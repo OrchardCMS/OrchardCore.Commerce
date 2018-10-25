@@ -1,5 +1,7 @@
 # Orchard Core Commerce
 
+[![Join the chat at https://gitter.im/OrchardCore-Commerce/Lobby](https://badges.gitter.im/OrchardCore-Commerce/Lobby.svg)](https://gitter.im/OrchardCore-Commerce/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The commerce module for Orchard Core.
 
 ## History, status, and planning
