@@ -27,3 +27,7 @@ Globalization should be taken into account at every step.
 Next steps will include:
 
 * Base shipping infrastructure, plus one implementation TBD
+* Product catalogs (prices affected by x factor: region, date)
+* Shopping cart rules (prices affected in cart by x factor: quantity, region, user role)
+* Shopping cart coupons (rebates applied globally)
+* Multicurrency support with real-time exchange rate conversion
