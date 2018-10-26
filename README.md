@@ -25,7 +25,3 @@ The work will focus at first on porting a minimum viable feature set:
 * Workflow activities
 
 Globalization should be taken into account at every step.
-
-Next steps will include:
-
-* Base shipping infrastructure, plus one implementation TBD
