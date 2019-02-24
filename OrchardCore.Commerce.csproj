@@ -1,8 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="OrchardCore.Commerce.Tests\**" />
+    <EmbeddedResource Remove="OrchardCore.Commerce.Tests\**" />
+    <None Remove="OrchardCore.Commerce.Tests\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Remove="LICENSE" />

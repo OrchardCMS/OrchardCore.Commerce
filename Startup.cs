@@ -18,12 +18,18 @@ namespace OrchardCore.Commerce
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Product
             services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
             services.AddScoped<IDataMigration, ProductMigrations>();
             services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
             services.AddScoped<IContentPartDisplayDriver, ProductPartDisplayDriver>();
             services.AddSingleton<ContentPart, ProductPart>();
             services.AddScoped<IContentPartHandler, ProductPartHandler>();
+            // Price
+            services.AddScoped<IDataMigration, PriceMigrations>();
+            services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
+            services.AddSingleton<ContentPart, PricePart>();
+            services.AddScoped<IContentPartHandler, PricePartHandler>();
         }
     }
 }

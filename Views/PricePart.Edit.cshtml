@@ -1,0 +1,10 @@
+@model PricePartViewModel
+
+<div class="form-group" asp-validation-class-for="Price">
+    <label asp-for="Price">@T["Price"] </label>
+    <input asp-for="Price" class="form-control text-muted" />
+    <span asp-validation-for="Price"></span>
+    <span class="hint">
+        @T["The base price of the product."]
+    </span>       
+</div>
