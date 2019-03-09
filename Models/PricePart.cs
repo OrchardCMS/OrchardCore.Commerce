@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Money;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Models
@@ -8,6 +9,6 @@ namespace OrchardCore.Commerce.Models
     /// </summary>
     public class PricePart : ContentPart, IPrice
     {
-        public decimal Price { get; set; }
+        public Amount Price { get; set; }
     }
 }

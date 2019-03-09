@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -11,10 +12,14 @@ namespace OrchardCore.Commerce.Drivers
     public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IMoneyService _moneyService;
 
-        public PricePartDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        public PricePartDisplayDriver(
+            IContentDefinitionManager contentDefinitionManager,
+            IMoneyService moneyService)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _moneyService = moneyService;
         }
 
         public override IDisplayResult Display(PricePart pricePart)
@@ -34,7 +39,10 @@ namespace OrchardCore.Commerce.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(PricePart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Price);
+            var updateModel = new PricePartViewModel();
+            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceValue);
+            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceCurrency);
+            model.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
 
             return Edit(model);
         }
@@ -42,8 +50,12 @@ namespace OrchardCore.Commerce.Drivers
         private Task BuildViewModel(PricePartViewModel model, PricePart part)
         {
             model.ContentItem = part.ContentItem;
-            model.Price = part.Price;
+            model.Price = _moneyService.EnsureCurrency(part.Price);
+
+            model.PriceValue = model.Price.Value;
+            model.PriceCurrency = model.Price.Currency.IsoCode;
             model.PricePart = part;
+            model.Currencies = _moneyService.Currencies;
 
             return Task.CompletedTask;
         }

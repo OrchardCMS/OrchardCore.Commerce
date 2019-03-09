@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Drivers;
-using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using YesSql.Indexes;
@@ -24,12 +24,14 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
             services.AddScoped<IContentPartDisplayDriver, ProductPartDisplayDriver>();
             services.AddSingleton<ContentPart, ProductPart>();
-            services.AddScoped<IContentPartHandler, ProductPartHandler>();
             // Price
             services.AddScoped<IDataMigration, PriceMigrations>();
             services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
             services.AddSingleton<ContentPart, PricePart>();
-            services.AddScoped<IContentPartHandler, PricePartHandler>();
+            services.AddSingleton<IPriceProvider, PriceProvider>();
+            // Currency
+            services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
+            services.AddSingleton<IMoneyService, MoneyService>();
         }
     }
 }

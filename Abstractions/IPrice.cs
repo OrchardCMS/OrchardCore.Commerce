@@ -1,7 +1,9 @@
+using OrchardCore.Commerce.Money;
+
 namespace OrchardCore.Commerce.Abstractions
 {
     public interface IPrice
     {
-        decimal Price { get; }
+        Amount Price { get; }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using Xunit;
@@ -24,7 +25,7 @@ namespace OrchardCore.Commerce.Tests
             foreach (var item in cart)
             {
                 Assert.Single(item.Prices);
-                Assert.Equal(item.Prices.Single().Price, item.Product.As<PricePart>().Price, 2);
+                Assert.Equal(item.Prices.Single().Price.Value, item.Product.As<PricePart>().Price.Value, 2);
             }
         }
 
@@ -32,7 +33,7 @@ namespace OrchardCore.Commerce.Tests
         {
             var product = new ContentItem();
             product.GetOrCreate<PricePart>();
-            product.Alter<PricePart>(p => p.Price = price);
+            product.Alter<PricePart>(p => p.Price = new Amount(price, Currency.Dollar));
             return product;
         }
     }

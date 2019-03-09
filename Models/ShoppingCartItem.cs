@@ -33,14 +33,6 @@ namespace OrchardCore.Commerce.Models
         public bool Equals(ShoppingCartItem other)
             => other == null ? false : other.Quantity == Quantity && other.Product.Equals(Product);
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Product.GetHashCode();
-                hashCode = (hashCode * 397) ^ Quantity.GetHashCode();
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Product, Quantity);
     }
 }

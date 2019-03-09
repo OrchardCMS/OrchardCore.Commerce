@@ -1,12 +1,13 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Money;
 
 namespace OrchardCore.Commerce.Models
 {
     public class ProductPrice : IPrice
     {
-        public decimal Price { get; }
+        public Amount Price { get; }
 
-        public ProductPrice(decimal price)
+        public ProductPrice(Amount price)
         {
             Price = price;
         }
