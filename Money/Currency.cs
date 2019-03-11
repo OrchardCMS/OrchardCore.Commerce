@@ -52,7 +52,8 @@ namespace OrchardCore.Commerce.Money
 
         public override string ToString() => Symbol;
 
-        public virtual string ToString(decimal amount) => amount.ToString("C" + DecimalPlaces, Culture);
+        public virtual string ToString(decimal amount)
+            => IsResolved ? amount.ToString("C" + DecimalPlaces, Culture) : "(" + (IsoCode ?? "UNK") + ") " + amount.ToString("N2");
 
         private string DebuggerDisplay => IsResolved ? Name : IsoCode;
     }
