@@ -29,6 +29,7 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
             services.AddSingleton<ContentPart, PricePart>();
             services.AddSingleton<IPriceProvider, PriceProvider>();
+            services.AddSingleton<IPriceService, PriceService>();
             // Currency
             services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
             services.AddSingleton<IMoneyService, MoneyService>();

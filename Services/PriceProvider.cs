@@ -7,6 +7,8 @@ namespace OrchardCore.Commerce.Services
 {
     public class PriceProvider : IPriceProvider
     {
+        public int Order => 0;
+
         public void AddPrices(IList<ShoppingCartItem> items)
         {
             foreach (var item in items)
