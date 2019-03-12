@@ -11,14 +11,11 @@ namespace OrchardCore.Commerce.Drivers
 {
     public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IMoneyService _moneyService;
 
         public PricePartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
             IMoneyService moneyService)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _moneyService = moneyService;
         }
 
@@ -50,10 +47,10 @@ namespace OrchardCore.Commerce.Drivers
         private Task BuildViewModel(PricePartViewModel model, PricePart part)
         {
             model.ContentItem = part.ContentItem;
-            model.Price = _moneyService.EnsureCurrency(part.Price);
 
-            model.PriceValue = model.Price.Value;
-            model.PriceCurrency = model.Price.Currency.IsoCode;
+            model.Price = part.Price;
+            model.PriceValue = part.Price.Value;
+            model.PriceCurrency = part.Price.Currency.IsoCode;
             model.PricePart = part;
             model.Currencies = _moneyService.Currencies;
 
