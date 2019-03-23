@@ -1,0 +1,16 @@
+@model PricePartViewModel
+
+    <div class="form-group" asp-validation-class-for="Price">
+        <label asp-for="Price">@T["Price"] </label>
+        <div class="input-group">
+            <input asp-for="PriceValue" class="form-control text-muted" />
+            <div class="input-group-append">
+                <select asp-for="PriceCurrency"
+                        asp-items="@(new SelectList(Model.Currencies, "IsoCode", "Symbol"))"></select>
+            </div>
+        </div>
+        <span asp-validation-for="PriceValue"></span>
+        <span class="hint">
+            @T["The base price of the product."]
+        </span>
+    </div>

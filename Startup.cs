@@ -1,9 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -18,12 +20,22 @@ namespace OrchardCore.Commerce
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Product
             services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
             services.AddScoped<IDataMigration, ProductMigrations>();
             services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
             services.AddScoped<IContentPartDisplayDriver, ProductPartDisplayDriver>();
             services.AddSingleton<ContentPart, ProductPart>();
-            services.AddScoped<IContentPartHandler, ProductPartHandler>();
+            // Price
+            services.AddScoped<IDataMigration, PriceMigrations>();
+            services.AddScoped<IContentPartHandler, PricePartHandler>();
+            services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
+            services.AddSingleton<ContentPart, PricePart>();
+            services.AddSingleton<IPriceProvider, PriceProvider>();
+            services.AddSingleton<IPriceService, PriceService>();
+            // Currency
+            services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
+            services.AddSingleton<IMoneyService, MoneyService>();
         }
     }
 }
