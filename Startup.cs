@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Handlers;
@@ -11,7 +12,11 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using YesSql.Indexes;
 
 namespace OrchardCore.Commerce
@@ -36,6 +41,12 @@ namespace OrchardCore.Commerce
             // Currency
             services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
             services.AddSingleton<IMoneyService, MoneyService>();
+            // Settings
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+
+            services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
         }
     }
 }

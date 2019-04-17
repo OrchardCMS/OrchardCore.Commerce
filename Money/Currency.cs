@@ -17,6 +17,7 @@ namespace OrchardCore.Commerce.Money
         public static readonly ICurrency CanadianDollar = new Currency("Canadian dollar", "$", "CAD", "en-CA");
         public static readonly ICurrency SwissFranc = new Currency("Swiss Franc", "CHF", "CHF", "rm-CH");
         public static readonly ICurrency Renminbi = new Currency("Renminbi", "¥", "CNY", "zh-Hans");
+        public static readonly ICurrency SwedishKrona = new Currency("Swedish krona", "kr", "SEK", "sv-SE");
         public static readonly ICurrency BitCoin = new BitCoin();
 
         public Currency(string name, string symbol, string isoCode, CultureInfo culture, int decimalPlaces = 2)
