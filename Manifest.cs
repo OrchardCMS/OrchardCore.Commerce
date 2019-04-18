@@ -13,5 +13,9 @@ using OrchardCore.Modules.Manifest;
     Id = CommerceConstants.Features.Core,
     Name = "Orchard Core Commerce",
     Category = "Commerce",
-    Description = "Registers the core components used by the Commerce features."
+    Description = "Registers the core components used by the Commerce features.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Contents"
+    }
 )]

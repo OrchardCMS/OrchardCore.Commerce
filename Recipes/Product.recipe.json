@@ -1,0 +1,95 @@
+{
+  "name": "Product",
+  "displayName": "Product",
+  "description": "Creates a Product content type with a Product Part and a Price Part.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "product" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.Title",
+        "OrchardCore.Commerce"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Product",
+          "DisplayName": "Product",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Versionable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Product",
+              "Name": "Product",
+              "Settings": {
+                "Position": "5"
+              }
+            },
+            {
+              "PartName": "PricePart",
+              "Name": "PricePart",
+              "Settings": {
+                "Position": "4"
+              }
+            },
+            {
+              "PartName": "ProductPart",
+              "Name": "ProductPart",
+              "Settings": {
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "Position": "1",
+                "DisplayName": null,
+                "Description": null,
+                "Editor": null,
+                "Pattern": "{{ ContentItem | display_text | slugify }}",
+                "AllowCustomPath": "True",
+                "AllowUpdatePath": "False",
+                "ShowHomepageOption": "False"
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "Position": "2",
+                "DisplayName": null,
+                "Description": null,
+                "Editor": "Wysiwyg",
+                "HtmlBodyPartSettings": {}
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
