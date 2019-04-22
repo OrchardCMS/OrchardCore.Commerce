@@ -39,6 +39,8 @@ namespace OrchardCore.Commerce
             services.AddSingleton<IPriceProvider, PriceProvider>();
             services.AddSingleton<IPriceService, PriceService>();
             // Currency
+            services.AddScoped<IDataMigration, CurrencyMigration>();
+            //services.AddSingleton<ICurrencyProvider, ContentItemCurrencyProvider>();
             services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
             services.AddSingleton<IMoneyService, MoneyService>();
             // Settings
