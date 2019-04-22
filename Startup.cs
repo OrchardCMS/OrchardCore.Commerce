@@ -2,15 +2,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Drivers;
+using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -31,6 +34,16 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
             services.AddScoped<IContentPartDisplayDriver, ProductPartDisplayDriver>();
             services.AddSingleton<ContentPart, ProductPart>();
+            // Attributes
+            services.AddSingleton<ContentField, BooleanProductAttributeField>();
+            services.AddScoped<IContentFieldDisplayDriver, BooleanProductAttributeFieldDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanProductAttributeFieldSettingsDriver>();
+            services.AddSingleton<ContentField, NumericProductAttributeField>();
+            services.AddScoped<IContentFieldDisplayDriver, NumericProductAttributeFieldDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericProductAttributeFieldSettingsDriver>();
+            services.AddSingleton<ContentField, TextProductAttributeField>();
+            services.AddScoped<IContentFieldDisplayDriver, TextProductAttributeFieldDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
             // Price
             services.AddScoped<IDataMigration, PriceMigrations>();
             services.AddScoped<IContentPartHandler, PricePartHandler>();

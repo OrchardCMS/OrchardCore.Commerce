@@ -1,0 +1,30 @@
+@model OrchardCore.Commerce.ViewModels.EditProductAttributeFieldViewModel<TextProductAttributeField, TextProductAttributeFieldSettings>
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Commerce.Fields
+@using OrchardCore.Commerce.Settings
+@{
+    var settings = Model.Settings;
+    string name = Model.PartFieldDefinition.DisplayName();
+}
+
+<fieldset class="form-group">
+    <label>@name @T["(Text product attribute)"]</label>
+    <ul>
+        @if (settings.Required) {
+            <li class="hint">@T["Required"]</li>
+        }
+        @if ((settings.PredefinedValues is object) && (settings.PredefinedValues.Length > 0)) {
+            <li class="hint">@T["Predefined values: {0}", string.Join(", ", settings.PredefinedValues)]</li>
+            @if (settings.RestrictToPredefinedValues) {
+                <li class="hint">@T["Choice is restricted to predefined values."]</li>
+            } else {
+                <li class="hint">@T["The user may enter a value that is not one of the predefined values."]</li>
+            }
+            @if (settings.MultipleValues) {
+                <li class="hint">@T["The user may select more than one value."]</li>
+            }
+        }
+        <li class="hint">@T["Placeholder: {0}", settings.Placeholder]</li>
+        <li class="hint">@T["Hint: {0}", settings.Hint]</li>
+    </ul>
+</fieldset>
