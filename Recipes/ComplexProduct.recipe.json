@@ -1,0 +1,306 @@
+{
+  "name": "ComplexProduct",
+  "displayName": "ComplexProduct",
+  "description": "Creates a Product content type with a Price Part and experimental SizeCurve content types.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "complexproduct" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.Title",
+        "OrchardCore.Commerce"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "SizeCurve",
+          "DisplayName": "SizeCurve",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Versionable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "SizeCurve",
+              "Name": "SizeCurve",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "BagPart",
+              "Settings": {
+                "DisplayName": "Bag",
+                "Description": "Provides a collection behavior for your content item.",
+                "Editor": null,
+                "ContainedContentTypes": [
+                  "Size"
+                ],
+                "DisplayType": null,
+                "Position": "1"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Size",
+          "DisplayName": "Size",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Versionable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Size",
+              "Name": "Size",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ComplexProduct",
+          "DisplayName": "ComplexProduct",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Versionable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "ComplexProduct",
+              "Name": "ComplexProduct",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "PricePart",
+              "Name": "PricePart",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "BagPart",
+              "Name": "BagPart",
+              "Settings": {
+                "DisplayName": "Bag",
+                "Description": "Provides a collection behavior for your content item.",
+                "Editor": null,
+                "ContainedContentTypes": [
+                  "ComplexProductItem"
+                ],
+                "DisplayType": null,
+                "Position": "3"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "SizeCurveWithContentPicker",
+          "DisplayName": "SizeCurveWithContentPicker",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Versionable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "SizeCurveWithContentPicker",
+              "Name": "SizeCurveWithContentPicker",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ComplexProductItem",
+          "DisplayName": "ComplexProductItem",
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Versionable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "ComplexProductItem",
+              "Name": "ComplexProductItem",
+              "Settings": {
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "ProductPart",
+              "Name": "ProductPart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "ComplexProduct",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "ContentPickerField",
+              "Name": "SizeCurve",
+              "Settings": {
+                "DisplayName": "SizeCurve",
+                "Editor": null,
+                "DisplayMode": null,
+                "Hint": null,
+                "Required": false,
+                "Multiple": false,
+                "DisplayedContentTypes": [
+                  "SizeCurve"
+                ],
+                "Position": "2"
+              }
+            },
+            {
+              "FieldName": "HtmlField",
+              "Name": "Description",
+              "Settings": {
+                "DisplayName": "Description",
+                "Editor": null,
+                "DisplayMode": null,
+                "Hint": null,
+                "Position": "1"
+              }
+            },
+            {
+              "FieldName": "ContentPickerField",
+              "Name": "SizeCurveWithContentPicker",
+              "Settings": {
+                "DisplayName": "SizeCurveWithContentPicker",
+                "Editor": null,
+                "DisplayMode": null,
+                "Hint": null,
+                "Required": false,
+                "Multiple": false,
+                "DisplayedContentTypes": [
+                  "SizeCurveWithContentPicker"
+                ],
+                "Position": "3"
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "ModelNumber",
+              "Settings": {
+                "DisplayName": "Model number",
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "SizeCurveWithContentPicker",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "ContentPickerField",
+              "Name": "Size",
+              "Settings": {
+                "DisplayName": "Size",
+                "Editor": null,
+                "DisplayMode": null,
+                "Hint": null,
+                "Required": true,
+                "Multiple": true,
+                "DisplayedContentTypes": [
+                  "Size"
+                ],
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "ComplexProductItem",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "ContentPickerField",
+              "Name": "Size",
+              "Settings": {
+                "DisplayName": "Size",
+                "Editor": null,
+                "DisplayMode": null,
+                "Hint": null,
+                "Required": true,
+                "Multiple": false,
+                "DisplayedContentTypes": [
+                  "Size"
+                ],
+                "Position": "0"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
