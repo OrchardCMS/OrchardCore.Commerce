@@ -1,0 +1,30 @@
+@model OrchardCore.Commerce.ViewModels.EditProductAttributeFieldViewModel<NumericProductAttributeField, NumericProductAttributeFieldSettings>
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Commerce.Fields
+@using OrchardCore.Commerce.Settings
+@{
+    var settings = Model.Settings;
+    string name = Model.PartFieldDefinition.DisplayName();
+}
+
+<fieldset class="form-group">
+    <label>@name @T["(Numeric product attribute)"]</label>
+    <ul>
+        @if (settings.Required) {
+            <li class="hint">@T["Required"]</li>
+        }
+        <li class="hint">@T["Decimal places: {0}", settings.DecimalPlaces]</li>
+        @if (settings.DefaultValue.HasValue) {
+            <li class="hint">@T["Default value: {0}", settings.DefaultValue.Value]</li>
+        }
+        @if (settings.Minimum.HasValue && settings.Maximum.HasValue) {
+            <li class="hint">@T["Value must be between {0} and {1}", settings.Minimum.Value, settings.Maximum.Value]</li>
+        } else if (settings.Minimum.HasValue) {
+            <li class="hint">@T["Minimum value: {0}", settings.Minimum.Value]</li>
+        } else if (settings.Maximum.HasValue) {
+            <li class="hint">@T["Maximum value: {0}", settings.Maximum.Value]</li>
+        }
+        <li class="hint">@T["Placeholder: {0}", settings.Placeholder]</li>
+        <li class="hint">@T["Hint: {0}", settings.Hint]</li>
+    </ul>
+</fieldset>
