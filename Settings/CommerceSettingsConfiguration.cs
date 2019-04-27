@@ -1,12 +1,9 @@
-using System;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Commerce.Services
+namespace OrchardCore.Commerce.Settings
 {
     public class CommerceSettingsConfiguration : IConfigureOptions<CommerceSettings>
     {

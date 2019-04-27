@@ -5,20 +5,49 @@ using OrchardCore.Commerce.Abstractions;
 
 namespace OrchardCore.Commerce.Money
 {
+    /// <summary>
+    /// A money amount, which is represented by a decimal number and a currency
+    /// </summary>
     [JsonConverter(typeof(AmountConverter))]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Amount : IEquatable<Amount>, IComparable<Amount>
     {
+        /// <summary>
+        /// Constructs a new money amount
+        /// </summary>
+        /// <param name="value">The decimal value</param>
+        /// <param name="currency">The currency</param>
         public Amount(decimal value, ICurrency currency) {
             Value = value;
             Currency = currency ?? throw new ArgumentNullException(nameof(currency));
         }
 
+        /// <summary>
+        /// Constructs a new money amount
+        /// </summary>
+        /// <param name="value">The value</param>
+        /// <param name="currency">The currency</param>
         public Amount(float value, ICurrency currency) : this((decimal)value, currency) { }
+        /// <summary>
+        /// Constructs a new money amount
+        /// </summary>
+        /// <param name="value">The value</param>
+        /// <param name="currency">The currency</param>
         public Amount(double value, ICurrency currency) : this((decimal)value, currency) { }
+        /// <summary>
+        /// Constructs a new money amount
+        /// </summary>
+        /// <param name="value">The value</param>
+        /// <param name="currency">The currency</param>
         public Amount(int value, ICurrency currency) : this((decimal)value, currency) { }
 
+        /// <summary>
+        /// The decimal value
+        /// </summary>
         public decimal Value { get; }
+        /// <summary>
+        /// The currency
+        /// </summary>
         public ICurrency Currency { get; }
 
         public bool Equals(Amount other) => Value == other.Value && Currency == other.Currency;

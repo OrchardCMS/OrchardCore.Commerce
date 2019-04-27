@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Money;
+using OrchardCore.Commerce.Settings;
 
 namespace OrchardCore.Commerce.Services
 {

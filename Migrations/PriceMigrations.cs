@@ -1,7 +1,6 @@
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
-using OrchardCore.Commerce.Indexes;
 
 namespace OrchardCore.Commerce.Migrations
 {
