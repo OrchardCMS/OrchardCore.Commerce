@@ -5,7 +5,6 @@ using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Commerce.Settings

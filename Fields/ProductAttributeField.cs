@@ -12,9 +12,18 @@ namespace OrchardCore.Commerce.Fields
         public ProductAttributeField() { }
     }
 
+    /// <summary>
+    /// A Boolean product attribute
+    /// </summary>
     public class BooleanProductAttributeField : ProductAttributeField { }
 
+    /// <summary>
+    /// A numeric product attribute
+    /// </summary>
     public class NumericProductAttributeField : ProductAttributeField { }
 
+    /// <summary>
+    /// A text product attribute, that may also have predefined values and be used as enumerations or flags
+    /// </summary>
     public class TextProductAttributeField : ProductAttributeField { }
 }

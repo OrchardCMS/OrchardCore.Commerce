@@ -5,6 +5,9 @@ using static OrchardCore.Commerce.Money.Currency;
 
 namespace OrchardCore.Commerce.Money
 {
+    /// <summary>
+    /// A simple currency provider that uses a static list of the most common predefined currencies
+    /// </summary>
     public class CurrencyProvider : ICurrencyProvider
     {
         private static readonly IEnumerable<ICurrency> _currencies = new List<ICurrency> {

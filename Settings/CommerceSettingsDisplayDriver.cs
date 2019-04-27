@@ -11,12 +11,11 @@ using OrchardCore.Settings;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Drivers
+namespace OrchardCore.Commerce.Settings
 {
     public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, CommerceSettings>
     {
         public const string GroupId = "commerce";
-        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IShellHost _orchardHost;
         private readonly ShellSettings _currentShellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -24,14 +23,12 @@ namespace OrchardCore.Commerce.Drivers
         private readonly IMoneyService _moneyService;
 
         public CommerceSettingsDisplayDriver(
-            IDataProtectionProvider dataProtectionProvider,
             IShellHost orchardHost,
             ShellSettings currentShellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IMoneyService moneyService)
         {
-            _dataProtectionProvider = dataProtectionProvider;
             _orchardHost = orchardHost;
             _currentShellSettings = currentShellSettings;
             _httpContextAccessor = httpContextAccessor;

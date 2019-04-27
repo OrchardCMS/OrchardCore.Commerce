@@ -3,6 +3,9 @@ using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Abstractions
 {
+    /// <summary>
+    /// A service that can add prices to a set of shopping cart items
+    /// </summary>
     public interface IPriceService
     {
         /// <summary>

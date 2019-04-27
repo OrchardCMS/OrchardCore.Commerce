@@ -5,6 +5,9 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Services
 {
+    /// <summary>
+    /// A simple price provider that obtains a price from a product by looking for a `PricePart`
+    /// </summary>
     public class PriceProvider : IPriceProvider
     {
         public int Order => 0;

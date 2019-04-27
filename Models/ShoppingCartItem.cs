@@ -5,15 +5,32 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Models
 {
+    /// <summary>
+    /// Ashopping cart item
+    /// </summary>
     [Serializable]
     public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     {
+        /// <summary>
+        /// The number of products
+        /// </summary>
         public int Quantity { get; }
 
+        /// <summary>
+        /// The product
+        /// </summary>
         public ContentItem Product { get; }
 
+        /// <summary>
+        /// The available prices
+        /// </summary>
         public IList<IPrice> Prices { get; } = new List<IPrice>();
 
+        /// <summary>
+        /// Constructs a new shopping cart item
+        /// </summary>
+        /// <param name="quantity">The number of products</param>
+        /// <param name="product">The product</param>
         public ShoppingCartItem(int quantity, ContentItem product)
         {
             if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
@@ -21,6 +38,10 @@ namespace OrchardCore.Commerce.Models
             Product = product ?? throw new ArgumentNullException(nameof(Product));
         }
 
+        /// <summary>
+        /// A string representation of the shopping cart item
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return $"{Quantity} x {Product.DisplayText}";

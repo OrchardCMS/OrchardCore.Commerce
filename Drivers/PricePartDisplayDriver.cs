@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -13,8 +12,7 @@ namespace OrchardCore.Commerce.Drivers
     {
         private readonly IMoneyService _moneyService;
 
-        public PricePartDisplayDriver(
-            IMoneyService moneyService)
+        public PricePartDisplayDriver(IMoneyService moneyService)
         {
             _moneyService = moneyService;
         }
