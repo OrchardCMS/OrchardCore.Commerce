@@ -1,0 +1,254 @@
+{
+  "name": "Commerce Module Setup",
+  "displayName": "Commerce Admin Manu and Settings",
+  "description": "Provides a basic admin menu with links to various settings and base data configurations",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "commerce", "admin" ],
+
+  "variables": {
+    "currencyListContentItemId": "[js:uuid()]"
+  },
+
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.AdminMenu",
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.Title",
+        "OrchardCore.Commerce"
+      ]
+    },
+    {
+      "name": "AdminMenu",
+      "data": [
+        {
+          "Id": "f25e22dfdc19481e8e754f2d78aa5972",
+          "Name": "Commerce",
+          "Enabled": true,
+          "MenuItems": [
+            {
+              "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+              "LinkText": "Dashboard",
+              "LinkUrl": "/Admin",
+              "IconClass": "fas fa-home",
+              "UniqueId": "[js:uuid()]",
+              "Enabled": true,
+              "Text": null,
+              "Id": null,
+              "Href": null,
+              "Url": null,
+              "Position": "-100",
+              "Priority": 0,
+              "LinkToFirstChild": true,
+              "LocalNav": false,
+              "Culture": null,
+              "Resource": null,
+              "Items": [],
+              "RouteValues": null,
+              "Permissions": [],
+              "Classes": []
+            },
+            {
+              "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
+              "LinkText": "Commerce",
+              "IconClass": "fas fa-cart-arrow-down",
+              "UniqueId": "[js:uuid()]",
+              "Enabled": true,
+              "Text": null,
+              "Id": null,
+              "Href": null,
+              "Url": null,
+              "Position": null,
+              "Priority": 0,
+              "LinkToFirstChild": true,
+              "LocalNav": false,
+              "Culture": null,
+              "Resource": null,
+              "Items": [
+                {
+                  "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
+                  "LinkText": "Settings",
+                  "IconClass": null,
+                  "UniqueId": "[js:uuid()]",
+                  "Enabled": true,
+                  "Text": null,
+                  "Id": null,
+                  "Href": null,
+                  "Url": null,
+                  "Position": null,
+                  "Priority": 0,
+                  "LinkToFirstChild": true,
+                  "LocalNav": false,
+                  "Culture": null,
+                  "Resource": null,
+                  "Items": [
+                    {
+                      "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+                      "LinkText": "General",
+                      "LinkUrl": "/Admin/Settings/commerce",
+                      "IconClass": null,
+                      "UniqueId": "[js:uuid()]",
+                      "Enabled": true,
+                      "Text": null,
+                      "Id": null,
+                      "Href": null,
+                      "Url": null,
+                      "Position": null,
+                      "Priority": 0,
+                      "LinkToFirstChild": true,
+                      "LocalNav": false,
+                      "Culture": null,
+                      "Resource": null,
+                      "Items": [],
+                      "RouteValues": null,
+                      "Permissions": [],
+                      "Classes": []
+                    },
+                    {
+                      "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
+                      "LinkText": "Currencies",
+                      "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('currencyListContentItemId') + '/Display']",
+                      "IconClass": null,
+                      "UniqueId": "[js:uuid()]",
+                      "Enabled": true,
+                      "Text": null,
+                      "Id": null,
+                      "Href": null,
+                      "Url": null,
+                      "Position": null,
+                      "Priority": 0,
+                      "LinkToFirstChild": true,
+                      "LocalNav": false,
+                      "Culture": null,
+                      "Resource": null,
+                      "Items": [],
+                      "RouteValues": null,
+                      "Permissions": [],
+                      "Classes": []
+                    }
+                  ],
+                  "RouteValues": null,
+                  "Permissions": [],
+                  "Classes": []
+                }
+              ],
+              "RouteValues": null,
+              "Permissions": [],
+              "Classes": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "CurrencyList",
+          "DisplayName": "CurrencyList",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Versionable": "False",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "CurrencyList",
+              "Name": "CurrencyList",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "ListPart",
+              "Name": "ListPart",
+              "Settings": {
+                "Position": "3",
+                "DisplayName": null,
+                "Description": null,
+                "Editor": null,
+                "PageSize": "10",
+                "ContainedContentTypes": [
+                  "Currency"
+                ]
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "AliasPart",
+              "Name": "AliasPart",
+              "Settings": {
+                "Position": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "[js: variables('currencyListContentItemId')]",
+          "ContentType": "CurrencyList",
+          "DisplayText": "Currencies",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2019-05-12T16:44:39.2884315Z",
+          "PublishedUtc": "2019-05-12T16:44:39.6162786Z",
+          "CreatedUtc": "2019-05-12T16:17:13.1564991Z",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "CurrencyList": {},
+          "ListPart": {
+            "FeedProxyUrl": null,
+            "FeedItemsCount": 20
+          },
+          "TitlePart": {
+            "Title": "Currencies"
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "Currency",
+          "DisplayText": "US Dollar",
+          "Latest": true,
+          "Published": true,
+          "Owner": "admin",
+          "Author": "admin",
+          "TitlePart": {
+            "Title": "US Dollar"
+          },
+          "CurrencyPart": {
+            "Name": "US Dollar",
+            "IsoCode": "USD",
+            "Symbol": "$",
+            "Culture": "en-US",
+            "DecimalPlaces": 2
+          },
+          "ContainedPart": {
+            "ListContentItemId": "[js: variables('currencyListContentItemId')]",
+            "Order": 0
+          }
+        }
+      ]
+    }
+  ]
+}

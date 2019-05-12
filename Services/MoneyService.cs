@@ -26,7 +26,7 @@ namespace OrchardCore.Commerce.Services
 
         public IEnumerable<ICurrency> Currencies => _currencyProviders.SelectMany(p => p.Currencies);
 
-        public ICurrency DefaultCurrency => GetCurrency(_options.DefaultCurrency);
+        public ICurrency DefaultCurrency => GetCurrency(_options.DefaultCurrency ?? "USD");
 
         public Amount Create(decimal value, string currencyIsoSymbol) => new Amount(value, GetCurrency(currencyIsoSymbol));
 
