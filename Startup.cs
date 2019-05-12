@@ -39,10 +39,15 @@ namespace OrchardCore.Commerce
             services.AddSingleton<IPriceProvider, PriceProvider>();
             services.AddSingleton<IPriceService, PriceService>();
             // Currency
-            services.AddScoped<IDataMigration, CurrencyMigration>();
-            //services.AddSingleton<ICurrencyProvider, ContentItemCurrencyProvider>();
-            services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
-            services.AddSingleton<IMoneyService, MoneyService>();
+            services.AddSingleton<IIndexProvider, CurrencyPartIndexProvider>();
+            services.AddScoped<IDataMigration, CurrencyMigrations>();
+            services.AddScoped<ICurrencyProvider, ContentItemCurrencyProvider>();
+            //            services.AddSingleton<ICurrencyProvider, ContentItemCurrencyProvider>();
+            //            services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
+            services.AddScoped<IContentPartDisplayDriver, CurrencyPartDisplayDriver>();
+            services.AddScoped<IMoneyService, MoneyService>();
+            //            services.AddSingleton<IMoneyService, MoneyService>();
+            services.AddSingleton<ContentPart, CurrencyPart>();
             // Settings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();

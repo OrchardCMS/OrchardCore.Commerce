@@ -1,0 +1,35 @@
+@model CurrencyPartViewModel
+
+    <div class="form-group" asp-validation-class-for="CurrencyPart">
+        <label asp-for="Name">@T["Name"] </label>
+        <input asp-for="Name" class="form-control text-muted" />
+        <span asp-validation-for="Name"></span>
+        <span class="hint">
+            @T["The Name of the currency."]
+        </span>
+        <br />
+
+        <label asp-for="IsoCode">@T["IsoCode"] </label>
+        <input asp-for="IsoCode" class="form-control text-muted" />
+        <span asp-validation-for="IsoCode"></span>
+        <span class="hint">
+            @T["The IsoCode of the currency."]
+        </span>
+        <br />
+
+        <label asp-for="Symbol">@T["Symbol"] </label>
+        <input asp-for="Symbol" class="form-control text-muted" />
+        <span asp-validation-for="Symbol"></span>
+        <span class="hint">
+            @T["The Symbol of the currency."]
+        </span>
+        <br />
+
+        <label asp-for="DecimalPlaces">@T["DecimalPlaces"] </label>
+        <input asp-for="DecimalPlaces" class="form-control text-muted" />
+        <span asp-validation-for="DecimalPlaces"></span>
+        <span class="hint">
+            @T["The DecimalPlaces of the currency."]
+        </span>
+
+    </div>
