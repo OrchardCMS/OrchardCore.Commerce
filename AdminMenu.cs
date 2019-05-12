@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Commerce.Drivers;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Commerce
@@ -24,7 +24,9 @@ namespace OrchardCore.Commerce
                 .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
                        .Add(T["Commerce"], T["Commerce"], entry => entry
-                          .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = CommerceSettingsDisplayDriver.GroupId })
+                          .Action("Index", "Admin", new {
+                              area = "OrchardCore.Settings",
+                              groupId = CommerceSettingsDisplayDriver.GroupId })
                           .Permission(Permissions.ManageCommerceSettings)
                           .LocalNav()
                 )));

@@ -1,0 +1,30 @@
+@model OrchardCore.Commerce.Settings.BooleanProductAttributeFieldSettings
+
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The description text to display for this attribute in the product page."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label asp-for="Label">@T["Label"]</label>
+        <input asp-for="Label" class="form-control" />
+        <span class="hint">@T["The text associated to the checkbox for this attribute in the product page."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label asp-for="Label">@T["Default value"]</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input asp-for="DefaultValue" type="checkbox" class="custom-control-input">
+        <label class="custom-control-label" asp-for="DefaultValue">@T["On/Off"]</label>
+    </div>
+    <div class="row col-md">
+        <span class="hint">@T["The default value associated with this attribute."]</span>
+    </div>
+</fieldset>

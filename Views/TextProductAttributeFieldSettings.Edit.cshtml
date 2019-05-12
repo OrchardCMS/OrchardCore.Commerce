@@ -1,0 +1,57 @@
+@model OrchardCore.Commerce.ViewModels.TextProductAttributeSettingsViewModel
+
+<fieldset class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="Required" type="checkbox" class="custom-control-input">
+        <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+        <span class="hint">@T["— Whether a value is required."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm-6">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this attribute in the product page."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label for="Placeholder">@T["Watermark (placeholder)"]</label>
+        <input asp-for="Placeholder" type="text" class="form-control" />
+        <span class="hint">@T["A hint to display when the input is empty. (optional)"]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm-6">
+        <label for="PredefinedValues">@T["Predefined values"]</label>
+        <textarea asp-for="PredefinedValues" cols="60" rows="8" class="form-control"></textarea>
+        <span class="hint">@T["The set of suggested or allowed values. Enter one value per line."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="RestrictToPredefinedValues" type="checkbox" class="custom-control-input">
+        <label class="custom-control-label" asp-for="RestrictToPredefinedValues">@T["Restrict to predefined values"]</label>
+        <span class="hint">@T["— Whether values should be restricted to the set of predefined values."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="MultipleValues" type="checkbox" class="custom-control-input">
+        <label class="custom-control-label" asp-for="MultipleValues">@T["Multiple values"]</label>
+        <span class="hint">@T["— Whether multiple values can be selected."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label for="DefaultValue">@T["Default value"]</label>
+        <input asp-for="DefaultValue" class="form-control" type="text" />
+        <span class="hint">@T["The default value. (optional)"]</span>
+    </div>
+</fieldset>
