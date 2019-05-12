@@ -34,6 +34,7 @@ namespace OrchardCore.Commerce.Drivers
                 part.Name = model.Name;
                 part.IsoCode = model.IsoCode;
                 part.Symbol = model.Symbol;
+                part.Culture = model.Culture;
                 part.DecimalPlaces = model.DecimalPlaces;
             }
 
@@ -45,6 +46,7 @@ namespace OrchardCore.Commerce.Drivers
             model.Name = part.Name;
             model.IsoCode = part.IsoCode;
             model.Symbol = part.Symbol;
+            model.Culture = part.Culture;
             model.DecimalPlaces = part.DecimalPlaces;
 
             return Task.CompletedTask;

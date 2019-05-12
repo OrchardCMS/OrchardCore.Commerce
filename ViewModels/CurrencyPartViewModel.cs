@@ -12,6 +12,7 @@ namespace OrchardCore.Commerce.ViewModels
         public string Name { get; set; }
         public string IsoCode { get; set; }
         public string Symbol { get; set; }
+        public string Culture { get; set; }
         public int DecimalPlaces { get; set; }
 
         [BindNever]

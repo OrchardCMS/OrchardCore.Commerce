@@ -25,6 +25,14 @@
         </span>
         <br />
 
+        <label asp-for="Culture">@T["Culture"] </label>
+        <input asp-for="Culture" class="form-control text-muted" />
+        <span asp-validation-for="Culture"></span>
+        <span class="hint">
+            @T["The Culture of the currency."]
+        </span>
+        <br />
+
         <label asp-for="DecimalPlaces">@T["DecimalPlaces"] </label>
         <input asp-for="DecimalPlaces" class="form-control text-muted" />
         <span asp-validation-for="DecimalPlaces"></span>
