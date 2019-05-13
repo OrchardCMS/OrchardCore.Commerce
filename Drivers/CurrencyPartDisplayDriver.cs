@@ -36,6 +36,8 @@ namespace OrchardCore.Commerce.Drivers
                 part.Symbol = model.Symbol;
                 part.Culture = model.Culture;
                 part.DecimalPlaces = model.DecimalPlaces;
+
+                part.ContentItem.DisplayText = model.Name;
             }
 
             return Edit(part);

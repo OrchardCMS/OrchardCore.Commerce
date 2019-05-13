@@ -233,9 +233,6 @@
           "Published": true,
           "Owner": "admin",
           "Author": "admin",
-          "TitlePart": {
-            "Title": "US Dollar"
-          },
           "CurrencyPart": {
             "Name": "US Dollar",
             "IsoCode": "USD",

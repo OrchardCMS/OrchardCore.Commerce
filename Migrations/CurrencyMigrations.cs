@@ -17,7 +17,6 @@ namespace OrchardCore.Commerce.Migrations
         public int Create()
         {
             _contentDefinitionManager.AlterTypeDefinition("Currency", builder => builder
-                .WithPart("TitlePart")
                 .WithPart("CurrencyPart")
             );
 
