@@ -34,28 +34,6 @@
           "Enabled": true,
           "MenuItems": [
             {
-              "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
-              "LinkText": "Dashboard",
-              "LinkUrl": "/Admin",
-              "IconClass": "fas fa-home",
-              "UniqueId": "[js:uuid()]",
-              "Enabled": true,
-              "Text": null,
-              "Id": null,
-              "Href": null,
-              "Url": null,
-              "Position": "-100",
-              "Priority": 0,
-              "LinkToFirstChild": true,
-              "LocalNav": false,
-              "Culture": null,
-              "Resource": null,
-              "Items": [],
-              "RouteValues": null,
-              "Permissions": [],
-              "Classes": []
-            },
-            {
               "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Commerce",
               "IconClass": "fas fa-cart-arrow-down",

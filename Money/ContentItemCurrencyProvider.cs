@@ -15,32 +15,38 @@ namespace OrchardCore.Commerce.Money
     public class ContentItemCurrencyProvider : ICurrencyProvider
     {
         private IServiceProvider _serviceProvider;
-        private static IEnumerable<ICurrency> _currencies;
 
         private static IDictionary<string, ICurrency> _currencyDictionary;
 
         public ContentItemCurrencyProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            _currencyDictionary = new Dictionary<string, ICurrency>();
         }
 
         public IEnumerable<ICurrency> Currencies
         {
-            get { return Initialize(); }
+            get
+            {
+                Initialize();
+
+                return from a in _currencyDictionary
+                       select a.Value;
+            }
             private set { }
         }
 
         public ICurrency GetCurrency(string isoSymbol)
         {
-            if (_currencies == null)
+            if (_currencyDictionary.Count() == 0)
                 Initialize();
 
             return _currencyDictionary[isoSymbol];
         }
 
-        private IEnumerable<ICurrency> Initialize()
+        private void Initialize()
         {
-            if (_currencies == null || _currencies.Count() == 0)
+            if (_currencyDictionary.Count() == 0)
             {
                 var contentItems = GetSession().Query<ContentItem, CurrencyPartIndex>().ListAsync().Result;
 
@@ -50,16 +56,23 @@ namespace OrchardCore.Commerce.Money
                 {
                     var currencyPart = contentItem.As<CurrencyPart>();
 
-                    currencies.Add(new Currency(currencyPart.Name, currencyPart.Symbol, currencyPart.IsoCode, "SE-sv", currencyPart.DecimalPlaces));
+                    _currencyDictionary.Add(currencyPart.IsoCode, new Currency(currencyPart.Name, currencyPart.Symbol, currencyPart.IsoCode, currencyPart.Culture, currencyPart.DecimalPlaces));
                 }
-
-                _currencies = currencies;
-
-                // lookup via index in GetCurrency?
-                _currencyDictionary = _currencies.ToDictionary(c => c.IsoCode);
             }
+        }
 
-            return _currencies;
+        public Task AddOrUpdateAsync(ICurrency currency)
+        {
+            _currencyDictionary[currency.IsoCode] = currency;
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveAsync(ICurrency currency)
+        {
+            _currencyDictionary.Remove(currency.IsoCode);
+
+            return Task.CompletedTask;
         }
 
         private YesSql.ISession GetSession()

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using static OrchardCore.Commerce.Money.Currency;
 
@@ -20,5 +21,15 @@ namespace OrchardCore.Commerce.Money
         public IEnumerable<ICurrency> Currencies => _currencies;
 
         public ICurrency GetCurrency(string isoSymbol) => _currencyDictionary[isoSymbol];
+
+        public Task AddOrUpdateAsync(ICurrency currency)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveAsync(ICurrency currency)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

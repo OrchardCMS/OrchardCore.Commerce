@@ -13,18 +13,20 @@ namespace OrchardCore.Commerce.Services
     /// </summary>
     public class MoneyService : IMoneyService
     {
-        private IEnumerable<ICurrencyProvider> _currencyProviders;
+        private ICurrencyProvider _currencyProvider;
+        //private IEnumerable<ICurrencyProvider> _currencyProviders;
         private readonly CommerceSettings _options;
 
         public MoneyService(
-            IEnumerable<ICurrencyProvider> currencyProviders,
+            ICurrencyProvider currencyProvider,
+            //IEnumerable<ICurrencyProvider> currencyProviders,
             IOptions<CommerceSettings> options)
         {
-            _currencyProviders = currencyProviders;
+            _currencyProvider = currencyProvider;
             _options = options.Value;
         }
 
-        public IEnumerable<ICurrency> Currencies => _currencyProviders.SelectMany(p => p.Currencies);
+        public IEnumerable<ICurrency> Currencies => _currencyProvider.Currencies;   // (p => p.Currencies);
 
         public ICurrency DefaultCurrency => GetCurrency(_options.DefaultCurrency ?? "USD");
 
