@@ -1,3 +1,4 @@
+using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
@@ -64,6 +65,9 @@ namespace OrchardCore.Commerce
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
+
+            // ContentHandler
+            services.AddScoped<IContentHandler, CommerceContentHandler>();
         }
     }
 }

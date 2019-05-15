@@ -6,12 +6,14 @@ namespace OrchardCore.Commerce
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageCommerceSettings = new Permission("ManageCommerceSettings", "Manage Commerce Settings");
+        public static readonly Permission ManageCommerceCurrencies = new Permission("ManageCommerceCurrencies", "Manage Commerce Currencies");
 
         public IEnumerable<Permission> GetPermissions()
         {
             return new[]
             {
                 ManageCommerceSettings,
+                ManageCommerceCurrencies,
             };
         }
 
@@ -22,7 +24,7 @@ namespace OrchardCore.Commerce
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageCommerceSettings }
+                    Permissions = new[] { ManageCommerceSettings, ManageCommerceCurrencies }
                 },
             };
         }
