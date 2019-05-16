@@ -63,6 +63,6 @@ namespace OrchardCore.Commerce.Models
             : Value == null || !Value.Any() || AttributeName != other.AttributeName ? false
             : Value.ToHashSet().SetEquals(other.Value);
 
-        public override string ToString() => AttributeName + ": " + String.Join(",", Value);
+        public override string ToString() => AttributeName + ": " + String.Join(", ", Value);
     }
 }

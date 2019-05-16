@@ -1,3 +1,6 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
@@ -54,12 +57,24 @@ namespace OrchardCore.Commerce
             // Currency
             services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
             services.AddSingleton<IMoneyService, MoneyService>();
+            // Shopping Cart
+            services.AddSingleton<IShoppingCartPersistence, SessionShoppingCartPersistence>();
             // Settings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "ShoppingCart",
+                areaName: "OrchardCore.Commerce",
+                template: "shoppingcart/{action}",
+                defaults: new { controller = "ShoppingCart", action = "Index" }
+            );
         }
     }
 }
