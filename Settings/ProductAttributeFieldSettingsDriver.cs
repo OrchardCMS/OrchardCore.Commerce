@@ -29,13 +29,16 @@ namespace OrchardCore.Commerce.Settings
     }
 
     public class BooleanProductAttributeFieldSettingsDriver
-        : ProductAttributeFieldSettingsDriver<BooleanProductAttributeField, BooleanProductAttributeFieldSettings> {}
+        : ProductAttributeFieldSettingsDriver<BooleanProductAttributeField, BooleanProductAttributeFieldSettings>
+    { }
 
     public class NumericProductAttributeFieldSettingsDriver
-        : ProductAttributeFieldSettingsDriver<NumericProductAttributeField, NumericProductAttributeFieldSettings> {}
+        : ProductAttributeFieldSettingsDriver<NumericProductAttributeField, NumericProductAttributeFieldSettings>
+    { }
 
     public class TextProductAttributeFieldSettingsDriver
-        : ProductAttributeFieldSettingsDriver<TextProductAttributeField, TextProductAttributeFieldSettings> {
+        : ProductAttributeFieldSettingsDriver<TextProductAttributeField, TextProductAttributeFieldSettings>
+    {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
             => Initialize<TextProductAttributeSettingsViewModel>(nameof(TextProductAttributeFieldSettings) + "_Edit",
                            viewModel =>
@@ -55,7 +58,8 @@ namespace OrchardCore.Commerce.Settings
         {
             var viewModel = new TextProductAttributeSettingsViewModel();
             await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
-            context.Builder.MergeSettings(new TextProductAttributeFieldSettings {
+            context.Builder.MergeSettings(new TextProductAttributeFieldSettings
+            {
                 Hint = viewModel.Hint,
                 DefaultValue = viewModel.DefaultValue,
                 Required = viewModel.Required,

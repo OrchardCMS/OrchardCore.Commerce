@@ -30,7 +30,7 @@ namespace OrchardCore.Commerce.Models
 
         public override bool Equals(object obj) => obj != null && obj is IProductAttributeValue<T> other && Equals(other);
 
-        public override int GetHashCode() => HashCode.Combine(AttributeName, Value);
+        public override int GetHashCode() => (AttributeName, Value).GetHashCode();
 
         public override string ToString() => AttributeName + ": " + Value;
     }
@@ -61,7 +61,7 @@ namespace OrchardCore.Commerce.Models
         public override bool Equals(IProductAttributeValue<IEnumerable<string>> other)
             => other == null || other.Value == null || !other.Value.Any() ? Value == null || !Value.Any()
             : Value == null || !Value.Any() || AttributeName != other.AttributeName ? false
-            : Value.ToHashSet().SetEquals(other.Value);
+            : new HashSet<string>(Value).SetEquals(other.Value);
 
         public override string ToString() => AttributeName + ": " + String.Join(", ", Value);
     }

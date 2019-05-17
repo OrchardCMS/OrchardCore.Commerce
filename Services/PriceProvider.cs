@@ -17,7 +17,8 @@ namespace OrchardCore.Commerce.Services
             foreach (var item in items)
             {
                 var pricePart = item.Product.As<PricePart>();
-                if (pricePart != null) {
+                if (pricePart != null)
+                {
                     var price = pricePart.Price;
                     item.Prices.Add(new ProductPrice(price));
                 }

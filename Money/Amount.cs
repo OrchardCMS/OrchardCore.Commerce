@@ -17,7 +17,8 @@ namespace OrchardCore.Commerce.Money
         /// </summary>
         /// <param name="value">The decimal value</param>
         /// <param name="currency">The currency</param>
-        public Amount(decimal value, ICurrency currency) {
+        public Amount(decimal value, ICurrency currency)
+        {
             Value = value;
             Currency = currency ?? throw new ArgumentNullException(nameof(currency));
         }
@@ -54,7 +55,7 @@ namespace OrchardCore.Commerce.Money
 
         public override bool Equals(object obj) => obj != null && obj is Amount other && Equals(other);
 
-        public override int GetHashCode() => HashCode.Combine(Value, Currency);
+        public override int GetHashCode() => (Value, Currency).GetHashCode();
 
         public override string ToString() => (Currency ?? Money.Currency.Dollar).ToString(Value);
 

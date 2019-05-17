@@ -57,8 +57,6 @@ namespace OrchardCore.Commerce
             // Currency
             services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
             services.AddSingleton<IMoneyService, MoneyService>();
-            // Shopping Cart
-            services.AddSingleton<IShoppingCartPersistence, SessionShoppingCartPersistence>();
             // Settings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
@@ -66,9 +64,21 @@ namespace OrchardCore.Commerce
 
             services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
         }
+    }
+
+    [RequireFeatures(CommerceConstants.Features.SessionCartStorage)]
+    public class SessionCartStorageStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSession(options => { });
+            // Shopping Cart
+            services.AddSingleton<IShoppingCartPersistence, SessionShoppingCartPersistence>();
+        }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            app.UseSession();
             routes.MapAreaRoute(
                 name: "ShoppingCart",
                 areaName: "OrchardCore.Commerce",

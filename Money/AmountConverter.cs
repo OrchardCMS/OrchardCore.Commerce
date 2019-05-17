@@ -18,7 +18,7 @@ namespace OrchardCore.Commerce.Money
                 var propertyName = (string)reader.Value;
                 if (!reader.Read()) continue;
 
-                switch(propertyName)
+                switch (propertyName)
                 {
                     case nameof(Amount.Value):
                         val = serializer.Deserialize<decimal>(reader);

@@ -14,8 +14,8 @@ namespace OrchardCore.Commerce.Controllers
             _shoppingCartPersistence = shoppingCartPersistence;
         }
 
-        [HttpPost]
-        public async Task<IList<ShoppingCartItem>> Index(string shoppingCartId)
+        [HttpGet]
+        public async Task<IList<ShoppingCartItem>> Index(string shoppingCartId = null)
             => await _shoppingCartPersistence.Retrieve(shoppingCartId);
     }
 }

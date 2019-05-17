@@ -2,3 +2,4 @@
 /obj
 /OrchardCore.Commerce.Tests/bin
 /OrchardCore.Commerce.Tests/obj
+*.csproj.user

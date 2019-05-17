@@ -24,9 +24,11 @@ namespace OrchardCore.Commerce
                 .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
                        .Add(T["Commerce"], T["Commerce"], entry => entry
-                          .Action("Index", "Admin", new {
+                          .Action("Index", "Admin", new
+                          {
                               area = "OrchardCore.Settings",
-                              groupId = CommerceSettingsDisplayDriver.GroupId })
+                              groupId = CommerceSettingsDisplayDriver.GroupId
+                          })
                           .Permission(Permissions.ManageCommerceSettings)
                           .LocalNav()
                 )));
