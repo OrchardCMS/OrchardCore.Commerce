@@ -54,7 +54,7 @@ namespace OrchardCore.Commerce.Money
 
         public override bool Equals(object obj) => obj != null && obj is Amount other && Equals(other);
 
-        public override int GetHashCode() => HashCode.Combine(Value, Currency);
+        public override int GetHashCode() => (Value, Currency).GetHashCode();
 
         public override string ToString() => (Currency ?? Money.Currency.Dollar).ToString(Value);
 
