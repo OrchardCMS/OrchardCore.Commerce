@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Logging;
+using System;
 using Microsoft.Extensions.Options;
+using OrchardCore.Commerce.Money;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 
@@ -8,23 +9,21 @@ namespace OrchardCore.Commerce.Settings
     public class CommerceSettingsConfiguration : IConfigureOptions<CommerceSettings>
     {
         private readonly ISiteService _site;
-        private readonly ILogger<CommerceSettingsConfiguration> _logger;
 
-        public CommerceSettingsConfiguration(
-            ISiteService site,
-            ILogger<CommerceSettingsConfiguration> logger)
+        public CommerceSettingsConfiguration(ISiteService site)
         {
             _site = site;
-            _logger = logger;
         }
 
         public void Configure(CommerceSettings options)
         {
-            var settings = _site.GetSiteSettingsAsync()
+            var defaultCurrencySymbol = _site.GetSiteSettingsAsync()
                 .GetAwaiter().GetResult()
-                .As<CommerceSettings>();
+                .As<CommerceSettings>()
+                .DefaultCurrency;
 
-            options.DefaultCurrency = settings.DefaultCurrency;
+            options.DefaultCurrency =
+                String.IsNullOrEmpty(defaultCurrencySymbol) ? Currency.Dollar.Symbol : defaultCurrencySymbol;
         }
     }
 }
