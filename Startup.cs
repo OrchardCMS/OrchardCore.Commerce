@@ -35,6 +35,7 @@ namespace OrchardCore.Commerce
             services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
             services.AddScoped<IDataMigration, ProductMigrations>();
             services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
+            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IContentPartDisplayDriver, ProductPartDisplayDriver>();
             services.AddSingleton<ContentPart, ProductPart>();
             // Attributes
