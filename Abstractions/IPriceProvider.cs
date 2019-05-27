@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Abstractions
@@ -13,7 +14,7 @@ namespace OrchardCore.Commerce.Abstractions
         /// Adds prices to shopping cart items.
         /// </summary>
         /// <param name="items">The quantities and products to which prices must be added.</param>
-        void AddPrices(IList<ShoppingCartItem> items);
+        Task AddPrices(IList<ShoppingCartItem> items);
 
         /// <summary>
         /// Price providers are invited to add prices in increasing order.

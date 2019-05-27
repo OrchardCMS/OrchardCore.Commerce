@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using YesSql;
 
 namespace OrchardCore.Commerce.Services
 {
@@ -10,17 +14,29 @@ namespace OrchardCore.Commerce.Services
     /// </summary>
     public class PriceProvider : IPriceProvider
     {
+        private readonly IProductService _productService;
+
+        public PriceProvider(IProductService productService)
+        {
+            _productService = productService;
+        }
+
         public int Order => 0;
 
-        public void AddPrices(IList<ShoppingCartItem> items)
+        public async Task AddPrices(IList<ShoppingCartItem> items)
         {
+            var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
+            var skuProducts = (await _productService.GetProducts(skus))
+                .ToDictionary(p => p.Sku);
             foreach (var item in items)
             {
-                var pricePart = item.Product.As<PricePart>();
-                if (pricePart != null)
+                if (skuProducts.TryGetValue(item.ProductSku, out var product))
                 {
-                    var price = pricePart.Price;
-                    item.Prices.Add(new ProductPrice(price));
+                    var pricePart = product.ContentItem.As<PricePart>();
+                    if (pricePart is object)
+                    {
+                        item.Prices.Add(new ProductPrice(pricePart.Price));
+                    }
                 }
             }
         }

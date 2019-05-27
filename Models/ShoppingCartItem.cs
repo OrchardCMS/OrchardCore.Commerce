@@ -18,11 +18,11 @@ namespace OrchardCore.Commerce.Models
         /// </summary>
         /// <param name="quantity">The number of products</param>
         /// <param name="product">The product</param>
-        public ShoppingCartItem(int quantity, ContentItem product, ISet<IProductAttributeValue> attributes = null)
+        public ShoppingCartItem(int quantity, string productSku, ISet<IProductAttributeValue> attributes = null)
         {
             if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
             Quantity = quantity;
-            Product = product ?? throw new ArgumentNullException(nameof(Product));
+            ProductSku = productSku ?? throw new ArgumentNullException(nameof(productSku));
             Attributes = attributes;
         }
 
@@ -32,9 +32,9 @@ namespace OrchardCore.Commerce.Models
         public int Quantity { get; }
 
         /// <summary>
-        /// The product
+        /// The product SKU
         /// </summary>
-        public ContentItem Product { get; }
+        public string ProductSku { get; }
 
         /// <summary>
         /// The product attributes associated with this shopping cart line item
@@ -46,11 +46,6 @@ namespace OrchardCore.Commerce.Models
         /// </summary>
         public IList<IPrice> Prices { get; } = new List<IPrice>();
 
-        public string Display(CultureInfo culture = null)
-            => Quantity.ToString(culture ?? CultureInfo.InvariantCulture)
-            + " x " + Product.DisplayText
-            + (Attributes != null && Attributes.Count != 0 ? " (" + String.Join(", ", Attributes.Select(a => a.Display(culture))) + ")" : "");
-
         public override bool Equals(object obj)
             => !ReferenceEquals(null, obj)
             && (ReferenceEquals(this, obj) || Equals(obj as ShoppingCartItem));
@@ -60,12 +55,15 @@ namespace OrchardCore.Commerce.Models
         /// </summary>
         /// <returns></returns>
         public override string ToString()
-            => Quantity + " x " + Product.DisplayText
+            => Quantity + " x " + ProductSku
             + (Attributes != null && Attributes.Count != 0 ? " (" + String.Join(", ", Attributes) + ")" : "");
 
         public bool Equals(ShoppingCartItem other)
-            => other is null ? false : other.Quantity == Quantity && other.Product.Equals(Product) && other.Attributes.SetEquals(Attributes);
+            => other is null ? false : other.Quantity == Quantity
+                && other.ProductSku.Equals(ProductSku)
+                && ((Attributes is null && other.Attributes is null)
+                || (other.Attributes is object && other.Attributes.SetEquals(Attributes)));
 
-        public override int GetHashCode() => (Product, Quantity, Attributes).GetHashCode();
+        public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
     }
 }
