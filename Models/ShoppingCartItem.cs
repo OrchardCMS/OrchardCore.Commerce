@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.ContentManagement;
+using OrchardCore.Commerce.Helpers;
 
 namespace OrchardCore.Commerce.Models
 {
@@ -59,10 +57,7 @@ namespace OrchardCore.Commerce.Models
             + (Attributes != null && Attributes.Count != 0 ? " (" + String.Join(", ", Attributes) + ")" : "");
 
         public bool Equals(ShoppingCartItem other)
-            => other is null ? false : other.Quantity == Quantity
-                && other.ProductSku.Equals(ProductSku)
-                && ((Attributes is null && other.Attributes is null)
-                || (other.Attributes is object && other.Attributes.SetEquals(Attributes)));
+            => other is null ? false : other.Quantity == Quantity && other.IsSameProductAs(this);
 
         public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
     }

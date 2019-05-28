@@ -49,7 +49,7 @@ namespace OrchardCore.Commerce.Settings
                                viewModel.DefaultValue = model.DefaultValue;
                                viewModel.Required = model.Required;
                                viewModel.Placeholder = model.Placeholder;
-                               viewModel.PredefinedValues = model.PredefinedValues is object ? String.Join("\r\n", model.PredefinedValues) : "";
+                               viewModel.PredefinedValues = model.PredefinedValues != null ? String.Join("\r\n", model.PredefinedValues) : "";
                                viewModel.RestrictToPredefinedValues = model.RestrictToPredefinedValues;
                                viewModel.MultipleValues = model.MultipleValues;
                            }).Location("Content");

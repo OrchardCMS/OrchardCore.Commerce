@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Helpers;
 using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Controllers
@@ -23,19 +23,25 @@ namespace OrchardCore.Commerce.Controllers
         public async Task<IList<ShoppingCartItem>> AddItem(ShoppingCartItem item, string shoppingCartId = null)
         {
             var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
-            var existingItem = cart.FirstOrDefault(i => i.ProductSku == item.ProductSku
-                && ((item.Attributes is null && i.Attributes is null)
-                || (i.Attributes is object && i.Attributes.SetEquals(item.Attributes))));
+            var existingItem = cart.GetExistingItem(item);
             if (existingItem != null)
             {
-                var index = cart.IndexOf(existingItem);
-                cart.RemoveAt(index);
+                var index = cart.RemoveItem(existingItem);
                 cart.Insert(index, new ShoppingCartItem(existingItem.Quantity + item.Quantity, item.ProductSku, item.Attributes));
             }
             else
             {
                 cart.Add(item);
             }
+            await _shoppingCartPersistence.Store(cart, shoppingCartId);
+            return cart;
+        }
+
+        [HttpPost]
+        public async Task<IList<ShoppingCartItem>> RemoveItem(ShoppingCartItem item, string shoppingCartId = null)
+        {
+            var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
+            cart.RemoveItem(item);
             await _shoppingCartPersistence.Store(cart, shoppingCartId);
             return cart;
         }

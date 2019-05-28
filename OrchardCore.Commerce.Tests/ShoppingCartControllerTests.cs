@@ -10,7 +10,7 @@ namespace OrchardCore.Commerce.Tests
     public class ShoppingCartControllerTests
     {
         [Fact]
-        public async void AddExistingItemToCart()
+        public async Task AddExistingItemToCart()
         {
             var cartStorage = new FakeCartStorage(new List<ShoppingCartItem> { new ShoppingCartItem(3, "foo") });
             var controller = new ShoppingCartController(cartStorage);
@@ -20,7 +20,7 @@ namespace OrchardCore.Commerce.Tests
         }
 
         [Fact]
-        public async void AddNewItemToCart()
+        public async Task AddNewItemToCart()
         {
             var cartStorage = new FakeCartStorage(new List<ShoppingCartItem> { new ShoppingCartItem(3, "foo") });
             var controller = new ShoppingCartController(cartStorage);
@@ -34,7 +34,7 @@ namespace OrchardCore.Commerce.Tests
         }
 
         [Fact]
-        public async void AddExistingItemWithAttributes()
+        public async Task AddExistingItemWithAttributes()
         {
             var attrSet1 = new HashSet<IProductAttributeValue>
             {
@@ -77,13 +77,65 @@ namespace OrchardCore.Commerce.Tests
             }, cart);
         }
 
+        [Fact]
+        public async Task RemoveItems()
+        {
+            var attrSet1 = new HashSet<IProductAttributeValue>
+            {
+                new BooleanProductAttributeValue("attr1", true)
+            };
+            var attrSet2 = new HashSet<IProductAttributeValue>
+            {
+                new BooleanProductAttributeValue("attr1", false)
+            };
+            var attrSet3 = new HashSet<IProductAttributeValue>
+            {
+                new BooleanProductAttributeValue("attr1", true),
+                new TextProductAttributeValue("attr2", "bar", "baz")
+            };
+            var expectedCart = new List<ShoppingCartItem>
+            {
+                new ShoppingCartItem(2, "foo"),
+                new ShoppingCartItem(3, "foo", attrSet1),
+                new ShoppingCartItem(4, "foo", attrSet2),
+                new ShoppingCartItem(5, "foo", attrSet3),
+                new ShoppingCartItem(6, "bar", attrSet3)
+            };
+            var cartStorage = new FakeCartStorage(expectedCart);
+            var controller = new ShoppingCartController(cartStorage);
+
+            await controller.RemoveItem(new ShoppingCartItem(0, "foo", attrSet2));
+            expectedCart.RemoveAt(2);
+            Assert.Equal(expectedCart, await controller.Index());
+
+            // Removing an item that's no longer there does nothing
+            await controller.RemoveItem(new ShoppingCartItem(0, "foo", attrSet2));
+            Assert.Equal(expectedCart, await controller.Index());
+
+            await controller.RemoveItem(new ShoppingCartItem(0, "bar", attrSet3));
+            expectedCart.RemoveAt(3);
+            Assert.Equal(expectedCart, await controller.Index());
+
+            await controller.RemoveItem(new ShoppingCartItem(0, "foo"));
+            expectedCart.RemoveAt(0);
+            Assert.Equal(expectedCart, await controller.Index());
+
+            await controller.RemoveItem(new ShoppingCartItem(0, "foo", attrSet1));
+            expectedCart.RemoveAt(0);
+            Assert.Equal(expectedCart, await controller.Index());
+
+            await controller.RemoveItem(new ShoppingCartItem(0, "foo", attrSet3));
+            expectedCart.RemoveAt(0);
+            Assert.Equal(expectedCart, await controller.Index());
+        }
+
         private class FakeCartStorage : IShoppingCartPersistence
         {
             private Dictionary<string, IList<ShoppingCartItem>> _carts = new Dictionary<string, IList<ShoppingCartItem>>();
 
             public FakeCartStorage(IList<ShoppingCartItem> items = null, string cartId = null)
             {
-                _carts[cartId ?? ""] = items ?? new List<ShoppingCartItem>();
+                _carts[cartId ?? ""] = new List<ShoppingCartItem>(items) ?? new List<ShoppingCartItem>();
             }
 
             public Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null)

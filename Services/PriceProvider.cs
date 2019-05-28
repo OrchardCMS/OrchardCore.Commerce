@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
-using YesSql;
 
 namespace OrchardCore.Commerce.Services
 {
@@ -33,7 +31,7 @@ namespace OrchardCore.Commerce.Services
                 if (skuProducts.TryGetValue(item.ProductSku, out var product))
                 {
                     var pricePart = product.ContentItem.As<PricePart>();
-                    if (pricePart is object)
+                    if (pricePart != null)
                     {
                         item.Prices.Add(new ProductPrice(pricePart.Price));
                     }
