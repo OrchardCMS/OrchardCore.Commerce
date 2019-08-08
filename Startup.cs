@@ -48,6 +48,7 @@ namespace OrchardCore.Commerce
             services.AddSingleton<ContentField, TextProductAttributeField>();
             services.AddScoped<IContentFieldDisplayDriver, TextProductAttributeFieldDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
+            services.AddScoped<IProductAttributeParseService, ProductAttributeParseService>();
             // Price
             services.AddScoped<IDataMigration, PriceMigrations>();
             services.AddScoped<IContentPartHandler, PricePartHandler>();
@@ -58,6 +59,8 @@ namespace OrchardCore.Commerce
             // Currency
             services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
             services.AddSingleton<IMoneyService, MoneyService>();
+            // Shopping cart
+            services.AddSingleton<IShoppingCartHelpers, ShoppingCartHelpers>();
             // Settings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -77,7 +78,7 @@ namespace OrchardCore.Commerce.Tests
             public Task<ProductPart> GetProduct(string sku)
                 => Task.FromResult(_products[sku]);
 
-            public Task<IEnumerable<ProductPart>> GetProducts(params string[] skus)
+            public Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus)
                 => Task.FromResult(skus.Select(sku => _products[sku]));
         }
 

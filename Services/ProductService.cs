@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace OrchardCore.Commerce.Services
             return contentItemId.HasValue ? await _session.GetAsync<ProductPart>(contentItemId.Value) : null;
         }
 
-        public async Task<IEnumerable<ProductPart>> GetProducts(params string[] skus)
+        public async Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus)
         {
             var contentItemIds = (await _session
                 .QueryIndex<ProductPartIndex>(x => skus.Contains(x.Sku))

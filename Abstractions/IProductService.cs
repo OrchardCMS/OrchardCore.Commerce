@@ -7,6 +7,6 @@ namespace OrchardCore.Commerce.Abstractions
     public interface IProductService
     {
         Task<ProductPart> GetProduct(string sku);
-        Task<IEnumerable<ProductPart>> GetProducts(params string[] skus);
+        Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus);
     }
 }

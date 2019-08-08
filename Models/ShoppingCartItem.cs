@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Helpers;
+using OrchardCore.Commerce.Services;
 
 namespace OrchardCore.Commerce.Models
 {
@@ -21,7 +21,7 @@ namespace OrchardCore.Commerce.Models
             if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
             Quantity = quantity;
             ProductSku = productSku ?? throw new ArgumentNullException(nameof(productSku));
-            Attributes = attributes;
+            Attributes = attributes ?? new HashSet<IProductAttributeValue>();
         }
 
         /// <summary>
@@ -54,10 +54,13 @@ namespace OrchardCore.Commerce.Models
         /// <returns></returns>
         public override string ToString()
             => Quantity + " x " + ProductSku
-            + (Attributes != null && Attributes.Count != 0 ? " (" + String.Join(", ", Attributes) + ")" : "");
+            + (Attributes.Count != 0 ? " (" + string.Join(", ", Attributes) + ")" : "");
 
         public bool Equals(ShoppingCartItem other)
             => other is null ? false : other.Quantity == Quantity && other.IsSameProductAs(this);
+
+        public bool IsSameProductAs(ShoppingCartItem other)
+            => ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
         public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
     }
