@@ -9,12 +9,7 @@ namespace OrchardCore.Commerce
         public static readonly Permission ManageCommerceSettings = new Permission("ManageCommerceSettings", "Manage Commerce Settings");
 
         public IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                ManageCommerceSettings,
-            };
-        }
+            => new[] { ManageCommerceSettings };
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -22,15 +17,12 @@ namespace OrchardCore.Commerce
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageCommerceSettings }
-                },
-            };
-        }
+            => new[] { new PermissionStereotype {
+                Name = "Administrator",
+                Permissions = new[] { ManageCommerceSettings }
+            } };
+
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+            => Task.FromResult(GetPermissions());
     }
 }
