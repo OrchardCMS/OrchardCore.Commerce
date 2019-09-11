@@ -1,0 +1,9 @@
+@model dynamic;
+Boo
+<ul>
+@foreach(var item in Model.CartItems)
+{
+    <li>@item.Quantity</li>
+}
+</ul>
+/Boo

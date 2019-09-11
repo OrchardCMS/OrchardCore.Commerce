@@ -1,3 +1,6 @@
 @model ProductPartViewModel
 
-<span class="product-sku">@Model.Sku</span>
+<form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
+    <input type="hidden" name="item.Sku" value="@Model.Sku"/>
+    <button type="submit">@T["Add to cart"]</button>
+</form>

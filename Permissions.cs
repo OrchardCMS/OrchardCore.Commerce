@@ -1,5 +1,6 @@
 using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce
 {
@@ -13,6 +14,11 @@ namespace OrchardCore.Commerce
             {
                 ManageCommerceSettings,
             };
+        }
+
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        {
+            throw new System.NotImplementedException();
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
