@@ -20,31 +20,32 @@ namespace OrchardCore.Commerce.Services
             IEnumerable<ICurrencyProvider> currencyProviders,
             IOptions<CommerceSettings> options)
         {
-            _currencyProviders = currencyProviders;
-            _options = options.Value;
+            _currencyProviders = currencyProviders ?? Array.Empty<ICurrencyProvider>();
+            _options = options?.Value;
         }
 
-        public IEnumerable<ICurrency> Currencies => _currencyProviders.SelectMany(p => p.Currencies);
+        public IEnumerable<ICurrency> Currencies
+            => _currencyProviders.SelectMany(p => p.Currencies);
 
         public ICurrency DefaultCurrency
         {
             get
             {
-                var defaultSymbol = _options.DefaultCurrency;
-                if (String.IsNullOrEmpty(defaultSymbol)) return Currency.Dollar;
-                return GetCurrency(_options.DefaultCurrency);
+                string defaultIsoCode = _options?.DefaultCurrency;
+                if (String.IsNullOrEmpty(defaultIsoCode)) return Currency.Dollar;
+                return GetCurrency(_options.DefaultCurrency) ?? Currency.Dollar;
             }
         }
 
-        public Amount Create(decimal value, string currencyIsoSymbol) => new Amount(value, GetCurrency(currencyIsoSymbol));
+        public Amount Create(decimal value, string currencyIsoCode)
+            => new Amount(value, GetCurrency(currencyIsoCode));
 
         public Amount EnsureCurrency(Amount amount)
             => amount.Currency != null && amount.Currency.IsResolved
             ? amount
             : new Amount(amount.Value, GetCurrency(amount.Currency.IsoCode));
 
-        public ICurrency GetCurrency(string isoSymbol)
-            => Currencies.FirstOrDefault(p => p.IsoCode.Equals(isoSymbol, StringComparison.InvariantCultureIgnoreCase))
-            ?? throw new ArgumentOutOfRangeException(nameof(isoSymbol), isoSymbol, "Currency not found.");
+        public ICurrency GetCurrency(string isoCode)
+            => Currencies.FirstOrDefault(p => p.IsoCode.Equals(isoCode, StringComparison.InvariantCultureIgnoreCase));
     }
 }

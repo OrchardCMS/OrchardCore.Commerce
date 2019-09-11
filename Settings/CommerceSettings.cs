@@ -6,7 +6,7 @@ namespace OrchardCore.Commerce.Settings
     public class CommerceSettings
     {
         /// <summary>
-        /// The default currency
+        /// The default currency ISO code
         /// </summary>
         public string DefaultCurrency { get; set; }
     }

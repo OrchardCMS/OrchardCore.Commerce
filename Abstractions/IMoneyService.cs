@@ -15,21 +15,21 @@ namespace OrchardCore.Commerce.Abstractions
         IEnumerable<ICurrency> Currencies { get; }
 
         /// <summary>
-        /// Finds a currency from its ISO symbol.
+        /// Finds a currency from its ISO code.
         /// </summary>
-        /// <param name="isoSymbol">The ISO symbol of the currency to look up.</param>
+        /// <param name="isoCode">The ISO code of the currency to look up.</param>
         /// <returns>The currency if found.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if the currency symbol is not found from any active provider.</exception>
-        ICurrency GetCurrency(string isoSymbol);
+        /// <exception cref="ArgumentOutOfRangeException">Throws if the currency code is not found from any active provider.</exception>
+        ICurrency GetCurrency(string isoCode);
 
         /// <summary>
         /// Creates an amount object from a value and a currency symbol.
         /// </summary>
         /// <param name="value">The decimal value of the amount.</param>
-        /// <param name="currencyIsoSymbol">The ISO symbol of the currency.</param>
+        /// <param name="currencyIsoCode">The ISO code of the currency.</param>
         /// <returns>The amount.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Throws if the currency symbol is not found from any active provider.</exception>
-        Amount Create(decimal value, string currencyIsoSymbol);
+        /// <exception cref="ArgumentOutOfRangeException">Throws if the currency code is not found from any active provider.</exception>
+        Amount Create(decimal value, string currencyIsoCode);
 
         /// <summary>
         /// The currency to use or assume when none is provided.
