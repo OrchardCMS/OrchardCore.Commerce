@@ -12,17 +12,11 @@ namespace OrchardCore.Commerce
             => new[] { ManageCommerceSettings };
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            throw new System.NotImplementedException();
-        }
-
+            => Task.FromResult(GetPermissions());
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
             => new[] { new PermissionStereotype {
                 Name = "Administrator",
                 Permissions = new[] { ManageCommerceSettings }
             } };
-
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-            => Task.FromResult(GetPermissions());
     }
 }
