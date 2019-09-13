@@ -14,8 +14,8 @@ namespace OrchardCore.Commerce.Abstractions
         /// <summary>
         /// Finds the currency object for the provided symbol 
         /// </summary>
-        /// <param name="isoSymbol">The three-letter ISO 4217 code for the currency</param>
+        /// <param name="isoCode">The three-letter ISO 4217 code for the currency</param>
         /// <returns>The currency object</returns>
-        ICurrency GetCurrency(string isoSymbol);
+        ICurrency GetCurrency(string isoCode);
     }
 }

@@ -58,8 +58,6 @@ namespace OrchardCore.Commerce
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
         }
     }
 }
