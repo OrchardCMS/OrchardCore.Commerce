@@ -1,13 +1,20 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
+using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests
 {
-    public class ProductAttributeValueTests
+    public class ProductAttributeTests
     {
         [Fact]
         public void BooleanAttributeEquality()
@@ -30,7 +37,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void BooleanAttributeParse()
         {
-            var parser = new ProductAttributeParseService();
+            var parser = new ProductAttributeProvider();
             var fieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                 "BooleanField", new JObject());
@@ -65,7 +72,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void NumericAttributeParse()
         {
-            var parser = new ProductAttributeParseService();
+            var parser = new ProductAttributeProvider();
             var fieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(NumericProductAttributeField)),
                 "NumericField", new JObject());
@@ -118,7 +125,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void TextAttributeParse()
         {
-            var parser = new ProductAttributeParseService();
+            var parser = new ProductAttributeProvider();
             var fieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
                 "TextField", new JObject());
@@ -137,6 +144,75 @@ namespace OrchardCore.Commerce.Tests
             Assert.NotNull(listValue);
             Assert.Equal("TextField", listValue.AttributeName);
             Assert.Equal(new[] { "1", "2", "3" }, listValue.Value);
+        }
+
+        [Fact]
+        public void ProductAttributeServiceCanFindAttributesOnProducts()
+        {
+            var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), new ContentField[] {
+                new BooleanProductAttributeField(),
+                new TextProductAttributeField(),
+                new BooleanField(),
+                new TextField()
+            }, null);
+            var product = new ContentItem() {
+                ContentType = "Product"
+            };
+            var productPart = new ContentPart { };
+            var boolProductAttribute = new BooleanProductAttributeField();
+            productPart.Weld("foobool", boolProductAttribute);
+            productPart.Weld("barbool", new BooleanField());
+            product.Weld("ProductPart", productPart);
+            var productPart2 = new ContentPart { };
+            var textProductAttribute = new TextProductAttributeField();
+            productPart2.Weld("footext", textProductAttribute);
+            productPart2.Weld("bartext", new TextField());
+            product.Weld("ProductPart2", productPart2);
+
+            var productAttributeFields = productAttributeService.GetProductAttributeFields(product).ToArray();
+
+            Assert.Equal(2, productAttributeFields.Length);
+            var foobool = productAttributeFields.FirstOrDefault(f => f.Name == "foobool");
+            Assert.Equal("ProductPart", foobool.PartName);
+            Assert.Equal(boolProductAttribute, foobool.Field);
+            var footext = productAttributeFields.FirstOrDefault(f => f.Name == "footext");
+            Assert.Equal("ProductPart2", footext.PartName);
+            Assert.Equal(textProductAttribute, footext.Field);
+        }
+
+        private class FakeContentDefinitionManager : IContentDefinitionManager
+        {
+            public IChangeToken ChangeToken => throw new System.NotImplementedException();
+
+            public void DeletePartDefinition(string name) => throw new System.NotImplementedException();
+
+            public void DeleteTypeDefinition(string name) => throw new System.NotImplementedException();
+
+            public ContentPartDefinition GetPartDefinition(string name) => throw new System.NotImplementedException();
+
+            public ContentTypeDefinition GetTypeDefinition(string name)
+            {
+                return new ContentTypeDefinition("Product", "Product", new ContentTypePartDefinition[] {
+                    new ContentTypePartDefinition("ProductPart", new ContentPartDefinition("ProductPartType", new ContentPartFieldDefinition[] {
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanProductAttributeField)), "foobool", null),
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanField)), "barbool", null)
+                    }, null), null),
+                    new ContentTypePartDefinition("ProductPart2", new ContentPartDefinition("ProductPartType2", new ContentPartFieldDefinition[] {
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextProductAttributeField)), "footext", null),
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextField)), "bartext", null)
+                    }, null), null)
+                }, null);
+            }
+
+            public Task<int> GetTypesHashAsync() => throw new System.NotImplementedException();
+
+            public IEnumerable<ContentPartDefinition> ListPartDefinitions() => throw new System.NotImplementedException();
+
+            public IEnumerable<ContentTypeDefinition> ListTypeDefinitions() => throw new System.NotImplementedException();
+
+            public void StorePartDefinition(ContentPartDefinition contentPartDefinition) => throw new System.NotImplementedException();
+
+            public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition) => throw new System.NotImplementedException();
         }
     }
 }

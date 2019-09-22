@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Commerce.Services
 {
-    public class ProductAttributeParseService : IProductAttributeParseService
+    public class ProductAttributeProvider : IProductAttributeProvider
     {
         public IProductAttributeValue Parse(ContentPartFieldDefinition attributeFieldDefinition, string value)
         {

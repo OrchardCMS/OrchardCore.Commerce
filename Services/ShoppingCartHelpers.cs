@@ -11,16 +11,16 @@ namespace OrchardCore.Commerce.Services
 {
     public class ShoppingCartHelpers : IShoppingCartHelpers
     {
-        private readonly IList<IProductAttributeParseService> _parseServices;
+        private readonly IList<IProductAttributeProvider> _attributeProviders;
         private readonly IProductService _productService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public ShoppingCartHelpers(
-            IList<IProductAttributeParseService> parseServices,
+            IList<IProductAttributeProvider> attributeProviders,
             IProductService productService,
             IContentDefinitionManager contentDefinitionManager)
         {
-            _parseServices = parseServices;
+            _attributeProviders = attributeProviders;
             _productService = productService;
             _contentDefinitionManager = contentDefinitionManager;
         }
@@ -95,7 +95,7 @@ namespace OrchardCore.Commerce.Services
                     ContentPartFieldDefinition attributeFieldDefinition = type
                         .Parts.SelectMany(p => p.PartDefinition.Fields)
                         .First(f => f.Name == a.Key);
-                    return _parseServices
+                    return _attributeProviders
                         .Select(s => s.Parse(attributeFieldDefinition, a.Value))
                         .FirstOrDefault(v => v != null);
                 })

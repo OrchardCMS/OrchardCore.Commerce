@@ -46,7 +46,7 @@ namespace OrchardCore.Commerce.Tests
             _controller = new ShoppingCartController(
                 shoppingCartPersistence: _cartStorage,
                 shoppingCartHelpers: new ShoppingCartHelpers(
-                    parseServices: new[] { new ProductAttributeParseService() },
+                    attributeProviders: new[] { new ProductAttributeProvider() },
                     productService: new FakeProductService(),
                     contentDefinitionManager: new FakeContentDefinitionManager()
                 )
