@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Fields;
@@ -149,12 +150,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void ProductAttributeServiceCanFindAttributesOnProducts()
         {
-            var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), new ContentField[] {
-                new BooleanProductAttributeField(),
-                new TextProductAttributeField(),
-                new BooleanField(),
-                new TextField()
-            }, null);
+            var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), new FakeFieldOptions(), null);
             var product = new ContentItem() {
                 ContentType = "Product"
             };
@@ -213,6 +209,20 @@ namespace OrchardCore.Commerce.Tests
             public void StorePartDefinition(ContentPartDefinition contentPartDefinition) => throw new System.NotImplementedException();
 
             public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition) => throw new System.NotImplementedException();
+        }
+
+        private class FakeFieldOptions : IOptions<ContentOptions>
+        {
+            public FakeFieldOptions()
+            {
+                Value = new ContentOptions();
+                Value.AddContentField<BooleanProductAttributeField>();
+                Value.AddContentField<TextProductAttributeField>();
+                Value.AddContentField<BooleanField>();
+                Value.AddContentField<TextField>();
+            }
+
+            public ContentOptions Value { get; }
         }
     }
 }

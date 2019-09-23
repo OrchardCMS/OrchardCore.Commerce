@@ -37,23 +37,24 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IContentPartDisplayDriver, ProductPartDisplayDriver>();
-            services.AddSingleton<ContentPart, ProductPart>();
+            services.AddContentPart<ProductPart>();
             // Attributes
-            services.AddSingleton<ContentField, BooleanProductAttributeField>();
+            services.AddContentField<BooleanProductAttributeField>();
             services.AddScoped<IContentFieldDisplayDriver, BooleanProductAttributeFieldDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanProductAttributeFieldSettingsDriver>();
-            services.AddSingleton<ContentField, NumericProductAttributeField>();
+            services.AddContentField<NumericProductAttributeField>();
             services.AddScoped<IContentFieldDisplayDriver, NumericProductAttributeFieldDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericProductAttributeFieldSettingsDriver>();
-            services.AddSingleton<ContentField, TextProductAttributeField>();
+            services.AddContentField<TextProductAttributeField>();
             services.AddScoped<IContentFieldDisplayDriver, TextProductAttributeFieldDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
-            services.AddScoped<IProductAttributeParseService, ProductAttributeParseService>();
+            services.AddScoped<IProductAttributeProvider, ProductAttributeProvider>();
+            services.AddScoped<IProductAttributeService, ProductAttributeService>();
             // Price
             services.AddScoped<IDataMigration, PriceMigrations>();
             services.AddScoped<IContentPartHandler, PricePartHandler>();
             services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
-            services.AddSingleton<ContentPart, PricePart>();
+            services.AddContentPart<PricePart>();
             services.AddSingleton<IPriceProvider, PriceProvider>();
             services.AddSingleton<IPriceService, PriceService>();
             // Currency
@@ -78,13 +79,14 @@ namespace OrchardCore.Commerce
             services.AddSingleton<IShoppingCartPersistence, SessionShoppingCartPersistence>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            base.Configure(app, routes, serviceProvider);
             app.UseSession();
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "ShoppingCart",
                 areaName: "OrchardCore.Commerce",
-                template: "shoppingcart/{action}",
+                pattern: "shoppingcart/{action}",
                 defaults: new { controller = "ShoppingCart", action = "Index" }
             );
         }
