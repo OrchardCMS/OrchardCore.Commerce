@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -171,9 +172,11 @@ namespace OrchardCore.Commerce.Tests
             var foobool = productAttributeFields.FirstOrDefault(f => f.Name == "foobool");
             Assert.Equal("ProductPart", foobool.PartName);
             Assert.Equal(boolProductAttribute, foobool.Field);
+            Assert.IsType<BooleanProductAttributeFieldSettings>(foobool.Settings);
             var footext = productAttributeFields.FirstOrDefault(f => f.Name == "footext");
             Assert.Equal("ProductPart2", footext.PartName);
             Assert.Equal(textProductAttribute, footext.Field);
+            Assert.IsType<TextProductAttributeFieldSettings>(footext.Settings);
         }
 
         private class FakeContentDefinitionManager : IContentDefinitionManager
