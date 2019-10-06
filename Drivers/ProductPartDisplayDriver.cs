@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -10,11 +10,11 @@ namespace OrchardCore.Commerce.Drivers
 {
     public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IProductAttributeService _productAttributeService;
 
-        public ProductPartDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        public ProductPartDisplayDriver(IProductAttributeService productAttributeService)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            _productAttributeService = productAttributeService;
         }
 
         public override IDisplayResult Display(ProductPart productPart)
@@ -44,6 +44,8 @@ namespace OrchardCore.Commerce.Drivers
             model.ContentItem = part.ContentItem;
             model.Sku = part.Sku;
             model.ProductPart = part;
+
+            model.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
 
             return Task.CompletedTask;
         }

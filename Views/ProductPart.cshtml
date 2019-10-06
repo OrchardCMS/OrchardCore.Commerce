@@ -1,6 +1,11 @@
 @model ProductPartViewModel
+@using OrchardCore.Commerce.Abstractions;
 
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
-    <input type="hidden" name="item.Sku" value="@Model.Sku"/>
+    <input type="hidden" name="item.Sku" value="@Model.Sku" />
+    @foreach (ProductAttributeDescription attr in Model.Attributes)
+    {
+        <label>@attr.Name</label>
+    }
     <button type="submit">@T["Add to cart"]</button>
 </form>
