@@ -1,0 +1,40 @@
+@using OrchardCore.Commerce.Settings
+@{
+    var settings = Model.Settings as TextProductAttributeFieldSettings;
+}
+<label>@Model.Name</label>
+@if (settings.PredefinedValues is null || settings.PredefinedValues.Length == 0 || !settings.RestrictToPredefinedValues)
+{
+    <input type="text" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
+}
+@if (settings.PredefinedValues != null && settings.PredefinedValues.Length > 0)
+{
+    if (settings.MultipleValues)
+    {
+        <ul>
+            @foreach (string predefinedValue in settings.PredefinedValues)
+            {
+                <li>
+                    <input type="checkbox" checked="@(predefinedValue == settings.DefaultValue)" />
+                    <label>@predefinedValue</label>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <ul>
+            @foreach (string predefinedValue in settings.PredefinedValues)
+            {
+            <li>
+                <input type="radio" checked="@(predefinedValue == settings.DefaultValue)" />
+                <label>@predefinedValue</label>
+            </li>
+            }
+        </ul>
+    }
+}
+@if (settings.Hint != null)
+{
+    <div class="hint">@settings.Hint</div>
+}

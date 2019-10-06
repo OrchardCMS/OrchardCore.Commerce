@@ -1,0 +1,12 @@
+@using OrchardCore.Commerce.Settings
+@{
+    var settings = Model.Settings as NumericProductAttributeFieldSettings;
+}
+<label>@Model.Name</label>
+<input type="number" value="@(settings.DefaultValue.ToString() ?? "")"
+       min="@settings.Minimum" max="@settings.Maximum" step="@Math.Pow(10, -settings.DecimalPlaces)"
+       placeholder="@settings.Placeholder" required="@settings.Required" />
+@if (settings.Hint != null)
+{
+    <div class="hint">@settings.Hint</div>
+}
