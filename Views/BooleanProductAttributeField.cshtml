@@ -1,9 +1,10 @@
 @using OrchardCore.Commerce.Settings
-@{ 
+@{
     var settings = Model.Settings as BooleanProductAttributeFieldSettings;
+    var id = Guid.NewGuid();
 }
-<input type="checkbox" checked="@settings.DefaultValue"/>
-<label>@(string.IsNullOrEmpty(settings.Label) ? Model.Name : settings.Label)</label>
+<input id="@id" type="checkbox" name="@Model.PartName.@Model.Name" checked="@settings.DefaultValue"/>
+<label for="@id">@(string.IsNullOrEmpty(settings.Label) ? Model.Name : settings.Label)</label>
 @if (settings.Hint != null)
 {
     <div class="hint">@settings.Hint</div>

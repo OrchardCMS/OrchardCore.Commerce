@@ -1,38 +1,70 @@
 @using OrchardCore.Commerce.Settings
 @{
     var settings = Model.Settings as TextProductAttributeFieldSettings;
+    var id = Guid.NewGuid();
 }
-<label>@Model.Name</label>
-@if (settings.PredefinedValues is null || settings.PredefinedValues.Length == 0 || !settings.RestrictToPredefinedValues)
+<label for="@id">@Model.Name</label>
+@if (settings.PredefinedValues is null || settings.PredefinedValues.Length == 0)
 {
-    <input type="text" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
+    <input id="@id" type="text" name="@Model.PartName.@Model.Name" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
 }
-@if (settings.PredefinedValues != null && settings.PredefinedValues.Length > 0)
+else if (settings.MultipleValues)
 {
-    if (settings.MultipleValues)
+    <ul>
+        @foreach (string predefinedValue in settings.PredefinedValues)
+        {
+            <li>
+                <input type="checkbox" name="@Model.PartName.@Model.Name" checked="@(predefinedValue == settings.DefaultValue)" />
+                <label>@predefinedValue</label>
+            </li>
+        }
+    </ul>
+}
+else if (settings.RestrictToPredefinedValues)
+{
+    if (settings.PredefinedValues.Length > 5) // Doing radio buttons for less than 5 options
     {
-        <ul>
+        <select id="@id" name="@Model.PartName.@Model.Name">
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
-                <li>
-                    <input type="checkbox" checked="@(predefinedValue == settings.DefaultValue)" />
-                    <label>@predefinedValue</label>
-                </li>
+                <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
             }
-        </ul>
+        </select>
     }
     else
     {
         <ul>
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
-            <li>
-                <input type="radio" checked="@(predefinedValue == settings.DefaultValue)" />
-                <label>@predefinedValue</label>
-            </li>
+                var optionId = Guid.NewGuid();
+                <li>
+                    <input id="@optionId" type="radio" name="@Model.PartName.@Model.Name" checked="@(predefinedValue == settings.DefaultValue)" />
+                    <label for="@optionId">@predefinedValue</label>
+                </li>
             }
         </ul>
     }
+}
+else
+{
+    <input id="@id" type="text" name="@Model.PartName.@Model.Name" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
+    <select data-related="@Model.PartName.@Model.Name" class="product-attribute-combo-select">
+        @foreach (string predefinedValue in settings.PredefinedValues)
+        {
+            <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
+        }
+    </select>
+    <script at="Foot">
+        $(function () {
+            $(".product-attribute-combo-select").on('change', function (e) {
+                var select = $(e.target);
+                select
+                    .closest('form')
+                    .find('input[name="' + select.data('related') + '"]')
+                    .val(select.val());
+            });
+        });
+    </script>
 }
 @if (settings.Hint != null)
 {

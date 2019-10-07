@@ -1,9 +1,10 @@
 @using OrchardCore.Commerce.Settings
 @{
     var settings = Model.Settings as NumericProductAttributeFieldSettings;
+    var id = Guid.NewGuid();
 }
-<label>@Model.Name</label>
-<input type="number" value="@(settings.DefaultValue.ToString() ?? "")"
+<label for="@id">@Model.Name</label>
+<input id="@id" type="number" name="@Model.PartName.@Model.Name" value="@(settings.DefaultValue.ToString() ?? "")"
        min="@settings.Minimum" max="@settings.Maximum" step="@Math.Pow(10, -settings.DecimalPlaces)"
        placeholder="@settings.Placeholder" required="@settings.Required" />
 @if (settings.Hint != null)
