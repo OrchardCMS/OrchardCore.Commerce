@@ -1,10 +1,16 @@
 @using OrchardCore.Commerce.Settings
+@using OrchardCore.Commerce.Abstractions
+
 @{
-    var settings = Model.Settings as NumericProductAttributeFieldSettings;
-    var id = Guid.NewGuid();
+    int index = Model.Index;
+    var attr = Model.AttributeDescription as ProductAttributeDescription;
+    var settings = attr.Settings as NumericProductAttributeFieldSettings;
+    var id = $"{Model.IdPrefix}-attribute-{index}";
 }
-<label for="@id">@Model.Name</label>
-<input id="@id" type="number" name="@Model.PartName.@Model.Name" value="@(settings.DefaultValue.ToString() ?? "")"
+
+<label for="@id">@attr.Name</label>
+<input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
+<input id="@id" type="number" name="line.Attributes[@index].Value" value="@(settings.DefaultValue.ToString() ?? "")"
        min="@settings.Minimum" max="@settings.Maximum" step="@Math.Pow(10, -settings.DecimalPlaces)"
        placeholder="@settings.Placeholder" required="@settings.Required" />
 @if (settings.Hint != null)

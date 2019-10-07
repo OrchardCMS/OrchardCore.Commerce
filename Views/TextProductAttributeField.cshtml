@@ -1,21 +1,29 @@
 @using OrchardCore.Commerce.Settings
+@using OrchardCore.Commerce.Abstractions
+
 @{
-    var settings = Model.Settings as TextProductAttributeFieldSettings;
-    var id = Guid.NewGuid();
+    int index = Model.Index;
+    var attr = Model.AttributeDescription as ProductAttributeDescription;
+    var settings = attr.Settings as TextProductAttributeFieldSettings;
+    var id = $"{Model.IdPrefix}-attribute-{index}";
+    int optionIndex = 0;
 }
-<label for="@id">@Model.Name</label>
+
+<label for="@id">@attr.Name</label>
+<input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
 @if (settings.PredefinedValues is null || settings.PredefinedValues.Length == 0)
 {
-    <input id="@id" type="text" name="@Model.PartName.@Model.Name" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
+    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
 }
 else if (settings.MultipleValues)
 {
     <ul>
         @foreach (string predefinedValue in settings.PredefinedValues)
         {
+            var optionId = $"{id}-{optionIndex++}";
             <li>
-                <input type="checkbox" name="@Model.PartName.@Model.Name" checked="@(predefinedValue == settings.DefaultValue)" />
-                <label>@predefinedValue</label>
+                <input id="optionId" type="checkbox" name="line.Attributes[@index].Value" checked="@(predefinedValue == settings.DefaultValue)" />
+                <label for="@optionId">@predefinedValue</label>
             </li>
         }
     </ul>
@@ -24,7 +32,7 @@ else if (settings.RestrictToPredefinedValues)
 {
     if (settings.PredefinedValues.Length > 5) // Doing radio buttons for less than 5 options
     {
-        <select id="@id" name="@Model.PartName.@Model.Name">
+        <select id="@id" name="line.Attributes[@index].Value">
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
                 <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
@@ -36,9 +44,9 @@ else if (settings.RestrictToPredefinedValues)
         <ul>
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
-                var optionId = Guid.NewGuid();
+                var optionId = $"{id}-{optionIndex++}";
                 <li>
-                    <input id="@optionId" type="radio" name="@Model.PartName.@Model.Name" checked="@(predefinedValue == settings.DefaultValue)" />
+                    <input id="@optionId" type="radio" name="line.Attributes[@index].Value" checked="@(predefinedValue == settings.DefaultValue)" />
                     <label for="@optionId">@predefinedValue</label>
                 </li>
             }
@@ -47,8 +55,8 @@ else if (settings.RestrictToPredefinedValues)
 }
 else
 {
-    <input id="@id" type="text" name="@Model.PartName.@Model.Name" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
-    <select data-related="@Model.PartName.@Model.Name" class="product-attribute-combo-select">
+    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
+    <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select">
         @foreach (string predefinedValue in settings.PredefinedValues)
         {
             <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>

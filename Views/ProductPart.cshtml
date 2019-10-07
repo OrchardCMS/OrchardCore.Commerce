@@ -4,13 +4,19 @@
 
 @{ 
     var shapeHelper = New as IShapeFactory;
+    int i = 0;
+    var id = $"product-{Model.Sku}";
 }
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
-    <input type="hidden" name="item.Sku" value="@Model.Sku" />
+    <input type="hidden" name="line.ProductSku" value="@Model.Sku" />
+    <label for="@id-quantity">@T["Quantity"]</label>
+    <input id="@id-quantity" type="number" name="line.Quantity" step="1" min="1" value="1" />
     <ul class="product-attribute-list">
         @foreach (ProductAttributeDescription attr in Model.Attributes)
         {
-            <li>@await DisplayAsync(await shapeHelper.CreateAsync(attr.Field.GetType().Name, attr))</li>
+            <li>@await DisplayAsync(await shapeHelper.CreateAsync(
+               attr.Field.GetType().Name,
+               new { Index = i++, AttributeDescription = attr, IdPrefix = id }))</li>
         }
     </ul>
     <button type="submit">@T["Add to cart"]</button>
