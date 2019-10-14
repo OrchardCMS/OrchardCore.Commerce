@@ -11,12 +11,12 @@ namespace OrchardCore.Commerce.Services
 {
     public class ShoppingCartHelpers : IShoppingCartHelpers
     {
-        private readonly IList<IProductAttributeProvider> _attributeProviders;
+        private readonly IEnumerable<IProductAttributeProvider> _attributeProviders;
         private readonly IProductService _productService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public ShoppingCartHelpers(
-            IList<IProductAttributeProvider> attributeProviders,
+            IEnumerable<IProductAttributeProvider> attributeProviders,
             IProductService productService,
             IContentDefinitionManager contentDefinitionManager)
         {
@@ -81,6 +81,7 @@ namespace OrchardCore.Commerce.Services
         public async Task<ShoppingCartItem> ParseCartLine(ShoppingCartLineUpdateModel line)
         {
             ProductPart product = await _productService.GetProduct(line.ProductSku);
+            if (product is null) return null;
             ContentTypeDefinition type = _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
             var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
             return parsedLine;
@@ -92,9 +93,10 @@ namespace OrchardCore.Commerce.Services
                 line.Attributes
                 .Select(a =>
                 {
+                    string[] partAndField = a.Key.Split('.');
                     ContentPartFieldDefinition attributeFieldDefinition = type
-                        .Parts.SelectMany(p => p.PartDefinition.Fields)
-                        .First(f => f.Name == a.Key);
+                        .Parts.SelectMany(p => p.PartDefinition.Fields.Where(f => p.Name == partAndField[0] && f.Name == partAndField[1]))
+                        .First();
                     return _attributeProviders
                         .Select(s => s.Parse(attributeFieldDefinition, a.Value))
                         .FirstOrDefault(v => v != null);

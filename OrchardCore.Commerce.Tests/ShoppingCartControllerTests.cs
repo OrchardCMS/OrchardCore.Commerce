@@ -16,16 +16,16 @@ namespace OrchardCore.Commerce.Tests
 
         private readonly Dictionary<string, string> _attrSet1 = new Dictionary<string, string>
         {
-            { "attr1", "true" }
+            { "product.attr1", "true" }
         };
         private Dictionary<string, string> _attrSet2 = new Dictionary<string, string>
         {
-            {  "attr1", "false" }
+            {  "product.attr1", "false" }
         };
         private Dictionary<string, string> _attrSet3 = new Dictionary<string, string>
         {
-            { "attr1", "true" },
-            { "attr2", "bar,baz" }
+            { "product.attr1", "true" },
+            { "product.attr2", "bar,baz" }
         };
         private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new HashSet<IProductAttributeValue>
         {
@@ -45,6 +45,7 @@ namespace OrchardCore.Commerce.Tests
             _cartStorage = new FakeCartStorage();
             _controller = new ShoppingCartController(
                 shoppingCartPersistence: _cartStorage,
+                priceService: new FakePriceService(),
                 shoppingCartHelpers: new ShoppingCartHelpers(
                     attributeProviders: new[] { new ProductAttributeProvider() },
                     productService: new FakeProductService(),
@@ -57,7 +58,8 @@ namespace OrchardCore.Commerce.Tests
         public async Task AddExistingItemToCart()
         {
             await _cartStorage.Store(new List<ShoppingCartItem> { new ShoppingCartItem(3, "foo") });
-            var cart = await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "foo" });
+            await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "foo" });
+            var cart = await _cartStorage.Retrieve();
 
             Assert.Equal(new List<ShoppingCartItem> { new ShoppingCartItem(10, "foo") }, cart);
         }
@@ -66,7 +68,8 @@ namespace OrchardCore.Commerce.Tests
         public async Task AddNewItemToCart()
         {
             await _cartStorage.Store(new List<ShoppingCartItem> { new ShoppingCartItem(3, "foo") });
-            var cart = await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "bar" });
+            await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "bar" });
+            var cart = await _cartStorage.Retrieve();
 
             Assert.Equal(new List<ShoppingCartItem>
             {

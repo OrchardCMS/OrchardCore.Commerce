@@ -31,7 +31,7 @@ namespace OrchardCore.Commerce.Tests
             foreach (var item in cart)
             {
                 Assert.Single(item.Prices);
-                Assert.Equal(item.Prices.Single().Price.Value, (await productService.GetProduct(item.ProductSku)).ContentItem.As<PricePart>().Price.Value, 2);
+                Assert.Equal(item.Prices.Single().Value, (await productService.GetProduct(item.ProductSku)).ContentItem.As<PricePart>().Price.Value, 2);
             }
         }
 
@@ -49,10 +49,10 @@ namespace OrchardCore.Commerce.Tests
             var cart = new List<ShoppingCartItem> { item };
             priceService.AddPrices(cart);
             Assert.Collection(item.Prices,
-                p => Assert.Equal(1.0m, p.Price.Value),
-                p => Assert.Equal(2.0m, p.Price.Value),
-                p => Assert.Equal(3.0m, p.Price.Value),
-                p => Assert.Equal(4.0m, p.Price.Value));
+                p => Assert.Equal(1.0m, p.Value),
+                p => Assert.Equal(2.0m, p.Value),
+                p => Assert.Equal(3.0m, p.Value),
+                p => Assert.Equal(4.0m, p.Value));
         }
 
         private static ProductPart BuildProduct(string sku, decimal price)
@@ -96,7 +96,7 @@ namespace OrchardCore.Commerce.Tests
             {
                 foreach (var item in items)
                 {
-                    item.Prices.Add(new ProductPrice(new Amount(Price, Currency.Dollar)));
+                    item.Prices.Add(new Amount(Price, Currency.Dollar));
                 }
                 return Task.CompletedTask;
             }

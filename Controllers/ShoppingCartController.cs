@@ -12,12 +12,16 @@ namespace OrchardCore.Commerce.Controllers
     {
         private readonly IShoppingCartPersistence _shoppingCartPersistence;
         private readonly IShoppingCartHelpers _shoppingCartHelpers;
+        private readonly IPriceService _priceService;
+
         public ShoppingCartController(
             IShoppingCartPersistence shoppingCartPersistence,
-            IShoppingCartHelpers shoppingCartHelpers)
+            IShoppingCartHelpers shoppingCartHelpers,
+            IPriceService priceService)
         {
             _shoppingCartPersistence = shoppingCartPersistence;
             _shoppingCartHelpers = shoppingCartHelpers;
+            _priceService = priceService;
         }
 
         [HttpGet]
@@ -40,7 +44,7 @@ namespace OrchardCore.Commerce.Controllers
         {
             var parsedCart = await _shoppingCartHelpers.ParseCart(cart);
             await _shoppingCartPersistence.Store(parsedCart, shoppingCartId);
-            return RedirectToAction("Index", new { shoppingCartId = shoppingCartId });
+            return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
         [HttpGet]
@@ -48,32 +52,37 @@ namespace OrchardCore.Commerce.Controllers
             => await _shoppingCartPersistence.Retrieve(shoppingCartId);
 
         [HttpPost]
-        public async Task<IList<ShoppingCartItem>> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
+        public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
         {
             ShoppingCartItem parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
+            if (parsedLine is null)
+            {
+                throw new System.ArgumentException($"Product with SKU {line.ProductSku} not found.", nameof(line));
+            }
+            _priceService.AddPrices(new[] { parsedLine });
             IList<ShoppingCartItem> cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
             ShoppingCartItem existingItem = _shoppingCartHelpers.GetExistingItem(cart, parsedLine);
             if (existingItem != null)
             {
                 int index = _shoppingCartHelpers.RemoveItem(cart, existingItem);
-                cart.Insert(index, new ShoppingCartItem(existingItem.Quantity + line.Quantity, existingItem.ProductSku, existingItem.Attributes));
+                cart.Insert(index, new ShoppingCartItem(existingItem.Quantity + line.Quantity, existingItem.ProductSku, existingItem.Attributes, existingItem.Prices));
             }
             else
             {
                 cart.Add(parsedLine);
             }
             await _shoppingCartPersistence.Store(cart, shoppingCartId);
-            return cart;
+            return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
         [HttpPost]
-        public async Task<IList<ShoppingCartItem>> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
+        public async Task<ActionResult> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
         {
             ShoppingCartItem parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
             IList<ShoppingCartItem> cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
             _shoppingCartHelpers.RemoveItem(cart, parsedLine);
             await _shoppingCartPersistence.Store(cart, shoppingCartId);
-            return cart;
+            return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
     }
 }

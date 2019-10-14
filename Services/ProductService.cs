@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using YesSql;
 
 namespace OrchardCore.Commerce.Services
@@ -11,16 +13,20 @@ namespace OrchardCore.Commerce.Services
     public class ProductService : IProductService
     {
         private ISession _session;
+        private IContentManager _contentManager;
 
-        public ProductService(ISession session)
+        public ProductService(
+            ISession session,
+            IContentManager contentManager)
         {
             _session = session;
+            _contentManager = contentManager;
         }
 
         public async Task<ProductPart> GetProduct(string sku)
         {
-            var contentItemId = (await _session.QueryIndex<ProductPartIndex>(x => x.Sku == sku).FirstOrDefaultAsync())?.Id;
-            return contentItemId.HasValue ? await _session.GetAsync<ProductPart>(contentItemId.Value) : null;
+            var contentItemId = (await _session.QueryIndex<ProductPartIndex>(x => x.Sku == sku).FirstOrDefaultAsync())?.ContentItemId;
+            return contentItemId is null ? null : (await _contentManager.GetAsync(contentItemId)).As<ProductPart>();
         }
 
         public async Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus)
@@ -28,10 +34,11 @@ namespace OrchardCore.Commerce.Services
             var contentItemIds = (await _session
                 .QueryIndex<ProductPartIndex>(x => skus.Contains(x.Sku))
                 .ListAsync())
-                .Select(idx => idx.Id)
+                .Select(idx => idx.ContentItemId)
                 .Distinct()
                 .ToArray();
-            return await _session.GetAsync<ProductPart>(contentItemIds);
+            return (await _contentManager.GetAsync(contentItemIds))
+                .Select(item => item.As<ProductPart>());
         }
     }
 }

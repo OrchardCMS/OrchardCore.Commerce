@@ -64,7 +64,7 @@ namespace OrchardCore.Commerce.Models
             : new HashSet<string>(Value).SetEquals(other.Value);
 
         public override int GetHashCode()
-            => Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
+            => Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
 
         public override string ToString() => AttributeName + ": " + String.Join(", ", Value);
     }

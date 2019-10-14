@@ -55,13 +55,14 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentPartHandler, PricePartHandler>();
             services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
             services.AddContentPart<PricePart>();
-            services.AddSingleton<IPriceProvider, PriceProvider>();
-            services.AddSingleton<IPriceService, PriceService>();
+            services.AddScoped<IPriceProvider, PriceProvider>();
+            services.AddScoped<IPriceService, PriceService>();
+            services.AddScoped<IPriceSelectionStrategy, LowestPriceStrategy>();
             // Currency
-            services.AddSingleton<ICurrencyProvider, CurrencyProvider>();
-            services.AddSingleton<IMoneyService, MoneyService>();
+            services.AddScoped<ICurrencyProvider, CurrencyProvider>();
+            services.AddScoped<IMoneyService, MoneyService>();
             // Shopping cart
-            services.AddSingleton<IShoppingCartHelpers, ShoppingCartHelpers>();
+            services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
             // Settings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();

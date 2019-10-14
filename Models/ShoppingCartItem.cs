@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Money;
 
 namespace OrchardCore.Commerce.Models
 {
@@ -9,19 +10,35 @@ namespace OrchardCore.Commerce.Models
     /// Ashopping cart item
     /// </summary>
     [Serializable]
-    public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
+    public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>, ISerializable
     {
         /// <summary>
         /// Constructs a new shopping cart item
         /// </summary>
         /// <param name="quantity">The number of products</param>
         /// <param name="product">The product</param>
-        public ShoppingCartItem(int quantity, string productSku, ISet<IProductAttributeValue> attributes = null)
+        public ShoppingCartItem(
+            int quantity,
+            string productSku,
+            ISet<IProductAttributeValue> attributes = null,
+            IList<Amount> prices = null)
         {
             if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
             Quantity = quantity;
             ProductSku = productSku ?? throw new ArgumentNullException(nameof(productSku));
             Attributes = attributes ?? new HashSet<IProductAttributeValue>();
+            Prices = prices ?? new List<Amount>();
+        }
+
+        /// <summary>
+        /// Construct a shopping cart item from JSON
+        /// </summary>
+        public ShoppingCartItem(SerializationInfo serializationInfo, StreamingContext context)
+        {
+            Quantity = serializationInfo.GetInt32("quantity");
+            ProductSku = serializationInfo.GetString("sku");
+            // Prices =
+            // Attributes = 
         }
 
         /// <summary>
@@ -42,7 +59,7 @@ namespace OrchardCore.Commerce.Models
         /// <summary>
         /// The available prices
         /// </summary>
-        public IList<IPrice> Prices { get; } = new List<IPrice>();
+        public IList<Amount> Prices { get; }
 
         public override bool Equals(object obj)
             => !ReferenceEquals(null, obj)
@@ -63,5 +80,16 @@ namespace OrchardCore.Commerce.Models
             => ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
         public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
+
+        /// <summary>
+        /// Serialize to JSON
+        /// </summary>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("quantity", Quantity);
+            info.AddValue("sku", ProductSku);
+            info.AddValue("prices", Prices);
+            info.AddValue("attributes", Attributes);
+        }
     }
 }
