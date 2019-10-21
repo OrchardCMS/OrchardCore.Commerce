@@ -1,7 +1,8 @@
 using System;
 using System.Diagnostics;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Serialization;
 
 namespace OrchardCore.Commerce.Money
 {
@@ -9,6 +10,7 @@ namespace OrchardCore.Commerce.Money
     /// A money amount, which is represented by a decimal number and a currency
     /// </summary>
     [JsonConverter(typeof(AmountConverter))]
+    [Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Amount : IEquatable<Amount>, IComparable<Amount>
     {

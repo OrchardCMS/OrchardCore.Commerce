@@ -17,5 +17,7 @@ namespace OrchardCore.Commerce.Abstractions
         Task<IList<ShoppingCartItem>> ParseCart(ShoppingCartUpdateModel cart);
         Task<ShoppingCartItem> ParseCartLine(ShoppingCartLineUpdateModel line);
         HashSet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
+        Task<IList<ShoppingCartItem>> Deserialize(string serializedCart);
+        Task<string> Serialize(IList<ShoppingCartItem> cart);
     }
 }

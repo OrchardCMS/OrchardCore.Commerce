@@ -6,7 +6,6 @@ namespace OrchardCore.Commerce.Abstractions
 {
     public interface IProductAttributeService
     {
-        IProductAttributeValue Parse(ContentPartFieldDefinition attributeFieldDefinition, string value);
         IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product);
     }
 }

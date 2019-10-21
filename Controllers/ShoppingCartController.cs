@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Controllers
 {
@@ -12,16 +14,25 @@ namespace OrchardCore.Commerce.Controllers
     {
         private readonly IShoppingCartPersistence _shoppingCartPersistence;
         private readonly IShoppingCartHelpers _shoppingCartHelpers;
+        private readonly IProductService _productService;
         private readonly IPriceService _priceService;
+        private readonly IPriceSelectionStrategy _priceStrategy;
+        private readonly IContentManager _contentManager;
 
         public ShoppingCartController(
             IShoppingCartPersistence shoppingCartPersistence,
             IShoppingCartHelpers shoppingCartHelpers,
-            IPriceService priceService)
+            IProductService productService,
+            IPriceService priceService,
+            IPriceSelectionStrategy priceStrategy,
+            IContentManager contentManager)
         {
             _shoppingCartPersistence = shoppingCartPersistence;
             _shoppingCartHelpers = shoppingCartHelpers;
+            _productService = productService;
             _priceService = priceService;
+            _priceStrategy = priceStrategy;
+            _contentManager = contentManager;
         }
 
         [HttpGet]
@@ -29,12 +40,26 @@ namespace OrchardCore.Commerce.Controllers
         public async Task<ActionResult> Index(string shoppingCartId = null)
         {
             IList<ShoppingCartItem> cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
-            // TODO: retrieve other product info
+            IDictionary<string, ProductPart> products =
+                await _productService.GetProductDictionary(cart.Select(line => line.ProductSku));
+            ShoppingCartLineViewModel[] lines = await Task.WhenAll(cart.Select(async item =>
+            {
+                ProductPart product = products[item.ProductSku];
+                Amount price = _priceStrategy.SelectPrice(item.Prices);
+                ContentItemMetadata metaData = await _contentManager.GetContentItemMetadataAsync(product);
+                return new ShoppingCartLineViewModel
+                {
+                    Quantity = item.Quantity,
+                    ProductSku = item.ProductSku,
+                    ProductName = product.ContentItem.DisplayText,
+                    Price = price,
+                    ProductUrl = Url.RouteUrl(metaData.DisplayRouteValues),
+                    Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName, attr => attr.Display())
+                };
+            }));
             var model = new ShoppingCartViewModel {
                 Id = shoppingCartId,
-                Lines = cart.Select(item => new ShoppingCartLineViewModel {
-                    ProductSku = item.ProductSku
-                }).ToList()
+                Lines = lines
             };
             return View(model);
         }
@@ -59,7 +84,7 @@ namespace OrchardCore.Commerce.Controllers
             {
                 throw new System.ArgumentException($"Product with SKU {line.ProductSku} not found.", nameof(line));
             }
-            _priceService.AddPrices(new[] { parsedLine });
+            await _priceService.AddPrices(new[] { parsedLine });
             IList<ShoppingCartItem> cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
             ShoppingCartItem existingItem = _shoppingCartHelpers.GetExistingItem(cart, parsedLine);
             if (existingItem != null)

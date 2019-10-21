@@ -9,7 +9,8 @@
 }
 
 <input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
-<input id="@id" type="checkbox" name="line.Attributes[@index].Value" checked="@settings.DefaultValue" value="true"/>
+<input type="hidden" name="line.Attributes[@index].Value" value="false" />
+<input id="@id" type="checkbox" name="line.Attributes[@index].Value" checked="@settings.DefaultValue" value="true" />
 <label for="@id">@(string.IsNullOrEmpty(settings.Label) ? attr.Name : settings.Label)</label>
 @if (settings.Hint != null)
 {

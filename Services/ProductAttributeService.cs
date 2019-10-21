@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -31,9 +32,6 @@ namespace OrchardCore.Commerce.Services
             _contentOptions = contentOptions;
             _cache = cache;
         }
-
-        public IProductAttributeValue Parse(ContentPartFieldDefinition attributeFieldDefinition, string value)
-            => _attributeProviders.Select(p => p.Parse(attributeFieldDefinition, value)).First(v => v != null);
 
         public IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product)
         {

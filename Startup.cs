@@ -77,7 +77,7 @@ namespace OrchardCore.Commerce
         {
             services.AddSession(options => { });
             // Shopping Cart
-            services.AddSingleton<IShoppingCartPersistence, SessionShoppingCartPersistence>();
+            services.AddScoped<IShoppingCartPersistence, SessionShoppingCartPersistence>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

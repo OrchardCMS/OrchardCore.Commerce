@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Money;
+using OrchardCore.Commerce.Serialization;
 
 namespace OrchardCore.Commerce.Models
 {
     /// <summary>
     /// Ashopping cart item
     /// </summary>
-    [Serializable]
-    public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>, ISerializable
+    [JsonConverter(typeof(ShoppingCartItemConverter))]
+    public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     {
         /// <summary>
         /// Constructs a new shopping cart item
@@ -31,17 +33,6 @@ namespace OrchardCore.Commerce.Models
         }
 
         /// <summary>
-        /// Construct a shopping cart item from JSON
-        /// </summary>
-        public ShoppingCartItem(SerializationInfo serializationInfo, StreamingContext context)
-        {
-            Quantity = serializationInfo.GetInt32("quantity");
-            ProductSku = serializationInfo.GetString("sku");
-            // Prices =
-            // Attributes = 
-        }
-
-        /// <summary>
         /// The number of products
         /// </summary>
         public int Quantity { get; }
@@ -59,7 +50,7 @@ namespace OrchardCore.Commerce.Models
         /// <summary>
         /// The available prices
         /// </summary>
-        public IList<Amount> Prices { get; }
+        public IList<Amount> Prices { get; set; } // Prices don't count in queality and hash codes, so they are safe to mutate
 
         public override bool Equals(object obj)
             => !ReferenceEquals(null, obj)
@@ -80,16 +71,5 @@ namespace OrchardCore.Commerce.Models
             => ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
         public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
-
-        /// <summary>
-        /// Serialize to JSON
-        /// </summary>
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("quantity", Quantity);
-            info.AddValue("sku", ProductSku);
-            info.AddValue("prices", Prices);
-            info.AddValue("attributes", Attributes);
-        }
     }
 }

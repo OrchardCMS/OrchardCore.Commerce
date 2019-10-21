@@ -6,6 +6,6 @@ namespace OrchardCore.Commerce.ViewModels
     {
         public int Quantity { get; set; }
         public string ProductSku { get; set; }
-        public IDictionary<string, string> Attributes { get; set; }
+        public IDictionary<string, string[]> Attributes { get; set; }
     }
 }

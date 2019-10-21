@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentFields.Fields;

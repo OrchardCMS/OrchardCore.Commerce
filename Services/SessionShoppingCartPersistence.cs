@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 
@@ -12,31 +10,29 @@ namespace OrchardCore.Commerce.Services
     {
         const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart:";
 
-        IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IShoppingCartHelpers _shoppingCartHelpers;
 
-        public SessionShoppingCartPersistence(IHttpContextAccessor httpContextAccessor)
+        public SessionShoppingCartPersistence(
+            IHttpContextAccessor httpContextAccessor,
+            IShoppingCartHelpers shoppingCartHelpers)
         {
             _httpContextAccessor = httpContextAccessor;
+            _shoppingCartHelpers = shoppingCartHelpers;
         }
 
-        public ISession Session => _httpContextAccessor.HttpContext.Session;
+        private ISession Session => _httpContextAccessor.HttpContext.Session;
 
-        public Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null)
+        public async Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null)
         {
             var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? ""));
-            if (String.IsNullOrEmpty(cartString))
-            {
-                return Task.FromResult((IList<ShoppingCartItem>)new List<ShoppingCartItem>());
-            }
-            var cart = JsonConvert.DeserializeObject<List<ShoppingCartItem>>(cartString);
-            return Task.FromResult((IList<ShoppingCartItem>)cart);
+            return await _shoppingCartHelpers.Deserialize(cartString);
         }
 
-        public Task Store(IList<ShoppingCartItem> items, string shoppingCartId = null)
+        public async Task Store(IList<ShoppingCartItem> items, string shoppingCartId = null)
         {
-            var cartString = JsonConvert.SerializeObject(items);
+            var cartString = await _shoppingCartHelpers.Serialize(items);
             Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? ""), cartString);
-            return Task.CompletedTask;
         }
     }
 }

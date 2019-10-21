@@ -5,8 +5,8 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Commerce.Services
 {
@@ -32,7 +32,7 @@ namespace OrchardCore.Commerce.Services
         public async Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus)
         {
             var contentItemIds = (await _session
-                .QueryIndex<ProductPartIndex>(x => skus.Contains(x.Sku))
+                .QueryIndex<ProductPartIndex>(x => x.Sku.IsIn(skus))
                 .ListAsync())
                 .Select(idx => idx.ContentItemId)
                 .Distinct()
