@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
 using Xunit;
 
@@ -15,43 +16,47 @@ namespace OrchardCore.Commerce.Tests
         private readonly IShoppingCartPersistence _cartStorage;
         private readonly ShoppingCartController _controller;
 
-        private readonly Dictionary<string, string> _attrSet1 = new Dictionary<string, string>
+        private readonly Dictionary<string, string[]> _attrSet1 = new Dictionary<string, string[]>
         {
-            { "product.attr1", "true" }
+            { "ProductPart3.attr1", new[] { "true" } }
         };
-        private Dictionary<string, string> _attrSet2 = new Dictionary<string, string>
+        private Dictionary<string, string[]> _attrSet2 = new Dictionary<string, string[]>
         {
-            {  "product.attr1", "false" }
+            {  "ProductPart3.attr1", new[] { "false" } }
         };
-        private Dictionary<string, string> _attrSet3 = new Dictionary<string, string>
+        private Dictionary<string, string[]> _attrSet3 = new Dictionary<string, string[]>
         {
-            { "product.attr1", "true" },
-            { "product.attr2", "bar,baz" }
+            { "ProductPart3.attr1", new[] { "true" } },
+            { "ProductPart3.attr2", new[] { "bar", "baz" } }
         };
         private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new HashSet<IProductAttributeValue>
         {
-            new BooleanProductAttributeValue("attr1", true)
+            new BooleanProductAttributeValue("ProductPart3.attr1", true)
         };
         private readonly HashSet<IProductAttributeValue> _attrSet2Parsed = new HashSet<IProductAttributeValue>
         {
-            new BooleanProductAttributeValue("attr1", false)
+            new BooleanProductAttributeValue("ProductPart3.attr1", false)
         };
         private readonly HashSet<IProductAttributeValue> _attrSet3Parsed = new HashSet<IProductAttributeValue>
         {
-            new BooleanProductAttributeValue("attr1", true),
-            new TextProductAttributeValue("attr2", "bar", "baz")
+            new BooleanProductAttributeValue("ProductPart3.attr1", true),
+            new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz")
         };
 
         public ShoppingCartControllerTests() {
             _cartStorage = new FakeCartStorage();
             _controller = new ShoppingCartController(
                 shoppingCartPersistence: _cartStorage,
-                priceService: new FakePriceService(),
                 shoppingCartHelpers: new ShoppingCartHelpers(
                     attributeProviders: new[] { new ProductAttributeProvider() },
                     productService: new FakeProductService(),
+                    moneyService: new TestMoneyService(),
                     contentDefinitionManager: new FakeContentDefinitionManager()
-                )
+                ),
+                productService: new FakeProductService(),
+                priceService: new FakePriceService(),
+                priceStrategy: new LowestPriceStrategy(),
+                contentManager: new FakeContentManager() 
             );
         }
 

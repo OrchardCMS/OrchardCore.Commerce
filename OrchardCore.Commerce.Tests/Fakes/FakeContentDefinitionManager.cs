@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Commerce.Fields;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.Commerce.Tests
+namespace OrchardCore.Commerce.Tests.Fakes
 {
     public class FakeContentDefinitionManager : IContentDefinitionManager
     {
@@ -16,7 +17,15 @@ namespace OrchardCore.Commerce.Tests
 
         public ContentTypeDefinition GetTypeDefinition(string name)
             => new ContentTypeDefinition(name, name, new[] {
-                    new ContentTypePartDefinition("product", new ContentPartDefinition("product", new[] {
+                    new ContentTypePartDefinition("ProductPart1", new ContentPartDefinition("ProductPartType", new ContentPartFieldDefinition[] {
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanProductAttributeField)), "foobool", null),
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanField)), "barbool", null)
+                    }, null), null),
+                    new ContentTypePartDefinition("ProductPart2", new ContentPartDefinition("ProductPartType2", new ContentPartFieldDefinition[] {
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextProductAttributeField)), "footext", null),
+                        new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextField)), "bartext", null)
+                    }, null), null),
+                    new ContentTypePartDefinition("ProductPart3", new ContentPartDefinition("product", new[] {
                         new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanProductAttributeField)), "attr1", null),
                         new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextProductAttributeField)), "attr2", null),
                         new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(NumericProductAttributeField)), "attr3", null)

@@ -10,10 +10,13 @@ namespace OrchardCore.Commerce.Services
 {
     public class ProductAttributeProvider : IProductAttributeProvider
     {
-        public IProductAttributeValue CreateFromJsonElement(ContentPartFieldDefinition attributeFieldDefinition, JsonElement value)
+        public IProductAttributeValue CreateFromJsonElement(
+            ContentTypePartDefinition partDefinition,
+            ContentPartFieldDefinition attributeFieldDefinition,
+            JsonElement value)
         {
             string attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
-            string name = attributeFieldDefinition.PartDefinition.Name + "." + attributeFieldDefinition.Name;
+            string name = partDefinition.Name + "." + attributeFieldDefinition.Name;
             switch (attributeFieldTypeName)
             {
                 case nameof(BooleanProductAttributeField):
@@ -39,15 +42,18 @@ namespace OrchardCore.Commerce.Services
             }
         }
 
-        public IProductAttributeValue Parse(ContentPartFieldDefinition attributeFieldDefinition, string[] value)
+        public IProductAttributeValue Parse(
+            ContentTypePartDefinition partDefinition,
+            ContentPartFieldDefinition attributeFieldDefinition,
+            string[] value)
         {
             string attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
-            string name = attributeFieldDefinition.PartDefinition.Name + "." + attributeFieldDefinition.Name;
+            string name = partDefinition.Name + "." + attributeFieldDefinition.Name;
             switch(attributeFieldTypeName)
             {
                 case nameof(BooleanProductAttributeField):
                     return new BooleanProductAttributeValue(name,
-                        value != null && !value.Contains("true", StringComparer.InvariantCultureIgnoreCase));
+                        value != null && value.Contains("true", StringComparer.InvariantCultureIgnoreCase));
                 case nameof(NumericProductAttributeField):
                     if (decimal.TryParse(value.FirstOrDefault(), out decimal decimalValue))
                     {

@@ -49,7 +49,7 @@ namespace OrchardCore.Commerce.Serialization
                             if (reader.TokenType != JsonTokenType.PropertyName) continue;
                             var attributeName = reader.GetString();
                             var value = JsonSerializer.Deserialize<RawProductAttributeValue>(ref reader)
-                                ?? new RawProductAttributeValue(null); // It looks like a .NET Core bug that I have to do that, but whatevs.
+                                ?? new RawProductAttributeValue(null); // It looks like a .NET Core bug that I have to do that, but whatevs. It's for "perf", or so Fowler tells me.
                             value.SetAttributeName(attributeName);
                             attributes.Add(value);
                         }

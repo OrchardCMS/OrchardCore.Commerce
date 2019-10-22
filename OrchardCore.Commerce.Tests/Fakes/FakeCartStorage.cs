@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 
-namespace OrchardCore.Commerce.Tests
+namespace OrchardCore.Commerce.Tests.Fakes
 {
     public class FakeCartStorage : IShoppingCartPersistence
     {

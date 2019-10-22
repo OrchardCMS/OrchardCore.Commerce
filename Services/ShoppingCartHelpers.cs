@@ -51,9 +51,9 @@ namespace OrchardCore.Commerce.Services
         public int IndexOfProduct(IList<ShoppingCartItem> cart, ShoppingCartItem item)
         {
             var index = 0;
-            foreach (var i in cart)
+            foreach (ShoppingCartItem line in cart)
             {
-                if (IsSameProductAs(i, item)) return index;
+                if (IsSameProductAs(line, item)) return index;
                 index++;
             }
             return -1;
@@ -107,18 +107,22 @@ namespace OrchardCore.Commerce.Services
                 line.Attributes
                 .Select(attr =>
                 {
-                    ContentPartFieldDefinition attributeFieldDefinition = GetFieldDefinition(type, attr.Key);
+                    (ContentTypePartDefinition attributePartDefinition, ContentPartFieldDefinition attributeFieldDefinition)
+                        = GetFieldDefinition(type, attr.Key);
                     return _attributeProviders
-                        .Select(provider => provider.Parse(attributeFieldDefinition, attr.Value))
+                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attr.Value))
                         .FirstOrDefault(v => v != null);
                 })
             );
 
-        private static ContentPartFieldDefinition GetFieldDefinition(ContentTypeDefinition type, string attributeName)
+        private static (ContentTypePartDefinition, ContentPartFieldDefinition) GetFieldDefinition(ContentTypeDefinition type, string attributeName)
         {
             string[] partAndField = attributeName.Split('.');
             return type
-                .Parts.SelectMany(p => p.PartDefinition.Fields.Where(f => p.Name == partAndField[0] && f.Name == partAndField[1]))
+                .Parts.SelectMany(p => p.PartDefinition
+                    .Fields
+                    .Select(f => (p, f))
+                    .Where(pf => p.Name == partAndField[0] && pf.f.Name == partAndField[1]))
                 .First();
         }
 
@@ -152,9 +156,13 @@ namespace OrchardCore.Commerce.Services
                 {
                     ProductPart product = products[line.ProductSku];
                     ContentTypeDefinition type = types[product.ContentItem.ContentType];
-                    ContentPartFieldDefinition attributeFieldDefinition = GetFieldDefinition(type, attr.AttributeName);
+                    (ContentTypePartDefinition attributePartDefinition, ContentPartFieldDefinition attributeFieldDefinition)
+                        = GetFieldDefinition(type, attr.AttributeName);
                     IProductAttributeValue newAttr = _attributeProviders
-                        .Select(provider => provider.CreateFromJsonElement(attributeFieldDefinition, attr.Value is null ? default(JsonElement) : (JsonElement)attr.Value))
+                        .Select(provider => provider.CreateFromJsonElement(
+                            attributePartDefinition,
+                            attributeFieldDefinition,
+                            attr.Value is null ? default(JsonElement) : (JsonElement)attr.Value))
                         .FirstOrDefault(v => v != null);
                 }
             }
