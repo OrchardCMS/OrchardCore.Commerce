@@ -1,25 +1,27 @@
 @model ShoppingCartViewModel
-    <table>
-        <thead><tr><th>@T["Quantity"]</th><th>@T["Product"]</th><th>@T["Price"]</th></tr></thead>
-        <tbody>
-            @foreach (ShoppingCartLineViewModel item in Model.Lines)
-            {
-                <tr>
-                    <td>@T["{0} x ", item.Quantity]</td>
-                    <td>
-                        <a href="@item.ProductUrl">@item.ProductName</a>
-                        @if (item.Attributes != null)
-                        {
-                            <ul class="cart-product-attributes">
-                                @foreach (var val in item.Attributes.Select(attr => attr.Value).Where(val => !String.IsNullOrEmpty(val)))
-                                {
-                                    <li>@val</li>
-                                }
-                            </ul>
-                        }
-                    </td>
-                    <td>@item.Price</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <section id="shopping-cart">
+        <table>
+            <thead><tr><th>@T["Quantity"]</th><th>@T["Product"]</th><th>@T["Price"]</th></tr></thead>
+            <tbody>
+                @foreach (ShoppingCartLineViewModel item in Model.Lines)
+                {
+                    <tr>
+                        <td>@T["{0} x ", item.Quantity]</td>
+                        <td>
+                            <a href="@item.ProductUrl">@item.ProductName</a>
+                            @if (item.Attributes != null)
+                            {
+                                <ul class="cart-product-attributes">
+                                    @foreach (var val in item.Attributes.Select(attr => attr.Value).Where(val => !String.IsNullOrEmpty(val)))
+                                    {
+                                        <li>@val</li>
+                                    }
+                                </ul>
+                            }
+                        </td>
+                        <td>@item.Price</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>

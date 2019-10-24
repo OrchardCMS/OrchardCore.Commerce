@@ -148,10 +148,11 @@ namespace OrchardCore.Commerce.Services
             // contextual information).
             Dictionary<string, ProductPart> products = await GetProducts(cart.Select(l => l.ProductSku));
             Dictionary<string, ContentTypeDefinition> types = ExtractTypeDefinitions(products.Values);
+            var newCart = new List<ShoppingCartItem>(cart.Count);
             foreach (ShoppingCartItem line in cart)
             {
                 if (line.Attributes is null) continue;
-                var attributes = new List<IProductAttributeValue>(line.Attributes.Count);
+                var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
                 foreach(RawProductAttributeValue attr in line.Attributes)
                 {
                     ProductPart product = products[line.ProductSku];
@@ -164,9 +165,11 @@ namespace OrchardCore.Commerce.Services
                             attributeFieldDefinition,
                             attr.Value is null ? default(JsonElement) : (JsonElement)attr.Value))
                         .FirstOrDefault(v => v != null);
+                    attributes.Add(newAttr);
                 }
+                newCart.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
             }
-            return cart;
+            return newCart;
         }
 
         public async Task<string> Serialize(IList<ShoppingCartItem> cart)
