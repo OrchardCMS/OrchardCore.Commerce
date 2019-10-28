@@ -52,14 +52,16 @@ namespace OrchardCore.Commerce.Controllers
                     Quantity = item.Quantity,
                     ProductSku = item.ProductSku,
                     ProductName = product.ContentItem.DisplayText,
-                    Price = price,
+                    UnitPrice = price,
+                    LinePrice = item.Quantity * price,
                     ProductUrl = Url.RouteUrl(metaData.DisplayRouteValues),
                     Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName)
                 };
             }));
             var model = new ShoppingCartViewModel {
                 Id = shoppingCartId,
-                Lines = lines
+                Lines = lines,
+                Totals = lines.GroupBy(l => l.LinePrice.Currency).Select(g => new Amount(g.Sum(l => l.LinePrice.Value), g.Key))
             };
             return View(model);
         }

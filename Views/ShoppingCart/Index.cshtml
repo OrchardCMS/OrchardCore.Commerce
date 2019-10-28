@@ -1,5 +1,6 @@
 @model ShoppingCartViewModel
 @using OrchardCore.Commerce.Abstractions
+@using OrchardCore.Commerce.Money
 <zone name="Header">
     <header class="masthead">
         <div class="container">
@@ -30,7 +31,7 @@
                             </ul>
                         }
                     </td>
-                    <td>@item.Price</td>
+                    <td>@item.UnitPrice</td>
                     <td>
                         @{
                             int i = 0;
@@ -48,5 +49,17 @@
                 </tr>
             }
         </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="2">@T["Total"]</th>
+                <td>
+                    @foreach(Amount total in Model.Totals)
+                    {
+                    <div>@total</div>
+                    }
+                </td>
+                <td></td>
+            </tr>
+        </tfoot>
     </table>
 </section>

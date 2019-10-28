@@ -11,7 +11,8 @@ namespace OrchardCore.Commerce.ViewModels
         public string ProductName { get; set; }
         public string ProductUrl { get; set; }
         public string ProductImageUrl { get; set; }
-        public Amount Price { get; set; }
+        public Amount UnitPrice { get; set; }
+        public Amount LinePrice { get; set; }
         public IDictionary<string, IProductAttributeValue> Attributes { get; set; }
     }
 }
