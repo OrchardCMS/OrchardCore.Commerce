@@ -26,65 +26,74 @@
           "Name": "Product",
           "DisplayName": "Product",
           "Settings": {
-            "Creatable": "True",
-            "Draftable": "True",
-            "Versionable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": null
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true
+            },
+            "FullTextAspectSettings": {}
           },
           "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Product",
-              "Name": "Product",
-              "Settings": {
-                "Position": "5"
-              }
-            },
-            {
-              "PartName": "PricePart",
-              "Name": "PricePart",
-              "Settings": {
-                "Position": "4"
-              }
-            },
-            {
-              "PartName": "ProductPart",
-              "Name": "ProductPart",
-              "Settings": {
-                "Position": "3"
-              }
-            },
             {
               "PartName": "TitlePart",
               "Name": "TitlePart",
               "Settings": {
-                "Position": "0"
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
               }
             },
             {
               "PartName": "AutoroutePart",
               "Name": "AutoroutePart",
               "Settings": {
-                "Position": "1",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": null,
-                "Pattern": "{{ ContentItem | display_text | slugify }}",
-                "AllowCustomPath": "True",
-                "AllowUpdatePath": "False",
-                "ShowHomepageOption": "False"
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}"
+                }
               }
             },
             {
               "PartName": "HtmlBodyPart",
               "Name": "HtmlBodyPart",
               "Settings": {
-                "Position": "2",
-                "DisplayName": null,
-                "Description": null,
-                "Editor": "Wysiwyg",
-                "HtmlBodyPartSettings": {}
+                "HtmlBodyPartSettings": {},
+                "ContentTypePartSettings": {
+                  "Position": "2",
+                  "Editor": "Wysiwyg"
+                }
+              }
+            },
+            {
+              "PartName": "ProductPart",
+              "Name": "ProductPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
+              }
+            },
+            {
+              "PartName": "PricePart",
+              "Name": "PricePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "4"
+                }
+              }
+            },
+            {
+              "PartName": "Product",
+              "Name": "Product",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "5"
+                }
               }
             }
           ]
