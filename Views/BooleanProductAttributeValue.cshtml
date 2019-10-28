@@ -1,12 +1,12 @@
 @using OrchardCore.Commerce.ProductAttributeValues
 @{
-    TagBuilder tag = Tag(Model, "li");
     var attr = Model.Attribute as BooleanProductAttributeValue;
     if (attr.Value)
     {
+        TagBuilder tag = Tag(Model, "li");
+        tag.AddCssClass("list-inline-item");
         var label = Model.Label as string;
-        tag.RenderStartTag();
-        @label
-        tag.RenderEndTag();
+        tag.InnerHtml.Append(label);
+        @tag
     }
 }
