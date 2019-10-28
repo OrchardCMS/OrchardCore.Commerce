@@ -2,13 +2,14 @@
 @{
     int index = Model.Index;
     var attr = Model.AttributeValue as TextProductAttributeValue;
-    var id = $"{Model.IdPrefix}-attribute-{index}";
+    var name = $"{Model.NamePrefix ?? "line"}.Attributes[{index}]";
+    var form = string.IsNullOrEmpty(Model.Form) ? "" : $" form=\"{Model.Form}\"";
     if (attr.Value != null)
     {
-        <input type="hidden" name="line.Attributes[@index].Key" value="@attr.AttributeName" />
+        <input type="hidden"@Html.Raw(form) name="@(name).Key" value="@attr.AttributeName" />
         @foreach (string val in attr.Value)
 {
-            <input type="hidden" name="line.Attributes[@index].Value" value="@val" />
+            <input type="hidden"@Html.Raw(form) name="@(name).Value" value="@val" />
         }
     }
 }

@@ -7,7 +7,7 @@
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
     <input type="hidden" name="line.ProductSku" value="@Model.Sku" />
     <label for="@id-quantity">@T["Quantity"]</label>
-    <input id="@id-quantity" type="number" name="line.Quantity" step="1" min="1" value="1" />
+    <input id="@id-quantity" type="number" name="line.Quantity" step="1" min="1" value="1" class="form-control" />
     <ul class="product-attribute-list">
         @foreach (ProductAttributeDescription attr in Model.Attributes)
         {

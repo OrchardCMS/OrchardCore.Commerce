@@ -14,6 +14,7 @@ namespace OrchardCore.Commerce.Services
     /// </summary>
     public class LowestPriceStrategy : IPriceSelectionStrategy
     {
-        public Amount SelectPrice(IList<Amount> prices) => prices.Min();
+        public Amount SelectPrice(IList<Amount> prices)
+            => prices is null || !prices.Any() ? new Amount() : prices.Min();
     }
 }

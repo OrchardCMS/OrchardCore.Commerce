@@ -2,7 +2,8 @@
 @{
     int index = Model.Index;
     var attr = Model.AttributeValue as BooleanProductAttributeValue;
-    var id = $"{Model.IdPrefix}-attribute-{index}";
+    var name = $"{Model.NamePrefix ?? "line"}.Attributes[{index}]";
+    var form = string.IsNullOrEmpty(Model.Form) ? "" : $" form=\"{Model.Form}\"";
 }
-<input type="hidden" name="line.Attributes[@index].Key" value="@attr.AttributeName" />
-<input type="hidden" name="line.Attributes[@index].Value" value="@attr.Value.ToString()" />
+<input type="hidden"@Html.Raw(form) name="@(name).Key" value="@attr.AttributeName" />
+<input type="hidden"@Html.Raw(form) name="@(name).Value" value="@attr.Value.ToString()" />

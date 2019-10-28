@@ -13,7 +13,7 @@
 <input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
 @if (settings.PredefinedValues is null || settings.PredefinedValues.Length == 0)
 {
-    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
+    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" class="form-control" />
 }
 else if (settings.MultipleValues)
 {
@@ -22,8 +22,8 @@ else if (settings.MultipleValues)
         {
             var optionId = $"{id}-{optionIndex++}";
             <li>
-                <input id="optionId" type="checkbox" name="line.Attributes[@index].Value" checked="@(predefinedValue == settings.DefaultValue)" />
-                <label for="@optionId">@predefinedValue</label>
+                <input id="optionId" type="checkbox" name="line.Attributes[@index].Value" checked="@(predefinedValue == settings.DefaultValue)" class="form-check-input" />
+                <label for="@optionId" class="form-check-label">@predefinedValue</label>
             </li>
         }
     </ul>
@@ -32,7 +32,7 @@ else if (settings.RestrictToPredefinedValues)
 {
     if (settings.PredefinedValues.Length > 5) // Doing radio buttons for less than 5 options
     {
-        <select id="@id" name="line.Attributes[@index].Value">
+        <select id="@id" name="line.Attributes[@index].Value" class="form-control">
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
                 <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
@@ -46,8 +46,8 @@ else if (settings.RestrictToPredefinedValues)
             {
                 var optionId = $"{id}-{optionIndex++}";
                 <li>
-                    <input id="@optionId" type="radio" name="line.Attributes[@index].Value" checked="@(predefinedValue == settings.DefaultValue)" />
-                    <label for="@optionId">@predefinedValue</label>
+                    <input id="@optionId" type="radio" name="line.Attributes[@index].Value" value="@predefinedValue" checked="@(predefinedValue == settings.DefaultValue)" class="form-check-input" />
+                    <label for="@optionId" class="form-check-label">@predefinedValue</label>
                 </li>
             }
         </ul>
@@ -55,8 +55,8 @@ else if (settings.RestrictToPredefinedValues)
 }
 else
 {
-    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" />
-    <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select">
+    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" class="form-control" />
+    <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select form-control">
         @foreach (string predefinedValue in settings.PredefinedValues)
         {
             <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
@@ -76,5 +76,5 @@ else
 }
 @if (settings.Hint != null)
 {
-    <div class="hint">@settings.Hint</div>
+    <div class="hint form-text text-muted">@settings.Hint</div>
 }
