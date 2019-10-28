@@ -1,0 +1,12 @@
+{
+  "PricePart": [
+    {
+      "place": "Content:1"
+    }
+  ],
+  "ProductPart": [
+    {
+      "place": "Content:last"
+    }
+  ]
+}

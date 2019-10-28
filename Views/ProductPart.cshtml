@@ -11,7 +11,7 @@
     <ul class="product-attribute-list">
         @foreach (ProductAttributeDescription attr in Model.Attributes)
         {
-            <shape Tag="li" Type="@attr.Field.GetType().Name" prop-index="@(i++)" prop-attributeDescription="@attr" prop-idPrefix="@id"/>
+        <li><shape Type="@attr.Field.GetType().Name" prop-index="@(i++)" prop-attributeDescription="@attr" prop-idPrefix="@id" /></li>
         }
     </ul>
     <button type="submit" class="btn btn-primary">@T["Add to cart"]</button>
