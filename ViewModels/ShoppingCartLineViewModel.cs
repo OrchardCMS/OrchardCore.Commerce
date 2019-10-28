@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Money;
 
 namespace OrchardCore.Commerce.ViewModels
@@ -11,6 +12,6 @@ namespace OrchardCore.Commerce.ViewModels
         public string ProductUrl { get; set; }
         public string ProductImageUrl { get; set; }
         public Amount Price { get; set; }
-        public IDictionary<string, string> Attributes { get; set; }
+        public IDictionary<string, IProductAttributeValue> Attributes { get; set; }
     }
 }

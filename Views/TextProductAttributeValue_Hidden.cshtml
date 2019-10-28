@@ -1,0 +1,14 @@
+@using OrchardCore.Commerce.ProductAttributeValues
+@{
+    int index = Model.Index;
+    var attr = Model.AttributeValue as TextProductAttributeValue;
+    var id = $"{Model.IdPrefix}-attribute-{index}";
+    if (attr.Value != null)
+    {
+        <input type="hidden" name="line.Attributes[@index].Key" value="@attr.AttributeName" />
+        @foreach (string val in attr.Value)
+{
+            <input type="hidden" name="line.Attributes[@index].Value" value="@val" />
+        }
+    }
+}

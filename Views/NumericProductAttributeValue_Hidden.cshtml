@@ -1,0 +1,8 @@
+@using OrchardCore.Commerce.ProductAttributeValues
+@{
+    int index = Model.Index;
+    var attr = Model.AttributeValue as NumericProductAttributeValue;
+    var id = $"{Model.IdPrefix}-attribute-{index}";
+}
+<input type="hidden" name="line.Attributes[@index].Key" value="@attr.AttributeName" />
+<input type="hidden" name="line.Attributes[@index].Value" value="@attr.Value" />

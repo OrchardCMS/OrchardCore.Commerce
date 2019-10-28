@@ -1,27 +1,52 @@
 @model ShoppingCartViewModel
-    <section id="shopping-cart">
-        <table>
-            <thead><tr><th>@T["Quantity"]</th><th>@T["Product"]</th><th>@T["Price"]</th></tr></thead>
-            <tbody>
-                @foreach (ShoppingCartLineViewModel item in Model.Lines)
-                {
-                    <tr>
-                        <td>@T["{0} x ", item.Quantity]</td>
-                        <td>
-                            <a href="@item.ProductUrl">@item.ProductName</a>
-                            @if (item.Attributes != null)
+@using OrchardCore.Commerce.Abstractions
+<zone name="Header">
+    <header class="masthead">
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in"></div>
+                <div class="intro-heading text-uppercase">@T["Your cart"]</div>
+            </div>
+        </div>
+    </header>
+</zone>
+<section id="shopping-cart">
+    <table class="table">
+        <thead><tr><th>@T["Quantity"]</th><th>@T["Product"]</th><th>@T["Price"]</th><th>@T["Action"]</th></tr></thead>
+        <tbody>
+            @foreach (ShoppingCartLineViewModel item in Model.Lines)
+            {
+                <tr>
+                    <td>@T["{0} x ", item.Quantity]</td>
+                    <td>
+                        <a href="@item.ProductUrl">@item.ProductName</a>
+                        @if (item.Attributes != null)
+                        {
+                            <ul class="cart-product-attributes">
+                                @foreach (IProductAttributeValue attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                                {
+                                    <shape tag="li" Type="@attr.GetType().Name" prop-attribute="@attr" prop-label="@attr.Label"/>
+                                }
+                            </ul>
+                        }
+                    </td>
+                    <td>@item.Price</td>
+                    <td>
+                        @{
+                            int i = 0;
+                            var id = $"product-{item.ProductSku}";
+                        }
+                        <form asp-action="RemoveItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
+                            <input type="hidden" name="line.ProductSku" value="@item.ProductSku" />
+                            @foreach (IProductAttributeValue attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
                             {
-                                <ul class="cart-product-attributes">
-                                    @foreach (var val in item.Attributes.Select(attr => attr.Value).Where(val => !String.IsNullOrEmpty(val)))
-                                    {
-                                        <li>@val</li>
-                                    }
-                                </ul>
+                                <shape Type="@attr.GetType().Name" alternate="@(attr.GetType().Name)_hidden" prop-index="@(i++)" prop-attributeValue="@attr" prop-idPrefix="@id" />
                             }
-                        </td>
-                        <td>@item.Price</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+                            <button type="submit" class="btn btn-primary">@T["Remove"]</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>

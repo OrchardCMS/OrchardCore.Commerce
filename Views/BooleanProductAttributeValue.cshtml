@@ -1,0 +1,12 @@
+@using OrchardCore.Commerce.ProductAttributeValues
+@{
+    TagBuilder tag = Tag(Model, "li");
+    var attr = Model.Attribute as BooleanProductAttributeValue;
+    if (attr.Value)
+    {
+        var label = Model.Label as string;
+        tag.RenderStartTag();
+        @label
+        tag.RenderEndTag();
+    }
+}

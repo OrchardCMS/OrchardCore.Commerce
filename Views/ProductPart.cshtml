@@ -1,9 +1,6 @@
 @model ProductPartViewModel
-@using OrchardCore.DisplayManagement;
-@using OrchardCore.Commerce.Abstractions;
-
+@using OrchardCore.Commerce.Abstractions
 @{ 
-    var shapeHelper = New as IShapeFactory;
     int i = 0;
     var id = $"product-{Model.Sku}";
 }
@@ -14,10 +11,8 @@
     <ul class="product-attribute-list">
         @foreach (ProductAttributeDescription attr in Model.Attributes)
         {
-            <li>@await DisplayAsync(await shapeHelper.CreateAsync(
-               attr.Field.GetType().Name,
-               new { Index = i++, AttributeDescription = attr, IdPrefix = id }))</li>
+            <shape Tag="li" Type="@attr.Field.GetType().Name" prop-index="@(i++)" prop-attributeDescription="@attr" prop-idPrefix="@id"/>
         }
     </ul>
-    <button type="submit">@T["Add to cart"]</button>
+    <button type="submit" class="btn btn-primary">@T["Add to cart"]</button>
 </form>

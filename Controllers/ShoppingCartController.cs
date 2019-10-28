@@ -54,7 +54,7 @@ namespace OrchardCore.Commerce.Controllers
                     ProductName = product.ContentItem.DisplayText,
                     Price = price,
                     ProductUrl = Url.RouteUrl(metaData.DisplayRouteValues),
-                    Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName, attr => attr.Display())
+                    Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName)
                 };
             }));
             var model = new ShoppingCartViewModel {
