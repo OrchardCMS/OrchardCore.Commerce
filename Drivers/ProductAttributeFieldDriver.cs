@@ -10,7 +10,7 @@ namespace OrchardCore.Commerce.Drivers
 {
     public abstract class ProductAttributeFieldDriver<TField, TFieldSettings> : ContentFieldDisplayDriver<TField>
         where TField : ProductAttributeField, new()
-        where TFieldSettings : ProductAttributeFieldSettings
+        where TFieldSettings : ProductAttributeFieldSettings, new()
     {
         public ProductAttributeFieldDriver(
             IStringLocalizer<ProductAttributeFieldDriver<TField, TFieldSettings>> localizer)
@@ -25,7 +25,8 @@ namespace OrchardCore.Commerce.Drivers
             return Initialize<EditProductAttributeFieldViewModel<TField, TFieldSettings>>(
                 GetEditorShapeType(context), model =>
                 {
-                    var settings = context.PartFieldDefinition.Settings.ToObject<TFieldSettings>();
+                    var settings = new TFieldSettings();
+                    context.PartFieldDefinition.PopulateSettings(settings);
                     model.Field = field;
                     model.Settings = settings;
                     model.Part = context.ContentPart;

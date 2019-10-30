@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 
@@ -13,5 +15,8 @@ namespace OrchardCore.Commerce.ViewModels
 
         [BindNever]
         public ProductPart ProductPart { get; set; }
+
+        [BindNever]
+        public IEnumerable<ProductAttributeDescription> Attributes { get; set; }
     }
 }

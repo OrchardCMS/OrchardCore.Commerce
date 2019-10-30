@@ -1,0 +1,9 @@
+@using OrchardCore.Commerce.ProductAttributeValues
+@{
+    int index = Model.Index;
+    var attr = Model.AttributeValue as BooleanProductAttributeValue;
+    var name = $"{Model.NamePrefix ?? "line"}.Attributes[{index}]";
+    var form = string.IsNullOrEmpty(Model.Form) ? "" : $" form=\"{Model.Form}\"";
+}
+<input type="hidden"@Html.Raw(form) name="@(name).Key" value="@attr.AttributeName" />
+<input type="hidden"@Html.Raw(form) name="@(name).Value" value="@attr.Value.ToString()" />

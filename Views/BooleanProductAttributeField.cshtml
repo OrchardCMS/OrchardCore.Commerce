@@ -1,0 +1,18 @@
+@using OrchardCore.Commerce.Settings
+@using OrchardCore.Commerce.Abstractions
+
+@{
+    int index = Model.Index;
+    var attr = Model.AttributeDescription as ProductAttributeDescription;
+    var settings = attr.Settings as BooleanProductAttributeFieldSettings;
+    var id = $"{Model.IdPrefix}-attribute-{index}";
+}
+
+<input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
+<input type="hidden" name="line.Attributes[@index].Value" value="false" />
+<input id="@id" type="checkbox" name="line.Attributes[@index].Value" @(settings.DefaultValue ? "checked" : "") value="true" class="form-check-input" />
+<label for="@id" class="form-check-label">@(string.IsNullOrEmpty(settings.Label) ? attr.Name : settings.Label)</label>
+@if (settings.Hint != null)
+{
+    <div class="hint form-text text-muted">@settings.Hint</div>
+}

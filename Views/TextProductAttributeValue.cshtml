@@ -1,0 +1,12 @@
+@using OrchardCore.Commerce.ProductAttributeValues
+@{
+    var attr = Model.Attribute as TextProductAttributeValue;
+    if (attr.Value != null && attr.Value.Any() && attr.Value.First() != null)
+    {
+        TagBuilder tag = Tag(Model, "li");
+        tag.AddCssClass("list-inline-item");
+        var label = Model.Label as string;
+        tag.InnerHtml.AppendHtml(T["{0}: {1}", label, string.Join(T[", "].Value, attr.Value)]);
+        @tag
+    }
+}

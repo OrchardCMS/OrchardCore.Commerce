@@ -13,7 +13,7 @@
         @if (settings.Required) {
             <li class="hint">@T["Required"]</li>
         }
-        @if ((settings.PredefinedValues is object) && (settings.PredefinedValues.Length > 0)) {
+        @if ((settings.PredefinedValues != null) && (settings.PredefinedValues.Length > 0)) {
             <li class="hint">@T["Predefined values: {0}", string.Join(", ", settings.PredefinedValues)]</li>
             @if (settings.RestrictToPredefinedValues) {
                 <li class="hint">@T["Choice is restricted to predefined values."]</li>

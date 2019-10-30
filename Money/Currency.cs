@@ -1,11 +1,13 @@
 using System.Diagnostics;
 using System.Globalization;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Serialization;
 
 namespace OrchardCore.Commerce.Money
 {
     [JsonConverter(typeof(CurrencyConverter))]
+    [Newtonsoft.Json.JsonConverter(typeof(LegacyCurrencyConverter))]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Currency : ICurrency
     {

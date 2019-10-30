@@ -1,0 +1,20 @@
+{
+  "PricePart": [
+    {
+      "place": "Content:1"
+    },
+    {
+      "displayType": "SummaryAdmin",
+      "place": "-"
+    }
+  ],
+  "ProductPart": [
+    {
+      "place": "Content:last"
+    },
+    {
+      "displayType": "SummaryAdmin",
+      "place": "-"
+    }
+  ]
+}

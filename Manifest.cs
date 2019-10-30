@@ -19,3 +19,15 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Contents"
     }
 )]
+
+[assembly: Feature(
+    Id = CommerceConstants.Features.SessionCartStorage,
+    Name = "Orchard Core Commerce Session Cart Storage",
+    Category = "Commerce",
+    Description = "Registers session-based shopping cart persistence.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Contents",
+        CommerceConstants.Features.Core
+    }
+)]

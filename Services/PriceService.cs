@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 
@@ -17,11 +18,11 @@ namespace OrchardCore.Commerce.Services
             _providers = priceProviders;
         }
 
-        public void AddPrices(IList<ShoppingCartItem> items)
+        public async Task AddPrices(IList<ShoppingCartItem> items)
         {
             foreach (var priceProvider in _providers.OrderBy(p => p.Order))
             {
-                priceProvider.AddPrices(items);
+                await priceProvider.AddPrices(items);
             }
         }
     }
