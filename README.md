@@ -14,11 +14,15 @@ Orchard Core represents a major evolution of the Orchard design principles, and 
 
 This work is in its initial design phases. There's a lot of work to do, and yes, we do welcome participation in any shape or form.
 
-The work will focus at first on porting a [minimum viable feature set](https://github.com/OrchardCMS/OrchardCore.Commerce/issues/3):
+The work will focus at first on porting a [minimum viable feature set](https://github.com/OrchardCMS/OrchardCore.Commerce/issues/3).
+
+### Done:
 
 * Product, price, and inventory parts and/or fields (those were a single part in Nwazet)
   Note: not all products have a price
 * Shopping cart
+
+### To do:
 * Checkout (probably redesigned around Orchard Workflows)
 * Base infrastructure for payment, plus one implementation (Stripe)
 * Order content type and management screens (including a redesign and refactoring of the order part)
