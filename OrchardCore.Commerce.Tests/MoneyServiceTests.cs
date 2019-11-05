@@ -46,16 +46,6 @@ namespace OrchardCore.Commerce.Tests
         }
 
         [Fact]
-        public void CanEnumerateCurrenciesAcrossProviders()
-        {
-            Assert.Equal(new[] {
-                Dollar, Euro, Yen, PoundSterling, AustralianDollar,
-                CanadianDollar, SwissFranc, Renminbi, SwedishKrona,
-                Currency.BitCoin, AnkhMorporkDollar, SixPence},
-                new TestMoneyService().Currencies);
-        }
-
-        [Fact]
         public void CanGetCurrenciesFromMultipleProviders()
         {
             Assert.Equal("EUR", new TestMoneyService().GetCurrency("EUR").IsoCode);
@@ -71,17 +61,20 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void CreateMakesAmountWithCurrency()
         {
-            Amount amount = new TestMoneyService().Create(42, "AMD");
+            var service = new TestMoneyService();
+            var amount = service.Create(42, "AMD");
+
             Assert.Equal(42, amount.Value);
-            Assert.Equal(AnkhMorporkDollar, amount.Currency);
+            Assert.Equal(service.GetCurrency("AMD"), amount.Currency);
         }
 
         [Fact]
         public void EnsureCurrencyAddsRealCurrencyForCodeThatExists()
         {
-            Amount amount = new TestMoneyService().EnsureCurrency(new Amount(42, new Currency(null, null, "AMD", (CultureInfo)null)));
+            var service = new TestMoneyService();
+            Amount amount = service.EnsureCurrency(new Amount(42, new Currency(null, null, null, "AMD")));
             Assert.Equal(42, amount.Value);
-            Assert.Equal(AnkhMorporkDollar, amount.Currency);
+            Assert.Equal(service.GetCurrency("AMD"), amount.Currency);
         }
     }
 }

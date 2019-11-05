@@ -16,9 +16,7 @@ namespace OrchardCore.Commerce.Services
         private IEnumerable<ICurrencyProvider> _currencyProviders;
         private readonly CommerceSettings _options;
 
-        public MoneyService(
-            IEnumerable<ICurrencyProvider> currencyProviders,
-            IOptions<CommerceSettings> options)
+        public MoneyService(IEnumerable<ICurrencyProvider> currencyProviders, IOptions<CommerceSettings> options)
         {
             _currencyProviders = currencyProviders ?? Array.Empty<ICurrencyProvider>();
             _options = options?.Value;
@@ -31,9 +29,11 @@ namespace OrchardCore.Commerce.Services
         {
             get
             {
-                string defaultIsoCode = _options?.DefaultCurrency;
-                if (String.IsNullOrEmpty(defaultIsoCode)) return Currency.Dollar;
-                return GetCurrency(_options.DefaultCurrency) ?? Currency.Dollar;
+                var defaultIsoCode = _options?.DefaultCurrency;
+                return string.IsNullOrEmpty(defaultIsoCode) 
+                    ? Currency.USDollar 
+                    : GetCurrency(_options.DefaultCurrency) 
+                    ?? Currency.USDollar;
             }
         }
 
@@ -41,9 +41,7 @@ namespace OrchardCore.Commerce.Services
             => new Amount(value, GetCurrency(currencyIsoCode));
 
         public Amount EnsureCurrency(Amount amount)
-            => amount.Currency != null && amount.Currency.IsResolved
-            ? amount
-            : new Amount(amount.Value, GetCurrency(amount.Currency.IsoCode));
+            => new Amount(amount.Value, GetCurrency(amount.Currency.IsoCode));
 
         public ICurrency GetCurrency(string isoCode)
             => Currencies.FirstOrDefault(p => p.IsoCode.Equals(isoCode, StringComparison.InvariantCultureIgnoreCase));

@@ -8,10 +8,10 @@ namespace OrchardCore.Commerce.Tests.Fakes
     public class AnkhMorporkCurrencyProvider : ICurrencyProvider
     {
         public static readonly ICurrency AnkhMorporkDollar
-            = new Currency("Ankh-Morpork Dollar", "$AM", "AMD", "dw-am");
+            = new Currency("Ankh-Morpork Dollar", "Ankh-Morpork Dollar", "$AM", "AMD");
 
         public static readonly ICurrency SixPence
-            = new Currency("Sixpence", "6p", "SXP", "dw-am");
+            = new Currency("Sixpence", "Sixpence", "6p", "SXP");
 
         private ICurrency[] _currencies = new[] {
             AnkhMorporkDollar,

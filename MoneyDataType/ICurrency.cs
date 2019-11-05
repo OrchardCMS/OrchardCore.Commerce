@@ -8,26 +8,35 @@ namespace OrchardCore.Commerce.Abstractions
     public interface ICurrency : IEquatable<ICurrency>
     {
         /// <summary>
+        /// Culture name for the currency
+        /// </summary>
+        string Culture { get; }
+
+        /// <summary>
         /// The symbol for the currency, usually a single character
         /// </summary>
         string Symbol { get; }
+
         /// <summary>
-        /// The full name of the currency
+        /// The full english name of the currency
         /// </summary>
-        string Name { get; }
+        string EnglishName { get; }
+
+        /// <summary>
+        /// The full native name of the currency 
+        /// </summary>
+        string NativeName { get; }
+
         /// <summary>
         /// The three-letter ISO 4217 code for the currency if it exists
         /// (for non-standardized crypto-currencies for example, follow usage)
         /// </summary>
         string IsoCode { get; }
+
         /// <summary>
         /// The number of significant decimal places after the decimal separator
         /// </summary>
         int DecimalPlaces { get; }
-        /// <summary>
-        /// A technical field that specifies whether the currency object has complete information
-        /// </summary>
-        bool IsResolved { get; }
 
         /// <summary>
         /// Formats an amount of the currency

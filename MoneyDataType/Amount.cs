@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Serialization;
@@ -14,6 +16,30 @@ namespace OrchardCore.Commerce.Money
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Amount : IEquatable<Amount>, IComparable<Amount>
     {
+        public static readonly Amount Empty = new Amount(0);
+        public decimal _value;
+        public ICurrency _currency;
+
+        public Amount(decimal value) : this(value, CultureInfo.CurrentCulture) { }
+
+        public Amount(decimal value, RegionInfo region)
+        {
+            if (region == null)
+                throw new ArgumentNullException(nameof(region));
+
+            _currency = Money.Currency.FromRegion(region);
+            _value = value;
+        }
+
+        public Amount(decimal value, CultureInfo culture)
+        {
+            if (culture is null)
+                throw new ArgumentNullException(nameof(culture));
+
+            _currency = Money.Currency.FromCulture(culture);
+            _value = value;
+        }
+
         /// <summary>
         /// Constructs a new money amount
         /// </summary>
@@ -21,37 +47,19 @@ namespace OrchardCore.Commerce.Money
         /// <param name="currency">The currency</param>
         public Amount(decimal value, ICurrency currency)
         {
-            Value = value;
-            Currency = currency ?? throw new ArgumentNullException(nameof(currency));
+            _currency = currency ?? throw new ArgumentNullException(nameof(currency));
+            _value = value;
         }
-
-        /// <summary>
-        /// Constructs a new money amount
-        /// </summary>
-        /// <param name="value">The value</param>
-        /// <param name="currency">The currency</param>
-        public Amount(float value, ICurrency currency) : this((decimal)value, currency) { }
-        /// <summary>
-        /// Constructs a new money amount
-        /// </summary>
-        /// <param name="value">The value</param>
-        /// <param name="currency">The currency</param>
-        public Amount(double value, ICurrency currency) : this((decimal)value, currency) { }
-        /// <summary>
-        /// Constructs a new money amount
-        /// </summary>
-        /// <param name="value">The value</param>
-        /// <param name="currency">The currency</param>
-        public Amount(int value, ICurrency currency) : this((decimal)value, currency) { }
 
         /// <summary>
         /// The decimal value
         /// </summary>
-        public decimal Value { get; }
+        public decimal Value => _value;
+
         /// <summary>
         /// The currency
         /// </summary>
-        public ICurrency Currency { get; }
+        public ICurrency Currency => _currency;
 
         public bool Equals(Amount other) => Value == other.Value && Currency == other.Currency;
 
@@ -59,7 +67,7 @@ namespace OrchardCore.Commerce.Money
 
         public override int GetHashCode() => (Value, Currency).GetHashCode();
 
-        public override string ToString() => (Currency ?? Money.Currency.Dollar).ToString(Value);
+        public override string ToString() => _currency.ToString(_value);
 
         private string DebuggerDisplay => ToString();
 

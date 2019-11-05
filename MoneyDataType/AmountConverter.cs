@@ -14,7 +14,8 @@ namespace OrchardCore.Commerce.Serialization
         public override Amount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var val = default(decimal);
-            var currency = Currency.Dollar;
+            var currency = Currency.FromCulture(CultureInfo.CurrentCulture);
+
             while (reader.Read())
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) break;
@@ -28,11 +29,10 @@ namespace OrchardCore.Commerce.Serialization
                         val = reader.GetDecimal();
                         break;
                     case currencyName:
-                        currency = new Currency(null, null, reader.GetString(), (CultureInfo)null);
+                        currency = new Currency(null,null, null, reader.GetString());
                         break;
                 }
             }
-
             return new Amount(val, currency);
         }
 
@@ -56,7 +56,7 @@ namespace OrchardCore.Commerce.Serialization
         public override Amount ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, Amount existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
             var val = default(decimal);
-            var currency = Currency.Dollar;
+            var currency = Currency.FromCulture(CultureInfo.CurrentCulture);
             while (reader.Read())
             {
                 if (reader.TokenType != Newtonsoft.Json.JsonToken.PropertyName) break;
@@ -69,7 +69,7 @@ namespace OrchardCore.Commerce.Serialization
                         val = (decimal)reader.ReadAsDecimal();
                         break;
                     case currencyName:
-                        currency = new Currency(null, null, reader.ReadAsString(), (CultureInfo)null);
+                        currency = new Currency(null,null, null, reader.ReadAsString());
                         break;
                 }
             }

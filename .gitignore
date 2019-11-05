@@ -3,3 +3,6 @@
 /OrchardCore.Commerce.Tests/bin
 /OrchardCore.Commerce.Tests/obj
 *.csproj.user
+/.vs
+/MoneyDataType/bin/Debug/netstandard2.0
+/MoneyDataType/obj

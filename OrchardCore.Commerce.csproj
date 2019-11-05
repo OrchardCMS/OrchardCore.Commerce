@@ -10,8 +10,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="MoneyDataType\**" />
     <Compile Remove="OrchardCore.Commerce.Tests\**" />
+    <Content Remove="MoneyDataType\**" />
+    <Content Remove="OrchardCore.Commerce.Tests\**" />
+    <EmbeddedResource Remove="MoneyDataType\**" />
     <EmbeddedResource Remove="OrchardCore.Commerce.Tests\**" />
+    <None Remove="MoneyDataType\**" />
     <None Remove="OrchardCore.Commerce.Tests\**" />
   </ItemGroup>
 
@@ -21,11 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc1-10004" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="MoneyDataType\MoneyDataType.csproj" />
   </ItemGroup>
 
 </Project>
