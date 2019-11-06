@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
@@ -46,6 +47,12 @@ namespace OrchardCore.Commerce.Tests
         }
 
         [Fact]
+        public void EnsureCurrenciesAcrossAllProviders()
+        {
+            Assert.Equal(114, new TestMoneyService().Currencies.Count());
+        }
+
+        [Fact]
         public void CanGetCurrenciesFromMultipleProviders()
         {
             Assert.Equal("EUR", new TestMoneyService().GetCurrency("EUR").IsoCode);
@@ -72,7 +79,7 @@ namespace OrchardCore.Commerce.Tests
         public void EnsureCurrencyAddsRealCurrencyForCodeThatExists()
         {
             var service = new TestMoneyService();
-            Amount amount = service.EnsureCurrency(new Amount(42, new Currency(null, null, null, "AMD")));
+            var amount = service.EnsureCurrency(new Amount(42, new Currency("My Fake", "X", "AMD")));
             Assert.Equal(42, amount.Value);
             Assert.Equal(service.GetCurrency("AMD"), amount.Currency);
         }

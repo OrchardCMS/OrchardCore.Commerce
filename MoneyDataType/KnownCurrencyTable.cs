@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using OrchardCore.Commerce.Abstractions;
-using System;
-using System.Diagnostics;
 
 namespace OrchardCore.Commerce.Money
 {
     internal static class KnownCurrencyTable
     {
-        internal static ICurrency[] CurrencyTable;
+        private static object _obj = new object();
+
+        internal static IDictionary<string, ICurrency> CurrencyTable { get; private set; }
 
         internal static void EnsureCurrencyTable()
         {
@@ -20,55 +20,29 @@ namespace OrchardCore.Commerce.Money
         private class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
         {
             public bool Equals(ICurrency x, ICurrency y) => x.IsoCode == y.IsoCode;
-            public int GetHashCode(ICurrency obj) => obj.GetHashCode();
-        }
-        private static object obj = new object();
-
-        private class CultureLCIDComparer : IEqualityComparer<CultureInfo>
-        {
-            public bool Equals(CultureInfo x, CultureInfo y) => x.LCID == y.LCID;
-            public int GetHashCode(CultureInfo obj) => obj.LCID.GetHashCode();
+            public int GetHashCode(ICurrency obj) => obj.IsoCode.GetHashCode();
         }
 
         private static void InitCurrencyCodeTable()
         {
-            lock (obj)
+            lock (_obj)
             {
-                var currencies = new List<ICurrency>();
                 bool valid(CultureInfo c) => !c.IsNeutralCulture && !c.EnglishName.StartsWith("Unknown Locale") && !c.EnglishName.StartsWith("Invariant Language");
-                var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+
+                CurrencyTable = CultureInfo.GetCultures(CultureTypes.AllCultures)
                     .Where(valid)
-                    .Distinct(new CultureLCIDComparer())
-                    .ToList();
-
-                currencies.AddRange(cultures.Select(c=> new Currency(c)).Cast<ICurrency>());
-
-                CurrencyTable = currencies
+                    .Select(c => new Currency(c)).Cast<ICurrency>()
                     .Distinct(new CurrencyEqualityComparer())
-                    .OrderBy(c => c.IsoCode)
-                    .ToArray();
+                    .ToDictionary(k => k.IsoCode, e => e);
+
+                CurrencyTable.Add("BTC", new Currency("BitCoin", "₿", "BTC", 8));
             }
         }
 
-        internal static ICurrency FromSystemCurrency(SystemCurrency currency)
+        internal static ICurrency FromIsoCode(string isoCode)
         {
             EnsureCurrencyTable();
-            return CurrencyTable.First(c => c.IsoCode == currency.ToString());
+            return CurrencyTable[isoCode];
         }
-
-        //private static CultureInfo SetCultureForRegion(RegionInfo region)
-        //{
-        //    try
-        //    {
-        //        var regionName = region.Name.ToLower();
-        //        if (regionName.IndexOf('-') == -1) regionName = "-" + regionName;
-        //        var r = CultureInfo.GetCultures(CultureTypes.SpecificCultures).FirstOrDefault(c => c.Name.ToLowerInvariant().IndexOf(regionName) > -1);
-        //        return r ?? CultureInfo.GetCultureInfo(region.Name);
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //}
     }
 }
