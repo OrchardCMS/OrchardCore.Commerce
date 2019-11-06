@@ -2,19 +2,20 @@ using System;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Money;
 
 namespace OrchardCore.Commerce.Serialization
 {
     internal class AmountConverter : JsonConverter<Amount>
     {
-        private const string valueName = "value";
-        private const string currencyName = "currency";
+        private const string ValueName = "value";
+        private const string CurrencyName = "currency";
 
         public override Amount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var val = default(decimal);
-            var currency = Currency.FromCulture(CultureInfo.CurrentCulture);
+            ICurrency currency = null;
 
             while (reader.Read())
             {
@@ -25,68 +26,27 @@ namespace OrchardCore.Commerce.Serialization
 
                 switch (propertyName)
                 {
-                    case valueName:
+                    case ValueName:
                         val = reader.GetDecimal();
                         break;
-                    case currencyName:
-                        currency = new Currency(null,null, null, reader.GetString());
+                    case CurrencyName:
+                        currency = Currency.FromISOCode(reader.GetString());
                         break;
                 }
+
+                if (currency is null)
+                    currency = Currency.FromCulture(CultureInfo.CurrentCulture);
             }
             return new Amount(val, currency);
         }
 
         public override void Write(Utf8JsonWriter writer, Amount amount, JsonSerializerOptions options)
         {
+            if (amount.Currency is null)
+                throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
             writer.WriteStartObject();
-            writer.WriteNumber(valueName, amount.Value);
-            if (amount.Currency?.IsoCode != null)
-            {
-                writer.WriteString(currencyName, amount.Currency?.IsoCode ?? "USD");
-            }
-            writer.WriteEndObject();
-        }
-    }
-
-    internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
-    {
-        private const string valueName = "value";
-        private const string currencyName = "currency";
-
-        public override Amount ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, Amount existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
-        {
-            var val = default(decimal);
-            var currency = Currency.FromCulture(CultureInfo.CurrentCulture);
-            while (reader.Read())
-            {
-                if (reader.TokenType != Newtonsoft.Json.JsonToken.PropertyName) break;
-
-                var propertyName = reader.Value;
-
-                switch (propertyName)
-                {
-                    case valueName:
-                        val = (decimal)reader.ReadAsDecimal();
-                        break;
-                    case currencyName:
-                        currency = new Currency(null,null, null, reader.ReadAsString());
-                        break;
-                }
-            }
-
-            return new Amount(val, currency);
-        }
-
-        public override void WriteJson(Newtonsoft.Json.JsonWriter writer, Amount amount, Newtonsoft.Json.JsonSerializer serializer)
-        {
-            writer.WriteStartObject();
-            writer.WritePropertyName(valueName);
-            writer.WriteValue(amount.Value);
-            if (amount.Currency?.IsoCode != null)
-            {
-                writer.WritePropertyName(currencyName);
-                writer.WriteValue(amount.Currency?.IsoCode ?? "USD");
-            }
+            writer.WriteNumber(ValueName, amount.Value);
+            writer.WriteString(CurrencyName, amount.Currency.IsoCode);
             writer.WriteEndObject();
         }
     }

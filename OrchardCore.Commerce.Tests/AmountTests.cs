@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Money;
 using Xunit;
@@ -91,6 +92,18 @@ namespace OrchardCore.Commerce.Tests
             Assert.Throws<InvalidOperationException>(() => new Amount(2, Euro) > new Amount(1, USDollar));
             Assert.Throws<InvalidOperationException>(() => new Amount(1, Euro) <= new Amount(2, USDollar));
             Assert.Throws<InvalidOperationException>(() => new Amount(2, Euro) >= new Amount(1, USDollar));
+        }
+
+        [Fact]
+        public void SerialisationPersistsValidValues()
+        {
+            var amt1 = new Amount(1.23M, Euro);
+
+            var s= JsonConvert.SerializeObject(amt1);
+
+            var amt2 = JsonConvert.DeserializeObject<Amount>(s);
+
+            Assert.Equal(amt1, amt2);
         }
     }
 }
