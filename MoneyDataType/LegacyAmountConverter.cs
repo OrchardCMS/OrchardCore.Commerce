@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Money;
 
@@ -32,7 +31,7 @@ namespace OrchardCore.Commerce.Serialization
             }
 
             if (currency is null)
-                currency = Currency.FromCulture(CultureInfo.CurrentCulture);
+                throw new InvalidOperationException("Invalid amount format. Must include a currency");
 
             return new Amount(val, currency);
         }

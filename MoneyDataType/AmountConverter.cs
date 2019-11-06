@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
@@ -33,10 +32,11 @@ namespace OrchardCore.Commerce.Serialization
                         currency = Currency.FromISOCode(reader.GetString());
                         break;
                 }
-
-                if (currency is null)
-                    currency = Currency.FromCulture(CultureInfo.CurrentCulture);
             }
+
+            if (currency is null)
+                throw new InvalidOperationException("Invalid amount format. Must include a currency");
+
             return new Amount(val, currency);
         }
 

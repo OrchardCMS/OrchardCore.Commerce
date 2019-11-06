@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Serialization;
@@ -15,20 +14,14 @@ namespace OrchardCore.Commerce.Money
     [Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Amount : IEquatable<Amount>, IComparable<Amount>
-    {
-        public static readonly Amount Empty = new Amount(0);
-        public decimal _value;
-        public ICurrency _currency;
-
-        public Amount(decimal value) : this(value, CultureInfo.CurrentCulture) { }
-
+    { 
         public Amount(decimal value, RegionInfo region)
         {
             if (region == null)
                 throw new ArgumentNullException(nameof(region));
 
-            _currency = Money.Currency.FromRegion(region);
-            _value = value;
+            Currency = Money.Currency.FromRegion(region);
+            Value = value;
         }
 
         public Amount(decimal value, CultureInfo culture)
@@ -36,8 +29,8 @@ namespace OrchardCore.Commerce.Money
             if (culture is null)
                 throw new ArgumentNullException(nameof(culture));
 
-            _currency = Money.Currency.FromCulture(culture);
-            _value = value;
+            Currency = Money.Currency.FromCulture(culture);
+            Value = value;
         }
 
         /// <summary>
@@ -47,19 +40,19 @@ namespace OrchardCore.Commerce.Money
         /// <param name="currency">The currency</param>
         public Amount(decimal value, ICurrency currency)
         {
-            _currency = currency ?? throw new ArgumentNullException(nameof(currency));
-            _value = value;
+            Currency = currency ?? throw new ArgumentNullException(nameof(currency));
+            Value = value;
         }
 
         /// <summary>
         /// The decimal value
         /// </summary>
-        public decimal Value => _value;
+        public decimal Value { get; }
 
         /// <summary>
         /// The currency
         /// </summary>
-        public ICurrency Currency => _currency;
+        public ICurrency Currency { get; }
 
         public bool Equals(Amount other) => Value == other.Value && Currency == other.Currency;
 
@@ -67,7 +60,7 @@ namespace OrchardCore.Commerce.Money
 
         public override int GetHashCode() => (Value, Currency).GetHashCode();
 
-        public override string ToString() => _currency.ToString(_value);
+        public override string ToString() => Currency.ToString(Value);
 
         private string DebuggerDisplay => ToString();
 

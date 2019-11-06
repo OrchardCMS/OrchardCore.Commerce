@@ -16,7 +16,9 @@ namespace OrchardCore.Commerce.Services
         private IEnumerable<ICurrencyProvider> _currencyProviders;
         private readonly CommerceSettings _options;
 
-        public MoneyService(IEnumerable<ICurrencyProvider> currencyProviders, IOptions<CommerceSettings> options)
+        public MoneyService(
+            IEnumerable<ICurrencyProvider> currencyProviders, 
+            IOptions<CommerceSettings> options)
         {
             _currencyProviders = currencyProviders ?? Array.Empty<ICurrencyProvider>();
             _options = options?.Value;

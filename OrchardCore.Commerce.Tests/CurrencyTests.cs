@@ -18,7 +18,6 @@ namespace OrchardCore.Commerce.Tests
                 { Currency.CanadianDollar, 1234.56m, "$1,234.56" },
                 { Currency.SwissFranc, 1234.56m, "CHF 1’234.56" },
                 { Currency.Renminbi, 1234.56m, "¥1,234.56" },
-                { Currency.BitCoin, 1234.56789012m, "1,234.56789012 BTC" },
                 { new Currency(null,null, null, "FOO"), 1234.56m, "(FOO) 1,234.56" },
                 { new Currency(null,null, null, null), 1234.56m, "(UNK) 1,234.56" }
             };

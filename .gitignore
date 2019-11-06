@@ -6,3 +6,4 @@
 /.vs
 /MoneyDataType/bin/Debug/netstandard2.0
 /MoneyDataType/obj
+*.sln

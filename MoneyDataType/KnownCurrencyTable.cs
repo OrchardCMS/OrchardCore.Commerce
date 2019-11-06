@@ -41,19 +41,7 @@ namespace OrchardCore.Commerce.Money
                     .Distinct(new CultureLCIDComparer())
                     .ToList();
 
-                foreach (var c in cultures)
-                {
-                    try
-                    {
-                        var currency = new Currency(c);
-                        currencies.Add(currency);
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                currencies.Add(new BitCoin());
+                currencies.AddRange(cultures.Select(c=> new Currency(c)).Cast<ICurrency>());
 
                 CurrencyTable = currencies
                     .Distinct(new CurrencyEqualityComparer())

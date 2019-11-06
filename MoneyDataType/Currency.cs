@@ -13,7 +13,7 @@ namespace OrchardCore.Commerce.Money
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Currency : ICurrency
     {
-        internal readonly CultureInfo _culture;
+        private readonly CultureInfo _culture;
 
         public Currency(string cultureCode)
             :this (CultureInfo.GetCultureInfo(cultureCode))
