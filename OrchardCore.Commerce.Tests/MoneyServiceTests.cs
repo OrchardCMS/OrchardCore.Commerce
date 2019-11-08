@@ -15,7 +15,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar()
         {
-            Assert.Equal("USD", new MoneyService(null, null).DefaultCurrency.IsoCode);
+            Assert.Equal("USD", new MoneyService(null, null).DefaultCurrency.CurrencyIsoCode);
         }
 
         [Fact]
@@ -26,13 +26,13 @@ namespace OrchardCore.Commerce.Tests
                 new MoneyService(
                     null,
                     new TestOptions<CommerceSettings>(new CommerceSettings { })
-                    ).DefaultCurrency.IsoCode);
+                    ).DefaultCurrency.CurrencyIsoCode);
         }
 
         [Fact]
         public void DefaultCurrencyWithSettingsSpecifyingDefaultCurrencyIsObserved()
         {
-            Assert.Equal("EUR", new TestMoneyService().DefaultCurrency.IsoCode);
+            Assert.Equal("EUR", new TestMoneyService().DefaultCurrency.CurrencyIsoCode);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace OrchardCore.Commerce.Tests
                 new MoneyService(null, new TestOptions<CommerceSettings>(
                     new CommerceSettings {
                         DefaultCurrency = "WTF"
-                    })).DefaultCurrency.IsoCode);
+                    })).DefaultCurrency.CurrencyIsoCode);
         }
 
         [Fact]
@@ -55,8 +55,8 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void CanGetCurrenciesFromMultipleProviders()
         {
-            Assert.Equal("EUR", new TestMoneyService().GetCurrency("EUR").IsoCode);
-            Assert.Equal("AMD", new TestMoneyService().GetCurrency("AMD").IsoCode);
+            Assert.Equal("EUR", new TestMoneyService().GetCurrency("EUR").CurrencyIsoCode);
+            Assert.Equal("AMD", new TestMoneyService().GetCurrency("AMD").CurrencyIsoCode);
         }
 
         [Fact]

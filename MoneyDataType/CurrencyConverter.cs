@@ -12,7 +12,7 @@ namespace OrchardCore.Commerce.Serialization
             => Currency.FromISOCode(reader.GetString());
 
         public override void Write(Utf8JsonWriter writer, ICurrency value, JsonSerializerOptions options)
-            => writer.WriteStringValue(value.IsoCode);
+            => writer.WriteStringValue(value.CurrencyIsoCode);
     }
 
     internal class LegacyCurrencyConverter : Newtonsoft.Json.JsonConverter<ICurrency>
@@ -21,6 +21,6 @@ namespace OrchardCore.Commerce.Serialization
             => Currency.FromISOCode(reader.ReadAsString());
 
         public override void WriteJson(Newtonsoft.Json.JsonWriter writer, ICurrency value, Newtonsoft.Json.JsonSerializer serializer)
-            => writer.WriteValue(value.IsoCode);
+            => writer.WriteValue(value.CurrencyIsoCode);
     }
 }

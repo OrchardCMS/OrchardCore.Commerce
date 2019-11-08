@@ -46,7 +46,7 @@ namespace OrchardCore.Commerce.Serialization
                 throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
             writer.WriteStartObject();
             writer.WriteNumber(ValueName, amount.Value);
-            writer.WriteString(CurrencyName, amount.Currency.IsoCode);
+            writer.WriteString(CurrencyName, amount.Currency.CurrencyIsoCode);
             writer.WriteEndObject();
         }
     }

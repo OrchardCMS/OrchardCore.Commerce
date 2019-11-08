@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using OrchardCore.Commerce.Abstractions;
 
 namespace OrchardCore.Commerce.Money
@@ -13,10 +14,10 @@ namespace OrchardCore.Commerce.Money
             KnownCurrencyTable.EnsureCurrencyTable();
         }
 
-        public IEnumerable<ICurrency> Currencies 
+        public IEnumerable<ICurrency> Currencies
             => KnownCurrencyTable.CurrencyTable.Values;
 
-        public ICurrency GetCurrency(string isoSymbol) 
-            => KnownCurrencyTable.CurrencyTable[isoSymbol];
+        public ICurrency GetCurrency(string isoSymbol)
+            => KnownCurrencyTable.CurrencyTable.TryGetValue(isoSymbol, out var value) ? value : null;
     }
 }

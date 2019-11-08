@@ -17,10 +17,10 @@ namespace OrchardCore.Commerce.Abstractions
         /// <summary>
         /// Finds a currency from its ISO code.
         /// </summary>
-        /// <param name="isoCode">The ISO code of the currency to look up.</param>
+        /// <param name="currencyIsoCode">The ISO code of the currency to look up.</param>
         /// <returns>The currency if found.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Throws if the currency code is not found from any active provider.</exception>
-        ICurrency GetCurrency(string isoCode);
+        ICurrency GetCurrency(string currencyIsoCode);
 
         /// <summary>
         /// Creates an amount object from a value and a currency symbol.

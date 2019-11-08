@@ -1,4 +1,5 @@
 ﻿using OrchardCore.Commerce.Abstractions;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -6,142 +7,151 @@ namespace OrchardCore.Commerce.Money
 {
     partial struct Currency
     {
-        public static ICurrency UnitedArabEmiratesDirham => KnownCurrencyTable.FromIsoCode("AED");
-        public static ICurrency AfghanAfghani => KnownCurrencyTable.FromIsoCode("AFN");
-        public static ICurrency AlbanianLek => KnownCurrencyTable.FromIsoCode("ALL");
-        public static ICurrency ArmenianDram => KnownCurrencyTable.FromIsoCode("AMD");
-        public static ICurrency ArgentinePeso => KnownCurrencyTable.FromIsoCode("ARS");
-        public static ICurrency AustralianDollar => KnownCurrencyTable.FromIsoCode("AUD");
-        public static ICurrency AzerbaijaniManat => KnownCurrencyTable.FromIsoCode("AZN");
-        public static ICurrency BosniaHerzegovinaConvertibleMark => KnownCurrencyTable.FromIsoCode("BAM");
-        public static ICurrency BangladeshiTaka => KnownCurrencyTable.FromIsoCode("BDT");
-        public static ICurrency BulgarianLev => KnownCurrencyTable.FromIsoCode("BGN");
-        public static ICurrency BahrainiDinar => KnownCurrencyTable.FromIsoCode("BHD");
-        public static ICurrency BruneiDollar => KnownCurrencyTable.FromIsoCode("BND");
-        public static ICurrency BolivianBoliviano => KnownCurrencyTable.FromIsoCode("BOB");
-        public static ICurrency BrazilianReal => KnownCurrencyTable.FromIsoCode("BRL");
-        public static ICurrency BitCoin => KnownCurrencyTable.FromIsoCode("BTC");
-        public static ICurrency BhutaneseNgultrum => KnownCurrencyTable.FromIsoCode("BTN");
-        public static ICurrency BotswananPula => KnownCurrencyTable.FromIsoCode("BWP");
-        public static ICurrency BelarusianRuble => KnownCurrencyTable.FromIsoCode("BYN");
-        public static ICurrency BelizeDollar => KnownCurrencyTable.FromIsoCode("BZD");
-        public static ICurrency CanadianDollar => KnownCurrencyTable.FromIsoCode("CAD");
-        public static ICurrency CongoleseFranc => KnownCurrencyTable.FromIsoCode("CDF");
-        public static ICurrency SwissFranc => KnownCurrencyTable.FromIsoCode("CHF");
-        public static ICurrency ChileanPeso => KnownCurrencyTable.FromIsoCode("CLP");
-        public static ICurrency ChineseYuan => KnownCurrencyTable.FromIsoCode("CNY");
-        public static ICurrency ColombianPeso => KnownCurrencyTable.FromIsoCode("COP");
-        public static ICurrency CostaRicanColón => KnownCurrencyTable.FromIsoCode("CRC");
-        public static ICurrency CubanPeso => KnownCurrencyTable.FromIsoCode("CUP");
-        public static ICurrency CzechKoruna => KnownCurrencyTable.FromIsoCode("CZK");
-        public static ICurrency DanishKrone => KnownCurrencyTable.FromIsoCode("DKK");
-        public static ICurrency DominicanPeso => KnownCurrencyTable.FromIsoCode("DOP");
-        public static ICurrency AlgerianDinar => KnownCurrencyTable.FromIsoCode("DZD");
-        public static ICurrency EgyptianPound => KnownCurrencyTable.FromIsoCode("EGP");
-        public static ICurrency EritreanNakfa => KnownCurrencyTable.FromIsoCode("ERN");
-        public static ICurrency EthiopianBirr => KnownCurrencyTable.FromIsoCode("ETB");
-        public static ICurrency Euro => KnownCurrencyTable.FromIsoCode("EUR");
-        public static ICurrency BritishPound => KnownCurrencyTable.FromIsoCode("GBP");
-        public static ICurrency GeorgianLari => KnownCurrencyTable.FromIsoCode("GEL");
-        public static ICurrency GuatemalanQuetzal => KnownCurrencyTable.FromIsoCode("GTQ");
-        public static ICurrency HongKongDollar => KnownCurrencyTable.FromIsoCode("HKD");
-        public static ICurrency HonduranLempira => KnownCurrencyTable.FromIsoCode("HNL");
-        public static ICurrency CroatianKuna => KnownCurrencyTable.FromIsoCode("HRK");
-        public static ICurrency HaitianGourde => KnownCurrencyTable.FromIsoCode("HTG");
-        public static ICurrency HungarianForint => KnownCurrencyTable.FromIsoCode("HUF");
-        public static ICurrency IndonesianRupiah => KnownCurrencyTable.FromIsoCode("IDR");
-        public static ICurrency IsraeliNewShekel => KnownCurrencyTable.FromIsoCode("ILS");
-        public static ICurrency IndianRupee => KnownCurrencyTable.FromIsoCode("INR");
-        public static ICurrency IraqiDinar => KnownCurrencyTable.FromIsoCode("IQD");
-        public static ICurrency IranianRial => KnownCurrencyTable.FromIsoCode("IRR");
-        public static ICurrency IcelandicKróna => KnownCurrencyTable.FromIsoCode("ISK");
-        public static ICurrency JamaicanDollar => KnownCurrencyTable.FromIsoCode("JMD");
-        public static ICurrency JordanianDinar => KnownCurrencyTable.FromIsoCode("JOD");
-        public static ICurrency JapaneseYen => KnownCurrencyTable.FromIsoCode("JPY");
-        public static ICurrency KenyanShilling => KnownCurrencyTable.FromIsoCode("KES");
-        public static ICurrency KyrgystaniSom => KnownCurrencyTable.FromIsoCode("KGS");
-        public static ICurrency CambodianRiel => KnownCurrencyTable.FromIsoCode("KHR");
-        public static ICurrency SouthKoreanWon => KnownCurrencyTable.FromIsoCode("KRW");
-        public static ICurrency KuwaitiDinar => KnownCurrencyTable.FromIsoCode("KWD");
-        public static ICurrency KazakhstaniTenge => KnownCurrencyTable.FromIsoCode("KZT");
-        public static ICurrency LaotianKip => KnownCurrencyTable.FromIsoCode("LAK");
-        public static ICurrency LebanesePound => KnownCurrencyTable.FromIsoCode("LBP");
-        public static ICurrency SriLankanRupee => KnownCurrencyTable.FromIsoCode("LKR");
-        public static ICurrency LibyanDinar => KnownCurrencyTable.FromIsoCode("LYD");
-        public static ICurrency MoroccanDirham => KnownCurrencyTable.FromIsoCode("MAD");
-        public static ICurrency MoldovanLeu => KnownCurrencyTable.FromIsoCode("MDL");
-        public static ICurrency MacedonianDenar => KnownCurrencyTable.FromIsoCode("MKD");
-        public static ICurrency MyanmarKyat => KnownCurrencyTable.FromIsoCode("MMK");
-        public static ICurrency MongolianTugrik => KnownCurrencyTable.FromIsoCode("MNT");
-        public static ICurrency MacanesePataca => KnownCurrencyTable.FromIsoCode("MOP");
-        public static ICurrency MaldivianRufiyaa => KnownCurrencyTable.FromIsoCode("MVR");
-        public static ICurrency MexicanPeso => KnownCurrencyTable.FromIsoCode("MXN");
-        public static ICurrency MalaysianRinggit => KnownCurrencyTable.FromIsoCode("MYR");
-        public static ICurrency NigerianNaira => KnownCurrencyTable.FromIsoCode("NGN");
-        public static ICurrency NicaraguanCórdoba => KnownCurrencyTable.FromIsoCode("NIO");
-        public static ICurrency NorwegianKrone => KnownCurrencyTable.FromIsoCode("NOK");
-        public static ICurrency NepaleseRupee => KnownCurrencyTable.FromIsoCode("NPR");
-        public static ICurrency NewZealandDollar => KnownCurrencyTable.FromIsoCode("NZD");
-        public static ICurrency OmaniRial => KnownCurrencyTable.FromIsoCode("OMR");
-        public static ICurrency PanamanianBalboa => KnownCurrencyTable.FromIsoCode("PAB");
-        public static ICurrency PeruvianSol => KnownCurrencyTable.FromIsoCode("PEN");
-        public static ICurrency PhilippinePiso => KnownCurrencyTable.FromIsoCode("PHP");
-        public static ICurrency PakistaniRupee => KnownCurrencyTable.FromIsoCode("PKR");
-        public static ICurrency PolishZloty => KnownCurrencyTable.FromIsoCode("PLN");
-        public static ICurrency ParaguayanGuarani => KnownCurrencyTable.FromIsoCode("PYG");
-        public static ICurrency QatariRial => KnownCurrencyTable.FromIsoCode("QAR");
-        public static ICurrency RomanianLeu => KnownCurrencyTable.FromIsoCode("RON");
-        public static ICurrency SerbianDinar => KnownCurrencyTable.FromIsoCode("RSD");
-        public static ICurrency RussianRuble => KnownCurrencyTable.FromIsoCode("RUB");
-        public static ICurrency RwandanFranc => KnownCurrencyTable.FromIsoCode("RWF");
-        public static ICurrency SaudiRiyal => KnownCurrencyTable.FromIsoCode("SAR");
-        public static ICurrency SwedishKrona => KnownCurrencyTable.FromIsoCode("SEK");
-        public static ICurrency SingaporeDollar => KnownCurrencyTable.FromIsoCode("SGD");
-        public static ICurrency SomaliShilling => KnownCurrencyTable.FromIsoCode("SOS");
-        public static ICurrency SyrianPound => KnownCurrencyTable.FromIsoCode("SYP");
-        public static ICurrency ThaiBaht => KnownCurrencyTable.FromIsoCode("THB");
-        public static ICurrency TajikistaniSomoni => KnownCurrencyTable.FromIsoCode("TJS");
-        public static ICurrency TurkmenistaniManat => KnownCurrencyTable.FromIsoCode("TMT");
-        public static ICurrency TunisianDinar => KnownCurrencyTable.FromIsoCode("TND");
-        public static ICurrency TurkishLira => KnownCurrencyTable.FromIsoCode("TRY");
-        public static ICurrency TrinidadAndTobagoDollar => KnownCurrencyTable.FromIsoCode("TTD");
-        public static ICurrency NewTaiwanDollar => KnownCurrencyTable.FromIsoCode("TWD");
-        public static ICurrency UkrainianHryvnia => KnownCurrencyTable.FromIsoCode("UAH");
-        public static ICurrency USDollar => KnownCurrencyTable.FromIsoCode("USD");
-        public static ICurrency UruguayanPeso => KnownCurrencyTable.FromIsoCode("UYU");
-        public static ICurrency UzbekistaniSom => KnownCurrencyTable.FromIsoCode("UZS");
-        public static ICurrency VenezuelanBolívar => KnownCurrencyTable.FromIsoCode("VES");
-        public static ICurrency VietnameseDong => KnownCurrencyTable.FromIsoCode("VND");
-        public static ICurrency CentralAfricanCFAFranc => KnownCurrencyTable.FromIsoCode("XAF");
-        public static ICurrency EastCaribbeanDollar => KnownCurrencyTable.FromIsoCode("XCD");
-        public static ICurrency SpecialDrawingRights => KnownCurrencyTable.FromIsoCode("XDR");
-        public static ICurrency WestAfricanCFAFranc => KnownCurrencyTable.FromIsoCode("XOF");
-        public static ICurrency YemeniRial => KnownCurrencyTable.FromIsoCode("YER");
-        public static ICurrency SouthAfricanRand => KnownCurrencyTable.FromIsoCode("ZAR");
+        public static ICurrency UnitedArabEmiratesDirham => DefaultProvider.GetCurrency("AED");
+        public static ICurrency AfghanAfghani => DefaultProvider.GetCurrency("AFN");
+        public static ICurrency AlbanianLek => DefaultProvider.GetCurrency("ALL");
+        public static ICurrency ArmenianDram => DefaultProvider.GetCurrency("AMD");
+        public static ICurrency ArgentinePeso => DefaultProvider.GetCurrency("ARS");
+        public static ICurrency AustralianDollar => DefaultProvider.GetCurrency("AUD");
+        public static ICurrency AzerbaijaniManat => DefaultProvider.GetCurrency("AZN");
+        public static ICurrency BosniaHerzegovinaConvertibleMark => DefaultProvider.GetCurrency("BAM");
+        public static ICurrency BangladeshiTaka => DefaultProvider.GetCurrency("BDT");
+        public static ICurrency BulgarianLev => DefaultProvider.GetCurrency("BGN");
+        public static ICurrency BahrainiDinar => DefaultProvider.GetCurrency("BHD");
+        public static ICurrency BruneiDollar => DefaultProvider.GetCurrency("BND");
+        public static ICurrency BolivianBoliviano => DefaultProvider.GetCurrency("BOB");
+        public static ICurrency BrazilianReal => DefaultProvider.GetCurrency("BRL");
+        public static ICurrency BitCoin => DefaultProvider.GetCurrency("BTC");
+        public static ICurrency BhutaneseNgultrum => DefaultProvider.GetCurrency("BTN");
+        public static ICurrency BotswananPula => DefaultProvider.GetCurrency("BWP");
+        public static ICurrency BelarusianRuble => DefaultProvider.GetCurrency("BYN");
+        public static ICurrency BelizeDollar => DefaultProvider.GetCurrency("BZD");
+        public static ICurrency CanadianDollar => DefaultProvider.GetCurrency("CAD");
+        public static ICurrency CongoleseFranc => DefaultProvider.GetCurrency("CDF");
+        public static ICurrency SwissFranc => DefaultProvider.GetCurrency("CHF");
+        public static ICurrency ChileanPeso => DefaultProvider.GetCurrency("CLP");
+        public static ICurrency ChineseYuan => DefaultProvider.GetCurrency("CNY");
+        public static ICurrency ColombianPeso => DefaultProvider.GetCurrency("COP");
+        public static ICurrency CostaRicanColón => DefaultProvider.GetCurrency("CRC");
+        public static ICurrency CubanPeso => DefaultProvider.GetCurrency("CUP");
+        public static ICurrency CzechKoruna => DefaultProvider.GetCurrency("CZK");
+        public static ICurrency DanishKrone => DefaultProvider.GetCurrency("DKK");
+        public static ICurrency DominicanPeso => DefaultProvider.GetCurrency("DOP");
+        public static ICurrency AlgerianDinar => DefaultProvider.GetCurrency("DZD");
+        public static ICurrency EgyptianPound => DefaultProvider.GetCurrency("EGP");
+        public static ICurrency EritreanNakfa => DefaultProvider.GetCurrency("ERN");
+        public static ICurrency EthiopianBirr => DefaultProvider.GetCurrency("ETB");
+        public static ICurrency Euro => DefaultProvider.GetCurrency("EUR");
+        public static ICurrency BritishPound => DefaultProvider.GetCurrency("GBP");
+        public static ICurrency GeorgianLari => DefaultProvider.GetCurrency("GEL");
+        public static ICurrency GuatemalanQuetzal => DefaultProvider.GetCurrency("GTQ");
+        public static ICurrency HongKongDollar => DefaultProvider.GetCurrency("HKD");
+        public static ICurrency HonduranLempira => DefaultProvider.GetCurrency("HNL");
+        public static ICurrency CroatianKuna => DefaultProvider.GetCurrency("HRK");
+        public static ICurrency HaitianGourde => DefaultProvider.GetCurrency("HTG");
+        public static ICurrency HungarianForint => DefaultProvider.GetCurrency("HUF");
+        public static ICurrency IndonesianRupiah => DefaultProvider.GetCurrency("IDR");
+        public static ICurrency IsraeliNewShekel => DefaultProvider.GetCurrency("ILS");
+        public static ICurrency IndianRupee => DefaultProvider.GetCurrency("INR");
+        public static ICurrency IraqiDinar => DefaultProvider.GetCurrency("IQD");
+        public static ICurrency IranianRial => DefaultProvider.GetCurrency("IRR");
+        public static ICurrency IcelandicKróna => DefaultProvider.GetCurrency("ISK");
+        public static ICurrency JamaicanDollar => DefaultProvider.GetCurrency("JMD");
+        public static ICurrency JordanianDinar => DefaultProvider.GetCurrency("JOD");
+        public static ICurrency JapaneseYen => DefaultProvider.GetCurrency("JPY");
+        public static ICurrency KenyanShilling => DefaultProvider.GetCurrency("KES");
+        public static ICurrency KyrgystaniSom => DefaultProvider.GetCurrency("KGS");
+        public static ICurrency CambodianRiel => DefaultProvider.GetCurrency("KHR");
+        public static ICurrency SouthKoreanWon => DefaultProvider.GetCurrency("KRW");
+        public static ICurrency KuwaitiDinar => DefaultProvider.GetCurrency("KWD");
+        public static ICurrency KazakhstaniTenge => DefaultProvider.GetCurrency("KZT");
+        public static ICurrency LaotianKip => DefaultProvider.GetCurrency("LAK");
+        public static ICurrency LebanesePound => DefaultProvider.GetCurrency("LBP");
+        public static ICurrency SriLankanRupee => DefaultProvider.GetCurrency("LKR");
+        public static ICurrency LibyanDinar => DefaultProvider.GetCurrency("LYD");
+        public static ICurrency MoroccanDirham => DefaultProvider.GetCurrency("MAD");
+        public static ICurrency MoldovanLeu => DefaultProvider.GetCurrency("MDL");
+        public static ICurrency MacedonianDenar => DefaultProvider.GetCurrency("MKD");
+        public static ICurrency MyanmarKyat => DefaultProvider.GetCurrency("MMK");
+        public static ICurrency MongolianTugrik => DefaultProvider.GetCurrency("MNT");
+        public static ICurrency MacanesePataca => DefaultProvider.GetCurrency("MOP");
+        public static ICurrency MaldivianRufiyaa => DefaultProvider.GetCurrency("MVR");
+        public static ICurrency MexicanPeso => DefaultProvider.GetCurrency("MXN");
+        public static ICurrency MalaysianRinggit => DefaultProvider.GetCurrency("MYR");
+        public static ICurrency NigerianNaira => DefaultProvider.GetCurrency("NGN");
+        public static ICurrency NicaraguanCórdoba => DefaultProvider.GetCurrency("NIO");
+        public static ICurrency NorwegianKrone => DefaultProvider.GetCurrency("NOK");
+        public static ICurrency NepaleseRupee => DefaultProvider.GetCurrency("NPR");
+        public static ICurrency NewZealandDollar => DefaultProvider.GetCurrency("NZD");
+        public static ICurrency OmaniRial => DefaultProvider.GetCurrency("OMR");
+        public static ICurrency PanamanianBalboa => DefaultProvider.GetCurrency("PAB");
+        public static ICurrency PeruvianSol => DefaultProvider.GetCurrency("PEN");
+        public static ICurrency PhilippinePiso => DefaultProvider.GetCurrency("PHP");
+        public static ICurrency PakistaniRupee => DefaultProvider.GetCurrency("PKR");
+        public static ICurrency PolishZloty => DefaultProvider.GetCurrency("PLN");
+        public static ICurrency ParaguayanGuarani => DefaultProvider.GetCurrency("PYG");
+        public static ICurrency QatariRial => DefaultProvider.GetCurrency("QAR");
+        public static ICurrency RomanianLeu => DefaultProvider.GetCurrency("RON");
+        public static ICurrency SerbianDinar => DefaultProvider.GetCurrency("RSD");
+        public static ICurrency RussianRuble => DefaultProvider.GetCurrency("RUB");
+        public static ICurrency RwandanFranc => DefaultProvider.GetCurrency("RWF");
+        public static ICurrency SaudiRiyal => DefaultProvider.GetCurrency("SAR");
+        public static ICurrency SwedishKrona => DefaultProvider.GetCurrency("SEK");
+        public static ICurrency SingaporeDollar => DefaultProvider.GetCurrency("SGD");
+        public static ICurrency SomaliShilling => DefaultProvider.GetCurrency("SOS");
+        public static ICurrency SyrianPound => DefaultProvider.GetCurrency("SYP");
+        public static ICurrency ThaiBaht => DefaultProvider.GetCurrency("THB");
+        public static ICurrency TajikistaniSomoni => DefaultProvider.GetCurrency("TJS");
+        public static ICurrency TurkmenistaniManat => DefaultProvider.GetCurrency("TMT");
+        public static ICurrency TunisianDinar => DefaultProvider.GetCurrency("TND");
+        public static ICurrency TurkishLira => DefaultProvider.GetCurrency("TRY");
+        public static ICurrency TrinidadAndTobagoDollar => DefaultProvider.GetCurrency("TTD");
+        public static ICurrency NewTaiwanDollar => DefaultProvider.GetCurrency("TWD");
+        public static ICurrency UkrainianHryvnia => DefaultProvider.GetCurrency("UAH");
+        public static ICurrency USDollar => DefaultProvider.GetCurrency("USD");
+        public static ICurrency UruguayanPeso => DefaultProvider.GetCurrency("UYU");
+        public static ICurrency UzbekistaniSom => DefaultProvider.GetCurrency("UZS");
+        public static ICurrency VenezuelanBolívar => DefaultProvider.GetCurrency("VES");
+        public static ICurrency VietnameseDong => DefaultProvider.GetCurrency("VND");
+        public static ICurrency CentralAfricanCFAFranc => DefaultProvider.GetCurrency("XAF");
+        public static ICurrency EastCaribbeanDollar => DefaultProvider.GetCurrency("XCD");
+        public static ICurrency SpecialDrawingRights => DefaultProvider.GetCurrency("XDR");
+        public static ICurrency WestAfricanCFAFranc => DefaultProvider.GetCurrency("XOF");
+        public static ICurrency YemeniRial => DefaultProvider.GetCurrency("YER");
+        public static ICurrency SouthAfricanRand => DefaultProvider.GetCurrency("ZAR");
 
-        public static ICurrency FromISOCode(string code)
+        private static readonly ICurrencyProvider DefaultProvider = new CurrencyProvider();
+
+        public static ICurrency FromISOCode(string code, IEnumerable<ICurrencyProvider> providers = null)
         {
-            KnownCurrencyTable.EnsureCurrencyTable();
-            return KnownCurrencyTable.CurrencyTable[code];
+            var found = DefaultProvider.GetCurrency(code);
+            return found ?? (providers ?? new List<ICurrencyProvider>())
+                .SelectMany(p => p.Currencies)
+                .FirstOrDefault(c => c.CurrencyIsoCode == code);
         }
 
-        public static ICurrency FromName(string name)
+        public static ICurrency FromName(string name, IEnumerable<ICurrencyProvider> providers = null)
         {
-            KnownCurrencyTable.EnsureCurrencyTable();
-            return KnownCurrencyTable.CurrencyTable.Values.FirstOrDefault(c => c.Name == name);
+            if (string.IsNullOrWhiteSpace(name))
+                throw new System.ArgumentException("Must provide a name", nameof(name));
+            return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.Name == name);
         }
 
-        public static ICurrency FromRegion(RegionInfo region)
+        public static ICurrency FromRegion(RegionInfo region, IEnumerable<ICurrencyProvider> providers = null)
         {
-            KnownCurrencyTable.EnsureCurrencyTable();
-            return KnownCurrencyTable.CurrencyTable[region.ISOCurrencySymbol];
+            if (region is null)
+                throw new System.ArgumentNullException(nameof(region));
+            var found = DefaultProvider.GetCurrency(region.ISOCurrencySymbol);
+            return (providers ?? new List<ICurrencyProvider>())
+                .SelectMany(p => p.Currencies)
+                .FirstOrDefault(c => c.CurrencyIsoCode == region.ISOCurrencySymbol);
         }
 
-        public static ICurrency FromCulture(CultureInfo culture)
+        public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null)
         {
             KnownCurrencyTable.EnsureCurrencyTable();
             var temp = new Currency(culture);
-            return temp != null ? KnownCurrencyTable.CurrencyTable.Values.FirstOrDefault(c => c.Name == temp.IsoCode) : null;
+            return temp != null ? (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.CurrencyIsoCode == temp.CurrencyIsoCode) : null;
         }
     }
 }

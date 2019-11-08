@@ -45,7 +45,7 @@ namespace OrchardCore.Commerce.Serialization
             writer.WritePropertyName(ValueName);
             writer.WriteValue(amount.Value);
             writer.WritePropertyName(CurrencyName);
-            writer.WriteValue(amount.Currency.IsoCode);
+            writer.WriteValue(amount.Currency.CurrencyIsoCode);
             writer.WriteEndObject();
         }
     }

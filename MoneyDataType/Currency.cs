@@ -26,7 +26,7 @@ namespace OrchardCore.Commerce.Money
             Culture = culture;
             Name = region.CurrencyNativeName;
             Symbol = region.CurrencySymbol;
-            IsoCode = region.ISOCurrencySymbol;
+            CurrencyIsoCode = region.ISOCurrencySymbol;
             DecimalPlaces = culture.NumberFormat.CurrencyDecimalDigits;
         }
 
@@ -44,13 +44,13 @@ namespace OrchardCore.Commerce.Money
             Culture = null;
             Name = name;
             Symbol = symbol;
-            IsoCode = iSOSymbol;
+            CurrencyIsoCode = iSOSymbol;
             DecimalPlaces = decimalDigits;
         }
 
         public int DecimalPlaces { get; }
 
-        public string IsoCode { get; }
+        public string CurrencyIsoCode { get; }
 
         public string Name { get; }
 
@@ -58,21 +58,21 @@ namespace OrchardCore.Commerce.Money
 
         public CultureInfo Culture { get; }
 
-        public bool Equals(ICurrency other) => other != null && IsoCode == other.IsoCode;
+        public bool Equals(ICurrency other) => other != null && CurrencyIsoCode == other.CurrencyIsoCode;
 
         public override bool Equals(object obj) => obj != null && obj is ICurrency other && Equals(other);
 
-        public override int GetHashCode() => IsoCode.GetHashCode();
+        public override int GetHashCode() => CurrencyIsoCode.GetHashCode();
 
         public override string ToString() => Symbol;
 
         public string ToString(decimal amount)
             => Culture is null 
-            ? "(" + IsoCode + ") " + amount.ToString("N" + DecimalPlaces) 
+            ? "(" + CurrencyIsoCode + ") " + amount.ToString("N" + DecimalPlaces) 
             : amount.ToString("C" + DecimalPlaces, Culture);
 
         private string DebuggerDisplay
-            => IsoCode;
+            => CurrencyIsoCode;
 
         public static bool operator ==(Currency left, Currency right)
             => left.Equals(right);

@@ -20,6 +20,6 @@ namespace OrchardCore.Commerce.Tests.Fakes
         public IEnumerable<ICurrency> Currencies => _currencies;
 
         public ICurrency GetCurrency(string isoCode)
-            => _currencies.FirstOrDefault(c => c.IsoCode == isoCode);
+            => _currencies.FirstOrDefault(c => c.CurrencyIsoCode == isoCode);
     }
 }

@@ -21,7 +21,7 @@ namespace OrchardCore.Commerce.Abstractions
         /// The three-letter ISO 4217 code for the currency if it exists
         /// (for non-standardized crypto-currencies for example, follow usage)
         /// </summary>
-        string IsoCode { get; }
+        string CurrencyIsoCode { get; }
 
         /// <summary>
         /// The number of significant decimal places after the decimal separator

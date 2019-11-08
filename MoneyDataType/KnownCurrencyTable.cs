@@ -19,8 +19,8 @@ namespace OrchardCore.Commerce.Money
 
         private class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
         {
-            public bool Equals(ICurrency x, ICurrency y) => x.IsoCode == y.IsoCode;
-            public int GetHashCode(ICurrency obj) => obj.IsoCode.GetHashCode();
+            public bool Equals(ICurrency x, ICurrency y) => x.CurrencyIsoCode == y.CurrencyIsoCode;
+            public int GetHashCode(ICurrency obj) => obj.CurrencyIsoCode.GetHashCode();
         }
 
         private static void InitCurrencyCodeTable()
@@ -33,7 +33,7 @@ namespace OrchardCore.Commerce.Money
                     .Where(valid)
                     .Select(c => new Currency(c)).Cast<ICurrency>()
                     .Distinct(new CurrencyEqualityComparer())
-                    .ToDictionary(k => k.IsoCode, e => e);
+                    .ToDictionary(k => k.CurrencyIsoCode, e => e);
 
                 CurrencyTable.Add("BTC", new Currency("BitCoin", "₿", "BTC", 8));
             }

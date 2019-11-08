@@ -43,9 +43,9 @@ namespace OrchardCore.Commerce.Services
             => new Amount(value, GetCurrency(currencyIsoCode));
 
         public Amount EnsureCurrency(Amount amount)
-            => new Amount(amount.Value, GetCurrency(amount.Currency.IsoCode));
+            => new Amount(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));
 
-        public ICurrency GetCurrency(string isoCode)
-            => Currencies.FirstOrDefault(p => p.IsoCode.Equals(isoCode, StringComparison.InvariantCultureIgnoreCase));
+        public ICurrency GetCurrency(string currencyIsoCode)
+            => Currency.FromISOCode(currencyIsoCode, _currencyProviders); 
     }
 }
