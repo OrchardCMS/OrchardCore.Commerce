@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Money</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Allan Nielsen</Authors>
+    <Company>Our Presence</Company>
+    <Product>MoneyDataType</Product>
+    <Description>New data type representing monertry values.</Description>
+    <Copyright>Copyright © 2019 Our Presence</Copyright>
+    <PackageTags>Currency, Money</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
