@@ -1,5 +1,5 @@
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Money;
+using Money;
+using Money.Abstractions;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Money;
 
 namespace OrchardCore.Commerce.Tests.Fakes
 {

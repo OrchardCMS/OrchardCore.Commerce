@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Money;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Money;
+using Money.Abstractions;
 
 namespace OrchardCore.Commerce.ViewModels
 {

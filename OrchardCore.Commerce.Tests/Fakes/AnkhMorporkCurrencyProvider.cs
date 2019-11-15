@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Money;
+using Money;
+using Money.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.Fakes
 {
@@ -13,7 +13,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
         public static readonly ICurrency SixPence
             = new Currency("Sixpence", "6p", "SXP");
 
-        private ICurrency[] _currencies = new[] {
+        private readonly ICurrency[] _currencies = new[] {
             AnkhMorporkDollar,
             SixPence
         };

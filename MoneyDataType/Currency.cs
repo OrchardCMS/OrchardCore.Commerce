@@ -1,11 +1,11 @@
+using System;
 using System.Diagnostics;
 using System.Globalization;
-using System;
 using System.Text.Json.Serialization;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Serialization;
+using Money.Abstractions;
+using Money.Serialization;
 
-namespace OrchardCore.Commerce.Money
+namespace Money
 {
     [JsonConverter(typeof(CurrencyConverter))]
     [Newtonsoft.Json.JsonConverter(typeof(LegacyCurrencyConverter))]
@@ -28,6 +28,7 @@ namespace OrchardCore.Commerce.Money
             Symbol = region.CurrencySymbol;
             CurrencyIsoCode = region.ISOCurrencySymbol;
             DecimalPlaces = culture.NumberFormat.CurrencyDecimalDigits;
+            IsKnownCurrency = true;
         }
 
         public Currency(string name, string symbol, string iSOSymbol, int decimalDigits = 2)
@@ -46,7 +47,10 @@ namespace OrchardCore.Commerce.Money
             Symbol = symbol;
             CurrencyIsoCode = iSOSymbol;
             DecimalPlaces = decimalDigits;
+            IsKnownCurrency = false;
         }
+
+        public bool IsKnownCurrency { get; }
 
         public int DecimalPlaces { get; }
 
@@ -58,7 +62,7 @@ namespace OrchardCore.Commerce.Money
 
         public CultureInfo Culture { get; }
 
-        public bool Equals(ICurrency other) => other != null && CurrencyIsoCode == other.CurrencyIsoCode;
+        public bool Equals(ICurrency other) => other != null && CurrencyIsoCode.Equals(other.CurrencyIsoCode, StringComparison.InvariantCultureIgnoreCase);
 
         public override bool Equals(object obj) => obj != null && obj is ICurrency other && Equals(other);
 
@@ -67,8 +71,8 @@ namespace OrchardCore.Commerce.Money
         public override string ToString() => Symbol;
 
         public string ToString(decimal amount)
-            => Culture is null 
-            ? "(" + CurrencyIsoCode + ") " + amount.ToString("N" + DecimalPlaces) 
+            => Culture is null
+            ? "(" + CurrencyIsoCode + ") " + amount.ToString("N" + DecimalPlaces)
             : amount.ToString("C" + DecimalPlaces, Culture);
 
         private string DebuggerDisplay

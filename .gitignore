@@ -4,6 +4,6 @@
 /OrchardCore.Commerce.Tests/obj
 *.csproj.user
 /.vs
-/MoneyDataType/bin/Debug/netstandard2.0
+/MoneyDataType/bin
 /MoneyDataType/obj
 *.sln

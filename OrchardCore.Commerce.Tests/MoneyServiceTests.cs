@@ -1,12 +1,9 @@
-using System.Globalization;
 using System.Linq;
-using OrchardCore.Commerce.Money;
+using Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.Tests.Fakes;
 using Xunit;
-using static OrchardCore.Commerce.Money.Currency;
-using static OrchardCore.Commerce.Tests.Fakes.AnkhMorporkCurrencyProvider;
 
 namespace OrchardCore.Commerce.Tests
 {
@@ -41,7 +38,8 @@ namespace OrchardCore.Commerce.Tests
             Assert.Equal(
                 "USD",
                 new MoneyService(null, new TestOptions<CommerceSettings>(
-                    new CommerceSettings {
+                    new CommerceSettings
+                    {
                         DefaultCurrency = "WTF"
                     })).DefaultCurrency.CurrencyIsoCode);
         }

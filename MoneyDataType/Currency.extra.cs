@@ -1,9 +1,9 @@
-﻿using OrchardCore.Commerce.Abstractions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Money.Abstractions;
 
-namespace OrchardCore.Commerce.Money
+namespace Money
 {
     partial struct Currency
     {

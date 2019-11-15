@@ -1,13 +1,13 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using OrchardCore.Commerce.Abstractions;
+using System.Linq;
+using Money.Abstractions;
 
-namespace OrchardCore.Commerce.Money
+namespace Money
 {
     internal static class KnownCurrencyTable
     {
-        private static object _obj = new object();
+        private static readonly object Obj = new object();
 
         internal static IDictionary<string, ICurrency> CurrencyTable { get; private set; }
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Commerce.Money
 
         private static void InitCurrencyCodeTable()
         {
-            lock (_obj)
+            lock (Obj)
             {
                 bool valid(CultureInfo c) => !c.IsNeutralCulture && !c.EnglishName.StartsWith("Unknown Locale") && !c.EnglishName.StartsWith("Invariant Language");
 

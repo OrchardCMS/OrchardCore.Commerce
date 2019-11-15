@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using Xunit;
@@ -67,7 +67,7 @@ namespace OrchardCore.Commerce.Tests
 
         private class DummyProductService : IProductService
         {
-            private Dictionary<string, ProductPart> _products;
+            private readonly Dictionary<string, ProductPart> _products;
 
             public DummyProductService(params ProductPart[] products)
             {

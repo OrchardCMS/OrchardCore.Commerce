@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 
@@ -58,7 +58,8 @@ namespace OrchardCore.Commerce.Controllers
                     Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName)
                 };
             }));
-            var model = new ShoppingCartViewModel {
+            var model = new ShoppingCartViewModel
+            {
                 Id = shoppingCartId,
                 Lines = lines,
                 Totals = lines.GroupBy(l => l.LinePrice.Currency).Select(g => new Amount(g.Sum(l => l.LinePrice.Value), g.Key))

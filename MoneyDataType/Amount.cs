@@ -2,10 +2,10 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Serialization;
+using Money.Abstractions;
+using Money.Serialization;
 
-namespace OrchardCore.Commerce.Money
+namespace Money
 {
     /// <summary>
     /// A money amount, which is represented by a decimal number and a currency
@@ -14,7 +14,7 @@ namespace OrchardCore.Commerce.Money
     [Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Amount : IEquatable<Amount>, IComparable<Amount>
-    { 
+    {
         public Amount(decimal value, RegionInfo region)
         {
             if (region == null)
@@ -54,7 +54,7 @@ namespace OrchardCore.Commerce.Money
         /// </summary>
         public ICurrency Currency { get; }
 
-        public bool Equals(Amount other) => Value == other.Value && Currency == other.Currency;
+        public bool Equals(Amount other) => Value == other.Value && Currency.Equals(other.Currency);
 
         public override bool Equals(object obj) => obj != null && obj is Amount other && Equals(other);
 

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Money;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Money;
 
 namespace OrchardCore.Commerce.Services
 {
