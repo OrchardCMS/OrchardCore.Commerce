@@ -7,7 +7,7 @@
     <Authors>Allan Nielsen</Authors>
     <Company>Our Presence</Company>
     <Product>MoneyDataType</Product>
-    <Description>New data type representing monertry values.</Description>
+    <Description>New data type representing monetary values.</Description>
     <Copyright>Copyright © 2019 Our Presence</Copyright>
     <PackageTags>Currency, Money</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
