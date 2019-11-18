@@ -7,6 +7,16 @@ namespace Money
 {
     partial struct Currency
     {
+        public static ICurrency GetByIsoCode(string isoCode)
+        {
+            return DefaultProvider.GetCurrency(isoCode);
+        }
+
+        public static bool IsKnownCurrency(string isoCode)
+        {
+            return DefaultProvider.IsKnownCurrency(isoCode);
+        }
+
         public static ICurrency UnitedArabEmiratesDirham => DefaultProvider.GetCurrency("AED");
         public static ICurrency AfghanAfghani => DefaultProvider.GetCurrency("AFN");
         public static ICurrency AlbanianLek => DefaultProvider.GetCurrency("ALL");

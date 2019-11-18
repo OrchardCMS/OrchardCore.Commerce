@@ -74,7 +74,8 @@ namespace Money
                 throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
             writer.WriteStartObject();
             writer.WriteNumber(ValueName, amount.Value);
-            if (amount.Currency.IsKnownCurrency)
+            
+            if (Currency.IsKnownCurrency(amount.Currency.CurrencyIsoCode))
             {
                 writer.WriteString(CurrencyName, amount.Currency.CurrencyIsoCode);
             }

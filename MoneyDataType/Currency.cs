@@ -28,7 +28,6 @@ namespace Money
             Symbol = region.CurrencySymbol;
             CurrencyIsoCode = region.ISOCurrencySymbol;
             DecimalPlaces = culture.NumberFormat.CurrencyDecimalDigits;
-            IsKnownCurrency = true;
         }
 
         public Currency(string name, string symbol, string iSOSymbol, int decimalDigits = 2)
@@ -47,10 +46,7 @@ namespace Money
             Symbol = symbol;
             CurrencyIsoCode = iSOSymbol;
             DecimalPlaces = decimalDigits;
-            IsKnownCurrency = false;
         }
-
-        public bool IsKnownCurrency { get; }
 
         public int DecimalPlaces { get; }
 

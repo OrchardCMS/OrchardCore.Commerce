@@ -74,7 +74,7 @@ namespace Money.Serialization
             writer.WriteStartObject();
             writer.WritePropertyName(ValueName);
             writer.WriteValue(amount.Value);
-            if (amount.Currency.IsKnownCurrency)
+            if (Currency.IsKnownCurrency(amount.Currency.CurrencyIsoCode))
             {
                 writer.WritePropertyName(CurrencyName);
                 writer.WriteValue(amount.Currency.CurrencyIsoCode);

@@ -8,12 +8,6 @@ namespace Money.Abstractions
     public interface ICurrency : IEquatable<ICurrency>
     {
         /// <summary>
-        /// Flag indicating if the instance is from the <see cref="KnownCurrencyTable"/>
-        /// </summary>
-        /// <remarks>This value affects the serialization of the currency instance</remarks>
-        bool IsKnownCurrency { get; }
-
-        /// <summary>
         /// The symbol for the currency, usually a single character
         /// </summary>
         string Symbol { get; }

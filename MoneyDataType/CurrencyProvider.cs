@@ -18,5 +18,8 @@ namespace Money
 
         public ICurrency GetCurrency(string isoSymbol)
             => KnownCurrencyTable.CurrencyTable.TryGetValue(isoSymbol, out var value) ? value : null;
+
+        public bool IsKnownCurrency(string isoCode) 
+            => KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);
     }
 }
