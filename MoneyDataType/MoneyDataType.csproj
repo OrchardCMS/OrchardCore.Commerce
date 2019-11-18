@@ -5,10 +5,9 @@
     <RootNamespace>Money</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Bertrand Le Roy, Allan Nielsen</Authors>
-    <Company>.Net Foundation</Company>
     <Product>MoneyDataType</Product>
     <Description>New data type representing monetary values.</Description>
-    <Copyright>Copyright © 2019 Net Foundation</Copyright>
+    <Copyright>Copyright © 2019 .NET Foundation</Copyright>
     <PackageTags>Currency, Money</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
