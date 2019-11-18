@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Money</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Allan Nielsen</Authors>
-    <Company>Our Presence</Company>
+    <Authors>Bertrand Le Roy, Allan Nielsen</Authors>
+    <Company>.Net Foundation</Company>
     <Product>MoneyDataType</Product>
     <Description>New data type representing monetary values.</Description>
-    <Copyright>Copyright © 2019 Our Presence</Copyright>
+    <Copyright>Copyright © 2019 Net Foundation</Copyright>
     <PackageTags>Currency, Money</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
