@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Money</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Bertrand Le Roy, Allan Nielsen</Authors>
+    <Product>MoneyDataType</Product>
+    <Description>New data type representing monetary values.</Description>
+    <Copyright>Copyright © 2019 .NET Foundation</Copyright>
+    <PackageTags>Currency, Money</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Text.Json" Version="4.7.0-preview2.19523.17" />
+  </ItemGroup>
+
+</Project>

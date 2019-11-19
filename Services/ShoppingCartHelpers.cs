@@ -1,15 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Money;
+using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using System;
-using OrchardCore.Commerce.ProductAttributeValues;
 
 namespace OrchardCore.Commerce.Services
 {
@@ -153,7 +153,7 @@ namespace OrchardCore.Commerce.Services
             {
                 if (line.Attributes is null) continue;
                 var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
-                foreach(RawProductAttributeValue attr in line.Attributes)
+                foreach (RawProductAttributeValue attr in line.Attributes)
                 {
                     ProductPart product = products[line.ProductSku];
                     ContentTypeDefinition type = types[product.ContentItem.ContentType];

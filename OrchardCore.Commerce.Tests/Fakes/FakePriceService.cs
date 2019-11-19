@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Money;
 
 namespace OrchardCore.Commerce.Tests.Fakes
 {
@@ -13,7 +13,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
             var i = 0;
             foreach (ShoppingCartItem item in items)
             {
-                item.Prices.Add(new Amount(42 + i++, Currency.Dollar));
+                item.Prices.Add(new Amount(42 + i++, Currency.USDollar));
             }
             return Task.CompletedTask;
         }

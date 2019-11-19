@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using Xunit;
@@ -36,7 +36,7 @@ namespace OrchardCore.Commerce.Tests
         }
 
         [Fact]
-        public void PriceServiceAddsPricesInOrder()
+        public async Task PriceServiceAddsPricesInOrder()
         {
             var priceService = new PriceService(new List<IPriceProvider>
             {
@@ -47,7 +47,7 @@ namespace OrchardCore.Commerce.Tests
             });
             var item = new ShoppingCartItem(1, "foo");
             var cart = new List<ShoppingCartItem> { item };
-            priceService.AddPrices(cart);
+            await priceService.AddPrices(cart);
             Assert.Collection(item.Prices,
                 p => Assert.Equal(1.0m, p.Value),
                 p => Assert.Equal(2.0m, p.Value),
@@ -59,7 +59,7 @@ namespace OrchardCore.Commerce.Tests
         {
             var product = new ContentItem();
             product.GetOrCreate<PricePart>();
-            product.Alter<PricePart>(p => p.Price = new Amount(price, Currency.Dollar));
+            product.Alter<PricePart>(p => p.Price = new Amount(price, Currency.USDollar));
             product.GetOrCreate<ProductPart>();
             product.Alter<ProductPart>(p => p.Sku = sku);
             return product.As<ProductPart>();
@@ -67,7 +67,7 @@ namespace OrchardCore.Commerce.Tests
 
         private class DummyProductService : IProductService
         {
-            private Dictionary<string, ProductPart> _products;
+            private readonly Dictionary<string, ProductPart> _products;
 
             public DummyProductService(params ProductPart[] products)
             {
@@ -96,7 +96,7 @@ namespace OrchardCore.Commerce.Tests
             {
                 foreach (var item in items)
                 {
-                    item.Prices.Add(new Amount(Price, Currency.Dollar));
+                    item.Prices.Add(new Amount(Price, Currency.USDollar));
                 }
                 return Task.CompletedTask;
             }

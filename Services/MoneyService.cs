@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using Money;
+using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Money;
 using OrchardCore.Commerce.Settings;
 
 namespace OrchardCore.Commerce.Services
@@ -13,8 +14,9 @@ namespace OrchardCore.Commerce.Services
     /// </summary>
     public class MoneyService : IMoneyService
     {
-        private IEnumerable<ICurrencyProvider> _currencyProviders;
+        private readonly IEnumerable<ICurrencyProvider> _currencyProviders;
         private readonly CommerceSettings _options;
+
 
         public MoneyService(
             IEnumerable<ICurrencyProvider> currencyProviders,
@@ -31,9 +33,11 @@ namespace OrchardCore.Commerce.Services
         {
             get
             {
-                string defaultIsoCode = _options?.DefaultCurrency;
-                if (String.IsNullOrEmpty(defaultIsoCode)) return Currency.Dollar;
-                return GetCurrency(_options.DefaultCurrency) ?? Currency.Dollar;
+                var defaultIsoCode = _options?.DefaultCurrency;
+                return string.IsNullOrEmpty(defaultIsoCode)
+                    ? Currency.USDollar
+                    : GetCurrency(_options.DefaultCurrency)
+                    ?? Currency.USDollar;
             }
         }
 
@@ -41,11 +45,9 @@ namespace OrchardCore.Commerce.Services
             => new Amount(value, GetCurrency(currencyIsoCode));
 
         public Amount EnsureCurrency(Amount amount)
-            => amount.Currency != null && amount.Currency.IsResolved
-            ? amount
-            : new Amount(amount.Value, GetCurrency(amount.Currency.IsoCode));
+            => new Amount(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));
 
-        public ICurrency GetCurrency(string isoCode)
-            => Currencies.FirstOrDefault(p => p.IsoCode.Equals(isoCode, StringComparison.InvariantCultureIgnoreCase));
+        public ICurrency GetCurrency(string currencyIsoCode)
+            => Currency.FromISOCode(currencyIsoCode, _currencyProviders);
     }
 }

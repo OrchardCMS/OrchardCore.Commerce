@@ -12,12 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.0.0-rc1-10004" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" />
+    <ProjectReference Include="..\MoneyDataType\MoneyDataType.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 

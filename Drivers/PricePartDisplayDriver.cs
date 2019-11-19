@@ -48,7 +48,7 @@ namespace OrchardCore.Commerce.Drivers
 
             model.Price = part.Price;
             model.PriceValue = part.Price.Value;
-            model.PriceCurrency = part.Price.Currency?.IsoCode ?? _moneyService.DefaultCurrency.IsoCode;
+            model.PriceCurrency = part.Price.Currency?.CurrencyIsoCode ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
             model.PricePart = part;
             model.Currencies = _moneyService.Currencies;
 

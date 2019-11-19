@@ -1,10 +1,11 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json.Serialization;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Serialization;
+using Money.Abstractions;
+using Money.Serialization;
 
-namespace OrchardCore.Commerce.Money
+namespace Money
 {
     /// <summary>
     /// A money amount, which is represented by a decimal number and a currency
@@ -14,6 +15,24 @@ namespace OrchardCore.Commerce.Money
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Amount : IEquatable<Amount>, IComparable<Amount>
     {
+        public Amount(decimal value, RegionInfo region)
+        {
+            if (region == null)
+                throw new ArgumentNullException(nameof(region));
+
+            Currency = Money.Currency.FromRegion(region);
+            Value = value;
+        }
+
+        public Amount(decimal value, CultureInfo culture)
+        {
+            if (culture is null)
+                throw new ArgumentNullException(nameof(culture));
+
+            Currency = Money.Currency.FromCulture(culture);
+            Value = value;
+        }
+
         /// <summary>
         /// Constructs a new money amount
         /// </summary>
@@ -21,45 +40,27 @@ namespace OrchardCore.Commerce.Money
         /// <param name="currency">The currency</param>
         public Amount(decimal value, ICurrency currency)
         {
-            Value = value;
             Currency = currency ?? throw new ArgumentNullException(nameof(currency));
+            Value = value;
         }
-
-        /// <summary>
-        /// Constructs a new money amount
-        /// </summary>
-        /// <param name="value">The value</param>
-        /// <param name="currency">The currency</param>
-        public Amount(float value, ICurrency currency) : this((decimal)value, currency) { }
-        /// <summary>
-        /// Constructs a new money amount
-        /// </summary>
-        /// <param name="value">The value</param>
-        /// <param name="currency">The currency</param>
-        public Amount(double value, ICurrency currency) : this((decimal)value, currency) { }
-        /// <summary>
-        /// Constructs a new money amount
-        /// </summary>
-        /// <param name="value">The value</param>
-        /// <param name="currency">The currency</param>
-        public Amount(int value, ICurrency currency) : this((decimal)value, currency) { }
 
         /// <summary>
         /// The decimal value
         /// </summary>
         public decimal Value { get; }
+
         /// <summary>
         /// The currency
         /// </summary>
         public ICurrency Currency { get; }
 
-        public bool Equals(Amount other) => Value == other.Value && Currency == other.Currency;
+        public bool Equals(Amount other) => Value == other.Value && Currency.Equals(other.Currency);
 
         public override bool Equals(object obj) => obj != null && obj is Amount other && Equals(other);
 
         public override int GetHashCode() => (Value, Currency).GetHashCode();
 
-        public override string ToString() => (Currency ?? Money.Currency.Dollar).ToString(Value);
+        public override string ToString() => Currency.ToString(Value);
 
         private string DebuggerDisplay => ToString();
 
