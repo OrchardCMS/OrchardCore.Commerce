@@ -1,0 +1,22 @@
+@model PriceBookPartViewModel
+@{ 
+    // Always disabled when standard price book to ensure there is always one standard price book
+    var switchDisabled = Model.StandardPriceBook;
+}
+
+<div class="form-group" asp-validation-class-for="StandardPriceBook">
+    <span class="switch">
+        <input asp-for="StandardPriceBook" type="checkbox" asp-is-disabled="@switchDisabled" class="switch switch-sm content-preview-select" checked="@Model.StandardPriceBook" />
+        <label asp-for="StandardPriceBook">@T["Standard Price Book"]</label>
+    </span>
+    <span asp-validation-for="StandardPriceBook"></span>
+    @if (switchDisabled)
+    {
+        <input asp-for="StandardPriceBook" type="hidden" value="@Model.StandardPriceBook"/>
+    }
+    
+    <br />
+    <span class="hint">
+        @T["Toggle to have this price book be considered the 'standard' for all other price books."]
+    </span>
+</div>

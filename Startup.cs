@@ -92,4 +92,91 @@ namespace OrchardCore.Commerce
             );
         }
     }
+
+    [RequireFeatures(CommerceConstants.Features.PriceBooks)]
+    public class PriceBooksStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Index Providers
+            services.AddSingleton<IIndexProvider, PriceBookEntryPartIndexProvider>();
+
+            // Migrations
+            services.AddScoped<IDataMigration, PriceBookMigrations>();
+
+            // Drivers
+            services.AddScoped<IContentPartDisplayDriver, PriceBookPartDisplayDriver>();
+            services.AddScoped<IContentPartDisplayDriver, PriceBookEntryPartDisplayDriver>();
+            services.AddScoped<IContentPartDisplayDriver, PriceBookProductPartDisplayDriver>();
+            services.AddScoped<IContentPartDisplayDriver, PriceBookRulePartDisplayDriver>();
+
+            // Models
+            services.AddSingleton<ContentPart, PriceBookPart>();
+            services.AddSingleton<ContentPart, PriceBookEntryPart>();
+            services.AddSingleton<ContentPart, PriceBookProductPart>();
+            services.AddSingleton<ContentPart, PriceBookRulePart>();
+
+            // Services
+            services.AddScoped<IPriceBookService, PriceBookService>();
+            services.AddScoped<IPriceProvider, PriceBookPriceProvider>();
+
+            // Settings
+            services.AddScoped<INavigationProvider, PriceBookAdminMenu>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "PriceBookRule",
+                areaName: "OrchardCore.Commerce",
+                pattern: "Admin/PriceBooks",
+                defaults: new { controller = "PriceBooksAdmin", action = "Index" }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "PriceBookRules",
+                areaName: "OrchardCore.Commerce",
+                pattern: "Admin/PriceBookRules",
+                defaults: new { controller = "PriceBookRulesAdmin", action = "Index" }
+            );
+        }
+    }
+
+    [RequireFeatures(CommerceConstants.Features.PriceBooksByUser)]
+    public class PriceBooksByUserStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Migrations
+            services.AddScoped<IDataMigration, PriceBookByUserMigrations>();
+
+            // Drivers
+            services.AddScoped<IContentPartDisplayDriver, PriceBookByUserPartDisplayDriver>();
+
+            // Models
+            services.AddSingleton<ContentPart, PriceBookByUserPart>();
+
+            // Services
+            services.AddScoped<IPriceBookRuleProvider, PriceBookByUserRuleProvider>();
+        }
+    }
+
+    [RequireFeatures(CommerceConstants.Features.PriceBooksByRole)]
+    public class PriceBooksByRoleStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Migrations
+            services.AddScoped<IDataMigration, PriceBookByRoleMigrations>();
+
+            // Drivers
+            services.AddScoped<IContentPartDisplayDriver, PriceBookByRolePartDisplayDriver>();
+
+            // Models
+            services.AddSingleton<ContentPart, PriceBookByRolePart>();
+
+            // Services
+            services.AddScoped<IPriceBookRuleProvider, PriceBookByRoleRuleProvider>();
+        }
+    }
 }

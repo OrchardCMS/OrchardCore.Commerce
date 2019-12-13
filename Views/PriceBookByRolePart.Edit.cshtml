@@ -1,0 +1,27 @@
+@model PriceBookByRolePartViewModel
+@{ 
+    var priceBooksSelectList = Model.PriceBooks?.Select(pb => 
+        new SelectListItem
+        {
+            Value = pb.ContentItem.ContentItemId,
+            Text = pb.ContentItem.DisplayText,
+            Selected = pb.ContentItem.ContentItemId == Model.PriceBookContentItemId
+        }) 
+        ?? Enumerable.Empty<SelectListItem>();
+}
+<div class="form-group" asp-validation-class-for="RoleName">
+    <label asp-for="RoleName">@T["Role Name"] </label>
+    <input asp-for="RoleName" class="form-control content-preview-text" />
+    <span asp-validation-for="RoleName"></span>
+    <span class="hint">
+        @T["Enter the role name exactly as it appears in roles."]
+    </span>       
+</div>
+<div class="form-group" asp-validation-class-for="PriceBookContentItemId">
+    <label asp-for="PriceBookContentItemId">@T["Price Book"] </label>
+    <select asp-for="PriceBookContentItemId" class="form-control content-preview-select" asp-items="@priceBooksSelectList"/>
+    <span asp-validation-for="PriceBookContentItemId"></span>
+    <span class="hint">
+        @T["Select the price book this role will be presented pricing from."]
+    </span>
+</div>

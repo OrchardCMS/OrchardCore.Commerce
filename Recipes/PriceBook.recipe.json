@@ -1,0 +1,42 @@
+{
+  "name": "PriceBook",
+  "displayName": "Price Book",
+  "description": "Sets up a typical price book scenario.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "price book" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Lists",
+        "OrchardCore.Title",
+        "OrchardCore.Commerce",
+        "OrchardCore.Commerce.PriceBooks"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentParts": [
+      ],
+      "ContentTypes": [
+        {
+          "Name": "Product",
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "PriceBookProductPart",
+              "Name": "PriceBookProductPart",
+              "Settings": {
+                "Position": "4"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+<style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
+
+<div class="edit-container">
+    <div class="edit-body">
+        <div class="edit-item-primary">
+            @if (Model.Content != null)
+            {
+                <div class="edit-item-content">
+                    @await DisplayAsync(Model.Content)
+                </div>
+            }
+        </div>
+        <div class="edit-item-parts">
+            @if (Model.Parts != null)
+            {
+                @await DisplayAsync(Model.Parts)
+            }
+        </div>
+    </div>
+</div>

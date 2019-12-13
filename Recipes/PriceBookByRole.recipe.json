@@ -1,0 +1,56 @@
+{
+  "name": "PriceBookByRole",
+  "displayName": "Price Book by Role",
+  "description": "Adds in a Price Book by Role Rule.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "price book" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Commerce",
+        "OrchardCore.Commerce.PriceBooks"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentParts": [
+      ],
+      "ContentTypes": [
+        {
+          "Name": "PriceBookByRole",
+          "DisplayName": "Price Book by Role",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Versionable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "PriceBookByRolePart",
+              "Name": "PriceBookByRolePart",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "PriceBookRulePart",
+              "Name": "PriceBookRulePart",
+              "Settings": {
+                "Position": "1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

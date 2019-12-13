@@ -1,0 +1,10 @@
+@model PriceBookRulePartViewModel
+
+<div class="form-group" asp-validation-class-for="Weight">
+    <label asp-for="Weight">@T["User Name"] </label>
+    <input asp-for="Weight" class="form-control content-preview-text" />
+    <span asp-validation-for="Weight"></span>
+    <span class="hint">
+        @T["A higher 'weight' is more important."]
+    </span>
+</div>

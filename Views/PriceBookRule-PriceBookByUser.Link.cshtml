@@ -1,0 +1,21 @@
+@model dynamic
+@{ 
+    var returnUrl = Context.Request.Path;
+    var routeData = new Dictionary<string, string>();
+    routeData.Add("returlUrl", returnUrl);
+}
+
+<div class="card">
+    <div class="card-body">
+        <h4>@T["Price Book by User"]</h4>
+        <p class="hint">@T["Associate a price book with a user."]</p>    
+    </div>
+    <div class="card-footer text-muted text-xs-right">
+        <a asp-area="OrchardCore.Contents"
+           asp-controller="Admin"
+           asp-action="Create"
+           asp-route-id="@Model.Name"
+           asp-all-route-data="@routeData"
+           class="btn btn-primary btn-sm">@T["Add"]</a>
+    </div>
+</div>

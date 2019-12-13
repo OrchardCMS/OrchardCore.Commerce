@@ -1,0 +1,21 @@
+@model dynamic
+@{
+    var returnUrl = Context.Request.Path;
+    var routeData = new Dictionary<string, string>();
+    routeData.Add("returlUrl", returnUrl);
+}
+
+<a asp-area="OrchardCore.Contents"
+    asp-controller="Admin"
+    asp-action="Edit"
+    asp-route-id="@Model.Name"
+    asp-all-route-data="@routeData"
+    class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-area="OrchardCore.Contents"
+    asp-controller="Admin"
+    asp-action="Delete"
+    asp-route-id="@Model.Name"
+    asp-all-route-data="@routeData"
+    class="btn btn-danger btn-sm"
+    itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>

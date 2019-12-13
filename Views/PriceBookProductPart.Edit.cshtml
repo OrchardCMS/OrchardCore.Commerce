@@ -1,0 +1,89 @@
+@using OrchardCore.Lists.Models;
+@using OrchardCore.ContentManagement;
+@using OrchardCore.Commerce.Models;
+
+@model PriceBookProductPartEditViewModel
+
+@inject IContentManager ContentManager
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{ 
+    var priceBookEntryEditorShapeAlternate = "Content_Edit__PriceBookProduct";
+    var productContentItemId = Model.PriceBookProductPart.ContentItem.ContentItemId;
+}
+<fieldset class="form-group">
+    @if (Model.PriceBooks.Any())
+    {
+        // Assign defaults
+        ViewBag.PriceBookEntryHideProduct = true;
+
+        <legend>@T["Pricing by Price Book"]</legend>
+        foreach (var priceBook in Model.PriceBooks
+            .OrderByDescending(pb => pb.ContentItem.As<PriceBookPart>().StandardPriceBook)
+            .ThenBy(pb => pb.ContentItem.DisplayText))
+        {
+            <strong class="pricebook-name">@priceBook.ContentItem.DisplayText</strong>
+            if (priceBook.ContentItem.As<PriceBookPart>().StandardPriceBook)
+            {
+                <span>(Standard Price Book)</span>
+            }
+
+            var priceBookEntries = Model.PriceBookEntries
+                .Where(pbe => pbe.ContentItem.As<ContainedPart>().ListContentItemId == priceBook.ContentItem.ContentItemId);
+            if (priceBookEntries.Any())
+            {
+                foreach (var priceBookEntry in priceBookEntries)
+                {
+                    var prefix = priceBookEntry.ContentItem.ContentItemId;
+
+                    dynamic priceBookEntryEditor = await ContentItemDisplayManager
+                        .BuildEditorAsync(priceBookEntry.ContentItem, Model.Updater, false, "", prefix);
+
+                    priceBookEntryEditor.Metadata.Alternates.Add(priceBookEntryEditorShapeAlternate);
+
+                    // Remove Shapes (since it is not prefixed, would cause the product to become a child)
+                    priceBookEntryEditor.Content.Remove("ListPart_ContainerId");
+
+                    @await DisplayAsync(priceBookEntryEditor)
+
+                    <input type="hidden" asp-for="Prefixes" value="@prefix" />
+                    <input type="hidden" asp-for="PriceBookContentItemIds" value="@priceBook.ContentItem.ContentItemId" />
+                }
+            }
+            else
+            {
+                var newPriceBookEntry = await ContentManager.NewAsync("PriceBookEntry");
+
+                // Assign Content Part Defaults
+                newPriceBookEntry.Alter<PriceBookEntryPart>(pbe =>
+                {
+                    pbe.ProductContentItemId = productContentItemId;
+                    pbe.UseStandardPrice = false;
+                });
+                newPriceBookEntry.Alter<ContainedPart>(c =>
+                    c.ListContentItemId = priceBook.ContentItem.ContentItemId);
+
+                var prefix = Guid.NewGuid().ToString("n");
+
+                dynamic newPriceBookEntryEditor = await ContentItemDisplayManager
+                    .BuildEditorAsync(newPriceBookEntry, Model.Updater, true, "", prefix);
+
+                newPriceBookEntryEditor.Metadata.Alternates.Add(priceBookEntryEditorShapeAlternate);
+
+                // Remove Shapes (since it is not prefixed, would cause the product to become a child)
+                newPriceBookEntryEditor.Content.Remove("ListPart_ContainerId");
+
+                @await DisplayAsync(newPriceBookEntryEditor);
+
+                <input type="hidden" asp-for="Prefixes" value="@prefix" />
+                <input type="hidden" asp-for="PriceBookContentItemIds" value="@priceBook.ContentItem.ContentItemId" />
+            }
+        }
+    }
+    else
+    {
+        <p>@T["Please add in at least one price book in order to set prices on this product."]</p>
+    }
+
+</fieldset>

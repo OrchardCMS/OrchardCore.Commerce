@@ -1,0 +1,27 @@
+@model PriceBookByUserPartViewModel
+@{ 
+    var priceBooksSelectList = Model.PriceBooks?.Select(pb => 
+        new SelectListItem
+        {
+            Value = pb.ContentItem.ContentItemId,
+            Text = pb.ContentItem.DisplayText,
+            Selected = pb.ContentItem.ContentItemId == Model.PriceBookContentItemId
+        }) 
+        ?? Enumerable.Empty<SelectListItem>();
+}
+<div class="form-group" asp-validation-class-for="UserName">
+    <label asp-for="UserName">@T["User Name"] </label>
+    <input asp-for="UserName" class="form-control content-preview-text" />
+    <span asp-validation-for="UserName"></span>
+    <span class="hint">
+        @T["Enter the user name exactly as it appears in users."]
+    </span>       
+</div>
+<div class="form-group" asp-validation-class-for="PriceBookContentItemId">
+    <label asp-for="PriceBookContentItemId">@T["Price Book"] </label>
+    <select asp-for="PriceBookContentItemId" class="form-control content-preview-select" asp-items="@priceBooksSelectList"/>
+    <span asp-validation-for="PriceBookContentItemId"></span>
+    <span class="hint">
+        @T["Select the price book this user will be presented pricing from."]
+    </span>
+</div>

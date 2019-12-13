@@ -1,0 +1,42 @@
+@model PriceBookEntryPartViewModel
+
+@if (ViewBag.PriceBookEntryHideProduct ?? false)
+{
+    <input asp-for="ProductContentItemId" type="hidden" value="@Model.ProductContentItemId" />
+}
+else
+{
+    if (Model.Product != null)
+    {
+        <div class="form-group">
+            <label asp-for="ProductContentItemId">@Model.Product.ContentItem.DisplayText</label>
+            <input asp-for="ProductContentItemId" type="hidden" value="@Model.ProductContentItemId" />
+        </div>
+    }
+    else
+    {
+        <div class="form-group">
+            <label asp-for="ProductContentItemId">@T["Product Content Item Id"]</label>
+            <input asp-for="ProductContentItemId" class="form-control content-preview-text" />
+        </div>
+    }
+}
+
+@if (!Model.StandardPriceBook)
+{
+    <div class="form-group" asp-validation-class-for="UseStandardPrice">
+        <span class="switch">
+            <input asp-for="UseStandardPrice" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.UseStandardPrice" />
+            <label asp-for="UseStandardPrice">@T["Use Standard Price"]</label>
+        </span>
+        <span asp-validation-for="UseStandardPrice"></span>
+        <br />
+        <span class="hint">
+            @T["Toggle to utilize the price from the 'standard price book'."]
+        </span>
+    </div>
+}
+else
+{
+    <input asp-for="UseStandardPrice" type="hidden" value="false" />
+}

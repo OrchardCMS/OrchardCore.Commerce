@@ -1,0 +1,15 @@
+@model PriceBookProductPartDisplayViewModel
+
+@if (Model.PriceBookPrices.Any())
+{
+    <h4>@T["Pricing by Price Book"]</h4>
+    @foreach (var priceBookPrice in Model.PriceBookPrices)
+    {
+        <strong class="pricebook-name">@priceBookPrice.PriceBook.ContentItem.DisplayText</strong>
+        <span class="product-price">@priceBookPrice.Price.ToString()</span>
+    }
+}
+else
+{
+    <p>@T["Please add in at least one price book in order to set prices on this product."]</p>
+}

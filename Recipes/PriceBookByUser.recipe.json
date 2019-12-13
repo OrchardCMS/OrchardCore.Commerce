@@ -1,0 +1,56 @@
+{
+  "name": "PriceBookByUser",
+  "displayName": "Price Book by User",
+  "description": "Adds in a Price Book by User Rule.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "price book" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Commerce",
+        "OrchardCore.Commerce.PriceBooks"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentParts": [
+      ],
+      "ContentTypes": [
+        {
+          "Name": "PriceBookByUser",
+          "DisplayName": "Price Book by User",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "False",
+            "Versionable": "True",
+            "Listable": "False",
+            "Securable": "True",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "PriceBookByUserPart",
+              "Name": "PriceBookByUserPart",
+              "Settings": {
+                "Position": "0"
+              }
+            },
+            {
+              "PartName": "PriceBookRulePart",
+              "Name": "PriceBookRulePart",
+              "Settings": {
+                "Position": "1"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
