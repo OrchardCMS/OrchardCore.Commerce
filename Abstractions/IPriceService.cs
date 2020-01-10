@@ -14,5 +14,7 @@ namespace OrchardCore.Commerce.Abstractions
         /// </summary>
         /// <param name="items">The quantities and products to which prices must be added.</param>
         Task AddPrices(IList<ShoppingCartItem> items);
+
+        Dictionary<string, decimal> BuildVariantPrices(IEnumerable<string> keys, PricePart part);
     }
 }
