@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -14,14 +11,10 @@ namespace OrchardCore.Commerce.Drivers
     public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     {
         private readonly IMoneyService _moneyService;
-        private readonly IProductAttributeService _productAttributeService;
-        private readonly IPriceService _priceService;
 
-        public PricePartDisplayDriver(IMoneyService moneyService, IProductAttributeService productAttributeService, IPriceService priceService)
+        public PricePartDisplayDriver(IMoneyService moneyService)
         {
             _moneyService = moneyService;
-            _productAttributeService = productAttributeService;
-            _priceService = priceService;
         }
 
         public override IDisplayResult Display(PricePart pricePart)
@@ -44,9 +37,7 @@ namespace OrchardCore.Commerce.Drivers
             var updateModel = new PricePartViewModel();
             await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceValue);
             await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceCurrency);
-            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.VariantsPrices);
             model.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
-            model.VariantsPrices = updateModel.VariantsPrices;
 
             return Edit(model);
         }
@@ -60,8 +51,6 @@ namespace OrchardCore.Commerce.Drivers
             model.PriceCurrency = part.Price.Currency?.CurrencyIsoCode ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
             model.PricePart = part;
             model.Currencies = _moneyService.Currencies;
-
-            model.VariantsPrices = _priceService.BuildVariantPrices(_productAttributeService.GetProductAttributesCombinations(part.ContentItem), part);
 
             return Task.CompletedTask;
         }

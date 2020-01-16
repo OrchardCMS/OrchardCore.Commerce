@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Money;
 using Money.Abstractions;
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 
@@ -12,7 +11,6 @@ namespace OrchardCore.Commerce.ViewModels
     {
         public decimal PriceValue { get; set; }
         public string PriceCurrency { get; set; }
-        public Dictionary<string, decimal> VariantsPrices { get; set; }
 
         public IEnumerable<ICurrency> Currencies { get; set; }
 

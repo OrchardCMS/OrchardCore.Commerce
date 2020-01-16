@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Money;
 using OrchardCore.ContentManagement;
 
@@ -10,7 +9,5 @@ namespace OrchardCore.Commerce.Models
     public class PricePart : ContentPart
     {
         public Amount Price { get; set; }
-
-        public Dictionary<string, decimal> VariantsPrices { get; set; }
     }
 }
