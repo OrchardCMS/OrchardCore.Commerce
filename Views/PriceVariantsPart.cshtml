@@ -1,0 +1,18 @@
+@model PriceVariantsPartViewModel
+
+@if (Model.Variants != null && Model.Variants.Count > 0)
+{
+    <div class="product-price-variants">
+        Prices:
+        <ul>
+            @foreach (var variant in Model.Variants)
+            {
+                <li>@variant.Key - @variant.Value.ToString()</li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div class="product-price">@Model.BasePrice.ToString()</div>
+}

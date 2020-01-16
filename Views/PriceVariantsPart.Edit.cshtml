@@ -1,0 +1,49 @@
+@model PriceVariantsPartViewModel
+
+<div class="form-group" asp-validation-class-for="BasePrice">
+    <label asp-for="BasePrice">@T["Base Price"] </label>
+    <div class="input-group">
+        <input type="hidden" class="base-price-hidden-value" />
+        <input asp-for="BasePriceValue" class="form-control text-muted base-price-value" />
+        <div class="input-group-append">
+            <select asp-for="PriceCurrency"
+                    asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
+        </div>
+    </div>
+    <span asp-validation-for="BasePriceValue"></span>
+    <span class="hint">
+        @T["The base price of the product."]
+    </span>
+</div>
+
+<h3>Price variants</h3>
+
+<div class="row">
+    @foreach (var variantKey in Model.VariantsValues.Keys)
+    {
+        <div class="col-md-3">
+            <div class="form-group" asp-validation-class-for="VariantsValues[variantKey]">
+                <label asp-for="VariantsValues[variantKey]">@variantKey @T["Price"] </label>
+                <div class="input-group">
+                    <input asp-for="VariantsValues[variantKey]" class="form-control text-muted variant-price-value" />
+                </div>
+                <span asp-validation-for="VariantsValues[variantKey]"></span>
+            </div>
+        </div>
+    }
+</div>
+
+<script at="Foot">
+    $(function () {
+        $('.base-price-hidden-value').val($('.base-price-value').val());
+        $('.base-price-value').on('change', function (e) {
+            var newBaseValue = $(this).val();
+            var hiddenValue = $('.base-price-hidden-value').val();
+            $('.variant-price-value').each(function () {
+                var variantValue = $(this).val();
+                if (variantValue == hiddenValue) $(this).val(newBaseValue);
+            });
+            $('.base-price-hidden-value').val(newBaseValue);
+        });
+    });
+</script>

@@ -50,6 +50,7 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
             services.AddScoped<IProductAttributeProvider, ProductAttributeProvider>();
             services.AddScoped<IProductAttributeService, ProductAttributeService>();
+            services.AddScoped<IPredefinedValuesProductAttributeService, PredefinedValuesProductAttributeService>();
             // Price
             services.AddScoped<IDataMigration, PriceMigrations>();
             services.AddScoped<IContentPartHandler, PricePartHandler>();
@@ -58,6 +59,13 @@ namespace OrchardCore.Commerce
             services.AddScoped<IPriceProvider, PriceProvider>();
             services.AddScoped<IPriceService, PriceService>();
             services.AddScoped<IPriceSelectionStrategy, LowestPriceStrategy>();
+            // Price Variants
+            services.AddScoped<IDataMigration, PriceVariantsMigrations>();
+            services.AddScoped<IContentPartHandler, PriceVariantsPartHandler>();
+            services.AddScoped<IContentPartDisplayDriver, PriceVariantsPartDisplayDriver>();
+            services.AddContentPart<PriceVariantsPart>();
+            services.AddScoped<IPriceProvider, PriceVariantProvider>();
+            services.AddScoped<IPriceVariantsService, PriceVariantsService>();
             // Currency
             services.AddScoped<ICurrencyProvider, CurrencyProvider>();
             services.AddScoped<IMoneyService, MoneyService>();
