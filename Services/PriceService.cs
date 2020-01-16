@@ -25,5 +25,14 @@ namespace OrchardCore.Commerce.Services
                 await priceProvider.AddPrices(items);
             }
         }
+
+        public Dictionary<string, decimal> BuildVariantPrices(IEnumerable<string> keys, PricePart part)
+        {
+            return keys.Select(key =>
+            {
+                if (part.VariantsPrices != null && part.VariantsPrices.ContainsKey(key)) return part.VariantsPrices.FirstOrDefault(x => x.Key == key);
+                else return new KeyValuePair<string, decimal>(key, part.Price.Value);
+            }).ToDictionary(x => x.Key, x => x.Value);
+        }
     }
 }

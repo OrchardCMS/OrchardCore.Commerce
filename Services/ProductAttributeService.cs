@@ -59,6 +59,26 @@ namespace OrchardCore.Commerce.Services
                     .Where(description => description.Field != null);
         }
 
+        public IEnumerable<IEnumerable<string>> GetProductAttributesPredefinedValues(ContentItem product)
+        {
+            return GetProductAttributeFields(product).Select(x =>
+                {
+                    if (x.Settings is TextProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues)
+                    {
+                        return textSettings.PredefinedValues.ToList();
+                    }
+                    return null;
+                })
+                .Where(x => x != null)
+                .ToList();
+        }
+
+        public IEnumerable<string> GetProductAttributesCombinations(ContentItem product)
+        {
+            return CartesianProduct(GetProductAttributesPredefinedValues(product))
+                .Select(x => string.Join("-", x));
+        }
+
         private IDictionary<string, Type> GetProductAttributeFieldTypes()
             => _contentOptions
             .Value.ContentFieldOptions
@@ -75,6 +95,18 @@ namespace OrchardCore.Commerce.Services
                     nameof(ProductAttributeField<TextProductAttributeFieldSettings>.GetSettings),
                     BindingFlags.Instance | BindingFlags.Public)
                 ?.Invoke(field, new[] { partFieldDefinition }) as ProductAttributeFieldSettings;
+        }
+
+        private IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
+        {
+            IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };
+            return sequences.Aggregate(
+                emptyProduct,
+                (accumulator, sequence) =>
+                    from accseq in accumulator
+                    from item in sequence
+                    select accseq.Concat(new[] { item })
+                );
         }
     }
 }

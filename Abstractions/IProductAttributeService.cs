@@ -7,5 +7,7 @@ namespace OrchardCore.Commerce.Abstractions
     public interface IProductAttributeService
     {
         IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product);
+        IEnumerable<IEnumerable<string>> GetProductAttributesPredefinedValues(ContentItem product);
+        IEnumerable<string> GetProductAttributesCombinations(ContentItem product);
     }
 }
