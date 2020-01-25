@@ -6,7 +6,7 @@ namespace OrchardCore.Commerce.Abstractions
 {
     public interface IPredefinedValuesProductAttributeService
     {
-        IEnumerable<IEnumerable<string>> GetProductAttributesPredefinedValues(ContentItem product);
+        IEnumerable<IEnumerable<object>> GetProductAttributesPredefinedValues(ContentItem product);
         IEnumerable<string> GetProductAttributesCombinations(ContentItem product);
     }
 }

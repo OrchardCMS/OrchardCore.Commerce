@@ -18,11 +18,11 @@ namespace OrchardCore.Commerce.Services
             _productAttributeService = productAttributeService;
         }
 
-        public IEnumerable<IEnumerable<string>> GetProductAttributesPredefinedValues(ContentItem product)
+        public IEnumerable<IEnumerable<object>> GetProductAttributesPredefinedValues(ContentItem product)
         {
             return _productAttributeService.GetProductAttributeFields(product)
-                .Where(x => x.Settings is TextProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues)
-                .Select(x => (x.Settings as TextProductAttributeFieldSettings).PredefinedValues.ToList())
+                .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues)
+                .Select(x => (x.Settings as IPredefinedValuesProductAttributeFieldSettings).PredefinedValues.ToList())
                 .ToList();
         }
 

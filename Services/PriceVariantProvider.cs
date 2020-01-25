@@ -36,8 +36,8 @@ namespace OrchardCore.Commerce.Services
                     {
                         if (priceVariantsPart.Variants != null)
                         {
-                            var tpavs = item.Attributes.Where(x => x is TextProductAttributeValue ta).Cast<TextProductAttributeValue>();
-                            var variantKey = string.Join("-", tpavs.Select(x => x.Value.FirstOrDefault()).Where(x => x != null));
+                            var tpavs = item.Attributes.Where(x => x is IPredefinedValuesProductAttributeValue ta).Cast<IPredefinedValuesProductAttributeValue>();
+                            var variantKey = string.Join("-", tpavs.Select(x => x.UntypedPredefinedValue).Where(x => x != null));
                             if (priceVariantsPart.Variants.ContainsKey(variantKey))
                             {
                                 item.Prices.Add(new Money.Amount(priceVariantsPart.Variants[variantKey], priceVariantsPart.BasePrice.Currency));
