@@ -1,0 +1,22 @@
+@model PriceVariantsPartViewModel
+
+<h3>Price variants</h3>
+
+<div class="row">
+    @foreach (var variantKey in Model.VariantsValues.Keys)
+    {
+        <div class="col-md-3">
+            <div class="form-group" asp-validation-class-for="VariantsValues[variantKey]">
+                <label asp-for="VariantsValues[variantKey]">@variantKey @T["Price"] </label>
+                <div class="input-group">
+                    <input asp-for="VariantsValues[variantKey]" class="form-control text-muted variant-price-value" />
+                    <div class="input-group-append">
+                        <select asp-for="VariantsCurrencies[variantKey]"
+                                asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
+                    </div>
+                </div>
+                <span asp-validation-for="VariantsValues[variantKey]"></span>
+            </div>
+        </div>
+    }
+</div>

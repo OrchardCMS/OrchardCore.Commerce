@@ -7,7 +7,7 @@ using OrchardCore.Commerce.Abstractions;
 namespace OrchardCore.Commerce.ProductAttributeValues
 {
 
-    public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<string>>
+    public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<string>>, IPredefinedValuesProductAttributeValue<string>
     {
         public TextProductAttributeValue(string attributeName, IEnumerable<string> value)
             : base(attributeName, value) { }
@@ -27,5 +27,9 @@ namespace OrchardCore.Commerce.ProductAttributeValues
             => Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
 
         public override string ToString() => AttributeName + ": " + String.Join(", ", Value);
+
+        public object UntypedPredefinedValue => PredefinedValue;
+
+        public string PredefinedValue => Value?.FirstOrDefault();
     }
 }
