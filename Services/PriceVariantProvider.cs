@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
@@ -14,10 +15,12 @@ namespace OrchardCore.Commerce.Services
     public class PriceVariantProvider : IPriceProvider
     {
         private readonly IProductService _productService;
+        private readonly IMoneyService _moneyService;
 
-        public PriceVariantProvider(IProductService productService)
+        public PriceVariantProvider(IProductService productService, IMoneyService moneyService)
         {
             _productService = productService;
+            _moneyService = moneyService;
         }
 
         public int Order => 1;
@@ -40,12 +43,12 @@ namespace OrchardCore.Commerce.Services
                             var variantKey = string.Join("-", tpavs.Select(x => x.UntypedPredefinedValue).Where(x => x != null));
                             if (priceVariantsPart.Variants.ContainsKey(variantKey))
                             {
-                                item.Prices.Add(new Money.Amount(priceVariantsPart.Variants[variantKey], priceVariantsPart.BasePrice.Currency));
+                                item.Prices.Add(priceVariantsPart.Variants[variantKey]);
                                 continue;
                             }
                         }
 
-                        item.Prices.Add(priceVariantsPart.BasePrice);
+                        item.Prices.Add(new Amount(0, _moneyService.DefaultCurrency));
                     }
                 }
             }

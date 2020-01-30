@@ -41,11 +41,9 @@ namespace OrchardCore.Commerce.Drivers
         public override async Task<IDisplayResult> UpdateAsync(PriceVariantsPart model, IUpdateModel updater)
         {
             var updateModel = new PriceVariantsPartViewModel();
-            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.BasePriceValue);
-            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceCurrency);
             await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.VariantsValues);
-            model.BasePrice = _moneyService.Create(updateModel.BasePriceValue, updateModel.PriceCurrency);
-            model.Variants = updateModel.VariantsValues;
+            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.VariantsCurrencies);
+            model.Variants = updateModel.VariantsValues.ToDictionary(x => x.Key, x => _moneyService.Create(x.Value, updateModel.VariantsCurrencies[x.Key]));
 
             return Edit(model);
         }
@@ -54,15 +52,12 @@ namespace OrchardCore.Commerce.Drivers
         {
             model.ContentItem = part.ContentItem;
 
-            var priceCurrency = part.BasePrice.Currency ?? _moneyService.DefaultCurrency;
-            model.BasePrice = part.BasePrice;
-            model.BasePriceValue = part.BasePrice.Value;
-            model.PriceCurrency = priceCurrency.CurrencyIsoCode;
             model.PriceVariantsPart = part;
             model.Currencies = _moneyService.Currencies;
 
-            model.VariantsValues = _priceVariantsService.GetPriceVariants(part.ContentItem);
-            model.Variants = model.VariantsValues.ToDictionary(x => x.Key, x => new Amount(x.Value, priceCurrency));
+            model.Variants = _priceVariantsService.GetPriceVariants(part.ContentItem);
+            model.VariantsValues = model.Variants.ToDictionary(x => x.Key, x => x.Value.Value);
+            model.VariantsCurrencies = model.Variants.ToDictionary(x => x.Key, x => x.Value.Currency.CurrencyIsoCode);
 
             return Task.CompletedTask;
         }

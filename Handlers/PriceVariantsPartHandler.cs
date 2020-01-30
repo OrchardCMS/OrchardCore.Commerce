@@ -16,7 +16,13 @@ namespace OrchardCore.Commerce.Handlers
 
         public override Task LoadingAsync(LoadContentContext context, PriceVariantsPart part)
         {
-            part.BasePrice = _moneyService.EnsureCurrency(part.BasePrice);
+            if (part.Variants != null)
+            {
+                foreach (var variantKey in part.Variants.Keys)
+                {
+                    part.Variants[variantKey] = _moneyService.EnsureCurrency(part.Variants[variantKey]);
+                }
+            }
             return base.LoadingAsync(context, part);
         }
     }

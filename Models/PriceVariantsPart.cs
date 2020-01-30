@@ -9,8 +9,6 @@ namespace OrchardCore.Commerce.Models
     /// </summary>
     public class PriceVariantsPart : ContentPart
     {
-        public Amount BasePrice { get; set; }
-
-        public Dictionary<string, decimal> Variants { get; set; }
+        public Dictionary<string, Amount> Variants { get; set; }
     }
 }
