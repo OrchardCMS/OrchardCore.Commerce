@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Services
@@ -19,18 +16,13 @@ namespace OrchardCore.Commerce.Services
         }
 
         public IEnumerable<IEnumerable<object>> GetProductAttributesPredefinedValues(ContentItem product)
-        {
-            return _productAttributeService.GetProductAttributeFields(product)
-                .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues)
+            => GetProductAttributesRestrictedToPredefinedValues(product)
                 .Select(x => (x.Settings as IPredefinedValuesProductAttributeFieldSettings).PredefinedValues.ToList())
                 .ToList();
-        }
 
         public IEnumerable<string> GetProductAttributesCombinations(ContentItem product)
-        {
-            return CartesianProduct(GetProductAttributesPredefinedValues(product))
-                .Select(x => string.Join("-", x));
-        }
+            => CartesianProduct(GetProductAttributesPredefinedValues(product))
+                .Select(x => String.Join("-", x));
 
         private IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
         {
@@ -43,5 +35,10 @@ namespace OrchardCore.Commerce.Services
                     select accseq.Concat(new[] { item })
                 );
         }
+
+        public IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product)
+            => _productAttributeService
+                .GetProductAttributeFields(product)
+                .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues);
     }
 }

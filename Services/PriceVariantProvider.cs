@@ -1,10 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Services
@@ -15,12 +14,12 @@ namespace OrchardCore.Commerce.Services
     public class PriceVariantProvider : IPriceProvider
     {
         private readonly IProductService _productService;
-        private readonly IMoneyService _moneyService;
+        private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
 
-        public PriceVariantProvider(IProductService productService, IMoneyService moneyService)
+        public PriceVariantProvider(IProductService productService, IPredefinedValuesProductAttributeService predefinedValuesService)
         {
             _productService = productService;
-            _moneyService = moneyService;
+            _predefinedValuesService = predefinedValuesService;
         }
 
         public int Order => 1;
@@ -39,16 +38,24 @@ namespace OrchardCore.Commerce.Services
                     {
                         if (priceVariantsPart.Variants != null)
                         {
-                            var tpavs = item.Attributes.Where(x => x is IPredefinedValuesProductAttributeValue ta).Cast<IPredefinedValuesProductAttributeValue>();
-                            var variantKey = string.Join("-", tpavs.Select(x => x.UntypedPredefinedValue).Where(x => x != null));
+                            var attributesRestrictedToPredefinedValues = _predefinedValuesService
+                                .GetProductAttributesRestrictedToPredefinedValues(product.ContentItem)
+                                .Select(attr => attr.PartName + "." + attr.Name)
+                                .ToHashSet();
+                            var predefinedAttributes = item.Attributes
+                                .Where(x => attributesRestrictedToPredefinedValues.Contains(x.AttributeName) && x is IPredefinedValuesProductAttributeValue ta)
+                                .Cast<IPredefinedValuesProductAttributeValue>();
+                            var variantKey = String.Join(
+                                "-",
+                                predefinedAttributes
+                                    .Select(attr => attr.UntypedPredefinedValue)
+                                    .Where(value => value != null));
                             if (priceVariantsPart.Variants.ContainsKey(variantKey))
                             {
                                 item.Prices.Add(priceVariantsPart.Variants[variantKey]);
                                 continue;
                             }
                         }
-
-                        item.Prices.Add(new Amount(0, _moneyService.DefaultCurrency));
                     }
                 }
             }

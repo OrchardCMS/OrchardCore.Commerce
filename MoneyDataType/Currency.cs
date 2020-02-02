@@ -58,6 +58,8 @@ namespace Money
 
         public CultureInfo Culture { get; }
 
+        public static Currency UnspecifiedCurrency = new Currency("Unspecified", "---", "---");
+
         public bool Equals(ICurrency other) => other != null && CurrencyIsoCode.Equals(other.CurrencyIsoCode, StringComparison.InvariantCultureIgnoreCase);
 
         public override bool Equals(object obj) => obj != null && obj is ICurrency other && Equals(other);
