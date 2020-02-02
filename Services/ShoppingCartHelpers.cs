@@ -134,14 +134,14 @@ namespace OrchardCore.Commerce.Services
             }
             var cart = JsonSerializer.Deserialize<List<ShoppingCartItem>>(serializedCart);
             // Actualize prices
-            foreach (ShoppingCartItem item in cart)
+            foreach (var item in cart)
             {
-                var actualizedPrices = new List<Amount>(item.Prices.Count);
-                foreach (Amount price in item.Prices)
+                if (item.Prices != null && item.Prices.Any())
                 {
-                    actualizedPrices.Add(_moneyService.EnsureCurrency(price));
+                    item.Prices = item.Prices
+                        .Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price)))
+                        .ToList();
                 }
-                item.Prices = actualizedPrices;
             }
             // Post-process attributes for concrete types according to field definitions
             // (deserialization being essentially non-polymorphic and without access to our type definition

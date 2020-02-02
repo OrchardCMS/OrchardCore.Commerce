@@ -58,7 +58,7 @@ namespace OrchardCore.Commerce
             services.AddContentPart<PricePart>();
             services.AddScoped<IPriceProvider, PriceProvider>();
             services.AddScoped<IPriceService, PriceService>();
-            services.AddScoped<IPriceSelectionStrategy, LowestPriceStrategy>();
+            services.AddScoped<IPriceSelectionStrategy, SimplePriceStrategy>();
             // Price Variants
             services.AddScoped<IDataMigration, PriceVariantsMigrations>();
             services.AddScoped<IContentPartHandler, PriceVariantsPartHandler>();

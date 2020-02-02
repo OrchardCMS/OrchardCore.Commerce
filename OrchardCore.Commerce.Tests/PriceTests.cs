@@ -31,7 +31,10 @@ namespace OrchardCore.Commerce.Tests
             foreach (var item in cart)
             {
                 Assert.Single(item.Prices);
-                Assert.Equal(item.Prices.Single().Value, (await productService.GetProduct(item.ProductSku)).ContentItem.As<PricePart>().Price.Value, 2);
+                Assert.Equal(
+                    item.Prices.Single().Price.Value,
+                    (await productService.GetProduct(item.ProductSku)).ContentItem.As<PricePart>().Price.Value,
+                    precision: 2);
             }
         }
 
@@ -49,10 +52,23 @@ namespace OrchardCore.Commerce.Tests
             var cart = new List<ShoppingCartItem> { item };
             await priceService.AddPrices(cart);
             Assert.Collection(item.Prices,
-                p => Assert.Equal(1.0m, p.Value),
-                p => Assert.Equal(2.0m, p.Value),
-                p => Assert.Equal(3.0m, p.Value),
-                p => Assert.Equal(4.0m, p.Value));
+                p => Assert.Equal(1.0m, p.Price.Value),
+                p => Assert.Equal(2.0m, p.Price.Value),
+                p => Assert.Equal(3.0m, p.Price.Value),
+                p => Assert.Equal(4.0m, p.Price.Value));
+        }
+
+        [Fact]
+        public void SimplePriceStrategySelectsLowestPriceForHighestStrategy()
+        {
+            var strategy = new SimplePriceStrategy();
+            Amount selected = strategy.SelectPrice(new List<PrioritizedPrice> {
+                new PrioritizedPrice(0, new Amount(10, Currency.USDollar)),
+                new PrioritizedPrice(1, new Amount(12, Currency.USDollar)),
+                new PrioritizedPrice(1, new Amount(11, Currency.USDollar))
+            });
+
+            Assert.Equal(11, selected.Value);
         }
 
         private static ProductPart BuildProduct(string sku, decimal price)
@@ -96,7 +112,7 @@ namespace OrchardCore.Commerce.Tests
             {
                 foreach (var item in items)
                 {
-                    item.Prices.Add(new Amount(Price, Currency.USDollar));
+                    item.Prices.Add(new PrioritizedPrice(0, new Amount(Price, Currency.USDollar)));
                 }
                 return Task.CompletedTask;
             }

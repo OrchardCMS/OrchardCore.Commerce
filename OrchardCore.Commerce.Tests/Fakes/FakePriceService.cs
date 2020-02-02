@@ -13,7 +13,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
             var i = 0;
             foreach (ShoppingCartItem item in items)
             {
-                item.Prices.Add(new Amount(42 + i++, Currency.USDollar));
+                item.Prices.Add(new PrioritizedPrice(0, new Amount(42 + i++, Currency.USDollar)));
             }
             return Task.CompletedTask;
         }

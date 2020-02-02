@@ -52,7 +52,7 @@ namespace OrchardCore.Commerce.Services
                                     .Where(value => value != null));
                             if (priceVariantsPart.Variants.ContainsKey(variantKey))
                             {
-                                item.Prices.Add(priceVariantsPart.Variants[variantKey]);
+                                item.Prices.Add(new PrioritizedPrice(1, priceVariantsPart.Variants[variantKey]));
                                 continue;
                             }
                         }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Serialization;
 
@@ -22,13 +21,13 @@ namespace OrchardCore.Commerce.Models
             int quantity,
             string productSku,
             ISet<IProductAttributeValue> attributes = null,
-            IList<Amount> prices = null)
+            IList<PrioritizedPrice> prices = null)
         {
             if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
             Quantity = quantity;
             ProductSku = productSku ?? throw new ArgumentNullException(nameof(productSku));
             Attributes = attributes ?? new HashSet<IProductAttributeValue>();
-            Prices = prices ?? new List<Amount>();
+            Prices = prices ?? new List<PrioritizedPrice>();
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace OrchardCore.Commerce.Models
         /// <summary>
         /// The available prices
         /// </summary>
-        public IList<Amount> Prices { get; set; } // Prices don't count in queality and hash codes, so they are safe to mutate
+        public IList<PrioritizedPrice> Prices { get; set; } // Prices don't count in quality and hash codes, so they are safe to mutate
 
         public override bool Equals(object obj)
             => !ReferenceEquals(null, obj)
