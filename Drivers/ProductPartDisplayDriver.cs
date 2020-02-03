@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
@@ -46,6 +47,9 @@ namespace OrchardCore.Commerce.Drivers
             model.ProductPart = part;
 
             model.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
+
+            // TODO: filter out of inventory products here as well when we have inventory management
+            // model.CanBeBought = ...;
 
             return Task.CompletedTask;
         }
