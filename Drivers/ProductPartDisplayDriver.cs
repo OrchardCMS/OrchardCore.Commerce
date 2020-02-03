@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
