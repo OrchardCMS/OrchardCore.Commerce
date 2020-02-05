@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Money.Abstractions;
 
 namespace Money.Serialization
@@ -21,7 +21,6 @@ namespace Money.Serialization
             string symbol = null;
             string iso = null;
             int? dec = null;
-            bool unknown = false;
 
             while (reader.Read())
             {
@@ -40,25 +39,23 @@ namespace Money.Serialization
 
                     case Name:
                         name = reader.ReadAsString();
-                        unknown = true;
                         break;
                     case Symbol:
                         symbol = reader.ReadAsString();
-                        unknown = true;
                         break;
                     case Iso:
                         iso = reader.ReadAsString();
-                        unknown = true;
                         break;
                     case Dec:
                         dec = reader.ReadAsInt32();
-                        unknown = true;
                         break;
                 }
             }
 
-            if (unknown)
+            if (!Currency.IsKnownCurrency(currency.CurrencyIsoCode))
+            {
                 currency = new Currency(name, symbol, iso, dec.GetValueOrDefault(2));
+            }
 
             if (currency is null)
                 throw new InvalidOperationException("Invalid amount format. Must include a currency");

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -48,7 +49,7 @@ namespace OrchardCore.Commerce.Drivers
 
             model.Price = part.Price;
             model.PriceValue = part.Price.Value;
-            model.PriceCurrency = part.Price.Currency?.CurrencyIsoCode ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
+            model.PriceCurrency = part.Price.Currency == Currency.UnspecifiedCurrency ? _moneyService.DefaultCurrency.CurrencyIsoCode : part.Price.Currency.CurrencyIsoCode;
             model.PricePart = part;
             model.Currencies = _moneyService.Currencies;
 

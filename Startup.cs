@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Money;
 using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
@@ -75,6 +76,7 @@ namespace OrchardCore.Commerce
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
         }
     }
 
