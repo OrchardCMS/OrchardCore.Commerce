@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Money.Abstractions;
@@ -34,6 +34,11 @@ namespace Money
                     .Select(c => new Currency(c)).Cast<ICurrency>()
                     .Distinct(new CurrencyEqualityComparer())
                     .ToDictionary(k => k.CurrencyIsoCode, e => e);
+
+                // Make sure the CurrentCulture currency is used for countres with multiple cultures/languages.
+                var currentCultureCurrency = new Currency(CultureInfo.CurrentCulture) as ICurrency;
+                CurrencyTable.Remove(currentCultureCurrency.CurrencyIsoCode);
+                CurrencyTable.Add(currentCultureCurrency.CurrencyIsoCode, currentCultureCurrency);
 
                 CurrencyTable.Add("BTC", new Currency("BitCoin", "₿", "BTC", 8));
             }
