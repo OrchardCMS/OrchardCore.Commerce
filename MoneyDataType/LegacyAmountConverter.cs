@@ -9,6 +9,8 @@ namespace Money.Serialization
         private const string CurrencyName = "currency";
 
         private const string Name = "name";
+        private const string NativeName = "nativename";
+        private const string EnglishName = "englishname";
         private const string Symbol = "symbol";
         private const string Iso = "iso";
         private const string Dec = "dec";
@@ -17,7 +19,8 @@ namespace Money.Serialization
         {
             var val = default(decimal);
             ICurrency currency = null;
-            string name = null;
+            string nativename = null;
+            string englishname = null;
             string symbol = null;
             string iso = null;
             int? dec = null;
@@ -37,8 +40,16 @@ namespace Money.Serialization
                         currency = Currency.FromISOCode(reader.ReadAsString());
                         break;
 
+                    // Kept for backwards compatibility
                     case Name:
-                        name = reader.ReadAsString();
+                        nativename = reader.ReadAsString();
+                        break;
+
+                    case NativeName:
+                        nativename = reader.ReadAsString();
+                        break;
+                    case EnglishName:
+                        englishname = reader.ReadAsString();
                         break;
                     case Symbol:
                         symbol = reader.ReadAsString();
@@ -54,7 +65,7 @@ namespace Money.Serialization
 
             if (!Currency.IsKnownCurrency(currency.CurrencyIsoCode))
             {
-                currency = new Currency(name, symbol, iso, dec.GetValueOrDefault(2));
+                currency = new Currency(nativename, englishname, symbol, iso, dec.GetValueOrDefault(2));
             }
 
             if (currency is null)
@@ -78,8 +89,10 @@ namespace Money.Serialization
             }
             else
             {
-                writer.WritePropertyName(Name);
-                writer.WriteValue(amount.Currency.Name);
+                writer.WritePropertyName(NativeName);
+                writer.WriteValue(amount.Currency.NativeName);
+                writer.WritePropertyName(EnglishName);
+                writer.WriteValue(amount.Currency.EnglishName);
                 writer.WritePropertyName(Symbol);
                 writer.WriteValue(amount.Currency.Symbol);
                 writer.WritePropertyName(Iso);

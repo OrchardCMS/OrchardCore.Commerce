@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using Money;
@@ -35,7 +36,7 @@ namespace OrchardCore.Commerce.Services
             {
                 var defaultIsoCode = _options?.DefaultCurrency;
                 return string.IsNullOrEmpty(defaultIsoCode)
-                    ? Currency.USDollar
+                    ? new Currency(CultureInfo.CurrentCulture)
                     : GetCurrency(_options.DefaultCurrency)
                     ?? Currency.USDollar;
             }

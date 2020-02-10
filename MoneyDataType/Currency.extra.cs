@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Money.Abstractions;
@@ -140,11 +140,18 @@ namespace Money
                 .FirstOrDefault(c => c.CurrencyIsoCode == code);
         }
 
-        public static ICurrency FromName(string name, IEnumerable<ICurrencyProvider> providers = null)
+        public static ICurrency FromNativeName(string name, IEnumerable<ICurrencyProvider> providers = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new System.ArgumentException("Must provide a name", nameof(name));
-            return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.Name == name);
+            return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.NativeName == name);
+        }
+
+        public static ICurrency FromEnglishName(string name, IEnumerable<ICurrencyProvider> providers = null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new System.ArgumentException("Must provide a name", nameof(name));
+            return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.EnglishName == name);
         }
 
         public static ICurrency FromRegion(RegionInfo region, IEnumerable<ICurrencyProvider> providers = null)

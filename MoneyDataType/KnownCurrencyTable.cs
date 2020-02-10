@@ -40,7 +40,7 @@ namespace Money
                 CurrencyTable.Remove(currentCultureCurrency.CurrencyIsoCode);
                 CurrencyTable.Add(currentCultureCurrency.CurrencyIsoCode, currentCultureCurrency);
 
-                CurrencyTable.Add("BTC", new Currency("BitCoin", "₿", "BTC", 8));
+                CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
             }
         }
 
