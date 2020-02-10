@@ -8,7 +8,7 @@
     <div class="input-group">
         <div class="input-group-append">
             <select asp-for="DefaultCurrency"
-                    asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "Name"))"></select>
+                    asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
         </div>
     </div>
 

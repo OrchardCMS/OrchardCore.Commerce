@@ -12,7 +12,7 @@ namespace Money
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public partial struct Currency : ICurrency
     {
-        internal Currency(CultureInfo culture)
+        public Currency(CultureInfo culture)
         {
             if (culture is null)
                 throw new ArgumentNullException(nameof(culture));
@@ -24,16 +24,19 @@ namespace Money
                 throw new ArgumentNullException(nameof(region));
 
             Culture = culture;
-            Name = region.CurrencyNativeName;
+            NativeName = region.CurrencyNativeName;
+            EnglishName = region.CurrencyEnglishName;
             Symbol = region.CurrencySymbol;
             CurrencyIsoCode = region.ISOCurrencySymbol;
             DecimalPlaces = culture.NumberFormat.CurrencyDecimalDigits;
         }
 
-        public Currency(string name, string symbol, string iSOSymbol, int decimalDigits = 2)
+        public Currency(string nativename, string englishname, string symbol, string iSOSymbol, int decimalDigits = 2)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name is required", nameof(name));
+            if (string.IsNullOrWhiteSpace(nativename))
+                throw new ArgumentException("NativeName is required", nameof(nativename));
+            if (string.IsNullOrWhiteSpace(englishname))
+                throw new ArgumentException("EnglishName is required", nameof(englishname));
             if (string.IsNullOrWhiteSpace(symbol))
                 throw new ArgumentException("Symbol is required", nameof(symbol));
             if (string.IsNullOrWhiteSpace(iSOSymbol))
@@ -42,7 +45,8 @@ namespace Money
                 throw new ArgumentOutOfRangeException(nameof(decimalDigits), "Decimal Digits must be greater than or equal to zero");
 
             Culture = null;
-            Name = name;
+            NativeName = nativename;
+            EnglishName = englishname;
             Symbol = symbol;
             CurrencyIsoCode = iSOSymbol;
             DecimalPlaces = decimalDigits;
@@ -52,13 +56,15 @@ namespace Money
 
         public string CurrencyIsoCode { get; }
 
-        public string Name { get; }
+        public string NativeName { get; }
+
+        public string EnglishName { get; }
 
         public string Symbol { get; }
 
         public CultureInfo Culture { get; }
 
-        public static ICurrency UnspecifiedCurrency = new Currency("Unspecified", "---", "---");
+        public static ICurrency UnspecifiedCurrency = new Currency("Unspecified", "Unspecified", "---", "---");
 
         public bool Equals(ICurrency other) => other != null && CurrencyIsoCode.Equals(other.CurrencyIsoCode, StringComparison.InvariantCultureIgnoreCase);
 
