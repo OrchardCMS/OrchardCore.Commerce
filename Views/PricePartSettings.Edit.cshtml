@@ -1,0 +1,27 @@
+@model PricePartSettingsViewModel
+
+    <fieldset class="form-group" asp-validation-class-for="PricePartSettings">
+        <label asp-for="CurrencySelectionMode">@T["Currency selection mode"]</label>
+
+        <div class="input-group">
+            <div class="input-group-append">
+                <select asp-for="CurrencySelectionMode"
+                        asp-items="@(new SelectList(Model.CurrencySelectionModes, "Text", "Value"))"></select>
+            </div>
+        </div>
+
+        <span class="hint">@T["Specifies the currency configuration for this PricePart."]</span>
+
+        @* TODO: MP - Enable the block below when conditional display is done. *@
+            
+        @*<label asp-for="CurrencyIsoCode">@T["Specific currency"]</label>
+
+        <div class="input-group">
+            <div class="input-group-append">
+                <select asp-for="CurrencyIsoCode"
+                        asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
+            </div>
+        </div>
+
+        <span class="hint">@T["Currency used for specific currency selection mode."]</span>*@
+    </fieldset>

@@ -56,6 +56,7 @@ namespace OrchardCore.Commerce
             services.AddScoped<IDataMigration, PriceMigrations>();
             services.AddScoped<IContentPartHandler, PricePartHandler>();
             services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
             services.AddContentPart<PricePart>();
             services.AddScoped<IPriceProvider, PriceProvider>();
             services.AddScoped<IPriceService, PriceService>();
