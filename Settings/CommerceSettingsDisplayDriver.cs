@@ -55,7 +55,11 @@ namespace OrchardCore.Commerce.Settings
                 Initialize<CommerceSettingsViewModel>("CommerceSettings_Edit", model =>
                 {
                     model.DefaultCurrency = section.DefaultCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
-                    model.Currencies = _moneyService.Currencies.Select(c => new SelectListItem(c.CurrencyIsoCode, S[c.EnglishName]));
+                    model.Currencies = _moneyService.Currencies
+                        .OrderBy(c => c.CurrencyIsoCode)
+                        .Select(c => new SelectListItem(
+                            c.CurrencyIsoCode,
+                            $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
                 }).Location("Content:5").OnGroup(GroupId)
             };
 
