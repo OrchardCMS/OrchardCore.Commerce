@@ -31,22 +31,20 @@ namespace OrchardCore.Commerce.Handlers
         {
             part.Price = _moneyService.EnsureCurrency(part.Price);
 
-            GetCurrencySelectionMode(part);
-
             return base.LoadingAsync(context, part);
         }
 
         private void GetCurrencySelectionMode(PricePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "PricePart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => x.PartDefinition.Name == nameof(PricePart));
             var currencySelectionMode = contentTypePartDefinition.GetSettings<PricePartSettings>().CurrencySelectionMode;
 
             part.CurrencySelectionMode = currencySelectionMode;
 
-            if (currencySelectionMode == CurrencySelectionModes.SpecificCurrency)
+            if (currencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency)
             {
-                part.CurrencyIsoCode = contentTypePartDefinition.GetSettings<PricePartSettings>().CurrencyIsoCode;
+                part.CurrencyIsoCode = contentTypePartDefinition.GetSettings<PricePartSettings>().SpecificCurrencyIsoCode;
             }
         }
     }

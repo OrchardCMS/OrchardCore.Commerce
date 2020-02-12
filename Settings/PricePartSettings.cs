@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace OrchardCore.Commerce.Settings
 {
-    public class CurrencySelectionModes
-    {
-        public const string AllCurrencies = "AllCurrencies";
-        public const string DefaultCurrency = "DefaultCurrency";
-        public const string SpecificCurrency = "SpecificCurrency";
-    }
-
+    [JsonObject]
     public class PricePartSettings
     {
-        public string CurrencySelectionMode { get; set; }
-        public string CurrencyIsoCode { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CurrencySelectionModeEnum CurrencySelectionMode { get; set; }
+        public string SpecificCurrencyIsoCode { get; set; }
     }
 }

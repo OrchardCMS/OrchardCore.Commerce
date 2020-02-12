@@ -66,15 +66,11 @@ namespace OrchardCore.Commerce.Drivers
 
             switch (part.CurrencySelectionMode)
             {
-                case CurrencySelectionModes.AllCurrencies:
-                    currencySelectionList = _moneyService.Currencies;
-                    break;
-
-                case CurrencySelectionModes.DefaultCurrency:
+                case CurrencySelectionModeEnum.DefaultCurrency:
                     currencySelectionList = new List<ICurrency>() { _moneyService.DefaultCurrency };
                     break;
 
-                case CurrencySelectionModes.SpecificCurrency:
+                case CurrencySelectionModeEnum.SpecificCurrency:
                     currencySelectionList = new List<ICurrency>() { _moneyService.GetCurrency(part.CurrencyIsoCode) };
                     break;
 

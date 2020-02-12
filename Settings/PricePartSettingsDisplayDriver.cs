@@ -39,13 +39,11 @@ namespace OrchardCore.Commerce.Settings
                 model.CurrencySelectionMode = settings.CurrencySelectionMode;
                 model.CurrencySelectionModes = new List<SelectListItem>()
                 {
-                    new SelectListItem(CurrencySelectionModes.AllCurrencies, S["All Currencies"]),
-                    new SelectListItem(CurrencySelectionModes.DefaultCurrency, S["Default Currency"]),
-
-                    // TODO: MP - Fix view so that currency selector dropdown is only visible when Specific Currency is selected.
-                    //new SelectListItem(CurrencySelectionModes.SpecificCurrency, S["Specific Currency"])
+                    new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), S["All Currencies"]),
+                    new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), S["Default Currency"]),
+                    new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), S["Specific Currency"])
                 };
-                model.CurrencyIsoCode = settings.CurrencyIsoCode;
+                model.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
                 model.Currencies = _moneyService.Currencies
                         .OrderBy(c => c.CurrencyIsoCode)
                         .Select(c => new SelectListItem(
@@ -65,14 +63,14 @@ namespace OrchardCore.Commerce.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.CurrencySelectionMode,
-                m => m.CurrencyIsoCode);
+                m => m.SpecificCurrencyIsoCode);
 
             context.Builder.WithSettings(new PricePartSettings
             {
                 CurrencySelectionMode = model.CurrencySelectionMode,
-                CurrencyIsoCode =
-                    model.CurrencySelectionMode == CurrencySelectionModes.SpecificCurrency
-                        ? model.CurrencyIsoCode : null
+                SpecificCurrencyIsoCode =
+                    model.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
+                        ? model.SpecificCurrencyIsoCode : null
             });
 
             return Edit(contentTypePartDefinition, context.Updater);
