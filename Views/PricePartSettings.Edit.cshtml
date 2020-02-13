@@ -1,0 +1,45 @@
+@model PricePartSettingsViewModel
+
+<fieldset class="form-group" asp-validation-class-for="PricePartSettings">
+    <label asp-for="CurrencySelectionMode">@T["Currency selection mode"]</label>
+
+    <div class="input-group">
+        <div class="input-group-append">
+            <select asp-for="CurrencySelectionMode"
+                    asp-items="@(new SelectList(Model.CurrencySelectionModes, "Text", "Value"))"></select>
+        </div>
+    </div>
+
+    <span class="hint">@T["Specifies the currency configuration for this PricePart."]</span>
+
+    <fieldset class="input-group" id="@Html.IdFor(m => m.SpecificCurrencyIsoCode)-Group">
+        <div class="input-group">
+            <div class="input-group-append">
+                <select asp-for="SpecificCurrencyIsoCode"
+                        asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
+            </div>
+        </div>
+
+        <span class="hint">@T["Currency used for specific currency selection mode."]</span>
+    </fieldset>
+</fieldset>
+
+<script at="Foot">
+$(function () {
+    $(document).ready(function () {
+        SpecificCurrencyGroupVisibility($('#@Html.IdFor(m => m.CurrencySelectionMode)'), $('#@Html.IdFor(m => m.SpecificCurrencyIsoCode)-Group'));
+    });
+
+    $('#@Html.IdFor(m => m.CurrencySelectionMode)').change(function () {
+        SpecificCurrencyGroupVisibility($(this), $('#@Html.IdFor(m => m.SpecificCurrencyIsoCode)-Group'));
+    });
+
+    function SpecificCurrencyGroupVisibility(element, group) {
+        if ('@Html.ValueFor(m => m.SingleSelectionModeEditor)' === element.val()) {
+            group.show();
+        } else {
+            group.hide();
+        }
+    }
+});
+</script>
