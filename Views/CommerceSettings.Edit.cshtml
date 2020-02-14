@@ -13,4 +13,18 @@
     </div>
 
     <span class="hint">@T["The default currency used by the system."]</span>
+
+    <br />
+
+    <label asp-for="CurrentDisplayCurrency">@T["Current display currency"]</label>
+
+    <div class="input-group">
+        <div class="input-group-append">
+            <select asp-for="CurrentDisplayCurrency"
+                    asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
+        </div>
+    </div>
+
+    <span class="hint">@T["The currently used currency for displaying prices to customers."]</span>
+
 </fieldset>

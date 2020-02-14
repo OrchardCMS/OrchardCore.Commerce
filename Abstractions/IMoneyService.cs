@@ -38,6 +38,11 @@ namespace OrchardCore.Commerce.Abstractions
         ICurrency DefaultCurrency { get; }
 
         /// <summary>
+        /// The current currency used for displaying prices to the customer.
+        /// </summary>
+        ICurrency CurrentDisplayCurrency { get; }
+
+        /// <summary>
         /// Returns a new Amount where the currency has been verified to be resolved, or resolved.
         /// </summary>
         /// <param name="amount"></param>

@@ -70,6 +70,11 @@ namespace OrchardCore.Commerce
             // Currency
             services.AddScoped<ICurrencyProvider, CurrencyProvider>();
             services.AddScoped<IMoneyService, MoneyService>();
+
+            // Currency Display Strategies (Enable one of the below implementations).
+            services.AddScoped<ICurrencySelector, NullCurrencySelector>();
+            //services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
+
             // Shopping cart
             services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
             // Settings

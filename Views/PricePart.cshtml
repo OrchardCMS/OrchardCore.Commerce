@@ -1,3 +1,6 @@
 @model PricePartViewModel
 
+@if (Model.CurrentDisplayCurrency.CurrencyIsoCode == Model.PriceCurrency)
+{
 <div class="product-price">@Model.Price.ToString()</div>
+}

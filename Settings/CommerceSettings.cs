@@ -9,5 +9,7 @@ namespace OrchardCore.Commerce.Settings
         /// The default currency ISO code
         /// </summary>
         public string DefaultCurrency { get; set; }
+
+        public string CurrentDisplayCurrency { get; set; }
     }
 }

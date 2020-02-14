@@ -61,6 +61,7 @@ namespace OrchardCore.Commerce.Drivers
             model.PriceValue = part.Price.Value;
             model.PriceCurrency = part.Price.Currency == Currency.UnspecifiedCurrency ? _moneyService.DefaultCurrency.CurrencyIsoCode : part.Price.Currency.CurrencyIsoCode;
             model.PricePart = part;
+            model.CurrentDisplayCurrency = _moneyService.CurrentDisplayCurrency;
 
             return Task.CompletedTask;
         }
