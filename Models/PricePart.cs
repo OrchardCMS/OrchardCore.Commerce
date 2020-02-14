@@ -10,8 +10,5 @@ namespace OrchardCore.Commerce.Models
     public class PricePart : ContentPart
     {
         public Amount Price { get; set; } = new Amount(0, Currency.UnspecifiedCurrency);
-
-        public CurrencySelectionModeEnum CurrencySelectionMode { get; set; }
-        public string CurrencyIsoCode { get; set; }
     }
 }
