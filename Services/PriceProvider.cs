@@ -33,7 +33,7 @@ namespace OrchardCore.Commerce.Services
                     var pricePart = product.ContentItem.As<PricePart>();
                     if (pricePart != null)
                     {
-                        item.Prices.Add(pricePart.Price);
+                        item.Prices.Add(new PrioritizedPrice(0, pricePart.Price));
                     }
                 }
             }

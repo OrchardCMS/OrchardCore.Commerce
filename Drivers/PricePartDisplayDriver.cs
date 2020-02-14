@@ -1,6 +1,10 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Money;
+using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -48,11 +52,35 @@ namespace OrchardCore.Commerce.Drivers
 
             model.Price = part.Price;
             model.PriceValue = part.Price.Value;
-            model.PriceCurrency = part.Price.Currency?.CurrencyIsoCode ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
+            model.PriceCurrency = part.Price.Currency == Currency.UnspecifiedCurrency ? _moneyService.DefaultCurrency.CurrencyIsoCode : part.Price.Currency.CurrencyIsoCode;
             model.PricePart = part;
-            model.Currencies = _moneyService.Currencies;
+
+            model.Currencies = GetCurrencySelectionList(part);
 
             return Task.CompletedTask;
+        }
+
+        private IEnumerable<ICurrency> GetCurrencySelectionList(PricePart part)
+        {
+            IEnumerable<ICurrency> currencySelectionList;
+
+            switch (part.CurrencySelectionMode)
+            {
+                case CurrencySelectionModeEnum.DefaultCurrency:
+                    currencySelectionList = new List<ICurrency>() { _moneyService.DefaultCurrency };
+                    break;
+
+                case CurrencySelectionModeEnum.SpecificCurrency:
+                    currencySelectionList = new List<ICurrency>() { _moneyService.GetCurrency(part.CurrencyIsoCode) };
+                    break;
+
+                default:
+                    // As a fallback show all currencies.
+                    currencySelectionList = _moneyService.Currencies;
+                    break;
+            }
+
+            return currencySelectionList;
         }
     }
 }

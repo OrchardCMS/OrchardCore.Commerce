@@ -13,9 +13,14 @@ namespace Money.Abstractions
         string Symbol { get; }
 
         /// <summary>
-        /// The full name of the currency
+        /// The full native name of the currency
         /// </summary>
-        string Name { get; }
+        string NativeName { get; }
+
+        /// <summary>
+        /// The full english name of the currency
+        /// </summary>
+        string EnglishName { get; }
 
         /// <summary>
         /// The three-letter ISO 4217 code for the currency if it exists

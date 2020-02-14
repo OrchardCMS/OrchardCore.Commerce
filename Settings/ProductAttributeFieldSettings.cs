@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OrchardCore.Commerce.Abstractions;
 
 namespace OrchardCore.Commerce.Settings
 {
@@ -66,7 +67,7 @@ namespace OrchardCore.Commerce.Settings
     /// <summary>
     /// Settings for the text product attribute
     /// </summary>
-    public class TextProductAttributeFieldSettings : ProductAttributeFieldSettings<string>
+    public class TextProductAttributeFieldSettings : ProductAttributeFieldSettings<string>, IPredefinedValuesProductAttributeFieldSettings
     {
         /// <summary>
         /// Whether a value is required
@@ -79,7 +80,7 @@ namespace OrchardCore.Commerce.Settings
         /// <summary>
         /// The set of suggested or allowed values
         /// </summary>
-        public string[] PredefinedValues { get; set; }
+        public IEnumerable<object> PredefinedValues { get; set; }
         /// <summary>
         /// Whether values should be restricted to the set of predefined values
         /// </summary>

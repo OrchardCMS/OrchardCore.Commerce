@@ -1,9 +1,7 @@
-
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
@@ -22,7 +20,7 @@ namespace OrchardCore.Commerce.Serialization
             var quantity = 1;
             string sku = null;
             ISet<IProductAttributeValue> attributes = null;
-            IList<Amount> prices = null;
+            IList<PrioritizedPrice> prices = null;
             while (reader.Read())
             {
                 if (reader.TokenType != JsonTokenType.PropertyName) break;
@@ -39,7 +37,7 @@ namespace OrchardCore.Commerce.Serialization
                         sku = reader.GetString();
                         break;
                     case pricesName:
-                        prices = JsonSerializer.Deserialize<List<Amount>>(ref reader);
+                        prices = JsonSerializer.Deserialize<List<PrioritizedPrice>>(ref reader);
                         break;
                     case attributesName:
                         attributes = new HashSet<IProductAttributeValue>();

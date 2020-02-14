@@ -1,4 +1,5 @@
 using Money;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Models
@@ -8,6 +9,9 @@ namespace OrchardCore.Commerce.Models
     /// </summary>
     public class PricePart : ContentPart
     {
-        public Amount Price { get; set; }
+        public Amount Price { get; set; } = new Amount(0, Currency.UnspecifiedCurrency);
+
+        public CurrencySelectionModeEnum CurrencySelectionMode { get; set; }
+        public string CurrencyIsoCode { get; set; }
     }
 }

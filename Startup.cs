@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Money;
 using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
@@ -50,14 +51,23 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
             services.AddScoped<IProductAttributeProvider, ProductAttributeProvider>();
             services.AddScoped<IProductAttributeService, ProductAttributeService>();
+            services.AddScoped<IPredefinedValuesProductAttributeService, PredefinedValuesProductAttributeService>();
             // Price
             services.AddScoped<IDataMigration, PriceMigrations>();
             services.AddScoped<IContentPartHandler, PricePartHandler>();
             services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
             services.AddContentPart<PricePart>();
             services.AddScoped<IPriceProvider, PriceProvider>();
             services.AddScoped<IPriceService, PriceService>();
-            services.AddScoped<IPriceSelectionStrategy, LowestPriceStrategy>();
+            services.AddScoped<IPriceSelectionStrategy, SimplePriceStrategy>();
+            // Price Variants
+            services.AddScoped<IDataMigration, PriceVariantsMigrations>();
+            services.AddScoped<IContentPartHandler, PriceVariantsPartHandler>();
+            services.AddScoped<IContentPartDisplayDriver, PriceVariantsPartDisplayDriver>();
+            services.AddContentPart<PriceVariantsPart>();
+            services.AddScoped<IPriceProvider, PriceVariantProvider>();
+            services.AddScoped<IPriceVariantsService, PriceVariantsService>();
             // Currency
             services.AddScoped<ICurrencyProvider, CurrencyProvider>();
             services.AddScoped<IMoneyService, MoneyService>();
@@ -67,6 +77,7 @@ namespace OrchardCore.Commerce
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
         }
     }
 

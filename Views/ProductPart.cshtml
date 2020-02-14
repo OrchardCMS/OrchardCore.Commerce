@@ -14,5 +14,5 @@
         <li><shape Type="@attr.Field.GetType().Name" prop-index="@(i++)" prop-attributeDescription="@attr" prop-idPrefix="@id" /></li>
         }
     </ul>
-    <button type="submit" class="btn btn-primary">@T["Add to cart"]</button>
+    <button type="submit" class="btn btn-primary" disabled="@(!Model.CanBeBought)">@T["Add to cart"]</button>
 </form>

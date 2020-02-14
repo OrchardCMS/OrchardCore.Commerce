@@ -18,5 +18,8 @@ namespace OrchardCore.Commerce.ViewModels
 
         [BindNever]
         public IEnumerable<ProductAttributeDescription> Attributes { get; set; }
+
+        [BindNever]
+        public bool CanBeBought { get; set; } = true;
     }
 }

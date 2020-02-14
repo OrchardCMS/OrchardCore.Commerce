@@ -10,6 +10,8 @@ namespace Money
         private const string ValueName = "value";
         private const string CurrencyName = "currency";
         private const string Name = "name";
+        private const string NativeName = "nativename";
+        private const string EnglishName = "englishname";
         private const string Symbol = "symbol";
         private const string Iso = "iso";
         private const string Dec = "dec";
@@ -18,7 +20,8 @@ namespace Money
         {
             var val = default(decimal);
             ICurrency currency = null;
-            string name = null;
+            string nativename = null;
+            string englishname = null;
             string symbol = null;
             string iso = null;
             int? dec = null;
@@ -40,8 +43,18 @@ namespace Money
                         currency = Currency.FromISOCode(reader.GetString());
                         break;
 
+                    // Kept for backwards compatibility
                     case Name:
-                        name = reader.GetString();
+                        nativename = reader.GetString();
+                        unknown = true;
+                        break;
+
+                    case NativeName:
+                        nativename = reader.GetString();
+                        unknown = true;
+                        break;
+                    case EnglishName:
+                        englishname = reader.GetString();
                         unknown = true;
                         break;
                     case Symbol:
@@ -60,7 +73,7 @@ namespace Money
             }
 
             if (unknown)
-                currency = new Currency(name, symbol, iso, dec.GetValueOrDefault(2));
+                currency = new Currency(nativename, englishname, symbol, iso, dec.GetValueOrDefault(2));
 
             if (currency is null)
                 throw new InvalidOperationException("Invalid amount format. Must include a currency");
@@ -81,7 +94,8 @@ namespace Money
             }
             else
             {
-                writer.WriteString(Name, amount.Currency.Name);
+                writer.WriteString(NativeName, amount.Currency.NativeName);
+                writer.WriteString(EnglishName, amount.Currency.EnglishName);
                 writer.WriteString(Symbol, amount.Currency.Symbol);
                 writer.WriteString(Iso, amount.Currency.CurrencyIsoCode);
                 if (amount.Currency.DecimalPlaces != 2)
