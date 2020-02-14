@@ -32,18 +32,23 @@ namespace OrchardCore.Commerce.Drivers
         public override IDisplayResult Edit(PricePart pricePart, BuildPartEditorContext context)
         {
             var pricePartSettings = context.TypePartDefinition.GetSettings<PricePartSettings>();
-            pricePart.CurrencySelectionMode = pricePartSettings.CurrencySelectionMode;
-            pricePart.CurrencyIsoCode = pricePartSettings.SpecificCurrencyIsoCode;
+            
+            return Initialize<PricePartViewModel>(GetEditorShapeType(context), m =>
+            {
+                BuildViewModel(m, pricePart);
 
-            return Initialize<PricePartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, pricePart));
+                // This is only required for the editor. Not the frontend display.
+                m.Currencies = GetCurrencySelectionList(pricePartSettings);
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(PricePart pricePart, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var updateModel = new PricePartViewModel();
-            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceValue);
-            await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceCurrency);
-            pricePart.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
+            if (await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceValue, t => t.PriceCurrency))
+            {
+                pricePart.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
+            }
 
             return Edit(pricePart, context);
         }
@@ -57,23 +62,21 @@ namespace OrchardCore.Commerce.Drivers
             model.PriceCurrency = part.Price.Currency == Currency.UnspecifiedCurrency ? _moneyService.DefaultCurrency.CurrencyIsoCode : part.Price.Currency.CurrencyIsoCode;
             model.PricePart = part;
 
-            model.Currencies = GetCurrencySelectionList(part);
-
             return Task.CompletedTask;
         }
 
-        private IEnumerable<ICurrency> GetCurrencySelectionList(PricePart part)
+        private IEnumerable<ICurrency> GetCurrencySelectionList(PricePartSettings pricePartSettings)
         {
             IEnumerable<ICurrency> currencySelectionList;
 
-            switch (part.CurrencySelectionMode)
+            switch (pricePartSettings.CurrencySelectionMode)
             {
                 case CurrencySelectionModeEnum.DefaultCurrency:
                     currencySelectionList = new List<ICurrency>() { _moneyService.DefaultCurrency };
                     break;
 
                 case CurrencySelectionModeEnum.SpecificCurrency:
-                    currencySelectionList = new List<ICurrency>() { _moneyService.GetCurrency(part.CurrencyIsoCode) };
+                    currencySelectionList = new List<ICurrency>() { _moneyService.GetCurrency(pricePartSettings.SpecificCurrencyIsoCode) };
                     break;
 
                 default:
