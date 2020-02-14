@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -26,9 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Admin.Abstractions" Version="1.0.0-rc1-10802" />
-    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc1-10004" />
-    <PackageReference Include="OrchardCore.Lists" Version="1.0.0-rc1-10802" />
+    <PackageReference Include="OrchardCore.Admin.Abstractions" Version="1.0.0-rc1-11937" />
+    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc1-11937" />
+    <PackageReference Include="OrchardCore.Lists" Version="1.0.0-rc1-11937" />
   </ItemGroup>
 
   <ItemGroup>
