@@ -37,7 +37,7 @@ namespace OrchardCore.Commerce.Services
                         var priceBookPrices = await _priceBookService.GetPriceBookPrices(priceBooks, product);
                         foreach (var priceBookPrice in priceBookPrices)
                         {
-                            item.Prices.Add(priceBookPrice.Price);
+                            item.Prices.Add(new PrioritizedPrice(0, priceBookPrice.Price));
                         }
                     }
                 }
