@@ -23,6 +23,9 @@ namespace OrchardCore.Commerce.Services
 
         private ISession Session => _httpContextAccessor.HttpContext.Session;
 
+        public string GetUniqueCartId(string shoppingCartId)
+            => Session.Id + shoppingCartId;
+
         public async Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null)
         {
             var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? ""));

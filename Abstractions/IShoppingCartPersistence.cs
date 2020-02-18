@@ -8,5 +8,6 @@ namespace OrchardCore.Commerce.Abstractions
     {
         Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null);
         Task Store(IList<ShoppingCartItem> items, string shoppingCartId = null);
+        string GetUniqueCartId(string shoppingCartId);
     }
 }

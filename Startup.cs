@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Money;
 using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
@@ -24,6 +25,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Workflows.Helpers;
 using YesSql.Indexes;
 
 namespace OrchardCore.Commerce
@@ -75,6 +77,7 @@ namespace OrchardCore.Commerce
 
             // Shopping cart
             services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
+            services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
             // Settings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();

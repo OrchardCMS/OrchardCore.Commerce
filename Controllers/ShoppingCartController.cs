@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Money;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Commerce.Controllers
 {
@@ -20,6 +22,7 @@ namespace OrchardCore.Commerce.Controllers
         private readonly IPriceService _priceService;
         private readonly IPriceSelectionStrategy _priceStrategy;
         private readonly IContentManager _contentManager;
+        private readonly IWorkflowManager _workflowManager;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
 
@@ -30,6 +33,7 @@ namespace OrchardCore.Commerce.Controllers
             IPriceService priceService,
             IPriceSelectionStrategy priceStrategy,
             IContentManager contentManager,
+            IWorkflowManager workflowManager,
             INotifier notifier,
             IHtmlLocalizer<ShoppingCartController> localizer)
         {
@@ -39,6 +43,7 @@ namespace OrchardCore.Commerce.Controllers
             _priceService = priceService;
             _priceStrategy = priceStrategy;
             _contentManager = contentManager;
+            _workflowManager = workflowManager;
             _notifier = notifier;
             H = localizer;
         }
@@ -115,6 +120,12 @@ namespace OrchardCore.Commerce.Controllers
                 cart.Add(parsedLine);
             }
             await _shoppingCartPersistence.Store(cart, shoppingCartId);
+            await _workflowManager.TriggerEventAsync(
+                nameof(ProductAddedToCartEvent),
+                new {
+                    LineItem = parsedLine
+                },
+                "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
