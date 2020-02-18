@@ -13,9 +13,12 @@ namespace OrchardCore.Commerce.Abstractions
         Task<IEnumerable<IContent>> GetAllPriceBooks();
         Task<IEnumerable<IContent>> GetPriceBookEntriesByPriceBook(string priceBookContentItemId);
         Task<IEnumerable<IContent>> GetPriceBookEntriesByProduct(string productContentItemId);
+        Task RemovePriceBookEntriesByProduct(string productContentItemId);
 
         Task<IEnumerable<PriceBookPrice>> GetPriceBookPrices(IEnumerable<IContent> priceBooks, ProductPart productPart);
 
         Task<IEnumerable<IContent>> GetPriceBooksFromRules();
+
+        Task<string> GeneratePriceBookEntryTitle(PriceBookEntryPart model, string productTitle);
     }
 }

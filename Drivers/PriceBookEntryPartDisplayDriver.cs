@@ -38,21 +38,15 @@ namespace OrchardCore.Commerce.Drivers
             // Auto set the display text if no TitlePart
             if (!model.ContentItem.Has("TitlePart"))
             {
-                if (model.UseStandardPrice)
-                {
-                    model.ContentItem.DisplayText = string.Format("Product '{0}' using 'Standard Price'",
-                        (await _contentManager.GetAsync(model.ProductContentItemId)).DisplayText);
-                }
-                else
-                {
-                    model.ContentItem.DisplayText = string.Format("Product '{0}' - {1}",
-                        (await _contentManager.GetAsync(model.ProductContentItemId)).DisplayText,
-                        model.ContentItem.As<PricePart>().Price.ToString());
-                }
+                var product = await _contentManager.GetAsync(model.ProductContentItemId);
+                var productTitle = product.DisplayText;
+                model.ContentItem.DisplayText = await _priceBookService.GeneratePriceBookEntryTitle(model, productTitle);
             }
 
             return Edit(model);
         }
+
+        
 
         private async Task BuildViewModel(PriceBookEntryPartViewModel model, PriceBookEntryPart part)
         {

@@ -81,7 +81,17 @@ namespace OrchardCore.Commerce.Services
 
             var priceBookEntryContentItemIds = priceBookEntryPartIndexes
                 .Select(i => i.ContentItemId);
+
             return await _contentManager.GetAsync(priceBookEntryContentItemIds);
+        }
+
+        public async Task RemovePriceBookEntriesByProduct(string productContentItemId)
+        {
+            var priceBookEntryContentItems = await GetPriceBookEntriesByProduct(productContentItemId);
+
+            foreach (var priceBookEntryContentItem in priceBookEntryContentItems) {
+                await _contentManager.RemoveAsync(priceBookEntryContentItem.ContentItem);
+            }
         }
 
 
@@ -169,5 +179,24 @@ namespace OrchardCore.Commerce.Services
             return await _contentManager.GetAsync(priceBookRules.Select(p => p.PriceBookContentItemId));
         }
 
+        public async Task<string> GeneratePriceBookEntryTitle(PriceBookEntryPart model, string productTitle)
+        {
+            if (model.UseStandardPrice)
+            {
+                return $"Product '{ productTitle }' using 'Standard Price'";
+            }
+            else
+            {
+                var pricePart = model.ContentItem.As<PricePart>();
+                if (pricePart != null)
+                {
+                    return $"Product '{ productTitle }' - { pricePart.Price.ToString() }";
+                }
+                else
+                {
+                    return $"Product '{ productTitle }' Pricing";
+                }
+            }
+        }
     }
 }

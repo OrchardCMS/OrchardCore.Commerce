@@ -20,7 +20,7 @@ namespace OrchardCore.Commerce.Services
             _priceBookService = priceBookService;
         }
 
-        public int Order => 1;
+        public int Order => 0; // Keep the same level as the native price book provider so price variants can override
 
         public async Task AddPrices(IList<ShoppingCartItem> items)
         {

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
@@ -21,13 +22,13 @@ namespace OrchardCore.Commerce.Controllers
         private readonly IEnumerable<IPriceBookRuleProvider> _priceBookRuleProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly IDisplayManager<PriceBookRule> _displayManager;
+        private readonly IContentItemDisplayManager _displayManager;
 
         public PriceBookRulesAdminController(
             IEnumerable<IPriceBookRuleProvider> priceBookRuleProviders,
             IAuthorizationService authorizationService,
             ISiteService siteService,
-            IDisplayManager<PriceBookRule> displayManager,
+            IContentItemDisplayManager displayManager,
             IShapeFactory shapeFactory)
         {
             _priceBookRuleProviders = priceBookRuleProviders;
@@ -96,7 +97,7 @@ namespace OrchardCore.Commerce.Controllers
                 model.PriceBookRules.Add(new PriceBookRuleEntry
                 {
                     PriceBookRule = priceBookRule,
-                    Shape = await _displayManager.BuildDisplayAsync(priceBookRule, this, "SummaryAdmin") 
+                    Shape = await _displayManager.BuildDisplayAsync(priceBookRule.ContentItem, this, "SummaryAdmin") 
                 });
             }
 

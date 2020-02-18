@@ -121,6 +121,10 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentPartDisplayDriver, PriceBookProductPartDisplayDriver>();
             services.AddScoped<IContentPartDisplayDriver, PriceBookRulePartDisplayDriver>();
 
+            // Handlers
+            services.AddScoped<IContentPartHandler, PriceBookProductPartHandler>();
+            services.AddScoped<IContentPartHandler, ProductPartForPriceBookHandler>();
+
             // Models
             services.AddSingleton<ContentPart, PriceBookPart>();
             services.AddSingleton<ContentPart, PriceBookEntryPart>();

@@ -1,12 +1,12 @@
 @model dynamic
-@{ 
+@{
     var returnUrl = Context.Request.Path;
 }
 
 <div class="card">
     <div class="card-body">
-        <h4>@T["Price Book by User"]</h4>
-        <p class="hint">@T["Associate a price book with a user."]</p>    
+        <h4>@T["Price Book by Role"]</h4>
+        <p class="hint">@T["Associate a price book with a role."]</p>
     </div>
     <div class="card-footer text-muted text-xs-right">
         <a asp-area="OrchardCore.Contents"

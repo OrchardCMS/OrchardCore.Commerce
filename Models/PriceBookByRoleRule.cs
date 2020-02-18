@@ -23,7 +23,7 @@ namespace OrchardCore.Commerce.Models
 
         public override string PriceBookContentItemId => ContentItem?.ContentItem.As<PriceBookByRolePart>().PriceBookContentItemId;
 
-        public override IContent ContentItem => _priceBookByRolePart?.ContentItem;
+        public override ContentItem ContentItem => _priceBookByRolePart?.ContentItem;
 
         public override bool Applies()
         {

@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +10,10 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Lists.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers
 {
@@ -57,9 +57,9 @@ namespace OrchardCore.Commerce.Drivers
 
         public override IDisplayResult Edit(PriceBookProductPart priceBookProductPart, BuildPartEditorContext context)
         {
-            return Initialize<PriceBookProductPartEditViewModel>("PriceBookProductPart_Edit", async m => 
-                await BuildEditViewModel(m, priceBookProductPart, context.Updater)
-            );
+            return Initialize<PriceBookProductPartEditViewModel>("PriceBookProductPart_Edit", async m =>
+                    await BuildEditViewModel(m, priceBookProductPart, context.Updater)
+                );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(PriceBookProductPart part, UpdatePartEditorContext context)
@@ -72,36 +72,32 @@ namespace OrchardCore.Commerce.Drivers
             }
 
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-
+            
             var model = new PriceBookProductPartEditViewModel();
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            var currentPriceBookEntries = await _priceBookService.GetPriceBookEntriesByProduct(part.ContentItem.ContentItemId);
-
+            // In the handler, these will be converted into permananet Price Book Entries
+            var priceBookEntries = new List<PriceBookEntry>();
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
-                var matchingPriceBookEntry = currentPriceBookEntries
-                    .Where(pbe => pbe.ContentItem.ContentItemId == model.Prefixes[i])
-                    .FirstOrDefault();
+                // Adding in a new Price Book Entry
+                var priceBookEntry = await _contentManager.NewAsync("PriceBookEntry");
+                await contentItemDisplayManager.UpdateEditorAsync(priceBookEntry, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
+                var priceBookEntryPart = priceBookEntry.As<PriceBookEntryPart>();
+                var pricePart = priceBookEntry.As<PricePart>();
 
-                if (matchingPriceBookEntry == null)
+                var priceBookProduct = new PriceBookEntry
                 {
-                    // Adding in a new Price Book Entry
-                    var newPriceBookEntry = await _contentManager.NewAsync("PriceBookEntry");
-                    await contentItemDisplayManager.UpdateEditorAsync(newPriceBookEntry, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
-                    // Because ListPart.ContainerId is not prefixed, need to manually assign
-                    newPriceBookEntry.Alter<ContainedPart>(c => c.ListContentItemId = model.PriceBookContentItemIds[i]);
-                    await _contentManager.PublishAsync(newPriceBookEntry);
-                }
-                else
-                {
-                    // Updating a Price Book Entry
-                    await contentItemDisplayManager.UpdateEditorAsync(matchingPriceBookEntry.ContentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
-                    // Because ListPart.ContainerId is not prefixed, need to manually assign
-                    matchingPriceBookEntry.ContentItem.Alter<ContainedPart>(c => c.ListContentItemId = model.PriceBookContentItemIds[i]);
-                    await _contentManager.UpdateAsync(matchingPriceBookEntry.ContentItem);
-                }
+                    PriceBookEntryContentItemId = model.Prefixes[i],
+                    PriceBookContentItemId = model.PriceBookContentItemIds[i],
+                    UseStandardPrice = priceBookEntryPart.UseStandardPrice,
+                    Price = pricePart.Price
+                };
+
+                priceBookEntries.Add(priceBookProduct);
             }
+
+            part.TemporaryPriceBookEntries = priceBookEntries;
 
             return Edit(part, context);
         }
