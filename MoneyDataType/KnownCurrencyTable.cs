@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Money.Abstractions;
@@ -35,7 +35,7 @@ namespace Money
                     .Distinct(new CurrencyEqualityComparer())
                     .ToDictionary(k => k.CurrencyIsoCode, e => e);
 
-                CurrencyTable.Add("BTC", new Currency("BitCoin", "₿", "BTC", 8));
+                CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
             }
         }
 

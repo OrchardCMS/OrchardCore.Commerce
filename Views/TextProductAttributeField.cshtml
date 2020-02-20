@@ -11,7 +11,7 @@
 
 <label for="@id">@attr.Name</label>
 <input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
-@if (settings.PredefinedValues is null || settings.PredefinedValues.Length == 0)
+@if (settings.PredefinedValues is null || settings.PredefinedValues.Count() == 0)
 {
     <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" class="form-control" />
 }
@@ -30,7 +30,7 @@ else if (settings.MultipleValues)
 }
 else if (settings.RestrictToPredefinedValues)
 {
-    if (settings.PredefinedValues.Length > 5) // Doing radio buttons for less than 5 options
+    if (settings.PredefinedValues.Count() > 5) // Doing radio buttons for less than 5 options
     {
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
             @foreach (string predefinedValue in settings.PredefinedValues)

@@ -10,7 +10,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
     {
         public Task<ContentItem> CloneAsync(ContentItem contentItem) => throw new NotImplementedException();
 
-        public Task CreateAsync(ContentItem contentItem, VersionOptions options) => throw new NotImplementedException();
+        public Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks = false) => throw new System.NotImplementedException();
 
         public Task DiscardDraftAsync(ContentItem contentItem) => throw new NotImplementedException();
 

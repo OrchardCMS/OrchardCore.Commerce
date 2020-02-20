@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.Commerce.Controllers
 {
@@ -18,6 +20,8 @@ namespace OrchardCore.Commerce.Controllers
         private readonly IPriceService _priceService;
         private readonly IPriceSelectionStrategy _priceStrategy;
         private readonly IContentManager _contentManager;
+        private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
 
         public ShoppingCartController(
             IShoppingCartPersistence shoppingCartPersistence,
@@ -25,7 +29,9 @@ namespace OrchardCore.Commerce.Controllers
             IProductService productService,
             IPriceService priceService,
             IPriceSelectionStrategy priceStrategy,
-            IContentManager contentManager)
+            IContentManager contentManager,
+            INotifier notifier,
+            IHtmlLocalizer<ShoppingCartController> localizer)
         {
             _shoppingCartPersistence = shoppingCartPersistence;
             _shoppingCartHelpers = shoppingCartHelpers;
@@ -33,6 +39,8 @@ namespace OrchardCore.Commerce.Controllers
             _priceService = priceService;
             _priceStrategy = priceStrategy;
             _contentManager = contentManager;
+            _notifier = notifier;
+            H = localizer;
         }
 
         [HttpGet]
@@ -86,9 +94,15 @@ namespace OrchardCore.Commerce.Controllers
             ShoppingCartItem parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
             if (parsedLine is null)
             {
-                throw new System.ArgumentException($"Product with SKU {line.ProductSku} not found.", nameof(line));
+                _notifier.Add(NotifyType.Error, H["Product with SKU {0} not found.", line.ProductSku]);
+                return RedirectToAction(nameof(Index), new { shoppingCartId });
             }
             await _priceService.AddPrices(new[] { parsedLine });
+            if (!parsedLine.Prices.Any())
+            {
+                _notifier.Add(NotifyType.Error, H["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
+                return RedirectToAction(nameof(Index), new { shoppingCartId });
+            }
             IList<ShoppingCartItem> cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
             ShoppingCartItem existingItem = _shoppingCartHelpers.GetExistingItem(cart, parsedLine);
             if (existingItem != null)

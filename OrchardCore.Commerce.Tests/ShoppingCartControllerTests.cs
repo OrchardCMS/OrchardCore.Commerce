@@ -55,7 +55,7 @@ namespace OrchardCore.Commerce.Tests
                 ),
                 productService: new FakeProductService(),
                 priceService: new FakePriceService(),
-                priceStrategy: new LowestPriceStrategy(),
+                priceStrategy: new SimplePriceStrategy(),
                 contentManager: new FakeContentManager() 
             );
         }

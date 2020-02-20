@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Handlers
 {
     public class PricePartHandler : ContentPartHandler<PricePart>
     {
-        private IMoneyService _moneyService;
+        private readonly IMoneyService _moneyService;
 
         public PricePartHandler(IMoneyService moneyService)
         {
@@ -17,6 +17,7 @@ namespace OrchardCore.Commerce.Handlers
         public override Task LoadingAsync(LoadContentContext context, PricePart part)
         {
             part.Price = _moneyService.EnsureCurrency(part.Price);
+
             return base.LoadingAsync(context, part);
         }
     }
