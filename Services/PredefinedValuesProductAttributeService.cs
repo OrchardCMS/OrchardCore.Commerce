@@ -40,6 +40,7 @@ namespace OrchardCore.Commerce.Services
             => _productAttributeService
                 .GetProductAttributeFields(product)
                 .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues)
-                .OrderBy(x => $"{x.PartName}.{x.Name}");
+                .OrderBy(x => x.PartName)
+                .ThenBy(x => x.Name);
     }
 }

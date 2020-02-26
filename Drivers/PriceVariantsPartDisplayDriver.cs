@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Money;
@@ -64,16 +65,16 @@ namespace OrchardCore.Commerce.Drivers
             model.PriceVariantsPart = part;
 
             var allVariantsKeys = _predefinedValuesProductAttributeService.GetProductAttributesCombinations(part.ContentItem);
-            model.Variants = part.Variants;
+            model.Variants = part.Variants ?? new Dictionary<string, Amount>();
 
             model.VariantsValues = allVariantsKeys.ToDictionary(x => x,
-                x => model?.Variants?.ContainsKey(x) == true
-                    ? new decimal?(model.Variants[x].Value)
+                x => model.Variants.TryGetValue(x, out var amount)
+                    ? new decimal?(amount.Value)
                     : null);
 
             model.VariantsCurrencies = allVariantsKeys.ToDictionary(x => x,
-                x => model?.Variants?.ContainsKey(x) == true
-                    ? model.Variants[x].Currency.CurrencyIsoCode
+                x => model.Variants.TryGetValue(x, out var amount)
+                    ? amount.Currency.CurrencyIsoCode
                     : Currency.UnspecifiedCurrency.CurrencyIsoCode);
 
             return Task.CompletedTask;

@@ -40,7 +40,7 @@ namespace OrchardCore.Commerce.Services
                         {
                             var attributesRestrictedToPredefinedValues = _predefinedValuesService
                                 .GetProductAttributesRestrictedToPredefinedValues(product.ContentItem)
-                                .Select(attr => $"{attr.PartName}.{attr.Name}")
+                                .Select(attr => attr.PartName + "." + attr.Name)
                                 .ToHashSet();
                             var predefinedAttributes = item.Attributes
                                 .Where(x => attributesRestrictedToPredefinedValues.Contains(x.AttributeName) && x is IPredefinedValuesProductAttributeValue ta)
