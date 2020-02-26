@@ -67,7 +67,6 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentPartDisplayDriver, PriceVariantsPartDisplayDriver>();
             services.AddContentPart<PriceVariantsPart>();
             services.AddScoped<IPriceProvider, PriceVariantProvider>();
-            services.AddScoped<IPriceVariantsService, PriceVariantsService>();
             // Currency
             services.AddScoped<ICurrencyProvider, CurrencyProvider>();
             services.AddScoped<IMoneyService, MoneyService>();
