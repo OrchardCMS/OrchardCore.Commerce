@@ -20,6 +20,7 @@ namespace OrchardCore.Commerce.Migrations
         {
             _contentDefinitionManager.AlterPartDefinition("PricePart", builder => builder
                 .Attachable()
+                .Reusable()
                 .WithDescription("Adds a simple price to a product."));
             return 1;
         }

@@ -16,14 +16,16 @@ namespace OrchardCore.Commerce.Services
     {
         private readonly IEnumerable<ICurrencyProvider> _currencyProviders;
         private readonly CommerceSettings _options;
-
+        private readonly ICurrencySelector _currencySelector;
 
         public MoneyService(
             IEnumerable<ICurrencyProvider> currencyProviders,
-            IOptions<CommerceSettings> options)
+            IOptions<CommerceSettings> options,
+            ICurrencySelector currencySelector)
         {
             _currencyProviders = currencyProviders ?? Array.Empty<ICurrencyProvider>();
             _options = options?.Value;
+            _currencySelector = currencySelector;
         }
 
         public IEnumerable<ICurrency> Currencies
@@ -38,6 +40,14 @@ namespace OrchardCore.Commerce.Services
                     ? Currency.USDollar
                     : GetCurrency(_options.DefaultCurrency)
                     ?? Currency.USDollar;
+            }
+        }
+
+        public ICurrency CurrentDisplayCurrency
+        {
+            get
+            {
+                return _currencySelector.CurrentDisplayCurrency ?? DefaultCurrency;
             }
         }
 

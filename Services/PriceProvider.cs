@@ -13,10 +13,14 @@ namespace OrchardCore.Commerce.Services
     public class PriceProvider : IPriceProvider
     {
         private readonly IProductService _productService;
+        private readonly IMoneyService _moneyService;
 
-        public PriceProvider(IProductService productService)
+        public PriceProvider(
+            IProductService productService,
+            IMoneyService moneyService)
         {
             _productService = productService;
+            _moneyService = moneyService;
         }
 
         public int Order => 0;
@@ -30,8 +34,10 @@ namespace OrchardCore.Commerce.Services
             {
                 if (skuProducts.TryGetValue(item.ProductSku, out var product))
                 {
-                    var pricePart = product.ContentItem.As<PricePart>();
-                    if (pricePart != null)
+                    var contentItem = product.ContentItem;
+
+                    foreach (var pricePart in contentItem.OfType<PricePart>()
+                                 .Where(p => p.Price.Currency == _moneyService.CurrentDisplayCurrency))
                     {
                         item.Prices.Add(new PrioritizedPrice(0, pricePart.Price));
                     }

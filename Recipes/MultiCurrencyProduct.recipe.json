@@ -1,0 +1,135 @@
+{
+  "name": "MultiCurrencyProduct",
+  "displayName": "MultiCurrencyProduct",
+  "description": "Creates a Product content type with a Product Part and multiple Price Parts.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "product" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.Title",
+        "OrchardCore.Commerce"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "MultiPriceProduct",
+          "DisplayName": "MultiPriceProduct",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true
+            },
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+          	{
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2",
+                  "Editor": "Wysiwyg"
+                },
+                "HtmlBodyPartSettings": {}
+              }
+            },
+            {
+              "PartName": "ProductPart",
+              "Name": "ProductPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
+              }
+            },
+            {
+              "PartName": "PricePart",
+              "Name": "PriceUSD",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Price USD",
+                  "Description": "Adds a simple price to a product.",
+                  "Position": "4"
+                },
+                "PricePartSettings": {
+                  "CurrencySelectionMode": "DefaultCurrency"
+                }
+              }
+            },
+            {
+              "PartName": "PricePart",
+              "Name": "PriceSEK",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Price SEK",
+                  "Description": "Adds a simple price to a product.",
+                  "Position": "5"
+                },
+                "PricePartSettings": {
+                  "CurrencySelectionMode": "SpecificCurrency",
+                  "SpecificCurrencyIsoCode": "SEK"
+                }
+              }
+            },
+            {
+              "PartName": "PricePart",
+              "Name": "PriceNOK",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "DisplayName": "Price NOK",
+                  "Description": "Adds a simple price to a product.",
+                  "Position": "6"
+                },
+                "PricePartSettings": {
+                  "CurrencySelectionMode": "SpecificCurrency",
+                  "SpecificCurrencyIsoCode": "NOK"
+                }
+              }
+            },
+            {
+              "PartName": "MultiPriceProduct",
+              "Name": "MultiPriceProduct",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "7"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

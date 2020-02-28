@@ -14,6 +14,8 @@ namespace OrchardCore.Commerce.ViewModels
 
         public IEnumerable<ICurrency> Currencies { get; set; }
 
+        public ICurrency CurrentDisplayCurrency { get; set; }
+
         [BindNever]
         public ContentItem ContentItem { get; set; }
 
