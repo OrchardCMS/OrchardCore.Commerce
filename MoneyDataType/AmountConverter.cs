@@ -25,7 +25,6 @@ namespace Money
             string symbol = null;
             string iso = null;
             int? dec = null;
-            bool unknown = false;
 
             while (reader.Read())
             {
@@ -46,33 +45,27 @@ namespace Money
                     // Kept for backwards compatibility
                     case Name:
                         nativename = reader.GetString();
-                        unknown = true;
                         break;
 
                     case NativeName:
                         nativename = reader.GetString();
-                        unknown = true;
                         break;
                     case EnglishName:
                         englishname = reader.GetString();
-                        unknown = true;
                         break;
                     case Symbol:
                         symbol = reader.GetString();
-                        unknown = true;
                         break;
                     case Iso:
                         iso = reader.GetString();
-                        unknown = true;
                         break;
                     case Dec:
                         if (reader.TryGetInt32(out var i)) dec = i;
-                        unknown = true;
                         break;
                 }
             }
 
-            if (unknown)
+            if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? ""))
                 currency = new Currency(nativename, englishname, symbol, iso, dec.GetValueOrDefault(2));
 
             if (currency is null)

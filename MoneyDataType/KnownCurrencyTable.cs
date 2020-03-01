@@ -36,6 +36,7 @@ namespace Money
                     .ToDictionary(k => k.CurrencyIsoCode, e => e);
 
                 CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
+                CurrencyTable.Add("---", new Currency("Unspecified", "Unspecified", "---", "---"));
             }
         }
 
