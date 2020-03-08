@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>InternationalAddress</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Authors>Bertrand Le Roy</Authors>
+    <Product>AddressDataType</Product>
+    <Description>New data type representing international addresses.</Description>
+    <Copyright>Copyright © 2020 .NET Foundation</Copyright>
+    <PackageTags>Address, Postal</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+</Project>
