@@ -21,7 +21,7 @@ namespace InternationalAddress
 
         public string PostalCode { get; set; }
 
-        public string Country { get; set; }
+        public string Region { get; set; }
 
         private string DebuggerDisplay => $"{Name}, {StreetAddress1}, {City}";
     }

@@ -54,13 +54,14 @@ namespace Money
         /// </summary>
         public ICurrency Currency { get; }
 
-        public bool Equals(Amount other) => Value == other.Value && Currency.Equals(other.Currency);
+        public bool Equals(Amount other)
+            => Value == other.Value && ((Currency == null && other.Currency == null) || Currency.Equals(other.Currency));
 
         public override bool Equals(object obj) => obj != null && obj is Amount other && Equals(other);
 
         public override int GetHashCode() => (Value, Currency).GetHashCode();
 
-        public override string ToString() => Currency.ToString(Value);
+        public override string ToString() => Currency?.ToString(Value);
 
         private string DebuggerDisplay => ToString();
 

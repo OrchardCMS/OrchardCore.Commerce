@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
@@ -13,6 +14,9 @@ namespace OrchardCore.Commerce.Tests.Fakes
         {
             _carts[cartId ?? ""] = items != null ? new List<ShoppingCartItem>(items) : new List<ShoppingCartItem>();
         }
+
+        public string GetUniqueCartId(string shoppingCartId)
+            => Guid.NewGuid().ToString();
 
         public Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null)
         {

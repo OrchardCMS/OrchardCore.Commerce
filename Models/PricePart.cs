@@ -1,5 +1,4 @@
 using Money;
-using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Models

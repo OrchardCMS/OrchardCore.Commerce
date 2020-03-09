@@ -8,7 +8,7 @@ namespace InternationalAddress
     public interface IAddressFormatter
     {
         string Format(Address address)
-            => (address.Name
+            => address is null ? "-" : (address.Name
             + (String.IsNullOrWhiteSpace(address.Department) ? "" : Environment.NewLine + address.Department)
             + (String.IsNullOrWhiteSpace(address.Company) ? "" : Environment.NewLine + address.Company)
             + Environment.NewLine + address.StreetAddress1
@@ -16,7 +16,7 @@ namespace InternationalAddress
             + Environment.NewLine + address.City
             + (String.IsNullOrWhiteSpace(address.Province) ? "" : " " + address.Province)
             + " " + address.PostalCode
-            + (String.IsNullOrWhiteSpace(address.Country) ? "" : Environment.NewLine + address.Country)
+            + (String.IsNullOrWhiteSpace(address.Region) ? "" : Environment.NewLine + address.Region)
             ).ToUpper();
     }
 }

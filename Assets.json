@@ -1,0 +1,8 @@
+[
+  {
+    "inputs": [
+      "Assets/js/commerce-regions.js"
+    ],
+    "output": "wwwroot/Scripts/commerce-regions.js"
+  }
+]

@@ -54,6 +54,7 @@ namespace InternationalAddress
         /// <returns></returns>
         public string Format(Address address)
         {
+            if (address is null) return "-";
             string rawFormatted = String.Format(
                 _addressFormat,
                 address.Name,
@@ -62,7 +63,7 @@ namespace InternationalAddress
                 address.StreetAddress1,
                 address.StreetAddress2,
                 String.Format(_cityLineFormat, address.City, address.Province, address.PostalCode),
-                address.Country);
+                address.Region);
             string withoutEmptyLines = String.Join("", rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
             return _uppercase ? withoutEmptyLines.ToUpper() : withoutEmptyLines;
         }

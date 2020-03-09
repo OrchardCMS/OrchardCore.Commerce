@@ -1,4 +1,5 @@
 using System;
+using InternationalAddress;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,36 +40,47 @@ namespace OrchardCore.Commerce
             services.AddScoped<IDataMigration, ProductMigrations>();
             services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
             services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<IContentPartDisplayDriver, ProductPartDisplayDriver>();
-            services.AddContentPart<ProductPart>();
+            services.AddContentPart<ProductPart>()
+                .UseDisplayDriver<ProductPartDisplayDriver>();
+
             // Attributes
-            services.AddContentField<BooleanProductAttributeField>();
-            services.AddScoped<IContentFieldDisplayDriver, BooleanProductAttributeFieldDriver>();
+            services.AddContentField<BooleanProductAttributeField>()
+                .UseDisplayDriver<BooleanProductAttributeFieldDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanProductAttributeFieldSettingsDriver>();
-            services.AddContentField<NumericProductAttributeField>();
-            services.AddScoped<IContentFieldDisplayDriver, NumericProductAttributeFieldDriver>();
+
+            services.AddContentField<NumericProductAttributeField>()
+                .UseDisplayDriver<NumericProductAttributeFieldDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericProductAttributeFieldSettingsDriver>();
-            services.AddContentField<TextProductAttributeField>();
-            services.AddScoped<IContentFieldDisplayDriver, TextProductAttributeFieldDriver>();
+
+            services.AddContentField<TextProductAttributeField>()
+                .UseDisplayDriver<TextProductAttributeFieldDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
+
             services.AddScoped<IProductAttributeProvider, ProductAttributeProvider>();
             services.AddScoped<IProductAttributeService, ProductAttributeService>();
             services.AddScoped<IPredefinedValuesProductAttributeService, PredefinedValuesProductAttributeService>();
+
             // Price
             services.AddScoped<IDataMigration, PriceMigrations>();
-            services.AddScoped<IContentPartHandler, PricePartHandler>();
-            services.AddScoped<IContentPartDisplayDriver, PricePartDisplayDriver>();
+
+            services.AddContentPart<PricePart>()
+                .UseDisplayDriver<PricePartDisplayDriver>()
+                .AddHandler<PricePartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
-            services.AddContentPart<PricePart>();
+
             services.AddScoped<IPriceProvider, PriceProvider>();
             services.AddScoped<IPriceService, PriceService>();
             services.AddScoped<IPriceSelectionStrategy, SimplePriceStrategy>();
+
             // Price Variants
             services.AddScoped<IDataMigration, PriceVariantsMigrations>();
-            services.AddScoped<IContentPartHandler, PriceVariantsPartHandler>();
-            services.AddScoped<IContentPartDisplayDriver, PriceVariantsPartDisplayDriver>();
-            services.AddContentPart<PriceVariantsPart>();
+
+            services.AddContentPart<PriceVariantsPart>()
+                .UseDisplayDriver<PriceVariantsPartDisplayDriver>()
+                .AddHandler<PriceVariantsPartHandler>();
+
             services.AddScoped<IPriceProvider, PriceVariantProvider>();
+
             // Currency
             services.AddScoped<ICurrencyProvider, CurrencyProvider>();
             services.AddScoped<IMoneyService, MoneyService>();
@@ -78,6 +90,18 @@ namespace OrchardCore.Commerce
             // Shopping cart
             services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
             services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
+
+            // Orders
+            services.AddScoped<IDataMigration, OrderMigrations>();
+            services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
+
+            services.AddContentPart<OrderPart>()
+                .UseDisplayDriver<OrderPartDisplayDriver>();
+
+            services.AddContentField<AddressField>()
+                .UseDisplayDriver<AddressFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, AddressFieldSettingsDriver>();
+
             // Settings
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
@@ -86,7 +110,8 @@ namespace OrchardCore.Commerce
         }
     }
 
-    [RequireFeatures(CommerceConstants.Features.SessionCartStorage)]
+    [Feature(CommerceConstants.Features.SessionCartStorage)]
+    [RequireFeatures(CommerceConstants.Features.Core)]
     public class SessionCartStorageStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -109,7 +134,8 @@ namespace OrchardCore.Commerce
         }
     }
 
-    [RequireFeatures(CommerceConstants.Features.CommerceSettingsCurrencySelector)]
+    [Feature(CommerceConstants.Features.CommerceSettingsCurrencySelector)]
+    [RequireFeatures(CommerceConstants.Features.Core)]
     public class CommerceSettingsCurrencySettingsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
