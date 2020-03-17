@@ -44,7 +44,8 @@ namespace OrchardCore.Commerce.Services
                                 .ToHashSet();
                             var predefinedAttributes = item.Attributes
                                 .Where(x => attributesRestrictedToPredefinedValues.Contains(x.AttributeName) && x is IPredefinedValuesProductAttributeValue ta)
-                                .Cast<IPredefinedValuesProductAttributeValue>();
+                                .Cast<IPredefinedValuesProductAttributeValue>()
+                                .OrderBy(x => x.AttributeName);
                             var variantKey = String.Join(
                                 "-",
                                 predefinedAttributes

@@ -25,6 +25,7 @@ namespace OrchardCore.Commerce.Settings
                 .As<CommerceSettings>();
 
             options.DefaultCurrency = settings.DefaultCurrency;
+            options.CurrentDisplayCurrency = settings.CurrentDisplayCurrency;
         }
     }
 }

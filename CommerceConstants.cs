@@ -6,7 +6,8 @@ namespace OrchardCore.Commerce
         {
             public const string Core = "OrchardCore.Commerce";
             public const string SessionCartStorage = "OrchardCore.Commerce.SessionCartStorage";
-            public const string PriceBooks = "OrchardCore.Commerce.PriceBooks";
+            public const string CommerceSettingsCurrencySelector = "OrchardCore.Commerce.CommerceSettingsCurrencySelector";
+			public const string PriceBooks = "OrchardCore.Commerce.PriceBooks";
             public const string PriceBooksByRole = "OrchardCore.Commerce.PriceBooks.ByRole";
             public const string PriceBooksByUser = "OrchardCore.Commerce.PriceBooks.ByUser";
         }

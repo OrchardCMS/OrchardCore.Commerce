@@ -67,10 +67,12 @@ namespace OrchardCore.Commerce
             services.AddScoped<IContentPartDisplayDriver, PriceVariantsPartDisplayDriver>();
             services.AddContentPart<PriceVariantsPart>();
             services.AddScoped<IPriceProvider, PriceVariantProvider>();
-            services.AddScoped<IPriceVariantsService, PriceVariantsService>();
             // Currency
             services.AddScoped<ICurrencyProvider, CurrencyProvider>();
             services.AddScoped<IMoneyService, MoneyService>();
+            // No display currency selected. Fall back to default currency logic in MoneyService.
+            services.AddScoped<ICurrencySelector, NullCurrencySelector>();
+
             // Shopping cart
             services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
             // Settings
@@ -101,6 +103,15 @@ namespace OrchardCore.Commerce
                 pattern: "shoppingcart/{action}",
                 defaults: new { controller = "ShoppingCart", action = "Index" }
             );
+        }
+    }
+
+	[RequireFeatures(CommerceConstants.Features.CommerceSettingsCurrencySelector)]
+    public class CommerceSettingsCurrencySettingsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
         }
     }
 

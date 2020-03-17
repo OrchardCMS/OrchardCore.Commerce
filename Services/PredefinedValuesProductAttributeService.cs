@@ -39,6 +39,8 @@ namespace OrchardCore.Commerce.Services
         public IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product)
             => _productAttributeService
                 .GetProductAttributeFields(product)
-                .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues);
+                .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues)
+                .OrderBy(x => x.PartName)
+                .ThenBy(x => x.Name);
     }
 }

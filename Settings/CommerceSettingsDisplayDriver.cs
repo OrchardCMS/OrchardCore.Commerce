@@ -55,6 +55,7 @@ namespace OrchardCore.Commerce.Settings
                 Initialize<CommerceSettingsViewModel>("CommerceSettings_Edit", model =>
                 {
                     model.DefaultCurrency = section.DefaultCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
+                    model.CurrentDisplayCurrency = section.CurrentDisplayCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
                     model.Currencies = _moneyService.Currencies
                         .OrderBy(c => c.CurrencyIsoCode)
                         .Select(c => new SelectListItem(
@@ -82,6 +83,7 @@ namespace OrchardCore.Commerce.Settings
                 if (await context.Updater.TryUpdateModelAsync(model, Prefix))
                 {
                     section.DefaultCurrency = model.DefaultCurrency;
+                    section.CurrentDisplayCurrency = model.CurrentDisplayCurrency;
                 }
 
                 // Reload the tenant to apply the settings

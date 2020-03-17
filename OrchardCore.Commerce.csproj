@@ -26,10 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Admin.Abstractions" Version="1.0.0-rc1-11937" />
-    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc1-11937" />
-    <PackageReference Include="OrchardCore.Lists" Version="1.0.0-rc1-11937" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc1-12003" />
+    <PackageReference Include="OrchardCore.Admin.Abstractions" Version="1.0.0-rc1-12293" />
+    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc1-12293" />
+    <PackageReference Include="OrchardCore.Lists" Version="1.0.0-rc1-12293" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc1-12293" />
   </ItemGroup>
 
   <ItemGroup>
