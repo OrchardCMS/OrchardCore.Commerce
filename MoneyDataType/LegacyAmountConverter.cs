@@ -63,10 +63,8 @@ namespace Money.Serialization
                 }
             }
 
-            if (!Currency.IsKnownCurrency(currency.CurrencyIsoCode))
-            {
+            if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? ""))
                 currency = new Currency(nativename, englishname, symbol, iso, dec.GetValueOrDefault(2));
-            }
 
             if (currency is null)
                 throw new InvalidOperationException("Invalid amount format. Must include a currency");
