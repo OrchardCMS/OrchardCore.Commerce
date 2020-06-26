@@ -25,24 +25,28 @@ namespace OrchardCore.Commerce.Services
 
         public int Order => 0;
 
-        public async Task AddPrices(IList<ShoppingCartItem> items)
+        public async Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
         {
             var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
             var skuProducts = (await _productService.GetProducts(skus))
                 .ToDictionary(p => p.Sku);
-            foreach (var item in items)
-            {
-                if (skuProducts.TryGetValue(item.ProductSku, out var product))
+            return items
+                .Select(item =>
                 {
-                    var contentItem = product.ContentItem;
-
-                    foreach (var pricePart in contentItem.OfType<PricePart>()
-                                 .Where(p => p.Price.Currency == _moneyService.CurrentDisplayCurrency))
+                    if (skuProducts.TryGetValue(item.ProductSku, out var product))
                     {
-                        item.Prices.Add(new PrioritizedPrice(0, pricePart.Price));
+                        var newPrices = product
+                            .ContentItem
+                            .OfType<PricePart>()
+                            .Where(pricePart => pricePart.Price.Currency == _moneyService.CurrentDisplayCurrency)
+                            .Select(pricePart => new PrioritizedPrice(0, pricePart.Price));
+                        return item.WithPrices(newPrices);
                     }
-                }
-            }
+                    else
+                    {
+                        return item;
+                    }
+                });
         }
     }
 }

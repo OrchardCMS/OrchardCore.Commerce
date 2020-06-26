@@ -26,15 +26,15 @@ namespace OrchardCore.Commerce.Services
         public string GetUniqueCartId(string shoppingCartId)
             => Session.Id + shoppingCartId;
 
-        public async Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null)
+        public async Task<ShoppingCart> Retrieve(string shoppingCartId = null)
         {
             var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? ""));
             return await _shoppingCartHelpers.Deserialize(cartString);
         }
 
-        public async Task Store(IList<ShoppingCartItem> items, string shoppingCartId = null)
+        public async Task Store(ShoppingCart cart, string shoppingCartId = null)
         {
-            var cartString = await _shoppingCartHelpers.Serialize(items);
+            var cartString = await _shoppingCartHelpers.Serialize(cart);
             Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? ""), cartString);
         }
     }

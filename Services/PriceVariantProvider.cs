@@ -24,27 +24,27 @@ namespace OrchardCore.Commerce.Services
 
         public int Order => 1;
 
-        public async Task AddPrices(IList<ShoppingCartItem> items)
+        public async Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
         {
             var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
             var skuProducts = (await _productService.GetProducts(skus))
                 .ToDictionary(p => p.Sku);
-            foreach (var item in items)
-            {
-                if (skuProducts.TryGetValue(item.ProductSku, out var product))
+
+            return items
+                .Select(item =>
                 {
-                    var priceVariantsPart = product.ContentItem.As<PriceVariantsPart>();
-                    if (priceVariantsPart != null)
+                    if (skuProducts.TryGetValue(item.ProductSku, out var product))
                     {
-                        if (priceVariantsPart.Variants != null)
+                        var priceVariantsPart = product.ContentItem.As<PriceVariantsPart>();
+                        if (priceVariantsPart != null && priceVariantsPart.Variants != null)
                         {
                             var attributesRestrictedToPredefinedValues = _predefinedValuesService
                                 .GetProductAttributesRestrictedToPredefinedValues(product.ContentItem)
                                 .Select(attr => attr.PartName + "." + attr.Name)
                                 .ToHashSet();
                             var predefinedAttributes = item.Attributes
-                                .Where(x => attributesRestrictedToPredefinedValues.Contains(x.AttributeName) && x is IPredefinedValuesProductAttributeValue ta)
-                                .Cast<IPredefinedValuesProductAttributeValue>()
+                                .OfType<IPredefinedValuesProductAttributeValue>()
+                                .Where(attribute => attributesRestrictedToPredefinedValues.Contains(attribute.AttributeName))
                                 .OrderBy(x => x.AttributeName);
                             var variantKey = String.Join(
                                 "-",
@@ -53,13 +53,12 @@ namespace OrchardCore.Commerce.Services
                                     .Where(value => value != null));
                             if (priceVariantsPart.Variants.ContainsKey(variantKey))
                             {
-                                item.Prices.Add(new PrioritizedPrice(1, priceVariantsPart.Variants[variantKey]));
-                                continue;
+                                return item.WithPrice(new PrioritizedPrice(1, priceVariantsPart.Variants[variantKey]));
                             }
                         }
                     }
-                }
-            }
+                    return item;
+                });
         }
     }
 }

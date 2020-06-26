@@ -56,45 +56,59 @@ namespace OrchardCore.Commerce.Tests
                 productService: new FakeProductService(),
                 priceService: new FakePriceService(),
                 priceStrategy: new SimplePriceStrategy(),
-                contentManager: new FakeContentManager() 
+                contentManager: new FakeContentManager() ,
+                workflowManager: null,
+                notifier: null,
+                localizer: null
             );
         }
 
         [Fact]
         public async Task AddExistingItemToCart()
         {
-            await _cartStorage.Store(new List<ShoppingCartItem> { new ShoppingCartItem(3, "foo") });
-            await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "foo" });
+            await _cartStorage.Store(new ShoppingCart(new ShoppingCartItem(3, "foo")));
+            await _controller.AddItem(new ShoppingCartLineUpdateModel
+            {
+                Quantity = 7,
+                ProductSku = "foo"
+            });
             var cart = await _cartStorage.Retrieve();
 
-            Assert.Equal(new List<ShoppingCartItem> { new ShoppingCartItem(10, "foo") }, cart);
+            Assert.Equal(new List<ShoppingCartItem>
+            {
+                new ShoppingCartItem(10, "foo")
+            }, cart.Items);
         }
 
         [Fact]
         public async Task AddNewItemToCart()
         {
-            await _cartStorage.Store(new List<ShoppingCartItem> { new ShoppingCartItem(3, "foo") });
-            await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "bar" });
+            await _cartStorage.Store(new ShoppingCart(new ShoppingCartItem(3, "foo")));
+            await _controller.AddItem(new ShoppingCartLineUpdateModel
+            {
+                Quantity = 7,
+                ProductSku = "bar"
+            });
             var cart = await _cartStorage.Retrieve();
 
             Assert.Equal(new List<ShoppingCartItem>
             {
                 new ShoppingCartItem(3, "foo"),
                 new ShoppingCartItem(7, "bar")
-            }, cart);
+            }, cart.Items);
         }
 
         [Fact]
         public async Task AddExistingItemWithAttributes()
         {
-            await _cartStorage.Store(new List<ShoppingCartItem>
+            await _cartStorage.Store(new ShoppingCart(new[]
             {
                 new ShoppingCartItem(2, "foo"),
                 new ShoppingCartItem(3, "foo", _attrSet1Parsed),
                 new ShoppingCartItem(4, "foo", _attrSet2Parsed),
                 new ShoppingCartItem(5, "foo", _attrSet3Parsed),
                 new ShoppingCartItem(6, "bar", _attrSet3Parsed)
-            });
+            }));
             await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "foo" });
             await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 8, ProductSku = "foo", Attributes = _attrSet1 });
             await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 9, ProductSku = "foo", Attributes = _attrSet2 });
@@ -111,13 +125,13 @@ namespace OrchardCore.Commerce.Tests
                 new ShoppingCartItem(15, "foo", _attrSet3Parsed),
                 new ShoppingCartItem(17, "bar", _attrSet3Parsed),
                 new ShoppingCartItem(13, "baz", _attrSet3Parsed)
-            }, cart);
+            }, cart.Items);
         }
 
         [Fact]
         public async Task RemoveItems()
         {
-            var expectedCart = new List<ShoppingCartItem>
+            var expectedCartItems = new List<ShoppingCartItem>
             {
                 new ShoppingCartItem(2, "foo"),
                 new ShoppingCartItem(3, "foo", _attrSet1Parsed),
@@ -125,31 +139,32 @@ namespace OrchardCore.Commerce.Tests
                 new ShoppingCartItem(5, "foo", _attrSet3Parsed),
                 new ShoppingCartItem(6, "bar", _attrSet3Parsed)
             };
-            await _cartStorage.Store(expectedCart);
+            var cart = new ShoppingCart(expectedCartItems);
+            await _cartStorage.Store(cart);
 
             await _controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet2 });
-            expectedCart.RemoveAt(2); // foo - attr2
-            Assert.Equal(expectedCart, await _controller.Get());
+            expectedCartItems.RemoveAt(2); // foo - attr2
+            Assert.Equal(expectedCartItems, (await _controller.Get()).Items);
 
             // Removing an item that's no longer there does nothing
             await _controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet2 });
-            Assert.Equal(expectedCart, await _controller.Get());
+            Assert.Equal(expectedCartItems, (await _controller.Get()).Items);
 
             await _controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "bar", Attributes = _attrSet3 });
-            expectedCart.RemoveAt(3); // bar - attr3
-            Assert.Equal(expectedCart, await _controller.Get());
+            expectedCartItems.RemoveAt(3); // bar - attr3
+            Assert.Equal(expectedCartItems, (await _controller.Get()).Items);
 
             await _controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo" });
-            expectedCart.RemoveAt(0); // foo
-            Assert.Equal(expectedCart, await _controller.Get());
+            expectedCartItems.RemoveAt(0); // foo
+            Assert.Equal(expectedCartItems, (await _controller.Get()).Items);
 
             await _controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet1 });
-            expectedCart.RemoveAt(0); // foo - attr1
-            Assert.Equal(expectedCart, await _controller.Get());
+            expectedCartItems.RemoveAt(0); // foo - attr1
+            Assert.Equal(expectedCartItems, (await _controller.Get()).Items);
 
             await _controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet3 });
-            expectedCart.RemoveAt(0); // foo - attr3
-            Assert.Equal(expectedCart, await _controller.Get());
+            expectedCartItems.RemoveAt(0); // foo - attr3
+            Assert.Equal(expectedCartItems, (await _controller.Get()).Items);
         }
     }
 }

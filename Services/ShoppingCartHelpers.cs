@@ -31,35 +31,8 @@ namespace OrchardCore.Commerce.Services
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public ShoppingCartItem GetExistingItem(IList<ShoppingCartItem> cart, ShoppingCartItem item)
-            => cart.FirstOrDefault(i => IsSameProductAs(i, item));
-
         public ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line)
             => cart.Lines.FirstOrDefault(i => IsSameProductAs(i, line));
-
-        public int RemoveItem(IList<ShoppingCartItem> cart, ShoppingCartItem item)
-        {
-            var index = IndexOfProduct(cart, item);
-            if (index != -1)
-            {
-                cart.RemoveAt(index);
-            }
-            return index;
-        }
-
-        public int IndexOfProduct(IList<ShoppingCartItem> cart, ShoppingCartItem item)
-        {
-            var index = 0;
-            foreach (ShoppingCartItem line in cart)
-            {
-                if (IsSameProductAs(line, item)) return index;
-                index++;
-            }
-            return -1;
-        }
-
-        public bool IsSameProductAs(ShoppingCartItem item, ShoppingCartItem other)
-            => other.ProductSku == item.ProductSku && other.Attributes.SetEquals(item.Attributes);
 
         public bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other)
             => other.ProductSku == line.ProductSku
@@ -68,25 +41,17 @@ namespace OrchardCore.Commerce.Services
                     || (line.Attributes.Count == other.Attributes.Count && !line.Attributes.Except(other.Attributes).Any())
                 );
 
-        public async Task<IList<ShoppingCartItem>> ParseCart(ShoppingCartUpdateModel cart)
+        public async Task<ShoppingCart> ParseCart(ShoppingCartUpdateModel cart)
         {
             Dictionary<string, ProductPart> products = await GetProducts(cart.Lines.Select(l => l.ProductSku));
             Dictionary<string, ContentTypeDefinition> types = ExtractTypeDefinitions(products.Values);
             IList<ShoppingCartItem> parsedCart = cart.Lines
+                .Where(l => l.Quantity > 0)
                 .Select(l => new ShoppingCartItem(l.Quantity, l.ProductSku,
                     ParseAttributes(l, types[products[l.ProductSku].ContentItem.ContentType])
                  )).ToList();
-            return parsedCart;
+            return new ShoppingCart(parsedCart);
         }
-
-        private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products)
-            => products
-                .Select(p => _contentDefinitionManager.GetTypeDefinition(p.ContentItem.ContentType))
-                .Distinct()
-                .ToDictionary(t => t.Name);
-
-        private async Task<Dictionary<string, ProductPart>> GetProducts(IEnumerable<string> skus)
-            => (await _productService.GetProducts(skus)).ToDictionary(p => p.Sku);
 
         public async Task<ShoppingCartItem> ParseCartLine(ShoppingCartLineUpdateModel line)
         {
@@ -96,9 +61,6 @@ namespace OrchardCore.Commerce.Services
             var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
             return parsedLine;
         }
-
-        private ContentTypeDefinition GetTypeDefinition(ProductPart product)
-            => _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
 
         public HashSet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type)
             => new HashSet<IProductAttributeValue>(
@@ -114,41 +76,28 @@ namespace OrchardCore.Commerce.Services
                 })
             );
 
-        private static (ContentTypePartDefinition, ContentPartFieldDefinition) GetFieldDefinition(ContentTypeDefinition type, string attributeName)
-        {
-            string[] partAndField = attributeName.Split('.');
-            return type
-                .Parts.SelectMany(p => p.PartDefinition
-                    .Fields
-                    .Select(f => (p, f))
-                    .Where(pf => p.Name == partAndField[0] && pf.f.Name == partAndField[1]))
-                .First();
-        }
-
-        public async Task<IList<ShoppingCartItem>> Deserialize(string serializedCart)
+        public async Task<ShoppingCart> Deserialize(string serializedCart)
         {
             if (String.IsNullOrEmpty(serializedCart))
             {
-                return new List<ShoppingCartItem>();
+                return new ShoppingCart();
             }
-            var cart = JsonSerializer.Deserialize<List<ShoppingCartItem>>(serializedCart);
+            var cart = JsonSerializer.Deserialize<ShoppingCart>(serializedCart);
             // Actualize prices
-            foreach (var item in cart)
+            foreach (var item in cart.Items)
             {
                 if (item.Prices != null && item.Prices.Any())
                 {
-                    item.Prices = item.Prices
-                        .Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price)))
-                        .ToList();
+                    cart.SetPrices(item, item.Prices.Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price))));
                 }
             }
             // Post-process attributes for concrete types according to field definitions
             // (deserialization being essentially non-polymorphic and without access to our type definition
             // contextual information).
-            Dictionary<string, ProductPart> products = await GetProducts(cart.Select(l => l.ProductSku));
+            Dictionary<string, ProductPart> products = await GetProducts(cart.Items.Select(l => l.ProductSku));
             Dictionary<string, ContentTypeDefinition> types = ExtractTypeDefinitions(products.Values);
-            var newCart = new List<ShoppingCartItem>(cart.Count);
-            foreach (ShoppingCartItem line in cart)
+            var newCartItems = new List<ShoppingCartItem>(cart.Count);
+            foreach (ShoppingCartItem line in cart.Items)
             {
                 if (line.Attributes is null) continue;
                 var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
@@ -166,12 +115,35 @@ namespace OrchardCore.Commerce.Services
                         .FirstOrDefault(v => v != null);
                     attributes.Add(newAttr);
                 }
-                newCart.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
+                newCartItems.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
             }
-            return newCart;
+            return cart.With(newCartItems);
         }
 
-        public async Task<string> Serialize(IList<ShoppingCartItem> cart)
+        public async Task<string> Serialize(ShoppingCart cart)
             => await Task.FromResult(JsonSerializer.Serialize(cart));
+
+        private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products)
+                => products
+                    .Select(p => _contentDefinitionManager.GetTypeDefinition(p.ContentItem.ContentType))
+                    .Distinct()
+                    .ToDictionary(t => t.Name);
+
+        private async Task<Dictionary<string, ProductPart>> GetProducts(IEnumerable<string> skus)
+            => (await _productService.GetProducts(skus)).ToDictionary(p => p.Sku);
+
+        private ContentTypeDefinition GetTypeDefinition(ProductPart product)
+            => _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
+
+        private static (ContentTypePartDefinition, ContentPartFieldDefinition) GetFieldDefinition(ContentTypeDefinition type, string attributeName)
+        {
+            string[] partAndField = attributeName.Split('.');
+            return type
+                .Parts.SelectMany(p => p.PartDefinition
+                    .Fields
+                    .Select(f => (p, f))
+                    .Where(pf => p.Name == partAndField[0] && pf.f.Name == partAndField[1]))
+                .First();
+        }
     }
 }

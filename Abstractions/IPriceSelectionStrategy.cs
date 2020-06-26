@@ -7,6 +7,6 @@ namespace OrchardCore.Commerce.Abstractions
     public interface IPriceSelectionStrategy
     {
         // TODO: include attributes in price strategy
-        Amount SelectPrice(IList<PrioritizedPrice> prices);
+        Amount SelectPrice(IEnumerable<PrioritizedPrice> prices);
     }
 }

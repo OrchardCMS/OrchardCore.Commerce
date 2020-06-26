@@ -8,29 +8,31 @@ namespace OrchardCore.Commerce.Tests.Fakes
 {
     public class FakeCartStorage : IShoppingCartPersistence
     {
-        private Dictionary<string, IList<ShoppingCartItem>> _carts = new Dictionary<string, IList<ShoppingCartItem>>();
+        private Dictionary<string, ShoppingCart> _carts = new Dictionary<string, ShoppingCart>();
 
-        public FakeCartStorage(IList<ShoppingCartItem> items = null, string cartId = null)
+        public FakeCartStorage(ShoppingCart cart = null, string cartId = null)
         {
-            _carts[cartId ?? ""] = items != null ? new List<ShoppingCartItem>(items) : new List<ShoppingCartItem>();
+            _carts[cartId ?? ""] = cart != null
+                ? new ShoppingCart(cart.Items)
+                : new ShoppingCart();
         }
 
         public string GetUniqueCartId(string shoppingCartId)
             => Guid.NewGuid().ToString();
 
-        public Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null)
+        public Task<ShoppingCart> Retrieve(string shoppingCartId = null)
         {
             if (!_carts.TryGetValue(shoppingCartId ?? "", out var cart))
             {
-                cart = new List<ShoppingCartItem>();
+                cart = new ShoppingCart();
                 _carts.Add(shoppingCartId ?? "", cart);
             }
             return Task.FromResult(cart);
         }
 
-        public Task Store(IList<ShoppingCartItem> items, string shoppingCartId = null)
+        public Task Store(ShoppingCart cart, string shoppingCartId = null)
         {
-            _carts[shoppingCartId ?? ""] = new List<ShoppingCartItem>(items);
+            _carts[shoppingCartId ?? ""] = new ShoppingCart(cart.Items);
             return Task.CompletedTask;
         }
     }

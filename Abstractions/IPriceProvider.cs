@@ -14,7 +14,7 @@ namespace OrchardCore.Commerce.Abstractions
         /// Adds prices to shopping cart items.
         /// </summary>
         /// <param name="items">The quantities and products to which prices must be added.</param>
-        Task AddPrices(IList<ShoppingCartItem> items);
+        Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items);
 
         /// <summary>
         /// Price providers are invited to add prices in increasing order.

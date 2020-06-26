@@ -12,7 +12,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar()
         {
-            Assert.Equal("USD", new MoneyService(null, null).DefaultCurrency.CurrencyIsoCode);
+            Assert.Equal("USD", new MoneyService(null, null, null).DefaultCurrency.CurrencyIsoCode);
         }
 
         [Fact]
@@ -22,8 +22,9 @@ namespace OrchardCore.Commerce.Tests
                 "USD",
                 new MoneyService(
                     null,
-                    new TestOptions<CommerceSettings>(new CommerceSettings { })
-                    ).DefaultCurrency.CurrencyIsoCode);
+                    new TestOptions<CommerceSettings>(new CommerceSettings { }),
+                    null)
+                .DefaultCurrency.CurrencyIsoCode);
         }
 
         [Fact]
@@ -37,17 +38,21 @@ namespace OrchardCore.Commerce.Tests
         {
             Assert.Equal(
                 "USD",
-                new MoneyService(null, new TestOptions<CommerceSettings>(
+                new MoneyService(
+                    null,
+                    new TestOptions<CommerceSettings>(
                     new CommerceSettings
                     {
                         DefaultCurrency = "WTF"
-                    })).DefaultCurrency.CurrencyIsoCode);
+                    }),
+                    null)
+                .DefaultCurrency.CurrencyIsoCode);
         }
 
         [Fact]
         public void EnsureCurrenciesAcrossAllProviders()
         {
-            Assert.Equal(114, new TestMoneyService().Currencies.Count());
+            Assert.Equal(115, new TestMoneyService().Currencies.Count());
         }
 
         [Fact]
@@ -77,7 +82,7 @@ namespace OrchardCore.Commerce.Tests
         public void EnsureCurrencyAddsRealCurrencyForCodeThatExists()
         {
             var service = new TestMoneyService();
-            var amount = service.EnsureCurrency(new Amount(42, new Currency("My Fake", "X", "AMD")));
+            var amount = service.EnsureCurrency(new Amount(42, new Currency("My Fake", "My Fake", "X", "AMD")));
             Assert.Equal(42, amount.Value);
             Assert.Equal(service.GetCurrency("AMD"), amount.Currency);
         }

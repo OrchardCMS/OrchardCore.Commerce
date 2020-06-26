@@ -6,8 +6,8 @@ namespace OrchardCore.Commerce.Abstractions
 {
     public interface IShoppingCartPersistence
     {
-        Task<IList<ShoppingCartItem>> Retrieve(string shoppingCartId = null);
-        Task Store(IList<ShoppingCartItem> items, string shoppingCartId = null);
+        Task<ShoppingCart> Retrieve(string shoppingCartId = null);
+        Task Store(ShoppingCart items, string shoppingCartId = null);
         string GetUniqueCartId(string shoppingCartId);
     }
 }

@@ -15,7 +15,7 @@ namespace OrchardCore.Commerce.Services
     /// </summary>
     public class SimplePriceStrategy : IPriceSelectionStrategy
     {
-        public Amount SelectPrice(IList<PrioritizedPrice> prices)
+        public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices)
             => prices is null
                 || !prices.Any()
                     ? new Amount()

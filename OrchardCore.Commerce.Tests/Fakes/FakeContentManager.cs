@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.Commerce.Tests.Fakes
 {
@@ -11,6 +12,10 @@ namespace OrchardCore.Commerce.Tests.Fakes
         public Task<ContentItem> CloneAsync(ContentItem contentItem) => throw new NotImplementedException();
 
         public Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks = false) => throw new System.NotImplementedException();
+
+        public Task CreateAsync(ContentItem contentItem, VersionOptions options) => throw new NotImplementedException();
+
+        public Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem) => throw new NotImplementedException();
 
         public Task DiscardDraftAsync(ContentItem contentItem) => throw new NotImplementedException();
 
@@ -21,6 +26,8 @@ namespace OrchardCore.Commerce.Tests.Fakes
         public Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false) => throw new NotImplementedException();
 
         public Task<ContentItem> GetVersionAsync(string contentItemVersionId) => throw new NotImplementedException();
+
+        public Task ImportAsync(IEnumerable<ContentItem> contentItems) => throw new NotImplementedException();
 
         public Task<ContentItem> LoadAsync(ContentItem contentItem) => throw new NotImplementedException();
 
@@ -43,5 +50,9 @@ namespace OrchardCore.Commerce.Tests.Fakes
         public Task UnpublishAsync(ContentItem contentItem) => throw new NotImplementedException();
 
         public Task UpdateAsync(ContentItem contentItem) => throw new NotImplementedException();
+
+        public Task<ContentValidateResult> UpdateContentItemVersionAsync(ContentItem updatingVersion, ContentItem updatedVersion) => throw new NotImplementedException();
+
+        public Task<ContentValidateResult> ValidateAsync(ContentItem contentItem) => throw new NotImplementedException();
     }
 }

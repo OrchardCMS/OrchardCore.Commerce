@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Money;
 using OrchardCore.Commerce.Abstractions;
@@ -8,14 +9,9 @@ namespace OrchardCore.Commerce.Tests.Fakes
 {
     public class FakePriceService : IPriceService
     {
-        public Task AddPrices(IList<ShoppingCartItem> items)
-        {
-            var i = 0;
-            foreach (ShoppingCartItem item in items)
-            {
-                item.Prices.Add(new PrioritizedPrice(0, new Amount(42 + i++, Currency.USDollar)));
-            }
-            return Task.CompletedTask;
-        }
+        public Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
+            => Task.FromResult(
+                items.Select(
+                    (item, i) => item.WithPrice(new PrioritizedPrice(0, new Amount(42 + i++, Currency.USDollar)))));
     }
 }

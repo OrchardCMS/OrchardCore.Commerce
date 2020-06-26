@@ -13,7 +13,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
                 new CurrencyProvider(),
                 new AnkhMorporkCurrencyProvider()
             },
-            new TestOptions<CommerceSettings>(new CommerceSettings { DefaultCurrency = "EUR" }))
-        { }
+            new TestOptions<CommerceSettings>(new CommerceSettings { DefaultCurrency = "EUR" }),
+            new NullCurrencySelector()) { }
     }
 }

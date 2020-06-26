@@ -18,12 +18,13 @@ namespace OrchardCore.Commerce.Services
             _providers = priceProviders;
         }
 
-        public async Task AddPrices(IList<ShoppingCartItem> items)
+        public async Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
         {
             foreach (var priceProvider in _providers.OrderBy(p => p.Order))
             {
-                await priceProvider.AddPrices(items);
+                items = await priceProvider.AddPrices(items);
             }
+            return items;
         }
     }
 }

@@ -5,6 +5,7 @@ using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentManagement;
 using Xunit;
 
@@ -15,20 +16,18 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public async void PriceProviderAddsPriceFromPricePart()
         {
-            var cart = new List<ShoppingCartItem>
-            {
+            var cart = new ShoppingCart(
                 new ShoppingCartItem (1, "foo"),
                 new ShoppingCartItem (4, "bar"),
-                new ShoppingCartItem (1, "baz")
-            };
+                new ShoppingCartItem (1, "baz"));
             var productService = new DummyProductService(
                 BuildProduct("foo", 50.0M),
                 BuildProduct("bar", 30.0M),
                 BuildProduct("baz", 10.0M));
-            var priceProvider = new PriceProvider(productService);
-            await priceProvider.AddPrices(cart);
+            var priceProvider = new PriceProvider(productService, new TestMoneyService());
+            cart = cart.With(await priceProvider.AddPrices(cart.Items));
 
-            foreach (var item in cart)
+            foreach (var item in cart.Items)
             {
                 Assert.Single(item.Prices);
                 Assert.Equal(
@@ -48,10 +47,9 @@ namespace OrchardCore.Commerce.Tests
                 new DummyPriceProvider(1, 1.0m),
                 new DummyPriceProvider(3, 3.0m)
             });
-            var item = new ShoppingCartItem(1, "foo");
-            var cart = new List<ShoppingCartItem> { item };
-            await priceService.AddPrices(cart);
-            Assert.Collection(item.Prices,
+            var cart = new ShoppingCart(new ShoppingCartItem(1, "foo"));
+            cart = cart.With(await priceService.AddPrices(cart.Items));
+            Assert.Collection(cart.Items.Single().Prices,
                 p => Assert.Equal(1.0m, p.Price.Value),
                 p => Assert.Equal(2.0m, p.Price.Value),
                 p => Assert.Equal(3.0m, p.Price.Value),
@@ -75,7 +73,7 @@ namespace OrchardCore.Commerce.Tests
         {
             var product = new ContentItem();
             product.GetOrCreate<PricePart>();
-            product.Alter<PricePart>(p => p.Price = new Amount(price, Currency.USDollar));
+            product.Alter<PricePart>(p => p.Price = new Amount(price, Currency.Euro));
             product.GetOrCreate<ProductPart>();
             product.Alter<ProductPart>(p => p.Sku = sku);
             return product.As<ProductPart>();
@@ -108,14 +106,11 @@ namespace OrchardCore.Commerce.Tests
             public int Order { get; }
             public decimal Price { get; }
 
-            public Task AddPrices(IList<ShoppingCartItem> items)
-            {
-                foreach (var item in items)
-                {
-                    item.Prices.Add(new PrioritizedPrice(0, new Amount(Price, Currency.USDollar)));
-                }
-                return Task.CompletedTask;
-            }
+            public Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
+                => Task.FromResult(
+                    items.Select(item
+                        => item.WithPrice(
+                            new PrioritizedPrice(0, new Amount(Price, Currency.USDollar)))));
         }
     }
 }

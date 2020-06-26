@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Serialization;
@@ -20,14 +21,18 @@ namespace OrchardCore.Commerce.Models
         public ShoppingCartItem(
             int quantity,
             string productSku,
-            ISet<IProductAttributeValue> attributes = null,
-            IList<PrioritizedPrice> prices = null)
+            IEnumerable<IProductAttributeValue> attributes = null,
+            IEnumerable<PrioritizedPrice> prices = null)
         {
             if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
             Quantity = quantity;
             ProductSku = productSku ?? throw new ArgumentNullException(nameof(productSku));
-            Attributes = attributes ?? new HashSet<IProductAttributeValue>();
-            Prices = prices ?? new List<PrioritizedPrice>();
+            Attributes = attributes is null
+                ? new HashSet<IProductAttributeValue>()
+                : new HashSet<IProductAttributeValue>(attributes);
+            Prices = prices is null
+                ? new List<PrioritizedPrice>().AsReadOnly()
+                : new List<PrioritizedPrice>(prices).AsReadOnly();
         }
 
         /// <summary>
@@ -48,7 +53,31 @@ namespace OrchardCore.Commerce.Models
         /// <summary>
         /// The available prices
         /// </summary>
-        public IList<PrioritizedPrice> Prices { get; set; } // Prices don't count in quality and hash codes, so they are safe to mutate
+        public IReadOnlyList<PrioritizedPrice> Prices { get; }
+
+        /// <summary>
+        /// Creates a new shopping cart item that is a clone of this, but with additional prices.
+        /// </summary>
+        /// <param name="prices">The list of prices to add.</param>
+        /// <returns>The new shopping cart item.</returns>
+        public ShoppingCartItem WithPrices(IEnumerable<PrioritizedPrice> prices)
+            => new ShoppingCartItem(Quantity, ProductSku, Attributes, Prices.Concat(prices));
+
+        /// <summary>
+        /// Creates a new shopping cart item that is a clone of this, but with an additional price.
+        /// </summary>
+        /// <param name="price">The price to add.</param>
+        /// <returns>The new shopping cart item.</returns>
+        public ShoppingCartItem WithPrice(PrioritizedPrice price)
+            => new ShoppingCartItem(Quantity, ProductSku, Attributes, Prices.Concat(new[] { price }));
+
+        /// <summary>
+        /// Creates a new shopping cart item that is a clone of this, but with a different quantity.
+        /// </summary>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public ShoppingCartItem WithQuantity(int quantity)
+            => new ShoppingCartItem(quantity, ProductSku, Attributes, Prices);
 
         public override bool Equals(object obj)
             => !ReferenceEquals(null, obj)

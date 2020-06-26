@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentTypes.Services;
 
 namespace OrchardCore.Commerce.Services
 {
@@ -18,18 +17,18 @@ namespace OrchardCore.Commerce.Services
     {
         private readonly IEnumerable<IProductAttributeProvider> _attributeProviders;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IOptions<ContentOptions> _contentOptions;
+        private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IMemoryCache _cache;
 
         public ProductAttributeService(
             IEnumerable<IProductAttributeProvider> attributeProviders,
             IContentDefinitionManager contentDefinitionManager,
-            IOptions<ContentOptions> contentOptions,
+            IContentDefinitionService contentDefinitionService,
             IMemoryCache cache)
         {
             _attributeProviders = attributeProviders;
             _contentDefinitionManager = contentDefinitionManager;
-            _contentOptions = contentOptions;
+            _contentDefinitionService = contentDefinitionService;
             _cache = cache;
         }
 
@@ -60,11 +59,10 @@ namespace OrchardCore.Commerce.Services
         }
 
         private IDictionary<string, Type> GetProductAttributeFieldTypes()
-            => _contentOptions
-            .Value.ContentFieldOptions
-            .Select(f => f.Type)
-            .Where(t => typeof(ProductAttributeField).IsAssignableFrom(t))
-            .ToDictionary(t => t.Name);
+            => _contentDefinitionService
+                .GetFields()
+                .Where(t => typeof(ProductAttributeField).IsAssignableFrom(t))
+                .ToDictionary(t => t.Name);
 
         private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field)
         {

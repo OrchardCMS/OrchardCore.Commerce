@@ -29,7 +29,9 @@ namespace OrchardCore.Commerce.Services
         }
 
         public IEnumerable<ICurrency> Currencies
-            => _currencyProviders.SelectMany(p => p.Currencies);
+            => _currencyProviders
+                .SelectMany(p => p.Currencies)
+                .OrderBy(c => c.CurrencyIsoCode);
 
         public ICurrency DefaultCurrency
         {
