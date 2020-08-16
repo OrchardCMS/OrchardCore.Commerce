@@ -345,3 +345,4 @@ healthchecksdb
 
 SampleWebApp/App_Data/
 *.po
+SampleWebApp/wwwroot/is-cache/
