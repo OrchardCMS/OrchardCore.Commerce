@@ -344,3 +344,4 @@ healthchecksdb
 # =========================
 
 SampleWebApp/App_Data/
+*.po
