@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -12,14 +12,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.0.0-rc2-13450" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" />
     <ProjectReference Include="..\MoneyDataType\MoneyDataType.csproj" />
-    <ProjectReference Include="..\OrchardCore.Commerce.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,11 +1,9 @@
-/bin
-/obj
-/OrchardCore.Commerce.Tests/bin
-/OrchardCore.Commerce.Tests/obj
+*/bin
+*/obj
 *.csproj.user
 /.vs
-/MoneyDataType/bin
-/MoneyDataType/obj
 *.sln
-AddressDataType/bin
-AddressDataType/obj
+*.po
+SampleWebApp/App_Data/
+SampleWebApp/wwwroot/is-cache/
+*.placeholder

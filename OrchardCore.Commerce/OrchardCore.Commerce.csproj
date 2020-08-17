@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="LICENSE" />
+    <EmbeddedResource Remove="README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc2-13450" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc2-13450" />
+    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.0.0-rc2-13450" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AddressDataType\AddressDataType.csproj" />
+    <ProjectReference Include="..\MoneyDataType\MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Scripts\" />
+  </ItemGroup>
+
+</Project>
