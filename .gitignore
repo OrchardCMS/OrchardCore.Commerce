@@ -6,3 +6,4 @@
 *.po
 SampleWebApp/App_Data/
 SampleWebApp/wwwroot/is-cache/
+*.placeholder
