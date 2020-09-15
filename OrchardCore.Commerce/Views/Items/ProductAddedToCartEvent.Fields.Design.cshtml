@@ -1,0 +1,7 @@
+@model OrchardCore.Workflows.ViewModels.ActivityViewModel<ProductAddedToCartEvent>
+@using OrchardCore.Workflows.Helpers
+@using OrchardCore.Commerce.Activities
+
+<header>
+    <h4><i class="fa fa-shopping-cart"></i>@Model.Activity.GetTitleOrDefault(() => T["Product added to cart"])</h4>
+</header>

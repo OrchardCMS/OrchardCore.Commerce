@@ -1,0 +1,95 @@
+@model OrchardCore.Commerce.ViewModels.AddressFieldViewModel
+@using OrchardCore.Commerce.Settings
+
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<AddressPartFieldSettings>();
+}
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.Name">@T["Name"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.Name">
+        <input asp-for="Address.Name" class="form-control content-preview-text" required="required" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.Department">@T["Department"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.Department">
+        <input asp-for="Address.Department" class="form-control content-preview-text" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.Company">@T["Company or institution"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.Company">
+        <input asp-for="Address.Company" class="form-control content-preview-text" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.StreetAddress1">@T["Street address"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.StreetAddress1">
+        <input asp-for="Address.StreetAddress1" class="form-control content-preview-text" required="required" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.StreetAddress2">@T[""]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.StreetAddress2">
+        <input asp-for="Address.StreetAddress2" class="form-control content-preview-text" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.City">@T["City"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.City">
+        <input asp-for="Address.City" class="form-control content-preview-text" required="required" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.Province">@T["State or province"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.Province">
+        <select asp-for="Address.Province" class="form-control content-preview-text" required="required"></select>
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.PostalCode">@T["Postal code"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.PostalCode">
+        <input asp-for="Address.PostalCode" class="form-control content-preview-text" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12">
+        <label asp-for="Address.Region">@T["Country or region"]</label>
+    </div>
+    <div class="form-group col-md-6" asp-validation-class-for="Address.Region">
+        <select asp-for="Address.Region"
+                asp-items="@Model.Regions.OrderBy(region => region.DisplayName).Select(region => new SelectListItem(
+                    region.DisplayName,
+                    region.TwoLetterISORegionName))"
+                class="form-control content-preview-text" required="required"></select>
+    </div>
+</div>
+@if (!string.IsNullOrWhiteSpace(settings.Hint))
+{
+    <span class="hint">@settings.Hint</span>
+}
+<script asp-name="commerce-regions" asp-src="~/OrchardCore.Commerce/Scripts/commerce-regions.js" at="Foot" depends-on="jQuery"></script>
+<script at="Foot" depends-on="commerce-regions">
+    @if (Context.Items["commerce-regions-initialized"] == null)
+    {
+        <text>commerceRegionsInitialize(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Provinces)));</text>
+        Context.Items["commerce-regions-initialized"] = true;
+    }
+    commerceRegionsBind("#@Html.IdFor(m => m.Address.Province)", "#@Html.IdFor(m => m.Address.Region)");
+</script>

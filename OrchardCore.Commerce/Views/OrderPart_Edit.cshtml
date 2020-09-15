@@ -1,0 +1,60 @@
+@model OrderPartViewModel
+@using OrchardCore.Commerce.Abstractions
+
+@* TODO: make the line items editable *@
+<zone name="Header">
+    <header class="masthead">
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in"></div>
+                <div class="intro-heading text-uppercase">@T["Order items"]</div>
+            </div>
+        </div>
+    </header>
+</zone>
+<section id="shopping-cart">
+    @if (Model.LineItems != null && Model.LineItems.Any())
+    {
+        <div class="container">
+            <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
+                <div class="col-xs-12 col-sm-1">@T["Quantity"]</div>
+                <div class="col-xs-12 col-sm-9">@T["Product"]</div>
+                <div class="col-xs-12 col-sm-1">@T["Price"]</div>
+            </div>
+            @foreach (OrderLineItemViewModel item in Model.LineItems)
+            {
+                <div class="row border-bottom mt-3 pb-2">
+                    <div class="col-xs-12 col-sm-1">@item.Quantity@T[" × "]</div>
+                    <div class="col-xs-12 col-sm-9">
+                        <a href="@Url.RouteUrl(item.ProductRouteValues)">@item.ProductName</a>
+                        @if (item.Attributes != null)
+                        {
+                            <ul class="cart-product-attributes list-inline">
+                                @foreach (IProductAttributeValue attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                                {
+                                    <shape tag="li" Type="@attr.GetType().Name" prop-attribute="@attr" prop-label="@attr.Label" />
+                                }
+                            </ul>
+                        }
+                    </div>
+                    <div class="col-xs-12 col-sm-1">@item.UnitPrice</div>
+                </div>
+            }
+            <div class="row mt-3 mb-3 pb-2">
+                <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
+                <div class="col-xs-12 col-sm-1">
+                    <div>@Model.Total</div>
+                </div>
+                <div class="col-xs-12 col-sm-1">
+                    <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
+                        <button type="submit" class="btn btn-primary">@T["Update"]</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>@T["This order is empty."]</p>
+    }
+</section>

@@ -109,7 +109,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void SerialisationPersistsUnknownCurrencies()
         {
-            var unknown = new Currency("My FOO", "f", "FOO");
+            var unknown = new Currency("My FOO", "My FOO", "f", "FOO");
 
             var amt1 = new Amount(1.23M, unknown);
 
