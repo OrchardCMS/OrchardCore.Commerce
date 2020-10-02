@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
+using OrchardCore.Commerce.Serialization;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -78,14 +79,17 @@ namespace OrchardCore.Commerce.Services
 
         public async Task<ShoppingCart> Deserialize(string serializedCart)
         {
+            var cart = new ShoppingCart();
             if (String.IsNullOrEmpty(serializedCart))
             {
-                return new ShoppingCart();
+                return cart;
             }
-            var cart = JsonSerializer.Deserialize<ShoppingCart>(serializedCart);
+            JsonElement.ArrayEnumerator cartItems = JsonDocument.Parse(serializedCart).RootElement.GetProperty("Items").EnumerateArray();
             // Actualize prices
-            foreach (var item in cart.Items)
+            foreach (JsonElement itemElement in cartItems)
             {
+                ShoppingCartItem item = itemElement.ToObject<ShoppingCartItem>();
+                cart.AddItem(item);
                 if (item.Prices != null && item.Prices.Any())
                 {
                     cart.SetPrices(item, item.Prices.Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price))));
@@ -107,13 +111,20 @@ namespace OrchardCore.Commerce.Services
                     ContentTypeDefinition type = types[product.ContentItem.ContentType];
                     (ContentTypePartDefinition attributePartDefinition, ContentPartFieldDefinition attributeFieldDefinition)
                         = GetFieldDefinition(type, attr.AttributeName);
-                    IProductAttributeValue newAttr = _attributeProviders
-                        .Select(provider => provider.CreateFromJsonElement(
-                            attributePartDefinition,
-                            attributeFieldDefinition,
-                            attr.Value is null ? default(JsonElement) : (JsonElement)attr.Value))
-                        .FirstOrDefault(v => v != null);
-                    attributes.Add(newAttr);
+                    if (attributePartDefinition != null && attributeFieldDefinition != null)
+                    {
+                        IProductAttributeValue newAttr = _attributeProviders
+                            .Select(provider => provider.CreateFromJsonElement(
+                                attributePartDefinition,
+                                attributeFieldDefinition,
+                                attr.Value is null ? default(JsonElement) : (JsonElement)attr.Value))
+                            .FirstOrDefault(v => v != null);
+                        attributes.Add(newAttr);
+                    }
+                    else
+                    {
+                        attributes.Add(attr);
+                    }
                 }
                 newCartItems.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
             }
@@ -126,8 +137,8 @@ namespace OrchardCore.Commerce.Services
         private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products)
                 => products
                     .Select(p => _contentDefinitionManager.GetTypeDefinition(p.ContentItem.ContentType))
-                    .Distinct()
-                    .ToDictionary(t => t.Name);
+                    .GroupBy(t => t.Name)
+                    .ToDictionary(g => g.Key, g => g.First());
 
         private async Task<Dictionary<string, ProductPart>> GetProducts(IEnumerable<string> skus)
             => (await _productService.GetProducts(skus)).ToDictionary(p => p.Sku);
@@ -143,7 +154,7 @@ namespace OrchardCore.Commerce.Services
                     .Fields
                     .Select(f => (p, f))
                     .Where(pf => p.Name == partAndField[0] && pf.f.Name == partAndField[1]))
-                .First();
+                .FirstOrDefault();
         }
     }
 }
