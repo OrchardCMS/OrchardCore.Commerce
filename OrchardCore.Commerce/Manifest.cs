@@ -16,7 +16,8 @@ using OrchardCore.Modules.Manifest;
     Description = "Registers the core components used by the Commerce features.",
     Dependencies = new[]
     {
-        "OrchardCore.Contents"
+        "OrchardCore.Contents",
+        "OrchardCore.Workflows"
     }
 )]
 

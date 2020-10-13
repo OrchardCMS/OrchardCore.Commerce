@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Services
     /// <summary>
     /// Handles looking up products by SKU.
     /// </summary>
-    public class ProductPartContentAliasProvider : IContentAliasProvider
+    public class ProductPartContentAliasProvider : IContentHandleProvider
     {
         private readonly ISession _session;
 

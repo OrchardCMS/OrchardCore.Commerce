@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Models
 {
@@ -37,12 +38,14 @@ namespace OrchardCore.Commerce.Models
         /// <summary>
         /// The number of lines in the cart.
         /// </summary>
+        [JsonIgnore]
         public int Count => Items.Count;
 
         /// <summary>
         /// The total number of items (i.e. products) in the cart.
         /// In other words, the sum of quantities of all lines.
         /// </summary>
+        [JsonIgnore]
         public int ItemCount => Items.Sum(item => item.Quantity);
 
         /// <summary>

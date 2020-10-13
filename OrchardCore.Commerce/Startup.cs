@@ -37,7 +37,7 @@ namespace OrchardCore.Commerce
             // Product
             services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
             services.AddScoped<IDataMigration, ProductMigrations>();
-            services.AddScoped<IContentAliasProvider, ProductPartContentAliasProvider>();
+            services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
             services.AddScoped<IProductService, ProductService>();
             services.AddContentPart<ProductPart>()
                 .UseDisplayDriver<ProductPartDisplayDriver>();

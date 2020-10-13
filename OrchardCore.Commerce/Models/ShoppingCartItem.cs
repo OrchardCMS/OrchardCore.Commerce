@@ -56,12 +56,12 @@ namespace OrchardCore.Commerce.Models
         public IReadOnlyList<PrioritizedPrice> Prices { get; }
 
         /// <summary>
-        /// Creates a new shopping cart item that is a clone of this, but with additional prices.
+        /// Creates a new shopping cart item that is a clone of this, but with prices replaced with new ones.
         /// </summary>
         /// <param name="prices">The list of prices to add.</param>
         /// <returns>The new shopping cart item.</returns>
         public ShoppingCartItem WithPrices(IEnumerable<PrioritizedPrice> prices)
-            => new ShoppingCartItem(Quantity, ProductSku, Attributes, Prices.Concat(prices));
+            => new ShoppingCartItem(Quantity, ProductSku, Attributes, prices);
 
         /// <summary>
         /// Creates a new shopping cart item that is a clone of this, but with an additional price.

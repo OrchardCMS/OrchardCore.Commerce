@@ -2,6 +2,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Commerce.Indexes;
+using YesSql.Sql;
 
 namespace OrchardCore.Commerce.Migrations
 {
@@ -23,9 +24,10 @@ namespace OrchardCore.Commerce.Migrations
                 .Attachable()
                 .WithDescription("Makes a content item into a product."));
 
-            SchemaBuilder.CreateMapIndexTable(nameof(ProductPartIndex), table => table
-                .Column<string>("Sku", col => col.WithLength(128))
-                .Column<string>("ContentItemId", c => c.WithLength(26))
+            SchemaBuilder.CreateMapIndexTable<ProductPartIndex>(
+                table => table
+                    .Column<string>("Sku", col => col.WithLength(128))
+                    .Column<string>("ContentItemId", c => c.WithLength(26))
             );
 
             SchemaBuilder.AlterTable(nameof(ProductPartIndex), table => table
