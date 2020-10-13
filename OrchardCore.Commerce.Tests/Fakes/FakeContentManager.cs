@@ -47,6 +47,8 @@ namespace OrchardCore.Commerce.Tests.Fakes
 
         public Task RemoveAsync(ContentItem contentItem) => throw new NotImplementedException();
 
+        public Task SaveDraftAsync(ContentItem contentItem) => throw new NotImplementedException();
+
         public Task UnpublishAsync(ContentItem contentItem) => throw new NotImplementedException();
 
         public Task UpdateAsync(ContentItem contentItem) => throw new NotImplementedException();
