@@ -33,6 +33,6 @@ Globalization should be taken into account at every step.
 ## Setting up your dev environment
 
 1. Clone this repository.
-2. Build and run the `SampleWebApp` project (in order to restore Orchard Core packages, you may need to add [the Orchard dev repository](https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json) to your list of Nuget repositories).
+2. Build and run the `SampleWebApp` project.
 3. From the admin, enable the module's only feature.
 4. (optional) Start using the features, by creating a new `Product` content type, and adding the product part to it.
