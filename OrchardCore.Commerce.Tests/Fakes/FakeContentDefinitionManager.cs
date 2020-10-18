@@ -14,6 +14,9 @@ namespace OrchardCore.Commerce.Tests.Fakes
         public IChangeToken ChangeToken => throw new System.NotImplementedException();
         public void DeletePartDefinition(string name) => throw new System.NotImplementedException();
         public void DeleteTypeDefinition(string name) => throw new System.NotImplementedException();
+
+        public Task<string> GetIdentifierAsync() => throw new System.NotImplementedException();
+
         public ContentPartDefinition GetPartDefinition(string name) => throw new System.NotImplementedException();
 
         public ContentTypeDefinition GetTypeDefinition(string name)
