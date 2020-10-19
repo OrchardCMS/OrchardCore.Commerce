@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.0.0-rc2-14744" />
-    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc2-14744" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc2-14744" />
-    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.0.0-rc2-14744" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.0.0-rc2-14899" />
+    <PackageReference Include="OrchardCore.ContentTypes" Version="1.0.0-rc2-14899" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc2-14899" />
+    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.0.0-rc2-14899" />
   </ItemGroup>
 
   <ItemGroup>
