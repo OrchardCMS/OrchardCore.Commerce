@@ -34,7 +34,7 @@ namespace OrchardCore.Commerce.Serialization
                 }
             }
 
-            if (priority > int.MinValue && amount.Currency != Currency.UnspecifiedCurrency)
+            if (priority > int.MinValue && !amount.Currency.Equals(Currency.UnspecifiedCurrency))
             {
                 return new PrioritizedPrice(priority, amount);
             }
