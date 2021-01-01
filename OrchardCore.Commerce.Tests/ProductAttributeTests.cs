@@ -162,7 +162,7 @@ namespace OrchardCore.Commerce.Tests
         [Fact]
         public void ProductAttributeServiceCanFindAttributesOnProducts()
         {
-            var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), new FakeContentDefinitionService(), null);
+            var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), null);
             var product = new ContentItem() {
                 ContentType = "Product"
             };
