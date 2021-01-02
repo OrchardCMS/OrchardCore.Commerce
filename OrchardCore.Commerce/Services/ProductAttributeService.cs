@@ -9,7 +9,6 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentTypes.Services;
 
 namespace OrchardCore.Commerce.Services
 {
@@ -17,24 +16,21 @@ namespace OrchardCore.Commerce.Services
     {
         private readonly IEnumerable<IProductAttributeProvider> _attributeProviders;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IMemoryCache _cache;
 
         public ProductAttributeService(
             IEnumerable<IProductAttributeProvider> attributeProviders,
             IContentDefinitionManager contentDefinitionManager,
-            IContentDefinitionService contentDefinitionService,
             IMemoryCache cache)
         {
             _attributeProviders = attributeProviders;
             _contentDefinitionManager = contentDefinitionManager;
-            _contentDefinitionService = contentDefinitionService;
             _cache = cache;
         }
 
         public IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product)
         {
-            var productAttributeTypes = GetProductAttributeFieldTypes();
+            var productAttributeTypes = GetProductAttributeFieldTypes(product);
 
             ProductAttributeField GetContentField(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition)
                 => product.Get<ContentPart>(typePartDefinition.Name)
@@ -58,10 +54,10 @@ namespace OrchardCore.Commerce.Services
                     .Where(description => description.Field != null);
         }
 
-        private IDictionary<string, Type> GetProductAttributeFieldTypes()
-            => _contentDefinitionService
-                .GetFields()
-                .Where(t => typeof(ProductAttributeField).IsAssignableFrom(t))
+        private IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product)
+            => product.OfType<ContentPart>()
+                .SelectMany(parts => parts.OfType<ProductAttributeField>())
+                .Select(t => t.GetType())
                 .ToDictionary(t => t.Name);
 
         private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field)
