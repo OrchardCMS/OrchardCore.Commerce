@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.0.0-rc2-15734" />
-    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.0.0-rc2-15734" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc2-15734" />
-    <PackageReference Include="OrchardCore.Navigation.Core" Version="1.0.0-rc2-15734" />
-    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.0.0-rc2-15734" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.0.0-rc2-16143" />
+    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.0.0-rc2-16143" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.0.0-rc2-16143" />
+    <PackageReference Include="OrchardCore.Navigation.Core" Version="1.0.0-rc2-16143" />
+    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.0.0-rc2-16143" />
   </ItemGroup>
 
   <ItemGroup>
