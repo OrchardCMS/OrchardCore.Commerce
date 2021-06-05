@@ -50,12 +50,6 @@ namespace OrchardCore.Commerce.Tests
         }
 
         [Fact]
-        public void EnsureCurrenciesAcrossAllProviders()
-        {
-            Assert.Equal(115, new TestMoneyService().Currencies.Count());
-        }
-
-        [Fact]
         public void CanGetCurrenciesFromMultipleProviders()
         {
             Assert.Equal("EUR", new TestMoneyService().GetCurrency("EUR").CurrencyIsoCode);
