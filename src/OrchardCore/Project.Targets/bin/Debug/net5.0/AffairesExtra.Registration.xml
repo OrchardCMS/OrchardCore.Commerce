@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AffairesExtra.Registration</name>
+    </assembly>
+    <members>
+        <member name="M:AffairesExtra.Registration.Controllers.ControllerExtensions.RegisterUser(Microsoft.AspNetCore.Mvc.Controller,OrchardCore.Users.ViewModels.RegisterViewModel,System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Returns the created user, otherwise returns null
+            </summary>
+            <param name="controller"></param>
+            <param name="model"></param>
+            <param name="confirmationEmailSubject"></param>
+            <param name="logger"></param>
+            <returns></returns>
+        </member>
+        <member name="P:AffairesExtra.Registration.ViewModels.ContactInfo.Name">
+            <summary>
+            The name of the dealer place
+            </summary>
+        </member>
+    </members>
+</doc>

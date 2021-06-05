@@ -13,11 +13,9 @@ using System.Reflection;
 
 [assembly: Microsoft.AspNetCore.Mvc.ApplicationParts.ProvideApplicationPartFactoryAttribute("Microsoft.AspNetCore.Mvc.ApplicationParts.CompiledRazorAssemblyApplicationPartFac" +
     "tory, Microsoft.AspNetCore.Mvc.Razor")]
-[assembly: System.Reflection.AssemblyCompanyAttribute("OrchardCore.Commerce")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyProductAttribute("OrchardCore.Commerce")]
+[assembly: System.Reflection.AssemblyCopyrightAttribute("Orchard Core Community and Contributors")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0-rc2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OrchardCore.Commerce.Views")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 

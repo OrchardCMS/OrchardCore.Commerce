@@ -17,7 +17,9 @@ namespace OrchardCore.Commerce.Models
         /// Constructs a new shopping cart item
         /// </summary>
         /// <param name="quantity">The number of products</param>
-        /// <param name="product">The product</param>
+        /// <param name="productSku">The product SKU</param>
+        /// <param name="attributes"></param>
+        /// <param name="prices"></param>
         public ShoppingCartItem(
             int quantity,
             string productSku,

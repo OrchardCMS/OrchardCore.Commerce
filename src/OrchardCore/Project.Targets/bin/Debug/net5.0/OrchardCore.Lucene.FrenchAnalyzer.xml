@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OrchardCore.Lucene.FrenchAnalyzer</name>
+    </assembly>
+    <members>
+        <member name="T:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer">
+            <summary>
+            <see cref="T:Lucene.Net.Analysis.Analyzer"/> for French language. 
+            <para>
+            Supports an external list of stopwords (words that
+            will not be indexed at all) and an external list of exclusions (word that will
+            not be stemmed, but indexed).
+            A default set of stopwords is used unless an alternative list is specified, but the
+            exclusion list is empty by default.
+            </para>
+            <para>You must specify the required <see cref="T:Lucene.Net.Util.LuceneVersion"/>
+            compatibility when creating FrenchAnalyzer:
+            <list type="bullet">
+              <item><description> As of 3.6, <see cref="T:Lucene.Net.Analysis.Fr.FrenchLightStemFilter"/> is used for less aggressive stemming.</description></item>
+              <item><description> As of 3.1, Snowball stemming is done with <see cref="T:Lucene.Net.Analysis.Snowball.SnowballFilter"/>, 
+                   <see cref="T:Lucene.Net.Analysis.Core.LowerCaseFilter"/> is used prior to <see cref="T:Lucene.Net.Analysis.Core.StopFilter"/>, and <see cref="T:Lucene.Net.Analysis.Util.ElisionFilter"/> and 
+                   Snowball stopwords are used by default.</description></item>
+              <item><description> As of 2.9, <see cref="T:Lucene.Net.Analysis.Core.StopFilter"/> preserves position
+                   increments</description></item>
+            </list>
+            
+            </para>
+            <para><b>NOTE</b>: This class uses the same <see cref="T:Lucene.Net.Util.LuceneVersion"/>
+            dependent settings as <see cref="T:Lucene.Net.Analysis.Standard.StandardAnalyzer"/>.</para>
+            </summary>
+        </member>
+        <member name="F:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.FRENCH_STOP_WORDS">
+            <summary>
+            Extended list of typical French stopwords. </summary>
+            @deprecated (3.1) remove in Lucene 5.0 (index bw compat) 
+        </member>
+        <member name="F:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.DEFAULT_STOPWORD_FILE">
+            <summary>
+            File containing default French stopwords. </summary>
+        </member>
+        <member name="F:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.DEFAULT_ARTICLES">
+            <summary>
+            Default set of articles for <see cref="T:Lucene.Net.Analysis.Util.ElisionFilter"/> </summary>
+        </member>
+        <member name="F:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.excltable">
+            <summary>
+            Contains words that should be indexed but not stemmed.
+            </summary>
+        </member>
+        <member name="P:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.DefaultStopSet">
+            <summary>
+            Returns an unmodifiable instance of the default stop-words set. </summary>
+            <returns> an unmodifiable instance of the default stop-words set. </returns>
+        </member>
+        <member name="F:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.DefaultSetHolder.DEFAULT_STOP_SET_30">
+            @deprecated (3.1) remove this in Lucene 5.0, index bw compat 
+        </member>
+        <member name="M:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion)">
+            <summary>
+            Builds an analyzer with the default stop words (<see cref="P:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.DefaultStopSet"/>).
+            </summary>
+        </member>
+        <member name="M:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion,Lucene.Net.Analysis.Util.CharArraySet)">
+            <summary>
+            Builds an analyzer with the given stop words
+            </summary>
+            <param name="matchVersion">
+                     lucene compatibility version </param>
+            <param name="stopwords">
+                     a stopword set </param>
+        </member>
+        <member name="M:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion,Lucene.Net.Analysis.Util.CharArraySet,Lucene.Net.Analysis.Util.CharArraySet)">
+            <summary>
+            Builds an analyzer with the given stop words
+            </summary>
+            <param name="matchVersion">
+                     lucene compatibility version </param>
+            <param name="stopwords">
+                     a stopword set </param>
+            <param name="stemExclutionSet">
+                     a stemming exclusion set </param>
+        </member>
+        <member name="M:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchAnalyzer.CreateComponents(System.String,System.IO.TextReader)">
+            <summary>
+            Creates
+            <see cref="T:Lucene.Net.Analysis.TokenStreamComponents"/>
+            used to tokenize all the text in the provided <see cref="T:System.IO.TextReader"/>.
+            </summary>
+            <returns> <see cref="T:Lucene.Net.Analysis.TokenStreamComponents"/>
+                    built from a <see cref="T:Lucene.Net.Analysis.Standard.StandardTokenizer"/> filtered with
+                    <see cref="T:Lucene.Net.Analysis.Standard.StandardFilter"/>, <see cref="T:Lucene.Net.Analysis.Util.ElisionFilter"/>,
+                    <see cref="T:Lucene.Net.Analysis.Core.LowerCaseFilter"/>, <see cref="T:Lucene.Net.Analysis.Core.StopFilter"/>,
+                    <see cref="T:Lucene.Net.Analysis.Miscellaneous.SetKeywordMarkerFilter"/> if a stem exclusion set is
+                    provided, and <see cref="T:Lucene.Net.Analysis.Fr.FrenchLightStemFilter"/> </returns>
+                    
+        </member>
+        <member name="T:OrchardCore.Lucene.FrenchAnalyzer.Analyzers.FrenchStemmer">
+            <summary>
+            This class was automatically generated by a Snowball to Java compiler
+            It implements the stemming algorithm defined by a snowball script.
+            </summary>
+        </member>
+    </members>
+</doc>

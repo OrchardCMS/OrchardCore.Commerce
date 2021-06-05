@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AffairesExtra.Contents</name>
+    </assembly>
+    <members>
+        <member name="T:AffairesExtra.Contents.Drivers.AdPartDisplayDriver">
+             <summary>
+            
+             </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Drivers.AdPartDisplayDriver.#ctor(OrchardCore.ContentManagement.IContentManager,Microsoft.AspNetCore.Authorization.IAuthorizationService,Microsoft.AspNetCore.Http.IHttpContextAccessor,Microsoft.Extensions.Localization.IStringLocalizer{AffairesExtra.Contents.Drivers.AdPartDisplayDriver},YesSql.ISession)">
+             <summary>
+            
+             </summary>
+             <param name="contentManager"></param>
+             <param name="authorizationService"></param>
+             <param name="httpContextAccessor"></param>
+             <param name="localizer"></param>
+             <param name="session"></param>
+        </member>
+        <member name="M:AffairesExtra.Contents.Drivers.AdPartDisplayDriver.UpdateAsync(AffairesExtra.Contents.Models.AdPart,OrchardCore.DisplayManagement.ModelBinding.IUpdateModel)">
+             <summary>
+            
+             </summary>
+             <param name="model"></param>
+             <param name="updater"></param>
+             <returns></returns>
+        </member>
+        <member name="P:AffairesExtra.Contents.Indexes.FeaturedAdIndex.CreatedBy">
+            <summary>
+            The owner id
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Indexes.ViewedStatsIndex.ModifiedUtc">
+            <summary>
+            The <see cref="T:System.DateTime"/> value the task was modified.
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Models.AdPart.IsClassifiedAd">
+            <summary>
+            Whether to make the content item a Classified Ad.
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Models.AdPart.IsFind">
+            <summary>
+            If is Classified Ad, add the option to set the ad as "find or sell".
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Models.AdPart.IsFeaturedAd">
+            <summary>
+            Whether to make the content item a Featured Ad.
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Models.AdPart.FeaturedCreatedUtc">
+            <summary>
+            When the ad has been set as Featured.
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Models.AdPart.Dealer">
+            <summary>
+            The Dealer associated to the ad. A Classified Ad never has an associated Dealer by definition.
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Models.AdPart.Phone">
+            <summary>
+            The phone number associated with the Classified Ad.
+            This phone number is used for reaching the advertiser for product informations.
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Contents.Models.AdPart.Email">
+            <summary>
+            The email associated with the Classified Ad.
+            This email is used for reaching the advertiser for product informations.
+            </summary>
+        </member>
+        <member name="T:AffairesExtra.Contents.Services.IFeaturedAdsManager">
+            <summary>
+            Provides services to create and retrieve <see cref="T:AffairesExtra.Contents.Indexes.FeaturedAdIndex"/> instances.
+            </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Services.IFeaturedAdsManager.GetFeaturedAdsAsync">
+            <summary>
+            Returns a page of <see cref="T:AffairesExtra.Contents.Indexes.FeaturedAdIndex"/>.
+            </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Services.IFeaturedAdsManager.CreateAsync(AffairesExtra.Contents.Indexes.FeaturedAdIndex)">
+            <summary>
+            Creates a new <see cref="T:AffairesExtra.Contents.Indexes.FeaturedAdIndex"/>. 
+            </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Services.IFeaturedAdsManager.RemoveAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Remove a <see cref="T:AffairesExtra.Contents.Indexes.FeaturedAdIndex"/>. 
+            </summary>
+        </member>
+        <member name="T:AffairesExtra.Contents.Services.IViewedStatsManager">
+            <summary>
+            Provides services to create and retrieve <see cref="T:AffairesExtra.Contents.Indexes.ViewedStatsIndex"/> instances.
+            </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Services.IViewedStatsManager.GetViewedStatsIndexAsync(System.Int32)">
+            <summary>
+            Returns a page of <see cref="T:AffairesExtra.Contents.Indexes.ViewedStatsIndex"/>.
+            </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Services.IViewedStatsManager.CreateAsync(AffairesExtra.Contents.Indexes.ViewedStatsIndex)">
+            <summary>
+            Creates a new <see cref="T:AffairesExtra.Contents.Indexes.ViewedStatsIndex"/>. 
+            </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Services.IViewedStatsManager.UpdateAsync(AffairesExtra.Contents.Indexes.ViewedStatsIndex)">
+            <summary>
+            Update a <see cref="T:AffairesExtra.Contents.Indexes.ViewedStatsIndex"/>. 
+            </summary>
+        </member>
+        <member name="M:AffairesExtra.Contents.Services.IViewedStatsManager.RemoveAsync(OrchardCore.ContentManagement.ContentItem)">
+            <summary>
+            Creates a new <see cref="T:AffairesExtra.Contents.Indexes.ViewedStatsIndex"/>. 
+            </summary>
+        </member>
+    </members>
+</doc>

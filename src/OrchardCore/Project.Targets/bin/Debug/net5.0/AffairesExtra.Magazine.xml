@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AffairesExtra.Magazine</name>
+    </assembly>
+    <members>
+        <member name="P:AffairesExtra.Magazine.Indexes.AdvertorialIndex.CreatedBy">
+            <summary>
+            The owner id
+            </summary>
+        </member>
+        <member name="P:AffairesExtra.Magazine.Indexes.PublicationIndex.CreatedBy">
+            <summary>
+            The owner id
+            </summary>
+        </member>
+    </members>
+</doc>

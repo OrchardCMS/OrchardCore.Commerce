@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>MoneyDataType</id>
+    <version>1.0.0-rc2</version>
+    <authors>Bertrand Le Roy, Allan Nielsen</authors>
+    <license type="expression">BSD-3-Clause</license>
+    <licenseUrl>https://licenses.nuget.org/BSD-3-Clause</licenseUrl>
+    <projectUrl>https://www.orchardcore.net/</projectUrl>
+    <description>New data type representing monetary values.</description>
+    <copyright>Copyright © 2019 .NET Foundation</copyright>
+    <tags>Currency, Money</tags>
+    <repository url="https://github.com/OrchardCMS/OrchardCore" />
+    <dependencies>
+      <group targetFramework="net5.0">
+        <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Json" version="5.0.2" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\Repositories\OrchardCore.Commerce\src\OrchardCore\MoneyDataType\bin\Debug\net5.0\MoneyDataType.dll" target="lib\net5.0\MoneyDataType.dll" />
+    <file src="E:\Repositories\OrchardCore.Commerce\src\OrchardCore\MoneyDataType\bin\Debug\net5.0\MoneyDataType.xml" target="lib\net5.0\MoneyDataType.xml" />
+  </files>
+</package>

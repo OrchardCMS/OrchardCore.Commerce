@@ -19,27 +19,27 @@
       "NETCOREAPP3_0_OR_GREATER",
       "NETCOREAPP3_1_OR_GREATER"
     ],
-    "languageVersion": "9.0",
+    "languageVersion": "8.0",
     "platform": "",
     "allowUnsafe": false,
-    "warningsAsErrors": false,
+    "warningsAsErrors": true,
     "optimize": false,
     "keyFile": "",
     "emitEntryPoint": false,
-    "xmlDoc": false,
+    "xmlDoc": true,
     "debugType": "portable"
   },
   "targets": {
     ".NETCoreApp,Version=v5.0": {
-      "OrchardCore.Commerce/1.0.0": {
+      "OrchardCore.Commerce/1.0.0-rc2": {
         "dependencies": {
-          "AddressDataType": "1.0.0",
-          "MoneyDataType": "1.0.0",
-          "OrchardCore.ContentManagement": "1.0.0-rc2-16270",
-          "OrchardCore.ContentTypes.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Module.Targets": "1.0.0-rc2-16270",
-          "OrchardCore.Navigation.Core": "1.0.0-rc2-16270",
-          "OrchardCore.Workflows.Abstractions": "1.0.0-rc2-16270",
+          "AddressDataType": "1.0.0-rc2",
+          "MoneyDataType": "1.0.0-rc2",
+          "OrchardCore.ContentManagement": "1.0.0-rc2-16100",
+          "OrchardCore.ContentTypes.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Module.Targets": "1.0.0-rc2-16100",
+          "OrchardCore.Navigation.Core": "1.0.0-rc2-16100",
+          "OrchardCore.Workflows.Abstractions": "1.0.0-rc2-16100",
           "Microsoft.AspNetCore.Antiforgery": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "5.0.0.0",
@@ -294,7 +294,6 @@
           "System.Text.Encoding.Reference": "5.0.0.0",
           "System.Text.Encoding.Extensions.Reference": "5.0.0.0",
           "System.Text.Encodings.Web": "5.0.0.0",
-          "System.Text.Json.Reference": "5.0.0.0",
           "System.Text.RegularExpressions.Reference": "5.0.0.0",
           "System.Threading.Channels": "5.0.0.0",
           "System.Threading.Reference": "5.0.0.0",
@@ -331,6 +330,34 @@
           "OrchardCore.Commerce.dll": {}
         }
       },
+      "AngleSharp/0.14.0": {
+        "dependencies": {
+          "System.Text.Encoding.CodePages": "4.7.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/AngleSharp.dll": {
+            "assemblyVersion": "0.14.0.0",
+            "fileVersion": "0.14.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/AngleSharp.dll": {}
+        }
+      },
+      "AngleSharp.Css/0.14.2": {
+        "dependencies": {
+          "AngleSharp": "0.14.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/AngleSharp.Css.dll": {
+            "assemblyVersion": "0.14.2.0",
+            "fileVersion": "0.14.2.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/AngleSharp.Css.dll": {}
+        }
+      },
       "Castle.Core/4.4.1": {
         "dependencies": {
           "NETStandard.Library": "1.6.1",
@@ -341,7 +368,7 @@
           "System.Dynamic.Runtime": "4.3.0",
           "System.Reflection": "4.3.0",
           "System.Reflection.Emit": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.3.0",
+          "System.Reflection.TypeExtensions": "4.4.0",
           "System.Xml.XmlDocument": "4.3.0"
         },
         "runtime": {
@@ -365,10 +392,10 @@
           "lib/net5.0/Dapper.StrongName.dll": {}
         }
       },
-      "Fluid.Core/2.0.13": {
+      "Fluid.Core/2.0.3": {
         "dependencies": {
           "Microsoft.Extensions.FileProviders.Abstractions": "1.1.1",
-          "Parlot": "0.0.17",
+          "Parlot": "0.0.12",
           "TimeZoneConverter": "3.3.0"
         },
         "runtime": {
@@ -381,73 +408,88 @@
           "lib/net5.0/Fluid.dll": {}
         }
       },
-      "Microsoft.AspNetCore.JsonPatch/5.0.6": {
+      "HtmlSanitizer/5.0.376": {
+        "dependencies": {
+          "AngleSharp": "0.14.0",
+          "AngleSharp.Css": "0.14.2"
+        },
+        "runtime": {
+          "lib/netstandard2.0/HtmlSanitizer.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.376.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/HtmlSanitizer.dll": {}
+        }
+      },
+      "Microsoft.AspNetCore.JsonPatch/5.0.5": {
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "Newtonsoft.Json": "13.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.AspNetCore.JsonPatch.dll": {
-            "assemblyVersion": "5.0.6.0",
-            "fileVersion": "5.0.621.22305"
+            "assemblyVersion": "5.0.5.0",
+            "fileVersion": "5.0.521.16708"
           }
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.AspNetCore.JsonPatch.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Mvc.NewtonsoftJson/5.0.6": {
+      "Microsoft.AspNetCore.Mvc.NewtonsoftJson/5.0.5": {
         "dependencies": {
-          "Microsoft.AspNetCore.JsonPatch": "5.0.6",
+          "Microsoft.AspNetCore.JsonPatch": "5.0.5",
           "Newtonsoft.Json": "13.0.1",
           "Newtonsoft.Json.Bson": "1.0.2"
         },
         "runtime": {
           "lib/net5.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll": {
-            "assemblyVersion": "5.0.6.0",
-            "fileVersion": "5.0.621.22305"
+            "assemblyVersion": "5.0.5.0",
+            "fileVersion": "5.0.521.16708"
           }
         },
         "compile": {
           "lib/net5.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Mvc.Razor.Extensions/5.0.6": {
+      "Microsoft.AspNetCore.Mvc.Razor.Extensions/5.0.5": {
         "dependencies": {
-          "Microsoft.AspNetCore.Razor.Language": "5.0.6",
-          "Microsoft.CodeAnalysis.Razor": "5.0.6"
+          "Microsoft.AspNetCore.Razor.Language": "5.0.5",
+          "Microsoft.CodeAnalysis.Razor": "5.0.5"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.AspNetCore.Mvc.Razor.Extensions.dll": {
-            "assemblyVersion": "5.0.6.0",
-            "fileVersion": "5.0.621.22305"
+            "assemblyVersion": "5.0.5.0",
+            "fileVersion": "5.0.521.16708"
           }
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.AspNetCore.Mvc.Razor.Extensions.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation/5.0.6": {
+      "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation/5.0.5": {
         "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Razor.Extensions": "5.0.6",
-          "Microsoft.CodeAnalysis.Razor": "5.0.6",
+          "Microsoft.AspNetCore.Mvc.Razor.Extensions": "5.0.5",
+          "Microsoft.CodeAnalysis.Razor": "5.0.5",
           "Microsoft.Extensions.DependencyModel": "5.0.0"
         },
         "runtime": {
           "lib/net5.0/Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.dll": {
-            "assemblyVersion": "5.0.6.0",
-            "fileVersion": "5.0.621.22305"
+            "assemblyVersion": "5.0.5.0",
+            "fileVersion": "5.0.521.16708"
           }
         },
         "compile": {
           "lib/net5.0/Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.dll": {}
         }
       },
-      "Microsoft.AspNetCore.Razor.Language/5.0.6": {
+      "Microsoft.AspNetCore.Razor.Language/5.0.5": {
         "runtime": {
           "lib/netstandard2.0/Microsoft.AspNetCore.Razor.Language.dll": {
-            "assemblyVersion": "5.0.6.0",
-            "fileVersion": "5.0.621.22305"
+            "assemblyVersion": "5.0.5.0",
+            "fileVersion": "5.0.521.16708"
           }
         },
         "compile": {
@@ -571,16 +613,16 @@
           "lib/netcoreapp3.1/Microsoft.CodeAnalysis.CSharp.dll": {}
         }
       },
-      "Microsoft.CodeAnalysis.Razor/5.0.6": {
+      "Microsoft.CodeAnalysis.Razor/5.0.5": {
         "dependencies": {
-          "Microsoft.AspNetCore.Razor.Language": "5.0.6",
+          "Microsoft.AspNetCore.Razor.Language": "5.0.5",
           "Microsoft.CodeAnalysis.CSharp": "3.8.0",
           "Microsoft.CodeAnalysis.Common": "3.8.0"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.CodeAnalysis.Razor.dll": {
-            "assemblyVersion": "5.0.6.0",
-            "fileVersion": "5.0.621.22305"
+            "assemblyVersion": "5.0.5.0",
+            "fileVersion": "5.0.521.16708"
           }
         },
         "compile": {
@@ -761,7 +803,7 @@
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "Microsoft.IdentityModel.Logging": "6.8.0",
-          "System.Security.Cryptography.Cng": "4.5.0"
+          "System.Security.Cryptography.Cng": "4.7.0"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.Tokens.dll": {
@@ -793,6 +835,24 @@
           "Microsoft.NETCore.Platforms": "3.1.0"
         }
       },
+      "MimeKit/2.11.0": {
+        "dependencies": {
+          "Portable.BouncyCastle": "1.8.10",
+          "System.Buffers": "4.5.1",
+          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Security.Cryptography.Pkcs": "4.7.0",
+          "System.Text.Encoding.CodePages": "4.7.0"
+        },
+        "runtime": {
+          "lib/net50/MimeKit.dll": {
+            "assemblyVersion": "2.11.0.0",
+            "fileVersion": "2.11.0.0"
+          }
+        },
+        "compile": {
+          "lib/net50/MimeKit.dll": {}
+        }
+      },
       "MySqlConnector/1.3.2": {
         "runtime": {
           "lib/net5.0/MySqlConnector.dll": {
@@ -802,6 +862,17 @@
         },
         "compile": {
           "lib/net5.0/MySqlConnector.dll": {}
+        }
+      },
+      "NCrontab/3.3.1": {
+        "runtime": {
+          "lib/netstandard2.0/NCrontab.dll": {
+            "assemblyVersion": "3.3.1.0",
+            "fileVersion": "3.3.1.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/NCrontab.dll": {}
         }
       },
       "NETStandard.Library/1.6.1": {
@@ -877,6 +948,20 @@
           "lib/netstandard2.0/Newtonsoft.Json.Bson.dll": {}
         }
       },
+      "NodaTime/3.0.5": {
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.7.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NodaTime.dll": {
+            "assemblyVersion": "3.0.5.0",
+            "fileVersion": "3.0.5.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/NodaTime.dll": {}
+        }
+      },
       "Npgsql/5.0.4": {
         "dependencies": {
           "System.Runtime.CompilerServices.Unsafe": "4.7.1"
@@ -891,10 +976,27 @@
           "lib/net5.0/Npgsql.dll": {}
         }
       },
-      "OrchardCore.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore/1.0.0-rc2-16100": {
         "dependencies": {
-          "Newtonsoft.Json": "13.0.1",
-          "ZString": "2.4.2"
+          "NodaTime": "3.0.5",
+          "OrchardCore.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Infrastructure.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Localization.Abstractions": "1.0.0-rc2-16100",
+          "NCrontab": "3.3.1"
+        },
+        "runtime": {
+          "lib/net5.0/OrchardCore.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/net5.0/OrchardCore.dll": {}
+        }
+      },
+      "OrchardCore.Abstractions/1.0.0-rc2-16100": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.1"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Abstractions.dll": {
@@ -906,12 +1008,11 @@
           "lib/net5.0/OrchardCore.Abstractions.dll": {}
         }
       },
-      "OrchardCore.ContentManagement/1.0.0-rc2-16270": {
+      "OrchardCore.ContentManagement/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.ContentManagement.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Data.YesSql": "1.0.0-rc2-16270",
-          "OrchardCore.Infrastructure.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Recipes.Abstractions": "1.0.0-rc2-16270"
+          "OrchardCore.ContentManagement.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Infrastructure.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Recipes.Abstractions": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.ContentManagement.dll": {
@@ -923,10 +1024,10 @@
           "lib/net5.0/OrchardCore.ContentManagement.dll": {}
         }
       },
-      "OrchardCore.ContentManagement.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.ContentManagement.Abstractions/1.0.0-rc2-16100": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.1",
-          "OrchardCore.Data.YesSql.Abstractions": "1.0.0-rc2-16270"
+          "OrchardCore.Data.Abstractions": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.ContentManagement.Abstractions.dll": {
@@ -938,10 +1039,10 @@
           "lib/net5.0/OrchardCore.ContentManagement.Abstractions.dll": {}
         }
       },
-      "OrchardCore.ContentManagement.Display/1.0.0-rc2-16270": {
+      "OrchardCore.ContentManagement.Display/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.ContentManagement.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.DisplayManagement": "1.0.0-rc2-16270"
+          "OrchardCore.ContentManagement.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.DisplayManagement": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.ContentManagement.Display.dll": {
@@ -953,10 +1054,10 @@
           "lib/net5.0/OrchardCore.ContentManagement.Display.dll": {}
         }
       },
-      "OrchardCore.ContentTypes.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.ContentTypes.Abstractions/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.ContentManagement.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.ContentManagement.Display": "1.0.0-rc2-16270"
+          "OrchardCore.ContentManagement.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.ContentManagement.Display": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.ContentTypes.Abstractions.dll": {
@@ -968,10 +1069,11 @@
           "lib/net5.0/OrchardCore.ContentTypes.Abstractions.dll": {}
         }
       },
-      "OrchardCore.Data/1.0.0-rc2-16270": {
+      "OrchardCore.Data/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Data.Abstractions": "1.0.0-rc2-16270"
+          "OrchardCore.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Data.Abstractions": "1.0.0-rc2-16100",
+          "YesSql": "3.0.2"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Data.dll": {
@@ -983,7 +1085,10 @@
           "lib/net5.0/OrchardCore.Data.dll": {}
         }
       },
-      "OrchardCore.Data.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.Data.Abstractions/1.0.0-rc2-16100": {
+        "dependencies": {
+          "YesSql.Core": "3.0.2"
+        },
         "runtime": {
           "lib/net5.0/OrchardCore.Data.Abstractions.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -994,47 +1099,14 @@
           "lib/net5.0/OrchardCore.Data.Abstractions.dll": {}
         }
       },
-      "OrchardCore.Data.YesSql/1.0.0-rc2-16270": {
-        "dependencies": {
-          "OrchardCore.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Data": "1.0.0-rc2-16270",
-          "OrchardCore.Data.YesSql.Abstractions": "1.0.0-rc2-16270",
-          "YesSql": "3.0.6"
-        },
-        "runtime": {
-          "lib/net5.0/OrchardCore.Data.YesSql.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        },
-        "compile": {
-          "lib/net5.0/OrchardCore.Data.YesSql.dll": {}
-        }
-      },
-      "OrchardCore.Data.YesSql.Abstractions/1.0.0-rc2-16270": {
-        "dependencies": {
-          "OrchardCore.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Data.Abstractions": "1.0.0-rc2-16270",
-          "YesSql.Abstractions": "3.0.6"
-        },
-        "runtime": {
-          "lib/net5.0/OrchardCore.Data.YesSql.Abstractions.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        },
-        "compile": {
-          "lib/net5.0/OrchardCore.Data.YesSql.Abstractions.dll": {}
-        }
-      },
-      "OrchardCore.DisplayManagement/1.0.0-rc2-16270": {
+      "OrchardCore.DisplayManagement/1.0.0-rc2-16100": {
         "dependencies": {
           "Castle.Core": "4.4.1",
-          "OrchardCore.DisplayManagement.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Infrastructure.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Liquid.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Localization.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Mvc.Core": "1.0.0-rc2-16270"
+          "OrchardCore.DisplayManagement.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Infrastructure.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Liquid.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Localization.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Mvc.Core": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.DisplayManagement.dll": {
@@ -1046,7 +1118,7 @@
           "lib/net5.0/OrchardCore.DisplayManagement.dll": {}
         }
       },
-      "OrchardCore.DisplayManagement.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.DisplayManagement.Abstractions/1.0.0-rc2-16100": {
         "runtime": {
           "lib/net5.0/OrchardCore.DisplayManagement.Abstractions.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -1057,10 +1129,28 @@
           "lib/net5.0/OrchardCore.DisplayManagement.Abstractions.dll": {}
         }
       },
-      "OrchardCore.Infrastructure.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.Infrastructure/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.Data.Abstractions": "1.0.0-rc2-16270"
+          "HtmlSanitizer": "5.0.376",
+          "MimeKit": "2.11.0",
+          "OrchardCore": "1.0.0-rc2-16100",
+          "OrchardCore.Data": "1.0.0-rc2-16100",
+          "OrchardCore.Infrastructure.Abstractions": "1.0.0-rc2-16100"
+        },
+        "runtime": {
+          "lib/net5.0/OrchardCore.Infrastructure.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/net5.0/OrchardCore.Infrastructure.dll": {}
+        }
+      },
+      "OrchardCore.Infrastructure.Abstractions/1.0.0-rc2-16100": {
+        "dependencies": {
+          "OrchardCore.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.Data.Abstractions": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Infrastructure.Abstractions.dll": {
@@ -1072,9 +1162,9 @@
           "lib/net5.0/OrchardCore.Infrastructure.Abstractions.dll": {}
         }
       },
-      "OrchardCore.Liquid.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.Liquid.Abstractions/1.0.0-rc2-16100": {
         "dependencies": {
-          "Fluid.Core": "2.0.13"
+          "Fluid.Core": "2.0.3"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Liquid.Abstractions.dll": {
@@ -1086,7 +1176,7 @@
           "lib/net5.0/OrchardCore.Liquid.Abstractions.dll": {}
         }
       },
-      "OrchardCore.Localization.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.Localization.Abstractions/1.0.0-rc2-16100": {
         "runtime": {
           "lib/net5.0/OrchardCore.Localization.Abstractions.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -1097,9 +1187,9 @@
           "lib/net5.0/OrchardCore.Localization.Abstractions.dll": {}
         }
       },
-      "OrchardCore.Module.Targets/1.0.0-rc2-16270": {
+      "OrchardCore.Module.Targets/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.Abstractions": "1.0.0-rc2-16270"
+          "OrchardCore.Abstractions": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Module.Targets.dll": {
@@ -1111,12 +1201,12 @@
           "lib/net5.0/OrchardCore.Module.Targets.dll": {}
         }
       },
-      "OrchardCore.Mvc.Core/1.0.0-rc2-16270": {
+      "OrchardCore.Mvc.Core/1.0.0-rc2-16100": {
         "dependencies": {
-          "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "5.0.6",
-          "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": "5.0.6",
-          "OrchardCore.Abstractions": "1.0.0-rc2-16270",
-          "OrchardCore.DisplayManagement.Abstractions": "1.0.0-rc2-16270"
+          "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "5.0.5",
+          "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": "5.0.5",
+          "OrchardCore.Abstractions": "1.0.0-rc2-16100",
+          "OrchardCore.DisplayManagement.Abstractions": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Mvc.Core.dll": {
@@ -1128,9 +1218,9 @@
           "lib/net5.0/OrchardCore.Mvc.Core.dll": {}
         }
       },
-      "OrchardCore.Navigation.Core/1.0.0-rc2-16270": {
+      "OrchardCore.Navigation.Core/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.Infrastructure.Abstractions": "1.0.0-rc2-16270"
+          "OrchardCore.Infrastructure": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Navigation.Core.dll": {
@@ -1142,10 +1232,9 @@
           "lib/net5.0/OrchardCore.Navigation.Core.dll": {}
         }
       },
-      "OrchardCore.Recipes.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.Recipes.Abstractions/1.0.0-rc2-16100": {
         "dependencies": {
-          "Newtonsoft.Json": "13.0.1",
-          "OrchardCore.Data.YesSql.Abstractions": "1.0.0-rc2-16270"
+          "OrchardCore.Data.Abstractions": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Recipes.Abstractions.dll": {
@@ -1157,10 +1246,10 @@
           "lib/net5.0/OrchardCore.Recipes.Abstractions.dll": {}
         }
       },
-      "OrchardCore.Workflows.Abstractions/1.0.0-rc2-16270": {
+      "OrchardCore.Workflows.Abstractions/1.0.0-rc2-16100": {
         "dependencies": {
-          "OrchardCore.DisplayManagement": "1.0.0-rc2-16270",
-          "OrchardCore.Liquid.Abstractions": "1.0.0-rc2-16270"
+          "OrchardCore.DisplayManagement": "1.0.0-rc2-16100",
+          "OrchardCore.Liquid.Abstractions": "1.0.0-rc2-16100"
         },
         "runtime": {
           "lib/net5.0/OrchardCore.Workflows.Abstractions.dll": {
@@ -1172,15 +1261,26 @@
           "lib/net5.0/OrchardCore.Workflows.Abstractions.dll": {}
         }
       },
-      "Parlot/0.0.17": {
+      "Parlot/0.0.12": {
         "runtime": {
           "lib/netstandard2.1/Parlot.dll": {
-            "assemblyVersion": "0.0.17.0",
-            "fileVersion": "0.0.17.0"
+            "assemblyVersion": "0.0.12.0",
+            "fileVersion": "0.0.12.0"
           }
         },
         "compile": {
           "lib/netstandard2.1/Parlot.dll": {}
+        }
+      },
+      "Portable.BouncyCastle/1.8.10": {
+        "runtime": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {
+            "assemblyVersion": "1.8.10.0",
+            "fileVersion": "1.8.10.1"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {}
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
@@ -1354,15 +1454,7 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "System.Buffers/4.3.0": {
-        "dependencies": {
-          "System.Diagnostics.Debug": "4.3.0",
-          "System.Diagnostics.Tracing": "4.3.0",
-          "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
-          "System.Threading": "4.3.0"
-        }
-      },
+      "System.Buffers/4.5.1": {},
       "System.Collections/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "3.1.0",
@@ -1430,7 +1522,7 @@
           "System.Reflection": "4.3.0",
           "System.Reflection.Extensions": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.3.0",
+          "System.Reflection.TypeExtensions": "4.4.0",
           "System.Resources.ResourceManager": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Runtime.Extensions": "4.3.0",
@@ -1510,7 +1602,7 @@
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.3.0",
+          "System.Reflection.TypeExtensions": "4.4.0",
           "System.Resources.ResourceManager": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Runtime.Extensions": "4.3.0",
@@ -1569,7 +1661,7 @@
       "System.IO.Compression/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "3.1.0",
-          "System.Buffers": "4.3.0",
+          "System.Buffers": "4.5.1",
           "System.Collections": "4.3.0",
           "System.Diagnostics.Debug": "4.3.0",
           "System.IO": "4.3.0",
@@ -1587,7 +1679,7 @@
       },
       "System.IO.Compression.ZipFile/4.3.0": {
         "dependencies": {
-          "System.Buffers": "4.3.0",
+          "System.Buffers": "4.5.1",
           "System.IO": "4.3.0",
           "System.IO.Compression": "4.3.0",
           "System.IO.FileSystem": "4.3.0",
@@ -1638,7 +1730,7 @@
           "System.Reflection.Emit.Lightweight": "4.3.0",
           "System.Reflection.Extensions": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.3.0",
+          "System.Reflection.TypeExtensions": "4.4.0",
           "System.Resources.ResourceManager": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Runtime.Extensions": "4.3.0",
@@ -1752,12 +1844,7 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "System.Reflection.TypeExtensions/4.3.0": {
-        "dependencies": {
-          "System.Reflection": "4.3.0",
-          "System.Runtime": "4.3.0"
-        }
-      },
+      "System.Reflection.TypeExtensions/4.4.0": {},
       "System.Resources.ResourceManager/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "3.1.0",
@@ -1860,7 +1947,7 @@
           "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
         }
       },
-      "System.Security.Cryptography.Cng/4.5.0": {},
+      "System.Security.Cryptography.Cng/4.7.0": {},
       "System.Security.Cryptography.Csp/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "3.1.0",
@@ -1911,6 +1998,14 @@
           "runtime.native.System.Security.Cryptography.OpenSsl": "4.3.0"
         }
       },
+      "System.Security.Cryptography.Pkcs/4.7.0": {
+        "dependencies": {
+          "System.Security.Cryptography.Cng": "4.7.0"
+        },
+        "compile": {
+          "ref/netcoreapp3.0/System.Security.Cryptography.Pkcs.dll": {}
+        }
+      },
       "System.Security.Cryptography.Primitives/4.3.0": {
         "dependencies": {
           "System.Diagnostics.Debug": "4.3.0",
@@ -1955,7 +2050,7 @@
           "System.Runtime.InteropServices": "4.3.0",
           "System.Runtime.Numerics": "4.3.0",
           "System.Security.Cryptography.Algorithms": "4.3.0",
-          "System.Security.Cryptography.Cng": "4.5.0",
+          "System.Security.Cryptography.Cng": "4.7.0",
           "System.Security.Cryptography.Csp": "4.3.0",
           "System.Security.Cryptography.Encoding": "4.3.0",
           "System.Security.Cryptography.OpenSsl": "4.3.0",
@@ -1994,7 +2089,17 @@
           "System.Text.Encoding": "4.3.0"
         }
       },
-      "System.Text.Json/5.0.0": {},
+      "System.Text.Json/5.0.2": {
+        "runtime": {
+          "lib/netcoreapp3.0/System.Text.Json.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.521.16609"
+          }
+        },
+        "compile": {
+          "lib/netcoreapp3.0/System.Text.Json.dll": {}
+        }
+      },
       "System.Text.RegularExpressions/4.3.0": {
         "dependencies": {
           "System.Runtime": "4.3.0"
@@ -2086,14 +2191,14 @@
           "lib/netstandard2.0/TimeZoneConverter.dll": {}
         }
       },
-      "YesSql/3.0.6": {
+      "YesSql/3.0.2": {
         "dependencies": {
-          "YesSql.Abstractions": "3.0.6",
-          "YesSql.Core": "3.0.6",
-          "YesSql.Provider.MySql": "3.0.6",
-          "YesSql.Provider.PostgreSql": "3.0.6",
-          "YesSql.Provider.SqlServer": "3.0.6",
-          "YesSql.Provider.Sqlite": "3.0.6"
+          "YesSql.Abstractions": "3.0.2",
+          "YesSql.Core": "3.0.2",
+          "YesSql.Provider.MySql": "3.0.2",
+          "YesSql.Provider.PostgreSql": "3.0.2",
+          "YesSql.Provider.SqlServer": "3.0.2",
+          "YesSql.Provider.Sqlite": "3.0.2"
         },
         "runtime": {
           "lib/netstandard2.1/YesSql.dll": {
@@ -2105,7 +2210,7 @@
           "lib/netstandard2.1/YesSql.dll": {}
         }
       },
-      "YesSql.Abstractions/3.0.6": {
+      "YesSql.Abstractions/3.0.2": {
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "3.1.0",
           "System.Collections.Immutable": "5.0.0"
@@ -2120,13 +2225,13 @@
           "lib/netstandard2.1/YesSql.Abstractions.dll": {}
         }
       },
-      "YesSql.Core/3.0.6": {
+      "YesSql.Core/3.0.2": {
         "dependencies": {
           "Dapper.StrongName": "2.0.78",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.0",
           "Newtonsoft.Json": "13.0.1",
           "System.Collections.Immutable": "5.0.0",
-          "YesSql.Abstractions": "3.0.6"
+          "YesSql.Abstractions": "3.0.2"
         },
         "runtime": {
           "lib/netstandard2.1/YesSql.Core.dll": {
@@ -2138,10 +2243,10 @@
           "lib/netstandard2.1/YesSql.Core.dll": {}
         }
       },
-      "YesSql.Provider.MySql/3.0.6": {
+      "YesSql.Provider.MySql/3.0.2": {
         "dependencies": {
           "MySqlConnector": "1.3.2",
-          "YesSql.Core": "3.0.6"
+          "YesSql.Core": "3.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/YesSql.Provider.MySql.dll": {
@@ -2153,10 +2258,10 @@
           "lib/netstandard2.0/YesSql.Provider.MySql.dll": {}
         }
       },
-      "YesSql.Provider.PostgreSql/3.0.6": {
+      "YesSql.Provider.PostgreSql/3.0.2": {
         "dependencies": {
           "Npgsql": "5.0.4",
-          "YesSql.Core": "3.0.6"
+          "YesSql.Core": "3.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/YesSql.Provider.PostgreSql.dll": {
@@ -2168,10 +2273,10 @@
           "lib/netstandard2.0/YesSql.Provider.PostgreSql.dll": {}
         }
       },
-      "YesSql.Provider.Sqlite/3.0.6": {
+      "YesSql.Provider.Sqlite/3.0.2": {
         "dependencies": {
           "Microsoft.Data.Sqlite": "5.0.4",
-          "YesSql.Core": "3.0.6"
+          "YesSql.Core": "3.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/YesSql.Provider.Sqlite.dll": {
@@ -2183,10 +2288,10 @@
           "lib/netstandard2.0/YesSql.Provider.Sqlite.dll": {}
         }
       },
-      "YesSql.Provider.SqlServer/3.0.6": {
+      "YesSql.Provider.SqlServer/3.0.2": {
         "dependencies": {
           "Microsoft.Data.SqlClient": "2.1.2",
-          "YesSql.Core": "3.0.6"
+          "YesSql.Core": "3.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/YesSql.Provider.SqlServer.dll": {
@@ -2198,21 +2303,7 @@
           "lib/netstandard2.0/YesSql.Provider.SqlServer.dll": {}
         }
       },
-      "ZString/2.4.2": {
-        "dependencies": {
-          "System.Memory": "4.5.4"
-        },
-        "runtime": {
-          "lib/netstandard2.1/ZString.dll": {
-            "assemblyVersion": "2.4.2.0",
-            "fileVersion": "2.4.2.0"
-          }
-        },
-        "compile": {
-          "lib/netstandard2.1/ZString.dll": {}
-        }
-      },
-      "AddressDataType/1.0.0": {
+      "AddressDataType/1.0.0-rc2": {
         "runtime": {
           "AddressDataType.dll": {}
         },
@@ -2220,10 +2311,10 @@
           "AddressDataType.dll": {}
         }
       },
-      "MoneyDataType/1.0.0": {
+      "MoneyDataType/1.0.0-rc2": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.1",
-          "System.Text.Json": "5.0.0"
+          "System.Text.Json": "5.0.2"
         },
         "runtime": {
           "MoneyDataType.dll": {}
@@ -3756,12 +3847,6 @@
         },
         "compileOnly": true
       },
-      "System.Text.Json.Reference/5.0.0.0": {
-        "compile": {
-          "System.Text.Json.dll": {}
-        },
-        "compileOnly": true
-      },
       "System.Text.RegularExpressions.Reference/5.0.0.0": {
         "compile": {
           "System.Text.RegularExpressions.dll": {}
@@ -3933,10 +4018,24 @@
     }
   },
   "libraries": {
-    "OrchardCore.Commerce/1.0.0": {
+    "OrchardCore.Commerce/1.0.0-rc2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "AngleSharp/0.14.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-34w9I7nyszfEYBY8g7T3B0AtWlOivNh+QoWc3KECRwbmcNyqWmb4huihtmpH2Ds7rIRRHMMPv9yfPBxxjBn03g==",
+      "path": "anglesharp/0.14.0",
+      "hashPath": "anglesharp.0.14.0.nupkg.sha512"
+    },
+    "AngleSharp.Css/0.14.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2USpPu9V/+1iBwHpanBsqr1eR+3vxKe19ZsnejbZfxNOadsMvUUkJ+0OjMsQmT0ExSW4vjCKXq9K/JWv0ie8JQ==",
+      "path": "anglesharp.css/0.14.2",
+      "hashPath": "anglesharp.css.0.14.2.nupkg.sha512"
     },
     "Castle.Core/4.4.1": {
       "type": "package",
@@ -3952,47 +4051,54 @@
       "path": "dapper.strongname/2.0.78",
       "hashPath": "dapper.strongname.2.0.78.nupkg.sha512"
     },
-    "Fluid.Core/2.0.13": {
+    "Fluid.Core/2.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-UShGT2CiZrbbADRiAcdorVIh3rzEhl4ypwaJ4Bl0c8Fs/cJS2mYtW+2zQ1QouxpcDZtL+Tu27qgJ/mGcmg5cng==",
-      "path": "fluid.core/2.0.13",
-      "hashPath": "fluid.core.2.0.13.nupkg.sha512"
+      "sha512": "sha512-0RVMHsj7vBhR70C4k93tZZ5R/UM6AMcalGLXhiPXJrH4MwCAVYaZN23zEwgH+cxoIwpVpITzwFh0HE223tomwA==",
+      "path": "fluid.core/2.0.3",
+      "hashPath": "fluid.core.2.0.3.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.JsonPatch/5.0.6": {
+    "HtmlSanitizer/5.0.376": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-mLVtFR/wxJaWeHxBm7S+WoDGcYfE3Q9Tkf6m/BWzaZn2fWuTl3ojY3m6rDIBkPj2hGcgBvCnVmyYH5R2fkN+Aw==",
-      "path": "microsoft.aspnetcore.jsonpatch/5.0.6",
-      "hashPath": "microsoft.aspnetcore.jsonpatch.5.0.6.nupkg.sha512"
+      "sha512": "sha512-Jj2fn4g7w/Q4ljW/qzhhggzodmvURMpBSs6reCOZB7vo8bmgb4F6kSLFoFF7sAIPcYuhTsEqBtr3//1oF0VSDg==",
+      "path": "htmlsanitizer/5.0.376",
+      "hashPath": "htmlsanitizer.5.0.376.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Mvc.NewtonsoftJson/5.0.6": {
+    "Microsoft.AspNetCore.JsonPatch/5.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-q4Z1EiWGJP8TYXU26sUX6NoBoUXK0FIwKS00I1kNt1B3mYCtSyEvxE8bbjxNfa0psFhVpbNrr0M0hS5sHMgQ6A==",
-      "path": "microsoft.aspnetcore.mvc.newtonsoftjson/5.0.6",
-      "hashPath": "microsoft.aspnetcore.mvc.newtonsoftjson.5.0.6.nupkg.sha512"
+      "sha512": "sha512-ViYrCnQFWP3BHVyq73YYe7OijodEp0qBt3l0H3tQtdGB83fb/uEBPGXGrSvfCLkLJPa/Rk4/ZH3oEQcQao2VUg==",
+      "path": "microsoft.aspnetcore.jsonpatch/5.0.5",
+      "hashPath": "microsoft.aspnetcore.jsonpatch.5.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Mvc.Razor.Extensions/5.0.6": {
+    "Microsoft.AspNetCore.Mvc.NewtonsoftJson/5.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-yygv2vC+GejwDytyW+AfX3zXb4/j1+980S5IoIVvidPh967yDfI5ZSy04O/0KAI72BdsLCchNfM6LFx4bCC27A==",
-      "path": "microsoft.aspnetcore.mvc.razor.extensions/5.0.6",
-      "hashPath": "microsoft.aspnetcore.mvc.razor.extensions.5.0.6.nupkg.sha512"
+      "sha512": "sha512-3Vd2hbJwrHFOk6dYpqFQ10BBLeJvMPmbx3hxqH5erxSlvFOufnq3C9Nnz+hPpaqazRAQcOgkAWGvBsB3AM2XlQ==",
+      "path": "microsoft.aspnetcore.mvc.newtonsoftjson/5.0.5",
+      "hashPath": "microsoft.aspnetcore.mvc.newtonsoftjson.5.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation/5.0.6": {
+    "Microsoft.AspNetCore.Mvc.Razor.Extensions/5.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-TvAUI37XKXCBJc17bCWJLFa7ljA9w1wT4mdr+l9t+r76HYL6j4pNX/4UCbkAryqh4htJlbOBQRUFNZK2PUqhhg==",
-      "path": "microsoft.aspnetcore.mvc.razor.runtimecompilation/5.0.6",
-      "hashPath": "microsoft.aspnetcore.mvc.razor.runtimecompilation.5.0.6.nupkg.sha512"
+      "sha512": "sha512-wj6Q8mcbL8xDS47axjojDiB0nBhRekBl2Ng/v9Hnk0TxxqD5eMxn6OeKELJjLkQqW6P4vCmdAiBEYLGAr5P/8g==",
+      "path": "microsoft.aspnetcore.mvc.razor.extensions/5.0.5",
+      "hashPath": "microsoft.aspnetcore.mvc.razor.extensions.5.0.5.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.Razor.Language/5.0.6": {
+    "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation/5.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-nrkAnHCRt6DrxCJ7DwZX+PjBJffR8GAL6IkXcZIAlJ61rBKC2vzobk5STDhnL0PU7PwpRZMShilmTqWOvPxFbQ==",
-      "path": "microsoft.aspnetcore.razor.language/5.0.6",
-      "hashPath": "microsoft.aspnetcore.razor.language.5.0.6.nupkg.sha512"
+      "sha512": "sha512-nzYMwt6zGvpWFD4RdMnPyJGzHgXusCjx6jOqGyJ+goZHi9QhzS94dUOyQ5Q3aULAC4Qh2B0p5Gx7V+7RJdr1XA==",
+      "path": "microsoft.aspnetcore.mvc.razor.runtimecompilation/5.0.5",
+      "hashPath": "microsoft.aspnetcore.mvc.razor.runtimecompilation.5.0.5.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Razor.Language/5.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wh4JC/1sWxythiEEUKacWqZWNWnx6Kbmpj6FhYc28zV2VAV1+c9Ii1y7fmRefZciJpI/b25bm7c8icT72g2O9g==",
+      "path": "microsoft.aspnetcore.razor.language/5.0.5",
+      "hashPath": "microsoft.aspnetcore.razor.language.5.0.5.nupkg.sha512"
     },
     "Microsoft.CodeAnalysis.Analyzers/3.0.0": {
       "type": "package",
@@ -4015,12 +4121,12 @@
       "path": "microsoft.codeanalysis.csharp/3.8.0",
       "hashPath": "microsoft.codeanalysis.csharp.3.8.0.nupkg.sha512"
     },
-    "Microsoft.CodeAnalysis.Razor/5.0.6": {
+    "Microsoft.CodeAnalysis.Razor/5.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-gY95qNMQarYTokEB4q5hYkXcwIziqdjhzsweuYw0TSYZ3rpN5OmduGXpCNQ6JU5Z3dWxWHy6dRqeO2b83OHYmw==",
-      "path": "microsoft.codeanalysis.razor/5.0.6",
-      "hashPath": "microsoft.codeanalysis.razor.5.0.6.nupkg.sha512"
+      "sha512": "sha512-UYfBFE6dWkFXAIZlc/p8DYawHAPdfPdWBcX5Zrvx8WxYV74qdomARTyDDArKfbfm2MMi2oIReNjabPrBz4T42w==",
+      "path": "microsoft.codeanalysis.razor/5.0.5",
+      "hashPath": "microsoft.codeanalysis.razor.5.0.5.nupkg.sha512"
     },
     "Microsoft.CSharp/4.7.0": {
       "type": "package",
@@ -4169,12 +4275,26 @@
       "path": "microsoft.win32.systemevents/4.7.0",
       "hashPath": "microsoft.win32.systemevents.4.7.0.nupkg.sha512"
     },
+    "MimeKit/2.11.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xZGy3hLMxbw0ks82N/NjVYsW7Qb4pMEPtoJ+kcoJw566KVF2RJh2+kl0rdmzitghgf7FpxPGJmCNgIh+iciBmg==",
+      "path": "mimekit/2.11.0",
+      "hashPath": "mimekit.2.11.0.nupkg.sha512"
+    },
     "MySqlConnector/1.3.2": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-yz5MDctGTTS8OeFdmdChG8n4bu93L2m/UH9JYkQaB7ibwBdP7jKEbf5YZkCOoH2AcZwkyga0jy1zDE9XyqE+Iw==",
       "path": "mysqlconnector/1.3.2",
       "hashPath": "mysqlconnector.1.3.2.nupkg.sha512"
+    },
+    "NCrontab/3.3.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-G3tzcIIgsiyZyVbHNPyn5+adaM9UjeVNgjrRsvXU7wo2sMhpvpQrir29dcjIND53H/fuTdgg9nI3SfFFg7barA==",
+      "path": "ncrontab/3.3.1",
+      "hashPath": "ncrontab.3.3.1.nupkg.sha512"
     },
     "NETStandard.Library/1.6.1": {
       "type": "package",
@@ -4197,6 +4317,13 @@
       "path": "newtonsoft.json.bson/1.0.2",
       "hashPath": "newtonsoft.json.bson.1.0.2.nupkg.sha512"
     },
+    "NodaTime/3.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ctgx76GTZ3hcE0lV/XepXskkZ2m3F/XSftwb/a3vK+vSorbT3QhGgWp/ZNb13oyKQhBdFIPiISilvx49LQggtw==",
+      "path": "nodatime/3.0.5",
+      "hashPath": "nodatime.3.0.5.nupkg.sha512"
+    },
     "Npgsql/5.0.4": {
       "type": "package",
       "serviceable": true,
@@ -4204,145 +4331,152 @@
       "path": "npgsql/5.0.4",
       "hashPath": "npgsql.5.0.4.nupkg.sha512"
     },
-    "OrchardCore.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-3+lecMpTADopgzhylQAkzcTj+2n/YlGi8TFsqR76PG/Pqy4TWvc4Po4qHsy1gDKpr2RRLcRzU8ShIeOzu7SeRQ==",
-      "path": "orchardcore.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-UCjycvRWuAXNoPD45tgIgvSNifR5fRjM/UNljWY3N01frkKvsMrKpB3RgRWEQTJUMVW0cy5hfEHwLLz1mlHGOA==",
+      "path": "orchardcore/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.ContentManagement/1.0.0-rc2-16270": {
+    "OrchardCore.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-4u7q5kKtnLTopMPfYmg3btppZUThB6sscHP0Jm1O5218dH4vgCxnuBVKJz1WDNugNTc0G7XsdSBRMM5sjWz8sw==",
-      "path": "orchardcore.contentmanagement/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.contentmanagement.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-TZMvGIUDLJBe4Jbuht+IvTcl8rHHeLZtdXYjvwKzJBA9r1Hnx1esrrT8fgY/nusKwCFb8CrwS4NEGyPtso1LIw==",
+      "path": "orchardcore.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.ContentManagement.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.ContentManagement/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-uwZpr/HfGFy4hoVKpRVRhCnySbTV7/hNHTAtdyPDTuN+khO/E85vqqWMc2RwkUSY4YrzXheDs1sAffzqqQT9MA==",
-      "path": "orchardcore.contentmanagement.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.contentmanagement.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-E9QHKKnJzX+8+XWvJHXWq+9pVW1UB5I9sWMUMRpMtCt2nXL9foSkOQED9xpfWjT2BIGj3LRA9ad/KmhPGjvx0Q==",
+      "path": "orchardcore.contentmanagement/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.contentmanagement.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.ContentManagement.Display/1.0.0-rc2-16270": {
+    "OrchardCore.ContentManagement.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-XBKXDPr52V9MFSMzDymbKqDcgL0iERFAiY5B12v6U7ZnT7Y7x3+RfzVXLwHCz1j1IxMTjC6cgXWntf5hjXODIQ==",
-      "path": "orchardcore.contentmanagement.display/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.contentmanagement.display.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-XeTuOYekE6+Rby2HNtEPSdW/Qeg8Sxl6T7gCMzYdUQOGpUjVxh/LdH8t4dKGj5Ji7VOxE73Zvq9nLu5qzF8fUA==",
+      "path": "orchardcore.contentmanagement.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.contentmanagement.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.ContentTypes.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.ContentManagement.Display/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-2Wpclx2beJ/d9Ys6zK9p8Xdi6scxLkxTLEGXirjppPht4pmMvMxoxVAwHGwcjG5veFKgcr+4vXwsbKhONMvCOQ==",
-      "path": "orchardcore.contenttypes.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.contenttypes.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-vNVhN7t5VWBS/XFo1DQFogfwxqt1ArWROwUBfPMAhXnFwV4Cf6phjJDsllsauSfhHc/nXYmltDhGgb+iXtyhkQ==",
+      "path": "orchardcore.contentmanagement.display/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.contentmanagement.display.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Data/1.0.0-rc2-16270": {
+    "OrchardCore.ContentTypes.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-9nIKkNprvdTizD+cGJxFzRwtHuMK2OhxPalzXpD+g+zUymF48EWsAHiXPNMmKiWVcGKXZJwdhlQMn7ZicHAtWA==",
-      "path": "orchardcore.data/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.data.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-OkSKC5PfAZBM//VY97yQL6jgU88JGWsKbXZiUBUR3xJXpLo9g1u1CNzGNv9EY3bunREeYAzeVgMHlanuIYtHoQ==",
+      "path": "orchardcore.contenttypes.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.contenttypes.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Data.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.Data/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ze/P0RUPLDfo2LV4E0lcw2bZqfn+BiY7tkDH9kPvRdC3kl5bQMNCboFdo7jOuWUJ+L3Yy+2014aXIHbWJ9NOQw==",
-      "path": "orchardcore.data.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.data.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-EVzuJtnmXlejGs7yahblBoqq+UbxkzPMduU8fp4gHiScmm3LUQBPxyX0xOVbEEYTOKCWZWfZp/OPy3CzT89vtA==",
+      "path": "orchardcore.data/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.data.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Data.YesSql/1.0.0-rc2-16270": {
+    "OrchardCore.Data.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-TqA5Tng2iXqS7a2ecnPNBKgO8qopV761xmCjZ0THkWJ7jRn0hk2zY3Z8s43vkr4nYi2F3my06+LZEzYw4xM/0Q==",
-      "path": "orchardcore.data.yessql/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.data.yessql.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-JO4pLDtoiEYSYMsC81IHrQZ+SQ7paw5n/MCc3DWd0+L4xG2O/J0br4roBtZtc9OzYhDVmCL+IzGLFzcza5H0BQ==",
+      "path": "orchardcore.data.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.data.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Data.YesSql.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.DisplayManagement/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-OOYAxq20mJM/0mRRoIPoVw8awQdc+JySF5bkYmZ0bthMRugfPkoSkVQh9rG4XfRNipEuuyVE7qPp2h5ToRWjtg==",
-      "path": "orchardcore.data.yessql.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.data.yessql.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-6kKIzrTRnAVRzUI7iZ27Eea3NwiytC/zbXK3Z04hLonMe4iCA7GO+Hb3rwG7XQlFks9CP6P6q1PgRjwFweHISA==",
+      "path": "orchardcore.displaymanagement/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.displaymanagement.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.DisplayManagement/1.0.0-rc2-16270": {
+    "OrchardCore.DisplayManagement.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-txPpiHCr6ximMQCTTt1cL9iWK+QEj+Ys/veGRURaIiQSZMIkUWWnnpbBdh8L9bmNv4EqdEFCXZsnFTsaqhtlfg==",
-      "path": "orchardcore.displaymanagement/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.displaymanagement.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-iMyorHX0XFW8EzniJNGaixjBbEo3aL1mDSRbsptu8fk7lHZfckUtrUc5f/PDJV+yj9DcNKXCeQRnllrVes8CKA==",
+      "path": "orchardcore.displaymanagement.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.displaymanagement.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.DisplayManagement.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.Infrastructure/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-W0D+f5F8EjBep7VGiZjoUFtpqxaimlxDgBJ93zrIqMwBJzzmTKeFnhnoM89ajhG2/5iFlmifZ0/nCj6KLKG50g==",
-      "path": "orchardcore.displaymanagement.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.displaymanagement.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-SqtwpZljpnVErowcudaCTtV9XxCK6NE4jhEJyw+/gWmzIQPrTiQY8awEh8h42e1Ogo30KE3W1mAr/yHdxFpL9w==",
+      "path": "orchardcore.infrastructure/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.infrastructure.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Infrastructure.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.Infrastructure.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-BCkjKDEFoCvmTFU8lA4WnijEunzFq03Cin3wQsvF3mdVdE6NuH8ozWAMMkKAu2/LwlYEFaL6djR3PYJxEyCJLQ==",
-      "path": "orchardcore.infrastructure.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.infrastructure.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-4tp+hpzmjcb0w5Qux36t057W42BQ2X5LYXhmsDsIwlfb3U8wh4cVrWlFdH96PaAWhl+SiAmqpe41ZMngIuU7EA==",
+      "path": "orchardcore.infrastructure.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.infrastructure.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Liquid.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.Liquid.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0tggUQVmGqAFpOoJMFS+lwga2fGnevq8+yha7bVeW61kO7xEoVobmKyx106fKPYK1Twjo0vP2XjFuknGmmQkvQ==",
-      "path": "orchardcore.liquid.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.liquid.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-fLQkkl4S2u+VOlv/NBH4sze+0yCCFWpkuY8jQwWwOufepetBuXj48IxU7k1lYqBKkxVBR9sNo0k+4Jc+NVGQYg==",
+      "path": "orchardcore.liquid.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.liquid.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Localization.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.Localization.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qjIUg2oEZ+sz/6nZ3SL04lIXP9cJdIRSxKGX7BKHeCu5PEUURyfp2ujnGJICQYXOT0oOyPdiTFQh6iHn/vJEug==",
-      "path": "orchardcore.localization.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.localization.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-tnomIDUBF4Bd1ps3K7VqSVM7LKlsyobYkyKcXMxPmvJTdYnND4WpXIn41w0iSuu/WOhimWrSY6aiS/F79LCEjg==",
+      "path": "orchardcore.localization.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.localization.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Module.Targets/1.0.0-rc2-16270": {
+    "OrchardCore.Module.Targets/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-uS8L0WXxKeVCX+VT9UkOxf63zzSxMuVW8dMT2QH7MhWJGp+j4NQ54T9r3avbYC7MHIfO6tcsXFUbLWanOKGYPw==",
-      "path": "orchardcore.module.targets/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.module.targets.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-OxVvBo49mvOOm8gxcEqbjdpWB+3cAYBdb5yldQTPBsxpuc1iqdvmWHAx5G6FxvzWw7oijLbnokjKulhwW6KNyQ==",
+      "path": "orchardcore.module.targets/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.module.targets.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Mvc.Core/1.0.0-rc2-16270": {
+    "OrchardCore.Mvc.Core/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-2yCZM0RtDZ/UUAb47aNZzWQnTkz1v0XbLuj9LZX3q1gNYJ4rl5VdwA4GCh/2Ljy/0QT0igfj36lVv2ljVA0Mpw==",
-      "path": "orchardcore.mvc.core/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.mvc.core.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-Yp4LGmzfn2j8yu2aOcNj+iq/aLkk7QKdnFYJ1GZbC+YvjR7JbS/dMSKOkQ6tvLta2rrLo1TvXmBNJj4EocAyhw==",
+      "path": "orchardcore.mvc.core/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.mvc.core.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Navigation.Core/1.0.0-rc2-16270": {
+    "OrchardCore.Navigation.Core/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-PN3Je7ELN7jfL0Mj8wsXqrp4RbMZpyfsiQ/ajEGb13RBjqauwI09vq42XSly1zbq3j/pYiXLZr9OuGxce1DtrA==",
-      "path": "orchardcore.navigation.core/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.navigation.core.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-cCM1hwqXTPPabYHeam6xck8ml+bPWy2gk+v0Xxb6bzwnv3g8pBdQi18TxIIea/jHcx+DOQPFohGqZ0mD1VmYBQ==",
+      "path": "orchardcore.navigation.core/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.navigation.core.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Recipes.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.Recipes.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-t1yDZ8R3Dxcm3zaw0XvBsk2vZHpK9tQnWCkt2kgPXSHlXC3omImyuSwM50hVkT2j0WbVOhJuZS0B2AN0J3teuQ==",
-      "path": "orchardcore.recipes.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.recipes.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-pQcrCcIMGPUNcOeARYTDn0dN5CfHnV04a5nWFmKGfXsgRvef6IRqoZIcrs4F5dZsKeJJKjp8m0EgWCh8+Z68Ug==",
+      "path": "orchardcore.recipes.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.recipes.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "OrchardCore.Workflows.Abstractions/1.0.0-rc2-16270": {
+    "OrchardCore.Workflows.Abstractions/1.0.0-rc2-16100": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wFLPjUtxeSK86z+/4ZSw0omjlSU844LzwvUcOOjPyQwkQnwXNjpWC7wXEQVEBrF3+7mEcv5GzA03WBHNRneKyg==",
-      "path": "orchardcore.workflows.abstractions/1.0.0-rc2-16270",
-      "hashPath": "orchardcore.workflows.abstractions.1.0.0-rc2-16270.nupkg.sha512"
+      "sha512": "sha512-8xGA54FvkMhxT3P76G0M1hheRRfySefMs8DMJoFe6jC1MWZnUaHVEWfe2YT7JvEsUzq6LPFfpICf6q07aWvOeQ==",
+      "path": "orchardcore.workflows.abstractions/1.0.0-rc2-16100",
+      "hashPath": "orchardcore.workflows.abstractions.1.0.0-rc2-16100.nupkg.sha512"
     },
-    "Parlot/0.0.17": {
+    "Parlot/0.0.12": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-6PUJ5AGMnah06zWsJSfqcZnbsQuGKUfIV7lTGw8AzXaPYXry1SnNg94At6FagRTuYaW/9aViF7dQmuWNg7zb2Q==",
-      "path": "parlot/0.0.17",
-      "hashPath": "parlot.0.0.17.nupkg.sha512"
+      "sha512": "sha512-WHX7nFVo1kaJ7MphRsv7PwsoyveWJIjS+EE8IJMXsBZYxgEfKgpYf9Wt+HLIIjZR2alMW6TQ/kgQ3WsAPjX9EQ==",
+      "path": "parlot/0.0.12",
+      "hashPath": "parlot.0.0.12.nupkg.sha512"
+    },
+    "Portable.BouncyCastle/1.8.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XLhjNAwuVB9ynwn11l5K44eyozh8q6gFseTrlnLNttejimglX7+F9+vxh60LPjvA/DAt6fUdS43N3ah8K6eaWg==",
+      "path": "portable.bouncycastle/1.8.10",
+      "hashPath": "portable.bouncycastle.1.8.10.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "type": "package",
@@ -4491,12 +4625,12 @@
       "path": "system.appcontext/4.3.0",
       "hashPath": "system.appcontext.4.3.0.nupkg.sha512"
     },
-    "System.Buffers/4.3.0": {
+    "System.Buffers/4.5.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ratu44uTIHgeBeI0dE8DWvmXVBSo4u7ozRZZHOMmK/JPpYyo0dAfgSiHlpiObMQ5lEtEyIXA40sKRYg5J6A8uQ==",
-      "path": "system.buffers/4.3.0",
-      "hashPath": "system.buffers.4.3.0.nupkg.sha512"
+      "sha512": "sha512-Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg==",
+      "path": "system.buffers/4.5.1",
+      "hashPath": "system.buffers.4.5.1.nupkg.sha512"
     },
     "System.Collections/4.3.0": {
       "type": "package",
@@ -4778,12 +4912,12 @@
       "path": "system.reflection.primitives/4.3.0",
       "hashPath": "system.reflection.primitives.4.3.0.nupkg.sha512"
     },
-    "System.Reflection.TypeExtensions/4.3.0": {
+    "System.Reflection.TypeExtensions/4.4.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-7u6ulLcZbyxB5Gq0nMkQttcdBTx57ibzw+4IOXEfR+sXYQoHvjW5LTLyNr8O22UIMrqYbchJQJnos4eooYzYJA==",
-      "path": "system.reflection.typeextensions/4.3.0",
-      "hashPath": "system.reflection.typeextensions.4.3.0.nupkg.sha512"
+      "sha512": "sha512-dkmh/ySlwnXJp/1qYP9uyKkCK1CXR/REFzl7abHcArxBcV91mY2CgrrzSRA5Z/X4MevJWwXsklGRdR3A7K9zbg==",
+      "path": "system.reflection.typeextensions/4.4.0",
+      "hashPath": "system.reflection.typeextensions.4.4.0.nupkg.sha512"
     },
     "System.Resources.ResourceManager/4.3.0": {
       "type": "package",
@@ -4862,12 +4996,12 @@
       "path": "system.security.cryptography.algorithms/4.3.0",
       "hashPath": "system.security.cryptography.algorithms.4.3.0.nupkg.sha512"
     },
-    "System.Security.Cryptography.Cng/4.5.0": {
+    "System.Security.Cryptography.Cng/4.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-WG3r7EyjUe9CMPFSs6bty5doUqT+q9pbI80hlNzo2SkPkZ4VTuZkGWjpp77JB8+uaL4DFPRdBsAY+DX3dBK92A==",
-      "path": "system.security.cryptography.cng/4.5.0",
-      "hashPath": "system.security.cryptography.cng.4.5.0.nupkg.sha512"
+      "sha512": "sha512-4WQjFuypWtxb/bl/YwEE7LYGn4fgpsikFfBU6xwEm4YBYiRAhXAEJ62lILBu2JJSFbClIAntFTGfDZafn8yZTg==",
+      "path": "system.security.cryptography.cng/4.7.0",
+      "hashPath": "system.security.cryptography.cng.4.7.0.nupkg.sha512"
     },
     "System.Security.Cryptography.Csp/4.3.0": {
       "type": "package",
@@ -4889,6 +5023,13 @@
       "sha512": "sha512-h4CEgOgv5PKVF/HwaHzJRiVboL2THYCou97zpmhjghx5frc7fIvlkY1jL+lnIQyChrJDMNEXS6r7byGif8Cy4w==",
       "path": "system.security.cryptography.openssl/4.3.0",
       "hashPath": "system.security.cryptography.openssl.4.3.0.nupkg.sha512"
+    },
+    "System.Security.Cryptography.Pkcs/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0Srzh6YlhjuMxaqMyeCCdZs22cucaUAG6SKDd3gNHBJmre0VZ71ekzWu9rvLD4YXPetyNdPvV6Qst+8C++9v3Q==",
+      "path": "system.security.cryptography.pkcs/4.7.0",
+      "hashPath": "system.security.cryptography.pkcs.4.7.0.nupkg.sha512"
     },
     "System.Security.Cryptography.Primitives/4.3.0": {
       "type": "package",
@@ -4946,12 +5087,12 @@
       "path": "system.text.encoding.extensions/4.3.0",
       "hashPath": "system.text.encoding.extensions.4.3.0.nupkg.sha512"
     },
-    "System.Text.Json/5.0.0": {
+    "System.Text.Json/5.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-+luxMQNZ2WqeffBU7Ml6njIvxc8169NW2oU+ygNudXQGZiarjE7DOtN7bILiQjTZjkmwwRZGTtLzmdrSI/Ustw==",
-      "path": "system.text.json/5.0.0",
-      "hashPath": "system.text.json.5.0.0.nupkg.sha512"
+      "sha512": "sha512-I47dVIGiV6SfAyppphxqupertT/5oZkYLDCX6vC3HpOI4ZLjyoKAreUoem2ie6G0RbRuFrlqz/PcTQjfb2DOfQ==",
+      "path": "system.text.json/5.0.2",
+      "hashPath": "system.text.json.5.0.2.nupkg.sha512"
     },
     "System.Text.RegularExpressions/4.3.0": {
       "type": "package",
@@ -5023,68 +5164,61 @@
       "path": "timezoneconverter/3.3.0",
       "hashPath": "timezoneconverter.3.3.0.nupkg.sha512"
     },
-    "YesSql/3.0.6": {
+    "YesSql/3.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sw/5zm6Q0Vr2W0RECWVKtyBAIQVEFtX7JeMS3kt1QbqKGsZSybHrZJrkIQtFb3nllaFZf+9v+yYcpmOIw5cNNQ==",
-      "path": "yessql/3.0.6",
-      "hashPath": "yessql.3.0.6.nupkg.sha512"
+      "sha512": "sha512-s3KcP8RWz1r6v+wsZ65vhxdw1Fa124B5Z+7PcrwOUDvel9X9O+QjRHHJJbz1Y7fV7GS1wRywBOKXyYXgTjVEJw==",
+      "path": "yessql/3.0.2",
+      "hashPath": "yessql.3.0.2.nupkg.sha512"
     },
-    "YesSql.Abstractions/3.0.6": {
+    "YesSql.Abstractions/3.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-KcnIbvYj3Hel0srKHlcErfuz8Aoac1QvBC8DpggFND5kjV7uMGOPNv1zQZ3NCduTn416ODNw/b7iUL4D/o4wig==",
-      "path": "yessql.abstractions/3.0.6",
-      "hashPath": "yessql.abstractions.3.0.6.nupkg.sha512"
+      "sha512": "sha512-tKKrcI6n8iIqFw3kTmlITbJqHsMK4IiVMNlqD0gJ8ebCluoZ8kF1BVXZEN6vCZfAKni4miXj0RlMuiBoE8cl4A==",
+      "path": "yessql.abstractions/3.0.2",
+      "hashPath": "yessql.abstractions.3.0.2.nupkg.sha512"
     },
-    "YesSql.Core/3.0.6": {
+    "YesSql.Core/3.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-05aI+WyXvqQpLom9xO6pM9TKQKejW09xfVlE3XoNbHhdI+ftlnXksjLeo/YNdtqtRq8QID21WbOoOxj3uYLqjg==",
-      "path": "yessql.core/3.0.6",
-      "hashPath": "yessql.core.3.0.6.nupkg.sha512"
+      "sha512": "sha512-zB7o0qY5wtba2lihLx+hI1Y6pX+vAZW9TjcEmgzrsKbSw7GDkmGbYZLjJ3iVlSQyz2cbBIfD8mHZgUJFsGutdw==",
+      "path": "yessql.core/3.0.2",
+      "hashPath": "yessql.core.3.0.2.nupkg.sha512"
     },
-    "YesSql.Provider.MySql/3.0.6": {
+    "YesSql.Provider.MySql/3.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-s85xRq1TyzgKhwt0WEzr96FFgmHuNtBfOzSeFcufemsHyKN4WewnWRyhRo9bcTtLfigk3qf4ufoecyY5aR+gAQ==",
-      "path": "yessql.provider.mysql/3.0.6",
-      "hashPath": "yessql.provider.mysql.3.0.6.nupkg.sha512"
+      "sha512": "sha512-Kz0bhnFziS6FX4qtVKaf4pzwR7K281DopPa+7ABtfXTvNbCS9j5i71KyfrNGLqqM34speu463o26FRPi5X96LA==",
+      "path": "yessql.provider.mysql/3.0.2",
+      "hashPath": "yessql.provider.mysql.3.0.2.nupkg.sha512"
     },
-    "YesSql.Provider.PostgreSql/3.0.6": {
+    "YesSql.Provider.PostgreSql/3.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Lcj15ISyXLlJ8Mw0IhzwZ44m/dREVdFkv7kxoTRyUHqCcMPAF8RXcgOsS+UeFRStmmcD+nA3iSdO3/qdaoWDzA==",
-      "path": "yessql.provider.postgresql/3.0.6",
-      "hashPath": "yessql.provider.postgresql.3.0.6.nupkg.sha512"
+      "sha512": "sha512-+nNDhSbzC3mcm3hYPyDnShOkNwG5meZz6wjfpJxKtVeUWXzT0BSNytALCitjzzW1x77E4mwD0CRvyd0t3iramw==",
+      "path": "yessql.provider.postgresql/3.0.2",
+      "hashPath": "yessql.provider.postgresql.3.0.2.nupkg.sha512"
     },
-    "YesSql.Provider.Sqlite/3.0.6": {
+    "YesSql.Provider.Sqlite/3.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-FtbyrPGSe9FhH70M8cMk4pckhfEY2HE/VgQOuaCO8pJuIYHPeYV/7J1IP17SDmI30ZdTbu/EyOkzGjgH9YMBlQ==",
-      "path": "yessql.provider.sqlite/3.0.6",
-      "hashPath": "yessql.provider.sqlite.3.0.6.nupkg.sha512"
+      "sha512": "sha512-9pSm1S3UOzbA4rykYooZj5b78oNMOgFuDbkhWkKzkqhWaCHdLbxATkJTGXu5UtVNEEw0KgMnLDBlys3+dNyLZg==",
+      "path": "yessql.provider.sqlite/3.0.2",
+      "hashPath": "yessql.provider.sqlite.3.0.2.nupkg.sha512"
     },
-    "YesSql.Provider.SqlServer/3.0.6": {
+    "YesSql.Provider.SqlServer/3.0.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-l+q5NymBIlY7Q0eOXtH7i18wVil4F71CQ+NwZWY4uPWDEt19AIOOAg68h6/6E5xx4+bGPWSs/YyaVx4FARvCvA==",
-      "path": "yessql.provider.sqlserver/3.0.6",
-      "hashPath": "yessql.provider.sqlserver.3.0.6.nupkg.sha512"
+      "sha512": "sha512-6fPnOA602XykkvrL6BrSWxChhWVJRXbJHSPnNfU3eAYt3Mvhva5oa4T6BehBWYGbCUjxp1ojjqyqFg+Y0mvo4Q==",
+      "path": "yessql.provider.sqlserver/3.0.2",
+      "hashPath": "yessql.provider.sqlserver.3.0.2.nupkg.sha512"
     },
-    "ZString/2.4.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-3KNL8FCTz3yC28Kz4aX9fltreiMgUFefwvuzHP/Iq6cxOkaA/0z4EjrNox/ZI3kjI4gfZjBMdOT+jhX8q+WS+Q==",
-      "path": "zstring/2.4.2",
-      "hashPath": "zstring.2.4.2.nupkg.sha512"
-    },
-    "AddressDataType/1.0.0": {
+    "AddressDataType/1.0.0-rc2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "MoneyDataType/1.0.0": {
+    "MoneyDataType/1.0.0-rc2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -6355,11 +6489,6 @@
       "sha512": ""
     },
     "System.Text.Encodings.Web/5.0.0.0": {
-      "type": "referenceassembly",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "System.Text.Json.Reference/5.0.0.0": {
       "type": "referenceassembly",
       "serviceable": false,
       "sha512": ""

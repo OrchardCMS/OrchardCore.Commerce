@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "CzFNM4Qu0+C2MMMz0Xq9Vnv1h1cgqD+Ku18j1iS+s0o5ZTv7/hq0wacuA2iVG74wc14fG2kHxinIIg11sJjm3Q==",
+  "success": true,
+  "projectFilePath": "E:\\Repositories\\OrchardCore.Commerce\\src\\OrchardCore\\MoneyDataType\\MoneyDataType.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Jasmin Savard\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\Jasmin Savard\\.nuget\\packages\\system.text.json\\5.0.2\\system.text.json.5.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

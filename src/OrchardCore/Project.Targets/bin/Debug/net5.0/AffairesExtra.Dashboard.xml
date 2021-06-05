@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AffairesExtra.Dashboard</name>
+    </assembly>
+    <members>
+        <member name="M:AffairesExtra.Dashboard.Controllers.DashboardController.Remove(System.String,System.String)">
+            <summary>
+            TODO : NEEDS TO BE A FORM POST
+            </summary>
+            <param name="contentItemId"></param>
+            <param name="returnUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AffairesExtra.Dashboard.Controllers.DashboardController.Unpublish(System.String,System.String)">
+            <summary>
+            TODO : NEEDS TO BE A FORM POST
+            </summary>
+            <param name="contentItemId"></param>
+            <param name="returnUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AffairesExtra.Dashboard.DashboardAttribute">
+            <summary>
+            When applied to an action or a controller, intercepts any request to check whether it applies to the admin site.
+            If so it marks the request as such and ensures the user has the right to access it.
+            </summary>
+        </member>
+        <member name="T:AffairesExtra.Dashboard.DashboardFilter">
+            <summary>
+            Intercepts any request to check whether it applies to the dashboard site.
+            If so it marks the request as such and ensures the user as the right to access it.
+            </summary>
+        </member>
+    </members>
+</doc>

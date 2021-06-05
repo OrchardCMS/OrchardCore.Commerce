@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\OrchardCore.Build\Dependencies.AspNetCore.props" />
+  <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
     <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
@@ -15,18 +15,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="16.9.4" />
+    <PackageReference Include="Microsoft.TestPlatform.TestHost" />
     <PackageReference Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MoneyDataType\MoneyDataType.csproj" />
-    <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\MoneyDataType\MoneyDataType.csproj" />
   </ItemGroup>
+
+  <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>

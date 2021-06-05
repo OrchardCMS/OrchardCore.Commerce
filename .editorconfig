@@ -1,0 +1,20 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+[*.{json,csproj,props,targets,liquid}]
+indent_size = 2
+
+
+[*.{cs, cshtml}]
+indent_size = 4
+
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# CS1591: Commentaire XML manquant pour le type ou le membre visible publiquement
+dotnet_diagnostic.CS1591.severity = none

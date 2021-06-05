@@ -3,21 +3,39 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleWebApp", "SampleWebApp\SampleWebApp.csproj", "{34FC102A-94ED-4432-861C-13ECB61A2CE9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressDataType", "AddressDataType\AddressDataType.csproj", "{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyDataType", "MoneyDataType\MoneyDataType.csproj", "{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce", "OrchardCore.Commerce\OrchardCore.Commerce.csproj", "{2BD08529-A96A-4783-8784-593DA6DE49D5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests", "OrchardCore.Commerce.Tests\OrchardCore.Commerce.Tests.csproj", "{1245BC54-3984-48C2-9BDC-DB88E7E00A84}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D15D472D-A6EF-441F-8278-6350D89E90D2}"
 	ProjectSection(SolutionItems) = preProject
-		OrchardCore.Build\Dependencies.AspNetCore.props = OrchardCore.Build\Dependencies.AspNetCore.props
+		.editorconfig = .editorconfig
 		Nuget.config = Nuget.config
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{BE8EDE40-CAD9-4531-9DA8-DB1AF488FAB6}"
+	ProjectSection(SolutionItems) = preProject
+		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
+		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
+		src\OrchardCore.Build\OrchardCore.Commons.props = src\OrchardCore.Build\OrchardCore.Commons.props
+		src\OrchardCore.Build\OrchardCore.Commons.targets = src\OrchardCore.Build\OrchardCore.Commons.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules", "OrchardCore.Modules", "{78EE01FF-C5EB-4144-BB20-360475E3C4E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Themes", "OrchardCore.Themes", "{338316F9-D6F1-435D-B006-C40A6CB374A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5648DECD-0976-45F2-8AFC-E95D67BB1DA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce", "src\OrchardCore.Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj", "{78C21C22-F223-40B8-9E10-839068A2B48A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore", "OrchardCore", "{A6E14701-CF46-4CB5-9A8B-841DC60C0FC4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests", "test\OrchardCore.Commerce.Tests\OrchardCore.Commerce.Tests.csproj", "{41783154-0EEE-4201-9FBB-905788304EB4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms.Web", "src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj", "{1439E7C8-71F8-4495-95C5-8468DD4F8448}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressDataType", "src\OrchardCore\AddressDataType\AddressDataType.csproj", "{A382F426-AC42-45EF-B03D-FBFF026A93B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyDataType", "src\OrchardCore\MoneyDataType\MoneyDataType.csproj", "{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Targets", "src\OrchardCore\Project.Targets\Project.Targets.csproj", "{C9CA7CDF-F889-4D99-9E8B-C0171C536D62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,29 +43,40 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{34FC102A-94ED-4432-861C-13ECB61A2CE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34FC102A-94ED-4432-861C-13ECB61A2CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34FC102A-94ED-4432-861C-13ECB61A2CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34FC102A-94ED-4432-861C-13ECB61A2CE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78C21C22-F223-40B8-9E10-839068A2B48A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78C21C22-F223-40B8-9E10-839068A2B48A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78C21C22-F223-40B8-9E10-839068A2B48A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78C21C22-F223-40B8-9E10-839068A2B48A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41783154-0EEE-4201-9FBB-905788304EB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41783154-0EEE-4201-9FBB-905788304EB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41783154-0EEE-4201-9FBB-905788304EB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41783154-0EEE-4201-9FBB-905788304EB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1439E7C8-71F8-4495-95C5-8468DD4F8448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1439E7C8-71F8-4495-95C5-8468DD4F8448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1439E7C8-71F8-4495-95C5-8468DD4F8448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1439E7C8-71F8-4495-95C5-8468DD4F8448}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A382F426-AC42-45EF-B03D-FBFF026A93B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A382F426-AC42-45EF-B03D-FBFF026A93B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A382F426-AC42-45EF-B03D-FBFF026A93B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A382F426-AC42-45EF-B03D-FBFF026A93B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9CA7CDF-F889-4D99-9E8B-C0171C536D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9CA7CDF-F889-4D99-9E8B-C0171C536D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9CA7CDF-F889-4D99-9E8B-C0171C536D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9CA7CDF-F889-4D99-9E8B-C0171C536D62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{78C21C22-F223-40B8-9E10-839068A2B48A} = {78EE01FF-C5EB-4144-BB20-360475E3C4E1}
+		{41783154-0EEE-4201-9FBB-905788304EB4} = {5648DECD-0976-45F2-8AFC-E95D67BB1DA8}
+		{A382F426-AC42-45EF-B03D-FBFF026A93B6} = {A6E14701-CF46-4CB5-9A8B-841DC60C0FC4}
+		{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C} = {A6E14701-CF46-4CB5-9A8B-841DC60C0FC4}
+		{C9CA7CDF-F889-4D99-9E8B-C0171C536D62} = {A6E14701-CF46-4CB5-9A8B-841DC60C0FC4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}

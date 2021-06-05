@@ -1,6 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-
-  <Import Project="..\OrchardCore.Build\Dependencies.AspNetCore.props" />
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
@@ -25,12 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressDataType\AddressDataType.csproj" />
-    <ProjectReference Include="..\MoneyDataType\MoneyDataType.csproj" />
+    <Folder Include="wwwroot\Scripts\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Scripts\" />
+    <ProjectReference Include="..\..\OrchardCore\AddressDataType\AddressDataType.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\MoneyDataType\MoneyDataType.csproj" />
   </ItemGroup>
 
 </Project>
