@@ -13,7 +13,7 @@ namespace InternationalAddress
         public static readonly IList<RegionInfo> All
             = CultureInfo
                 .GetCultures(CultureTypes.SpecificCultures)
-                .Select(culture => new RegionInfo(culture.LCID))
+                .Select(culture => new RegionInfo(culture.Name))
                 .Where(region => region.TwoLetterISORegionName.Length == 2) // Filter out world and other 3-digit regions
                 .Distinct()
                 .ToList();
