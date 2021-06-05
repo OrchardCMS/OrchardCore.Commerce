@@ -1,7 +1,0 @@
-E:\Repositories\OrchardCore.Commerce\MoneyDataType\bin\Debug\netcoreapp3.1\MoneyDataType.deps.json
-E:\Repositories\OrchardCore.Commerce\MoneyDataType\bin\Debug\netcoreapp3.1\MoneyDataType.dll
-E:\Repositories\OrchardCore.Commerce\MoneyDataType\bin\Debug\netcoreapp3.1\MoneyDataType.pdb
-E:\Repositories\OrchardCore.Commerce\MoneyDataType\obj\Debug\netcoreapp3.1\MoneyDataType.csproj.CoreCompileInputs.cache
-E:\Repositories\OrchardCore.Commerce\MoneyDataType\obj\Debug\netcoreapp3.1\MoneyDataType.dll
-E:\Repositories\OrchardCore.Commerce\MoneyDataType\obj\Debug\netcoreapp3.1\MoneyDataType.pdb
-E:\Repositories\OrchardCore.Commerce\MoneyDataType\obj\Debug\netcoreapp3.1\MoneyDataType.csproj.AssemblyReference.cache
