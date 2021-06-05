@@ -25,7 +25,7 @@ namespace OrchardCore.Commerce.Tests
         [MemberData(nameof(TestData))]
         public void CurrenciesProperlyFormatAmounts(ICurrency currency, decimal amount, string expectedFormat)
         {
-            var result = currency.ToString(amount).Replace(" ", "");
+            var result = currency.ToString(amount);
             Assert.Equal(expectedFormat, result);
         }
 
