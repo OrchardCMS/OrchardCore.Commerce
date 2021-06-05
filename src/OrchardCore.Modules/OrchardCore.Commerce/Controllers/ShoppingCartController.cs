@@ -84,8 +84,13 @@ namespace OrchardCore.Commerce.Controllers
         public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
         {
             ShoppingCart parsedCart = await _shoppingCartHelpers.ParseCart(cart);
-            await _priceService.AddPrices(parsedCart.Items);
-            await _shoppingCartPersistence.Store(parsedCart, shoppingCartId);
+            ShoppingCart resultCart = new ShoppingCart();
+            var cartItems = await _priceService.AddPrices(parsedCart.Items);
+            foreach(var cartItem in cartItems)
+            {
+                resultCart.AddItem(cartItem);
+            }
+            await _shoppingCartPersistence.Store(resultCart, shoppingCartId);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
