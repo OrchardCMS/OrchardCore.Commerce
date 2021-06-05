@@ -12,7 +12,7 @@ namespace OrchardCore.Commerce.Tests
             => new CurrencyTheoryData {
                 { USDollar, 1234.56m, "$1,234.56" },
                 { Euro, 1234.56m, "1.234,56 €" },
-                { JapaneseYen, 1234.56m, "¥1,235" },
+                { JapaneseYen, 1234.56m, "￥1,235" },
                 { BritishPound, 1234.56m, "£1,234.56" },
                 { AustralianDollar, 1234.56m, "$1,234.56" },
                 { CanadianDollar, 1234.56m, "$1,234.56" },
@@ -25,7 +25,7 @@ namespace OrchardCore.Commerce.Tests
         [MemberData(nameof(TestData))]
         public void CurrenciesProperlyFormatAmounts(ICurrency currency, decimal amount, string expectedFormat)
         {
-            var result = currency.ToString(amount).Replace(" ", "");
+            var result = currency.ToString(amount).Replace(" ", "").Replace("￥", "¥");
             Assert.Equal(expectedFormat.Replace(" ", ""), result);
         }
 
