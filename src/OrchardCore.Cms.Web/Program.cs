@@ -1,26 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Logging;
 
-namespace SampleWebApp
+namespace OrchardCore.Cms.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+        public static Task Main(string[] args)
+            => BuildHost(args).RunAsync();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        public static IHost BuildHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+                .ConfigureLogging(logging => logging.ClearProviders())
+                .ConfigureWebHostDefaults(webBuilder => webBuilder
+                    .UseStartup<Startup>()
+                    .UseNLogWeb())
+                .Build()
+            ;
     }
 }

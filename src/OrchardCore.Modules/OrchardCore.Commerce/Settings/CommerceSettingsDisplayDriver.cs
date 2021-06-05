@@ -23,7 +23,7 @@ namespace OrchardCore.Commerce.Settings
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IMoneyService _moneyService;
-        private readonly IStringLocalizer S;
+        private readonly IStringLocalizer<CommerceSettingsDisplayDriver> S;
 
         public CommerceSettingsDisplayDriver(
             IShellHost orchardHost,
@@ -60,7 +60,7 @@ namespace OrchardCore.Commerce.Settings
                         .OrderBy(c => c.CurrencyIsoCode)
                         .Select(c => new SelectListItem(
                             c.CurrencyIsoCode,
-                            $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
+                            $"{c.CurrencyIsoCode} {c.Symbol} - {c.EnglishName}"));
                 }).Location("Content:5").OnGroup(GroupId)
             };
 

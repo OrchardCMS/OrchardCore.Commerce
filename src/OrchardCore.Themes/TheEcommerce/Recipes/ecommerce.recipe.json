@@ -29,10 +29,29 @@
         "OrchardCore.Users",
 
         // ECommerce
+        "OrchardCore.Alias",
+        "OrchardCore.AdminMenu",
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.ContentFields",
+        "OrchardCore.ContentPreview",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
         "OrchardCore.Commerce",
+        "OrchardCore.Indexing",
+        "OrchardCore.Lucene",
+        "OrchardCore.Markdown",
+        "OrchardCore.Media",
+        "OrchardCore.Menu",
+        "OrchardCore.Placements",
+        "OrchardCore.Queries",
+        "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Taxonomies",
+        "OrchardCore.Title",
+        "OrchardCore.Templates",
 
         // Themes
-        "TheTheme",
+        "TheEcommerce",
         "TheAdmin",
         "SafeMode"
       ]

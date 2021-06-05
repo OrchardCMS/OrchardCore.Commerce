@@ -24,6 +24,7 @@ namespace OrchardCore.Commerce
                 .Add(T["Configuration"], configuration => configuration
                     .Add(T["Settings"], settings => settings
                        .Add(T["Commerce"], T["Commerce"], entry => entry
+                          .AddClass("commerce").Id("commerce")
                           .Action("Index", "Admin", new
                           {
                               area = "OrchardCore.Settings",
