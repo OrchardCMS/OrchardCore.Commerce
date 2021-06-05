@@ -11,7 +11,7 @@ namespace OrchardCore.Commerce.Tests
         public static CurrencyTheoryData TestData
             => new CurrencyTheoryData {
                 { USDollar, 1234.56m, "$1,234.56" },
-                { Euro, 1234.56m, "1 234,56 €" },
+                { Euro, 1234.56m, "1.234,56 €" },
                 { JapaneseYen, 1234.56m, "¥1,235" },
                 { BritishPound, 1234.56m, "£1,234.56" },
                 { AustralianDollar, 1234.56m, "$1,234.56" },
