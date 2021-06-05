@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheEcommerce\TheEcommerce.csproj"  PrivateAssets="none" />
   </ItemGroup>
   
 </Project>

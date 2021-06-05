@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Targets", "src\Orch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests.Functional", "test\Functional\OrchardCore.Commerce.Tests.Functional.csproj", "{ADD82BF2-A85C-4958-A2AA-CC765B9B080E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheEcommerce", "src\OrchardCore.Themes\TheEcommerce\TheEcommerce.csproj", "{44CD1272-AB53-4A66-A4B3-B480601B8E32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{ADD82BF2-A85C-4958-A2AA-CC765B9B080E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADD82BF2-A85C-4958-A2AA-CC765B9B080E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADD82BF2-A85C-4958-A2AA-CC765B9B080E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44CD1272-AB53-4A66-A4B3-B480601B8E32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44CD1272-AB53-4A66-A4B3-B480601B8E32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44CD1272-AB53-4A66-A4B3-B480601B8E32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44CD1272-AB53-4A66-A4B3-B480601B8E32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +90,7 @@ Global
 		{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C} = {A6E14701-CF46-4CB5-9A8B-841DC60C0FC4}
 		{C9CA7CDF-F889-4D99-9E8B-C0171C536D62} = {A6E14701-CF46-4CB5-9A8B-841DC60C0FC4}
 		{ADD82BF2-A85C-4958-A2AA-CC765B9B080E} = {5648DECD-0976-45F2-8AFC-E95D67BB1DA8}
+		{44CD1272-AB53-4A66-A4B3-B480601B8E32} = {338316F9-D6F1-435D-B006-C40A6CB374A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}

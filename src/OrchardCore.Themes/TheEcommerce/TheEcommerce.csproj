@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore ECommerce theme</Title>
+    <Description>$(OCCMSDescription)
+
+    The ecommerce Theme - Can be used as base theme for new themes.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Theme</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.Theme.Targets" Version="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.Admin.Abstractions" Version="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.ResourceManagement" Version="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.DisplayManagement" Version="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.Users.Abstractions" Version="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.Users" Version="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.Menu" Version="$(OrchardCoreVersion)" />
+  </ItemGroup>
+
+</Project>
