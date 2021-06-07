@@ -60,6 +60,14 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": "TheEcommerce"
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Index",
+        "Controller": "Home",
+        "Area": "TheEcommerce"
+      }
     }
   ]
 }
