@@ -6,8 +6,13 @@
   "website": "https://orchardcore.net",
   "version": "1.0.0-rc2",
   "issetuprecipe": true,
-  "categories": [ "default" ],
-  "tags": [ "developer", "default" ],
+  "categories": [
+    "default"
+  ],
+  "tags": [
+    "developer",
+    "default"
+  ],
   "steps": [
     {
       "name": "feature",
@@ -27,7 +32,6 @@
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
         "OrchardCore.Users",
-
         // Ecommerce
         "OrchardCore.Alias",
         "OrchardCore.AdminMenu",
@@ -38,6 +42,8 @@
         "OrchardCore.Contents",
         "OrchardCore.ContentTypes",
         "OrchardCore.Commerce",
+        "OrchardCore.Commerce.SessionCartStorage",
+        "OrchardCore.Commerce.CommerceSettingsCurrencySelector",
         "OrchardCore.Indexing",
         "OrchardCore.Lucene",
         "OrchardCore.Markdown",
@@ -49,7 +55,6 @@
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
-
         // Themes
         "TheEcommerce",
         "TheAdmin",
@@ -67,6 +72,10 @@
         "Action": "Index",
         "Controller": "Home",
         "Area": "TheEcommerce"
+      },
+      "CommerceSettings": {
+        "DefaultCurrency": "USD",
+        "CurrentDisplayCurrency": "USD"
       }
     }
   ]
