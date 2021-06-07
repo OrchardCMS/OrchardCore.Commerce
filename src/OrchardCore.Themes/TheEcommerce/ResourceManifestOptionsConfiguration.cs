@@ -12,8 +12,8 @@ namespace OrchardCore.Themes.TheEcommerce
             _manifest = new ResourceManifest();
 
             _manifest
-                .DefineStyle("TheTheme-bootstrap-oc")
-                .SetUrl("~/TheTheme/css/bootstrap-oc.min.css", "~/TheTheme/css/bootstrap-oc.css")
+                .DefineStyle("TheEcommerce-bootstrap-oc")
+                .SetUrl("~/TheEcommerce/css/bootstrap-oc.min.css", "~/TheEcommerce/css/bootstrap-oc.css")
                 .SetVersion("1.0.0");
         }
 
