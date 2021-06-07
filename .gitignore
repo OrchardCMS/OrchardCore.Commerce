@@ -194,6 +194,7 @@ node_modules/
 
 wwwroot
 **/Localization/**/*.po
+*.placeholder
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
 !src/OrchardCore.Modules/**/Localization/**/*.po
