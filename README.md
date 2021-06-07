@@ -33,6 +33,6 @@ Globalization should be taken into account at every step.
 ## Setting up your dev environment
 
 1. Clone this repository.
-2. Build and run the `SampleWebApp` project.
+2. Build and run the `OrchardCore.Cms.Web` project.
 3. From the admin, enable the module's only feature.
 4. (optional) Start using the features, by creating a new `Product` content type, and adding the product part to it.
