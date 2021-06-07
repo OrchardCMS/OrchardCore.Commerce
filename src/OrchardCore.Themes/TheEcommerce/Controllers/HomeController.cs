@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.TheTheme.Controllers
+namespace OrchardCore.TheEcommerce.Controllers
 {
     public class HomeController : Controller
     {
