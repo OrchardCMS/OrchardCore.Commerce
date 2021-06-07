@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressDataType", "src\Orch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyDataType", "src\OrchardCore\MoneyDataType\MoneyDataType.csproj", "{7E33612F-BFAC-44C3-8F2E-8837CE13BE0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project.Targets", "src\OrchardCore\Project.Targets\Project.Targets.csproj", "{C9CA7CDF-F889-4D99-9E8B-C0171C536D62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Targets", "src\OrchardCore\OrchardCore.Commerce.Targets\OrchardCore.Commerce.Targets.csproj", "{C9CA7CDF-F889-4D99-9E8B-C0171C536D62}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests.Functional", "test\Functional\OrchardCore.Commerce.Tests.Functional.csproj", "{ADD82BF2-A85C-4958-A2AA-CC765B9B080E}"
 EndProject
