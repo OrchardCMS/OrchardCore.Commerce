@@ -4,7 +4,7 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
     <!-- NuGet properties-->
-    <Title>OrchardCore ECommerce theme</Title>
+    <Title>OrchardCore Ecommerce theme</Title>
     <Description>$(OCCMSDescription)
 
     The ecommerce Theme - Can be used as base theme for new themes.</Description>

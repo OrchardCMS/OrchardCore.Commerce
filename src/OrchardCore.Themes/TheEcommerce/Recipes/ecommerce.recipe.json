@@ -1,7 +1,7 @@
 {
-  "name": "ECommerce",
-  "displayName": "ECommerce recipe",
-  "description": "Provides default ECommerce features.",
+  "name": "Ecommerce",
+  "displayName": "Ecommerce recipe",
+  "description": "Provides default Ecommerce features.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0-rc2",
@@ -28,7 +28,7 @@
         "OrchardCore.Themes",
         "OrchardCore.Users",
 
-        // ECommerce
+        // Ecommerce
         "OrchardCore.Alias",
         "OrchardCore.AdminMenu",
         "OrchardCore.Autoroute",
@@ -59,15 +59,7 @@
     {
       "name": "themes",
       "admin": "TheAdmin",
-      "site": "TheTheme"
-    },
-    {
-      "name": "settings",
-      "HomeRoute": {
-        "Action": "Index",
-        "Controller": "Home",
-        "Area": "TheTheme"
-      }
+      "site": "TheEcommerce"
     }
   ]
 }
