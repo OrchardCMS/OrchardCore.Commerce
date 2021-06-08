@@ -1,12 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- 
+		When adding a reference to these lists, please keep it ordered alphabetically, and set PrivateAssets="none" 
+		-->
+
+    <!-- Modules -->
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Themes\TheEcommerce\TheEcommerce.csproj"  PrivateAssets="none" />
+
+    <!-- Themes -->
+    <ProjectReference Include="..\..\OrchardCore.Themes\TheEcommerce\TheEcommerce.csproj" PrivateAssets="none" />
   </ItemGroup>
   
 </Project>
