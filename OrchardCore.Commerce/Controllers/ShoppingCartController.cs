@@ -99,13 +99,13 @@ namespace OrchardCore.Commerce.Controllers
             ShoppingCartItem parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
             if (parsedLine is null)
             {
-                _notifier.Add(NotifyType.Error, H["Product with SKU {0} not found.", line.ProductSku]);
+                await _notifier.AddAsync(NotifyType.Error, H["Product with SKU {0} not found.", line.ProductSku]);
                 return RedirectToAction(nameof(Index), new { shoppingCartId });
             }
             parsedLine = (await _priceService.AddPrices(new[] { parsedLine })).Single();
             if (!parsedLine.Prices.Any())
             {
-                _notifier.Add(NotifyType.Error, H["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
+                await _notifier.AddAsync(NotifyType.Error, H["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
                 return RedirectToAction(nameof(Index), new { shoppingCartId });
             }
             ShoppingCart cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
