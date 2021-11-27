@@ -168,7 +168,7 @@ namespace Money
         {
             KnownCurrencyTable.EnsureCurrencyTable();
             var temp = new Currency(culture);
-            return temp != null ? (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.CurrencyIsoCode == temp.CurrencyIsoCode) : null;
+            return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.CurrencyIsoCode == temp.CurrencyIsoCode);
         }
     }
 }
