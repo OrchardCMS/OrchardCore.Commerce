@@ -36,6 +36,6 @@ jobs:
         dotnet build --configuration Release --framework net5.0
     - name: Unit Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
+        dotnet test -c Release --no-restore --no-build ./OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
 
   
