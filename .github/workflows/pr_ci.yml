@@ -33,7 +33,7 @@ jobs:
         include-prerelease: true
     - name: Build
       run: |
-        dotnet build --configuration Release --framework net6.0
+        dotnet build --configuration Release --framework net5.0
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
