@@ -19,7 +19,7 @@ namespace Money
             if (culture.EnglishName.StartsWith("Unknown Locale") || culture.EnglishName.StartsWith("Invariant Language"))
                 throw new ArgumentOutOfRangeException(nameof(culture));
 
-            var region = new RegionInfo(culture.LCID);
+            var region = new RegionInfo(culture.Name);
             if (region is null)
                 throw new ArgumentNullException(nameof(region));
 
