@@ -1,0 +1,29 @@
+name: PR - CI
+on: 
+  pull_request:
+    branches: [ master ]
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+jobs:
+  build_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    name: Build & Test
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.*
+    - name: Build
+      run: |
+        dotnet build --configuration Release
+    - name: Unit Tests
+      run: |
+        dotnet test -c Release --no-restore --no-build ./OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
+
+  
