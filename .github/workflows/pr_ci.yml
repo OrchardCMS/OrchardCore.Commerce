@@ -15,10 +15,10 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
+    - name: Setup .NET Core 6.0 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.*
+        dotnet-version: 6.0.*
     - name: Build
       run: |
         dotnet build --configuration Release
