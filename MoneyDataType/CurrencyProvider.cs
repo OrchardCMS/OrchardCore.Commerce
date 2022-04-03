@@ -17,9 +17,9 @@ namespace Money
             => KnownCurrencyTable.CurrencyTable.Values;
 
         public ICurrency GetCurrency(string isoSymbol)
-            => KnownCurrencyTable.CurrencyTable.TryGetValue(isoSymbol, out var value) ? value : null;
+            => isoSymbol is null ? Currency.UnspecifiedCurrency : KnownCurrencyTable.CurrencyTable.TryGetValue(isoSymbol, out var value) ? value : null;
 
         public bool IsKnownCurrency(string isoCode) 
-            => KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);
+            => isoCode is null ? false : KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);
     }
 }

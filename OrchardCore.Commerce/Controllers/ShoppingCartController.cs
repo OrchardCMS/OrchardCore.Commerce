@@ -55,7 +55,8 @@ namespace OrchardCore.Commerce.Controllers
             ShoppingCart cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
             IDictionary<string, ProductPart> products =
                 await _productService.GetProductDictionary(cart.Items.Select(line => line.ProductSku));
-            ShoppingCartLineViewModel[] lines = await Task.WhenAll(cart.Items.Select(async item =>
+            var items = await _priceService.AddPrices(cart.Items);
+            ShoppingCartLineViewModel[] lines = await Task.WhenAll(items.Select(async item =>
             {
                 ProductPart product = products[item.ProductSku];
                 Amount price = _priceStrategy.SelectPrice(item.Prices);
@@ -84,7 +85,6 @@ namespace OrchardCore.Commerce.Controllers
         public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
         {
             ShoppingCart parsedCart = await _shoppingCartHelpers.ParseCart(cart);
-            await _priceService.AddPrices(parsedCart.Items);
             await _shoppingCartPersistence.Store(parsedCart, shoppingCartId);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
