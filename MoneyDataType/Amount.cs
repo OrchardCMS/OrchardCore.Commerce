@@ -15,6 +15,11 @@ namespace Money
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public struct Amount : IEquatable<Amount>, IComparable<Amount>
     {
+        public Amount() {
+            Value = 0;
+            Currency = Money.Currency.UnspecifiedCurrency;
+        }
+
         public Amount(decimal value, RegionInfo region)
         {
             if (region == null)

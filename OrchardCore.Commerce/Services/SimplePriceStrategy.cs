@@ -18,7 +18,7 @@ namespace OrchardCore.Commerce.Services
         public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices)
             => prices is null
                 || !prices.Any()
-                    ? new Amount()
+                    ? new Amount(0, Currency.UnspecifiedCurrency)
                     : prices
                         .Where(pp => pp.Priority == prices.Max(pp => pp.Priority))
                         .Min(pp => pp.Price);
