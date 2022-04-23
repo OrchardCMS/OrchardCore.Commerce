@@ -25,7 +25,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context)
-        // TODO: add permissions
         => Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");

@@ -65,7 +65,6 @@ public class ProductAttributeProvider : IProductAttributeProvider
 
                 return new NumericProductAttributeValue(name, value: null);
             case nameof(TextProductAttributeField):
-                // TODO: use settings to validate the value, and parse differently if multiple values are allowed.
                 return new TextProductAttributeValue(name, value);
             default:
                 return null;

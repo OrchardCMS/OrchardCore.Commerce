@@ -38,9 +38,6 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         model.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
 
-        // TODO: filter out of inventory products here as well when we have inventory management
-        // model.CanBeBought = ...;
-
         return Task.CompletedTask;
     }
 }
