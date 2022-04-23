@@ -45,12 +45,12 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         => Task.Run(async () =>
         {
             model.ContentItem = part.ContentItem;
-            IDictionary<string, ProductPart> products =
+            var products =
                 await _productService.GetProductDictionary(part.LineItems.Select(line => line.ProductSku));
-            OrderLineItemViewModel[] lineItems = await Task.WhenAll(part.LineItems.Select(async lineItem =>
+            var lineItems = await Task.WhenAll(part.LineItems.Select(async lineItem =>
             {
-                ProductPart product = products[lineItem.ProductSku];
-                ContentItemMetadata metaData = await _contentManager.GetContentItemMetadataAsync(product);
+                var product = products[lineItem.ProductSku];
+                var metaData = await _contentManager.GetContentItemMetadataAsync(product);
                 return new OrderLineItemViewModel
                 {
                     Quantity = lineItem.Quantity,

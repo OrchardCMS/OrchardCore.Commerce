@@ -44,8 +44,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
     public async Task<ShoppingCart> ParseCart(ShoppingCartUpdateModel cart)
     {
-        Dictionary<string, ProductPart> products = await GetProducts(cart.Lines.Select(l => l.ProductSku));
-        Dictionary<string, ContentTypeDefinition> types = ExtractTypeDefinitions(products.Values);
+        var products = await GetProducts(cart.Lines.Select(l => l.ProductSku));
+        var types = ExtractTypeDefinitions(products.Values);
         IList<ShoppingCartItem> parsedCart = cart.Lines
             .Where(l => l.Quantity > 0)
             .Select(l => new ShoppingCartItem(l.Quantity, l.ProductSku,
@@ -56,9 +56,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
     public async Task<ShoppingCartItem> ParseCartLine(ShoppingCartLineUpdateModel line)
     {
-        ProductPart product = await _productService.GetProduct(line.ProductSku);
+        var product = await _productService.GetProduct(line.ProductSku);
         if (product is null) return null;
-        ContentTypeDefinition type = GetTypeDefinition(product);
+        var type = GetTypeDefinition(product);
         var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
         return parsedLine;
     }
@@ -69,7 +69,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                 line.Attributes
                     .Select(attr =>
                     {
-                        (ContentTypePartDefinition attributePartDefinition, ContentPartFieldDefinition attributeFieldDefinition)
+                        (var attributePartDefinition, var attributeFieldDefinition)
                             = GetFieldDefinition(type, attr.Key);
                         return _attributeProviders
                             .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attr.Value))
@@ -85,11 +85,11 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             return cart;
         }
 
-        JsonElement.ArrayEnumerator cartItems = JsonDocument.Parse(serializedCart).RootElement.GetProperty("Items").EnumerateArray();
+        var cartItems = JsonDocument.Parse(serializedCart).RootElement.GetProperty("Items").EnumerateArray();
         // Actualize prices
-        foreach (JsonElement itemElement in cartItems)
+        foreach (var itemElement in cartItems)
         {
-            ShoppingCartItem item = itemElement.ToObject<ShoppingCartItem>();
+            var item = itemElement.ToObject<ShoppingCartItem>();
             cart.AddItem(item);
             if (item.Prices != null && item.Prices.Any())
             {
@@ -100,22 +100,22 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         // Post-process attributes for concrete types according to field definitions
         // (deserialization being essentially non-polymorphic and without access to our type definition
         // contextual information).
-        Dictionary<string, ProductPart> products = await GetProducts(cart.Items.Select(l => l.ProductSku));
-        Dictionary<string, ContentTypeDefinition> types = ExtractTypeDefinitions(products.Values);
+        var products = await GetProducts(cart.Items.Select(l => l.ProductSku));
+        var types = ExtractTypeDefinitions(products.Values);
         var newCartItems = new List<ShoppingCartItem>(cart.Count);
-        foreach (ShoppingCartItem line in cart.Items)
+        foreach (var line in cart.Items)
         {
             if (line.Attributes is null) continue;
             var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
             foreach (RawProductAttributeValue attr in line.Attributes)
             {
-                ProductPart product = products[line.ProductSku];
-                ContentTypeDefinition type = types[product.ContentItem.ContentType];
-                (ContentTypePartDefinition attributePartDefinition, ContentPartFieldDefinition attributeFieldDefinition)
+                var product = products[line.ProductSku];
+                var type = types[product.ContentItem.ContentType];
+                (var attributePartDefinition, var attributeFieldDefinition)
                     = GetFieldDefinition(type, attr.AttributeName);
                 if (attributePartDefinition != null && attributeFieldDefinition != null)
                 {
-                    IProductAttributeValue newAttr = _attributeProviders
+                    var newAttr = _attributeProviders
                         .Select(provider => provider.CreateFromJsonElement(
                             attributePartDefinition,
                             attributeFieldDefinition,

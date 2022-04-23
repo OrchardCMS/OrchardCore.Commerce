@@ -52,15 +52,15 @@ public class ShoppingCartController : Controller
     [Route("cart")]
     public async Task<ActionResult> Index(string shoppingCartId = null)
     {
-        ShoppingCart cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
-        IDictionary<string, ProductPart> products =
+        var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
+        var products =
             await _productService.GetProductDictionary(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPrices(cart.Items);
-        ShoppingCartLineViewModel[] lines = await Task.WhenAll(items.Select(async item =>
+        var lines = await Task.WhenAll(items.Select(async item =>
         {
-            ProductPart product = products[item.ProductSku];
-            Amount price = _priceStrategy.SelectPrice(item.Prices);
-            ContentItemMetadata metaData = await _contentManager.GetContentItemMetadataAsync(product);
+            var product = products[item.ProductSku];
+            var price = _priceStrategy.SelectPrice(item.Prices);
+            var metaData = await _contentManager.GetContentItemMetadataAsync(product);
             return new ShoppingCartLineViewModel
             {
                 Quantity = item.Quantity,
@@ -84,7 +84,7 @@ public class ShoppingCartController : Controller
     [HttpPost]
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
-        ShoppingCart parsedCart = await _shoppingCartHelpers.ParseCart(cart);
+        var parsedCart = await _shoppingCartHelpers.ParseCart(cart);
         await _shoppingCartPersistence.Store(parsedCart, shoppingCartId);
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
@@ -96,7 +96,7 @@ public class ShoppingCartController : Controller
     [HttpPost]
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        ShoppingCartItem parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
+        var parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
         if (parsedLine is null)
         {
             await _notifier.AddAsync(NotifyType.Error, _h["Product with SKU {0} not found.", line.ProductSku]);
@@ -110,7 +110,7 @@ public class ShoppingCartController : Controller
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
-        ShoppingCart cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
+        var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
         cart.AddItem(parsedLine);
         await _shoppingCartPersistence.Store(cart, shoppingCartId);
         if (_workflowManager != null)
@@ -130,8 +130,8 @@ public class ShoppingCartController : Controller
     [HttpPost]
     public async Task<ActionResult> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        ShoppingCartItem parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
-        ShoppingCart cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
+        var parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
+        var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
         cart.RemoveItem(parsedLine);
         await _shoppingCartPersistence.Store(cart, shoppingCartId);
         return RedirectToAction(nameof(Index), new { shoppingCartId });

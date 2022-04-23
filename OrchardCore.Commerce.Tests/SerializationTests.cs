@@ -34,7 +34,7 @@ public class SerializationTests
             moneyService: new TestMoneyService(),
             contentDefinitionManager: new FakeContentDefinitionManager());
         string serialized = await helpers.Serialize(cart);
-        ShoppingCart deserialized = await helpers.Deserialize(serialized);
+        var deserialized = await helpers.Deserialize(serialized);
 
         Assert.Equal(cart.Count, deserialized.Count);
         Assert.Equal(cart.ItemCount, deserialized.ItemCount);

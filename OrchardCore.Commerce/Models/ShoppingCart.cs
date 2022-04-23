@@ -62,7 +62,7 @@ public class ShoppingCart
         int existingIndex = IndexOf(item);
         if (existingIndex != -1)
         {
-            ShoppingCartItem existingItem = Items[existingIndex];
+            var existingItem = Items[existingIndex];
             Items[existingIndex] = existingItem.WithQuantity(existingItem.Quantity + item.Quantity);
         }
         else
@@ -108,7 +108,7 @@ public class ShoppingCart
     private int IndexOf(ShoppingCartItem item)
     {
         var index = 0;
-        foreach (ShoppingCartItem line in Items)
+        foreach (var line in Items)
         {
             if (line.IsSameProductAs(item)) return index;
             index++;

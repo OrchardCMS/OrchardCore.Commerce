@@ -60,7 +60,7 @@ public class PriceTests
     public void SimplePriceStrategySelectsLowestPriceForHighestStrategy()
     {
         var strategy = new SimplePriceStrategy();
-        Amount selected = strategy.SelectPrice(new List<PrioritizedPrice> {
+        var selected = strategy.SelectPrice(new List<PrioritizedPrice> {
             new PrioritizedPrice(0, new Amount(10, Currency.UsDollar)),
             new PrioritizedPrice(1, new Amount(12, Currency.UsDollar)),
             new PrioritizedPrice(1, new Amount(11, Currency.UsDollar)),
