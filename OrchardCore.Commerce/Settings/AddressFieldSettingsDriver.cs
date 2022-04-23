@@ -11,17 +11,16 @@ public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDrive
     public override IDisplayResult Edit(ContentPartFieldDefinition model)
         => Initialize(
             "AddressFieldSettings_Edit",
-            (System.Action<AddressPartFieldSettings>)(model => model.PopulateSettings<AddressPartFieldSettings>(model)))
+            (System.Action<AddressPartFieldSettings>)model.PopulateSettings)
             .Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
-        var model = new AddressPartFieldSettings();
+        var viewModel = new AddressPartFieldSettings();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        context.Builder.WithSettings(viewModel);
 
-        context.Builder.WithSettings(model);
-
-        return Edit(model);
+        return await EditAsync(model, context);
     }
 }

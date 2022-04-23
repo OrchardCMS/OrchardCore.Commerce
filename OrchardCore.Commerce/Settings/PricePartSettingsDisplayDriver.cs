@@ -27,24 +27,21 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
 
     public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
     {
-        if (!string.Equals(nameof(PricePart), model.PartDefinition.Name))
-        {
-            return null;
-        }
+        if (model.PartDefinition.Name != nameof(PricePart)) return null;
 
-        return Initialize("PricePartSettings_Edit", (Action<PricePartSettingsViewModel>)(model =>
+        return Initialize("PricePartSettings_Edit", (Action<PricePartSettingsViewModel>)(viewModel =>
         {
             var settings = model.GetSettings<PricePartSettings>();
 
-            model.CurrencySelectionMode = settings.CurrencySelectionMode;
-            model.CurrencySelectionModes = new List<SelectListItem>()
+            viewModel.CurrencySelectionMode = settings.CurrencySelectionMode;
+            viewModel.CurrencySelectionModes = new List<SelectListItem>
             {
-                new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), _s["All Currencies"]),
-                new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), _s["Default Currency"]),
-                new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), _s["Specific Currency"]),
+                new(CurrencySelectionModeEnum.AllCurrencies.ToString(), _s["All Currencies"]),
+                new(CurrencySelectionModeEnum.DefaultCurrency.ToString(), _s["Default Currency"]),
+                new(CurrencySelectionModeEnum.SpecificCurrency.ToString(), _s["Specific Currency"]),
             };
-            model.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
-            model.Currencies = _moneyService.Currencies
+            viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
+            viewModel.Currencies = _moneyService.Currencies
                 .OrderBy(c => c.CurrencyIsoCode)
                 .Select(c => new SelectListItem(
                     c.CurrencyIsoCode,
@@ -54,25 +51,24 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
     {
-        if (!string.Equals(nameof(PricePart), model.PartDefinition.Name))
-        {
-            return null;
-        }
+        if (model.PartDefinition.Name != nameof(PricePart)) return null;
 
-        var model = new PricePartSettingsViewModel();
+        var viewModel = new PricePartSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix,
+        await context.Updater.TryUpdateModelAsync(
+            viewModel,
+            Prefix,
             m => m.CurrencySelectionMode,
             m => m.SpecificCurrencyIsoCode);
 
         context.Builder.WithSettings(new PricePartSettings
         {
-            CurrencySelectionMode = model.CurrencySelectionMode,
-            SpecificCurrencyIsoCode =
-                model.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
-                    ? model.SpecificCurrencyIsoCode : null,
+            CurrencySelectionMode = viewModel.CurrencySelectionMode,
+            SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
+                    ? viewModel.SpecificCurrencyIsoCode
+                    : null,
         });
 
-        return Edit(model, context.Updater);
+        return await EditAsync(model, context.Updater);
     }
 }

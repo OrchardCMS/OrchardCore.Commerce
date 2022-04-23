@@ -9,23 +9,24 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Commerce.Settings;
 
-public abstract class ProductAttributeFieldSettingsDriver<TFIeld, TSettings>
-    : ContentPartFieldDefinitionDisplayDriver<TFIeld>
-    where TFIeld : ProductAttributeField
+public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
+    : ContentPartFieldDefinitionDisplayDriver<TField>
+    where TField : ProductAttributeField
     where TSettings : ProductAttributeFieldSettings, new()
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model)
         => Initialize(
             typeof(TSettings).Name + "_Edit",
-            (Action<TSettings>)(model => model.PopulateSettings<TSettings>(model)))
+            (Action<TSettings>)model.PopulateSettings)
             .Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
-        var model = new TSettings();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-        context.Builder
-            .WithSettings(model);
+        var viewModel = new TSettings();
+
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        context.Builder.WithSettings(viewModel);
+
         return Edit(model);
     }
 }
@@ -41,41 +42,41 @@ public class NumericProductAttributeFieldSettingsDriver
 public class TextProductAttributeFieldSettingsDriver
     : ProductAttributeFieldSettingsDriver<TextProductAttributeField, TextProductAttributeFieldSettings>
 {
-    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+    public override IDisplayResult Edit(ContentPartFieldDefinition model)
         => Initialize<TextProductAttributeSettingsViewModel>(
             nameof(TextProductAttributeFieldSettings) + "_Edit",
             viewModel =>
             {
-                var model = new TextProductAttributeFieldSettings();
-                partFieldDefinition.PopulateSettings(model);
-                viewModel.Hint = model.Hint;
-                viewModel.DefaultValue = model.DefaultValue;
-                viewModel.Required = model.Required;
-                viewModel.Placeholder = model.Placeholder;
-                viewModel.PredefinedValues = model.PredefinedValues != null ? string.Join("\r\n", model.PredefinedValues) : string.Empty;
-                viewModel.RestrictToPredefinedValues = model.RestrictToPredefinedValues;
-                viewModel.MultipleValues = model.MultipleValues;
+                var settings = new TextProductAttributeFieldSettings();
+                model.PopulateSettings(settings);
+                viewModel.Hint = settings.Hint;
+                viewModel.DefaultValue = settings.DefaultValue;
+                viewModel.Required = settings.Required;
+                viewModel.Placeholder = settings.Placeholder;
+                viewModel.PredefinedValues = settings.PredefinedValues != null ? string.Join("\r\n", settings.PredefinedValues) : string.Empty;
+                viewModel.RestrictToPredefinedValues = settings.RestrictToPredefinedValues;
+                viewModel.MultipleValues = settings.MultipleValues;
             }).Location("Content");
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
-        var model = new TextProductAttributeSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        var viewModel = new TextProductAttributeSettingsViewModel();
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
         context.Builder
             .WithSettings(new TextProductAttributeFieldSettings
             {
-                Hint = model.Hint,
-                DefaultValue = model.DefaultValue,
-                Required = model.Required,
-                Placeholder = model.Placeholder,
-                RestrictToPredefinedValues = model.RestrictToPredefinedValues,
-                MultipleValues = model.MultipleValues,
-                PredefinedValues = (model.PredefinedValues ?? string.Empty)
-                    .Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                Hint = viewModel.Hint,
+                DefaultValue = viewModel.DefaultValue,
+                Required = viewModel.Required,
+                Placeholder = viewModel.Placeholder,
+                RestrictToPredefinedValues = viewModel.RestrictToPredefinedValues,
+                MultipleValues = viewModel.MultipleValues,
+                PredefinedValues = (viewModel.PredefinedValues ?? string.Empty)
+                    .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(v => v.Trim())
                     .Where(v => !string.IsNullOrWhiteSpace(v))
                     .ToArray(),
             });
-        return Edit(partFieldDefinition);
+        return Edit(model);
     }
 }
