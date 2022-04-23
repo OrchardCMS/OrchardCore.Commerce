@@ -13,7 +13,7 @@ using Xunit;
 
 namespace OrchardCore.Commerce.Tests
 {
-    public partial class ProductAttributeTests
+    public class ProductAttributeTests
     {
         private IProductAttributeProvider parser;
         private ContentPartDefinition partDefinition;

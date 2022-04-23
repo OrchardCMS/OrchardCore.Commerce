@@ -7,7 +7,7 @@ using Xunit;
 
 namespace OrchardCore.Commerce.Tests
 {
-    public partial class MoneyServiceTests
+    public class MoneyServiceTests
     {
         [Fact]
         public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar() => Assert.Equal("USD", new MoneyService(null, null, null).DefaultCurrency.CurrencyIsoCode);
