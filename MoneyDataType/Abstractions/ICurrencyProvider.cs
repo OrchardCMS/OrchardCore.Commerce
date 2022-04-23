@@ -8,7 +8,7 @@ namespace Money.Abstractions;
 public interface ICurrencyProvider
 {
     /// <summary>
-    /// The list of currencies
+    /// Gets the list of currencies
     /// </summary>
     IEnumerable<ICurrency> Currencies { get; }
 

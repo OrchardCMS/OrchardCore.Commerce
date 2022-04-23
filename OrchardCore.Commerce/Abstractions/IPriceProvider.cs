@@ -17,7 +17,8 @@ public interface IPriceProvider
     Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items);
 
     /// <summary>
-    /// Price providers are invited to add prices in increasing order.
+    /// Gets the value used to sort price providers in ascending order. The first one that declares a price will be
+    /// used.
     /// </summary>
     int Order { get; }
 }

@@ -13,11 +13,11 @@ namespace OrchardCore.Commerce.Models;
 public class PrioritizedPrice
 {
     /// <summary>
-    /// The priority for the price (higher takes precedence).
+    /// Gets the priority for the price (higher takes precedence).
     /// </summary>
     public int Priority { get; }
     /// <summary>
-    /// The price.
+    /// Gets the price.
     /// </summary>
     public Amount Price { get; }
 

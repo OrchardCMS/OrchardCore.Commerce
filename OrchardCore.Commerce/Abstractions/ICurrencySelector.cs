@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface ICurrencySelector
 {
     /// <summary>
-    /// The current currency used for displaying prices to the customer.
+    /// Gets the current currency used for displaying prices to the customer.
     /// </summary>
     public ICurrency CurrentDisplayCurrency { get; }
 }

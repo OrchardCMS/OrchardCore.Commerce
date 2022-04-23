@@ -11,7 +11,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IMoneyService
 {
     /// <summary>
-    /// Returns all currencies from all currency providers.
+    /// Gets all currencies from all currency providers.
     /// </summary>
     IEnumerable<ICurrency> Currencies { get; }
 
@@ -33,12 +33,12 @@ public interface IMoneyService
     Amount Create(decimal value, string currencyIsoCode);
 
     /// <summary>
-    /// The currency to use or assume when none is provided.
+    /// Gets the currency to use or assume when none is provided.
     /// </summary>
     ICurrency DefaultCurrency { get; }
 
     /// <summary>
-    /// The current currency used for displaying prices to the customer.
+    /// Gets the current currency used for displaying prices to the customer.
     /// </summary>
     ICurrency CurrentDisplayCurrency { get; }
 

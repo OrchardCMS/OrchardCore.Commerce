@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Models;
 public class ProductPart : ContentPart
 {
     /// <summary>
-    /// The product's SKU, which can also be used as an alias for the item.
+    /// Gets or sets the product's SKU, which can also be used as an alias for the item.
     /// </summary>
     public string Sku { get; set; }
 }

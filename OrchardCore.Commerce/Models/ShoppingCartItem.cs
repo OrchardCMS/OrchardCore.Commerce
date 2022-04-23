@@ -36,22 +36,22 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     }
 
     /// <summary>
-    /// The number of products
+    /// Gets the number of products
     /// </summary>
     public int Quantity { get; }
 
     /// <summary>
-    /// The product SKU
+    /// Gets the product SKU
     /// </summary>
     public string ProductSku { get; }
 
     /// <summary>
-    /// The product attributes associated with this shopping cart line item
+    /// Gets the product attributes associated with this shopping cart line item
     /// </summary>
     public ISet<IProductAttributeValue> Attributes { get; }
 
     /// <summary>
-    /// The available prices
+    /// Gets the available prices
     /// </summary>
     public IReadOnlyList<PrioritizedPrice> Prices { get; }
 

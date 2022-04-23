@@ -11,7 +11,7 @@ namespace OrchardCore.Commerce.Models;
 public class ShoppingCart
 {
     /// <summary>
-    /// The list of quantities of product variants in the cart.
+    /// Gets the list of quantities of product variants in the cart.
     /// </summary>
     public IList<ShoppingCartItem> Items { get; }
 
@@ -33,13 +33,13 @@ public class ShoppingCart
     public ShoppingCart(params ShoppingCartItem[] items) : this((IList<ShoppingCartItem>)items) { }
 
     /// <summary>
-    /// The number of lines in the cart.
+    /// Gets the number of lines in the cart.
     /// </summary>
     [JsonIgnore]
     public int Count => Items.Count;
 
     /// <summary>
-    /// The total number of items (i.e. products) in the cart.
+    /// Gets the total number of items (i.e. products) in the cart.
     /// In other words, the sum of quantities of all lines.
     /// </summary>
     [JsonIgnore]

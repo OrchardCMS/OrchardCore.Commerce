@@ -51,12 +51,12 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
     }
 
     /// <summary>
-    /// The decimal value
+    /// Gets the decimal value
     /// </summary>
     public decimal Value { get; }
 
     /// <summary>
-    /// The currency
+    /// Gets the currency
     /// </summary>
     public ICurrency Currency { get; }
 
