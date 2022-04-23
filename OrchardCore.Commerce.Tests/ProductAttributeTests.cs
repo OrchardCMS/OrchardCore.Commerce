@@ -163,7 +163,8 @@ public class ProductAttributeTests
     public void ProductAttributeServiceCanFindAttributesOnProducts()
     {
         var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), null);
-        var product = new ContentItem() {
+        var product = new ContentItem()
+        {
             ContentType = "Product",
         };
         var productPart1 = new ContentPart { };

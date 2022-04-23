@@ -43,7 +43,8 @@ public class ShoppingCartControllerTests
         new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz"),
     };
 
-    public ShoppingCartControllerTests() {
+    public ShoppingCartControllerTests()
+    {
         _cartStorage = new FakeCartStorage();
         _controller = new ShoppingCartController(
             shoppingCartPersistence: _cartStorage,

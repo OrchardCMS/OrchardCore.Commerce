@@ -33,7 +33,8 @@ public static class Regions
     public static readonly IDictionary<string, IDictionary<string, string>> Provinces
         = new Dictionary<string, IDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
         { // TODO: complete this list with other countries that have regions
-            { "US" , new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "US" , new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
                     { "AL", "Alabama" },
                     { "AK", "Alaska" },
@@ -88,7 +89,8 @@ public static class Regions
                     { "WY", "Wyoming" },
                 }
             },
-            { "CA" , new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "CA" , new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
                     { "AB", "Alberta" },
                     { "BC", "British Columbia" },

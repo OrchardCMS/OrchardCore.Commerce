@@ -20,16 +20,20 @@ public class FakeContentDefinitionManager : IContentDefinitionManager
     public ContentPartDefinition GetPartDefinition(string name) => throw new System.NotImplementedException();
 
     public ContentTypeDefinition GetTypeDefinition(string name)
-        => new(name, name, new[] {
-            new ContentTypePartDefinition("ProductPart1", new ContentPartDefinition("ProductPartType", new ContentPartFieldDefinition[] {
+        => new(name, name, new[]
+        {
+            new ContentTypePartDefinition("ProductPart1", new ContentPartDefinition("ProductPartType", new ContentPartFieldDefinition[]
+            {
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanProductAttributeField)), "foobool", new JObject()),
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanField)), "barbool", new JObject()),
             }, new JObject()), new JObject()),
-            new ContentTypePartDefinition("ProductPart2", new ContentPartDefinition("ProductPartType2", new ContentPartFieldDefinition[] {
+            new ContentTypePartDefinition("ProductPart2", new ContentPartDefinition("ProductPartType2", new ContentPartFieldDefinition[]
+            {
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextProductAttributeField)), "footext", new JObject()),
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextField)), "bartext", new JObject()),
             }, new JObject()), new JObject()),
-            new ContentTypePartDefinition("ProductPart3", new ContentPartDefinition("product", new[] {
+            new ContentTypePartDefinition("ProductPart3", new ContentPartDefinition("product", new[]
+            {
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanProductAttributeField)), "attr1", new JObject()),
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(TextProductAttributeField)), "attr2", new JObject()),
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(NumericProductAttributeField)), "attr3", new JObject()),

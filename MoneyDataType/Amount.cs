@@ -15,7 +15,8 @@ namespace Money;
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
-    public Amount() {
+    public Amount()
+    {
         Value = 0;
         Currency = Money.Currency.UnspecifiedCurrency;
     }
