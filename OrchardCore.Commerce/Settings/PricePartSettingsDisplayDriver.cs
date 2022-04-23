@@ -27,7 +27,7 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
 
     public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
     {
-        if (!String.Equals(nameof(PricePart), model.PartDefinition.Name))
+        if (!string.Equals(nameof(PricePart), model.PartDefinition.Name))
         {
             return null;
         }
@@ -54,7 +54,7 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
     {
-        if (!String.Equals(nameof(PricePart), model.PartDefinition.Name))
+        if (!string.Equals(nameof(PricePart), model.PartDefinition.Name))
         {
             return null;
         }

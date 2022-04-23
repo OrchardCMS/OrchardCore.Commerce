@@ -46,7 +46,7 @@ public class PriceVariantProvider : IPriceProvider
                             .OfType<IPredefinedValuesProductAttributeValue>()
                             .Where(attribute => attributesRestrictedToPredefinedValues.Contains(attribute.AttributeName))
                             .OrderBy(x => x.AttributeName);
-                        var variantKey = String.Join(
+                        var variantKey = string.Join(
                             "-",
                             predefinedAttributes
                                 .Select(attr => attr.UntypedPredefinedValue)

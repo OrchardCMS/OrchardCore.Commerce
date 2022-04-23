@@ -55,16 +55,16 @@ public class AddressFormatter : IAddressFormatter
     public string Format(Address address)
     {
         if (address is null) return "-";
-        string rawFormatted = String.Format(
+        string rawFormatted = string.Format(
             _addressFormat,
             address.Name,
             address.Department,
             address.Company,
             address.StreetAddress1,
             address.StreetAddress2,
-            String.Format(_cityLineFormat, address.City, address.Province, address.PostalCode),
+            string.Format(_cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
-        string withoutEmptyLines = String.Join(string.Empty, rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
+        string withoutEmptyLines = string.Join(string.Empty, rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
         return _uppercase ? withoutEmptyLines.ToUpper() : withoutEmptyLines;
     }
 }

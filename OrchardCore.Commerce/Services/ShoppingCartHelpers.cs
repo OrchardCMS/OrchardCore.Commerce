@@ -80,7 +80,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     public async Task<ShoppingCart> Deserialize(string serializedCart)
     {
         var cart = new ShoppingCart();
-        if (String.IsNullOrEmpty(serializedCart))
+        if (string.IsNullOrEmpty(serializedCart))
         {
             return cart;
         }

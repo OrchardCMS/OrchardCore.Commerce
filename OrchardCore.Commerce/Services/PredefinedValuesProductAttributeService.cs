@@ -19,7 +19,7 @@ public class PredefinedValuesProductAttributeService : IPredefinedValuesProductA
 
     public IEnumerable<string> GetProductAttributesCombinations(ContentItem product)
         => CartesianProduct(GetProductAttributesPredefinedValues(product))
-            .Select(x => String.Join("-", x));
+            .Select(x => string.Join("-", x));
 
     private IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
     {

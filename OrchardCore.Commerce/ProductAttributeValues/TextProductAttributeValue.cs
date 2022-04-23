@@ -15,7 +15,7 @@ public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<s
         : this(attributeName, (IEnumerable<string>)values) { }
 
     public override string Display(CultureInfo culture = null)
-        => Value is null || !Value.Any() || Value.First() is null ? string.Empty : FieldName + ": " + String.Join(", ", Value);
+        => Value is null || !Value.Any() || Value.First() is null ? string.Empty : FieldName + ": " + string.Join(", ", Value);
 
     public override bool Equals(IProductAttributeValue<IEnumerable<string>> other)
         => other == null || other.Value == null || !other.Value.Any() ? Value == null || !Value.Any()
@@ -25,7 +25,7 @@ public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<s
     public override int GetHashCode()
         => Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
 
-    public override string ToString() => AttributeName + ": " + String.Join(", ", Value);
+    public override string ToString() => AttributeName + ": " + string.Join(", ", Value);
 
     public object UntypedPredefinedValue => PredefinedValue;
 
