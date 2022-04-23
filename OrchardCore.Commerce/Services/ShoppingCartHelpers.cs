@@ -84,6 +84,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         {
             return cart;
         }
+
         JsonElement.ArrayEnumerator cartItems = JsonDocument.Parse(serializedCart).RootElement.GetProperty("Items").EnumerateArray();
         // Actualize prices
         foreach (JsonElement itemElement in cartItems)
@@ -95,6 +96,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                 cart.SetPrices(item, item.Prices.Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price))));
             }
         }
+
         // Post-process attributes for concrete types according to field definitions
         // (deserialization being essentially non-polymorphic and without access to our type definition
         // contextual information).
@@ -126,8 +128,10 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                     attributes.Add(attr);
                 }
             }
+
             newCartItems.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
         }
+
         return cart.With(newCartItems);
     }
 

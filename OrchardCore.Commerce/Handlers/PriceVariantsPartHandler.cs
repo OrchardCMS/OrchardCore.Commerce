@@ -20,6 +20,7 @@ public class PriceVariantsPartHandler : ContentPartHandler<PriceVariantsPart>
                 part.Variants[variantKey] = _moneyService.EnsureCurrency(part.Variants[variantKey]);
             }
         }
+
         return base.LoadingAsync(context, part);
     }
 }

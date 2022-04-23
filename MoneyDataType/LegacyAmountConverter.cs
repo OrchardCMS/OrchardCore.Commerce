@@ -101,6 +101,7 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
                 writer.WriteValue(amount.Currency.DecimalPlaces);
             }
         }
+
         writer.WriteEndObject();
     }
 }

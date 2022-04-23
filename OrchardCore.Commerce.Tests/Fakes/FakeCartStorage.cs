@@ -25,6 +25,7 @@ public class FakeCartStorage : IShoppingCartPersistence
             cart = new ShoppingCart();
             _carts.Add(shoppingCartId ?? string.Empty, cart);
         }
+
         return Task.FromResult(cart);
     }
 

@@ -113,6 +113,7 @@ public class ShoppingCart
             if (line.IsSameProductAs(item)) return index;
             index++;
         }
+
         return -1;
     }
 

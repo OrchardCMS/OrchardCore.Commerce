@@ -94,6 +94,7 @@ internal class AmountConverter : JsonConverter<Amount>
             if (amount.Currency.DecimalPlaces != 2)
                 writer.WriteNumber(Dec, amount.Currency.DecimalPlaces);
         }
+
         writer.WriteEndObject();
     }
 }

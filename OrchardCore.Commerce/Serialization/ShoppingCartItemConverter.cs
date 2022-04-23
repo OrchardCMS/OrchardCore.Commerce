@@ -51,6 +51,7 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
                         value.SetAttributeName(attributeName);
                         attributes.Add(value);
                     }
+
                     break;
             }
         }
@@ -68,6 +69,7 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
             writer.WritePropertyName(PricesName);
             JsonSerializer.Serialize(writer, value.Prices, options);
         }
+
         if (value.Attributes != null)
         {
             writer.WriteStartObject(AttributesName);
@@ -77,8 +79,10 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
                 // Re-using the raw attribute serialization logic
                 JsonSerializer.Serialize(writer, new RawProductAttributeValue(attribute.UntypedValue), options);
             }
+
             writer.WriteEndObject();
         }
+
         writer.WriteEndObject();
     }
 }

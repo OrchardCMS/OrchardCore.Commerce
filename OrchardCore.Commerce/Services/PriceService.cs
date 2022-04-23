@@ -21,6 +21,7 @@ public class PriceService : IPriceService
         {
             items = await priceProvider.AddPrices(items);
         }
+
         return items;
     }
 }

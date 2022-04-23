@@ -38,6 +38,7 @@ internal class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
         {
             return new PrioritizedPrice(priority, amount);
         }
+
         return null;
     }
 

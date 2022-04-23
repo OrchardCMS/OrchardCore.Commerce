@@ -30,6 +30,7 @@ public interface IProductAttributeValue
         }
     }
 }
+
 public interface IProductAttributeValue<T> : IProductAttributeValue, IEquatable<IProductAttributeValue<T>>
 {
     T Value { get; }

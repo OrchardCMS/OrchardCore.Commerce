@@ -26,6 +26,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                 {
                     return new NumericProductAttributeValue(name, decimalValue);
                 }
+
                 return new NumericProductAttributeValue(name, null);
             case nameof(TextProductAttributeField):
                 switch (value.ValueKind)
@@ -37,6 +38,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                     default:
                         return new TextProductAttributeValue(name, null);
                 }
+
             default:
                 return null;
         }
@@ -59,6 +61,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                 {
                     return new NumericProductAttributeValue(name, decimalValue);
                 }
+
                 return new NumericProductAttributeValue(name, null);
             case nameof(TextProductAttributeField):
                 // TODO: use settings to validate the value, and parse differently if multiple values are allowed.

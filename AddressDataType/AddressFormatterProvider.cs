@@ -11,6 +11,7 @@ public class AddressFormatterProvider : IAddressFormatterProvider
         {
             return formatter.Format(address);
         }
+
         return KnownAddressFormatters.DefaultFormatter.Format(address);
     }
 }

@@ -102,12 +102,14 @@ public class ShoppingCartController : Controller
             await _notifier.AddAsync(NotifyType.Error, _h["Product with SKU {0} not found.", line.ProductSku]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
+
         parsedLine = (await _priceService.AddPrices(new[] { parsedLine })).Single();
         if (!parsedLine.Prices.Any())
         {
             await _notifier.AddAsync(NotifyType.Error, _h["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
+
         ShoppingCart cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
         cart.AddItem(parsedLine);
         await _shoppingCartPersistence.Store(cart, shoppingCartId);
@@ -121,6 +123,7 @@ public class ShoppingCartController : Controller
                 },
                 "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
         }
+
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
 
