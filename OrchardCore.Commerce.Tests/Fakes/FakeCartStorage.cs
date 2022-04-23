@@ -18,7 +18,7 @@ public class FakeCartStorage : IShoppingCartPersistence
     public string GetUniqueCartId(string shoppingCartId)
         => Guid.NewGuid().ToString();
 
-    public Task<ShoppingCart> Retrieve(string shoppingCartId = null)
+    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
     {
         if (!_carts.TryGetValue(shoppingCartId ?? string.Empty, out var cart))
         {
@@ -29,7 +29,7 @@ public class FakeCartStorage : IShoppingCartPersistence
         return Task.FromResult(cart);
     }
 
-    public Task Store(ShoppingCart items, string shoppingCartId = null)
+    public Task StoreAsync(ShoppingCart items, string shoppingCartId = null)
     {
         _carts[shoppingCartId ?? string.Empty] = new ShoppingCart(items.Items);
         return Task.CompletedTask;

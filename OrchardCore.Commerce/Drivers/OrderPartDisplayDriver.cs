@@ -26,12 +26,12 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context)
         // TODO: add permissions
-        => Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
+        => Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context)
-        => Initialize<OrderPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, part));
+        => Initialize<OrderPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
@@ -40,12 +40,12 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         return Edit(part, context);
     }
 
-    private Task BuildViewModel(OrderPartViewModel model, OrderPart part)
+    private Task BuildViewModelAsync(OrderPartViewModel model, OrderPart part)
         => Task.Run(async () =>
         {
             model.ContentItem = part.ContentItem;
             var products =
-                await _productService.GetProductDictionary(part.LineItems.Select(line => line.ProductSku));
+                await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
             var lineItems = await Task.WhenAll(part.LineItems.Select(async lineItem =>
             {
                 var product = products[lineItem.ProductSku];

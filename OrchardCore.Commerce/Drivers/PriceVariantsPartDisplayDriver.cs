@@ -26,14 +26,14 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
+        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
         Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), m =>
         {
-            BuildViewModel(m, part);
+            BuildViewModelAsync(m, part);
             m.Currencies = _moneyService.Currencies;
         });
 
@@ -56,7 +56,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         return Edit(part, context);
     }
 
-    private Task BuildViewModel(PriceVariantsPartViewModel model, PriceVariantsPart part)
+    private Task BuildViewModelAsync(PriceVariantsPartViewModel model, PriceVariantsPart part)
     {
         model.ContentItem = part.ContentItem;
         model.PriceVariantsPart = part;

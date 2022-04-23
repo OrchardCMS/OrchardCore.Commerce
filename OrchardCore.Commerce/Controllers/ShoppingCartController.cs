@@ -51,10 +51,10 @@ public class ShoppingCartController : Controller
     [Route("cart")]
     public async Task<ActionResult> Index(string shoppingCartId = null)
     {
-        var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
+        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var products =
-            await _productService.GetProductDictionary(cart.Items.Select(line => line.ProductSku));
-        var items = await _priceService.AddPrices(cart.Items);
+            await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
+        var items = await _priceService.AddPricesAsync(cart.Items);
         var lines = await Task.WhenAll(items.Select(async item =>
         {
             var product = products[item.ProductSku];
@@ -83,35 +83,35 @@ public class ShoppingCartController : Controller
     [HttpPost]
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
-        var parsedCart = await _shoppingCartHelpers.ParseCart(cart);
-        await _shoppingCartPersistence.Store(parsedCart, shoppingCartId);
+        var parsedCart = await _shoppingCartHelpers.ParseCartAsync(cart);
+        await _shoppingCartPersistence.StoreAsync(parsedCart, shoppingCartId);
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
 
     [HttpGet]
     public Task<ShoppingCart> Get(string shoppingCartId = null)
-        => _shoppingCartPersistence.Retrieve(shoppingCartId);
+        => _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
 
     [HttpPost]
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
+        var parsedLine = await _shoppingCartHelpers.ParseCartLineAsync(line);
         if (parsedLine is null)
         {
             await _notifier.AddAsync(NotifyType.Error, _h["Product with SKU {0} not found.", line.ProductSku]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
-        parsedLine = (await _priceService.AddPrices(new[] { parsedLine })).Single();
+        parsedLine = (await _priceService.AddPricesAsync(new[] { parsedLine })).Single();
         if (!parsedLine.Prices.Any())
         {
             await _notifier.AddAsync(NotifyType.Error, _h["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
-        var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
+        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         cart.AddItem(parsedLine);
-        await _shoppingCartPersistence.Store(cart, shoppingCartId);
+        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
         if (_workflowManager != null)
         {
             await _workflowManager.TriggerEventAsync(
@@ -129,10 +129,10 @@ public class ShoppingCartController : Controller
     [HttpPost]
     public async Task<ActionResult> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
-        var cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);
+        var parsedLine = await _shoppingCartHelpers.ParseCartLineAsync(line);
+        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         cart.RemoveItem(parsedLine);
-        await _shoppingCartPersistence.Store(cart, shoppingCartId);
+        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
 }

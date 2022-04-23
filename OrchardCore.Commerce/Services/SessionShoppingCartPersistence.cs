@@ -25,15 +25,15 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
     public string GetUniqueCartId(string shoppingCartId)
         => Session.Id + shoppingCartId;
 
-    public Task<ShoppingCart> Retrieve(string shoppingCartId = null)
+    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
     {
         var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty));
-        return _shoppingCartHelpers.Deserialize(cartString);
+        return _shoppingCartHelpers.DeserializeAsync(cartString);
     }
 
-    public async Task Store(ShoppingCart items, string shoppingCartId = null)
+    public async Task StoreAsync(ShoppingCart items, string shoppingCartId = null)
     {
-        var cartString = await _shoppingCartHelpers.Serialize(items);
+        var cartString = await _shoppingCartHelpers.SerializeAsync(items);
         Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty), cartString);
     }
 }

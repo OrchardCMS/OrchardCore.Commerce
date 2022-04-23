@@ -16,12 +16,12 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     public ProductPartDisplayDriver(IProductAttributeService productAttributeService) => _productAttributeService = productAttributeService;
 
     public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
-        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
+        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
             .Location("Detail", "Content:20")
             .Location("Summary", "Meta:5");
 
     public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) =>
-        Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, part));
+        Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, part));
 
     public override async Task<IDisplayResult> UpdateAsync(ProductPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
@@ -30,7 +30,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         return Edit(part, context);
     }
 
-    private Task BuildViewModel(ProductPartViewModel model, ProductPart part)
+    private Task BuildViewModelAsync(ProductPartViewModel model, ProductPart part)
     {
         model.ContentItem = part.ContentItem;
         model.Sku = part.Sku;

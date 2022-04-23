@@ -67,13 +67,13 @@ public class ShoppingCartControllerTests
     [Fact]
     public async Task AddExistingItemToCart()
     {
-        await _cartStorage.Store(new ShoppingCart(new ShoppingCartItem(3, "foo")));
+        await _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")));
         await _controller.AddItem(new ShoppingCartLineUpdateModel
         {
             Quantity = 7,
             ProductSku = "foo",
         });
-        var cart = await _cartStorage.Retrieve();
+        var cart = await _cartStorage.RetrieveAsync();
 
         Assert.Equal(new List<ShoppingCartItem>
         {
@@ -84,13 +84,13 @@ public class ShoppingCartControllerTests
     [Fact]
     public async Task AddNewItemToCart()
     {
-        await _cartStorage.Store(new ShoppingCart(new ShoppingCartItem(3, "foo")));
+        await _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")));
         await _controller.AddItem(new ShoppingCartLineUpdateModel
         {
             Quantity = 7,
             ProductSku = "bar",
         });
-        var cart = await _cartStorage.Retrieve();
+        var cart = await _cartStorage.RetrieveAsync();
 
         Assert.Equal(new List<ShoppingCartItem>
         {
@@ -102,7 +102,7 @@ public class ShoppingCartControllerTests
     [Fact]
     public async Task AddExistingItemWithAttributes()
     {
-        await _cartStorage.Store(new ShoppingCart(new[]
+        await _cartStorage.StoreAsync(new ShoppingCart(new[]
         {
             new ShoppingCartItem(2, "foo"),
             new ShoppingCartItem(3, "foo", _attrSet1Parsed),
@@ -141,7 +141,7 @@ public class ShoppingCartControllerTests
             new ShoppingCartItem(6, "bar", _attrSet3Parsed),
         };
         var cart = new ShoppingCart(expectedCartItems);
-        await _cartStorage.Store(cart);
+        await _cartStorage.StoreAsync(cart);
 
         await _controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet2 });
         expectedCartItems.RemoveAt(2); // foo - attr2

@@ -10,9 +10,9 @@ public interface IShoppingCartHelpers
 {
     ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line);
     bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other);
-    Task<ShoppingCart> ParseCart(ShoppingCartUpdateModel cart);
-    Task<ShoppingCartItem> ParseCartLine(ShoppingCartLineUpdateModel line);
+    Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart);
+    Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line);
     HashSet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
-    Task<ShoppingCart> Deserialize(string serializedCart);
-    Task<string> Serialize(ShoppingCart cart);
+    Task<ShoppingCart> DeserializeAsync(string serializedCart);
+    Task<string> SerializeAsync(ShoppingCart cart);
 }

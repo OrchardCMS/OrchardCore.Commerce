@@ -23,13 +23,13 @@ public class ProductService : IProductService
         _contentManager = contentManager;
     }
 
-    public async Task<ProductPart> GetProduct(string sku)
+    public async Task<ProductPart> GetProductAsync(string sku)
     {
         var contentItemId = (await _session.QueryIndex<ProductPartIndex>(x => x.Sku == sku).FirstOrDefaultAsync())?.ContentItemId;
         return contentItemId is null ? null : (await _contentManager.GetAsync(contentItemId)).As<ProductPart>();
     }
 
-    public async Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus)
+    public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
         var contentItemIds = (await _session
                 .QueryIndex<ProductPartIndex>(x => x.Sku.IsIn(skus))

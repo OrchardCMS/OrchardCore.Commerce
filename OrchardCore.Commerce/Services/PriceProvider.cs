@@ -25,10 +25,10 @@ public class PriceProvider : IPriceProvider
 
     public int Order => 0;
 
-    public async Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
+    public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items)
     {
         var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
-        var skuProducts = (await _productService.GetProducts(skus))
+        var skuProducts = (await _productService.GetProductsAsync(skus))
             .ToDictionary(p => p.Sku);
         return items
             .Select(item =>

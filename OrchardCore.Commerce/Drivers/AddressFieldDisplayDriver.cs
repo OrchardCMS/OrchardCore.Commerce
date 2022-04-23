@@ -18,9 +18,9 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     public override IDisplayResult Edit(
         AddressField field,
         BuildFieldEditorContext context) =>
-        Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, field, context));
+        Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, field, context));
 
-    private Task BuildViewModel(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
+    private Task BuildViewModelAsync(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
     {
         model.Address = field.Address;
         model.AddressHtml

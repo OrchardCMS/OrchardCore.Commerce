@@ -25,14 +25,14 @@ public class PriceTests
             BuildProduct("bar", 30.0M),
             BuildProduct("baz", 10.0M));
         var priceProvider = new PriceProvider(productService, new TestMoneyService());
-        cart = cart.With(await priceProvider.AddPrices(cart.Items));
+        cart = cart.With(await priceProvider.AddPricesAsync(cart.Items));
 
         foreach (var item in cart.Items)
         {
             Assert.Single(item.Prices);
             Assert.Equal(
                 item.Prices.Single().Price.Value,
-                (await productService.GetProduct(item.ProductSku)).ContentItem.As<PricePart>().Price.Value,
+                (await productService.GetProductAsync(item.ProductSku)).ContentItem.As<PricePart>().Price.Value,
                 precision: 2);
         }
     }
@@ -48,7 +48,7 @@ public class PriceTests
             new DummyPriceProvider(3, 3.0m),
         });
         var cart = new ShoppingCart(new ShoppingCartItem(1, "foo"));
-        cart = cart.With(await priceService.AddPrices(cart.Items));
+        cart = cart.With(await priceService.AddPricesAsync(cart.Items));
         Assert.Collection(cart.Items.Single().Prices,
             p => Assert.Equal(1.0m, p.Price.Value),
             p => Assert.Equal(2.0m, p.Price.Value),
@@ -86,10 +86,10 @@ public class PriceTests
 
         public DummyProductService(params ProductPart[] products) => _products = products.ToDictionary(p => p.Sku);
 
-        public Task<ProductPart> GetProduct(string sku)
+        public Task<ProductPart> GetProductAsync(string sku)
             => Task.FromResult(_products[sku]);
 
-        public Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus)
+        public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
             => Task.FromResult(skus.Select(sku => _products[sku]));
     }
 
@@ -104,7 +104,7 @@ public class PriceTests
         public int Order { get; }
         public decimal Price { get; }
 
-        public Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
+        public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items)
             => Task.FromResult(
                 items.Select(item
                     => item.WithPrice(

@@ -7,8 +7,8 @@ namespace OrchardCore.Commerce.Abstractions;
 
 public interface IProductService
 {
-    Task<ProductPart> GetProduct(string sku);
-    Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus);
-    async Task<IDictionary<string, ProductPart>> GetProductDictionary(IEnumerable<string> skus)
-        => (await GetProducts(skus)).ToDictionary(product => product.Sku);
+    Task<ProductPart> GetProductAsync(string sku);
+    Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus);
+    async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(IEnumerable<string> skus)
+        => (await GetProductsAsync(skus)).ToDictionary(product => product.Sku);
 }

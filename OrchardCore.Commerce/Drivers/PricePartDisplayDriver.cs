@@ -20,7 +20,7 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     public PricePartDisplayDriver(IMoneyService moneyService) => _moneyService = moneyService;
 
     public override IDisplayResult Display(PricePart part, BuildPartDisplayContext context) =>
-        Initialize<PricePartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
+        Initialize<PricePartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
@@ -30,7 +30,7 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
 
         return Initialize<PricePartViewModel>(GetEditorShapeType(context), m =>
         {
-            BuildViewModel(m, part);
+            BuildViewModelAsync(m, part);
 
             // This is only required for the editor. Not the frontend display.
             m.Currencies = GetCurrencySelectionList(pricePartSettings);
@@ -48,7 +48,7 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
         return Edit(part, context);
     }
 
-    private Task BuildViewModel(PricePartViewModel model, PricePart part)
+    private Task BuildViewModelAsync(PricePartViewModel model, PricePart part)
     {
         model.ContentItem = part.ContentItem;
 

@@ -41,9 +41,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                || (line.Attributes.Count == other.Attributes.Count && !line.Attributes.Except(other.Attributes).Any())
            );
 
-    public async Task<ShoppingCart> ParseCart(ShoppingCartUpdateModel cart)
+    public async Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart)
     {
-        var products = await GetProducts(cart.Lines.Select(l => l.ProductSku));
+        var products = await GetProductsAsync(cart.Lines.Select(l => l.ProductSku));
         var types = ExtractTypeDefinitions(products.Values);
         IList<ShoppingCartItem> parsedCart = cart.Lines
             .Where(l => l.Quantity > 0)
@@ -53,9 +53,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return new ShoppingCart(parsedCart);
     }
 
-    public async Task<ShoppingCartItem> ParseCartLine(ShoppingCartLineUpdateModel line)
+    public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
     {
-        var product = await _productService.GetProduct(line.ProductSku);
+        var product = await _productService.GetProductAsync(line.ProductSku);
         if (product is null) return null;
         var type = GetTypeDefinition(product);
         var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
@@ -76,7 +76,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                     })
         );
 
-    public async Task<ShoppingCart> Deserialize(string serializedCart)
+    public async Task<ShoppingCart> DeserializeAsync(string serializedCart)
     {
         var cart = new ShoppingCart();
         if (string.IsNullOrEmpty(serializedCart))
@@ -99,7 +99,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         // Post-process attributes for concrete types according to field definitions
         // (deserialization being essentially non-polymorphic and without access to our type definition
         // contextual information).
-        var products = await GetProducts(cart.Items.Select(l => l.ProductSku));
+        var products = await GetProductsAsync(cart.Items.Select(l => l.ProductSku));
         var types = ExtractTypeDefinitions(products.Values);
         var newCartItems = new List<ShoppingCartItem>(cart.Count);
         foreach (var line in cart.Items)
@@ -134,7 +134,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return cart.With(newCartItems);
     }
 
-    public Task<string> Serialize(ShoppingCart cart)
+    public Task<string> SerializeAsync(ShoppingCart cart)
         => Task.FromResult(JsonSerializer.Serialize(cart));
 
     private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products)
@@ -143,13 +143,15 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             .GroupBy(t => t.Name)
             .ToDictionary(g => g.Key, g => g.First());
 
-    private async Task<Dictionary<string, ProductPart>> GetProducts(IEnumerable<string> skus)
-        => (await _productService.GetProducts(skus)).ToDictionary(p => p.Sku);
+    private async Task<Dictionary<string, ProductPart>> GetProductsAsync(IEnumerable<string> skus)
+        => (await _productService.GetProductsAsync(skus)).ToDictionary(p => p.Sku);
 
     private ContentTypeDefinition GetTypeDefinition(ProductPart product)
         => _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
 
-    private static (ContentTypePartDefinition, ContentPartFieldDefinition) GetFieldDefinition(ContentTypeDefinition type, string attributeName)
+    private static (ContentTypePartDefinition, ContentPartFieldDefinition) GetFieldDefinition(
+        ContentTypeDefinition type,
+        string attributeName)
     {
         string[] partAndField = attributeName.Split('.');
         return type
