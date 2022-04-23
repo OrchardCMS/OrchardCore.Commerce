@@ -54,7 +54,8 @@ public class ProductAttributeProvider : IProductAttributeProvider
         switch (attributeFieldTypeName)
         {
             case nameof(BooleanProductAttributeField):
-                return new BooleanProductAttributeValue(name,
+                return new BooleanProductAttributeValue(
+                    name,
                     value != null && value.Contains("true", StringComparer.InvariantCultureIgnoreCase));
             case nameof(NumericProductAttributeField):
                 if (decimal.TryParse(value.FirstOrDefault(), out decimal decimalValue))

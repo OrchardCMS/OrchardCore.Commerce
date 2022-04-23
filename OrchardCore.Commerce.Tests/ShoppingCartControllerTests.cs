@@ -75,7 +75,8 @@ public class ShoppingCartControllerTests
         });
         var cart = await _cartStorage.RetrieveAsync();
 
-        Assert.Equal(new List<ShoppingCartItem>
+        Assert.Equal(
+            new List<ShoppingCartItem>
         {
             new ShoppingCartItem(10, "foo"),
         }, cart.Items);
@@ -92,7 +93,8 @@ public class ShoppingCartControllerTests
         });
         var cart = await _cartStorage.RetrieveAsync();
 
-        Assert.Equal(new List<ShoppingCartItem>
+        Assert.Equal(
+            new List<ShoppingCartItem>
         {
             new ShoppingCartItem(3, "foo"),
             new ShoppingCartItem(7, "bar"),
@@ -118,7 +120,8 @@ public class ShoppingCartControllerTests
         await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 13, ProductSku = "baz", Attributes = _attrSet3 });
         var cart = await _controller.Get();
 
-        Assert.Equal(new List<ShoppingCartItem>
+        Assert.Equal(
+            new List<ShoppingCartItem>
         {
             new ShoppingCartItem(9, "foo"),
             new ShoppingCartItem(11, "foo", _attrSet1Parsed),

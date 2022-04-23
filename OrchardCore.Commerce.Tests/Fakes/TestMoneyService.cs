@@ -8,7 +8,8 @@ namespace OrchardCore.Commerce.Tests.Fakes;
 public class TestMoneyService : MoneyService
 {
     public TestMoneyService()
-        : base(new ICurrencyProvider[]
+        : base(
+            new ICurrencyProvider[]
             {
                 new CurrencyProvider(),
                 new AnkhMorporkCurrencyProvider(),

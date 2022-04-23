@@ -49,7 +49,8 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
                 .Where(x => x.Value.HasValue
                             && updateModel.VariantsCurrencies?.ContainsKey(x.Key) == true
                             && updateModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
-                .ToDictionary(x => x.Key,
+                .ToDictionary(
+                    x => x.Key,
                     x => _moneyService.Create(x.Value.Value, updateModel.VariantsCurrencies[x.Key]));
         }
 
@@ -64,12 +65,14 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         var allVariantsKeys = _predefinedValuesProductAttributeService.GetProductAttributesCombinations(part.ContentItem);
         model.Variants = part.Variants ?? new Dictionary<string, Amount>();
 
-        model.VariantsValues = allVariantsKeys.ToDictionary(x => x,
+        model.VariantsValues = allVariantsKeys.ToDictionary(
+            x => x,
             x => model.Variants.TryGetValue(x, out var amount)
                 ? new decimal?(amount.Value)
                 : null);
 
-        model.VariantsCurrencies = allVariantsKeys.ToDictionary(x => x,
+        model.VariantsCurrencies = allVariantsKeys.ToDictionary(
+            x => x,
             x => model.Variants.TryGetValue(x, out var amount)
                 ? amount.Currency.CurrencyIsoCode
                 : Currency.UnspecifiedCurrency.CurrencyIsoCode);

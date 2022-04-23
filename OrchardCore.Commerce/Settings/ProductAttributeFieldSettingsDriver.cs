@@ -15,7 +15,8 @@ public abstract class ProductAttributeFieldSettingsDriver<TFIeld, TSettings>
     where TSettings : ProductAttributeFieldSettings, new()
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model)
-        => Initialize(typeof(TSettings).Name + "_Edit",
+        => Initialize(
+            typeof(TSettings).Name + "_Edit",
                 (Action<TSettings>)(model => model.PopulateSettings<TSettings>(model)))
             .Location("Content");
 
@@ -41,7 +42,8 @@ public class TextProductAttributeFieldSettingsDriver
     : ProductAttributeFieldSettingsDriver<TextProductAttributeField, TextProductAttributeFieldSettings>
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
-        => Initialize<TextProductAttributeSettingsViewModel>(nameof(TextProductAttributeFieldSettings) + "_Edit",
+        => Initialize<TextProductAttributeSettingsViewModel>(
+            nameof(TextProductAttributeFieldSettings) + "_Edit",
             viewModel =>
             {
                 var model = new TextProductAttributeFieldSettings();
