@@ -15,13 +15,10 @@ public class ShoppingCart
     /// </summary>
     public IList<ShoppingCartItem> Items { get; }
 
-    /// <summary>
-    /// Constructs an empty cart.
-    /// </summary>
     public ShoppingCart() : this(items: null) { }
 
     /// <summary>
-    /// Constructs a cart from a list of product variant quantities.
+    /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
     /// </summary>
     /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
     public ShoppingCart(IEnumerable<ShoppingCartItem> items) =>
@@ -30,7 +27,7 @@ public class ShoppingCart
         : new List<ShoppingCartItem>(items);
 
     /// <summary>
-    /// Constructs a cart from a list of product variant quantities.
+    /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
     /// </summary>
     /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
     public ShoppingCart(params ShoppingCartItem[] items) : this((IList<ShoppingCartItem>)items) { }

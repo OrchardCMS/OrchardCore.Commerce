@@ -13,11 +13,6 @@ namespace OrchardCore.Commerce.Models;
 [JsonConverter(typeof(ShoppingCartItemConverter))]
 public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 {
-    /// <summary>
-    /// Constructs a new shopping cart item.
-    /// </summary>
-    /// <param name="quantity">The number of products.</param>
-    /// <param name="product">The product.</param>
     public ShoppingCartItem(
         int quantity,
         string productSku,

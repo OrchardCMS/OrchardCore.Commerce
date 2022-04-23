@@ -17,7 +17,7 @@ public abstract class ProductAttributeFieldSettingsDriver<TFIeld, TSettings>
     public override IDisplayResult Edit(ContentPartFieldDefinition model)
         => Initialize(
             typeof(TSettings).Name + "_Edit",
-                (Action<TSettings>)(model => model.PopulateSettings<TSettings>(model)))
+            (Action<TSettings>)(model => model.PopulateSettings<TSettings>(model)))
             .Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)

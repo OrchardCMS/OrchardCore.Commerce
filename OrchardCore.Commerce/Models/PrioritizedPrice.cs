@@ -16,16 +16,12 @@ public class PrioritizedPrice
     /// Gets the priority for the price (higher takes precedence).
     /// </summary>
     public int Priority { get; }
+
     /// <summary>
     /// Gets the price.
     /// </summary>
     public Amount Price { get; }
 
-    /// <summary>
-    /// Builds a new prioritized price from an amount and a priority.
-    /// </summary>
-    /// <param name="priority">The piority.</param>
-    /// <param name="price">The price.</param>
     public PrioritizedPrice(int priority, Amount price)
     {
         Priority = priority;

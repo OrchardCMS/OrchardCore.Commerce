@@ -12,7 +12,7 @@ public class AddressFormatter : IAddressFormatter
     private readonly bool _uppercase;
 
     /// <summary>
-    /// Constructs a specialized address formatter from a couple of format strings.
+    /// Initializes a new instance of the <see cref="AddressFormatter"/> class.
     /// </summary>
     /// <param name="addressFormat">
     /// A format string for the address. Parameters are, in order:

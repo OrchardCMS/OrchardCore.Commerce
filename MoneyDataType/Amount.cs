@@ -39,11 +39,6 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
         Value = value;
     }
 
-    /// <summary>
-    /// Constructs a new money amount.
-    /// </summary>
-    /// <param name="value">The decimal value.</param>
-    /// <param name="currency">The currency.</param>
     public Amount(decimal value, ICurrency currency)
     {
         Currency = currency ?? throw new ArgumentNullException(nameof(currency));
