@@ -14,8 +14,11 @@ public class CurrencyProvider : ICurrencyProvider
         => KnownCurrencyTable.CurrencyTable.Values;
 
     public ICurrency GetCurrency(string isoCode)
-        => isoCode is null ? Currency.UnspecifiedCurrency : KnownCurrencyTable.CurrencyTable.TryGetValue(isoCode, out var value) ? value : null;
+    {
+        if (isoCode is null) return Currency.UnspecifiedCurrency;
 
-    public bool IsKnownCurrency(string isoCode)
-        => isoCode is null ? false : KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);
+        return KnownCurrencyTable.CurrencyTable.TryGetValue(isoCode, out var value) ? value : null;
+    }
+
+    public bool IsKnownCurrency(string isoCode) => isoCode is not null && KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);
 }

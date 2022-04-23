@@ -13,7 +13,7 @@ namespace Money;
 [JsonConverter(typeof(AmountConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public struct Amount : IEquatable<Amount>, IComparable<Amount>
+public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
     public Amount()
     {
@@ -23,8 +23,7 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount(decimal value, RegionInfo region)
     {
-        if (region == null)
-            throw new ArgumentNullException(nameof(region));
+        if (region == null) throw new ArgumentNullException(nameof(region));
 
         Currency = Money.Currency.FromRegion(region);
         Value = value;
@@ -32,8 +31,7 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount(decimal value, CultureInfo culture)
     {
-        if (culture is null)
-            throw new ArgumentNullException(nameof(culture));
+        if (culture is null) throw new ArgumentNullException(nameof(culture));
 
         Currency = Money.Currency.FromCulture(culture);
         Value = value;
@@ -55,10 +53,11 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
     /// </summary>
     public ICurrency Currency { get; }
 
-    public bool Equals(Amount other)
-        => Value == other.Value && ((Currency == null && other.Currency == null) || Currency.Equals(other.Currency));
+    public bool Equals(Amount other) =>
+        Value == other.Value &&
+        ((Currency == null && other.Currency == null) || Currency?.Equals(other.Currency) == true);
 
-    public override bool Equals(object obj) => obj != null && obj is Amount other && Equals(other);
+    public override bool Equals(object obj) => obj is Amount other && Equals(other);
 
     public override int GetHashCode() => (Value, Currency).GetHashCode();
 
@@ -67,21 +66,24 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
     private string DebuggerDisplay => ToString();
 
     public int CompareTo(Amount other)
-        => Currency != other.Currency
-            ? throw new InvalidOperationException("Can't compare amounts of different currencies.")
-            : Value.CompareTo(other.Value);
+    {
+        ThrowIfCurrencyDoesntMatch(other);
+        return Value.CompareTo(other.Value);
+    }
 
     public static explicit operator decimal(Amount amount) => amount.Value;
 
     public static Amount operator +(Amount first, Amount second)
-        => first.Currency != second.Currency
-            ? throw new InvalidOperationException("Can't add amounts of different currencies.")
-            : new Amount(first.Value + second.Value, first.Currency);
+    {
+        first.ThrowIfCurrencyDoesntMatch(second, activity: "add");
+        return new Amount(first.Value + second.Value, first.Currency);
+    }
 
     public static Amount operator -(Amount first, Amount second)
-        => first.Currency != second.Currency
-            ? throw new InvalidOperationException("Can't subtract amounts of different currencies.")
-            : new Amount(first.Value - second.Value, first.Currency);
+    {
+        first.ThrowIfCurrencyDoesntMatch(second, activity: "add");
+        return new Amount(first.Value - second.Value, first.Currency);
+    }
 
     public static Amount operator -(Amount amount)
         => new(-amount.Value, amount.Currency);
@@ -115,22 +117,33 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
     public static bool operator !=(Amount first, Amount second) => !first.Equals(second);
 
     public static bool operator <(Amount first, Amount second)
-        => first.Currency != second.Currency
-            ? throw new InvalidOperationException("Can't compare amounts of different currencies.")
-            : first.Value < second.Value;
+    {
+        first.ThrowIfCurrencyDoesntMatch(second);
+        return first.Value < second.Value;
+    }
 
     public static bool operator >(Amount first, Amount second)
-        => first.Currency != second.Currency
-            ? throw new InvalidOperationException("Can't compare amounts of different currencies.")
-            : first.Value > second.Value;
+    {
+        first.ThrowIfCurrencyDoesntMatch(second);
+        return first.Value > second.Value;
+    }
 
     public static bool operator <=(Amount first, Amount second)
-        => first.Currency != second.Currency
-            ? throw new InvalidOperationException("Can't compare amounts of different currencies.")
-            : first.Value <= second.Value;
+    {
+        first.ThrowIfCurrencyDoesntMatch(second);
+        return first.Value <= second.Value;
+    }
 
     public static bool operator >=(Amount first, Amount second)
-        => first.Currency != second.Currency
-            ? throw new InvalidOperationException("Can't compare amounts of different currencies.")
-            : first.Value >= second.Value;
+    {
+        first.ThrowIfCurrencyDoesntMatch(second);
+        return first.Value >= second.Value;
+    }
+
+    private void ThrowIfCurrencyDoesntMatch(Amount other, string activity = "compare")
+    {
+        if (Currency.Equals(other.Currency)) return;
+        throw new InvalidOperationException(
+            $"Can't {activity} amounts of different currencies ({Currency.CurrencyIsoCode} and {other.Currency.CurrencyIsoCode}).");
+    }
 }

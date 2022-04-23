@@ -1,7 +1,8 @@
+using Money.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Money.Abstractions;
 
 namespace Money;
 
@@ -13,25 +14,26 @@ internal static class KnownCurrencyTable
 
     internal static void EnsureCurrencyTable()
     {
-        if (CurrencyTable == null)
-            InitCurrencyCodeTable();
+        if (CurrencyTable == null) InitCurrencyCodeTable();
     }
 
-    private class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
+    private sealed class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
     {
-        public bool Equals(ICurrency x, ICurrency y) => x.CurrencyIsoCode == y.CurrencyIsoCode;
-        public int GetHashCode(ICurrency obj) => obj.CurrencyIsoCode.GetHashCode();
+        public bool Equals(ICurrency left, ICurrency right) =>
+            (left is null && right is null) ||
+            left?.CurrencyIsoCode?.Equals(right?.CurrencyIsoCode, StringComparison.OrdinalIgnoreCase) == true;
+        public int GetHashCode(ICurrency obj) => StringComparer.OrdinalIgnoreCase.GetHashCode(obj.CurrencyIsoCode);
     }
 
     private static void InitCurrencyCodeTable()
     {
+        static bool Valid(CultureInfo cultureInfo) =>
+            !cultureInfo.IsNeutralCulture &&
+            !cultureInfo.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) &&
+            !cultureInfo.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal);
+
         lock (_obj)
         {
-            bool Valid(CultureInfo c) =>
-                !c.IsNeutralCulture &&
-                !c.EnglishName.StartsWith("Unknown Locale") &&
-                !c.EnglishName.StartsWith("Invariant Language");
-
             CurrencyTable = CultureInfo.GetCultures(CultureTypes.AllCultures)
                 .Where(Valid)
                 .Select(c => new Currency(c)).Cast<ICurrency>()

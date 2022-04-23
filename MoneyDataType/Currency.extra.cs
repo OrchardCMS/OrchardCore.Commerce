@@ -5,7 +5,7 @@ using Money.Abstractions;
 
 namespace Money;
 
-public partial struct Currency
+public readonly partial struct Currency
 {
     public static ICurrency GetByIsoCode(string isoCode) => _defaultProvider.GetCurrency(isoCode);
 
@@ -137,22 +137,29 @@ public partial struct Currency
     public static ICurrency FromNativeName(string name, IEnumerable<ICurrencyProvider> providers = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new System.ArgumentException("Must provide a name", nameof(name));
+        }
+
         return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.NativeName == name);
     }
 
     public static ICurrency FromEnglishName(string name, IEnumerable<ICurrencyProvider> providers = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new System.ArgumentException("Must provide a name", nameof(name));
+        }
+
         return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.EnglishName == name);
     }
 
     public static ICurrency FromRegion(RegionInfo region, IEnumerable<ICurrencyProvider> providers = null)
     {
-        if (region is null)
-            throw new System.ArgumentNullException(nameof(region));
-        var found = _defaultProvider.GetCurrency(region.ISOCurrencySymbol);
+        if (region is null) throw new System.ArgumentNullException(nameof(region));
+
+        if (_defaultProvider.GetCurrency(region.ISOCurrencySymbol) is { } found) return found;
+
         return (providers ?? new List<ICurrencyProvider>())
             .SelectMany(p => p.Currencies)
             .FirstOrDefault(c => c.CurrencyIsoCode == region.ISOCurrencySymbol);

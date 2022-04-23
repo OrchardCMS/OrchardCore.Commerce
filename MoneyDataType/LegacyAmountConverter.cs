@@ -22,39 +22,32 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
         bool hasExistingValue,
         Newtonsoft.Json.JsonSerializer serializer)
     {
-        var val = default(decimal);
+        var value = default(decimal);
         ICurrency currency = null;
-        string nativename = null;
-        string englishname = null;
+        string nativeName = null;
+        string englishName = null;
         string symbol = null;
         string iso = null;
         int? dec = null;
 
-        while (reader.Read())
+        while (reader.Read() && reader.TokenType == Newtonsoft.Json.JsonToken.PropertyName)
         {
-            if (reader.TokenType != Newtonsoft.Json.JsonToken.PropertyName) break;
-
             var propertyName = reader.Value;
 
             switch (propertyName)
             {
                 case ValueName:
-                    val = (decimal)reader.ReadAsDecimal();
+                    value = reader.ReadAsDecimal().Value;
                     break;
                 case CurrencyName:
                     currency = Currency.FromIsoCode(reader.ReadAsString());
                     break;
-
-                // Kept for backwards compatibility
-                case Name:
-                    nativename = reader.ReadAsString();
-                    break;
-
+                case Name: // Kept for backwards compatibility
                 case NativeName:
-                    nativename = reader.ReadAsString();
+                    nativeName = reader.ReadAsString();
                     break;
                 case EnglishName:
-                    englishname = reader.ReadAsString();
+                    englishName = reader.ReadAsString();
                     break;
                 case Symbol:
                     symbol = reader.ReadAsString();
@@ -65,22 +58,27 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
                 case Dec:
                     dec = reader.ReadAsInt32();
                     break;
+                default:
+                    throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
             }
         }
 
         if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
-            currency = new Currency(nativename, englishname, symbol, iso, dec.GetValueOrDefault(2));
+        {
+            currency = new Currency(nativeName, englishName, symbol, iso, dec.GetValueOrDefault(2));
+        }
 
-        if (currency is null)
-            throw new InvalidOperationException("Invalid amount format. Must include a currency");
+        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency");
 
-        return new Amount(val, currency);
+        return new Amount(value, currency);
     }
 
     public override void WriteJson(Newtonsoft.Json.JsonWriter writer, Amount amount, Newtonsoft.Json.JsonSerializer serializer)
     {
         if (amount.Currency is null)
+        {
             throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
+        }
 
         writer.WriteStartObject();
         writer.WritePropertyName(ValueName);

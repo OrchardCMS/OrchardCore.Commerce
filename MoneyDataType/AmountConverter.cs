@@ -18,40 +18,33 @@ internal class AmountConverter : JsonConverter<Amount>
 
     public override Amount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var val = default(decimal);
+        var value = default(decimal);
         ICurrency currency = null;
-        string nativename = null;
-        string englishname = null;
+        string nativeName = null;
+        string englishName = null;
         string symbol = null;
         string iso = null;
         int? dec = null;
 
-        while (reader.Read())
+        while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
-            if (reader.TokenType != JsonTokenType.PropertyName) break;
-
             var propertyName = reader.GetString();
             if (!reader.Read()) continue;
 
             switch (propertyName)
             {
                 case ValueName:
-                    val = reader.GetDecimal();
+                    value = reader.GetDecimal();
                     break;
                 case CurrencyName:
                     currency = Currency.FromIsoCode(reader.GetString());
                     break;
-
-                // Kept for backwards compatibility
-                case Name:
-                    nativename = reader.GetString();
-                    break;
-
+                case Name: // Kept for backwards compatibility
                 case NativeName:
-                    nativename = reader.GetString();
+                    nativeName = reader.GetString();
                     break;
                 case EnglishName:
-                    englishname = reader.GetString();
+                    englishName = reader.GetString();
                     break;
                 case Symbol:
                     symbol = reader.GetString();
@@ -59,25 +52,31 @@ internal class AmountConverter : JsonConverter<Amount>
                 case Iso:
                     iso = reader.GetString();
                     break;
-                case Dec:
-                    if (reader.TryGetInt32(out var i)) dec = i;
+                case Dec when reader.TryGetInt32(out var i):
+                    dec = i;
                     break;
+                default:
+                    throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
             }
         }
 
         if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
-            currency = new Currency(nativename, englishname, symbol, iso, dec.GetValueOrDefault(2));
+        {
+            currency = new Currency(nativeName, englishName, symbol, iso, dec.GetValueOrDefault(2));
+        }
 
-        if (currency is null)
-            throw new InvalidOperationException("Invalid amount format. Must include a currency");
+        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency");
 
-        return new Amount(val, currency);
+        return new Amount(value, currency);
     }
 
     public override void Write(Utf8JsonWriter writer, Amount amount, JsonSerializerOptions options)
     {
         if (amount.Currency is null)
+        {
             throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
+        }
+
         writer.WriteStartObject();
         writer.WriteNumber(ValueName, amount.Value);
 
@@ -91,8 +90,7 @@ internal class AmountConverter : JsonConverter<Amount>
             writer.WriteString(EnglishName, amount.Currency.EnglishName);
             writer.WriteString(Symbol, amount.Currency.Symbol);
             writer.WriteString(Iso, amount.Currency.CurrencyIsoCode);
-            if (amount.Currency.DecimalPlaces != 2)
-                writer.WriteNumber(Dec, amount.Currency.DecimalPlaces);
+            if (amount.Currency.DecimalPlaces != 2) writer.WriteNumber(Dec, amount.Currency.DecimalPlaces);
         }
 
         writer.WriteEndObject();
