@@ -12,8 +12,8 @@ namespace OrchardCore.Commerce.Services;
 
 public class ProductService : IProductService
 {
-    private ISession _session;
-    private IContentManager _contentManager;
+    private readonly ISession _session;
+    private readonly IContentManager _contentManager;
 
     public ProductService(
         ISession session,

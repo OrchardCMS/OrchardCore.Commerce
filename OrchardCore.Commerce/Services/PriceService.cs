@@ -11,7 +11,7 @@ namespace OrchardCore.Commerce.Services;
 /// </summary>
 public class PriceService : IPriceService
 {
-    private IEnumerable<IPriceProvider> _providers;
+    private readonly IEnumerable<IPriceProvider> _providers;
 
     public PriceService(IEnumerable<IPriceProvider> priceProviders) => _providers = priceProviders;
 

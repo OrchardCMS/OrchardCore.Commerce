@@ -20,11 +20,11 @@ public class ShoppingCartControllerTests
     {
         { "ProductPart3.attr1", new[] { "true" } },
     };
-    private Dictionary<string, string[]> _attrSet2 = new Dictionary<string, string[]>
+    private readonly Dictionary<string, string[]> _attrSet2 = new Dictionary<string, string[]>
     {
         {  "ProductPart3.attr1", new[] { "false" } },
     };
-    private Dictionary<string, string[]> _attrSet3 = new Dictionary<string, string[]>
+    private readonly Dictionary<string, string[]> _attrSet3 = new Dictionary<string, string[]>
     {
         { "ProductPart3.attr1", new[] { "true" } },
         { "ProductPart3.attr2", new[] { "bar", "baz" } },

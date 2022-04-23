@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Handlers;
 
 public class PriceVariantsPartHandler : ContentPartHandler<PriceVariantsPart>
 {
-    private IMoneyService _moneyService;
+    private readonly IMoneyService _moneyService;
 
     public PriceVariantsPartHandler(IMoneyService moneyService) => _moneyService = moneyService;
 

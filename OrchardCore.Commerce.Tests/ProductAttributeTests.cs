@@ -15,12 +15,12 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ProductAttributeTests
 {
-    private IProductAttributeProvider _parser;
-    private ContentPartDefinition _partDefinition;
-    private ContentPartFieldDefinition _boolFieldDefinition;
-    private ContentPartFieldDefinition _numericFieldDefinition;
-    private ContentPartFieldDefinition _textFieldDefinition;
-    private ContentTypePartDefinition _partTypeDefinition;
+    private readonly IProductAttributeProvider _parser;
+    private readonly ContentPartDefinition _partDefinition;
+    private readonly ContentPartFieldDefinition _boolFieldDefinition;
+    private readonly ContentPartFieldDefinition _numericFieldDefinition;
+    private readonly ContentPartFieldDefinition _textFieldDefinition;
+    private readonly ContentTypePartDefinition _partTypeDefinition;
 
     public ProductAttributeTests()
     {
