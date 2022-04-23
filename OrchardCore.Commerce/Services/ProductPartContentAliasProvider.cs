@@ -16,11 +16,11 @@ public class ProductPartContentAliasProvider : IContentHandleProvider
 
     public int Order => 57;
         
-    public async Task<string> GetContentItemIdAsync(string alias)
+    public async Task<string> GetContentItemIdAsync(string handle)
     {
-        if (alias.StartsWith("sku:", System.StringComparison.OrdinalIgnoreCase))
+        if (handle.StartsWith("sku:", System.StringComparison.OrdinalIgnoreCase))
         {
-            var sku = alias.Substring(4).ToLowerInvariant();
+            var sku = handle.Substring(4).ToLowerInvariant();
 
             var productPartIndex = await _session
                 .Query<ContentItem, ProductPartIndex>(x => x.Sku == sku)

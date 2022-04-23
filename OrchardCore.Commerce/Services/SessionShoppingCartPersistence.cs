@@ -31,9 +31,9 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
         return await _shoppingCartHelpers.Deserialize(cartString);
     }
 
-    public async Task Store(ShoppingCart cart, string shoppingCartId = null)
+    public async Task Store(ShoppingCart items, string shoppingCartId = null)
     {
-        var cartString = await _shoppingCartHelpers.Serialize(cart);
+        var cartString = await _shoppingCartHelpers.Serialize(items);
         Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty), cartString);
     }
 }

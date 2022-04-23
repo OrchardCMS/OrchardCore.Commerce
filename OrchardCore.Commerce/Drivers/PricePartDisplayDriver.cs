@@ -19,33 +19,33 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
 
     public PricePartDisplayDriver(IMoneyService moneyService) => _moneyService = moneyService;
 
-    public override IDisplayResult Display(PricePart pricePart, BuildPartDisplayContext context) =>
-        Initialize<PricePartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, pricePart))
+    public override IDisplayResult Display(PricePart part, BuildPartDisplayContext context) =>
+        Initialize<PricePartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
-    public override IDisplayResult Edit(PricePart pricePart, BuildPartEditorContext context)
+    public override IDisplayResult Edit(PricePart part, BuildPartEditorContext context)
     {
         var pricePartSettings = context.TypePartDefinition.GetSettings<PricePartSettings>();
             
         return Initialize<PricePartViewModel>(GetEditorShapeType(context), m =>
         {
-            BuildViewModel(m, pricePart);
+            BuildViewModel(m, part);
 
             // This is only required for the editor. Not the frontend display.
             m.Currencies = GetCurrencySelectionList(pricePartSettings);
         });
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(PricePart pricePart, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(PricePart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
         var updateModel = new PricePartViewModel();
         if (await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceValue, t => t.PriceCurrency))
         {
-            pricePart.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
+            part.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
         }
 
-        return Edit(pricePart, context);
+        return Edit(part, context);
     }
 
     private Task BuildViewModel(PricePartViewModel model, PricePart part)

@@ -13,8 +13,8 @@ public class CurrencyProvider : ICurrencyProvider
     public IEnumerable<ICurrency> Currencies
         => KnownCurrencyTable.CurrencyTable.Values;
 
-    public ICurrency GetCurrency(string isoSymbol)
-        => isoSymbol is null ? Currency.UnspecifiedCurrency : KnownCurrencyTable.CurrencyTable.TryGetValue(isoSymbol, out var value) ? value : null;
+    public ICurrency GetCurrency(string isoCode)
+        => isoCode is null ? Currency.UnspecifiedCurrency : KnownCurrencyTable.CurrencyTable.TryGetValue(isoCode, out var value) ? value : null;
 
     public bool IsKnownCurrency(string isoCode) 
         => isoCode is null ? false : KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);

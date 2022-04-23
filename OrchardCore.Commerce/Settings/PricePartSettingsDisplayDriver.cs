@@ -25,16 +25,16 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
         _moneyService = moneyService;
     }
 
-    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+    public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
     {
-        if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
+        if (!String.Equals(nameof(PricePart), model.PartDefinition.Name))
         {
             return null;
         }
 
-        return Initialize<PricePartSettingsViewModel>("PricePartSettings_Edit", model =>
+        return Initialize("PricePartSettings_Edit", (Action<PricePartSettingsViewModel>)(model =>
         {
-            var settings = contentTypePartDefinition.GetSettings<PricePartSettings>();
+            var settings = model.GetSettings<PricePartSettings>();
 
             model.CurrencySelectionMode = settings.CurrencySelectionMode;
             model.CurrencySelectionModes = new List<SelectListItem>()
@@ -49,12 +49,12 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
                 .Select(c => new SelectListItem(
                     c.CurrencyIsoCode,
                     $"{c.CurrencyIsoCode} {c.Symbol} - {_s[c.EnglishName]}"));
-        }).Location("Content");
+        })).Location("Content");
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
     {
-        if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
+        if (!String.Equals(nameof(PricePart), model.PartDefinition.Name))
         {
             return null;
         }
@@ -73,6 +73,6 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
                     ? model.SpecificCurrencyIsoCode : null,
         });
 
-        return Edit(contentTypePartDefinition, context.Updater);
+        return Edit(model, context.Updater);
     }
 }

@@ -25,20 +25,20 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         _contentManager = contentManager;
     }
 
-    public override IDisplayResult Display(OrderPart orderPart, BuildPartDisplayContext context)
+    public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context)
         // TODO: add permissions
-        => Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, orderPart))
+        => Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
-    public override IDisplayResult Edit(OrderPart orderPart, BuildPartEditorContext context)
-        => Initialize<OrderPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, orderPart));
+    public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context)
+        => Initialize<OrderPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, part));
 
-    public override async Task<IDisplayResult> UpdateAsync(OrderPart orderPart, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
-        await updater.TryUpdateModelAsync(orderPart, Prefix, t => t.LineItems);
+        await updater.TryUpdateModelAsync(part, Prefix, t => t.LineItems);
 
-        return Edit(orderPart, context);
+        return Edit(part, context);
     }
 
     private Task BuildViewModel(OrderPartViewModel model, OrderPart part)

@@ -8,11 +8,11 @@ namespace OrchardCore.Commerce.Settings;
 
 public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<AddressField>
 {
-    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
-        => Initialize<AddressPartFieldSettings>("AddressFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
+    public override IDisplayResult Edit(ContentPartFieldDefinition model)
+        => Initialize("AddressFieldSettings_Edit", (System.Action<AddressPartFieldSettings>)(model => model.PopulateSettings<AddressPartFieldSettings>(model)))
             .Location("Content");
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
         var model = new AddressPartFieldSettings();
 
@@ -20,6 +20,6 @@ public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDrive
 
         context.Builder.WithSettings(model);
 
-        return Edit(partFieldDefinition);
+        return Edit(model);
     }
 }

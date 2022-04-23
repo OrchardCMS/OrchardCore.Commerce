@@ -11,16 +11,16 @@ public class PriceVariantsPartHandler : ContentPartHandler<PriceVariantsPart>
 
     public PriceVariantsPartHandler(IMoneyService moneyService) => _moneyService = moneyService;
 
-    public override Task LoadingAsync(LoadContentContext context, PriceVariantsPart part)
+    public override Task LoadingAsync(LoadContentContext context, PriceVariantsPart instance)
     {
-        if (part.Variants != null)
+        if (instance.Variants != null)
         {
-            foreach (var variantKey in part.Variants.Keys)
+            foreach (var variantKey in instance.Variants.Keys)
             {
-                part.Variants[variantKey] = _moneyService.EnsureCurrency(part.Variants[variantKey]);
+                instance.Variants[variantKey] = _moneyService.EnsureCurrency(instance.Variants[variantKey]);
             }
         }
 
-        return base.LoadingAsync(context, part);
+        return base.LoadingAsync(context, instance);
     }
 }

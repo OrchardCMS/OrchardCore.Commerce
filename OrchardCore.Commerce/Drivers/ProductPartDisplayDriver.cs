@@ -15,18 +15,18 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
     public ProductPartDisplayDriver(IProductAttributeService productAttributeService) => _productAttributeService = productAttributeService;
 
-    public override IDisplayResult Display(ProductPart productPart, BuildPartDisplayContext context) =>
-        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, productPart))
+    public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
+        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
             .Location("Detail", "Content:20")
             .Location("Summary", "Meta:5");
 
-    public override IDisplayResult Edit(ProductPart productPart, BuildPartEditorContext context) => Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, productPart));
+    public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) => Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, part));
 
-    public override async Task<IDisplayResult> UpdateAsync(ProductPart model, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ProductPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
-        await updater.TryUpdateModelAsync(model, Prefix, t => t.Sku);
+        await updater.TryUpdateModelAsync(part, Prefix, t => t.Sku);
 
-        return Edit(model, context);
+        return Edit(part, context);
     }
 
     private Task BuildViewModel(ProductPartViewModel model, ProductPart part)

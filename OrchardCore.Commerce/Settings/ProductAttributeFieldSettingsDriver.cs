@@ -14,18 +14,18 @@ public abstract class ProductAttributeFieldSettingsDriver<TFIeld, TSettings>
     where TFIeld : ProductAttributeField
     where TSettings : ProductAttributeFieldSettings, new()
 {
-    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
-        => Initialize<TSettings>(typeof(TSettings).Name + "_Edit",
-                model => partFieldDefinition.PopulateSettings(model))
+    public override IDisplayResult Edit(ContentPartFieldDefinition model)
+        => Initialize(typeof(TSettings).Name + "_Edit",
+                (Action<TSettings>)(                model => model.PopulateSettings<TSettings>(model)))
             .Location("Content");
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
         var model = new TSettings();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
         context.Builder
             .WithSettings(model);
-        return Edit(partFieldDefinition);
+        return Edit(model);
     }
 }
 

@@ -11,10 +11,10 @@ public class PricePartHandler : ContentPartHandler<PricePart>
 
     public PricePartHandler(IMoneyService moneyService) => _moneyService = moneyService;
 
-    public override Task LoadingAsync(LoadContentContext context, PricePart part)
+    public override Task LoadingAsync(LoadContentContext context, PricePart instance)
     {
-        part.Price = _moneyService.EnsureCurrency(part.Price);
+        instance.Price = _moneyService.EnsureCurrency(instance.Price);
 
-        return base.LoadingAsync(context, part);
+        return base.LoadingAsync(context, instance);
     }
 }

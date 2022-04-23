@@ -29,9 +29,9 @@ public class FakeCartStorage : IShoppingCartPersistence
         return Task.FromResult(cart);
     }
 
-    public Task Store(ShoppingCart cart, string shoppingCartId = null)
+    public Task Store(ShoppingCart items, string shoppingCartId = null)
     {
-        _carts[shoppingCartId ?? string.Empty] = new ShoppingCart(cart.Items);
+        _carts[shoppingCartId ?? string.Empty] = new ShoppingCart(items.Items);
         return Task.CompletedTask;
     }
 }
