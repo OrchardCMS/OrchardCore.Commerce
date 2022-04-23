@@ -37,7 +37,7 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
                     val = (decimal)reader.ReadAsDecimal();
                     break;
                 case CurrencyName:
-                    currency = Currency.FromISOCode(reader.ReadAsString());
+                    currency = Currency.FromIsoCode(reader.ReadAsString());
                     break;
 
                 // Kept for backwards compatibility

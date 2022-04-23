@@ -31,7 +31,7 @@ public partial struct Currency : ICurrency
         DecimalPlaces = culture.NumberFormat.CurrencyDecimalDigits;
     }
 
-    public Currency(string nativename, string englishname, string symbol, string iSOSymbol, int decimalDigits = 2)
+    public Currency(string nativename, string englishname, string symbol, string iSoSymbol, int decimalDigits = 2)
     {
         if (string.IsNullOrWhiteSpace(nativename))
             throw new ArgumentException("NativeName is required", nameof(nativename));
@@ -39,8 +39,8 @@ public partial struct Currency : ICurrency
             throw new ArgumentException("EnglishName is required", nameof(englishname));
         if (string.IsNullOrWhiteSpace(symbol))
             throw new ArgumentException("Symbol is required", nameof(symbol));
-        if (string.IsNullOrWhiteSpace(iSOSymbol))
-            throw new ArgumentException("ISO Symbol is required", nameof(iSOSymbol));
+        if (string.IsNullOrWhiteSpace(iSoSymbol))
+            throw new ArgumentException("ISO Symbol is required", nameof(iSoSymbol));
         if (decimalDigits < 0)
             throw new ArgumentOutOfRangeException(nameof(decimalDigits), "Decimal Digits must be greater than or equal to zero");
 
@@ -48,7 +48,7 @@ public partial struct Currency : ICurrency
         NativeName = nativename;
         EnglishName = englishname;
         Symbol = symbol;
-        CurrencyIsoCode = iSOSymbol;
+        CurrencyIsoCode = iSoSymbol;
         DecimalPlaces = decimalDigits;
     }
 

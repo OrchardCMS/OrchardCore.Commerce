@@ -12,5 +12,5 @@ public class FakePriceService : IPriceService
     public Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
         => Task.FromResult(
             items.Select(
-                (item, i) => item.WithPrice(new PrioritizedPrice(0, new Amount(42 + i++, Currency.USDollar)))));
+                (item, i) => item.WithPrice(new PrioritizedPrice(0, new Amount(42 + i++, Currency.UsDollar)))));
 }

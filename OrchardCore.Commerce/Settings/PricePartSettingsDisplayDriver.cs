@@ -16,12 +16,12 @@ namespace OrchardCore.Commerce.Settings;
 
 public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
-    private readonly IStringLocalizer<PricePartSettingsDisplayDriver> S;
+    private readonly IStringLocalizer<PricePartSettingsDisplayDriver> _s;
     private readonly IMoneyService _moneyService;
 
     public PricePartSettingsDisplayDriver(IStringLocalizer<PricePartSettingsDisplayDriver> localizer, IMoneyService moneyService)
     {
-        S = localizer;
+        _s = localizer;
         _moneyService = moneyService;
     }
 
@@ -39,16 +39,16 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
             model.CurrencySelectionMode = settings.CurrencySelectionMode;
             model.CurrencySelectionModes = new List<SelectListItem>()
             {
-                new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), S["All Currencies"]),
-                new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), S["Default Currency"]),
-                new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), S["Specific Currency"]),
+                new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), _s["All Currencies"]),
+                new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), _s["Default Currency"]),
+                new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), _s["Specific Currency"]),
             };
             model.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
             model.Currencies = _moneyService.Currencies
                 .OrderBy(c => c.CurrencyIsoCode)
                 .Select(c => new SelectListItem(
                     c.CurrencyIsoCode,
-                    $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
+                    $"{c.CurrencyIsoCode} {c.Symbol} - {_s[c.EnglishName]}"));
         }).Location("Content");
     }
 

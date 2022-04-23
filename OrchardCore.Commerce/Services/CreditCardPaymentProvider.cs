@@ -13,9 +13,9 @@ public class CreditCardPaymentProvider : IPaymentProvider
     private const string ExpirationMonth = nameof(ExpirationMonth);
     private const string ExpirationYear = nameof(ExpirationYear);
 
-    private readonly IStringLocalizer S;
+    private readonly IStringLocalizer _s;
 
-    public CreditCardPaymentProvider(IStringLocalizer<CreditCardPaymentProvider> localizer) => S = localizer;
+    public CreditCardPaymentProvider(IStringLocalizer<CreditCardPaymentProvider> localizer) => _s = localizer;
 
     public void AddData(IPayment charge, IDictionary<string, string> data)
     {
@@ -33,7 +33,7 @@ public class CreditCardPaymentProvider : IPaymentProvider
             {
                 TransactionId = transactionId,
                 Amount = amount,
-                ChargeText = S["Card **** **** **** {0} expiring {1}/{2}.", data[Last4], data[ExpirationMonth], data[ExpirationYear]].ToString(),
+                ChargeText = _s["Card **** **** **** {0} expiring {1}/{2}.", data[Last4], data[ExpirationMonth], data[ExpirationYear]].ToString(),
                 Last4 = data[Last4],
                 ExpirationMonth = int.TryParse(data[ExpirationMonth], out int expMonth) && expMonth >= 1 && expMonth <=12 ? expMonth : 0,
                 ExpirationYear = int.TryParse(data[ExpirationYear], out int expYear) && expYear >= 0 ? expYear : 0,

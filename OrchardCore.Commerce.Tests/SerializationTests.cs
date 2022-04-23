@@ -18,7 +18,7 @@ public class SerializationTests
             new ShoppingCartItem(2, "product-1", prices: new[]
             {
                 new PrioritizedPrice(0, new Amount(10, Currency.Euro)),
-                new PrioritizedPrice(1, new Amount(7, Currency.USDollar)),
+                new PrioritizedPrice(1, new Amount(7, Currency.UsDollar)),
             }),
             new ShoppingCartItem(1, "product-2", attributes: new IProductAttributeValue[]
             {
@@ -26,7 +26,7 @@ public class SerializationTests
                 new NumericProductAttributeValue("ProductPart3.attr3", (decimal?)42.0),
             }, prices: new[]
             {
-                new PrioritizedPrice(0, new Amount(12, Currency.USDollar)),
+                new PrioritizedPrice(0, new Amount(12, Currency.UsDollar)),
             }));
         var helpers = new ShoppingCartHelpers(
             attributeProviders: new[] { new ProductAttributeProvider() },

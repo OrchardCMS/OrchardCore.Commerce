@@ -10,5 +10,5 @@ public class CommerceSettingsCurrencySelector : ICurrencySelector
     private readonly CommerceSettings _options;
 
     public CommerceSettingsCurrencySelector(IOptions<CommerceSettings> options) => _options = options.Value;
-    public ICurrency CurrentDisplayCurrency => Currency.FromISOCode(_options.CurrentDisplayCurrency);
+    public ICurrency CurrentDisplayCurrency => Currency.FromIsoCode(_options.CurrentDisplayCurrency);
 }

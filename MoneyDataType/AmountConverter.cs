@@ -39,7 +39,7 @@ internal class AmountConverter : JsonConverter<Amount>
                     val = reader.GetDecimal();
                     break;
                 case CurrencyName:
-                    currency = Currency.FromISOCode(reader.GetString());
+                    currency = Currency.FromIsoCode(reader.GetString());
                     break;
 
                 // Kept for backwards compatibility

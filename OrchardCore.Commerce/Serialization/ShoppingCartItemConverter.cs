@@ -10,10 +10,10 @@ namespace OrchardCore.Commerce.Serialization;
 
 internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
 {
-    private const string quantityName = "quantity";
-    private const string skuName = "sku";
-    private const string pricesName = "prices";
-    private const string attributesName = "attributes";
+    private const string QuantityName = "quantity";
+    private const string SkuName = "sku";
+    private const string PricesName = "prices";
+    private const string AttributesName = "attributes";
 
     public override ShoppingCartItem Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -30,16 +30,16 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
 
             switch (propertyName)
             {
-                case quantityName:
+                case QuantityName:
                     quantity = reader.GetInt32();
                     break;
-                case skuName:
+                case SkuName:
                     sku = reader.GetString();
                     break;
-                case pricesName:
+                case PricesName:
                     prices = JsonSerializer.Deserialize<List<PrioritizedPrice>>(ref reader);
                     break;
-                case attributesName:
+                case AttributesName:
                     attributes = new HashSet<IProductAttributeValue>();
                     while (reader.TokenType != JsonTokenType.EndObject)
                     {
@@ -61,16 +61,16 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
     public override void Write(Utf8JsonWriter writer, ShoppingCartItem value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
-        writer.WriteNumber(quantityName, value.Quantity);
-        writer.WriteString(skuName, value.ProductSku);
+        writer.WriteNumber(QuantityName, value.Quantity);
+        writer.WriteString(SkuName, value.ProductSku);
         if (value.Prices != null)
         {
-            writer.WritePropertyName(pricesName);
+            writer.WritePropertyName(PricesName);
             JsonSerializer.Serialize(writer, value.Prices, options);
         }
         if (value.Attributes != null)
         {
-            writer.WriteStartObject(attributesName);
+            writer.WriteStartObject(AttributesName);
             foreach (var attribute in value.Attributes)
             {
                 writer.WritePropertyName(attribute.AttributeName);

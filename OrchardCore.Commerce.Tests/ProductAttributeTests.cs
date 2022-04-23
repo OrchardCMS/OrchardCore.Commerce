@@ -15,30 +15,30 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ProductAttributeTests
 {
-    private IProductAttributeProvider parser;
-    private ContentPartDefinition partDefinition;
-    private ContentPartFieldDefinition boolFieldDefinition;
-    private ContentPartFieldDefinition numericFieldDefinition;
-    private ContentPartFieldDefinition textFieldDefinition;
-    private ContentTypePartDefinition partTypeDefinition;
+    private IProductAttributeProvider _parser;
+    private ContentPartDefinition _partDefinition;
+    private ContentPartFieldDefinition _boolFieldDefinition;
+    private ContentPartFieldDefinition _numericFieldDefinition;
+    private ContentPartFieldDefinition _textFieldDefinition;
+    private ContentTypePartDefinition _partTypeDefinition;
 
     public ProductAttributeTests()
     {
-        parser = new ProductAttributeProvider();
-        partDefinition = new ContentPartDefinition("Product");
-        boolFieldDefinition = new ContentPartFieldDefinition(
+        _parser = new ProductAttributeProvider();
+        _partDefinition = new ContentPartDefinition("Product");
+        _boolFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                 "BooleanField", new JObject())
-            { PartDefinition = partDefinition };
-        numericFieldDefinition = new ContentPartFieldDefinition(
+            { PartDefinition = _partDefinition };
+        _numericFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(NumericProductAttributeField)),
                 "NumericField", new JObject())
-            { PartDefinition = partDefinition };
-        textFieldDefinition = new ContentPartFieldDefinition(
+            { PartDefinition = _partDefinition };
+        _textFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
                 "TextField", new JObject())
-            { PartDefinition = partDefinition };
-        partTypeDefinition = new ContentTypePartDefinition("product", partDefinition, new JObject());
+            { PartDefinition = _partDefinition };
+        _partTypeDefinition = new ContentTypePartDefinition("product", _partDefinition, new JObject());
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public class ProductAttributeTests
     [Fact]
     public void BooleanAttributeParse()
     {
-        var trueValue = parser.Parse(partTypeDefinition, boolFieldDefinition, "true") as BooleanProductAttributeValue;
-        var falseValue = parser.Parse(partTypeDefinition, boolFieldDefinition, "false") as BooleanProductAttributeValue;
+        var trueValue = _parser.Parse(_partTypeDefinition, _boolFieldDefinition, "true") as BooleanProductAttributeValue;
+        var falseValue = _parser.Parse(_partTypeDefinition, _boolFieldDefinition, "false") as BooleanProductAttributeValue;
 
         Assert.NotNull(trueValue);
         Assert.Equal("product.BooleanField", trueValue.AttributeName);
@@ -93,8 +93,8 @@ public class ProductAttributeTests
     [Fact]
     public void NumericAttributeParse()
     {
-        var oneValue = parser.Parse(partTypeDefinition, numericFieldDefinition, "1") as NumericProductAttributeValue;
-        var twoValue = parser.Parse(partTypeDefinition, numericFieldDefinition, "2") as NumericProductAttributeValue;
+        var oneValue = _parser.Parse(_partTypeDefinition, _numericFieldDefinition, "1") as NumericProductAttributeValue;
+        var twoValue = _parser.Parse(_partTypeDefinition, _numericFieldDefinition, "2") as NumericProductAttributeValue;
 
         Assert.NotNull(oneValue);
         Assert.Equal("product.NumericField", oneValue.AttributeName);
@@ -142,9 +142,9 @@ public class ProductAttributeTests
     [Fact]
     public void TextAttributeParse()
     {
-        var oneValue = parser.Parse(partTypeDefinition, textFieldDefinition, "1") as TextProductAttributeValue;
-        var twoValue = parser.Parse(partTypeDefinition, textFieldDefinition, "2") as TextProductAttributeValue;
-        var listValue = parser.Parse(partTypeDefinition, textFieldDefinition, new[] { "1", "2", "3" }) as TextProductAttributeValue;
+        var oneValue = _parser.Parse(_partTypeDefinition, _textFieldDefinition, "1") as TextProductAttributeValue;
+        var twoValue = _parser.Parse(_partTypeDefinition, _textFieldDefinition, "2") as TextProductAttributeValue;
+        var listValue = _parser.Parse(_partTypeDefinition, _textFieldDefinition, new[] { "1", "2", "3" }) as TextProductAttributeValue;
 
         Assert.NotNull(oneValue);
         Assert.Equal("product.TextField", oneValue.AttributeName);

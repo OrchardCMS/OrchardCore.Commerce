@@ -39,9 +39,9 @@ public class MoneyService : IMoneyService
         {
             var defaultIsoCode = _options?.DefaultCurrency;
             return string.IsNullOrEmpty(defaultIsoCode)
-                ? Currency.USDollar
+                ? Currency.UsDollar
                 : GetCurrency(_options.DefaultCurrency)
-                  ?? Currency.USDollar;
+                  ?? Currency.UsDollar;
         }
     }
 
@@ -54,5 +54,5 @@ public class MoneyService : IMoneyService
         => new Amount(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));
 
     public ICurrency GetCurrency(string currencyIsoCode)
-        => Currency.FromISOCode(currencyIsoCode, _currencyProviders);
+        => Currency.FromIsoCode(currencyIsoCode, _currencyProviders);
 }

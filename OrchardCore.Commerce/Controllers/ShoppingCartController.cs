@@ -24,7 +24,7 @@ public class ShoppingCartController : Controller
     private readonly IContentManager _contentManager;
     private readonly IWorkflowManager _workflowManager;
     private readonly INotifier _notifier;
-    private readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer _h;
 
     public ShoppingCartController(
         IShoppingCartPersistence shoppingCartPersistence,
@@ -45,7 +45,7 @@ public class ShoppingCartController : Controller
         _contentManager = contentManager;
         _workflowManager = workflowManager;
         _notifier = notifier;
-        H = localizer;
+        _h = localizer;
     }
 
     [HttpGet]
@@ -99,13 +99,13 @@ public class ShoppingCartController : Controller
         ShoppingCartItem parsedLine = await _shoppingCartHelpers.ParseCartLine(line);
         if (parsedLine is null)
         {
-            await _notifier.AddAsync(NotifyType.Error, H["Product with SKU {0} not found.", line.ProductSku]);
+            await _notifier.AddAsync(NotifyType.Error, _h["Product with SKU {0} not found.", line.ProductSku]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
         parsedLine = (await _priceService.AddPrices(new[] { parsedLine })).Single();
         if (!parsedLine.Prices.Any())
         {
-            await _notifier.AddAsync(NotifyType.Error, H["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
+            await _notifier.AddAsync(NotifyType.Error, _h["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
         ShoppingCart cart = await _shoppingCartPersistence.Retrieve(shoppingCartId);

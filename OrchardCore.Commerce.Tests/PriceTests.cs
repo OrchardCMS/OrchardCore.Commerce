@@ -61,9 +61,9 @@ public class PriceTests
     {
         var strategy = new SimplePriceStrategy();
         Amount selected = strategy.SelectPrice(new List<PrioritizedPrice> {
-            new PrioritizedPrice(0, new Amount(10, Currency.USDollar)),
-            new PrioritizedPrice(1, new Amount(12, Currency.USDollar)),
-            new PrioritizedPrice(1, new Amount(11, Currency.USDollar)),
+            new PrioritizedPrice(0, new Amount(10, Currency.UsDollar)),
+            new PrioritizedPrice(1, new Amount(12, Currency.UsDollar)),
+            new PrioritizedPrice(1, new Amount(11, Currency.UsDollar)),
         });
 
         Assert.Equal(11, selected.Value);
@@ -107,6 +107,6 @@ public class PriceTests
             => Task.FromResult(
                 items.Select(item
                     => item.WithPrice(
-                        new PrioritizedPrice(0, new Amount(Price, Currency.USDollar)))));
+                        new PrioritizedPrice(0, new Amount(Price, Currency.UsDollar)))));
     }
 }
