@@ -7,7 +7,7 @@ namespace Money;
 
 internal static class KnownCurrencyTable
 {
-    private static readonly object _obj = new object();
+    private static readonly object _obj = new();
 
     internal static IDictionary<string, ICurrency> CurrencyTable { get; private set; }
 

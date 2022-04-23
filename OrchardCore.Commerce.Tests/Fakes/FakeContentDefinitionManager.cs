@@ -20,7 +20,7 @@ public class FakeContentDefinitionManager : IContentDefinitionManager
     public ContentPartDefinition GetPartDefinition(string name) => throw new System.NotImplementedException();
 
     public ContentTypeDefinition GetTypeDefinition(string name)
-        => new ContentTypeDefinition(name, name, new[] {
+        => new(name, name, new[] {
             new ContentTypePartDefinition("ProductPart1", new ContentPartDefinition("ProductPartType", new ContentPartFieldDefinition[] {
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanProductAttributeField)), "foobool", new JObject()),
                 new ContentPartFieldDefinition(new ContentFieldDefinition(nameof(BooleanField)), "barbool", new JObject()),

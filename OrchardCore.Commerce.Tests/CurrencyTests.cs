@@ -9,7 +9,8 @@ namespace OrchardCore.Commerce.Tests;
 public class CurrencyTests
 {
     public static CurrencyTheoryData TestData
-        => new CurrencyTheoryData {
+        => new()
+        {
             { UsDollar, 1234.56m, "$1,234.56" },
             { Euro, 1234.56m, "1.234,56 €" },
             { JapaneseYen, 1234.56m, "￥1,235" },

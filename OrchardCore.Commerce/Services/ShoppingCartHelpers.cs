@@ -64,7 +64,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     }
 
     public HashSet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type)
-        => new HashSet<IProductAttributeValue>(
+        => new(
             line.Attributes is null ? Enumerable.Empty<IProductAttributeValue>() :
                 line.Attributes
                     .Select(attr =>

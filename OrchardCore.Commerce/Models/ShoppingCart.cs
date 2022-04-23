@@ -50,7 +50,7 @@ public class ShoppingCart
     /// </summary>
     /// <param name="items">The new list of items.</param>
     /// <returns>A new shopping cart with all properties identical to this, but with a different list of items.</returns>
-    public ShoppingCart With(IEnumerable<ShoppingCartItem> items) => new ShoppingCart(items);
+    public ShoppingCart With(IEnumerable<ShoppingCartItem> items) => new(items);
 
     /// <summary>
     /// Adds a quantity of product variants into the cart.

@@ -48,10 +48,10 @@ public class MoneyService : IMoneyService
     public ICurrency CurrentDisplayCurrency => _currencySelector.CurrentDisplayCurrency ?? DefaultCurrency;
 
     public Amount Create(decimal value, string currencyIsoCode)
-        => new Amount(value, GetCurrency(currencyIsoCode));
+        => new(value, GetCurrency(currencyIsoCode));
 
     public Amount EnsureCurrency(Amount amount)
-        => new Amount(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));
+        => new(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));
 
     public ICurrency GetCurrency(string currencyIsoCode)
         => Currency.FromIsoCode(currencyIsoCode, _currencyProviders);

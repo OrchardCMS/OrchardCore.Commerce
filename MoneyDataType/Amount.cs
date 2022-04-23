@@ -88,31 +88,31 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
             : new Amount(first.Value - second.Value, first.Currency);
 
     public static Amount operator -(Amount amount)
-        => new Amount(-amount.Value, amount.Currency);
+        => new(-amount.Value, amount.Currency);
 
     public static Amount operator *(int quantity, Amount amount)
-        => new Amount(quantity * amount.Value, amount.Currency);
+        => new(quantity * amount.Value, amount.Currency);
 
     public static Amount operator *(decimal quantity, Amount amount)
-        => new Amount(quantity * amount.Value, amount.Currency);
+        => new(quantity * amount.Value, amount.Currency);
 
     public static Amount operator *(float quantity, Amount amount)
-        => new Amount((decimal)quantity * amount.Value, amount.Currency);
+        => new((decimal)quantity * amount.Value, amount.Currency);
 
     public static Amount operator *(double quantity, Amount amount)
-        => new Amount((decimal)quantity * amount.Value, amount.Currency);
+        => new((decimal)quantity * amount.Value, amount.Currency);
 
     public static Amount operator *(Amount amount, int quantity)
-        => new Amount(quantity * amount.Value, amount.Currency);
+        => new(quantity * amount.Value, amount.Currency);
 
     public static Amount operator *(Amount amount, decimal quantity)
-        => new Amount(quantity * amount.Value, amount.Currency);
+        => new(quantity * amount.Value, amount.Currency);
 
     public static Amount operator *(Amount amount, float quantity)
-        => new Amount((decimal)quantity * amount.Value, amount.Currency);
+        => new((decimal)quantity * amount.Value, amount.Currency);
 
     public static Amount operator *(Amount amount, double quantity)
-        => new Amount((decimal)quantity * amount.Value, amount.Currency);
+        => new((decimal)quantity * amount.Value, amount.Currency);
 
     public static bool operator ==(Amount first, Amount second) => first.Equals(second);
 

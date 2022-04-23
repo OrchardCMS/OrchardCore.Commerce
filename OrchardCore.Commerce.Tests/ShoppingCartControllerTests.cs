@@ -16,28 +16,28 @@ public class ShoppingCartControllerTests
     private readonly IShoppingCartPersistence _cartStorage;
     private readonly ShoppingCartController _controller;
 
-    private readonly Dictionary<string, string[]> _attrSet1 = new Dictionary<string, string[]>
+    private readonly Dictionary<string, string[]> _attrSet1 = new()
     {
         { "ProductPart3.attr1", new[] { "true" } },
     };
-    private readonly Dictionary<string, string[]> _attrSet2 = new Dictionary<string, string[]>
+    private readonly Dictionary<string, string[]> _attrSet2 = new()
     {
         {  "ProductPart3.attr1", new[] { "false" } },
     };
-    private readonly Dictionary<string, string[]> _attrSet3 = new Dictionary<string, string[]>
+    private readonly Dictionary<string, string[]> _attrSet3 = new()
     {
         { "ProductPart3.attr1", new[] { "true" } },
         { "ProductPart3.attr2", new[] { "bar", "baz" } },
     };
-    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new HashSet<IProductAttributeValue>
+    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new()
     {
         new BooleanProductAttributeValue("ProductPart3.attr1", true),
     };
-    private readonly HashSet<IProductAttributeValue> _attrSet2Parsed = new HashSet<IProductAttributeValue>
+    private readonly HashSet<IProductAttributeValue> _attrSet2Parsed = new()
     {
         new BooleanProductAttributeValue("ProductPart3.attr1", false),
     };
-    private readonly HashSet<IProductAttributeValue> _attrSet3Parsed = new HashSet<IProductAttributeValue>
+    private readonly HashSet<IProductAttributeValue> _attrSet3Parsed = new()
     {
         new BooleanProductAttributeValue("ProductPart3.attr1", true),
         new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz"),
