@@ -4,7 +4,7 @@ using Money.Abstractions;
 namespace Money;
 
 /// <summary>
-/// A simple currency provider that uses a static list of the most common predefined currencies
+/// A simple currency provider that uses a static list of the most common predefined currencies.
 /// </summary>
 public class CurrencyProvider : ICurrencyProvider
 {

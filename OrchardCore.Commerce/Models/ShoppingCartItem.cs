@@ -8,16 +8,16 @@ using OrchardCore.Commerce.Serialization;
 namespace OrchardCore.Commerce.Models;
 
 /// <summary>
-/// Ashopping cart item
+/// Ashopping cart item.
 /// </summary>
 [JsonConverter(typeof(ShoppingCartItemConverter))]
 public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 {
     /// <summary>
-    /// Constructs a new shopping cart item
+    /// Constructs a new shopping cart item.
     /// </summary>
-    /// <param name="quantity">The number of products</param>
-    /// <param name="product">The product</param>
+    /// <param name="quantity">The number of products.</param>
+    /// <param name="product">The product.</param>
     public ShoppingCartItem(
         int quantity,
         string productSku,
@@ -36,22 +36,22 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     }
 
     /// <summary>
-    /// Gets the number of products
+    /// Gets the number of products.
     /// </summary>
     public int Quantity { get; }
 
     /// <summary>
-    /// Gets the product SKU
+    /// Gets the product SKU.
     /// </summary>
     public string ProductSku { get; }
 
     /// <summary>
-    /// Gets the product attributes associated with this shopping cart line item
+    /// Gets the product attributes associated with this shopping cart line item.
     /// </summary>
     public ISet<IProductAttributeValue> Attributes { get; }
 
     /// <summary>
-    /// Gets the available prices
+    /// Gets the available prices.
     /// </summary>
     public IReadOnlyList<PrioritizedPrice> Prices { get; }
 
@@ -84,7 +84,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
            && (ReferenceEquals(this, obj) || Equals(obj as ShoppingCartItem));
 
     /// <summary>
-    /// A string representation of the shopping cart item
+    /// A string representation of the shopping cart item.
     /// </summary>
     /// <returns></returns>
     public override string ToString()

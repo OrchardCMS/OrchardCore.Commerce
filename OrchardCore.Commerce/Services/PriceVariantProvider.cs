@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement;
 namespace OrchardCore.Commerce.Services;
 
 /// <summary>
-/// A simple price provider that obtains a price from a product by looking for a `PriceVariantsPart`
+/// A simple price provider that obtains a price from a product by looking for a `PriceVariantsPart`.
 /// </summary>
 public class PriceVariantProvider : IPriceProvider
 {

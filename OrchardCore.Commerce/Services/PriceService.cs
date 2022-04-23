@@ -7,7 +7,7 @@ using OrchardCore.Commerce.Models;
 namespace OrchardCore.Commerce.Services;
 
 /// <summary>
-/// A price service that asks all available price providers to add prices to a list of shopping cart items
+/// A price service that asks all available price providers to add prices to a list of shopping cart items.
 /// </summary>
 public class PriceService : IPriceService
 {

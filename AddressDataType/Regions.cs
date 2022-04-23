@@ -28,7 +28,7 @@ public static class Regions
             StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Maps two-letter regions codes to
+    /// Maps two-letter regions codes to.
     /// </summary>
     public static readonly IDictionary<string, IDictionary<string, string>> Provinces
         = new Dictionary<string, IDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)

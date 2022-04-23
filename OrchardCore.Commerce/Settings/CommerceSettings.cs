@@ -1,12 +1,12 @@
 namespace OrchardCore.Commerce.Settings;
 
 /// <summary>
-/// Basic settings for the commerce module
+/// Basic settings for the commerce module.
 /// </summary>
 public class CommerceSettings
 {
     /// <summary>
-    /// Gets or sets the default currency ISO code
+    /// Gets or sets the default currency ISO code.
     /// </summary>
     public string DefaultCurrency { get; set; }
 

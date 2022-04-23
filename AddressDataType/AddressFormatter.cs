@@ -16,19 +16,19 @@ public class AddressFormatter : IAddressFormatter
     /// </summary>
     /// <param name="addressFormat">
     /// A format string for the address. Parameters are, in order:
-    /// 0. The name
-    /// 1. The department
-    /// 2. The company or institution
-    /// 3. The first line of the street address
-    /// 4. The second line of the street address
-    /// 5. The city line (<see cref="cityLineFormat"/>)
-    /// 6. The country
+    /// 0. The name.
+    /// 1. The department.
+    /// 2. The company or institution.
+    /// 3. The first line of the street address.
+    /// 4. The second line of the street address.
+    /// 5. The city line (<see cref="cityLineFormat"/>).
+    /// 6. The country.
     /// </param>
     /// <param name="cityLineFormat">
     /// A format string for the city line of the address. Parameters are, in order:
-    /// 0. The city
-    /// 1. The province or state
-    /// 2. The postal code
+    /// 0. The city.
+    /// 1. The province or state.
+    /// 2. The postal code.
     /// </param>
     /// <param name="uppercase">If true, the address is changed to uppercase after formatting.</param>
     public AddressFormatter(
@@ -48,7 +48,7 @@ public class AddressFormatter : IAddressFormatter
     }
 
     /// <summary>
-    /// Formats the address with the format strings provided
+    /// Formats the address with the format strings provided.
     /// </summary>
     /// <param name="address"></param>
     /// <returns></returns>

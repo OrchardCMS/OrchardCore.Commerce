@@ -25,16 +25,16 @@ public abstract class ProductAttributeField<TSettings> : ProductAttributeField w
 }
 
 /// <summary>
-/// A Boolean product attribute
+/// A Boolean product attribute.
 /// </summary>
 public class BooleanProductAttributeField : ProductAttributeField<BooleanProductAttributeFieldSettings> { }
 
 /// <summary>
-/// A numeric product attribute
+/// A numeric product attribute.
 /// </summary>
 public class NumericProductAttributeField : ProductAttributeField<NumericProductAttributeFieldSettings> { }
 
 /// <summary>
-/// A text product attribute, that may also have predefined values and be used as enumerations or flags
+/// A text product attribute, that may also have predefined values and be used as enumerations or flags.
 /// </summary>
 public class TextProductAttributeField : ProductAttributeField<TextProductAttributeFieldSettings> { }

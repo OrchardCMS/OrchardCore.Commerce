@@ -8,7 +8,7 @@ using Money.Serialization;
 namespace Money;
 
 /// <summary>
-/// A money amount, which is represented by a decimal number and a currency
+/// A money amount, which is represented by a decimal number and a currency.
 /// </summary>
 [JsonConverter(typeof(AmountConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
@@ -40,10 +40,10 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
     }
 
     /// <summary>
-    /// Constructs a new money amount
+    /// Constructs a new money amount.
     /// </summary>
-    /// <param name="value">The decimal value</param>
-    /// <param name="currency">The currency</param>
+    /// <param name="value">The decimal value.</param>
+    /// <param name="currency">The currency.</param>
     public Amount(decimal value, ICurrency currency)
     {
         Currency = currency ?? throw new ArgumentNullException(nameof(currency));
@@ -51,12 +51,12 @@ public struct Amount : IEquatable<Amount>, IComparable<Amount>
     }
 
     /// <summary>
-    /// Gets the decimal value
+    /// Gets the decimal value.
     /// </summary>
     public decimal Value { get; }
 
     /// <summary>
-    /// Gets the currency
+    /// Gets the currency.
     /// </summary>
     public ICurrency Currency { get; }
 
