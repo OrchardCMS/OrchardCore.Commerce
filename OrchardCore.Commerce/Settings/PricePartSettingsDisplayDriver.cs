@@ -12,68 +12,67 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Commerce.Settings
+namespace OrchardCore.Commerce.Settings;
+
+public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
-    public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    private readonly IStringLocalizer<PricePartSettingsDisplayDriver> S;
+    private readonly IMoneyService _moneyService;
+
+    public PricePartSettingsDisplayDriver(IStringLocalizer<PricePartSettingsDisplayDriver> localizer, IMoneyService moneyService)
     {
-        private readonly IStringLocalizer<PricePartSettingsDisplayDriver> S;
-        private readonly IMoneyService _moneyService;
+        S = localizer;
+        _moneyService = moneyService;
+    }
 
-        public PricePartSettingsDisplayDriver(IStringLocalizer<PricePartSettingsDisplayDriver> localizer, IMoneyService moneyService)
+    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+    {
+        if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
         {
-            S = localizer;
-            _moneyService = moneyService;
+            return null;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        return Initialize<PricePartSettingsViewModel>("PricePartSettings_Edit", model =>
         {
-            if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
+            var settings = contentTypePartDefinition.GetSettings<PricePartSettings>();
 
-            return Initialize<PricePartSettingsViewModel>("PricePartSettings_Edit", model =>
+            model.CurrencySelectionMode = settings.CurrencySelectionMode;
+            model.CurrencySelectionModes = new List<SelectListItem>()
             {
-                var settings = contentTypePartDefinition.GetSettings<PricePartSettings>();
+                new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), S["All Currencies"]),
+                new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), S["Default Currency"]),
+                new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), S["Specific Currency"]),
+            };
+            model.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
+            model.Currencies = _moneyService.Currencies
+                .OrderBy(c => c.CurrencyIsoCode)
+                .Select(c => new SelectListItem(
+                    c.CurrencyIsoCode,
+                    $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
+        }).Location("Content");
+    }
 
-                model.CurrencySelectionMode = settings.CurrencySelectionMode;
-                model.CurrencySelectionModes = new List<SelectListItem>()
-                {
-                    new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), S["All Currencies"]),
-                    new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), S["Default Currency"]),
-                    new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), S["Specific Currency"]),
-                };
-                model.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
-                model.Currencies = _moneyService.Currencies
-                        .OrderBy(c => c.CurrencyIsoCode)
-                        .Select(c => new SelectListItem(
-                            c.CurrencyIsoCode,
-                            $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
-            }).Location("Content");
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    {
+        if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+        var model = new PricePartSettingsViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix,
+            m => m.CurrencySelectionMode,
+            m => m.SpecificCurrencyIsoCode);
+
+        context.Builder.WithSettings(new PricePartSettings
         {
-            if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
+            CurrencySelectionMode = model.CurrencySelectionMode,
+            SpecificCurrencyIsoCode =
+                model.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
+                    ? model.SpecificCurrencyIsoCode : null,
+        });
 
-            var model = new PricePartSettingsViewModel();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.CurrencySelectionMode,
-                m => m.SpecificCurrencyIsoCode);
-
-            context.Builder.WithSettings(new PricePartSettings
-            {
-                CurrencySelectionMode = model.CurrencySelectionMode,
-                SpecificCurrencyIsoCode =
-                    model.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
-                        ? model.SpecificCurrencyIsoCode : null,
-            });
-
-            return Edit(contentTypePartDefinition, context.Updater);
-        }
+        return Edit(contentTypePartDefinition, context.Updater);
     }
 }

@@ -7,28 +7,27 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Commerce.Drivers
+namespace OrchardCore.Commerce.Drivers;
+
+public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 {
-    public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
+    private readonly IAddressFormatterProvider _addressFormatterProvider;
+
+    public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider) => _addressFormatterProvider = addressFormatterProvider;
+
+    public override IDisplayResult Edit(AddressField addressField, BuildFieldEditorContext context) => Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, addressField, context));
+
+    private Task BuildViewModel(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
     {
-        private readonly IAddressFormatterProvider _addressFormatterProvider;
+        model.Address = field.Address;
+        model.AddressHtml
+            = new HtmlString(_addressFormatterProvider.Format(field.Address).Replace(System.Environment.NewLine, "<br/>"));
+        model.Regions = Regions.All;
+        model.Provinces = Regions.Provinces;
+        model.ContentItem = field.ContentItem;
+        model.AddressPart = field;
+        model.PartFieldDefinition = context.PartFieldDefinition;
 
-        public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider) => _addressFormatterProvider = addressFormatterProvider;
-
-        public override IDisplayResult Edit(AddressField addressField, BuildFieldEditorContext context) => Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, addressField, context));
-
-        private Task BuildViewModel(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
-        {
-            model.Address = field.Address;
-            model.AddressHtml
-                = new HtmlString(_addressFormatterProvider.Format(field.Address).Replace(System.Environment.NewLine, "<br/>"));
-            model.Regions = Regions.All;
-            model.Provinces = Regions.Provinces;
-            model.ContentItem = field.ContentItem;
-            model.AddressPart = field;
-            model.PartFieldDefinition = context.PartFieldDefinition;
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

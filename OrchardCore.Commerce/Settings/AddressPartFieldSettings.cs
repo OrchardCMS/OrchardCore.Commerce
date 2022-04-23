@@ -1,7 +1,6 @@
-namespace OrchardCore.Commerce.Settings
+namespace OrchardCore.Commerce.Settings;
+
+public class AddressPartFieldSettings
 {
-    public class AddressPartFieldSettings
-    {
-        public string Hint { get; set; }
-    }
+    public string Hint { get; set; }
 }

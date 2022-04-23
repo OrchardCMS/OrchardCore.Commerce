@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Commerce.Abstractions
+namespace OrchardCore.Commerce.Abstractions;
+
+public interface IProductAttributeService
 {
-    public interface IProductAttributeService
-    {
-        IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product);
-    }
+    IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product);
 }

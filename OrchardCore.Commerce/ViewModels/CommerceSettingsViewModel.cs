@@ -4,16 +4,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Money;
 using Money.Abstractions;
 
-namespace OrchardCore.Commerce.ViewModels
+namespace OrchardCore.Commerce.ViewModels;
+
+public class CommerceSettingsViewModel
 {
-    public class CommerceSettingsViewModel
-    {
-        public string DefaultCurrency { get; set; }
-        public string CurrentDisplayCurrency { get; set; }
+    public string DefaultCurrency { get; set; }
+    public string CurrentDisplayCurrency { get; set; }
 
-        public IEnumerable<SelectListItem> Currencies { get; set; }
+    public IEnumerable<SelectListItem> Currencies { get; set; }
 
-        [BindNever]
-        public Currency Currency { get; set; }
-    }
+    [BindNever]
+    public Currency Currency { get; set; }
 }

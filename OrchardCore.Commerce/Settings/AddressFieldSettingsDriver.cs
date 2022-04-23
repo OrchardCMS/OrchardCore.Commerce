@@ -4,24 +4,22 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Commerce.Settings
+namespace OrchardCore.Commerce.Settings;
+
+public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<AddressField>
 {
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        => Initialize<AddressPartFieldSettings>("AddressFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
+            .Location("Content");
 
-    public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<AddressField>
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
-            => Initialize<AddressPartFieldSettings>("AddressFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
-                .Location("Content");
+        var model = new AddressPartFieldSettings();
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new AddressPartFieldSettings();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+        context.Builder.WithSettings(model);
 
-            context.Builder.WithSettings(model);
-
-            return Edit(partFieldDefinition);
-        }
+        return Edit(partFieldDefinition);
     }
 }

@@ -4,34 +4,33 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Commerce.Indexes;
 using YesSql.Sql;
 
-namespace OrchardCore.Commerce.Migrations
+namespace OrchardCore.Commerce.Migrations;
+
+/// <summary>
+/// Adds the product part to the list of available parts.
+/// </summary>
+public class ProductMigrations : DataMigration
 {
-    /// <summary>
-    /// Adds the product part to the list of available parts.
-    /// </summary>
-    public class ProductMigrations : DataMigration
+    IContentDefinitionManager _contentDefinitionManager;
+
+    public ProductMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
+
+    public int Create()
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager.AlterPartDefinition("ProductPart", builder => builder
+            .Attachable()
+            .WithDescription("Makes a content item into a product."));
 
-        public ProductMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
+        SchemaBuilder.CreateMapIndexTable<ProductPartIndex>(
+            table => table
+                .Column<string>("Sku", col => col.WithLength(128))
+                .Column<string>("ContentItemId", c => c.WithLength(26))
+        );
 
-        public int Create()
-        {
-            _contentDefinitionManager.AlterPartDefinition("ProductPart", builder => builder
-                .Attachable()
-                .WithDescription("Makes a content item into a product."));
+        SchemaBuilder.AlterTable(nameof(ProductPartIndex), table => table
+            .CreateIndex("IDX_ProductPartIndex_Sku", "Sku")
+        );
 
-            SchemaBuilder.CreateMapIndexTable<ProductPartIndex>(
-                table => table
-                    .Column<string>("Sku", col => col.WithLength(128))
-                    .Column<string>("ContentItemId", c => c.WithLength(26))
-            );
-
-            SchemaBuilder.AlterTable(nameof(ProductPartIndex), table => table
-                .CreateIndex("IDX_ProductPartIndex_Sku", "Sku")
-            );
-
-            return 1;
-        }
+        return 1;
     }
 }

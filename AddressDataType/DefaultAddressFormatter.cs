@@ -1,6 +1,5 @@
-namespace InternationalAddress
+namespace InternationalAddress;
+
+public class DefaultAddressFormatter : IAddressFormatter
 {
-    public class DefaultAddressFormatter : IAddressFormatter
-    {
-    }
 }

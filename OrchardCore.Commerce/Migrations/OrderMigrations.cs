@@ -4,26 +4,25 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Settings;
 
-namespace OrchardCore.Commerce.Migrations
+namespace OrchardCore.Commerce.Migrations;
+
+/// <summary>
+/// Adds the order part to the list of available parts and the address field to the list of available fields.
+/// </summary>
+public class OrderMigrations : DataMigration
 {
-    /// <summary>
-    /// Adds the order part to the list of available parts and the address field to the list of available fields.
-    /// </summary>
-    public class OrderMigrations : DataMigration
+    IContentDefinitionManager _contentDefinitionManager;
+
+    public OrderMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
+
+    public int Create()
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager.AlterPartDefinition("OrderPart", builder => builder
+            .Attachable()
+            .WithDescription("Makes a content item into an order."));
 
-        public OrderMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
+        _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
 
-        public int Create()
-        {
-            _contentDefinitionManager.AlterPartDefinition("OrderPart", builder => builder
-                .Attachable()
-                .WithDescription("Makes a content item into an order."));
-
-            _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
-
-            return 1;
-        }
+        return 1;
     }
 }

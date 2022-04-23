@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using Money;
 using OrchardCore.Commerce.Models;
 
-namespace OrchardCore.Commerce.Abstractions
+namespace OrchardCore.Commerce.Abstractions;
+
+public interface IPriceSelectionStrategy
 {
-    public interface IPriceSelectionStrategy
-    {
-        // TODO: include attributes in price strategy
-        Amount SelectPrice(IEnumerable<PrioritizedPrice> prices);
-    }
+    // TODO: include attributes in price strategy
+    Amount SelectPrice(IEnumerable<PrioritizedPrice> prices);
 }

@@ -1,11 +1,10 @@
 using System;
 
-namespace OrchardCore.Commerce.Settings
+namespace OrchardCore.Commerce.Settings;
+
+public enum CurrencySelectionModeEnum
 {
-    public enum CurrencySelectionModeEnum
-    {
-        AllCurrencies,
-        DefaultCurrency,
-        SpecificCurrency,
-    }
+    AllCurrencies,
+    DefaultCurrency,
+    SpecificCurrency,
 }

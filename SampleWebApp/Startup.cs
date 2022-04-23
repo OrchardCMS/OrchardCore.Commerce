@@ -3,22 +3,21 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace SampleWebApp
+namespace SampleWebApp;
+
+public class Startup
 {
-    public class Startup
+    public void ConfigureServices(IServiceCollection services) => services.AddOrchardCms();
+
+    public void Configure(IApplicationBuilder app, IHostEnvironment env)
     {
-        public void ConfigureServices(IServiceCollection services) => services.AddOrchardCms();
-
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
+        if (env.IsDevelopment())
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseStaticFiles();
-
-            app.UseOrchardCore();
+            app.UseDeveloperExceptionPage();
         }
+
+        app.UseStaticFiles();
+
+        app.UseOrchardCore();
     }
 }
