@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Services;
 
 /// <summary>
 /// A price selection strategy that selects the lowest price of the highest priority prices.
-/// 
+///
 /// This price selection strategy will fail if the list of amounts
 /// isn't homogeneous in currency, so calling code is responsible for filtering
 /// for a specific currency before calling.
