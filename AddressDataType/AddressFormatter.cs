@@ -64,7 +64,7 @@ public class AddressFormatter : IAddressFormatter
             address.StreetAddress2,
             String.Format(_cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
-        string withoutEmptyLines = String.Join("", rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
+        string withoutEmptyLines = String.Join(string.Empty, rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
         return _uppercase ? withoutEmptyLines.ToUpper() : withoutEmptyLines;
     }
 }

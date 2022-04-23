@@ -63,7 +63,7 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
             }
         }
 
-        if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? ""))
+        if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
             currency = new Currency(nativename, englishname, symbol, iso, dec.GetValueOrDefault(2));
 
         if (currency is null)

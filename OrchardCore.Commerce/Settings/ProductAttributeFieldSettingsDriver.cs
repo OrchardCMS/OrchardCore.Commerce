@@ -50,7 +50,7 @@ public class TextProductAttributeFieldSettingsDriver
                 viewModel.DefaultValue = model.DefaultValue;
                 viewModel.Required = model.Required;
                 viewModel.Placeholder = model.Placeholder;
-                viewModel.PredefinedValues = model.PredefinedValues != null ? String.Join("\r\n", model.PredefinedValues) : "";
+                viewModel.PredefinedValues = model.PredefinedValues != null ? String.Join("\r\n", model.PredefinedValues) : string.Empty;
                 viewModel.RestrictToPredefinedValues = model.RestrictToPredefinedValues;
                 viewModel.MultipleValues = model.MultipleValues;
             }).Location("Content");
@@ -68,7 +68,7 @@ public class TextProductAttributeFieldSettingsDriver
                 Placeholder = model.Placeholder,
                 RestrictToPredefinedValues = model.RestrictToPredefinedValues,
                 MultipleValues = model.MultipleValues,
-                PredefinedValues = (model.PredefinedValues ?? "")
+                PredefinedValues = (model.PredefinedValues ?? string.Empty)
                     .Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(v => v.Trim())
                     .Where(v => !String.IsNullOrWhiteSpace(v))

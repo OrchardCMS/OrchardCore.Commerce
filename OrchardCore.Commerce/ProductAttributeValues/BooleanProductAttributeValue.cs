@@ -8,5 +8,5 @@ public class BooleanProductAttributeValue : BaseProductAttributeValue<bool>
         : base(attributeName, value) { }
 
     public override string Display(CultureInfo culture = null)
-        => Value ? FieldName : "";
+        => Value ? FieldName : string.Empty;
 }

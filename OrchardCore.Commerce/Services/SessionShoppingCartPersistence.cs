@@ -27,13 +27,13 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
 
     public async Task<ShoppingCart> Retrieve(string shoppingCartId = null)
     {
-        var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? ""));
+        var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty));
         return await _shoppingCartHelpers.Deserialize(cartString);
     }
 
     public async Task Store(ShoppingCart cart, string shoppingCartId = null)
     {
         var cartString = await _shoppingCartHelpers.Serialize(cart);
-        Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? ""), cartString);
+        Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty), cartString);
     }
 }

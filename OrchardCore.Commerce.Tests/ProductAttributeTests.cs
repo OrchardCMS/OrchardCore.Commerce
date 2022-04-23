@@ -124,15 +124,15 @@ public class ProductAttributeTests
     [Fact]
     public void TextAttributeMultipleValuesEquality()
     {
-        var oneTwo = new TextProductAttributeValue("", "1", "2");
-        var oneTwoThree = new TextProductAttributeValue("", "1", "2", "3");
-        var twoOneThree = new TextProductAttributeValue("", "2", "1", "3");
+        var oneTwo = new TextProductAttributeValue(string.Empty, "1", "2");
+        var oneTwoThree = new TextProductAttributeValue(string.Empty, "1", "2", "3");
+        var twoOneThree = new TextProductAttributeValue(string.Empty, "2", "1", "3");
 
         Assert.True(oneTwo.Equals(oneTwo));
         Assert.True(twoOneThree.Equals(twoOneThree));
         Assert.True(oneTwoThree.Equals(twoOneThree));
         Assert.True(twoOneThree.Equals(oneTwoThree));
-        Assert.True(oneTwo.Equals(new TextProductAttributeValue("", "1", "2")));
+        Assert.True(oneTwo.Equals(new TextProductAttributeValue(string.Empty, "1", "2")));
 
         Assert.False(oneTwo.Equals(oneTwoThree));
         Assert.False(oneTwo.Equals(twoOneThree));

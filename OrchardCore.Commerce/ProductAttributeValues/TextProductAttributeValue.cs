@@ -15,7 +15,7 @@ public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<s
         : this(attributeName, (IEnumerable<string>)values) { }
 
     public override string Display(CultureInfo culture = null)
-        => Value is null || !Value.Any() || Value.First() is null ? "" : FieldName + ": " + String.Join(", ", Value);
+        => Value is null || !Value.Any() || Value.First() is null ? string.Empty : FieldName + ": " + String.Join(", ", Value);
 
     public override bool Equals(IProductAttributeValue<IEnumerable<string>> other)
         => other == null || other.Value == null || !other.Value.Any() ? Value == null || !Value.Any()

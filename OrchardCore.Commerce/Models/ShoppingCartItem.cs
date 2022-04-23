@@ -89,7 +89,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     /// <returns></returns>
     public override string ToString()
         => Quantity + " x " + ProductSku
-           + (Attributes.Count != 0 ? " (" + string.Join(", ", Attributes) + ")" : "");
+           + (Attributes.Count != 0 ? " (" + string.Join(", ", Attributes) + ")" : string.Empty);
 
     public bool Equals(ShoppingCartItem other)
         => other is null ? false : other.Quantity == Quantity && other.IsSameProductAs(this);
