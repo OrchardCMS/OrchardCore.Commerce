@@ -11,10 +11,11 @@ public class FakeContentManager : IContentManager
 {
     public Task<ContentItem> CloneAsync(ContentItem contentItem) => throw new NotSupportedException();
 
-    public Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks = false) =>
+    public Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks) =>
         throw new NotSupportedException();
 
-    public Task CreateAsync(ContentItem contentItem, VersionOptions options) => throw new NotSupportedException();
+    public Task CreateAsync(ContentItem contentItem, VersionOptions options) =>
+        CreateAsync(contentItem, options, invokeUpdateCallbacks: false);
 
     public Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem) =>
         throw new NotSupportedException();

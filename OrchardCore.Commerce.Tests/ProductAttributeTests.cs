@@ -16,7 +16,6 @@ namespace OrchardCore.Commerce.Tests;
 public class ProductAttributeTests
 {
     private readonly IProductAttributeProvider _parser;
-    private readonly ContentPartDefinition _partDefinition;
     private readonly ContentPartFieldDefinition _boolFieldDefinition;
     private readonly ContentPartFieldDefinition _numericFieldDefinition;
     private readonly ContentPartFieldDefinition _textFieldDefinition;
@@ -25,38 +24,41 @@ public class ProductAttributeTests
     public ProductAttributeTests()
     {
         _parser = new ProductAttributeProvider();
-        _partDefinition = new ContentPartDefinition("Product");
+        var partDefinition = new ContentPartDefinition("Product");
         _boolFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
-                "BooleanField", new JObject())
-        { PartDefinition = _partDefinition };
+                "BooleanField",
+                new JObject())
+        { PartDefinition = partDefinition };
         _numericFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(NumericProductAttributeField)),
-                "NumericField", new JObject())
-        { PartDefinition = _partDefinition };
+                "NumericField",
+                new JObject())
+        { PartDefinition = partDefinition };
         _textFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
-                "TextField", new JObject())
-        { PartDefinition = _partDefinition };
-        _partTypeDefinition = new ContentTypePartDefinition("product", _partDefinition, new JObject());
+                "TextField",
+                new JObject())
+        { PartDefinition = partDefinition };
+        _partTypeDefinition = new ContentTypePartDefinition("product", partDefinition, new JObject());
     }
 
     [Fact]
     public void BooleanAttributeEquality()
     {
-        var trueValue = new BooleanProductAttributeValue("true", true);
-        var otherTrue = new BooleanProductAttributeValue("other", true);
-        var falseValue = new BooleanProductAttributeValue("false", false);
-        var otherFalse = new BooleanProductAttributeValue("other", false);
+        var trueValue = new BooleanProductAttributeValue("true", value: true);
+        var otherTrue = new BooleanProductAttributeValue("other", value: true);
+        var falseValue = new BooleanProductAttributeValue("false", value: false);
+        var otherFalse = new BooleanProductAttributeValue("other", value: false);
 
         Assert.True(trueValue.Equals(trueValue));
         Assert.True(falseValue.Equals(falseValue));
-        Assert.True(trueValue.Equals(new BooleanProductAttributeValue("true", true)));
+        Assert.True(trueValue.Equals(new BooleanProductAttributeValue("true", value: true)));
 
         Assert.False(trueValue.Equals(otherTrue));
         Assert.False(trueValue.Equals(falseValue));
         Assert.False(otherTrue.Equals(otherFalse));
-        Assert.False(trueValue.Equals(null));
+        Assert.False(trueValue.Equals(other: null));
     }
 
     [Fact]
@@ -87,7 +89,7 @@ public class ProductAttributeTests
 
         Assert.False(oneValue.Equals(otherOne));
         Assert.False(oneValue.Equals(twoValue));
-        Assert.False(oneValue.Equals(null));
+        Assert.False(oneValue.Equals(other: null));
     }
 
     [Fact]
@@ -118,7 +120,7 @@ public class ProductAttributeTests
 
         Assert.False(oneValue.Equals(otherOne));
         Assert.False(oneValue.Equals(twoValue));
-        Assert.False(oneValue.Equals(null));
+        Assert.False(oneValue.Equals(other: null));
     }
 
     [Fact]
@@ -136,7 +138,7 @@ public class ProductAttributeTests
 
         Assert.False(oneTwo.Equals(oneTwoThree));
         Assert.False(oneTwo.Equals(twoOneThree));
-        Assert.False(oneTwo.Equals(null));
+        Assert.False(oneTwo.Equals(other: null));
     }
 
     [Fact]
@@ -162,17 +164,17 @@ public class ProductAttributeTests
     [Fact]
     public void ProductAttributeServiceCanFindAttributesOnProducts()
     {
-        var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), null);
-        var product = new ContentItem()
-        {
-            ContentType = "Product",
-        };
-        var productPart1 = new ContentPart { };
+        var productAttributeService = new ProductAttributeService(
+            attributeProviders: null,
+            new FakeContentDefinitionManager(),
+            cache: null);
+        var product = new ContentItem { ContentType = "Product" };
+        var productPart1 = new ContentPart();
         var boolProductAttribute = new BooleanProductAttributeField();
         productPart1.Weld("foobool", boolProductAttribute);
         productPart1.Weld("barbool", new BooleanField());
         product.Weld("ProductPart1", productPart1);
-        var productPart2 = new ContentPart { };
+        var productPart2 = new ContentPart();
         var textProductAttribute = new TextProductAttributeField();
         productPart2.Weld("footext", textProductAttribute);
         productPart2.Weld("bartext", new TextField());
@@ -182,12 +184,12 @@ public class ProductAttributeTests
 
         Assert.Equal(2, productAttributeFields.Length);
         var foobool = productAttributeFields.FirstOrDefault(f => f.Name == "foobool");
-        Assert.Equal("ProductPart1", foobool.PartName);
-        Assert.Equal(boolProductAttribute, foobool.Field);
-        Assert.IsType<BooleanProductAttributeFieldSettings>(foobool.Settings);
+        Assert.Equal("ProductPart1", foobool?.PartName);
+        Assert.Equal(boolProductAttribute, foobool?.Field);
+        Assert.IsType<BooleanProductAttributeFieldSettings>(foobool?.Settings);
         var footext = productAttributeFields.FirstOrDefault(f => f.Name == "footext");
-        Assert.Equal("ProductPart2", footext.PartName);
-        Assert.Equal(textProductAttribute, footext.Field);
-        Assert.IsType<TextProductAttributeFieldSettings>(footext.Settings);
+        Assert.Equal("ProductPart2", footext?.PartName);
+        Assert.Equal(textProductAttribute, footext?.Field);
+        Assert.IsType<TextProductAttributeFieldSettings>(footext?.Settings);
     }
 }

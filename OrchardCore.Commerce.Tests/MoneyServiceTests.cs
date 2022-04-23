@@ -9,34 +9,38 @@ namespace OrchardCore.Commerce.Tests;
 public class MoneyServiceTests
 {
     [Fact]
-    public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar() => Assert.Equal("USD", new MoneyService(null, null, null).DefaultCurrency.CurrencyIsoCode);
+    public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar() =>
+        Assert.Equal(
+            "USD",
+            new MoneyService(currencyProviders: null, options: null, currencySelector: null)
+                .DefaultCurrency
+                .CurrencyIsoCode);
 
     [Fact]
     public void DefaultCurrencyWithNullSettingsButNoProvidersIsDollar() =>
         Assert.Equal(
             "USD",
             new MoneyService(
-                    null,
-                    new TestOptions<CommerceSettings>(new CommerceSettings { }),
-                    null)
-                .DefaultCurrency.CurrencyIsoCode);
+                    currencyProviders: null,
+                    new TestOptions<CommerceSettings>(new CommerceSettings()),
+                    currencySelector: null)
+                .DefaultCurrency
+                .CurrencyIsoCode);
 
     [Fact]
-    public void DefaultCurrencyWithSettingsSpecifyingDefaultCurrencyIsObserved() => Assert.Equal("EUR", new TestMoneyService().DefaultCurrency.CurrencyIsoCode);
+    public void DefaultCurrencyWithSettingsSpecifyingDefaultCurrencyIsObserved() =>
+        Assert.Equal("EUR", new TestMoneyService().DefaultCurrency.CurrencyIsoCode);
 
     [Fact]
     public void NotFoundDefaultCurrencyFallsBackToDollar() =>
         Assert.Equal(
             "USD",
             new MoneyService(
-                    null,
-                    new TestOptions<CommerceSettings>(
-                        new CommerceSettings
-                        {
-                            DefaultCurrency = "WTF",
-                        }),
-                    null)
-                .DefaultCurrency.CurrencyIsoCode);
+                    currencyProviders: null,
+                    new TestOptions<CommerceSettings>(new CommerceSettings { DefaultCurrency = "WTF" }),
+                    currencySelector: null)
+                .DefaultCurrency
+                .CurrencyIsoCode);
 
     [Fact]
     public void CanGetCurrenciesFromMultipleProviders()

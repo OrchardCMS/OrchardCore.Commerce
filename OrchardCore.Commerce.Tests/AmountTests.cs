@@ -23,7 +23,8 @@ public class AmountTests
     public void AmountsCanBeSubtracted() => Assert.Equal(new Amount(0.01M, Euro), new Amount(21.12M, Euro) - new Amount(21.11M, Euro));
 
     [Fact]
-    public void SubtractingDifferentCurrenciesThrows() => Assert.Throws<InvalidOperationException>(() => new Amount(1, UsDollar) - new Amount(1, Euro));
+    public void SubtractingDifferentCurrenciesThrows() =>
+        Assert.Throws<InvalidOperationException>(() => new Amount(1, UsDollar) - new Amount(1, Euro));
 
     [Fact]
     public void AmountsCanBeNegated()

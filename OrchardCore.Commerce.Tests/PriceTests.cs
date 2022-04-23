@@ -14,7 +14,7 @@ namespace OrchardCore.Commerce.Tests;
 public class PriceTests
 {
     [Fact]
-    public async void PriceProviderAddsPriceFromPricePart()
+    public async Task PriceProviderAddsPriceFromPricePart()
     {
         var cart = new ShoppingCart(
             new ShoppingCartItem(1, "foo"),
@@ -63,9 +63,9 @@ public class PriceTests
         var strategy = new SimplePriceStrategy();
         var selected = strategy.SelectPrice(new List<PrioritizedPrice>
         {
-            new PrioritizedPrice(0, new Amount(10, Currency.UsDollar)),
-            new PrioritizedPrice(1, new Amount(12, Currency.UsDollar)),
-            new PrioritizedPrice(1, new Amount(11, Currency.UsDollar)),
+            new(0, new Amount(10, Currency.UsDollar)),
+            new(1, new Amount(12, Currency.UsDollar)),
+            new(1, new Amount(11, Currency.UsDollar)),
         });
 
         Assert.Equal(11, selected.Value);
