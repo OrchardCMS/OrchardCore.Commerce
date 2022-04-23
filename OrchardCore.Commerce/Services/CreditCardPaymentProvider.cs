@@ -35,7 +35,7 @@ public class CreditCardPaymentProvider : IPaymentProvider
                 Amount = amount,
                 ChargeText = _s["Card **** **** **** {0} expiring {1}/{2}.", data[Last4], data[ExpirationMonth], data[ExpirationYear]].ToString(),
                 Last4 = data[Last4],
-                ExpirationMonth = int.TryParse(data[ExpirationMonth], out int expMonth) && expMonth >= 1 && expMonth <=12 ? expMonth : 0,
+                ExpirationMonth = int.TryParse(data[ExpirationMonth], out int expMonth) && expMonth >= 1 && expMonth <= 12 ? expMonth : 0,
                 ExpirationYear = int.TryParse(data[ExpirationYear], out int expYear) && expYear >= 0 ? expYear : 0,
             }
             : null;

@@ -22,7 +22,7 @@ public class ShoppingCartControllerTests
     };
     private readonly Dictionary<string, string[]> _attrSet2 = new()
     {
-        {  "ProductPart3.attr1", new[] { "false" } },
+        { "ProductPart3.attr1", new[] { "false" } },
     };
     private readonly Dictionary<string, string[]> _attrSet3 = new()
     {
@@ -57,7 +57,7 @@ public class ShoppingCartControllerTests
             productService: new FakeProductService(),
             priceService: new FakePriceService(),
             priceStrategy: new SimplePriceStrategy(),
-            contentManager: new FakeContentManager() ,
+            contentManager: new FakeContentManager(),
             workflowManager: null,
             notifier: null,
             localizer: null

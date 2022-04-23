@@ -14,7 +14,7 @@ public class OrderPart : ContentPart
     /// <summary>
     /// Additional costs such as taxes and shipping.
     /// </summary>
-    public IList<OrderAdditionalCost> AdditionalCosts {get;set;}
+    public IList<OrderAdditionalCost> AdditionalCosts { get; set; }
 
     /// <summary>
     /// Amounts charged on this order. Typically a single credit card charge.

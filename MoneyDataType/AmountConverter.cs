@@ -80,7 +80,7 @@ internal class AmountConverter : JsonConverter<Amount>
             throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
         writer.WriteStartObject();
         writer.WriteNumber(ValueName, amount.Value);
-            
+
         if (Currency.IsKnownCurrency(amount.Currency.CurrencyIsoCode))
         {
             writer.WriteString(CurrencyName, amount.Currency.CurrencyIsoCode);

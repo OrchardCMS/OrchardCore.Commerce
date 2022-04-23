@@ -27,7 +27,7 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     public override IDisplayResult Edit(PricePart part, BuildPartEditorContext context)
     {
         var pricePartSettings = context.TypePartDefinition.GetSettings<PricePartSettings>();
-            
+
         return Initialize<PricePartViewModel>(GetEditorShapeType(context), m =>
         {
             BuildViewModel(m, part);

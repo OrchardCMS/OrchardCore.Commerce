@@ -15,7 +15,7 @@ public class ProductPartContentAliasProvider : IContentHandleProvider
     public ProductPartContentAliasProvider(ISession session) => _session = session;
 
     public int Order => 57;
-        
+
     public async Task<string> GetContentItemIdAsync(string handle)
     {
         if (handle.StartsWith("sku:", System.StringComparison.OrdinalIgnoreCase))

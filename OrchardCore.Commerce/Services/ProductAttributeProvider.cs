@@ -51,7 +51,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
     {
         string attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
         string name = partDefinition.Name + "." + attributeFieldDefinition.Name;
-        switch(attributeFieldTypeName)
+        switch (attributeFieldTypeName)
         {
             case nameof(BooleanProductAttributeField):
                 return new BooleanProductAttributeValue(name,

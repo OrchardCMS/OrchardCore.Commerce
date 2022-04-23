@@ -17,9 +17,9 @@ public class PriceTests
     public async void PriceProviderAddsPriceFromPricePart()
     {
         var cart = new ShoppingCart(
-            new ShoppingCartItem (1, "foo"),
-            new ShoppingCartItem (4, "bar"),
-            new ShoppingCartItem (1, "baz"));
+            new ShoppingCartItem(1, "foo"),
+            new ShoppingCartItem(4, "bar"),
+            new ShoppingCartItem(1, "baz"));
         var productService = new DummyProductService(
             BuildProduct("foo", 50.0M),
             BuildProduct("bar", 30.0M),

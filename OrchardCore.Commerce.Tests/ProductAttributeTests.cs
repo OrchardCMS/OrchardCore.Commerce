@@ -29,15 +29,15 @@ public class ProductAttributeTests
         _boolFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                 "BooleanField", new JObject())
-            { PartDefinition = _partDefinition };
+        { PartDefinition = _partDefinition };
         _numericFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(NumericProductAttributeField)),
                 "NumericField", new JObject())
-            { PartDefinition = _partDefinition };
+        { PartDefinition = _partDefinition };
         _textFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
                 "TextField", new JObject())
-            { PartDefinition = _partDefinition };
+        { PartDefinition = _partDefinition };
         _partTypeDefinition = new ContentTypePartDefinition("product", _partDefinition, new JObject());
     }
 

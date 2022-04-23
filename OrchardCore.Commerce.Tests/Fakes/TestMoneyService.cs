@@ -14,5 +14,6 @@ public class TestMoneyService : MoneyService
                 new AnkhMorporkCurrencyProvider(),
             },
             new TestOptions<CommerceSettings>(new CommerceSettings { DefaultCurrency = "EUR" }),
-            new NullCurrencySelector()) { }
+            new NullCurrencySelector())
+    { }
 }

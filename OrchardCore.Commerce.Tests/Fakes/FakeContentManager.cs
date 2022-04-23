@@ -48,7 +48,7 @@ public class FakeContentManager : IContentManager
     public Task RemoveAsync(ContentItem contentItem) => throw new NotImplementedException();
 
     public Task<ContentValidateResult> RestoreAsync(ContentItem contentItem) => throw new NotImplementedException();
-        
+
     public Task SaveDraftAsync(ContentItem contentItem) => throw new NotImplementedException();
 
     public Task UnpublishAsync(ContentItem contentItem) => throw new NotImplementedException();
