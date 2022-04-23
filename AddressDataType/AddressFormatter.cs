@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace InternationalAddress;
 
@@ -21,7 +22,7 @@ public class AddressFormatter : IAddressFormatter
     /// 2. The company or institution.
     /// 3. The first line of the street address.
     /// 4. The second line of the street address.
-    /// 5. The city line (<see cref="cityLineFormat"/>).
+    /// 5. The city line (<see cref="_cityLineFormat"/>).
     /// 6. The country.
     /// </param>
     /// <param name="cityLineFormat">
@@ -50,21 +51,25 @@ public class AddressFormatter : IAddressFormatter
     /// <summary>
     /// Formats the address with the format strings provided.
     /// </summary>
-    /// <param name="address"></param>
-    /// <returns></returns>
     public string Format(Address address)
     {
         if (address is null) return "-";
+
         string rawFormatted = string.Format(
+            CultureInfo.InvariantCulture,
             _addressFormat,
             address.Name,
             address.Department,
             address.Company,
             address.StreetAddress1,
             address.StreetAddress2,
-            string.Format(_cityLineFormat, address.City, address.Province, address.PostalCode),
+            string.Format(CultureInfo.InvariantCulture, _cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
-        string withoutEmptyLines = string.Join(string.Empty, rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
-        return _uppercase ? withoutEmptyLines.ToUpper() : withoutEmptyLines;
+        string withoutEmptyLines = string.Join(
+            string.Empty,
+            rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
+        return _uppercase
+            ? withoutEmptyLines.ToUpperInvariant()
+            : withoutEmptyLines;
     }
 }
