@@ -15,8 +15,7 @@ namespace OrchardCore.Commerce.Indexes
     /// </summary>
     public class ProductPartIndexProvider : IndexProvider<ContentItem>
     {
-        public override void Describe(DescribeContext<ContentItem> context)
-        {
+        public override void Describe(DescribeContext<ContentItem> context) =>
             context.For<ProductPartIndex>()
                 .Map(contentItem =>
                 {
@@ -38,6 +37,5 @@ namespace OrchardCore.Commerce.Indexes
                         ContentItemId = contentItem.ContentItemId
                     };
                 });
-        }
     }
 }

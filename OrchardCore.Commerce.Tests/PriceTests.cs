@@ -83,10 +83,7 @@ namespace OrchardCore.Commerce.Tests
         {
             private readonly Dictionary<string, ProductPart> _products;
 
-            public DummyProductService(params ProductPart[] products)
-            {
-                _products = products.ToDictionary(p => p.Sku);
-            }
+            public DummyProductService(params ProductPart[] products) => _products = products.ToDictionary(p => p.Sku);
 
             public Task<ProductPart> GetProduct(string sku)
                 => Task.FromResult(_products[sku]);

@@ -137,9 +137,6 @@ namespace OrchardCore.Commerce
     [RequireFeatures(CommerceConstants.Features.Core)]
     public class CommerceSettingsCurrencySettingsStartup : StartupBase
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
-        }
+        public override void ConfigureServices(IServiceCollection services) => services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
     }
 }

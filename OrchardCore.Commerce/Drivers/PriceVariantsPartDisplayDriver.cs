@@ -24,21 +24,17 @@ namespace OrchardCore.Commerce.Drivers
             _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
         }
 
-        public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context)
-        {
-            return Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
+        public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
+            Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
                 .Location("Detail", "Content:25")
                 .Location("Summary", "Meta:10");
-        }
 
-        public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context)
-        {
-            return Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), m =>
+        public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
+            Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), m =>
             {
                 BuildViewModel(m, part);
                 m.Currencies = _moneyService.Currencies;
             });
-        }
 
         public override async Task<IDisplayResult> UpdateAsync(PriceVariantsPart part, IUpdateModel updater, UpdatePartEditorContext context)
         {

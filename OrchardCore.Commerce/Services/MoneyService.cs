@@ -45,13 +45,7 @@ namespace OrchardCore.Commerce.Services
             }
         }
 
-        public ICurrency CurrentDisplayCurrency
-        {
-            get
-            {
-                return _currencySelector.CurrentDisplayCurrency ?? DefaultCurrency;
-            }
-        }
+        public ICurrency CurrentDisplayCurrency => _currencySelector.CurrentDisplayCurrency ?? DefaultCurrency;
 
         public Amount Create(decimal value, string currencyIsoCode)
             => new Amount(value, GetCurrency(currencyIsoCode));

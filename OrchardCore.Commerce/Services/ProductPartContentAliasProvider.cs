@@ -12,10 +12,7 @@ namespace OrchardCore.Commerce.Services
     {
         private readonly ISession _session;
 
-        public ProductPartContentAliasProvider(ISession session)
-        {
-            _session = session;
-        }
+        public ProductPartContentAliasProvider(ISession session) => _session = session;
 
         public int Order => 57;
         

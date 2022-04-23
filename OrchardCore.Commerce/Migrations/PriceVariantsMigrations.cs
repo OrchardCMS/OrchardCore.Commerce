@@ -11,10 +11,7 @@ namespace OrchardCore.Commerce.Migrations
     {
         IContentDefinitionManager _contentDefinitionManager;
 
-        public PriceVariantsMigrations(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
+        public PriceVariantsMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
 
         public int Create()
         {

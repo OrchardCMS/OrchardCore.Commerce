@@ -10,12 +10,10 @@ namespace OrchardCore.Commerce.Tests.Fakes
     {
         private Dictionary<string, ShoppingCart> _carts = new Dictionary<string, ShoppingCart>();
 
-        public FakeCartStorage(ShoppingCart cart = null, string cartId = null)
-        {
+        public FakeCartStorage(ShoppingCart cart = null, string cartId = null) =>
             _carts[cartId ?? ""] = cart != null
                 ? new ShoppingCart(cart.Items)
                 : new ShoppingCart();
-        }
 
         public string GetUniqueCartId(string shoppingCartId)
             => Guid.NewGuid().ToString();

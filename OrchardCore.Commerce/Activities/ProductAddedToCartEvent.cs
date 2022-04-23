@@ -11,10 +11,7 @@ namespace OrchardCore.Commerce.Activities
     {
         private readonly IStringLocalizer<ProductAddedToCartEvent> S;
 
-        public ProductAddedToCartEvent(IStringLocalizer<ProductAddedToCartEvent> localizer)
-        {
-            S = localizer;
-        }
+        public ProductAddedToCartEvent(IStringLocalizer<ProductAddedToCartEvent> localizer) => S = localizer;
 
         public override string Name => nameof(ProductAddedToCartEvent);
 

@@ -15,10 +15,7 @@ namespace OrchardCore.Commerce.Services
 
         private readonly IStringLocalizer S;
 
-        public CreditCardPaymentProvider(IStringLocalizer<CreditCardPaymentProvider> localizer)
-        {
-            S = localizer;
-        }
+        public CreditCardPaymentProvider(IStringLocalizer<CreditCardPaymentProvider> localizer) => S = localizer;
 
         public void AddData(IPayment charge, IDictionary<string, string> data)
         {

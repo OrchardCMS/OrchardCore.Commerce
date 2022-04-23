@@ -9,10 +9,7 @@ namespace OrchardCore.Commerce.Settings
     {
         private readonly CommerceSettings _options;
 
-        public CommerceSettingsCurrencySelector(IOptions<CommerceSettings> options)
-        {
-            _options = options.Value;
-        }
+        public CommerceSettingsCurrencySelector(IOptions<CommerceSettings> options) => _options = options.Value;
         public ICurrency CurrentDisplayCurrency => Currency.FromISOCode(_options.CurrentDisplayCurrency);
     }
 }

@@ -17,17 +17,12 @@ namespace OrchardCore.Commerce.Drivers
     {
         private readonly IMoneyService _moneyService;
 
-        public PricePartDisplayDriver(IMoneyService moneyService)
-        {
-            _moneyService = moneyService;
-        }
+        public PricePartDisplayDriver(IMoneyService moneyService) => _moneyService = moneyService;
 
-        public override IDisplayResult Display(PricePart pricePart, BuildPartDisplayContext context)
-        {
-            return Initialize<PricePartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, pricePart))
+        public override IDisplayResult Display(PricePart pricePart, BuildPartDisplayContext context) =>
+            Initialize<PricePartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, pricePart))
                 .Location("Detail", "Content:25")
                 .Location("Summary", "Meta:10");
-        }
 
         public override IDisplayResult Edit(PricePart pricePart, BuildPartEditorContext context)
         {

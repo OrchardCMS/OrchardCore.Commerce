@@ -61,15 +61,13 @@ namespace OrchardCore.Commerce.Services
                 .Distinct()
                 .ToDictionary(t => t.Name);
 
-        private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field)
-        {
-            return field
+        private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field) =>
+            field
                 ?.GetType()
                 ?.GetMethod(
                     // Using that type parameter arbitrarily, any one of the concrete attribute settings types would have done.
                     nameof(ProductAttributeField<TextProductAttributeFieldSettings>.GetSettings),
                     BindingFlags.Instance | BindingFlags.Public)
                 ?.Invoke(field, new[] { partFieldDefinition }) as ProductAttributeFieldSettings;
-        }
     }
 }

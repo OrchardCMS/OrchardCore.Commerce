@@ -24,10 +24,7 @@ namespace OrchardCore.Commerce.Models
         /// Constructs a cart from a list of product variant quantities.
         /// </summary>
         /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
-        public ShoppingCart(IEnumerable<ShoppingCartItem> items)
-        {
-            Items = items is null ? new List<ShoppingCartItem>() : new List<ShoppingCartItem>(items);
-        }
+        public ShoppingCart(IEnumerable<ShoppingCartItem> items) => Items = items is null ? new List<ShoppingCartItem>() : new List<ShoppingCartItem>(items);
 
         /// <summary>
         /// Constructs a cart from a list of product variant quantities.

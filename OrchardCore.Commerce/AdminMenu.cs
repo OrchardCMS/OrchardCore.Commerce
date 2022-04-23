@@ -10,10 +10,7 @@ namespace OrchardCore.Commerce
     {
         private readonly IStringLocalizer<AdminMenu> T;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            T = localizer;
-        }
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer) => T = localizer;
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

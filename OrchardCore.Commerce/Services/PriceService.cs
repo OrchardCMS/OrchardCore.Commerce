@@ -13,10 +13,7 @@ namespace OrchardCore.Commerce.Services
     {
         private IEnumerable<IPriceProvider> _providers;
 
-        public PriceService(IEnumerable<IPriceProvider> priceProviders)
-        {
-            _providers = priceProviders;
-        }
+        public PriceService(IEnumerable<IPriceProvider> priceProviders) => _providers = priceProviders;
 
         public async Task<IEnumerable<ShoppingCartItem>> AddPrices(IEnumerable<ShoppingCartItem> items)
         {

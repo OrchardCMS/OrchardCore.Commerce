@@ -10,10 +10,7 @@ namespace OrchardCore.Commerce.Services
     {
         private readonly IProductAttributeService _productAttributeService;
 
-        public PredefinedValuesProductAttributeService(IProductAttributeService productAttributeService)
-        {
-            _productAttributeService = productAttributeService;
-        }
+        public PredefinedValuesProductAttributeService(IProductAttributeService productAttributeService) => _productAttributeService = productAttributeService;
 
         public IEnumerable<IEnumerable<object>> GetProductAttributesPredefinedValues(ContentItem product)
             => GetProductAttributesRestrictedToPredefinedValues(product)

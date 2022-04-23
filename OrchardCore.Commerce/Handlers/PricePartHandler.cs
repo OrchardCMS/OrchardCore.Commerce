@@ -9,10 +9,7 @@ namespace OrchardCore.Commerce.Handlers
     {
         private readonly IMoneyService _moneyService;
 
-        public PricePartHandler(IMoneyService moneyService)
-        {
-            _moneyService = moneyService;
-        }
+        public PricePartHandler(IMoneyService moneyService) => _moneyService = moneyService;
 
         public override Task LoadingAsync(LoadContentContext context, PricePart part)
         {

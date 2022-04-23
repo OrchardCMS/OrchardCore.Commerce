@@ -13,15 +13,9 @@ namespace OrchardCore.Commerce.Drivers
     {
         private readonly IAddressFormatterProvider _addressFormatterProvider;
 
-        public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider)
-        {
-            _addressFormatterProvider = addressFormatterProvider;
-        }
+        public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider) => _addressFormatterProvider = addressFormatterProvider;
 
-        public override IDisplayResult Edit(AddressField addressField, BuildFieldEditorContext context)
-        {
-            return Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, addressField, context));
-        }
+        public override IDisplayResult Edit(AddressField addressField, BuildFieldEditorContext context) => Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, addressField, context));
 
         private Task BuildViewModel(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
         {

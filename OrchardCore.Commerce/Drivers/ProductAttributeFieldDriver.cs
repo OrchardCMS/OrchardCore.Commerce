@@ -13,16 +13,13 @@ namespace OrchardCore.Commerce.Drivers
         where TFieldSettings : ProductAttributeFieldSettings, new()
     {
         public ProductAttributeFieldDriver(
-            IStringLocalizer<ProductAttributeFieldDriver<TField, TFieldSettings>> localizer)
-        {
+            IStringLocalizer<ProductAttributeFieldDriver<TField, TFieldSettings>> localizer) =>
             T = localizer;
-        }
 
         public IStringLocalizer T { get; set; }
 
-        public override IDisplayResult Edit(TField field, BuildFieldEditorContext context)
-        {
-            return Initialize<EditProductAttributeFieldViewModel<TField, TFieldSettings>>(
+        public override IDisplayResult Edit(TField field, BuildFieldEditorContext context) =>
+            Initialize<EditProductAttributeFieldViewModel<TField, TFieldSettings>>(
                 GetEditorShapeType(context), model =>
                 {
                     var settings = new TFieldSettings();
@@ -32,7 +29,6 @@ namespace OrchardCore.Commerce.Drivers
                     model.Part = context.ContentPart;
                     model.PartFieldDefinition = context.PartFieldDefinition;
                 });
-        }
     }
 
     public class BooleanProductAttributeFieldDriver

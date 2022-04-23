@@ -10,44 +10,34 @@ namespace OrchardCore.Commerce.Tests
     public partial class MoneyServiceTests
     {
         [Fact]
-        public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar()
-        {
-            Assert.Equal("USD", new MoneyService(null, null, null).DefaultCurrency.CurrencyIsoCode);
-        }
+        public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar() => Assert.Equal("USD", new MoneyService(null, null, null).DefaultCurrency.CurrencyIsoCode);
 
         [Fact]
-        public void DefaultCurrencyWithNullSettingsButNoProvidersIsDollar()
-        {
+        public void DefaultCurrencyWithNullSettingsButNoProvidersIsDollar() =>
             Assert.Equal(
                 "USD",
                 new MoneyService(
-                    null,
-                    new TestOptions<CommerceSettings>(new CommerceSettings { }),
-                    null)
-                .DefaultCurrency.CurrencyIsoCode);
-        }
+                        null,
+                        new TestOptions<CommerceSettings>(new CommerceSettings { }),
+                        null)
+                    .DefaultCurrency.CurrencyIsoCode);
 
         [Fact]
-        public void DefaultCurrencyWithSettingsSpecifyingDefaultCurrencyIsObserved()
-        {
-            Assert.Equal("EUR", new TestMoneyService().DefaultCurrency.CurrencyIsoCode);
-        }
+        public void DefaultCurrencyWithSettingsSpecifyingDefaultCurrencyIsObserved() => Assert.Equal("EUR", new TestMoneyService().DefaultCurrency.CurrencyIsoCode);
 
         [Fact]
-        public void NotFoundDefaultCurrencyFallsBackToDollar()
-        {
+        public void NotFoundDefaultCurrencyFallsBackToDollar() =>
             Assert.Equal(
                 "USD",
                 new MoneyService(
-                    null,
-                    new TestOptions<CommerceSettings>(
-                    new CommerceSettings
-                    {
-                        DefaultCurrency = "WTF"
-                    }),
-                    null)
-                .DefaultCurrency.CurrencyIsoCode);
-        }
+                        null,
+                        new TestOptions<CommerceSettings>(
+                            new CommerceSettings
+                            {
+                                DefaultCurrency = "WTF"
+                            }),
+                        null)
+                    .DefaultCurrency.CurrencyIsoCode);
 
         [Fact]
         public void CanGetCurrenciesFromMultipleProviders()
@@ -57,10 +47,7 @@ namespace OrchardCore.Commerce.Tests
         }
 
         [Fact]
-        public void UnknownCurrencyCodeGivesNullResult()
-        {
-            Assert.Null(new TestMoneyService().GetCurrency("WTF"));
-        }
+        public void UnknownCurrencyCodeGivesNullResult() => Assert.Null(new TestMoneyService().GetCurrency("WTF"));
 
         [Fact]
         public void CreateMakesAmountWithCurrency()

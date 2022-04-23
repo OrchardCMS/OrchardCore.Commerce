@@ -7,10 +7,7 @@ namespace SampleWebApp
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms();
-        }
+        public void ConfigureServices(IServiceCollection services) => services.AddOrchardCms();
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {

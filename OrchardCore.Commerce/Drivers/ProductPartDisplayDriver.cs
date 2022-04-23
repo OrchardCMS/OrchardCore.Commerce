@@ -13,22 +13,14 @@ namespace OrchardCore.Commerce.Drivers
     {
         private readonly IProductAttributeService _productAttributeService;
 
-        public ProductPartDisplayDriver(IProductAttributeService productAttributeService)
-        {
-            _productAttributeService = productAttributeService;
-        }
+        public ProductPartDisplayDriver(IProductAttributeService productAttributeService) => _productAttributeService = productAttributeService;
 
-        public override IDisplayResult Display(ProductPart productPart, BuildPartDisplayContext context)
-        {
-            return Initialize<ProductPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, productPart))
+        public override IDisplayResult Display(ProductPart productPart, BuildPartDisplayContext context) =>
+            Initialize<ProductPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, productPart))
                 .Location("Detail", "Content:20")
                 .Location("Summary", "Meta:5");
-        }
 
-        public override IDisplayResult Edit(ProductPart productPart, BuildPartEditorContext context)
-        {
-            return Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, productPart));
-        }
+        public override IDisplayResult Edit(ProductPart productPart, BuildPartEditorContext context) => Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, productPart));
 
         public override async Task<IDisplayResult> UpdateAsync(ProductPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
