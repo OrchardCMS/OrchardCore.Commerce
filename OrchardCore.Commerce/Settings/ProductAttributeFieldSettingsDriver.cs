@@ -72,7 +72,7 @@ namespace OrchardCore.Commerce.Settings
                         .Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(v => v.Trim())
                         .Where(v => !String.IsNullOrWhiteSpace(v))
-                        .ToArray()
+                        .ToArray(),
                 });
             return Edit(partFieldDefinition);
         }

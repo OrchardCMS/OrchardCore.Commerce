@@ -6,6 +6,6 @@ namespace OrchardCore.Commerce.Settings
     {
         AllCurrencies,
         DefaultCurrency,
-        SpecificCurrency
+        SpecificCurrency,
     }
 }

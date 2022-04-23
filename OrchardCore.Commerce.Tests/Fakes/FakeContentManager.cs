@@ -38,7 +38,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
             if (typeof(TAspect) != typeof(ContentItemMetadata)) throw new NotImplementedException();
             var metadata = new ContentItemMetadata
             {
-                DisplayRouteValues = new RouteValueDictionary()
+                DisplayRouteValues = new RouteValueDictionary(),
             };
             return await Task.FromResult((TAspect)(object)metadata);
         }

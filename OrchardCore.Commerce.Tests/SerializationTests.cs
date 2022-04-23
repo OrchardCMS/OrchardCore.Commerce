@@ -18,15 +18,15 @@ namespace OrchardCore.Commerce.Tests
                 new ShoppingCartItem(2, "product-1", prices: new[]
                 {
                     new PrioritizedPrice(0, new Amount(10, Currency.Euro)),
-                    new PrioritizedPrice(1, new Amount(7, Currency.USDollar))
+                    new PrioritizedPrice(1, new Amount(7, Currency.USDollar)),
                 }),
                 new ShoppingCartItem(1, "product-2", attributes: new IProductAttributeValue[]
                 {
                     new BooleanProductAttributeValue("ProductPart3.attr1", true),
-                    new NumericProductAttributeValue("ProductPart3.attr3", (decimal?)42.0)
+                    new NumericProductAttributeValue("ProductPart3.attr3", (decimal?)42.0),
                 }, prices: new[]
                 {
-                    new PrioritizedPrice(0, new Amount(12, Currency.USDollar))
+                    new PrioritizedPrice(0, new Amount(12, Currency.USDollar)),
                 }));
             var helpers = new ShoppingCartHelpers(
                 attributeProviders: new[] { new ProductAttributeProvider() },

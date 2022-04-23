@@ -15,7 +15,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
 
         private readonly ICurrency[] _currencies = new[] {
             AnkhMorporkDollar,
-            SixPence
+            SixPence,
         };
         public IEnumerable<ICurrency> Currencies => _currencies;
 

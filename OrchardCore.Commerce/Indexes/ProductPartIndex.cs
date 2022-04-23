@@ -34,7 +34,7 @@ namespace OrchardCore.Commerce.Indexes
                     return new ProductPartIndex
                     {
                         Sku = productPart.Sku.ToLowerInvariant(),
-                        ContentItemId = contentItem.ContentItemId
+                        ContentItemId = contentItem.ContentItemId,
                     };
                 });
     }

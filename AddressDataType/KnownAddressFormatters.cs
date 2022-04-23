@@ -12,7 +12,7 @@ namespace InternationalAddress
             = new Dictionary<string, IAddressFormatter>(StringComparer.InvariantCultureIgnoreCase)
         {
             { "US", DefaultFormatter },
-            { "FR", new AddressFormatter(cityLineFormat: "{2} {0}") }
+            { "FR", new AddressFormatter(cityLineFormat: "{2} {0}") },
         };
     }
 }

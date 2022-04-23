@@ -18,29 +18,29 @@ namespace OrchardCore.Commerce.Tests
 
         private readonly Dictionary<string, string[]> _attrSet1 = new Dictionary<string, string[]>
         {
-            { "ProductPart3.attr1", new[] { "true" } }
+            { "ProductPart3.attr1", new[] { "true" } },
         };
         private Dictionary<string, string[]> _attrSet2 = new Dictionary<string, string[]>
         {
-            {  "ProductPart3.attr1", new[] { "false" } }
+            {  "ProductPart3.attr1", new[] { "false" } },
         };
         private Dictionary<string, string[]> _attrSet3 = new Dictionary<string, string[]>
         {
             { "ProductPart3.attr1", new[] { "true" } },
-            { "ProductPart3.attr2", new[] { "bar", "baz" } }
+            { "ProductPart3.attr2", new[] { "bar", "baz" } },
         };
         private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new HashSet<IProductAttributeValue>
         {
-            new BooleanProductAttributeValue("ProductPart3.attr1", true)
+            new BooleanProductAttributeValue("ProductPart3.attr1", true),
         };
         private readonly HashSet<IProductAttributeValue> _attrSet2Parsed = new HashSet<IProductAttributeValue>
         {
-            new BooleanProductAttributeValue("ProductPart3.attr1", false)
+            new BooleanProductAttributeValue("ProductPart3.attr1", false),
         };
         private readonly HashSet<IProductAttributeValue> _attrSet3Parsed = new HashSet<IProductAttributeValue>
         {
             new BooleanProductAttributeValue("ProductPart3.attr1", true),
-            new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz")
+            new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz"),
         };
 
         public ShoppingCartControllerTests() {
@@ -70,13 +70,13 @@ namespace OrchardCore.Commerce.Tests
             await _controller.AddItem(new ShoppingCartLineUpdateModel
             {
                 Quantity = 7,
-                ProductSku = "foo"
+                ProductSku = "foo",
             });
             var cart = await _cartStorage.Retrieve();
 
             Assert.Equal(new List<ShoppingCartItem>
             {
-                new ShoppingCartItem(10, "foo")
+                new ShoppingCartItem(10, "foo"),
             }, cart.Items);
         }
 
@@ -87,14 +87,14 @@ namespace OrchardCore.Commerce.Tests
             await _controller.AddItem(new ShoppingCartLineUpdateModel
             {
                 Quantity = 7,
-                ProductSku = "bar"
+                ProductSku = "bar",
             });
             var cart = await _cartStorage.Retrieve();
 
             Assert.Equal(new List<ShoppingCartItem>
             {
                 new ShoppingCartItem(3, "foo"),
-                new ShoppingCartItem(7, "bar")
+                new ShoppingCartItem(7, "bar"),
             }, cart.Items);
         }
 
@@ -107,7 +107,7 @@ namespace OrchardCore.Commerce.Tests
                 new ShoppingCartItem(3, "foo", _attrSet1Parsed),
                 new ShoppingCartItem(4, "foo", _attrSet2Parsed),
                 new ShoppingCartItem(5, "foo", _attrSet3Parsed),
-                new ShoppingCartItem(6, "bar", _attrSet3Parsed)
+                new ShoppingCartItem(6, "bar", _attrSet3Parsed),
             }));
             await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "foo" });
             await _controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 8, ProductSku = "foo", Attributes = _attrSet1 });
@@ -124,7 +124,7 @@ namespace OrchardCore.Commerce.Tests
                 new ShoppingCartItem(13, "foo", _attrSet2Parsed),
                 new ShoppingCartItem(15, "foo", _attrSet3Parsed),
                 new ShoppingCartItem(17, "bar", _attrSet3Parsed),
-                new ShoppingCartItem(13, "baz", _attrSet3Parsed)
+                new ShoppingCartItem(13, "baz", _attrSet3Parsed),
             }, cart.Items);
         }
 
@@ -137,7 +137,7 @@ namespace OrchardCore.Commerce.Tests
                 new ShoppingCartItem(3, "foo", _attrSet1Parsed),
                 new ShoppingCartItem(4, "foo", _attrSet2Parsed),
                 new ShoppingCartItem(5, "foo", _attrSet3Parsed),
-                new ShoppingCartItem(6, "bar", _attrSet3Parsed)
+                new ShoppingCartItem(6, "bar", _attrSet3Parsed),
             };
             var cart = new ShoppingCart(expectedCartItems);
             await _cartStorage.Store(cart);

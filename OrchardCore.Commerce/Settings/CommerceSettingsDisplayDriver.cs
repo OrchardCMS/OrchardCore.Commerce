@@ -61,7 +61,7 @@ namespace OrchardCore.Commerce.Settings
                         .Select(c => new SelectListItem(
                             c.CurrencyIsoCode,
                             $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
-                }).Location("Content:5").OnGroup(GroupId)
+                }).Location("Content:5").OnGroup(GroupId),
             };
 
             return Combine(shapes);

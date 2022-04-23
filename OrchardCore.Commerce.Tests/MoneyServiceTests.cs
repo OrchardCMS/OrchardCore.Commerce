@@ -34,7 +34,7 @@ namespace OrchardCore.Commerce.Tests
                         new TestOptions<CommerceSettings>(
                             new CommerceSettings
                             {
-                                DefaultCurrency = "WTF"
+                                DefaultCurrency = "WTF",
                             }),
                         null)
                     .DefaultCurrency.CurrencyIsoCode);

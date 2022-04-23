@@ -12,7 +12,7 @@ namespace OrchardCore.Commerce.Tests.Fakes
             => Task.FromResult(new ProductPart
             {
                 Sku = sku,
-                ContentItem = new ContentManagement.ContentItem { ContentType = "Product" }
+                ContentItem = new ContentManagement.ContentItem { ContentType = "Product" },
             });
 
         public Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus)

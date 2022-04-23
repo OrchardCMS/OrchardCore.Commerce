@@ -85,7 +85,7 @@ namespace InternationalAddress
                       { "WA", "Washington" },
                       { "WV", "West Virginia" },
                       { "WI", "Wisconsin" },
-                      { "WY", "Wyoming" }
+                      { "WY", "Wyoming" },
                     }
                 },
                 { "CA" , new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -102,9 +102,9 @@ namespace InternationalAddress
                       { "PE", "Prince Edward Island" },
                       { "QC", "Quebec" },
                       { "SK", "Saskatchewan" },
-                      { "YT", "Yukon" }
+                      { "YT", "Yukon" },
                     }
-                }
+                },
             };
     }
 }

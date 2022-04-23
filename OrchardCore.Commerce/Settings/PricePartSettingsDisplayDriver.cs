@@ -41,7 +41,7 @@ namespace OrchardCore.Commerce.Settings
                 {
                     new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), S["All Currencies"]),
                     new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), S["Default Currency"]),
-                    new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), S["Specific Currency"])
+                    new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), S["Specific Currency"]),
                 };
                 model.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
                 model.Currencies = _moneyService.Currencies
@@ -70,7 +70,7 @@ namespace OrchardCore.Commerce.Settings
                 CurrencySelectionMode = model.CurrencySelectionMode,
                 SpecificCurrencyIsoCode =
                     model.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
-                        ? model.SpecificCurrencyIsoCode : null
+                        ? model.SpecificCurrencyIsoCode : null,
             });
 
             return Edit(contentTypePartDefinition, context.Updater);

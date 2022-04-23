@@ -16,7 +16,7 @@ namespace OrchardCore.Commerce
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
             => new[] { new PermissionStereotype {
                 Name = "Administrator",
-                Permissions = new[] { ManageCommerceSettings }
+                Permissions = new[] { ManageCommerceSettings },
             } };
     }
 }

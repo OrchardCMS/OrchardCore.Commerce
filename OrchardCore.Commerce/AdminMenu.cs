@@ -24,7 +24,7 @@ namespace OrchardCore.Commerce
                           .Action("Index", "Admin", new
                           {
                               area = "OrchardCore.Settings",
-                              groupId = CommerceSettingsDisplayDriver.GroupId
+                              groupId = CommerceSettingsDisplayDriver.GroupId,
                           })
                           .Permission(Permissions.ManageCommerceSettings)
                           .LocalNav()

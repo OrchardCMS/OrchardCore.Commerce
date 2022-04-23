@@ -45,7 +45,7 @@ namespace OrchardCore.Commerce.Tests
                 new DummyPriceProvider(4, 4.0m),
                 new DummyPriceProvider(2, 2.0m),
                 new DummyPriceProvider(1, 1.0m),
-                new DummyPriceProvider(3, 3.0m)
+                new DummyPriceProvider(3, 3.0m),
             });
             var cart = new ShoppingCart(new ShoppingCartItem(1, "foo"));
             cart = cart.With(await priceService.AddPrices(cart.Items));
@@ -63,7 +63,7 @@ namespace OrchardCore.Commerce.Tests
             Amount selected = strategy.SelectPrice(new List<PrioritizedPrice> {
                 new PrioritizedPrice(0, new Amount(10, Currency.USDollar)),
                 new PrioritizedPrice(1, new Amount(12, Currency.USDollar)),
-                new PrioritizedPrice(1, new Amount(11, Currency.USDollar))
+                new PrioritizedPrice(1, new Amount(11, Currency.USDollar)),
             });
 
             Assert.Equal(11, selected.Value);

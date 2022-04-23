@@ -17,7 +17,7 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Contents",
-        "OrchardCore.Workflows"
+        "OrchardCore.Workflows",
     }
 )]
 
@@ -29,7 +29,7 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Contents",
-        CommerceConstants.Features.Core
+        CommerceConstants.Features.Core,
     }
 )]
 
@@ -41,6 +41,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Contents",
-        CommerceConstants.Features.Core
+        CommerceConstants.Features.Core,
     }
 )]

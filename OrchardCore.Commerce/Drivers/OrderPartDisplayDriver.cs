@@ -59,7 +59,7 @@ namespace OrchardCore.Commerce.Drivers
                         UnitPrice = lineItem.UnitPrice,
                         LinePrice = lineItem.LinePrice,
                         ProductRouteValues = metaData.DisplayRouteValues,
-                        Attributes = lineItem.Attributes.ToDictionary(attr => attr.Key, attr =>  attr.Value)
+                        Attributes = lineItem.Attributes.ToDictionary(attr => attr.Key, attr =>  attr.Value),
                     };
                 }));
                 model.LineItems = lineItems;

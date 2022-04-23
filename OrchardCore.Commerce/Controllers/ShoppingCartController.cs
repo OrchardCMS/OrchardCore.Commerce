@@ -69,14 +69,14 @@ namespace OrchardCore.Commerce.Controllers
                     UnitPrice = price,
                     LinePrice = item.Quantity * price,
                     ProductUrl = Url.RouteUrl(metaData.DisplayRouteValues),
-                    Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName)
+                    Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName),
                 };
             }));
             var model = new ShoppingCartViewModel
             {
                 Id = shoppingCartId,
                 Lines = lines,
-                Totals = lines.GroupBy(l => l.LinePrice.Currency).Select(g => new Amount(g.Sum(l => l.LinePrice.Value), g.Key))
+                Totals = lines.GroupBy(l => l.LinePrice.Currency).Select(g => new Amount(g.Sum(l => l.LinePrice.Value), g.Key)),
             };
             return View(model);
         }
@@ -117,7 +117,7 @@ namespace OrchardCore.Commerce.Controllers
                     nameof(ProductAddedToCartEvent),
                     new
                     {
-                        LineItem = parsedLine
+                        LineItem = parsedLine,
                     },
                     "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
             }

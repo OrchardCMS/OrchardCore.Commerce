@@ -164,7 +164,7 @@ namespace OrchardCore.Commerce.Tests
         {
             var productAttributeService = new ProductAttributeService(null, new FakeContentDefinitionManager(), null);
             var product = new ContentItem() {
-                ContentType = "Product"
+                ContentType = "Product",
             };
             var productPart1 = new ContentPart { };
             var boolProductAttribute = new BooleanProductAttributeField();
