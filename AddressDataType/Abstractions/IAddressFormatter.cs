@@ -1,4 +1,5 @@
 using System;
+using static InternationalAddress.ConcatenationHelper;
 
 namespace InternationalAddress;
 
@@ -7,15 +8,18 @@ namespace InternationalAddress;
 /// </summary>
 public interface IAddressFormatter
 {
-    string Format(Address address)
-        => address is null ? "-" : (address.Name
-                                    + (string.IsNullOrWhiteSpace(address.Department) ? string.Empty : Environment.NewLine + address.Department)
-                                    + (string.IsNullOrWhiteSpace(address.Company) ? string.Empty : Environment.NewLine + address.Company)
-                                    + Environment.NewLine + address.StreetAddress1
-                                    + (string.IsNullOrWhiteSpace(address.StreetAddress2) ? string.Empty : Environment.NewLine + address.StreetAddress2)
-                                    + Environment.NewLine + address.City
-                                    + (string.IsNullOrWhiteSpace(address.Province) ? string.Empty : " " + address.Province)
-                                    + " " + address.PostalCode
-                                    + (string.IsNullOrWhiteSpace(address.Region) ? string.Empty : Environment.NewLine + address.Region)
-            ).ToUpper();
+    /// <summary>
+    /// Returns a multi-line formatted string representing the <paramref name="address"/>.
+    /// </summary>
+    string Format(Address address) =>
+        address is null
+        ? "-"
+        : JoinWhenNotEmptyOrWhiteSpace(
+            Environment.NewLine,
+            address.Department,
+            address.Company,
+            address.StreetAddress1,
+            address.StreetAddress2,
+            JoinWhenNotEmptyOrWhiteSpace(separator: " ", address.City, address.Province, address.PostalCode),
+            address.Region).ToUpperInvariant();
 }
