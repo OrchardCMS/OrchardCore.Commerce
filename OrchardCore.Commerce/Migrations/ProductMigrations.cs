@@ -1,7 +1,7 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data.Migration;
 using OrchardCore.Commerce.Indexes;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Data.Migration;
 using YesSql.Sql;
 
 namespace OrchardCore.Commerce.Migrations;

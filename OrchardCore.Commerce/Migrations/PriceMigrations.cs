@@ -1,5 +1,5 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Commerce.Migrations;

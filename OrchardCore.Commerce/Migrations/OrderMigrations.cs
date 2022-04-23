@@ -1,8 +1,8 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Data.Migration;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Settings;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Commerce.Migrations;
 
