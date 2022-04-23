@@ -27,7 +27,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                     return new NumericProductAttributeValue(name, decimalValue);
                 }
 
-                return new NumericProductAttributeValue(name, null);
+                return new NumericProductAttributeValue(name, value: null);
             case nameof(TextProductAttributeField):
                 switch (value.ValueKind)
                 {
@@ -36,7 +36,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                     case JsonValueKind.Array:
                         return new TextProductAttributeValue(name, value.EnumerateArray().Select(el => el.GetString()));
                     default:
-                        return new TextProductAttributeValue(name, null);
+                        return new TextProductAttributeValue(name, values: null);
                 }
 
             default:
@@ -62,7 +62,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                     return new NumericProductAttributeValue(name, decimalValue);
                 }
 
-                return new NumericProductAttributeValue(name, null);
+                return new NumericProductAttributeValue(name, value: null);
             case nameof(TextProductAttributeField):
                 // TODO: use settings to validate the value, and parse differently if multiple values are allowed.
                 return new TextProductAttributeValue(name, value);

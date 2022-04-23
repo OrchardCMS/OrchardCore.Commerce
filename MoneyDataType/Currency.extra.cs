@@ -162,6 +162,8 @@ public partial struct Currency
     {
         KnownCurrencyTable.EnsureCurrencyTable();
         var temp = new Currency(culture);
-        return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.CurrencyIsoCode == temp.CurrencyIsoCode);
+        return (providers ?? new List<ICurrencyProvider>())
+            .SelectMany(p => p.Currencies)
+            .FirstOrDefault(c => c.CurrencyIsoCode == temp.CurrencyIsoCode);
     }
 }

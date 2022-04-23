@@ -16,7 +16,12 @@ internal class CurrencyConverter : JsonConverter<ICurrency>
 
 internal class LegacyCurrencyConverter : Newtonsoft.Json.JsonConverter<ICurrency>
 {
-    public override ICurrency ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, ICurrency existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
+    public override ICurrency ReadJson(
+        Newtonsoft.Json.JsonReader reader,
+        Type objectType,
+        ICurrency existingValue,
+        bool hasExistingValue,
+        Newtonsoft.Json.JsonSerializer serializer)
         => Currency.FromIsoCode(reader.ReadAsString());
 
     public override void WriteJson(Newtonsoft.Json.JsonWriter writer, ICurrency value, Newtonsoft.Json.JsonSerializer serializer)

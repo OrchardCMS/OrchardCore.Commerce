@@ -20,7 +20,8 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             .Location("Detail", "Content:20")
             .Location("Summary", "Meta:5");
 
-    public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) => Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, part));
+    public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) =>
+        Initialize<ProductPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, part));
 
     public override async Task<IDisplayResult> UpdateAsync(ProductPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {

@@ -46,8 +46,9 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
                         reader.Read();
                         if (reader.TokenType != JsonTokenType.PropertyName) continue;
                         var attributeName = reader.GetString();
-                        var value = JsonSerializer.Deserialize<RawProductAttributeValue>(ref reader)
-                                    ?? new RawProductAttributeValue(null); // It looks like a .NET Core bug that I have to do that, but whatevs. It's for "perf", or so Fowler tells me.
+                        // It looks like a .NET Core bug that I have to do that, but whatevs. It's for "perf", or so Fowler tells me.
+                        var value = JsonSerializer.Deserialize<RawProductAttributeValue>(ref reader) ??
+                            new RawProductAttributeValue(value: null);
                         value.SetAttributeName(attributeName);
                         attributes.Add(value);
                     }

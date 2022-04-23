@@ -66,7 +66,8 @@ public partial struct Currency : ICurrency
 
     public static ICurrency UnspecifiedCurrency = new Currency("Unspecified", "Unspecified", "---", "---");
 
-    public bool Equals(ICurrency other) => other != null && CurrencyIsoCode.Equals(other.CurrencyIsoCode, StringComparison.InvariantCultureIgnoreCase);
+    public bool Equals(ICurrency other) =>
+        other != null && CurrencyIsoCode.Equals(other.CurrencyIsoCode, StringComparison.InvariantCultureIgnoreCase);
 
     public override bool Equals(object obj) => obj != null && obj is ICurrency other && Equals(other);
 

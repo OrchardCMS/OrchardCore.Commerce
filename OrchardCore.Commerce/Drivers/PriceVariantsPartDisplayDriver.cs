@@ -17,7 +17,9 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     private readonly IMoneyService _moneyService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
 
-    public PriceVariantsPartDisplayDriver(IMoneyService moneyService, IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService)
+    public PriceVariantsPartDisplayDriver(
+        IMoneyService moneyService,
+        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService)
     {
         _moneyService = moneyService;
         _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;

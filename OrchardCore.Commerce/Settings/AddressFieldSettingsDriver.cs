@@ -9,7 +9,9 @@ namespace OrchardCore.Commerce.Settings;
 public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<AddressField>
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model)
-        => Initialize("AddressFieldSettings_Edit", (System.Action<AddressPartFieldSettings>)(model => model.PopulateSettings<AddressPartFieldSettings>(model)))
+        => Initialize(
+            "AddressFieldSettings_Edit",
+            (System.Action<AddressPartFieldSettings>)(model => model.PopulateSettings<AddressPartFieldSettings>(model)))
             .Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)

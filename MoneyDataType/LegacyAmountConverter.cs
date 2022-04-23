@@ -15,7 +15,12 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
     private const string Iso = "iso";
     private const string Dec = "dec";
 
-    public override Amount ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, Amount existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
+    public override Amount ReadJson(
+        Newtonsoft.Json.JsonReader reader,
+        Type objectType,
+        Amount existingValue,
+        bool hasExistingValue,
+        Newtonsoft.Json.JsonSerializer serializer)
     {
         var val = default(decimal);
         ICurrency currency = null;

@@ -27,7 +27,10 @@ internal static class KnownCurrencyTable
     {
         lock (_obj)
         {
-            bool Valid(CultureInfo c) => !c.IsNeutralCulture && !c.EnglishName.StartsWith("Unknown Locale") && !c.EnglishName.StartsWith("Invariant Language");
+            bool Valid(CultureInfo c) =>
+                !c.IsNeutralCulture &&
+                !c.EnglishName.StartsWith("Unknown Locale") &&
+                !c.EnglishName.StartsWith("Invariant Language");
 
             CurrencyTable = CultureInfo.GetCultures(CultureTypes.AllCultures)
                 .Where(Valid)

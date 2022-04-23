@@ -15,7 +15,10 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 
     public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider) => _addressFormatterProvider = addressFormatterProvider;
 
-    public override IDisplayResult Edit(AddressField field, BuildFieldEditorContext context) => Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, field, context));
+    public override IDisplayResult Edit(
+        AddressField field,
+        BuildFieldEditorContext context) =>
+        Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, field, context));
 
     private Task BuildViewModel(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
     {
