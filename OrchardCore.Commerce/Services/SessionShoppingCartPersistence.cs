@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class SessionShoppingCartPersistence : IShoppingCartPersistence
 {
-    const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart:";
+    private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart:";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;

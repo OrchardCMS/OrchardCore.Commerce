@@ -5,7 +5,7 @@ using Money.Abstractions;
 
 namespace Money;
 
-partial struct Currency
+public partial struct Currency
 {
     public static ICurrency GetByIsoCode(string isoCode) => _defaultProvider.GetCurrency(isoCode);
 

@@ -11,7 +11,7 @@ namespace OrchardCore.Commerce.Migrations;
 /// </summary>
 public class ProductMigrations : DataMigration
 {
-    readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public ProductMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
 

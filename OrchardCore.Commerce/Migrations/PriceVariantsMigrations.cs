@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Migrations;
 /// </summary>
 public class PriceVariantsMigrations : DataMigration
 {
-    readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public PriceVariantsMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
 
