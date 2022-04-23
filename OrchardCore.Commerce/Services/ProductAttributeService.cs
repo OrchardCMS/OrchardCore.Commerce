@@ -58,6 +58,7 @@ namespace OrchardCore.Commerce.Services
             => product.OfType<ContentPart>()
                 .SelectMany(parts => parts.OfType<ProductAttributeField>())
                 .Select(t => t.GetType())
+                .Distinct()
                 .ToDictionary(t => t.Name);
 
         private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field)
