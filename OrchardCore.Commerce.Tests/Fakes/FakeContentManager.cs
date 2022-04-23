@@ -33,14 +33,14 @@ public class FakeContentManager : IContentManager
 
     public Task<ContentItem> NewAsync(string contentType) => throw new NotImplementedException();
 
-    public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
+    public Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
     {
         if (typeof(TAspect) != typeof(ContentItemMetadata)) throw new NotImplementedException();
         var metadata = new ContentItemMetadata
         {
             DisplayRouteValues = new RouteValueDictionary(),
         };
-        return await Task.FromResult((TAspect)(object)metadata);
+        return Task.FromResult((TAspect)(object)metadata);
     }
 
     public Task PublishAsync(ContentItem contentItem) => throw new NotImplementedException();

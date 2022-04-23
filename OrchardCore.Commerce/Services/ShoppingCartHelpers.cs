@@ -135,8 +135,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return cart.With(newCartItems);
     }
 
-    public async Task<string> Serialize(ShoppingCart cart)
-        => await Task.FromResult(JsonSerializer.Serialize(cart));
+    public Task<string> Serialize(ShoppingCart cart)
+        => Task.FromResult(JsonSerializer.Serialize(cart));
 
     private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products)
         => products

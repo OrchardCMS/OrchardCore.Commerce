@@ -90,8 +90,8 @@ public class ShoppingCartController : Controller
     }
 
     [HttpGet]
-    public async Task<ShoppingCart> Get(string shoppingCartId = null)
-        => await _shoppingCartPersistence.Retrieve(shoppingCartId);
+    public Task<ShoppingCart> Get(string shoppingCartId = null)
+        => _shoppingCartPersistence.Retrieve(shoppingCartId);
 
     [HttpPost]
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
