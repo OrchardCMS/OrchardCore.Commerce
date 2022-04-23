@@ -8,8 +8,7 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageCommerceSettings = new("ManageCommerceSettings", "Manage Commerce Settings");
 
-    public IEnumerable<Permission> GetPermissions()
-        => new[] { ManageCommerceSettings };
+    public IEnumerable<Permission> GetPermissions() => new[] { ManageCommerceSettings };
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(GetPermissions());

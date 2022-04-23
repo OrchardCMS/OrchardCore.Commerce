@@ -1,4 +1,3 @@
-using System.Linq;
 using Money;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
