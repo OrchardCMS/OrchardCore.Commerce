@@ -1,10 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Serialization;
 
@@ -21,24 +22,24 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
         string sku = null;
         ISet<IProductAttributeValue> attributes = null;
         IList<PrioritizedPrice> prices = null;
-        while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
+
+        foreach (var (propertyName, value) in JsonNode.Parse(ref reader)!.AsObject())
         {
-            var propertyName = reader.GetString();
-            if (!reader.Read()) continue;
+            if (value is null) continue;
 
             switch (propertyName)
             {
                 case QuantityName:
-                    quantity = reader.GetInt32();
+                    quantity = value.GetValue<int>();
                     break;
                 case SkuName:
-                    sku = reader.GetString();
+                    sku = value.GetValue<string>();
                     break;
                 case PricesName:
-                    prices = JsonSerializer.Deserialize<List<PrioritizedPrice>>(ref reader);
+                    prices = value.Deserialize<List<PrioritizedPrice>>();
                     break;
                 case AttributesName:
-                    attributes = ReadAttributeName(reader);
+                    attributes = ReadAttributeName(value);
                     break;
                 default:
                     throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
@@ -75,19 +76,18 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
         writer.WriteEndObject();
     }
 
-    private static HashSet<IProductAttributeValue> ReadAttributeName(Utf8JsonReader reader)
+    private static HashSet<IProductAttributeValue> ReadAttributeName(JsonNode node)
     {
         var attributes = new HashSet<IProductAttributeValue>();
-        while (reader.TokenType != JsonTokenType.EndObject)
+        if (node is not JsonObject jsonObject) return attributes;
+
+        foreach (var (name, value) in jsonObject)
         {
-            reader.Read();
-            if (reader.TokenType != JsonTokenType.PropertyName) continue;
-            var attributeName = reader.GetString();
-            // It looks like a .NET Core bug that I have to do that, but whatevs. It's for "perf", or so Fowler tells me.
-            var value = JsonSerializer.Deserialize<RawProductAttributeValue>(ref reader) ??
-                new RawProductAttributeValue(value: null);
-            value.SetAttributeName(attributeName);
-            attributes.Add(value);
+            if (value?.Deserialize<RawProductAttributeValue>() is { } attribute)
+            {
+                attribute.SetAttributeName(name);
+                attributes.Add(attribute);
+            }
         }
 
         return attributes;
