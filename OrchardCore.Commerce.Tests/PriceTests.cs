@@ -87,9 +87,6 @@ public class PriceTests
 
         public DummyProductService(params ProductPart[] products) => _products = products.ToDictionary(p => p.Sku);
 
-        public Task<ProductPart> GetProductAsync(string sku)
-            => Task.FromResult(_products[sku]);
-
         public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
             => Task.FromResult(skus.Select(sku => _products[sku]));
     }

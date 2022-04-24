@@ -13,8 +13,16 @@ public interface IShoppingCartHelpers
     Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart);
     Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line);
     ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
-    Task<ShoppingCart> DeserializeAsync(string serializedCart);
+
+    /// <summary>
+    /// Returns a JSON serialized <see langword="string"/> of <paramref name="cart"/>.
+    /// </summary>
     Task<string> SerializeAsync(ShoppingCart cart);
+
+    /// <summary>
+    /// Returns a deserialized object from JSON string <paramref name="serializedCart"/>.
+    /// </summary>
+    Task<ShoppingCart> DeserializeAsync(string serializedCart);
 
     /// <summary>
     /// Validates and updates the <paramref name="parsedLine"/>. If fails sends notification and returns <see

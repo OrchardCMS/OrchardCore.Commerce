@@ -12,31 +12,10 @@ public class PredefinedValuesProductAttributeService : IPredefinedValuesProductA
     public PredefinedValuesProductAttributeService(IProductAttributeService productAttributeService) =>
         _productAttributeService = productAttributeService;
 
-    public IEnumerable<IEnumerable<object>> GetProductAttributesPredefinedValues(ContentItem product)
-        => GetProductAttributesRestrictedToPredefinedValues(product)
-            .Select(x => (x.Settings as IPredefinedValuesProductAttributeFieldSettings).PredefinedValues.ToList())
-            .ToList();
-
-    public IEnumerable<string> GetProductAttributesCombinations(ContentItem product)
-        => CartesianProduct(GetProductAttributesPredefinedValues(product))
-            .Select(x => string.Join("-", x));
-
-    private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
-    {
-        IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };
-        return sequences.Aggregate(
-            emptyProduct,
-            (accumulator, sequence) =>
-                from accseq in accumulator
-                from item in sequence
-                select accseq.Concat(new[] { item })
-        );
-    }
-
     public IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product)
         => _productAttributeService
             .GetProductAttributeFields(product)
-            .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings textSettings && textSettings.RestrictToPredefinedValues)
+            .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings { RestrictToPredefinedValues: true })
             .OrderBy(x => x.PartName)
             .ThenBy(x => x.Name);
 }

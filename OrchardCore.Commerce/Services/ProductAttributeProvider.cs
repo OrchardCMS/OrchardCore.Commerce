@@ -17,27 +17,22 @@ public class ProductAttributeProvider : IProductAttributeProvider
     {
         string attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
         string name = partDefinition.Name + "." + attributeFieldDefinition.Name;
-        switch (attributeFieldTypeName)
+        return attributeFieldTypeName switch
         {
-            case nameof(BooleanProductAttributeField):
-                return new BooleanProductAttributeValue(name, value.GetBoolean());
-            case nameof(NumericProductAttributeField):
-                if (value.TryGetDecimal(out decimal decimalValue))
-                {
-                    return new NumericProductAttributeValue(name, decimalValue);
-                }
-
-                return new NumericProductAttributeValue(name, value: null);
-            case nameof(TextProductAttributeField):
-                return value.ValueKind switch
-                {
-                    JsonValueKind.String => new TextProductAttributeValue(name, value.GetString()),
-                    JsonValueKind.Array => new TextProductAttributeValue(name, value.EnumerateArray().Select(el => el.GetString())),
-                    _ => new TextProductAttributeValue(name, values: null),
-                };
-            default:
-                return null;
-        }
+            nameof(BooleanProductAttributeField) => new BooleanProductAttributeValue(name, value.GetBoolean()),
+            nameof(NumericProductAttributeField) => value.TryGetDecimal(out decimal decimalValue)
+                ? new NumericProductAttributeValue(name, decimalValue)
+                : new NumericProductAttributeValue(name, value: null),
+            nameof(TextProductAttributeField) => value.ValueKind switch
+            {
+                JsonValueKind.String => new TextProductAttributeValue(name, value.GetString()),
+                JsonValueKind.Array => new TextProductAttributeValue(
+                    name,
+                    value.EnumerateArray().Select(el => el.GetString())),
+                _ => new TextProductAttributeValue(name, values: null),
+            },
+            _ => null,
+        };
     }
 
     public IProductAttributeValue Parse(

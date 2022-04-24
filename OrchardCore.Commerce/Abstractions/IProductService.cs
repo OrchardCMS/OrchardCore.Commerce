@@ -5,10 +5,24 @@ using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Abstractions;
 
+/// <summary>
+/// Service for working with <see cref="ProductPart"/>.
+/// </summary>
 public interface IProductService
 {
-    Task<ProductPart> GetProductAsync(string sku);
+    /// <summary>
+    /// Returns the products that have the provided SKUs.
+    /// </summary>
     Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus);
-    async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(IEnumerable<string> skus)
-        => (await GetProductsAsync(skus)).ToDictionary(product => product.Sku);
+}
+
+public static class ProductServiceExtensions
+{
+    public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku) =>
+        (await service.GetProductsAsync(new[] { sku })).FirstOrDefault();
+
+    public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(
+        this IProductService service,
+        IEnumerable<string> skus) =>
+        (await service.GetProductsAsync(skus)).ToDictionary(product => product.Sku);
 }

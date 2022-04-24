@@ -43,11 +43,11 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         T = localizer;
     }
 
-    public ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line)
-        => cart.Lines.FirstOrDefault(i => IsSameProductAs(i, line));
+    public ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line) =>
+        cart.Lines.FirstOrDefault(i => IsSameProductAs(i, line));
 
-    public bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other)
-        => other.ProductSku == line.ProductSku
+    public bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other) =>
+        other.ProductSku == line.ProductSku
            && (
                ((line.Attributes is null || line.Attributes.Count == 0) && (other.Attributes is null || other.Attributes.Count == 0))
                || (line.Attributes.Count == other.Attributes.Count && !line.Attributes.Except(other.Attributes).Any())
@@ -139,8 +139,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return cart.With(newCartItems);
     }
 
-    public Task<string> SerializeAsync(ShoppingCart cart)
-        => Task.FromResult(JsonSerializer.Serialize(cart));
+    public Task<string> SerializeAsync(ShoppingCart cart) => Task.FromResult(JsonSerializer.Serialize(cart));
 
     private List<ShoppingCartItem> PostProcessAttributes(ShoppingCart cart, Dictionary<string, ProductPart> products)
     {
