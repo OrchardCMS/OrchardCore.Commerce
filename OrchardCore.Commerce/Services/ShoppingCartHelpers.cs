@@ -44,14 +44,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     }
 
     public ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line) =>
-        cart.Lines.FirstOrDefault(i => IsSameProductAs(i, line));
-
-    public bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other) =>
-        other.ProductSku == line.ProductSku
-           && (
-               ((line.Attributes is null || line.Attributes.Count == 0) && (other.Attributes is null || other.Attributes.Count == 0))
-               || (line.Attributes.Count == other.Attributes.Count && !line.Attributes.Except(other.Attributes).Any())
-           );
+        cart.Lines.FirstOrDefault(i => ShoppingCartLineViewModel.IsSameProductAs(i, line));
 
     public async Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart)
     {

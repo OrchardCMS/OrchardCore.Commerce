@@ -6,12 +6,29 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Commerce.Abstractions;
 
+/// <summary>
+/// A service to work with shopping cart data.
+/// </summary>
 public interface IShoppingCartHelpers
 {
+    /// <summary>
+    /// Returns the first line in <paramref name="cart"/> that has the product that <paramref name="line"/> refers to.
+    /// </summary>
     ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line);
-    bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other);
+
+    /// <summary>
+    /// Builds the <see cref="ShoppingCart"/> from the provided update model.
+    /// </summary>
     Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart);
+
+    /// <summary>
+    /// Builds a single <see cref="ShoppingCartItem"/> from the provided update model.
+    /// </summary>
     Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line);
+
+    /// <summary>
+    /// Returns a set of attribute values using the available <see cref="IProductAttributeProvider"/>s.
+    /// </summary>
     ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
 
     /// <summary>
