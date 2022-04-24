@@ -1,5 +1,6 @@
 using Money;
 using Money.Abstractions;
+using System;
 using Xunit;
 
 using static Money.Currency;
@@ -19,7 +20,7 @@ public class CurrencyTests
             { CanadianDollar, 1234.56m, "$1,234.56" },
             { SwissFranc, 1234.56m, "CHF 1’234.56" },
             { ChineseYuan, 1234.56m, "¥1,234.56" },
-            { new Currency("My FOO", "My FOO", "f", "FOO"), 1234.56m, $"(FOO) {1234.56m:N}" },
+            { new Currency("My FOO", "My FOO", "f", "FOO"), 1234.56m, FormattableString.Invariant($"(FOO) {1234.56m:N}") },
         };
 
     [Theory]
