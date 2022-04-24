@@ -15,4 +15,12 @@ public interface IShoppingCartHelpers
     ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
     Task<ShoppingCart> DeserializeAsync(string serializedCart);
     Task<string> SerializeAsync(ShoppingCart cart);
+
+    /// <summary>
+    /// Validates and updates the <paramref name="parsedLine"/>. If fails sends notification and returns <see
+    /// langword="null"/>.
+    /// </summary>
+    Task<ShoppingCartItem> ValidateParsedCartLineAsync(
+        ShoppingCartLineUpdateModel line,
+        ShoppingCartItem parsedLine);
 }

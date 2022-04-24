@@ -15,7 +15,8 @@ public class ShoppingCart
     /// </summary>
     public IList<ShoppingCartItem> Items { get; }
 
-    public ShoppingCart() : this(items: null) { }
+    public ShoppingCart()
+        : this(items: null) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
@@ -30,7 +31,8 @@ public class ShoppingCart
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
     /// </summary>
     /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
-    public ShoppingCart(params ShoppingCartItem[] items) : this((IList<ShoppingCartItem>)items) { }
+    public ShoppingCart(params ShoppingCartItem[] items)
+        : this((IList<ShoppingCartItem>)items) { }
 
     /// <summary>
     /// Gets the number of lines in the cart.
@@ -97,7 +99,10 @@ public class ShoppingCart
             Items.Remove(Items[existingIndex]);
             Items.Insert(existingIndex, item.WithPrices(prices));
         }
-        else throw new InvalidOperationException("Can't set prices on a product that's not in the cart.");
+        else
+        {
+            throw new InvalidOperationException($"Can't set {nameof(prices)} on a product that's not in the cart.");
+        }
     }
 
     /// <summary>
@@ -116,5 +121,4 @@ public class ShoppingCart
 
         return -1;
     }
-
 }

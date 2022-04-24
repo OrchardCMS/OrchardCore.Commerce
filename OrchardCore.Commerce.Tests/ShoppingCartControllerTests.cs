@@ -161,14 +161,15 @@ public class ShoppingCartControllerTests
                 attributeProviders: new[] { new ProductAttributeProvider() },
                 productService: new FakeProductService(),
                 moneyService: new TestMoneyService(),
-                contentDefinitionManager: new FakeContentDefinitionManager()
+                contentDefinitionManager: new FakeContentDefinitionManager(),
+                priceService: new FakePriceService(),
+                notifier: null,
+                localizer: null
             ),
             productService: new FakeProductService(),
             priceService: new FakePriceService(),
             priceStrategy: new SimplePriceStrategy(),
             contentManager: new FakeContentManager(),
-            workflowManager: null,
-            notifier: null,
-            localizer: null
+            workflowManager: null
         );
 }

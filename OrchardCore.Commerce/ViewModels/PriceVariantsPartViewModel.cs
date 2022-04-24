@@ -9,8 +9,8 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class PriceVariantsPartViewModel
 {
-    public Dictionary<string, decimal?> VariantsValues { get; set; }
-    public Dictionary<string, string> VariantsCurrencies { get; set; }
+    public IDictionary<string, decimal?> VariantsValues { get; set; }
+    public IDictionary<string, string> VariantsCurrencies { get; set; }
 
     public IEnumerable<ICurrency> Currencies { get; set; }
 

@@ -164,10 +164,7 @@ public class ProductAttributeTests
     [Fact]
     public void ProductAttributeServiceCanFindAttributesOnProducts()
     {
-        var productAttributeService = new ProductAttributeService(
-            attributeProviders: null,
-            new FakeContentDefinitionManager(),
-            cache: null);
+        var productAttributeService = new ProductAttributeService(new FakeContentDefinitionManager());
         var product = new ContentItem { ContentType = "Product" };
         var productPart1 = new ContentPart();
         var boolProductAttribute = new BooleanProductAttributeField();

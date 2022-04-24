@@ -1,15 +1,13 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Workflows.Services;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -22,8 +20,6 @@ public class ShoppingCartController : Controller
     private readonly IPriceSelectionStrategy _priceStrategy;
     private readonly IContentManager _contentManager;
     private readonly IWorkflowManager _workflowManager;
-    private readonly INotifier _notifier;
-    private readonly IHtmlLocalizer _h;
 
     public ShoppingCartController(
         IShoppingCartPersistence shoppingCartPersistence,
@@ -32,9 +28,7 @@ public class ShoppingCartController : Controller
         IPriceService priceService,
         IPriceSelectionStrategy priceStrategy,
         IContentManager contentManager,
-        IWorkflowManager workflowManager,
-        INotifier notifier,
-        IHtmlLocalizer<ShoppingCartController> localizer)
+        IWorkflowManager workflowManager)
     {
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartHelpers = shoppingCartHelpers;
@@ -43,8 +37,6 @@ public class ShoppingCartController : Controller
         _priceStrategy = priceStrategy;
         _contentManager = contentManager;
         _workflowManager = workflowManager;
-        _notifier = notifier;
-        _h = localizer;
     }
 
     [HttpGet]
@@ -81,6 +73,7 @@ public class ShoppingCartController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
         var parsedCart = await _shoppingCartHelpers.ParseCartAsync(cart);
@@ -93,21 +86,14 @@ public class ShoppingCartController : Controller
         => _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartHelpers.ParseCartLineAsync(line);
-        if (parsedLine is null)
-        {
-            await _notifier.AddAsync(NotifyType.Error, _h["Product with SKU {0} not found.", line.ProductSku]);
-            return RedirectToAction(nameof(Index), new { shoppingCartId });
-        }
+        var parsedLine = await _shoppingCartHelpers.ValidateParsedCartLineAsync(
+            line,
+            await _shoppingCartHelpers.ParseCartLineAsync(line));
 
-        parsedLine = (await _priceService.AddPricesAsync(new[] { parsedLine })).Single();
-        if (!parsedLine.Prices.Any())
-        {
-            await _notifier.AddAsync(NotifyType.Error, _h["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
-            return RedirectToAction(nameof(Index), new { shoppingCartId });
-        }
+        if (parsedLine == null) return RedirectToAction(nameof(Index), new { shoppingCartId });
 
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         cart.AddItem(parsedLine);
@@ -127,6 +113,7 @@ public class ShoppingCartController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<ActionResult> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
         var parsedLine = await _shoppingCartHelpers.ParseCartLineAsync(line);

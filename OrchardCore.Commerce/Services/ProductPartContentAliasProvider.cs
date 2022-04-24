@@ -20,7 +20,7 @@ public class ProductPartContentAliasProvider : IContentHandleProvider
     {
         if (handle.StartsWith("sku:", System.StringComparison.OrdinalIgnoreCase))
         {
-            var sku = handle[4..].ToLowerInvariant();
+            var sku = handle[4..].ToUpperInvariant();
 
             var productPartIndex = await _session
                 .Query<ContentItem, ProductPartIndex>(x => x.Sku == sku)

@@ -33,7 +33,7 @@ public class ProductPartIndexProvider : IndexProvider<ContentItem>
 
                 return new ProductPartIndex
                 {
-                    Sku = productPart.Sku.ToLowerInvariant(),
+                    Sku = productPart.Sku.ToUpperInvariant(),
                     ContentItemId = contentItem.ContentItemId,
                 };
             });

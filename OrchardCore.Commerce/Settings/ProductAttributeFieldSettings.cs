@@ -41,7 +41,6 @@ public class BooleanProductAttributeFieldSettings : ProductAttributeFieldSetting
 /// </summary>
 public class NumericProductAttributeFieldSettings : ProductAttributeFieldSettings<decimal?>
 {
-
     /// <summary>
     /// Gets or sets a value indicating whether a value is required.
     /// </summary>

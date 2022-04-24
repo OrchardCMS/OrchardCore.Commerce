@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Settings;
@@ -14,19 +13,10 @@ namespace OrchardCore.Commerce.Services;
 
 public class ProductAttributeService : IProductAttributeService
 {
-    private readonly IEnumerable<IProductAttributeProvider> _attributeProviders;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IMemoryCache _cache;
 
-    public ProductAttributeService(
-        IEnumerable<IProductAttributeProvider> attributeProviders,
-        IContentDefinitionManager contentDefinitionManager,
-        IMemoryCache cache)
-    {
-        _attributeProviders = attributeProviders;
+    public ProductAttributeService(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
-        _cache = cache;
-    }
 
     public IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product)
     {
@@ -64,9 +54,9 @@ public class ProductAttributeService : IProductAttributeService
     private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field) =>
         field
             ?.GetType()
-            ?.GetMethod(
-                // Using that type parameter arbitrarily, any one of the concrete attribute settings types would have done.
+            // Using that type parameter arbitrarily, any one of the concrete attribute settings types would have done.
+            .GetMethod(
                 nameof(ProductAttributeField<TextProductAttributeFieldSettings>.GetSettings),
                 BindingFlags.Instance | BindingFlags.Public)
-            ?.Invoke(field, new[] { partFieldDefinition }) as ProductAttributeFieldSettings;
+            ?.Invoke(field, new object[] { partFieldDefinition }) as ProductAttributeFieldSettings;
 }

@@ -33,7 +33,10 @@ public class SerializationTests
             attributeProviders: new[] { new ProductAttributeProvider() },
             productService: new FakeProductService(),
             moneyService: new TestMoneyService(),
-            contentDefinitionManager: new FakeContentDefinitionManager());
+            contentDefinitionManager: new FakeContentDefinitionManager(),
+            priceService: null,
+            notifier: null,
+            localizer: null);
         string serialized = await helpers.SerializeAsync(cart);
         var deserialized = await helpers.DeserializeAsync(serialized);
 

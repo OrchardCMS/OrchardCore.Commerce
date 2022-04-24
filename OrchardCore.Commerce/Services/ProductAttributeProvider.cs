@@ -29,16 +29,12 @@ public class ProductAttributeProvider : IProductAttributeProvider
 
                 return new NumericProductAttributeValue(name, value: null);
             case nameof(TextProductAttributeField):
-                switch (value.ValueKind)
+                return value.ValueKind switch
                 {
-                    case JsonValueKind.String:
-                        return new TextProductAttributeValue(name, value.GetString());
-                    case JsonValueKind.Array:
-                        return new TextProductAttributeValue(name, value.EnumerateArray().Select(el => el.GetString()));
-                    default:
-                        return new TextProductAttributeValue(name, values: null);
-                }
-
+                    JsonValueKind.String => new TextProductAttributeValue(name, value.GetString()),
+                    JsonValueKind.Array => new TextProductAttributeValue(name, value.EnumerateArray().Select(el => el.GetString())),
+                    _ => new TextProductAttributeValue(name, values: null),
+                };
             default:
                 return null;
         }

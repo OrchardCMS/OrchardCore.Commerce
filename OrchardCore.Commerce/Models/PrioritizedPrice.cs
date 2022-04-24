@@ -1,7 +1,8 @@
-using System.Diagnostics;
-using System.Text.Json.Serialization;
 using Money;
 using OrchardCore.Commerce.Serialization;
+using System;
+using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Models;
 
@@ -28,5 +29,5 @@ public class PrioritizedPrice
         Price = price;
     }
 
-    private string DebuggerDisplay => $"{Price} ^{Priority}";
+    private string DebuggerDisplay => FormattableString.Invariant($"{Price} ^{Priority}");
 }

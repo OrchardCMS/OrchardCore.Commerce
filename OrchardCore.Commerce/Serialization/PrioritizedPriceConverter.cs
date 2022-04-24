@@ -16,10 +16,8 @@ internal class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
         var priority = int.MinValue;
         var amount = new Amount(0, Currency.UnspecifiedCurrency);
 
-        while (reader.Read())
+        while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
-            if (reader.TokenType != JsonTokenType.PropertyName) break;
-
             var propertyName = reader.GetString();
             if (!reader.Read()) continue;
 
@@ -31,6 +29,8 @@ internal class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
                 case AmountName:
                     amount = JsonSerializer.Deserialize<Amount>(ref reader);
                     break;
+                default:
+                    throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
             }
         }
 

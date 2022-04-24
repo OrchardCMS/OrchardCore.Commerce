@@ -1,14 +1,17 @@
+using Microsoft.AspNetCore.Mvc.Localization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Serialization;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -18,17 +21,26 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IProductService _productService;
     private readonly IMoneyService _moneyService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IPriceService _priceService;
+    private readonly INotifier _notifier;
+    private readonly IHtmlLocalizer<ShoppingCartController> T;
 
     public ShoppingCartHelpers(
         IEnumerable<IProductAttributeProvider> attributeProviders,
         IProductService productService,
         IMoneyService moneyService,
-        IContentDefinitionManager contentDefinitionManager)
+        IContentDefinitionManager contentDefinitionManager,
+        IPriceService priceService,
+        INotifier notifier,
+        IHtmlLocalizer<ShoppingCartController> localizer)
     {
         _attributeProviders = attributeProviders;
         _productService = productService;
         _moneyService = moneyService;
         _contentDefinitionManager = contentDefinitionManager;
+        _priceService = priceService;
+        _notifier = notifier;
+        T = localizer;
     }
 
     public ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line)
@@ -61,6 +73,26 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         if (product is null) return null;
         var type = GetTypeDefinition(product);
         var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
+        return parsedLine;
+    }
+
+    public async Task<ShoppingCartItem> ValidateParsedCartLineAsync(
+        ShoppingCartLineUpdateModel line,
+        ShoppingCartItem parsedLine)
+    {
+        if (parsedLine is null)
+        {
+            await _notifier.AddAsync(NotifyType.Error, T["Product with SKU {0} not found.", line.ProductSku]);
+            return null;
+        }
+
+        parsedLine = (await _priceService.AddPricesAsync(new[] { parsedLine })).Single();
+        if (!parsedLine.Prices.Any())
+        {
+            await _notifier.AddAsync(NotifyType.Error, T["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
+            return null;
+        }
+
         return parsedLine;
     }
 

@@ -16,6 +16,8 @@ public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<s
     public override string Display(CultureInfo culture = null) =>
         Value is null || !Value.Any() || Value.First() is null ? string.Empty : FieldName + ": " + string.Join(", ", Value);
 
+    public override bool Equals(object obj) => base.Equals(obj);
+
     public override bool Equals(IProductAttributeValue<IEnumerable<string>> other) =>
         other == null || other.Value == null || !other.Value.Any()
             ? Value == null || !Value.Any()
@@ -25,7 +27,6 @@ public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<s
         => Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
 
     public override string ToString() => AttributeName + ": " + string.Join(", ", Value);
-    public override bool Equals(object obj) => base.Equals(obj);
 
     public object UntypedPredefinedValue => PredefinedValue;
 

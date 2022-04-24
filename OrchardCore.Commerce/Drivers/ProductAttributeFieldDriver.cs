@@ -12,7 +12,7 @@ public abstract class ProductAttributeFieldDriver<TField, TFieldSettings> : Cont
     where TField : ProductAttributeField, new()
     where TFieldSettings : ProductAttributeFieldSettings, new()
 {
-    public ProductAttributeFieldDriver(
+    protected ProductAttributeFieldDriver(
         IStringLocalizer<ProductAttributeFieldDriver<TField, TFieldSettings>> localizer) =>
         T = localizer;
 
