@@ -7,17 +7,17 @@ namespace OrchardCore.Commerce.Models;
 public class OrderPart : ContentPart
 {
     /// <summary>
-    /// Gets or sets the line items in this order.
+    /// Gets the line items in this order.
     /// </summary>
-    public IList<OrderLineItem> LineItems { get; set; }
+    public IList<OrderLineItem> LineItems { get; } = new List<OrderLineItem>();
 
     /// <summary>
-    /// Gets or sets additional costs such as taxes and shipping.
+    /// Gets additional costs such as taxes and shipping.
     /// </summary>
-    public IList<OrderAdditionalCost> AdditionalCosts { get; set; }
+    public IList<OrderAdditionalCost> AdditionalCosts { get; } = new List<OrderAdditionalCost>();
 
     /// <summary>
-    /// Gets or sets the amounts charged on this order. Typically a single credit card charge.
+    /// Gets the amounts charged on this order. Typically a single credit card charge.
     /// </summary>
-    public IList<IPayment> Charges { get; set; }
+    public IList<IPayment> Charges { get; } = new List<IPayment>();
 }

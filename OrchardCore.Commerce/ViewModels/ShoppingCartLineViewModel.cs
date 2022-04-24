@@ -13,5 +13,8 @@ public class ShoppingCartLineViewModel
     public string ProductImageUrl { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
-    public IDictionary<string, IProductAttributeValue> Attributes { get; set; }
+    public IDictionary<string, IProductAttributeValue> Attributes { get; }
+
+    public ShoppingCartLineViewModel(IDictionary<string, IProductAttributeValue> attributes = null) =>
+        Attributes ??= new Dictionary<string, IProductAttributeValue>();
 }

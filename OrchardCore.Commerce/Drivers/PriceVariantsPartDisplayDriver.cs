@@ -65,18 +65,21 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         model.PriceVariantsPart = part;
 
         var allVariantsKeys = _predefinedValuesProductAttributeService.GetProductAttributesCombinations(part.ContentItem);
-        model.Variants = part.Variants ?? new Dictionary<string, Amount>();
 
-        model.VariantsValues = allVariantsKeys.ToDictionary(
+        var variants = part.Variants ?? new Dictionary<string, Amount>();
+
+        var values = allVariantsKeys.ToDictionary(
             x => x,
             x => model.Variants.TryGetValue(x, out var amount)
                 ? new decimal?(amount.Value)
                 : null);
 
-        model.VariantsCurrencies = allVariantsKeys.ToDictionary(
+        var currencies = allVariantsKeys.ToDictionary(
             x => x,
             x => model.Variants.TryGetValue(x, out var amount)
                 ? amount.Currency.CurrencyIsoCode
                 : Currency.UnspecifiedCurrency.CurrencyIsoCode);
+
+        model.InitializeVariants(variants, values, currencies);
     }
 }

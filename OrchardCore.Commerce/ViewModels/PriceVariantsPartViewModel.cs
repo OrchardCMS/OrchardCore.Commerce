@@ -9,8 +9,8 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class PriceVariantsPartViewModel
 {
-    public IDictionary<string, decimal?> VariantsValues { get; set; }
-    public IDictionary<string, string> VariantsCurrencies { get; set; }
+    public IDictionary<string, decimal?> VariantsValues { get; private set; } = new Dictionary<string, decimal?>();
+    public IDictionary<string, string> VariantsCurrencies { get; private set; } = new Dictionary<string, string>();
 
     public IEnumerable<ICurrency> Currencies { get; set; }
 
@@ -21,5 +21,15 @@ public class PriceVariantsPartViewModel
     public PriceVariantsPart PriceVariantsPart { get; set; }
 
     [BindNever]
-    public IDictionary<string, Amount> Variants { get; set; }
+    public IDictionary<string, Amount> Variants { get; private set; } = new Dictionary<string, Amount>();
+
+    public void InitializeVariants(
+        IDictionary<string, Amount> variants,
+        IDictionary<string, decimal?> values,
+        IDictionary<string, string> currencies)
+    {
+        Variants = variants;
+        VariantsValues = values;
+        VariantsCurrencies = currencies;
+    }
 }

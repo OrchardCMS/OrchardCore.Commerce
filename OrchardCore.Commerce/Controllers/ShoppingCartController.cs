@@ -52,7 +52,8 @@ public class ShoppingCartController : Controller
             var product = products[item.ProductSku];
             var price = _priceStrategy.SelectPrice(item.Prices);
             var metaData = await _contentManager.GetContentItemMetadataAsync(product);
-            return new ShoppingCartLineViewModel
+            return new ShoppingCartLineViewModel(
+                attributes: item.Attributes.ToDictionary(attr => attr.AttributeName))
             {
                 Quantity = item.Quantity,
                 ProductSku = item.ProductSku,
@@ -60,13 +61,11 @@ public class ShoppingCartController : Controller
                 UnitPrice = price,
                 LinePrice = item.Quantity * price,
                 ProductUrl = Url.RouteUrl(metaData.DisplayRouteValues),
-                Attributes = item.Attributes.ToDictionary(attr => attr.AttributeName),
             };
         }));
-        var model = new ShoppingCartViewModel
+        var model = new ShoppingCartViewModel(lines)
         {
             Id = shoppingCartId,
-            Lines = lines,
             Totals = lines.GroupBy(l => l.LinePrice.Currency).Select(g => new Amount(g.Sum(l => l.LinePrice.Value), g.Key)),
         };
         return View(model);
