@@ -21,7 +21,7 @@ public class PredefinedValuesProductAttributeService : IPredefinedValuesProductA
         => CartesianProduct(GetProductAttributesPredefinedValues(product))
             .Select(x => string.Join("-", x));
 
-    private IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
+    private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
     {
         IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };
         return sequences.Aggregate(

@@ -36,9 +36,9 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
             viewModel.CurrencySelectionMode = settings.CurrencySelectionMode;
             viewModel.CurrencySelectionModes = new List<SelectListItem>
             {
-                new(CurrencySelectionModeEnum.AllCurrencies.ToString(), _s["All Currencies"]),
-                new(CurrencySelectionModeEnum.DefaultCurrency.ToString(), _s["Default Currency"]),
-                new(CurrencySelectionModeEnum.SpecificCurrency.ToString(), _s["Specific Currency"]),
+                new(CurrencySelectionMode.AllCurrencies.ToString(), _s["All Currencies"]),
+                new(CurrencySelectionMode.DefaultCurrency.ToString(), _s["Default Currency"]),
+                new(CurrencySelectionMode.SpecificCurrency.ToString(), _s["Specific Currency"]),
             };
             viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
             viewModel.Currencies = _moneyService.Currencies
@@ -64,7 +64,7 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
         context.Builder.WithSettings(new PricePartSettings
         {
             CurrencySelectionMode = viewModel.CurrencySelectionMode,
-            SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
+            SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionMode.SpecificCurrency
                     ? viewModel.SpecificCurrencyIsoCode
                     : null,
         });

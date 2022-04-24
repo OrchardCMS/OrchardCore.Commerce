@@ -54,7 +54,7 @@ public class ProductAttributeService : IProductAttributeService
             .Where(description => description.Field != null);
     }
 
-    private IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product)
+    private static IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product)
         => product.OfType<ContentPart>()
             .SelectMany(parts => parts.OfType<ProductAttributeField>())
             .Select(t => t.GetType())

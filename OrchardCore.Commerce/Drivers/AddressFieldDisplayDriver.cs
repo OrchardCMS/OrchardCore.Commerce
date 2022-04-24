@@ -18,19 +18,19 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     public override IDisplayResult Edit(
         AddressField field,
         BuildFieldEditorContext context) =>
-        Initialize<AddressFieldViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, field, context));
+        Initialize<AddressFieldViewModel>(GetEditorShapeType(context), model => BuildViewModelAsync(model, field, context));
 
-    private Task BuildViewModelAsync(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
+    private ValueTask BuildViewModelAsync(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
     {
         model.Address = field.Address;
-        model.AddressHtml
-            = new HtmlString(_addressFormatterProvider.Format(field.Address).Replace(System.Environment.NewLine, "<br/>"));
+        model.AddressHtml =
+            new HtmlString(_addressFormatterProvider.Format(field.Address).Replace(System.Environment.NewLine, "<br/>"));
         model.Regions = Regions.All;
-        model.Provinces = Regions.Provinces;
+        foreach (var (key, value) in Regions.Provinces) model.Provinces[key] = value;
         model.ContentItem = field.ContentItem;
         model.AddressPart = field;
         model.PartFieldDefinition = context.PartFieldDefinition;
 
-        return Task.CompletedTask;
+        return default;
     }
 }

@@ -45,7 +45,5 @@ public interface IMoneyService
     /// <summary>
     /// Returns a new Amount where the currency has been verified to be resolved, or resolved.
     /// </summary>
-    /// <param name="amount"></param>
-    /// <returns></returns>
     Amount EnsureCurrency(Amount amount);
 }

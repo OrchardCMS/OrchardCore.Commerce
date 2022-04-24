@@ -17,10 +17,11 @@ public class AddressFieldViewModel
     public HtmlString AddressHtml { get; set; }
 
     [BindNever]
-    public IList<RegionInfo> Regions { get; set; }
+    public IEnumerable<RegionInfo> Regions { get; set; }
 
     [BindNever]
-    public IDictionary<string, IDictionary<string, string>> Provinces { get; set; }
+    public IDictionary<string, IDictionary<string, string>> Provinces { get; } =
+        new Dictionary<string, IDictionary<string, string>>();
 
     [BindNever]
     public ContentItem ContentItem { get; set; }

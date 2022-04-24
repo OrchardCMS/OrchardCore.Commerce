@@ -47,7 +47,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var types = ExtractTypeDefinitions(products.Values);
         IList<ShoppingCartItem> parsedCart = cart.Lines
             .Where(l => l.Quantity > 0)
-            .Select(l => new ShoppingCartItem(l.Quantity, l.ProductSku,
+            .Select(l => new ShoppingCartItem(
+                l.Quantity,
+                l.ProductSku,
                 ParseAttributes(l, types[products[l.ProductSku].ContentItem.ContentType])
             )).ToList();
         return new ShoppingCart(parsedCart);
@@ -62,8 +64,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return parsedLine;
     }
 
-    public HashSet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type)
-        => new(
+    public ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type) =>
+        new HashSet<IProductAttributeValue>(
             line.Attributes is null ? Enumerable.Empty<IProductAttributeValue>() :
                 line.Attributes
                     .Select(attr =>
@@ -100,13 +102,24 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         // (deserialization being essentially non-polymorphic and without access to our type definition
         // contextual information).
         var products = await GetProductsAsync(cart.Items.Select(l => l.ProductSku));
+        var newCartItems = PostProcessAttributes(cart, products);
+
+        return cart.With(newCartItems);
+    }
+
+    public Task<string> SerializeAsync(ShoppingCart cart)
+        => Task.FromResult(JsonSerializer.Serialize(cart));
+
+    private List<ShoppingCartItem> PostProcessAttributes(ShoppingCart cart, Dictionary<string, ProductPart> products)
+    {
         var types = ExtractTypeDefinitions(products.Values);
         var newCartItems = new List<ShoppingCartItem>(cart.Count);
+
         foreach (var line in cart.Items)
         {
             if (line.Attributes is null) continue;
             var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
-            foreach (RawProductAttributeValue attr in line.Attributes)
+            foreach (var attr in line.Attributes.OfType<RawProductAttributeValue>())
             {
                 var product = products[line.ProductSku];
                 var type = types[product.ContentItem.ContentType];
@@ -118,7 +131,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                         .Select(provider => provider.CreateFromJsonElement(
                             attributePartDefinition,
                             attributeFieldDefinition,
-                            attr.Value is null ? default(JsonElement) : (JsonElement)attr.Value))
+                            attr.Value is JsonElement element ? element : default))
                         .FirstOrDefault(v => v != null);
                     attributes.Add(newAttr);
                 }
@@ -131,11 +144,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             newCartItems.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
         }
 
-        return cart.With(newCartItems);
+        return newCartItems;
     }
-
-    public Task<string> SerializeAsync(ShoppingCart cart)
-        => Task.FromResult(JsonSerializer.Serialize(cart));
 
     private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products)
         => products
@@ -149,7 +159,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private ContentTypeDefinition GetTypeDefinition(ProductPart product)
         => _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
 
-    private static (ContentTypePartDefinition, ContentPartFieldDefinition) GetFieldDefinition(
+    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition) GetFieldDefinition(
         ContentTypeDefinition type,
         string attributeName)
     {

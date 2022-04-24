@@ -2,6 +2,9 @@ using Money;
 
 namespace OrchardCore.Commerce.Abstractions;
 
+/// <summary>
+/// Describes a payment trasaction's details.
+/// </summary>
 public interface IPayment
 {
     /// <summary>

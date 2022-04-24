@@ -38,14 +38,12 @@ public class PriceProvider : IPriceProvider
                     var newPrices = product
                         .ContentItem
                         .OfType<PricePart>()
-                        .Where(pricePart => pricePart.Price.Currency == _moneyService.CurrentDisplayCurrency)
+                        .Where(pricePart => pricePart.Price.Currency.Equals(_moneyService.CurrentDisplayCurrency))
                         .Select(pricePart => new PrioritizedPrice(0, pricePart.Price));
                     return item.WithPrices(newPrices);
                 }
-                else
-                {
-                    return item;
-                }
+
+                return item;
             });
     }
 }

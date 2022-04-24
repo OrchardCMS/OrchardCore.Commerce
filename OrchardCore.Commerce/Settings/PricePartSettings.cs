@@ -7,6 +7,6 @@ namespace OrchardCore.Commerce.Settings;
 public class PricePartSettings
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public CurrencySelectionModeEnum CurrencySelectionMode { get; set; }
+    public CurrencySelectionMode CurrencySelectionMode { get; set; }
     public string SpecificCurrencyIsoCode { get; set; }
 }

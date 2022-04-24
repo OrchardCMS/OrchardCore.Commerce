@@ -26,14 +26,14 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
+        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
         Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), m =>
         {
-            BuildViewModelAsync(m, part);
+            BuildViewModel(m, part);
             m.Currencies = _moneyService.Currencies;
         });
 
@@ -45,19 +45,21 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             // Remove any content or the variants would be merged and not be cleared
             part.Content.Variants.RemoveAll();
 
-            part.Variants = updateModel.VariantsValues
-                .Where(x => x.Value.HasValue
-                            && updateModel.VariantsCurrencies?.ContainsKey(x.Key) == true
-                            && updateModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
-                .ToDictionary(
-                    x => x.Key,
-                    x => _moneyService.Create(x.Value.Value, updateModel.VariantsCurrencies[x.Key]));
+            foreach (var x in updateModel.VariantsValues)
+            {
+                if (x.Value.HasValue &&
+                    updateModel.VariantsCurrencies?.ContainsKey(x.Key) == true &&
+                    updateModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
+                {
+                    part.Variants[x.Key] = _moneyService.Create(x.Value.Value, updateModel.VariantsCurrencies[x.Key]);
+                }
+            }
         }
 
-        return Edit(part, context);
+        return await EditAsync(part, context);
     }
 
-    private Task BuildViewModelAsync(PriceVariantsPartViewModel model, PriceVariantsPart part)
+    private void BuildViewModel(PriceVariantsPartViewModel model, PriceVariantsPart part)
     {
         model.ContentItem = part.ContentItem;
         model.PriceVariantsPart = part;
@@ -76,7 +78,5 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             x => model.Variants.TryGetValue(x, out var amount)
                 ? amount.Currency.CurrencyIsoCode
                 : Currency.UnspecifiedCurrency.CurrencyIsoCode);
-
-        return Task.CompletedTask;
     }
 }

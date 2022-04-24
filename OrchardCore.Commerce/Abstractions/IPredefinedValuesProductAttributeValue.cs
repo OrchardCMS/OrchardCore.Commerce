@@ -5,7 +5,7 @@ public interface IPredefinedValuesProductAttributeValue : IProductAttributeValue
     public object UntypedPredefinedValue { get; }
 }
 
-public interface IPredefinedValuesProductAttributeValue<T> : IPredefinedValuesProductAttributeValue
+public interface IPredefinedValuesProductAttributeValue<out T> : IPredefinedValuesProductAttributeValue
 {
     public T PredefinedValue { get; }
 }

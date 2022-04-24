@@ -1,7 +1,11 @@
+using OrchardCore.Commerce.Fields;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Abstractions;
 
+/// <summary>
+/// Settings which contain a collection of pre-defined values to restrict a <see cref="ProductAttributeField"/>.
+/// </summary>
 public interface IPredefinedValuesProductAttributeFieldSettings
 {
     /// <summary>

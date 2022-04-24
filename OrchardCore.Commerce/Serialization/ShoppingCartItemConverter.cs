@@ -21,10 +21,8 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
         string sku = null;
         ISet<IProductAttributeValue> attributes = null;
         IList<PrioritizedPrice> prices = null;
-        while (reader.Read())
+        while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
-            if (reader.TokenType != JsonTokenType.PropertyName) break;
-
             var propertyName = reader.GetString();
             if (!reader.Read()) continue;
 
@@ -40,20 +38,10 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
                     prices = JsonSerializer.Deserialize<List<PrioritizedPrice>>(ref reader);
                     break;
                 case AttributesName:
-                    attributes = new HashSet<IProductAttributeValue>();
-                    while (reader.TokenType != JsonTokenType.EndObject)
-                    {
-                        reader.Read();
-                        if (reader.TokenType != JsonTokenType.PropertyName) continue;
-                        var attributeName = reader.GetString();
-                        // It looks like a .NET Core bug that I have to do that, but whatevs. It's for "perf", or so Fowler tells me.
-                        var value = JsonSerializer.Deserialize<RawProductAttributeValue>(ref reader) ??
-                            new RawProductAttributeValue(value: null);
-                        value.SetAttributeName(attributeName);
-                        attributes.Add(value);
-                    }
-
+                    attributes = ReadAttributeName(reader);
                     break;
+                default:
+                    throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
             }
         }
 
@@ -85,5 +73,23 @@ internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
         }
 
         writer.WriteEndObject();
+    }
+
+    private static HashSet<IProductAttributeValue> ReadAttributeName(Utf8JsonReader reader)
+    {
+        var attributes = new HashSet<IProductAttributeValue>();
+        while (reader.TokenType != JsonTokenType.EndObject)
+        {
+            reader.Read();
+            if (reader.TokenType != JsonTokenType.PropertyName) continue;
+            var attributeName = reader.GetString();
+            // It looks like a .NET Core bug that I have to do that, but whatevs. It's for "perf", or so Fowler tells me.
+            var value = JsonSerializer.Deserialize<RawProductAttributeValue>(ref reader) ??
+                new RawProductAttributeValue(value: null);
+            value.SetAttributeName(attributeName);
+            attributes.Add(value);
+        }
+
+        return attributes;
     }
 }

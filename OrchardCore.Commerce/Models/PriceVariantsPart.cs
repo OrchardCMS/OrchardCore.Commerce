@@ -9,5 +9,5 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class PriceVariantsPart : ContentPart
 {
-    public Dictionary<string, Amount> Variants { get; set; }
+    public IDictionary<string, Amount> Variants { get; } = new Dictionary<string, Amount>();
 }

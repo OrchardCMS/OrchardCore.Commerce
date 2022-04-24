@@ -12,7 +12,7 @@ public interface IShoppingCartHelpers
     bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other);
     Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart);
     Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line);
-    HashSet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
+    ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
     Task<ShoppingCart> DeserializeAsync(string serializedCart);
     Task<string> SerializeAsync(ShoppingCart cart);
 }

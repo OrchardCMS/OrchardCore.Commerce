@@ -8,17 +8,15 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageCommerceSettings = new("ManageCommerceSettings", "Manage Commerce Settings");
 
-    public IEnumerable<Permission> GetPermissions() => new[] { ManageCommerceSettings };
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(GetPermissions());
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => new[]
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() =>
+        Task.FromResult<IEnumerable<Permission>>(new[] { ManageCommerceSettings });
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+        new[]
         {
             new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions = new[] { ManageCommerceSettings },
-        }
+            {
+                Name = "Administrator",
+                Permissions = new[] { ManageCommerceSettings },
+            },
         };
 }

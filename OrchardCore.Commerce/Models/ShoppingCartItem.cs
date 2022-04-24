@@ -69,25 +69,20 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     /// <summary>
     /// Creates a new shopping cart item that is a clone of this, but with a different quantity.
     /// </summary>
-    /// <param name="quantity"></param>
-    /// <returns></returns>
     public ShoppingCartItem WithQuantity(int quantity)
         => new(quantity, ProductSku, Attributes, Prices);
 
-    public override bool Equals(object obj)
-        => !ReferenceEquals(null, obj)
-           && (ReferenceEquals(this, obj) || Equals(obj as ShoppingCartItem));
+    public override bool Equals(object obj) =>
+        obj is not null && (ReferenceEquals(this, obj) || Equals(obj as ShoppingCartItem));
+
+    public bool Equals(ShoppingCartItem other) =>
+        other is not null && other.Quantity == Quantity && other.IsSameProductAs(this);
 
     /// <summary>
     /// A string representation of the shopping cart item.
     /// </summary>
-    /// <returns></returns>
-    public override string ToString()
-        => Quantity + " x " + ProductSku
-           + (Attributes.Count != 0 ? " (" + string.Join(", ", Attributes) + ")" : string.Empty);
-
-    public bool Equals(ShoppingCartItem other)
-        => other is null ? false : other.Quantity == Quantity && other.IsSameProductAs(this);
+    public override string ToString() =>
+        $"{Quantity} x {ProductSku}" + (Attributes.Count != 0 ? $" ({string.Join(", ", Attributes)})" : string.Empty);
 
     public bool IsSameProductAs(ShoppingCartItem other)
         => ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);

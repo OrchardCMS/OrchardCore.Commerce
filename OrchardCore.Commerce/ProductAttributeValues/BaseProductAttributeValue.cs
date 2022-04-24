@@ -24,9 +24,9 @@ public class BaseProductAttributeValue<T> : IProductAttributeValue<T>
     public virtual bool Equals(IProductAttributeValue<T> other)
         => other != null
            && AttributeName == other.AttributeName
-           && (Value == null && other.Value == null || Value.Equals(other.Value));
+           && ((Value is null && other.Value is null) || Value.Equals(other.Value));
 
-    public override bool Equals(object obj) => obj != null && obj is IProductAttributeValue<T> other && Equals(other);
+    public override bool Equals(object obj) => obj is IProductAttributeValue<T> other && Equals(other);
 
     public override int GetHashCode() => (AttributeName, Value).GetHashCode();
 
@@ -38,7 +38,7 @@ public class BaseProductAttributeValue<T> : IProductAttributeValue<T>
         {
             int dot = AttributeName.IndexOf('.');
             if (dot == -1 || dot + 1 == AttributeName.Length) return AttributeName;
-            return AttributeName.Substring(dot + 1);
+            return AttributeName[(dot + 1)..];
         }
     }
 }

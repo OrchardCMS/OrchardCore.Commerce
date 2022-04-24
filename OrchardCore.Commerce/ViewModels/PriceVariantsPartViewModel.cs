@@ -21,5 +21,5 @@ public class PriceVariantsPartViewModel
     public PriceVariantsPart PriceVariantsPart { get; set; }
 
     [BindNever]
-    public Dictionary<string, Amount> Variants { get; set; }
+    public IDictionary<string, Amount> Variants { get; set; }
 }

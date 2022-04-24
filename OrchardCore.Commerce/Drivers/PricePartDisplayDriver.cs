@@ -28,9 +28,9 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     {
         var pricePartSettings = context.TypePartDefinition.GetSettings<PricePartSettings>();
 
-        return Initialize<PricePartViewModel>(GetEditorShapeType(context), m =>
+        return Initialize<PricePartViewModel>(GetEditorShapeType(context), async m =>
         {
-            BuildViewModelAsync(m, part);
+            await BuildViewModelAsync(m, part);
 
             // This is only required for the editor. Not the frontend display.
             m.Currencies = GetCurrencySelectionList(pricePartSettings);
@@ -45,10 +45,10 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
             part.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
         }
 
-        return Edit(part, context);
+        return await EditAsync(part, context);
     }
 
-    private Task BuildViewModelAsync(PricePartViewModel model, PricePart part)
+    private ValueTask BuildViewModelAsync(PricePartViewModel model, PricePart part)
     {
         model.ContentItem = part.ContentItem;
 
@@ -60,29 +60,21 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
         model.PricePart = part;
         model.CurrentDisplayCurrency = _moneyService.CurrentDisplayCurrency;
 
-        return Task.CompletedTask;
+        return default;
     }
 
     private IEnumerable<ICurrency> GetCurrencySelectionList(PricePartSettings pricePartSettings)
     {
-        IEnumerable<ICurrency> currencySelectionList;
-
-        switch (pricePartSettings.CurrencySelectionMode)
+        var currencySelectionList = pricePartSettings.CurrencySelectionMode switch
         {
-            case CurrencySelectionModeEnum.DefaultCurrency:
-                currencySelectionList = new List<ICurrency>() { _moneyService.DefaultCurrency };
-                break;
-
-            case CurrencySelectionModeEnum.SpecificCurrency:
-                currencySelectionList = new List<ICurrency>() { _moneyService.GetCurrency(pricePartSettings.SpecificCurrencyIsoCode) };
-                break;
-
-            default:
-                // As a fallback show all currencies.
-                currencySelectionList = _moneyService.Currencies;
-                break;
-        }
-
+            CurrencySelectionMode.DefaultCurrency => new List<ICurrency> { _moneyService.DefaultCurrency },
+            CurrencySelectionMode.SpecificCurrency => new List<ICurrency>
+            {
+                _moneyService.GetCurrency(pricePartSettings.SpecificCurrencyIsoCode),
+            },
+            CurrencySelectionMode.AllCurrencies => _moneyService.Currencies,
+            _ => _moneyService.Currencies, // As a fallback show all currencies.
+        };
         return currencySelectionList;
     }
 }

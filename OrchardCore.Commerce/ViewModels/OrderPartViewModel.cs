@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class OrderPartViewModel
 {
-    public IList<OrderLineItemViewModel> LineItems { get; set; }
+    public IList<OrderLineItemViewModel> LineItems { get; } = new List<OrderLineItemViewModel>();
 
     public Amount Total { get; set; }
 

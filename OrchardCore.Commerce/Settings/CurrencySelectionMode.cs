@@ -1,6 +1,6 @@
 namespace OrchardCore.Commerce.Settings;
 
-public enum CurrencySelectionModeEnum
+public enum CurrencySelectionMode
 {
     AllCurrencies,
     DefaultCurrency,

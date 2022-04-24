@@ -10,5 +10,6 @@ public class OrderLineItem
     public string ProductSku { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
-    public IDictionary<string, IProductAttributeValue> Attributes { get; set; }
+    public IDictionary<string, IProductAttributeValue> Attributes { get; } =
+        new Dictionary<string, IProductAttributeValue>();
 }

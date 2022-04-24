@@ -7,14 +7,14 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class PricePartSettingsViewModel
 {
-    public CurrencySelectionModeEnum CurrencySelectionMode { get; set; }
+    public CurrencySelectionMode CurrencySelectionMode { get; set; }
     public string SpecificCurrencyIsoCode { get; set; }
 
     public IEnumerable<SelectListItem> CurrencySelectionModes { get; set; }
 
     public IEnumerable<SelectListItem> Currencies { get; set; }
 
-    public CurrencySelectionModeEnum SingleSelectionModeEditor => CurrencySelectionModeEnum.SpecificCurrency;
+    public CurrencySelectionMode SingleSelectionModeEditor => CurrencySelectionMode.SpecificCurrency;
 
     [BindNever]
     public PricePartSettings PricePartSettings { get; set; }

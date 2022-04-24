@@ -13,9 +13,9 @@ public class CreditCardPaymentProvider : IPaymentProvider
     private const string ExpirationMonth = nameof(ExpirationMonth);
     private const string ExpirationYear = nameof(ExpirationYear);
 
-    private readonly IStringLocalizer _s;
+    private readonly IStringLocalizer T;
 
-    public CreditCardPaymentProvider(IStringLocalizer<CreditCardPaymentProvider> localizer) => _s = localizer;
+    public CreditCardPaymentProvider(IStringLocalizer<CreditCardPaymentProvider> localizer) => T = localizer;
 
     public void AddData(IPayment charge, IDictionary<string, string> data)
     {
@@ -28,15 +28,17 @@ public class CreditCardPaymentProvider : IPaymentProvider
     }
 
     public IPayment CreateCharge(string kind, string transactionId, Amount amount, IDictionary<string, string> data)
-        => kind == CreditCardPayment.CreditCardKind ?
-            new CreditCardPayment
-            {
-                TransactionId = transactionId,
-                Amount = amount,
-                ChargeText = _s["Card **** **** **** {0} expiring {1}/{2}.", data[Last4], data[ExpirationMonth], data[ExpirationYear]].ToString(),
-                Last4 = data[Last4],
-                ExpirationMonth = int.TryParse(data[ExpirationMonth], out int expMonth) && expMonth >= 1 && expMonth <= 12 ? expMonth : 0,
-                ExpirationYear = int.TryParse(data[ExpirationYear], out int expYear) && expYear >= 0 ? expYear : 0,
-            }
-            : null;
+    {
+        if (kind != CreditCardPayment.CreditCardKind) return null;
+
+        return new CreditCardPayment
+        {
+            TransactionId = transactionId,
+            Amount = amount,
+            ChargeText = T["Card **** **** **** {0} expiring {1}/{2}.", data[Last4], data[ExpirationMonth], data[ExpirationYear]].ToString(),
+            Last4 = data[Last4],
+            ExpirationMonth = int.TryParse(data[ExpirationMonth], out int expMonth) && expMonth >= 1 && expMonth <= 12 ? expMonth : 0,
+            ExpirationYear = int.TryParse(data[ExpirationYear], out int expYear) && expYear >= 0 ? expYear : 0,
+        };
+    }
 }

@@ -24,43 +24,42 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         _contentManager = contentManager;
     }
 
-    public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context)
-        => Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
+    public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
+        Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
-    public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context)
-        => Initialize<OrderPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, part));
+    public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
+        Initialize<OrderPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
         await updater.TryUpdateModelAsync(part, Prefix, t => t.LineItems);
 
-        return Edit(part, context);
+        return await EditAsync(part, context);
     }
 
-    private Task BuildViewModelAsync(OrderPartViewModel model, OrderPart part)
-        => Task.Run(async () =>
+    private async ValueTask BuildViewModelAsync(OrderPartViewModel model, OrderPart part)
+    {
+        model.ContentItem = part.ContentItem;
+        var products =
+            await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
+        var lineItems = await Task.WhenAll(part.LineItems.Select(async lineItem =>
         {
-            model.ContentItem = part.ContentItem;
-            var products =
-                await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
-            var lineItems = await Task.WhenAll(part.LineItems.Select(async lineItem =>
+            var product = products[lineItem.ProductSku];
+            var metaData = await _contentManager.GetContentItemMetadataAsync(product);
+            return new OrderLineItemViewModel
             {
-                var product = products[lineItem.ProductSku];
-                var metaData = await _contentManager.GetContentItemMetadataAsync(product);
-                return new OrderLineItemViewModel
-                {
-                    Quantity = lineItem.Quantity,
-                    ProductSku = lineItem.ProductSku,
-                    ProductName = product.ContentItem.DisplayText,
-                    UnitPrice = lineItem.UnitPrice,
-                    LinePrice = lineItem.LinePrice,
-                    ProductRouteValues = metaData.DisplayRouteValues,
-                    Attributes = lineItem.Attributes.ToDictionary(attr => attr.Key, attr => attr.Value),
-                };
-            }));
-            model.LineItems = lineItems;
-            model.OrderPart = part;
-        });
+                Quantity = lineItem.Quantity,
+                ProductSku = lineItem.ProductSku,
+                ProductName = product.ContentItem.DisplayText,
+                UnitPrice = lineItem.UnitPrice,
+                LinePrice = lineItem.LinePrice,
+                ProductRouteValues = metaData.DisplayRouteValues,
+                Attributes = lineItem.Attributes.ToDictionary(attr => attr.Key, attr => attr.Value),
+            };
+        }));
+        foreach (var item in lineItems) model.LineItems.Add(item);
+        model.OrderPart = part;
+    }
 }
