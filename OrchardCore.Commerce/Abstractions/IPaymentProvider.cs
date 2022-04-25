@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Money;
+using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Abstractions;
 

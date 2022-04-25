@@ -1,7 +1,8 @@
+using Money.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Money.Abstractions;
 
 namespace Money;
 
@@ -138,7 +139,7 @@ public readonly partial struct Currency
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new System.ArgumentException("Must provide a name", nameof(name));
+            throw new ArgumentException("Must provide a name", nameof(name));
         }
 
         return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.NativeName == name);
@@ -148,7 +149,7 @@ public readonly partial struct Currency
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new System.ArgumentException("Must provide a name", nameof(name));
+            throw new ArgumentException("Must provide a name", nameof(name));
         }
 
         return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.EnglishName == name);
@@ -156,7 +157,7 @@ public readonly partial struct Currency
 
     public static ICurrency FromRegion(RegionInfo region, IEnumerable<ICurrencyProvider> providers = null)
     {
-        if (region is null) throw new System.ArgumentNullException(nameof(region));
+        if (region is null) throw new ArgumentNullException(nameof(region));
 
         if (_defaultProvider.GetCurrency(region.ISOCurrencySymbol) is { } found) return found;
 

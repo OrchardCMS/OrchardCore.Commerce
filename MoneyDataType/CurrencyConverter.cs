@@ -1,11 +1,12 @@
+using Money.Abstractions;
+using Newtonsoft.Json;
 using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Money.Abstractions;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace Money.Serialization;
 
-internal class CurrencyConverter : JsonConverter<ICurrency>
+internal class CurrencyConverter : System.Text.Json.Serialization.JsonConverter<ICurrency>
 {
     public override ICurrency Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => Currency.FromIsoCode(reader.GetString());
@@ -17,13 +18,13 @@ internal class CurrencyConverter : JsonConverter<ICurrency>
 internal class LegacyCurrencyConverter : Newtonsoft.Json.JsonConverter<ICurrency>
 {
     public override ICurrency ReadJson(
-        Newtonsoft.Json.JsonReader reader,
+        JsonReader reader,
         Type objectType,
         ICurrency existingValue,
         bool hasExistingValue,
-        Newtonsoft.Json.JsonSerializer serializer)
+        JsonSerializer serializer)
         => Currency.FromIsoCode(reader.ReadAsString());
 
-    public override void WriteJson(Newtonsoft.Json.JsonWriter writer, ICurrency value, Newtonsoft.Json.JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, ICurrency value, JsonSerializer serializer)
         => writer.WriteValue(value.CurrencyIsoCode);
 }

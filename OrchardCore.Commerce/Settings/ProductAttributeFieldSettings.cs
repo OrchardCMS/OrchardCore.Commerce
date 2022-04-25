@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using OrchardCore.Commerce.Abstractions;
+using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Settings;
 

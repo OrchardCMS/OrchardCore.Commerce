@@ -1,4 +1,3 @@
-using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
@@ -9,6 +8,7 @@ using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Linq;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests;

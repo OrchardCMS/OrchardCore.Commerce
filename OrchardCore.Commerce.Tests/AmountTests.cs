@@ -1,9 +1,8 @@
-using System;
 using Money;
 using Money.Abstractions;
 using Newtonsoft.Json;
+using System;
 using Xunit;
-
 using static Money.Currency;
 
 namespace OrchardCore.Commerce.Tests;

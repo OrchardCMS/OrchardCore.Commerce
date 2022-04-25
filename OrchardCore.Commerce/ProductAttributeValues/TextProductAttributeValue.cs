@@ -1,7 +1,7 @@
+using OrchardCore.Commerce.Abstractions;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using OrchardCore.Commerce.Abstractions;
 
 namespace OrchardCore.Commerce.ProductAttributeValues;
 

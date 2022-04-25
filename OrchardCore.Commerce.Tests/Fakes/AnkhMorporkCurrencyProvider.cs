@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
 using Money;
 using Money.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
@@ -25,5 +26,5 @@ public class AnkhMorporkCurrencyProvider : ICurrencyProvider
         => _currencies.FirstOrDefault(c => c.CurrencyIsoCode == isoCode);
 
     public bool IsKnownCurrency(string isoCode) =>
-        _currencies.Any(c => string.Equals(c.CurrencyIsoCode, isoCode, System.StringComparison.OrdinalIgnoreCase));
+        _currencies.Any(c => string.Equals(c.CurrencyIsoCode, isoCode, StringComparison.OrdinalIgnoreCase));
 }

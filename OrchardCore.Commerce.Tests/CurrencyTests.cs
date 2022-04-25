@@ -2,7 +2,6 @@ using Money;
 using Money.Abstractions;
 using System;
 using Xunit;
-
 using static Money.Currency;
 
 namespace OrchardCore.Commerce.Tests;

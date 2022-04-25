@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Money;
 using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
@@ -10,6 +8,8 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 

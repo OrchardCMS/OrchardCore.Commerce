@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using InternationalAddress;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.Commerce.Fields;
@@ -6,6 +5,7 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 

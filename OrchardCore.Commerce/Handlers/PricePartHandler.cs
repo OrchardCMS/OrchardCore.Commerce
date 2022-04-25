@@ -1,7 +1,7 @@
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Handlers;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Handlers;
 

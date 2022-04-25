@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Options;
 using Money;
 using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Commerce.Services;
 

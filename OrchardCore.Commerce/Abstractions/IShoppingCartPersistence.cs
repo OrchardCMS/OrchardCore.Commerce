@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Models;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
 

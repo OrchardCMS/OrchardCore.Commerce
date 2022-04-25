@@ -1,8 +1,8 @@
+using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 

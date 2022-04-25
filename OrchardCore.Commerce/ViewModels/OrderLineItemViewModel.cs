@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Routing;
 using Money;
 using OrchardCore.Commerce.Abstractions;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrchardCore.Commerce.ViewModels;
 

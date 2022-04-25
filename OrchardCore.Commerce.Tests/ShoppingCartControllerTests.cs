@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
@@ -7,6 +5,8 @@ using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests;

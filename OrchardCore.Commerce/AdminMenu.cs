@@ -1,8 +1,8 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Navigation;
+using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce;
 

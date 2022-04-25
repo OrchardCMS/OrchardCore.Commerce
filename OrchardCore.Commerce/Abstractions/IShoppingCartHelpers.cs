@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
 

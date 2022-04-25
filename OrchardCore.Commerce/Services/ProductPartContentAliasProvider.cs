@@ -1,6 +1,7 @@
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.ContentManagement;
+using System;
+using System.Threading.Tasks;
 using YesSql;
 
 namespace OrchardCore.Commerce.Services;
@@ -18,7 +19,7 @@ public class ProductPartContentAliasProvider : IContentHandleProvider
 
     public async Task<string> GetContentItemIdAsync(string handle)
     {
-        if (handle.StartsWith("sku:", System.StringComparison.OrdinalIgnoreCase))
+        if (handle.StartsWith("sku:", StringComparison.OrdinalIgnoreCase))
         {
             var sku = handle[4..].ToUpperInvariant();
 

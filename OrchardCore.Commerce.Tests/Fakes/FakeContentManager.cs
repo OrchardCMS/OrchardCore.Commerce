@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 

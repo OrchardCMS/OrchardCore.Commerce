@@ -1,7 +1,5 @@
-@model OrchardCore.Commerce.ViewModels.EditProductAttributeFieldViewModel<BooleanProductAttributeField, BooleanProductAttributeFieldSettings>
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Commerce.Fields
-@using OrchardCore.Commerce.Settings
+@model EditProductAttributeFieldViewModel<OrchardCore.Commerce.Fields.BooleanProductAttributeField, OrchardCore.Commerce.Settings.BooleanProductAttributeFieldSettings>
 @{
     var settings = Model.Settings;
     string name = Model.PartFieldDefinition.DisplayName();

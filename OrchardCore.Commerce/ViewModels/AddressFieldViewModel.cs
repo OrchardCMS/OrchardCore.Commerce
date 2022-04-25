@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Globalization;
 using InternationalAddress;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace OrchardCore.Commerce.ViewModels;
 

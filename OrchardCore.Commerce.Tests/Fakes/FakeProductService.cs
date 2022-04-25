@@ -1,8 +1,9 @@
+using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Models;
+using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
@@ -12,6 +13,6 @@ public class FakeProductService : IProductService
         => Task.FromResult(skus.Select(sku => new ProductPart
         {
             Sku = sku,
-            ContentItem = new ContentManagement.ContentItem { ContentType = "Product" },
+            ContentItem = new ContentItem { ContentType = "Product" },
         }));
 }

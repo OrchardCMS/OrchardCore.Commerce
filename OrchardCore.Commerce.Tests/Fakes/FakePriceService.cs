@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 

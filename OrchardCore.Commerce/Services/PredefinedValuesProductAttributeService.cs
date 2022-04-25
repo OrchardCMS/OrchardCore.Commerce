@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.ContentManagement;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Commerce.Services;
 

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Money;
+using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 

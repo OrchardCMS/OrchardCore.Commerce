@@ -1,9 +1,10 @@
-using System;
 using Money.Abstractions;
+using Newtonsoft.Json;
+using System;
 
 namespace Money.Serialization;
 
-internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
+internal class LegacyAmountConverter : JsonConverter<Amount>
 {
     private const string ValueName = "value";
     private const string CurrencyName = "currency";
@@ -16,11 +17,11 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
     private const string Dec = "dec";
 
     public override Amount ReadJson(
-        Newtonsoft.Json.JsonReader reader,
+        JsonReader reader,
         Type objectType,
         Amount existingValue,
         bool hasExistingValue,
-        Newtonsoft.Json.JsonSerializer serializer)
+        JsonSerializer serializer)
     {
         var value = default(decimal);
         ICurrency currency = null;
@@ -30,7 +31,7 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
         string iso = null;
         int? dec = null;
 
-        while (reader.Read() && reader.TokenType == Newtonsoft.Json.JsonToken.PropertyName)
+        while (reader.Read() && reader.TokenType == JsonToken.PropertyName)
         {
             var propertyName = reader.Value;
 
@@ -73,7 +74,7 @@ internal class LegacyAmountConverter : Newtonsoft.Json.JsonConverter<Amount>
         return new Amount(value, currency);
     }
 
-    public override void WriteJson(Newtonsoft.Json.JsonWriter writer, Amount amount, Newtonsoft.Json.JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, Amount amount, JsonSerializer serializer)
     {
         if (amount.Currency is null)
         {

@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Activities;
 

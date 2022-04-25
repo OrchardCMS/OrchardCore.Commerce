@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using Money.Abstractions;
+using System.Collections.Generic;
 
 namespace Money;
 

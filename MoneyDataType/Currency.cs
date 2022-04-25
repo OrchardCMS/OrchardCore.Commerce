@@ -1,9 +1,9 @@
+using Money.Abstractions;
+using Money.Serialization;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
-using Money.Abstractions;
-using Money.Serialization;
 
 namespace Money;
 

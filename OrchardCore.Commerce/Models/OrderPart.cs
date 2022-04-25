@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.ContentManagement;
+using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Models;
 

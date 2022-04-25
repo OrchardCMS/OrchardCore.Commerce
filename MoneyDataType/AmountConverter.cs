@@ -1,7 +1,7 @@
+using Money.Abstractions;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Money.Abstractions;
 
 namespace Money;
 

@@ -1,8 +1,9 @@
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
+using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Settings;
 
@@ -11,7 +12,7 @@ public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDrive
     public override IDisplayResult Edit(ContentPartFieldDefinition model)
         => Initialize(
             "AddressFieldSettings_Edit",
-            (System.Action<AddressPartFieldSettings>)model.PopulateSettings)
+            (Action<AddressPartFieldSettings>)model.PopulateSettings)
             .Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)

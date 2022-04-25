@@ -1,9 +1,9 @@
+using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Serialization;
 
 namespace OrchardCore.Commerce.Models;
 

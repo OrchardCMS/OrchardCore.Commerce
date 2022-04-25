@@ -1,8 +1,8 @@
+using Money;
+using OrchardCore.Commerce.Models;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Money;
-using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Serialization;
 
