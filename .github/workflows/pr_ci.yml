@@ -21,6 +21,9 @@ jobs:
         dotnet-version: 6.0.*
     - name: Static Code Analysis
       run: |
+        pwd; ls -hl .; ls -hl /home/runner/work/OrchardCore.Commerce/OrchardCore.Commerce/tools;ls -hl /home/runner/work/OrchardCore.Commerce/OrchardCore.Commerce/tools/Lombiq.Analyzers
+    - name: Static Code Analysis
+      run: |
         dotnet build OrchardCore.Commerce.sln --no-incremental -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzersDuringBuild=true -nologo -consoleLoggerParameters:NoSummary -verbosity:quiet
     - name: Build
       run: |
