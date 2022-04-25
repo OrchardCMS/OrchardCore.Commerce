@@ -21,10 +21,7 @@ jobs:
         dotnet-version: 6.0.*
     - name: Submodule Init
       run: |
-        git submodule init tools/Lombiq.Analyzers
-    - name: LS
-      run: |
-        ls -hl /home/runner/work/OrchardCore.Commerce/OrchardCore.Commerce/tools/Lombiq.Analyzers/
+        git submodule init && git submodule update
     - name: Static Code Analysis
       run: |
         dotnet build OrchardCore.Commerce.sln --no-incremental -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzersDuringBuild=true -nologo -consoleLoggerParameters:NoSummary -verbosity:quiet
