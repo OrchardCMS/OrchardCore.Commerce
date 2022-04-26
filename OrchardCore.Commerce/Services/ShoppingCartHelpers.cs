@@ -171,17 +171,17 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return newCartItems;
     }
 
-    private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products)
-        => products
+    private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products) =>
+        products
             .Select(p => _contentDefinitionManager.GetTypeDefinition(p.ContentItem.ContentType))
             .GroupBy(t => t.Name)
             .ToDictionary(g => g.Key, g => g.First());
 
-    private async Task<Dictionary<string, ProductPart>> GetProductsAsync(IEnumerable<string> skus)
-        => (await _productService.GetProductsAsync(skus)).ToDictionary(p => p.Sku);
+    private async Task<Dictionary<string, ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
+        (await _productService.GetProductsAsync(skus)).ToDictionary(p => p.Sku);
 
-    private ContentTypeDefinition GetTypeDefinition(ProductPart product)
-        => _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
+    private ContentTypeDefinition GetTypeDefinition(ProductPart product) =>
+        _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
 
     private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition) GetFieldDefinition(
         ContentTypeDefinition type,

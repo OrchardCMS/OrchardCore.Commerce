@@ -81,8 +81,8 @@ public class ShoppingCartController : Controller
     }
 
     [HttpGet]
-    public Task<ShoppingCart> Get(string shoppingCartId = null)
-        => _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+    public Task<ShoppingCart> Get(string shoppingCartId = null) =>
+        _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
 
     [HttpPost]
     [ValidateAntiForgeryToken]

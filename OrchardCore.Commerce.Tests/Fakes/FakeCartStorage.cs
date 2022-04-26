@@ -15,8 +15,8 @@ public class FakeCartStorage : IShoppingCartPersistence
             ? new ShoppingCart(cart.Items)
             : new ShoppingCart();
 
-    public string GetUniqueCartId(string shoppingCartId)
-        => Guid.NewGuid().ToString();
+    public string GetUniqueCartId(string shoppingCartId) =>
+        Guid.NewGuid().ToString();
 
     public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
     {

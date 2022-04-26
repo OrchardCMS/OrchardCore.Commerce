@@ -20,10 +20,10 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
         _shoppingCartHelpers = shoppingCartHelpers;
     }
 
-    private ISession Session => _httpContextAccessor.HttpContext.Session;
+    private ISession Session => _httpContextAccessor.HttpContext?.Session;
 
-    public string GetUniqueCartId(string shoppingCartId)
-        => Session.Id + shoppingCartId;
+    public string GetUniqueCartId(string shoppingCartId) =>
+        Session.Id + shoppingCartId;
 
     public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
     {

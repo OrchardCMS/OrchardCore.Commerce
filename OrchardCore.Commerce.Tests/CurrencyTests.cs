@@ -8,8 +8,8 @@ namespace OrchardCore.Commerce.Tests;
 
 public class CurrencyTests
 {
-    public static CurrencyTheoryData TestData
-        => new()
+    public static CurrencyTheoryData TestData =>
+        new()
         {
             { UsDollar, 1234.56m, "$1,234.56" },
             { Euro, 1234.56m, "1.234,56 €" },

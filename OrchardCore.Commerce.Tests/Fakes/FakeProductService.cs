@@ -9,8 +9,8 @@ namespace OrchardCore.Commerce.Tests.Fakes;
 
 public class FakeProductService : IProductService
 {
-    public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
-        => Task.FromResult(skus.Select(sku => new ProductPart
+    public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
+        Task.FromResult(skus.Select(sku => new ProductPart
         {
             Sku = sku,
             ContentItem = new ContentItem { ContentType = "Product" },

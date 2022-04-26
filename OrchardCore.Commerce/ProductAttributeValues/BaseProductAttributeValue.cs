@@ -18,13 +18,13 @@ public class BaseProductAttributeValue<T> : IProductAttributeValue<T>
 
     public object UntypedValue => Value;
 
-    public virtual string Display(CultureInfo culture = null)
-        => FieldName + ": " + Convert.ToString(Value, culture ?? CultureInfo.InvariantCulture);
+    public virtual string Display(CultureInfo culture = null) =>
+        FieldName + ": " + Convert.ToString(Value, culture ?? CultureInfo.InvariantCulture);
 
-    public virtual bool Equals(IProductAttributeValue<T> other)
-        => other != null
+    public virtual bool Equals(IProductAttributeValue<T> other) =>
+        other != null
            && AttributeName == other.AttributeName
-           && ((Value is null && other.Value is null) || Value.Equals(other.Value));
+           && ((Value is null && other.Value is null) || Value?.Equals(other.Value) == true);
 
     public override bool Equals(object obj) => obj is IProductAttributeValue<T> other && Equals(other);
 

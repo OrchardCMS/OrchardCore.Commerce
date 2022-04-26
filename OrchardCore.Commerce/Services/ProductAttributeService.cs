@@ -22,8 +22,8 @@ public class ProductAttributeService : IProductAttributeService
     {
         var productAttributeTypes = GetProductAttributeFieldTypes(product);
 
-        ProductAttributeField GetContentField(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition)
-            => product.Get<ContentPart>(typePartDefinition.Name)
+        ProductAttributeField GetContentField(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition) =>
+            product.Get<ContentPart>(typePartDefinition.Name)
                 ?.Get(productAttributeTypes[partFieldDefinition.FieldDefinition.Name], partFieldDefinition.Name) as ProductAttributeField;
 
         return _contentDefinitionManager
@@ -44,8 +44,8 @@ public class ProductAttributeService : IProductAttributeService
             .Where(description => description.Field != null);
     }
 
-    private static IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product)
-        => product.OfType<ContentPart>()
+    private static IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
+        product.OfType<ContentPart>()
             .SelectMany(parts => parts.OfType<ProductAttributeField>())
             .Select(t => t.GetType())
             .Distinct()

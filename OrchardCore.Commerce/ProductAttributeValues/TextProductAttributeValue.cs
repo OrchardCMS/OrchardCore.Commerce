@@ -23,8 +23,8 @@ public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<s
             ? Value == null || !Value.Any()
             : Value != null && Value.Any() && AttributeName == other.AttributeName && new HashSet<string>(Value).SetEquals(other.Value);
 
-    public override int GetHashCode()
-        => Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
+    public override int GetHashCode() =>
+        Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
 
     public override string ToString() => AttributeName + ": " + string.Join(", ", Value);
 

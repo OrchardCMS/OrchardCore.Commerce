@@ -28,8 +28,8 @@ public class MoneyService : IMoneyService
         _currencySelector = currencySelector;
     }
 
-    public IEnumerable<ICurrency> Currencies
-        => _currencyProviders
+    public IEnumerable<ICurrency> Currencies =>
+        _currencyProviders
             .SelectMany(p => p.Currencies)
             .OrderBy(c => c.CurrencyIsoCode);
 
@@ -47,12 +47,12 @@ public class MoneyService : IMoneyService
 
     public ICurrency CurrentDisplayCurrency => _currencySelector.CurrentDisplayCurrency ?? DefaultCurrency;
 
-    public Amount Create(decimal value, string currencyIsoCode)
-        => new(value, GetCurrency(currencyIsoCode));
+    public Amount Create(decimal value, string currencyIsoCode) =>
+        new(value, GetCurrency(currencyIsoCode));
 
-    public Amount EnsureCurrency(Amount amount)
-        => new(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));
+    public Amount EnsureCurrency(Amount amount) =>
+        new(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));
 
-    public ICurrency GetCurrency(string currencyIsoCode)
-        => Currency.FromIsoCode(currencyIsoCode, _currencyProviders);
+    public ICurrency GetCurrency(string currencyIsoCode) =>
+        Currency.FromIsoCode(currencyIsoCode, _currencyProviders);
 }

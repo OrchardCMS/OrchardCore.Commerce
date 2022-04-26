@@ -22,8 +22,8 @@ public class AnkhMorporkCurrencyProvider : ICurrencyProvider
 
     public IEnumerable<ICurrency> Currencies => _currencies;
 
-    public ICurrency GetCurrency(string isoCode)
-        => _currencies.FirstOrDefault(c => c.CurrencyIsoCode == isoCode);
+    public ICurrency GetCurrency(string isoCode) =>
+        _currencies.FirstOrDefault(c => c.CurrencyIsoCode == isoCode);
 
     public bool IsKnownCurrency(string isoCode) =>
         _currencies.Any(c => string.Equals(c.CurrencyIsoCode, isoCode, StringComparison.OrdinalIgnoreCase));

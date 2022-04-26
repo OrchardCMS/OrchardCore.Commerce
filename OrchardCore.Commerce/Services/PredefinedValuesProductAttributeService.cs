@@ -12,8 +12,8 @@ public class PredefinedValuesProductAttributeService : IPredefinedValuesProductA
     public PredefinedValuesProductAttributeService(IProductAttributeService productAttributeService) =>
         _productAttributeService = productAttributeService;
 
-    public IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product)
-        => _productAttributeService
+    public IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product) =>
+        _productAttributeService
             .GetProductAttributeFields(product)
             .Where(x => x.Settings is IPredefinedValuesProductAttributeFieldSettings { RestrictToPredefinedValues: true })
             .OrderBy(x => x.PartName)

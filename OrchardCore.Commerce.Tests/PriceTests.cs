@@ -87,8 +87,8 @@ public class PriceTests
 
         public DummyProductService(params ProductPart[] products) => _products = products.ToDictionary(p => p.Sku);
 
-        public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
-            => Task.FromResult(skus.Select(sku => _products[sku]));
+        public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
+            Task.FromResult(skus.Select(sku => _products[sku]));
     }
 
     private class DummyPriceProvider : IPriceProvider
@@ -102,10 +102,10 @@ public class PriceTests
         public int Order { get; }
         public decimal Price { get; }
 
-        public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items)
-            => Task.FromResult(
-                items.Select(item
-                    => item.WithPrice(
+        public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items) =>
+            Task.FromResult(
+                items.Select(item =>
+                    item.WithPrice(
                         new PrioritizedPrice(0, new Amount(Price, Currency.UsDollar)))));
     }
 }

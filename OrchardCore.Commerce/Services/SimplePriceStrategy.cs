@@ -16,10 +16,13 @@ namespace OrchardCore.Commerce.Services;
 public class SimplePriceStrategy : IPriceSelectionStrategy
 {
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices)
-        => prices is null
-           || !prices.Any()
-            ? new Amount(0, Currency.UnspecifiedCurrency)
-            : prices
-                .Where(pp => pp.Priority == prices.Max(pp => pp.Priority))
-                .Min(pp => pp.Price);
+    {
+        var priceCollection = prices as ICollection<PrioritizedPrice> ?? prices?.ToList();
+        if (priceCollection?.Any() != true) return new Amount(0, Currency.UnspecifiedCurrency);
+
+        var maxPriority = priceCollection.Max(price => price.Priority);
+        return priceCollection
+            .Where(pp => pp.Priority == maxPriority)
+            .Min(pp => pp.Price);
+    }
 }

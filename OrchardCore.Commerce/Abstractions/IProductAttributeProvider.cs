@@ -31,6 +31,6 @@ public static class ProductAttributeProviderExtensions
         this IProductAttributeProvider provider,
         ContentTypePartDefinition partDefinition,
         ContentPartFieldDefinition attributeFieldDefinition,
-        string value)
-        => provider.Parse(partDefinition, attributeFieldDefinition, new[] { value });
+        string value) =>
+        provider.Parse(partDefinition, attributeFieldDefinition, new[] { value });
 }

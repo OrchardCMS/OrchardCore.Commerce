@@ -10,8 +10,8 @@ public class CurrencyProvider : ICurrencyProvider
 {
     public CurrencyProvider() => KnownCurrencyTable.EnsureCurrencyTable();
 
-    public IEnumerable<ICurrency> Currencies
-        => KnownCurrencyTable.CurrencyTable.Values;
+    public IEnumerable<ICurrency> Currencies =>
+        KnownCurrencyTable.CurrencyTable.Values;
 
     public ICurrency GetCurrency(string isoCode)
     {

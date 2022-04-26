@@ -55,22 +55,22 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     /// </summary>
     /// <param name="prices">The list of prices to add.</param>
     /// <returns>The new shopping cart item.</returns>
-    public ShoppingCartItem WithPrices(IEnumerable<PrioritizedPrice> prices)
-        => new(Quantity, ProductSku, Attributes, prices);
+    public ShoppingCartItem WithPrices(IEnumerable<PrioritizedPrice> prices) =>
+        new(Quantity, ProductSku, Attributes, prices);
 
     /// <summary>
     /// Creates a new shopping cart item that is a clone of this, but with an additional price.
     /// </summary>
     /// <param name="price">The price to add.</param>
     /// <returns>The new shopping cart item.</returns>
-    public ShoppingCartItem WithPrice(PrioritizedPrice price)
-        => new(Quantity, ProductSku, Attributes, Prices.Concat(new[] { price }));
+    public ShoppingCartItem WithPrice(PrioritizedPrice price) =>
+        new(Quantity, ProductSku, Attributes, Prices.Concat(new[] { price }));
 
     /// <summary>
     /// Creates a new shopping cart item that is a clone of this, but with a different quantity.
     /// </summary>
-    public ShoppingCartItem WithQuantity(int quantity)
-        => new(quantity, ProductSku, Attributes, Prices);
+    public ShoppingCartItem WithQuantity(int quantity) =>
+        new(quantity, ProductSku, Attributes, Prices);
 
     public override bool Equals(object obj) =>
         obj is not null && (ReferenceEquals(this, obj) || Equals(obj as ShoppingCartItem));
@@ -84,8 +84,8 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     public override string ToString() =>
         $"{Quantity} x {ProductSku}" + (Attributes.Count != 0 ? $" ({string.Join(", ", Attributes)})" : string.Empty);
 
-    public bool IsSameProductAs(ShoppingCartItem other)
-        => ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
+    public bool IsSameProductAs(ShoppingCartItem other) =>
+        ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
     public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
 }
