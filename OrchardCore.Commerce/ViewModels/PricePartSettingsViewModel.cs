@@ -14,7 +14,7 @@ public class PricePartSettingsViewModel
 
     public IEnumerable<SelectListItem> Currencies { get; set; }
 
-    public CurrencySelectionMode SingleSelectionModeEditor => CurrencySelectionMode.SpecificCurrency;
+    public CurrencySelectionMode SingleSelectionModeEditor { get; set; } = CurrencySelectionMode.SpecificCurrency;
 
     [BindNever]
     public PricePartSettings PricePartSettings { get; set; }
