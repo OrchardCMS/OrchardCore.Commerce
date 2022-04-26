@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitignore = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitignore
 		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\LICENSE = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\LICENSE
 		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\README.md = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\README.md
+		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitattributes = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitattributes
 	EndProjectSection
 EndProject
 Global
