@@ -13,7 +13,7 @@ public static class JsonElementSerializer
     /// <remarks><para>This will no longer be necessary when the BCL supports it natively.</para></remarks>
     public static T ToObject<T>(this JsonElement jsonElement)
     {
-        string elementText = jsonElement.GetRawText();
+        var elementText = jsonElement.GetRawText();
         return JsonSerializer.Deserialize<T>(elementText);
     }
 }

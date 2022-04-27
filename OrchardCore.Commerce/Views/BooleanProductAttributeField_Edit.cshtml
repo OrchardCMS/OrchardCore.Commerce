@@ -2,7 +2,7 @@
 @model EditProductAttributeFieldViewModel<OrchardCore.Commerce.Fields.BooleanProductAttributeField, OrchardCore.Commerce.Settings.BooleanProductAttributeFieldSettings>
 @{
     var settings = Model.Settings;
-    string name = Model.PartFieldDefinition.DisplayName();
+    var name = Model.PartFieldDefinition.DisplayName();
 }
 
     <fieldset class="form-group">

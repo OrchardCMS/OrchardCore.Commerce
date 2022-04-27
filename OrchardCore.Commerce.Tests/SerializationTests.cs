@@ -37,7 +37,7 @@ public class SerializationTests
             priceService: null,
             notifier: null,
             localizer: null);
-        string serialized = await helpers.SerializeAsync(cart);
+        var serialized = await helpers.SerializeAsync(cart);
         var deserialized = await helpers.DeserializeAsync(serialized);
 
         Assert.Equal(cart.Count, deserialized.Count);

@@ -1,4 +1,3 @@
-@using OrchardCore.Commerce.Abstractions
 @model OrderPartViewModel
 
 <zone name="Header">
@@ -20,7 +19,7 @@
                 <div class="col-xs-12 col-sm-9">@T["Product"]</div>
                 <div class="col-xs-12 col-sm-1">@T["Price"]</div>
             </div>
-            @foreach (OrderLineItemViewModel item in Model.LineItems)
+            @foreach (var item in Model.LineItems)
             {
                 <div class="row border-bottom mt-3 pb-2">
                     <div class="col-xs-12 col-sm-1">@item.Quantity@T[" × "]</div>
@@ -29,7 +28,7 @@
                         @if (item.Attributes != null)
                         {
                             <ul class="cart-product-attributes list-inline">
-                                @foreach (IProductAttributeValue attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                                @foreach (var attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
                                 {
                                     <shape tag="li" Type="@attr.GetType().Name" prop-attribute="@attr" prop-label="@attr.Label" />
                                 }

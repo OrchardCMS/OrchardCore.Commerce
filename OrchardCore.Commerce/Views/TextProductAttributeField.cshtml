@@ -3,16 +3,16 @@
 @{
     int index = Model.Index;
     var attr = Model.AttributeDescription as ProductAttributeDescription;
-    var settings = attr.Settings as TextProductAttributeFieldSettings;
+    var settings = attr?.Settings as TextProductAttributeFieldSettings;
     var id = $"{Model.IdPrefix}-attribute-{index}";
-    int optionIndex = 0;
+    var optionIndex = 0;
 }
 
-<label for="@id">@attr.Name</label>
-<input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
-@if (settings.PredefinedValues is null || settings.PredefinedValues.Count() == 0)
+<label for="@id">@attr?.Name</label>
+<input type="hidden" name="line.Attributes[@index].Key" value="@attr?.PartName.@attr?.Name" />
+@if (settings?.PredefinedValues is null || !settings.PredefinedValues.Any())
 {
-    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" class="form-control" />
+    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings?.DefaultValue" placeholder="@settings?.Placeholder" class="form-control" />
 }
 else if (settings.MultipleValues)
 {
@@ -73,7 +73,7 @@ else
         });
     </script>
 }
-@if (settings.Hint != null)
+@if (settings?.Hint != null)
 {
     <div class="hint form-text text-muted">@settings.Hint</div>
 }

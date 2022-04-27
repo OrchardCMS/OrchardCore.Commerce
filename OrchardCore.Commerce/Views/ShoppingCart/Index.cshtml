@@ -1,6 +1,5 @@
-@using Money
-@using OrchardCore.Commerce.Abstractions
 @model ShoppingCartViewModel
+
 <zone name="Header">
     <header class="masthead">
         <div class="container">
@@ -22,19 +21,19 @@
             <div class="col-xs-12 col-sm-1">@T["Action"]</div>
         </div>
         @{
-            int line = 0;
+            var line = 0;
         }
-        @foreach (ShoppingCartLineViewModel item in Model.Lines)
+        @foreach (var item in Model.Lines)
         {
             <div class="row border-bottom mt-3 pb-2">
                 <div class="col-xs-12 col-sm-1">
                     @{
-                        int i = 0;
+                        var i = 0;
                         var name = $"cart.lines[{line++}]";
                     }
                     <input form="shopping-cart-update" type="number" min="0" name="@(name).Quantity" value="@item.Quantity" class="form-control" />
                     <input form="shopping-cart-update" type="hidden" name="@(name).ProductSku" value="@item.ProductSku" />
-                    @foreach (IProductAttributeValue attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                    @foreach (var attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
                     {
                         <shape Type="@attr.GetType().Name" alternate="@(attr.GetType().Name)_hidden" form="shopping-cart-update" prop-index="@(i++)" prop-attributeValue="@attr" prop-namePrefix="@name" />
                     }
@@ -44,7 +43,7 @@
                     @if (item.Attributes != null)
                     {
                         <ul class="cart-product-attributes list-inline">
-                            @foreach (IProductAttributeValue attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                            @foreach (var attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
                             {
                                 <shape tag="li" Type="@attr.GetType().Name" prop-attribute="@attr" prop-label="@attr.Label" />
                             }
@@ -58,7 +57,7 @@
                     }
                     <form asp-action="RemoveItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
                         <input type="hidden" name="line.ProductSku" value="@item.ProductSku" />
-                        @foreach (IProductAttributeValue attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                        @foreach (var attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
                         {
                             <shape Type="@attr.GetType().Name" alternate="@(attr.GetType().Name)_hidden" prop-index="@(i++)" prop-attributeValue="@attr" />
                         }
@@ -70,7 +69,7 @@
         <div class="row mt-3 mb-3 pb-2">
             <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
             <div class="col-xs-12 col-sm-1">
-                @foreach (Amount total in Model.Totals)
+                @foreach (var total in Model.Totals)
                 {
                     <div>@total</div>
                 }

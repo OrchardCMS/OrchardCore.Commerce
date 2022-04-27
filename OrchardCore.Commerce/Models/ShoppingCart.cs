@@ -61,7 +61,7 @@ public class ShoppingCart
     /// <param name="item">The cart item to add.</param>
     public void AddItem(ShoppingCartItem item)
     {
-        int existingIndex = IndexOf(item);
+        var existingIndex = IndexOf(item);
         if (existingIndex != -1)
         {
             var existingItem = Items[existingIndex];
@@ -79,7 +79,7 @@ public class ShoppingCart
     /// <param name="item">The product variant to remove. Quantity will be ignored.</param>
     public void RemoveItem(ShoppingCartItem item)
     {
-        int existingIndex = IndexOf(item);
+        var existingIndex = IndexOf(item);
         if (existingIndex != -1)
         {
             Items.Remove(Items[existingIndex]);
@@ -93,7 +93,7 @@ public class ShoppingCart
     /// <param name="prices">The list of prices.</param>
     public void SetPrices(ShoppingCartItem item, IEnumerable<PrioritizedPrice> prices)
     {
-        int existingIndex = IndexOf(item);
+        var existingIndex = IndexOf(item);
         if (existingIndex != -1)
         {
             Items.Remove(Items[existingIndex]);

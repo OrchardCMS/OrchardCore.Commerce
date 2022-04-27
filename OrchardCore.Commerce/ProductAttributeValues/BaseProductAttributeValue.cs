@@ -36,7 +36,7 @@ public class BaseProductAttributeValue<T> : IProductAttributeValue<T>
     {
         get
         {
-            int dot = AttributeName.IndexOf('.');
+            var dot = AttributeName.IndexOf('.');
             if (dot == -1 || dot + 1 == AttributeName.Length) return AttributeName;
             return AttributeName[(dot + 1)..];
         }

@@ -187,7 +187,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         ContentTypeDefinition type,
         string attributeName)
     {
-        string[] partAndField = attributeName.Split('.');
+        var partAndField = attributeName.Split('.');
         return type
             .Parts.SelectMany(p => p.PartDefinition
                 .Fields

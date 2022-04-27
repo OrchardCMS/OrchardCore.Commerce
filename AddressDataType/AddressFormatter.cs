@@ -55,7 +55,7 @@ public class AddressFormatter : IAddressFormatter
     {
         if (address is null) return "-";
 
-        string rawFormatted = string.Format(
+        var rawFormatted = string.Format(
             CultureInfo.InvariantCulture,
             _addressFormat,
             address.Name,
@@ -65,7 +65,7 @@ public class AddressFormatter : IAddressFormatter
             address.StreetAddress2,
             string.Format(CultureInfo.InvariantCulture, _cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
-        string withoutEmptyLines = string.Join(
+        var withoutEmptyLines = string.Join(
             string.Empty,
             rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
         return _uppercase

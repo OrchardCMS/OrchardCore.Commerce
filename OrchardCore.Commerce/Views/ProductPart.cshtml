@@ -1,7 +1,6 @@
-@using OrchardCore.Commerce.Abstractions
 @model ProductPartViewModel
 @{
-    int i = 0;
+    var i = 0;
     var id = $"product-{Model.Sku}";
 }
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
@@ -9,7 +8,7 @@
     <label for="@id-quantity">@T["Quantity"]</label>
     <input id="@id-quantity" type="number" name="line.Quantity" step="1" min="1" value="1" class="form-control" />
     <ul class="product-attribute-list">
-        @foreach (ProductAttributeDescription attr in Model.Attributes)
+        @foreach (var attr in Model.Attributes)
         {
         <li><shape Type="@attr.Field.GetType().Name" prop-index="@(i++)" prop-attributeDescription="@attr" prop-idPrefix="@id" /></li>
         }

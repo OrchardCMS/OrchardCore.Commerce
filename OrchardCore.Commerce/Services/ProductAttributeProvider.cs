@@ -15,12 +15,12 @@ public class ProductAttributeProvider : IProductAttributeProvider
         ContentPartFieldDefinition attributeFieldDefinition,
         JsonElement value)
     {
-        string attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
-        string name = partDefinition.Name + "." + attributeFieldDefinition.Name;
+        var attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
+        var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
         return attributeFieldTypeName switch
         {
             nameof(BooleanProductAttributeField) => new BooleanProductAttributeValue(name, value.GetBoolean()),
-            nameof(NumericProductAttributeField) => value.TryGetDecimal(out decimal decimalValue)
+            nameof(NumericProductAttributeField) => value.TryGetDecimal(out var decimalValue)
                 ? new NumericProductAttributeValue(name, decimalValue)
                 : new NumericProductAttributeValue(name, value: null),
             nameof(TextProductAttributeField) => value.ValueKind switch
@@ -40,8 +40,8 @@ public class ProductAttributeProvider : IProductAttributeProvider
         ContentPartFieldDefinition attributeFieldDefinition,
         string[] value)
     {
-        string attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
-        string name = partDefinition.Name + "." + attributeFieldDefinition.Name;
+        var attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
+        var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
         switch (attributeFieldTypeName)
         {
             case nameof(BooleanProductAttributeField):
@@ -49,7 +49,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                     name,
                     value != null && value.Contains("true", StringComparer.InvariantCultureIgnoreCase));
             case nameof(NumericProductAttributeField):
-                if (decimal.TryParse(value.FirstOrDefault(), out decimal decimalValue))
+                if (decimal.TryParse(value.FirstOrDefault(), out var decimalValue))
                 {
                     return new NumericProductAttributeValue(name, decimalValue);
                 }
