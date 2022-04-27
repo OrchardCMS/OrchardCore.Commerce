@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
-/// Represents a set of utilities to more easily work with currency providers.
+/// Contains a set of utilities to more easily work with currency providers.
 /// </summary>
 public interface IMoneyService
 {
@@ -43,7 +43,8 @@ public interface IMoneyService
     ICurrency CurrentDisplayCurrency { get; }
 
     /// <summary>
-    /// Returns a new Amount where the currency has been verified to be resolved, or resolved.
+    /// Returns a new <see cref="Amount"/> that has been verified using <see cref="Currency.FromIsoCode"/> to ensure its
+    /// currency is a known ISO 4217 code.
     /// </summary>
     Amount EnsureCurrency(Amount amount);
 }

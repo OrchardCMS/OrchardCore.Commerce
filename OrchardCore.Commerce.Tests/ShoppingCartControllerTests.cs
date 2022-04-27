@@ -133,7 +133,7 @@ public class ShoppingCartControllerTests
         expectedCartItems.RemoveAt(2); // foo - attr2
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
 
-        // Removing an item that's no longer there does nothing
+        // Removing an item that's no longer there does nothing.
         await controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet2 });
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
 

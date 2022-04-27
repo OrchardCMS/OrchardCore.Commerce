@@ -26,7 +26,7 @@ public class SerializationTests
                 new IProductAttributeValue[]
                 {
                     new BooleanProductAttributeValue("ProductPart3.attr1", value: true),
-                    new NumericProductAttributeValue("ProductPart3.attr3", (decimal?)42.0),
+                    new NumericProductAttributeValue("ProductPart3.attr3", 42.0M),
                 },
                 new[] { new PrioritizedPrice(0, new Amount(12, Currency.UsDollar)) }));
         var helpers = new ShoppingCartHelpers(
