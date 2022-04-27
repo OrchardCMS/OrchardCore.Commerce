@@ -38,7 +38,7 @@ internal class AmountConverter : JsonConverter<Amount>
                     value = reader.GetDecimal();
                     break;
                 case CurrencyName:
-                    currency = Currency.FromIsoCode(reader.GetString());
+                    currency = FromIsoCode(reader.GetString());
                     break;
                 case Name: // Kept for backwards compatibility
                 case NativeName:
@@ -61,9 +61,7 @@ internal class AmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
-
-        if (!Currency.IsKnownCurrency(currency.CurrencyIsoCode ?? string.Empty))
+        if (!IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
         {
             currency = new Currency(
                 nativeName,
@@ -72,6 +70,8 @@ internal class AmountConverter : JsonConverter<Amount>
                 iso,
                 decimalDigits.GetValueOrDefault(DefaultDecimalDigits));
         }
+
+        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
 
         return new Amount(value, currency);
     }
@@ -86,7 +86,7 @@ internal class AmountConverter : JsonConverter<Amount>
         writer.WriteStartObject();
         writer.WriteNumber(ValueName, amount.Value);
 
-        if (Currency.IsKnownCurrency(amount.Currency.CurrencyIsoCode))
+        if (IsKnownCurrency(amount.Currency.CurrencyIsoCode))
         {
             writer.WriteString(CurrencyName, amount.Currency.CurrencyIsoCode);
         }

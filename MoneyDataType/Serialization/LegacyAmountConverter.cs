@@ -33,7 +33,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
                     value = reader.ReadAsDecimal().Value;
                     break;
                 case CurrencyName:
-                    currency = Currency.FromIsoCode(reader.ReadAsString());
+                    currency = FromIsoCode(reader.ReadAsString());
                     break;
                 case Name: // Kept for backwards compatibility
                 case NativeName:
@@ -56,9 +56,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
-
-        if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
+        if (!IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
         {
             currency = new Currency(
                 nativeName,
@@ -67,6 +65,8 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
                 iso,
                 decimalDigits.GetValueOrDefault(DefaultDecimalDigits));
         }
+
+        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
 
         return new Amount(value, currency);
     }
@@ -81,7 +81,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
         writer.WriteStartObject();
         writer.WritePropertyName(ValueName);
         writer.WriteValue(amount.Value);
-        if (Currency.IsKnownCurrency(amount.Currency.CurrencyIsoCode))
+        if (IsKnownCurrency(amount.Currency.CurrencyIsoCode))
         {
             writer.WritePropertyName(CurrencyName);
             writer.WriteValue(amount.Currency.CurrencyIsoCode);
