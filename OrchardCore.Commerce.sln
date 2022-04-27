@@ -16,11 +16,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D15D472D-A6EF-441F-8278-6350D89E90D2}"
 	ProjectSection(SolutionItems) = preProject
 		Nuget.config = Nuget.config
-		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\Directory.Build.props = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\Directory.Build.props
-		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitignore = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitignore
-		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\LICENSE = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\LICENSE
-		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\README.md = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\README.md
-		E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitattributes = E:\aux_c\repositories\orchard-core\OrchardCore.Commerce\.gitattributes
+		Directory.Build.props = Directory.Build.props
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		.gitattributes = .gitattributes
 	EndProjectSection
 EndProject
 Global
