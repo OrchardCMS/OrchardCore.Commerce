@@ -2,29 +2,30 @@ using Money.Abstractions;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static Money.Currency;
 
-namespace Money;
+namespace Money.Serialization;
 
 internal class AmountConverter : JsonConverter<Amount>
 {
-    private const string ValueName = "value";
-    private const string CurrencyName = "currency";
-    private const string Name = "name";
-    private const string NativeName = "nativename";
-    private const string EnglishName = "englishname";
-    private const string Symbol = "symbol";
-    private const string Iso = "iso";
-    private const string Dec = "dec";
+    public const string ValueName = "value";
+    public const string CurrencyName = "currency";
+    public const string Name = "name";
+    public const string NativeName = "nativename";
+    public const string EnglishName = "englishname";
+    public const string Symbol = "symbol";
+    public const string Iso = "iso";
+    public const string DecimalDigits = "dec";
 
     public override Amount Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var value = default(decimal);
+        decimal value = default;
         ICurrency currency = null;
         string nativeName = null;
         string englishName = null;
         string symbol = null;
         string iso = null;
-        int? dec = null;
+        int? decimalDigits = null;
 
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
@@ -52,20 +53,25 @@ internal class AmountConverter : JsonConverter<Amount>
                 case Iso:
                     iso = reader.GetString();
                     break;
-                case Dec when reader.TryGetInt32(out var i):
-                    dec = i;
+                case DecimalDigits when reader.TryGetInt32(out var i):
+                    decimalDigits = i;
                     break;
                 default:
                     throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
             }
         }
 
-        if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
-        {
-            currency = new Currency(nativeName, englishName, symbol, iso, dec.GetValueOrDefault(2));
-        }
+        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
 
-        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency");
+        if (!Currency.IsKnownCurrency(currency.CurrencyIsoCode ?? string.Empty))
+        {
+            currency = new Currency(
+                nativeName,
+                englishName,
+                symbol,
+                iso,
+                decimalDigits.GetValueOrDefault(DefaultDecimalDigits));
+        }
 
         return new Amount(value, currency);
     }
@@ -74,7 +80,7 @@ internal class AmountConverter : JsonConverter<Amount>
     {
         if (amount.Currency is null)
         {
-            throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
+            throw new InvalidOperationException("Amount must have a currency applied to allow serialization.");
         }
 
         writer.WriteStartObject();
@@ -90,7 +96,11 @@ internal class AmountConverter : JsonConverter<Amount>
             writer.WriteString(EnglishName, amount.Currency.EnglishName);
             writer.WriteString(Symbol, amount.Currency.Symbol);
             writer.WriteString(Iso, amount.Currency.CurrencyIsoCode);
-            if (amount.Currency.DecimalPlaces != 2) writer.WriteNumber(Dec, amount.Currency.DecimalPlaces);
+
+            if (amount.Currency.DecimalPlaces != DefaultDecimalDigits)
+            {
+                writer.WriteNumber(DecimalDigits, amount.Currency.DecimalPlaces);
+            }
         }
 
         writer.WriteEndObject();

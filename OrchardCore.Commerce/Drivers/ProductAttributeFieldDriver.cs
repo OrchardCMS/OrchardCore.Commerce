@@ -35,16 +35,22 @@ public class BooleanProductAttributeFieldDriver
     : ProductAttributeFieldDriver<BooleanProductAttributeField, BooleanProductAttributeFieldSettings>
 {
     public BooleanProductAttributeFieldDriver(
-        IStringLocalizer<ProductAttributeFieldDriver<BooleanProductAttributeField, BooleanProductAttributeFieldSettings>> localizer)
-        : base(localizer) { }
+        IStringLocalizer<
+            ProductAttributeFieldDriver<BooleanProductAttributeField, BooleanProductAttributeFieldSettings>> localizer)
+        : base(localizer)
+    {
+    }
 }
 
 public class NumericProductAttributeFieldDriver
     : ProductAttributeFieldDriver<NumericProductAttributeField, NumericProductAttributeFieldSettings>
 {
     public NumericProductAttributeFieldDriver(
-        IStringLocalizer<ProductAttributeFieldDriver<NumericProductAttributeField, NumericProductAttributeFieldSettings>> localizer)
-        : base(localizer) { }
+        IStringLocalizer<
+            ProductAttributeFieldDriver<NumericProductAttributeField, NumericProductAttributeFieldSettings>> localizer)
+        : base(localizer)
+    {
+    }
 }
 
 public class TextProductAttributeFieldDriver
@@ -52,5 +58,7 @@ public class TextProductAttributeFieldDriver
 {
     public TextProductAttributeFieldDriver(
         IStringLocalizer<ProductAttributeFieldDriver<TextProductAttributeField, TextProductAttributeFieldSettings>> localizer)
-        : base(localizer) { }
+        : base(localizer)
+    {
+    }
 }

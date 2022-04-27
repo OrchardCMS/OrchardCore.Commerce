@@ -10,7 +10,9 @@ namespace OrchardCore.Commerce.ProductAttributeValues;
 internal class RawProductAttributeValue : BaseProductAttributeValue<object>
 {
     public RawProductAttributeValue(object value)
-        : base(attributeName: null, value) { }
+        : base(attributeName: null, value)
+    {
+    }
 
     public void SetAttributeName(string name) => AttributeName = name;
 }

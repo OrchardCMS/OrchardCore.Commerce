@@ -16,5 +16,6 @@ public class TestMoneyService : MoneyService
             },
             new TestOptions<CommerceSettings>(new CommerceSettings { DefaultCurrency = "EUR" }),
             new NullCurrencySelector())
-    { }
+    {
+    }
 }

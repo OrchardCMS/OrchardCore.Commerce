@@ -1,21 +1,13 @@
 using Money.Abstractions;
 using Newtonsoft.Json;
 using System;
+using static Money.Currency;
+using static Money.Serialization.AmountConverter;
 
 namespace Money.Serialization;
 
 internal class LegacyAmountConverter : JsonConverter<Amount>
 {
-    private const string ValueName = "value";
-    private const string CurrencyName = "currency";
-
-    private const string Name = "name";
-    private const string NativeName = "nativename";
-    private const string EnglishName = "englishname";
-    private const string Symbol = "symbol";
-    private const string Iso = "iso";
-    private const string Dec = "dec";
-
     public override Amount ReadJson(
         JsonReader reader,
         Type objectType,
@@ -23,13 +15,13 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
         bool hasExistingValue,
         JsonSerializer serializer)
     {
-        var value = default(decimal);
+        decimal value = default;
         ICurrency currency = null;
         string nativeName = null;
         string englishName = null;
         string symbol = null;
         string iso = null;
-        int? dec = null;
+        int? decimalDigits = null;
 
         while (reader.Read() && reader.TokenType == JsonToken.PropertyName)
         {
@@ -56,20 +48,25 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
                 case Iso:
                     iso = reader.ReadAsString();
                     break;
-                case Dec:
-                    dec = reader.ReadAsInt32();
+                case DecimalDigits:
+                    decimalDigits = reader.ReadAsInt32();
                     break;
                 default:
                     throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
             }
         }
 
+        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
+
         if (!Currency.IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
         {
-            currency = new Currency(nativeName, englishName, symbol, iso, dec.GetValueOrDefault(2));
+            currency = new Currency(
+                nativeName,
+                englishName,
+                symbol,
+                iso,
+                decimalDigits.GetValueOrDefault(DefaultDecimalDigits));
         }
-
-        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency");
 
         return new Amount(value, currency);
     }
@@ -78,7 +75,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
     {
         if (amount.Currency is null)
         {
-            throw new InvalidOperationException("Amount must have a currency applied to allow serialization");
+            throw new InvalidOperationException("Amount must have a currency applied to allow serialization.");
         }
 
         writer.WriteStartObject();
@@ -99,9 +96,9 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
             writer.WriteValue(amount.Currency.Symbol);
             writer.WritePropertyName(Iso);
             writer.WriteValue(amount.Currency.CurrencyIsoCode);
-            if (amount.Currency.DecimalPlaces != 2)
+            if (amount.Currency.DecimalPlaces != DefaultDecimalDigits)
             {
-                writer.WritePropertyName(Dec);
+                writer.WritePropertyName(DecimalDigits);
                 writer.WriteValue(amount.Currency.DecimalPlaces);
             }
         }

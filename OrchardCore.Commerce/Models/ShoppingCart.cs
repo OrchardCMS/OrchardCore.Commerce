@@ -16,7 +16,9 @@ public class ShoppingCart
     public IList<ShoppingCartItem> Items { get; }
 
     public ShoppingCart()
-        : this(items: null) { }
+        : this(items: null)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
@@ -32,7 +34,9 @@ public class ShoppingCart
     /// </summary>
     /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
     public ShoppingCart(params ShoppingCartItem[] items)
-        : this((IList<ShoppingCartItem>)items) { }
+        : this((IList<ShoppingCartItem>)items)
+    {
+    }
 
     /// <summary>
     /// Gets the number of lines in the cart.

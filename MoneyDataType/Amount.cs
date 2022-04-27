@@ -77,13 +77,13 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public static Amount operator +(Amount first, Amount second)
     {
-        first.ThrowIfCurrencyDoesntMatch(second, activity: "add");
+        first.ThrowIfCurrencyDoesntMatch(second, operation: "add");
         return new Amount(first.Value + second.Value, first.Currency);
     }
 
     public static Amount operator -(Amount first, Amount second)
     {
-        first.ThrowIfCurrencyDoesntMatch(second, activity: "add");
+        first.ThrowIfCurrencyDoesntMatch(second, operation: "subtract");
         return new Amount(first.Value - second.Value, first.Currency);
     }
 
@@ -142,10 +142,10 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
         return first.Value >= second.Value;
     }
 
-    private void ThrowIfCurrencyDoesntMatch(Amount other, string activity = "compare")
+    private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")
     {
         if (Currency.Equals(other.Currency)) return;
         throw new InvalidOperationException(
-            $"Can't {activity} amounts of different currencies ({Currency.CurrencyIsoCode} and {other.Currency.CurrencyIsoCode}).");
+            $"Can't {operation} amounts of different currencies ({Currency.CurrencyIsoCode} and {other.Currency.CurrencyIsoCode}).");
     }
 }

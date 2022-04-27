@@ -12,6 +12,8 @@ namespace Money;
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 {
+    public const int DefaultDecimalDigits = 2;
+
     public Currency(CultureInfo culture)
     {
         ArgumentNullException.ThrowIfNull(culture);
@@ -32,7 +34,12 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         DecimalPlaces = culture.NumberFormat.CurrencyDecimalDigits;
     }
 
-    public Currency(string nativeName, string englishName, string symbol, string iSoSymbol, int decimalDigits = 2)
+    public Currency(
+        string nativeName,
+        string englishName,
+        string symbol,
+        string iSoSymbol,
+        int decimalDigits = DefaultDecimalDigits)
     {
         if (string.IsNullOrWhiteSpace(nativeName))
         {

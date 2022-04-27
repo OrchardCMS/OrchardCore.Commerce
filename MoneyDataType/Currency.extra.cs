@@ -142,7 +142,9 @@ public readonly partial struct Currency
             throw new ArgumentException("Must provide a name", nameof(name));
         }
 
-        return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.NativeName == name);
+        return (providers ?? new List<ICurrencyProvider>())
+            .SelectMany(p => p.Currencies)
+            .FirstOrDefault(c => c.NativeName == name);
     }
 
     public static ICurrency FromEnglishName(string name, IEnumerable<ICurrencyProvider> providers = null)
@@ -159,11 +161,8 @@ public readonly partial struct Currency
     {
         ArgumentNullException.ThrowIfNull(region);
 
-        if (_defaultProvider.GetCurrency(region.ISOCurrencySymbol) is { } found) return found;
-
-        return (providers ?? new List<ICurrencyProvider>())
-            .SelectMany(p => p.Currencies)
-            .FirstOrDefault(c => c.CurrencyIsoCode == region.ISOCurrencySymbol);
+        return _defaultProvider.GetCurrency(region.ISOCurrencySymbol) ??
+               FromIsoCode(region.ISOCurrencySymbol, providers);
     }
 
     public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null)

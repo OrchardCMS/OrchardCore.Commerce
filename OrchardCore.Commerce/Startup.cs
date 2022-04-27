@@ -115,7 +115,8 @@ public class SessionCartStorageStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSession(options => { });
+        services.AddSession(_ => { });
+
         // Shopping Cart
         services.AddScoped<IShoppingCartPersistence, SessionShoppingCartPersistence>();
     }
