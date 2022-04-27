@@ -157,7 +157,7 @@ public readonly partial struct Currency
 
     public static ICurrency FromRegion(RegionInfo region, IEnumerable<ICurrencyProvider> providers = null)
     {
-        if (region is null) throw new ArgumentNullException(nameof(region));
+        ArgumentNullException.ThrowIfNull(region);
 
         if (_defaultProvider.GetCurrency(region.ISOCurrencySymbol) is { } found) return found;
 

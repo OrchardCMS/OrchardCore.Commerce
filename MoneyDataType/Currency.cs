@@ -14,7 +14,8 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 {
     public Currency(CultureInfo culture)
     {
-        if (culture is null) throw new ArgumentNullException(nameof(culture));
+        ArgumentNullException.ThrowIfNull(culture);
+
         if (culture.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) ||
             culture.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal))
         {

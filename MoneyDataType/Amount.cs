@@ -23,7 +23,7 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount(decimal value, RegionInfo region)
     {
-        if (region == null) throw new ArgumentNullException(nameof(region));
+        ArgumentNullException.ThrowIfNull(region);
 
         Currency = Money.Currency.FromRegion(region);
         Value = value;
@@ -31,7 +31,7 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount(decimal value, CultureInfo culture)
     {
-        if (culture is null) throw new ArgumentNullException(nameof(culture));
+        ArgumentNullException.ThrowIfNull(culture);
 
         Currency = Money.Currency.FromCulture(culture);
         Value = value;
@@ -39,7 +39,9 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount(decimal value, ICurrency currency)
     {
-        Currency = currency ?? throw new ArgumentNullException(nameof(currency));
+        ArgumentNullException.ThrowIfNull(currency);
+
+        Currency = currency;
         Value = value;
     }
 
