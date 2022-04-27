@@ -32,7 +32,7 @@ public class AddressFormatter : IAddressFormatter
     /// 1. The province or state.
     /// 2. The postal code.
     /// </param>
-    /// <param name="uppercase">If true, the address is changed to uppercase after formatting.</param>
+    /// <param name="uppercase">If <see langword="true"/>, the address is changed to uppercase after formatting.</param>
     public AddressFormatter(
         string addressFormat = @"{0}
 {1}
