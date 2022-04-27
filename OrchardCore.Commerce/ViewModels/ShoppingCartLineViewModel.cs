@@ -20,9 +20,9 @@ public class ShoppingCartLineViewModel
         Attributes = attributes ?? new Dictionary<string, IProductAttributeValue>();
 
     public static bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other) =>
-        other.ProductSku == line.ProductSku
-        && (
-            ((line.Attributes is null || line.Attributes.Count == 0) && (other.Attributes is null || other.Attributes.Count == 0))
-            || (line.Attributes?.Count == other.Attributes.Count && !line.Attributes.Except(other.Attributes).Any())
+        other.ProductSku == line.ProductSku &&
+        (
+            ((line.Attributes is null || line.Attributes.Count == 0) && (other.Attributes is null || other.Attributes.Count == 0)) ||
+            (line.Attributes?.Count == other.Attributes.Count && !line.Attributes.Except(other.Attributes).Any())
         );
 }
