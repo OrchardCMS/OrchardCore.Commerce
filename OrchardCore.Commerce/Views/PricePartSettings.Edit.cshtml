@@ -24,22 +24,24 @@
     </fieldset>
 </fieldset>
 
-<script at="Foot">
-$(function () {
-    $(document).ready(function () {
-        SpecificCurrencyGroupVisibility($('#@Html.IdFor(m => m.CurrencySelectionMode)'), $('#@Html.IdFor(m => m.SpecificCurrencyIsoCode)-Group'));
-    });
+<script at="Foot" depends-on="jQuery">
+    jQuery(function ($) {
+        $(document).ready(function () {
+            SpecificCurrencyGroupVisibility(
+                $('#@Html.IdFor(m => m.CurrencySelectionMode)'),
+                $('#@Html.IdFor(m => m.SpecificCurrencyIsoCode)-Group'));
+        });
 
-    $('#@Html.IdFor(m => m.CurrencySelectionMode)').change(function () {
-        SpecificCurrencyGroupVisibility($(this), $('#@Html.IdFor(m => m.SpecificCurrencyIsoCode)-Group'));
-    });
+        $('#@Html.IdFor(m => m.CurrencySelectionMode)').change(function () {
+            SpecificCurrencyGroupVisibility($(this), $('#@Html.IdFor(m => m.SpecificCurrencyIsoCode)-Group'));
+        });
 
-    function SpecificCurrencyGroupVisibility(element, group) {
-        if ('@Html.ValueFor(m => m.SingleSelectionModeEditor)' === element.val()) {
-            group.show();
-        } else {
-            group.hide();
+        function SpecificCurrencyGroupVisibility(element, group) {
+            if ('@Html.ValueFor(m => m.SingleSelectionModeEditor)' === element.val()) {
+                group.show();
+            } else {
+                group.hide();
+            }
         }
-    }
-});
+    });
 </script>

@@ -61,8 +61,8 @@ else
             <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
         }
     </select>
-    <script at="Foot">
-        $(function () {
+    <script at="Foot" depends-on="jQuery">
+        jQuery(function ($) {
             $(".product-attribute-combo-select").on('change', function (e) {
                 var select = $(e.target);
                 select
