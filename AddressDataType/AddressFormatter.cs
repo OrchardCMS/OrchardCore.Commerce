@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace InternationalAddress;
 
@@ -65,9 +66,9 @@ public class AddressFormatter : IAddressFormatter
             address.StreetAddress2,
             string.Format(CultureInfo.InvariantCulture, _cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
-        var withoutEmptyLines = string.Join(
-            string.Empty,
-            rawFormatted.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries));
+        var withoutEmptyLines = Regex
+            .Replace(rawFormatted, @"\n\n+", "\n", RegexOptions.None, TimeSpan.FromSeconds(1))
+            .Trim('\n');
         return _uppercase
             ? withoutEmptyLines.ToUpperInvariant()
             : withoutEmptyLines;
