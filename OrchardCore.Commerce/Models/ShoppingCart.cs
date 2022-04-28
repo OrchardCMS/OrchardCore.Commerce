@@ -109,8 +109,8 @@ public class ShoppingCart
     }
 
     /// <summary>
-    /// Finds the index of the first line in the cart with the same product variant as the passed in item
-    /// (quantity may be different).
+    /// Finds the index of the first line in the cart with the same product variant as the passed in item (quantity may
+    /// be different).
     /// </summary>
     /// <param name="item">The item to find.</param>
     /// <returns>The index of the item, or -1 if not found.</returns>
