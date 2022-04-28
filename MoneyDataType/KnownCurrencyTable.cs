@@ -35,7 +35,8 @@ internal static class KnownCurrencyTable
 
         lock (_lockObject)
         {
-            CurrencyTable = CultureInfo.GetCultures(CultureTypes.AllCultures)
+            CurrencyTable = CultureInfo
+                .GetCultures(CultureTypes.AllCultures)
                 .Where(IsValid)
                 .Select(c => new Currency(c))
                 .Cast<ICurrency>()

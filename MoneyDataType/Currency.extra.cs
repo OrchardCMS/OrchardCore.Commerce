@@ -128,19 +128,18 @@ public readonly partial struct Currency
     private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
 
     public static ICurrency FromIsoCode(string code, IEnumerable<ICurrencyProvider> providers = null) =>
-        _defaultProvider.GetCurrency(code) ?? (providers ?? new List<ICurrencyProvider>())
-        .SelectMany(p => p.Currencies)
-        .FirstOrDefault(c => c.CurrencyIsoCode == code);
+        _defaultProvider.GetCurrency(code) ??
+        providers?.SelectMany(p => p.Currencies).FirstOrDefault(c => c.CurrencyIsoCode == code);
 
     public static ICurrency FromNativeName(string name, IEnumerable<ICurrencyProvider> providers = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new ArgumentException("Must provide a name", nameof(name));
+            throw new ArgumentException("Must provide a name.", nameof(name));
         }
 
-        return (providers ?? new List<ICurrencyProvider>())
-            .SelectMany(p => p.Currencies)
+        return providers
+            ?.SelectMany(p => p.Currencies)
             .FirstOrDefault(c => c.NativeName == name);
     }
 
@@ -148,10 +147,12 @@ public readonly partial struct Currency
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new ArgumentException("Must provide a name", nameof(name));
+            throw new ArgumentException("Must provide a name.", nameof(name));
         }
 
-        return (providers ?? new List<ICurrencyProvider>()).SelectMany(p => p.Currencies).FirstOrDefault(c => c.EnglishName == name);
+        return providers
+            ?.SelectMany(p => p.Currencies)
+            .FirstOrDefault(c => c.EnglishName == name);
     }
 
     public static ICurrency FromRegion(RegionInfo region, IEnumerable<ICurrencyProvider> providers = null)
@@ -166,8 +167,8 @@ public readonly partial struct Currency
     {
         KnownCurrencyTable.EnsureCurrencyTable();
         var temp = new Currency(culture);
-        return (providers ?? new List<ICurrencyProvider>())
-            .SelectMany(p => p.Currencies)
+        return providers
+            ?.SelectMany(p => p.Currencies)
             .FirstOrDefault(c => c.CurrencyIsoCode == temp.CurrencyIsoCode);
     }
 }

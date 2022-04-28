@@ -38,7 +38,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         string nativeName,
         string englishName,
         string symbol,
-        string iSoSymbol,
+        string isoSymbol,
         int decimalDigits = DefaultDecimalDigits)
     {
         if (string.IsNullOrWhiteSpace(nativeName))
@@ -56,9 +56,9 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
             throw new ArgumentException("Symbol is required.", nameof(symbol));
         }
 
-        if (string.IsNullOrWhiteSpace(iSoSymbol))
+        if (string.IsNullOrWhiteSpace(isoSymbol))
         {
-            throw new ArgumentException("ISO Symbol is required.", nameof(iSoSymbol));
+            throw new ArgumentException("ISO Symbol is required.", nameof(isoSymbol));
         }
 
         if (decimalDigits < 0)
@@ -70,7 +70,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         NativeName = nativeName;
         EnglishName = englishName;
         Symbol = symbol;
-        CurrencyIsoCode = iSoSymbol;
+        CurrencyIsoCode = isoSymbol;
         DecimalPlaces = decimalDigits;
     }
 
