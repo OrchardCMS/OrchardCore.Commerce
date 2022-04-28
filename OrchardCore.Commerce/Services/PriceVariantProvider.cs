@@ -26,8 +26,7 @@ public class PriceVariantProvider : IPriceProvider
     public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
         var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
-        var skuProducts = (await _productService.GetProductsAsync(skus))
-            .ToDictionary(productPart => productPart.Sku);
+        var skuProducts = (await _productService.GetProductsAsync(skus)).ToDictionary(productPart => productPart.Sku);
 
         return items
             .Select(item =>

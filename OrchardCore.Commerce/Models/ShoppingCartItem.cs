@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace OrchardCore.Commerce.Models;
 
 /// <summary>
-/// Ashopping cart item.
+/// A shopping cart item.
 /// </summary>
 [JsonConverter(typeof(ShoppingCartItemConverter))]
 public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>

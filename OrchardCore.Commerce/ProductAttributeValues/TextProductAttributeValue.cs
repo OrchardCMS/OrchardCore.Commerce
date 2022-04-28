@@ -8,8 +8,8 @@ namespace OrchardCore.Commerce.ProductAttributeValues;
 public class TextProductAttributeValue
     : BaseProductAttributeValue<IEnumerable<string>>, IPredefinedValuesProductAttributeValue<string>
 {
-    public TextProductAttributeValue(string attributeName, IEnumerable<string> value)
-        : base(attributeName, value)
+    public TextProductAttributeValue(string attributeName, IEnumerable<string> values)
+        : base(attributeName, values)
     {
     }
 
@@ -19,7 +19,7 @@ public class TextProductAttributeValue
     }
 
     public override string Display(CultureInfo culture = null) =>
-        Value is null || !Value.Any() || Value.First() is null
+        Value?.FirstOrDefault() is null
             ? string.Empty
             : FieldName + ": " + string.Join(", ", Value);
 

@@ -10,6 +10,7 @@ public class Permissions : IPermissionProvider
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync() =>
         Task.FromResult<IEnumerable<Permission>>(new[] { ManageCommerceSettings });
+
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
         new[]
         {

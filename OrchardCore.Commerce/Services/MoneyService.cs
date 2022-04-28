@@ -40,8 +40,7 @@ public class MoneyService : IMoneyService
             var defaultIsoCode = _options?.DefaultCurrency;
             return string.IsNullOrEmpty(defaultIsoCode)
                 ? Currency.UsDollar
-                : GetCurrency(_options.DefaultCurrency)
-                  ?? Currency.UsDollar;
+                : GetCurrency(defaultIsoCode) ?? Currency.UsDollar;
         }
     }
 
