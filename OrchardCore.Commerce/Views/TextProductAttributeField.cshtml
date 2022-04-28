@@ -12,16 +12,26 @@
 <input type="hidden" name="line.Attributes[@index].Key" value="@attr?.PartName.@attr?.Name" />
 @if (settings?.PredefinedValues is null || !settings.PredefinedValues.Any())
 {
-    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings?.DefaultValue" placeholder="@settings?.Placeholder" class="form-control" />
+    <input id="@id"
+           type="text"
+           name="line.Attributes[@index].Value"
+           value="@settings?.DefaultValue"
+           placeholder="@settings?.Placeholder"
+           class="form-control" />
 }
 else if (settings.MultipleValues)
 {
     <ul>
         @foreach (string predefinedValue in settings.PredefinedValues)
         {
-            var optionId = $"{id}-{optionIndex++}";
+            var optionId = $"{id}-{optionIndex}";
+            optionIndex++;
             <li>
-                <input id="optionId" type="checkbox" name="line.Attributes[@index].Value" checked="@(predefinedValue == settings.DefaultValue)" class="form-check-input" />
+                <input id="optionId"
+                       type="checkbox"
+                       name="line.Attributes[@index].Value"
+                       checked="@(predefinedValue == settings.DefaultValue)"
+                       class="form-check-input" />
                 <label for="@optionId" class="form-check-label">@predefinedValue</label>
             </li>
         }
@@ -43,9 +53,15 @@ else if (settings.RestrictToPredefinedValues)
         <ul>
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
-                var optionId = $"{id}-{optionIndex++}";
+                var optionId = $"{id}-{optionIndex}";
+                optionIndex++;
                 <li>
-                    <input id="@optionId" type="radio" name="line.Attributes[@index].Value" value="@predefinedValue" checked="@(predefinedValue == settings.DefaultValue)" class="form-check-input" />
+                    <input id="@optionId"
+                           type="radio"
+                           name="line.Attributes[@index].Value"
+                           value="@predefinedValue"
+                           checked="@(predefinedValue == settings.DefaultValue)"
+                           class="form-check-input" />
                     <label for="@optionId" class="form-check-label">@predefinedValue</label>
                 </li>
             }
@@ -54,7 +70,12 @@ else if (settings.RestrictToPredefinedValues)
 }
 else
 {
-    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" class="form-control" />
+    <input id="@id"
+           type="text"
+           name="line.Attributes[@index].Value"
+           value="@settings.DefaultValue"
+           placeholder="@settings.Placeholder"
+           class="form-control" />
     <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select form-control">
         @foreach (string predefinedValue in settings.PredefinedValues)
         {
@@ -73,6 +94,7 @@ else
         });
     </script>
 }
+
 @if (settings?.Hint != null)
 {
     <div class="hint form-text text-muted">@settings.Hint</div>
