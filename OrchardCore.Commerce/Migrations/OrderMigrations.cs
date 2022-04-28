@@ -18,7 +18,8 @@ public class OrderMigrations : DataMigration
 
     public int Create()
     {
-        _contentDefinitionManager.AlterPartDefinition("OrderPart", builder => builder
+        _contentDefinitionManager
+            .AlterPartDefinition("OrderPart", builder => builder
             .Attachable()
             .WithDescription("Makes a content item into an order."));
 

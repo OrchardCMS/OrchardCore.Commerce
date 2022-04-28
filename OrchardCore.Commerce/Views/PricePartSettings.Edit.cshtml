@@ -36,8 +36,8 @@
             SpecificCurrencyGroupVisibility($(this), $('#@Html.IdFor(model => model.SpecificCurrencyIsoCode)-Group'));
         });
 
-        function SpecificCurrencyGroupVisibility(element, group) {
-            group['@Html.ValueFor(model => model.SingleSelectionModeEditor)' === element.val() ? 'show' : 'hide']();
+        function SpecificCurrencyGroupVisibility($element, $group) {
+            $group.toggle('@Html.ValueFor(model => model.SingleSelectionModeEditor)' === $element.val());
         }
     });
 </script>

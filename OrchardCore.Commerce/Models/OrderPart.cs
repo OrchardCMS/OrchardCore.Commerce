@@ -17,7 +17,7 @@ public class OrderPart : ContentPart
     public IList<OrderAdditionalCost> AdditionalCosts { get; } = new List<OrderAdditionalCost>();
 
     /// <summary>
-    /// Gets the amounts already paid for this order. Typically a single credit card charge.
+    /// Gets the amounts charged for this order. Typically a single credit card charge.
     /// </summary>
     public IList<IPayment> Charges { get; } = new List<IPayment>();
 }

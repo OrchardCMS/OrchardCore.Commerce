@@ -18,17 +18,19 @@ public class ProductMigrations : DataMigration
 
     public int Create()
     {
-        _contentDefinitionManager.AlterPartDefinition("ProductPart", builder => builder
-            .Attachable()
-            .WithDescription("Makes a content item into a product."));
+        _contentDefinitionManager
+            .AlterPartDefinition("ProductPart", builder => builder
+                .Attachable()
+                .WithDescription("Makes a content item into a product."));
 
-        SchemaBuilder.CreateMapIndexTable<ProductPartIndex>(
-            table => table
+        SchemaBuilder
+            .CreateMapIndexTable<ProductPartIndex>(table => table
                 .Column<string>("Sku", column => column.WithLength(128))
                 .Column<string>("ContentItemId", column => column.WithLength(26)));
 
-        SchemaBuilder.AlterTable(nameof(ProductPartIndex), table => table
-            .CreateIndex("IDX_ProductPartIndex_Sku", "Sku"));
+        SchemaBuilder
+            .AlterTable(nameof(ProductPartIndex), table => table
+                .CreateIndex("IDX_ProductPartIndex_Sku", "Sku"));
 
         return 1;
     }

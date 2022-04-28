@@ -16,10 +16,11 @@ public class PriceMigrations : DataMigration
 
     public int Create()
     {
-        _contentDefinitionManager.AlterPartDefinition("PricePart", builder => builder
-            .Attachable()
-            .Reusable()
-            .WithDescription("Adds a simple price to a product."));
+        _contentDefinitionManager
+            .AlterPartDefinition("PricePart", builder => builder
+                .Attachable()
+                .Reusable()
+                .WithDescription("Adds a simple price to a product."));
         return 1;
     }
 }

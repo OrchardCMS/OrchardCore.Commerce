@@ -12,8 +12,10 @@ public class CommerceSettingsConfiguration : IConfigureOptions<CommerceSettings>
 
     public void Configure(CommerceSettings options)
     {
-        var settings = _site.GetSiteSettingsAsync()
-            .GetAwaiter().GetResult()
+        var settings = _site
+            .GetSiteSettingsAsync()
+            .GetAwaiter()
+            .GetResult()
             .As<CommerceSettings>();
 
         options.DefaultCurrency = settings.DefaultCurrency;

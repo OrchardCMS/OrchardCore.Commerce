@@ -27,10 +27,11 @@ public class ShoppingCart
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
     /// </summary>
     /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
-    public ShoppingCart(IEnumerable<ShoppingCartItem> items) =>
-        _items = items is null
-        ? new List<ShoppingCartItem>()
-        : new List<ShoppingCartItem>(items);
+    public ShoppingCart(IEnumerable<ShoppingCartItem> items)
+    {
+        items ??= Enumerable.Empty<ShoppingCartItem>();
+        _items = items as List<ShoppingCartItem> ?? new List<ShoppingCartItem>(items);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.

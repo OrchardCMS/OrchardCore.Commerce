@@ -21,7 +21,8 @@ public static class PredefinedValuesProductAttributeServiceExtensions
     public static IEnumerable<IEnumerable<object>> GetProductAttributesPredefinedValues(
         this IPredefinedValuesProductAttributeService service,
         ContentItem product) =>
-        service.GetProductAttributesRestrictedToPredefinedValues(product)
+        service
+            .GetProductAttributesRestrictedToPredefinedValues(product)
             .Where(description => description.Settings is IPredefinedValuesProductAttributeFieldSettings)
             .Select(description =>
                 ((IPredefinedValuesProductAttributeFieldSettings)description.Settings).PredefinedValues.ToList())

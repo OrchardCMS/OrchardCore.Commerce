@@ -50,14 +50,13 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     {
         var products = await GetProductsAsync(cart.Lines.Select(line => line.ProductSku));
         var types = ExtractTypeDefinitions(products.Values);
-        IList<ShoppingCartItem> parsedCart = cart.Lines
+
+        return new ShoppingCart(cart.Lines
             .Where(updateModel => updateModel.Quantity > 0)
             .Select(updateModel => new ShoppingCartItem(
                 updateModel.Quantity,
                 updateModel.ProductSku,
-                ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType])))
-            .ToList();
-        return new ShoppingCart(parsedCart);
+                ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType]))));
     }
 
     public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
@@ -93,8 +92,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
     public ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type) =>
         new HashSet<IProductAttributeValue>(
-            line.Attributes is null ? Enumerable.Empty<IProductAttributeValue>() :
-                line.Attributes
+            line.Attributes is null
+                ? Enumerable.Empty<IProductAttributeValue>()
+                : line.Attributes
                     .Select(attr =>
                     {
                         var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(type, attr.Key);
@@ -125,9 +125,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             }
         }
 
-        // Post-process attributes for concrete types according to field definitions
-        // (deserialization being essentially non-polymorphic and without access to our type definition
-        // contextual information).
+        // Post-process attributes for concrete types according to field definitions (deserialization being essentially
+        // non-polymorphic and without access to our type definition contextual information).
         var products = await GetProductsAsync(cart.Items.Select(item => item.ProductSku));
         var newCartItems = PostProcessAttributes(cart, products);
 
@@ -145,6 +144,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         {
             if (line.Attributes is null) continue;
             var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
+
             foreach (var attr in line.Attributes.OfType<RawProductAttributeValue>())
             {
                 var product = products[line.ProductSku];
@@ -184,9 +184,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private ContentTypeDefinition GetTypeDefinition(ProductPart product) =>
         _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
 
-    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition) GetFieldDefinition(
-        ContentTypeDefinition type,
-        string attributeName)
+    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
+        GetFieldDefinition(ContentTypeDefinition type, string attributeName)
     {
         var partAndField = attributeName.Split('.');
         var partName = partAndField[0];
