@@ -99,20 +99,17 @@ public class ShoppingCart
     /// <summary>
     /// Sets the list of prices for the item.
     /// </summary>
-    /// <param name="item">The item.</param>
-    /// <param name="prices">The list of prices.</param>
-    public void SetPrices(ShoppingCartItem item, IEnumerable<PrioritizedPrice> prices)
+    public void SetPrices(ShoppingCartItem item, IEnumerable<PrioritizedPrice> prioritizedPrices)
     {
         var existingIndex = IndexOf(item);
-        if (existingIndex != -1)
+        if (existingIndex == -1)
         {
-            Items.Remove(Items[existingIndex]);
-            Items.Insert(existingIndex, item.WithPrices(prices));
+            throw new InvalidOperationException(
+                $"Can't set prices for product \"{item.ProductSku}\" because it's not in the cart.");
         }
-        else
-        {
-            throw new InvalidOperationException($"Can't set {nameof(prices)} on a product that's not in the cart.");
-        }
+
+        Items.Remove(Items[existingIndex]);
+        Items.Insert(existingIndex, item.WithPrices(prioritizedPrices));
     }
 
     /// <summary>
