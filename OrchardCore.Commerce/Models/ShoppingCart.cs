@@ -10,10 +10,12 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class ShoppingCart
 {
+    private readonly List<ShoppingCartItem> _items;
+
     /// <summary>
     /// Gets the list of quantities of product variants in the cart.
     /// </summary>
-    public IList<ShoppingCartItem> Items { get; }
+    public IList<ShoppingCartItem> Items => _items;
 
     public ShoppingCart()
         : this(items: null)
@@ -25,7 +27,7 @@ public class ShoppingCart
     /// </summary>
     /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
     public ShoppingCart(IEnumerable<ShoppingCartItem> items) =>
-        Items = items is null
+        _items = items is null
         ? new List<ShoppingCartItem>()
         : new List<ShoppingCartItem>(items);
 
@@ -114,15 +116,5 @@ public class ShoppingCart
     /// </summary>
     /// <param name="item">The item to find.</param>
     /// <returns>The index of the item, or -1 if not found.</returns>
-    private int IndexOf(ShoppingCartItem item)
-    {
-        var index = 0;
-        foreach (var line in Items)
-        {
-            if (line.IsSameProductAs(item)) return index;
-            index++;
-        }
-
-        return -1;
-    }
+    private int IndexOf(ShoppingCartItem item) => _items.FindIndex(line => line.IsSameProductAs(item));
 }
