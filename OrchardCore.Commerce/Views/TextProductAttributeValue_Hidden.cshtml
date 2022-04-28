@@ -4,12 +4,13 @@
     var attr = Model.AttributeValue as TextProductAttributeValue;
     var name = $"{Model.NamePrefix ?? "line"}.Attributes[{index}]";
     var form = string.IsNullOrEmpty(Model.Form) ? "" : $" form=\"{Model.Form}\"";
+
     if (attr?.Value != null)
     {
         <input type="hidden"@Html.Raw(form) name="@(name).Key" value="@attr.AttributeName" />
-        @foreach (var val in attr.Value)
+        @foreach (var value in attr.Value)
 {
-            <input type="hidden"@Html.Raw(form) name="@(name).Value" value="@val" />
+            <input type="hidden"@Html.Raw(form) name="@(name).Value" value="@value" />
         }
     }
 }

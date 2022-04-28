@@ -4,6 +4,10 @@
     var attr = Model.AttributeValue as BooleanProductAttributeValue;
     var name = $"{Model.NamePrefix ?? "line"}.Attributes[{index}]";
     var form = string.IsNullOrEmpty(Model.Form) ? "" : $" form=\"{Model.Form}\"";
+
+    if (attr?.Value != null)
+    {
+        <input type="hidden"@Html.Raw(form) name="@(name).Key" value="@attr.AttributeName" />
+        <input type="hidden"@Html.Raw(form) name="@(name).Value" value="@attr.Value" />
+    }
 }
-<input type="hidden"@Html.Raw(form) name="@(name).Key" value="@attr.AttributeName" />
-<input type="hidden"@Html.Raw(form) name="@(name).Value" value="@attr.Value.ToString()" />
