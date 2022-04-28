@@ -39,6 +39,8 @@ public static class PredefinedValuesProductAttributeServiceExtensions
         return sequences.Aggregate(
             emptyProduct,
             (accumulator, sequence) =>
-                accumulator.SelectMany(_ => sequence, (accumulatorSequence, item) => accumulatorSequence.Concat(new[] { item })));
+                accumulator.SelectMany(
+                    _ => sequence,
+                    (accumulatorSequence, item) => accumulatorSequence.Concat(new[] { item })));
     }
 }

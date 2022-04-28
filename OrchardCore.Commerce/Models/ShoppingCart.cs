@@ -45,8 +45,7 @@ public class ShoppingCart
     public int Count => Items.Count;
 
     /// <summary>
-    /// Gets the total number of items (i.e. products) in the cart.
-    /// In other words, the sum of quantities of all lines.
+    /// Gets the total number of items (i.e. products) in the cart. In other words, the sum of quantities of all lines.
     /// </summary>
     [JsonIgnore]
     public int ItemCount => Items.Sum(item => item.Quantity);
@@ -59,8 +58,8 @@ public class ShoppingCart
     public ShoppingCart With(IEnumerable<ShoppingCartItem> items) => new(items);
 
     /// <summary>
-    /// Adds a quantity of product variants into the cart.
-    /// If the product variant already exists in the cart, the quantity gets updated. Otherwise, it's added to the end of the list.
+    /// Adds a quantity of product variants into the cart. If the product variant already exists in the cart, the
+    /// quantity gets updated. Otherwise, it's added to the end of the list.
     /// </summary>
     /// <param name="item">The cart item to add.</param>
     public void AddItem(ShoppingCartItem item)
@@ -110,7 +109,8 @@ public class ShoppingCart
     }
 
     /// <summary>
-    /// Finds the index of the first line in the cart with the same product variant as the passed in item (quantity may be different).
+    /// Finds the index of the first line in the cart with the same product variant as the passed in item
+    /// (quantity may be different).
     /// </summary>
     /// <param name="item">The item to find.</param>
     /// <returns>The index of the item, or -1 if not found.</returns>

@@ -146,7 +146,10 @@ public class ProductAttributeTests
     {
         var oneValue = _parser.Parse(_partTypeDefinition, _textFieldDefinition, "1") as TextProductAttributeValue;
         var twoValue = _parser.Parse(_partTypeDefinition, _textFieldDefinition, "2") as TextProductAttributeValue;
-        var listValue = _parser.Parse(_partTypeDefinition, _textFieldDefinition, new[] { "1", "2", "3" }) as TextProductAttributeValue;
+        var listValue = _parser.Parse(
+            _partTypeDefinition,
+            _textFieldDefinition,
+            new[] { "1", "2", "3" }) as TextProductAttributeValue;
 
         Assert.NotNull(oneValue);
         Assert.Equal("product.TextField", oneValue.AttributeName);

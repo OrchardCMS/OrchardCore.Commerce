@@ -37,7 +37,10 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             viewModel.Currencies = _moneyService.Currencies;
         });
 
-    public override async Task<IDisplayResult> UpdateAsync(PriceVariantsPart part, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(
+        PriceVariantsPart part,
+        IUpdateModel updater,
+        UpdatePartEditorContext context)
     {
         var updateModel = new PriceVariantsPartViewModel();
         if (await updater.TryUpdateModelAsync(

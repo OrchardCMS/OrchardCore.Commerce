@@ -20,7 +20,9 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
             (Action<TSettings>)model.PopulateSettings)
             .Location("Content");
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(
+        ContentPartFieldDefinition model,
+        UpdatePartFieldEditorContext context)
     {
         var viewModel = new TSettings();
 
@@ -55,12 +57,16 @@ public class TextProductAttributeFieldSettingsDriver
                 viewModel.DefaultValue = settings.DefaultValue;
                 viewModel.Required = settings.Required;
                 viewModel.Placeholder = settings.Placeholder;
-                viewModel.PredefinedValues = settings.PredefinedValues != null ? string.Join("\r\n", settings.PredefinedValues) : string.Empty;
+                viewModel.PredefinedValues = settings.PredefinedValues != null
+                    ? string.Join("\r\n", settings.PredefinedValues)
+                    : string.Empty;
                 viewModel.RestrictToPredefinedValues = settings.RestrictToPredefinedValues;
                 viewModel.MultipleValues = settings.MultipleValues;
             }).Location("Content");
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(
+        ContentPartFieldDefinition model,
+        UpdatePartFieldEditorContext context)
     {
         var viewModel = new TextProductAttributeSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix);

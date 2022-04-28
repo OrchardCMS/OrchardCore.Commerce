@@ -15,7 +15,9 @@ public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDrive
             (Action<AddressPartFieldSettings>)model.PopulateSettings)
             .Location("Content");
 
-    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(
+        ContentPartFieldDefinition model,
+        UpdatePartFieldEditorContext context)
     {
         var viewModel = new AddressPartFieldSettings();
 

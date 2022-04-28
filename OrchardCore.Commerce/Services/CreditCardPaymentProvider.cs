@@ -31,14 +31,18 @@ public class CreditCardPaymentProvider : IPaymentProvider
     {
         if (kind != CreditCardPayment.CreditCardKind) return null;
 
+        var last4 = data[Last4];
+        var expirationMonth = data[ExpirationMonth];
+        var expirationYear = data[ExpirationYear];
+
         return new CreditCardPayment
         {
             TransactionId = transactionId,
             Amount = amount,
-            ChargeText = T["Card **** **** **** {0} expiring {1}/{2}.", data[Last4], data[ExpirationMonth], data[ExpirationYear]].ToString(),
-            Last4 = data[Last4],
-            ExpirationMonth = int.TryParse(data[ExpirationMonth], out var expMonth) && expMonth >= 1 && expMonth <= 12 ? expMonth : 0,
-            ExpirationYear = int.TryParse(data[ExpirationYear], out var expYear) && expYear >= 0 ? expYear : 0,
+            ChargeText = T["Card **** **** **** {0} expiring {1}/{2}.", last4, expirationMonth, expirationYear].ToString(),
+            Last4 = last4,
+            ExpirationMonth = int.TryParse(expirationMonth, out var expMonth) && expMonth is >= 1 and <= 12 ? expMonth : 0,
+            ExpirationYear = int.TryParse(expirationYear, out var expYear) && expYear >= 0 ? expYear : 0,
         };
     }
 }

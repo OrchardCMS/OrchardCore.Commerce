@@ -83,7 +83,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         parsedLine = (await _priceService.AddPricesAsync(new[] { parsedLine })).Single();
         if (!parsedLine.Prices.Any())
         {
-            await _notifier.AddAsync(NotifyType.Error, T["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
+            await _notifier.AddAsync(
+                NotifyType.Error,
+                T["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
             return null;
         }
 
@@ -119,7 +121,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             cart.AddItem(item);
             if (item.Prices != null && item.Prices.Any())
             {
-                cart.SetPrices(item, item.Prices.Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price))));
+                cart.SetPrices(
+                    item,
+                    item.Prices.Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price))));
             }
         }
 

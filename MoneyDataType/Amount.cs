@@ -146,6 +146,7 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     {
         if (Currency.Equals(other.Currency)) return;
         throw new InvalidOperationException(
-            $"Can't {operation} amounts of different currencies ({Currency.CurrencyIsoCode} and {other.Currency.CurrencyIsoCode}).");
+            $"Can't {operation} amounts of different currencies ({Currency.CurrencyIsoCode} and " +
+            $"{other.Currency.CurrencyIsoCode}).");
     }
 }

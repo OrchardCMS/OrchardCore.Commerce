@@ -5,7 +5,8 @@ using System.Linq;
 
 namespace OrchardCore.Commerce.ProductAttributeValues;
 
-public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<string>>, IPredefinedValuesProductAttributeValue<string>
+public class TextProductAttributeValue
+    : BaseProductAttributeValue<IEnumerable<string>>, IPredefinedValuesProductAttributeValue<string>
 {
     public TextProductAttributeValue(string attributeName, IEnumerable<string> value)
         : base(attributeName, value)
@@ -18,14 +19,19 @@ public class TextProductAttributeValue : BaseProductAttributeValue<IEnumerable<s
     }
 
     public override string Display(CultureInfo culture = null) =>
-        Value is null || !Value.Any() || Value.First() is null ? string.Empty : FieldName + ": " + string.Join(", ", Value);
+        Value is null || !Value.Any() || Value.First() is null
+            ? string.Empty
+            : FieldName + ": " + string.Join(", ", Value);
 
     public override bool Equals(object obj) => base.Equals(obj);
 
     public override bool Equals(IProductAttributeValue<IEnumerable<string>> other) =>
-        other == null || other.Value == null || !other.Value.Any()
+        other?.Value == null || !other.Value.Any()
             ? Value == null || !Value.Any()
-            : Value != null && Value.Any() && AttributeName == other.AttributeName && new HashSet<string>(Value).SetEquals(other.Value);
+            : Value != null &&
+              Value.Any() &&
+              AttributeName == other.AttributeName &&
+              new HashSet<string>(Value).SetEquals(other.Value);
 
     public override int GetHashCode() =>
         Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());

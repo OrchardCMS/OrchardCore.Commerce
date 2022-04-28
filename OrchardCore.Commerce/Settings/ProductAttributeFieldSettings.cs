@@ -70,7 +70,8 @@ public class NumericProductAttributeFieldSettings : ProductAttributeFieldSetting
 /// <summary>
 /// Settings for the text product attribute.
 /// </summary>
-public class TextProductAttributeFieldSettings : ProductAttributeFieldSettings<string>, IPredefinedValuesProductAttributeFieldSettings
+public class TextProductAttributeFieldSettings
+    : ProductAttributeFieldSettings<string>, IPredefinedValuesProductAttributeFieldSettings
 {
     /// <summary>
     /// Gets or sets a value indicating whether a value is required.

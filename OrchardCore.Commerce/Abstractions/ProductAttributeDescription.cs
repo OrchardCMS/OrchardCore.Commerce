@@ -5,7 +5,11 @@ namespace OrchardCore.Commerce.Abstractions;
 
 public class ProductAttributeDescription
 {
-    public ProductAttributeDescription(string name, string partName, ProductAttributeField field, ProductAttributeFieldSettings settings)
+    public ProductAttributeDescription(
+        string name,
+        string partName,
+        ProductAttributeField field,
+        ProductAttributeFieldSettings settings)
     {
         Name = name;
         PartName = partName;

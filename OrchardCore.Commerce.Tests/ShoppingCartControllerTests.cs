@@ -129,27 +129,56 @@ public class ShoppingCartControllerTests
 
         using var controller = GetController();
 
-        await controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet2 });
+        await controller.RemoveItem(new ShoppingCartLineUpdateModel
+        {
+            Quantity = 0,
+            ProductSku = "foo",
+            Attributes = _attrSet2,
+        });
         expectedCartItems.RemoveAt(2); // foo - attr2
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
 
         // Removing an item that's no longer there does nothing.
-        await controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet2 });
+        await controller.RemoveItem(new ShoppingCartLineUpdateModel
+        {
+            Quantity = 0,
+            ProductSku = "foo",
+            Attributes = _attrSet2,
+        });
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
 
-        await controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "bar", Attributes = _attrSet3 });
+        await controller.RemoveItem(new ShoppingCartLineUpdateModel
+        {
+            Quantity = 0,
+            ProductSku = "bar",
+            Attributes = _attrSet3,
+        });
         expectedCartItems.RemoveAt(3); // bar - attr3
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
 
-        await controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo" });
+        await controller.RemoveItem(new ShoppingCartLineUpdateModel
+        {
+            Quantity = 0,
+            ProductSku = "foo",
+        });
         expectedCartItems.RemoveAt(0); // foo
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
 
-        await controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet1 });
+        await controller.RemoveItem(new ShoppingCartLineUpdateModel
+        {
+            Quantity = 0,
+            ProductSku = "foo",
+            Attributes = _attrSet1,
+        });
         expectedCartItems.RemoveAt(0); // foo - attr1
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
 
-        await controller.RemoveItem(new ShoppingCartLineUpdateModel { Quantity = 0, ProductSku = "foo", Attributes = _attrSet3 });
+        await controller.RemoveItem(new ShoppingCartLineUpdateModel
+        {
+            Quantity = 0,
+            ProductSku = "foo",
+            Attributes = _attrSet3,
+        });
         expectedCartItems.RemoveAt(0); // foo - attr3
         Assert.Equal(expectedCartItems, (await controller.Get()).Items);
     }

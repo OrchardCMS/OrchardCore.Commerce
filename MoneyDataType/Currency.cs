@@ -63,7 +63,9 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 
         if (decimalDigits < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(decimalDigits), "Decimal Digits must be greater than or equal to zero.");
+            throw new ArgumentOutOfRangeException(
+                nameof(decimalDigits),
+                "Decimal Digits must be greater than or equal to zero.");
         }
 
         Culture = null;

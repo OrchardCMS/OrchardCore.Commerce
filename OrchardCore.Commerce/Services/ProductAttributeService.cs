@@ -22,9 +22,14 @@ public class ProductAttributeService : IProductAttributeService
     {
         var productAttributeTypes = GetProductAttributeFieldTypes(product);
 
-        ProductAttributeField GetContentField(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition) =>
-            product.Get<ContentPart>(typePartDefinition.Name)
-                ?.Get(productAttributeTypes[partFieldDefinition.FieldDefinition.Name], partFieldDefinition.Name) as ProductAttributeField;
+        ProductAttributeField GetContentField(
+            ContentTypePartDefinition typePartDefinition,
+            ContentPartFieldDefinition partFieldDefinition) =>
+            product
+                .Get<ContentPart>(typePartDefinition.Name)
+                ?.Get(
+                    productAttributeTypes[partFieldDefinition.FieldDefinition.Name],
+                    partFieldDefinition.Name) as ProductAttributeField;
 
         return _contentDefinitionManager
             .GetTypeDefinition(product.ContentType)
@@ -51,7 +56,9 @@ public class ProductAttributeService : IProductAttributeService
             .Distinct()
             .ToDictionary(type => type.Name);
 
-    private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field) =>
+    private ProductAttributeFieldSettings GetFieldSettings(
+        ContentPartFieldDefinition partFieldDefinition,
+        ProductAttributeField field) =>
         field
             ?.GetType()
             // Using that type parameter arbitrarily, any one of the concrete attribute settings types would have done.
