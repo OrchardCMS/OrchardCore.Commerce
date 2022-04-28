@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
@@ -29,7 +30,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
                 JsonValueKind.Array => new TextProductAttributeValue(
                     name,
                     value.EnumerateArray().Select(el => el.GetString())),
-                _ => new TextProductAttributeValue(name, values: null),
+                _ => new TextProductAttributeValue(name, values: (IEnumerable<string>)null), // The cast prevents S3220.
             },
             _ => null,
         };
