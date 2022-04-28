@@ -15,6 +15,18 @@ namespace Money;
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
+    private string DebuggerDisplay => ToString();
+
+    /// <summary>
+    /// Gets the decimal value.
+    /// </summary>
+    public decimal Value { get; }
+
+    /// <summary>
+    /// Gets the currency.
+    /// </summary>
+    public ICurrency Currency { get; }
+
     public Amount()
         : this(0, Money.Currency.UnspecifiedCurrency)
     {
@@ -38,16 +50,6 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
         Value = value;
     }
 
-    /// <summary>
-    /// Gets the decimal value.
-    /// </summary>
-    public decimal Value { get; }
-
-    /// <summary>
-    /// Gets the currency.
-    /// </summary>
-    public ICurrency Currency { get; }
-
     public bool Equals(Amount other) =>
         Value == other.Value &&
         ((Currency == null && other.Currency == null) || Currency?.Equals(other.Currency) == true);
@@ -58,13 +60,21 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public override string ToString() => Currency?.ToString(Value);
 
-    private string DebuggerDisplay => ToString();
-
     public int CompareTo(Amount other)
     {
         ThrowIfCurrencyDoesntMatch(other);
         return Value.CompareTo(other.Value);
     }
+
+    private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")
+    {
+        if (Currency.Equals(other.Currency)) return;
+        throw new InvalidOperationException(
+            $"Can't {operation} amounts of different currencies ({Currency.CurrencyIsoCode} and " +
+            $"{other.Currency.CurrencyIsoCode}).");
+    }
+
+    #region Operators
 
     public static explicit operator decimal(Amount amount) => amount.Value;
 
@@ -135,11 +145,5 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
         return first.Value >= second.Value;
     }
 
-    private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")
-    {
-        if (Currency.Equals(other.Currency)) return;
-        throw new InvalidOperationException(
-            $"Can't {operation} amounts of different currencies ({Currency.CurrencyIsoCode} and " +
-            $"{other.Currency.CurrencyIsoCode}).");
-    }
+    #endregion
 }
