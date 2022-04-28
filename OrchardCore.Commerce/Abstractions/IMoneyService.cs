@@ -20,7 +20,9 @@ public interface IMoneyService
     /// </summary>
     /// <param name="currencyIsoCode">The ISO code of the currency to look up.</param>
     /// <returns>The currency if found.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Throws if the currency code is not found from any active provider.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Throws if the currency code is not found from any active provider.
+    /// </exception>
     ICurrency GetCurrency(string currencyIsoCode);
 
     /// <summary>
@@ -29,7 +31,9 @@ public interface IMoneyService
     /// <param name="value">The decimal value of the amount.</param>
     /// <param name="currencyIsoCode">The ISO code of the currency.</param>
     /// <returns>The amount.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Throws if the currency code is not found from any active provider.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Throws if the currency code is not found from any active provider.
+    /// </exception>
     Amount Create(decimal value, string currencyIsoCode);
 
     /// <summary>

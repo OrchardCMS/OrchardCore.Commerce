@@ -13,7 +13,8 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 {
     private readonly IAddressFormatterProvider _addressFormatterProvider;
 
-    public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider) => _addressFormatterProvider = addressFormatterProvider;
+    public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider) =>
+        _addressFormatterProvider = addressFormatterProvider;
 
     public override IDisplayResult Edit(
         AddressField field,

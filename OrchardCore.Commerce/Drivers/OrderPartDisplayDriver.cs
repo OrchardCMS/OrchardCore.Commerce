@@ -42,8 +42,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private async ValueTask BuildViewModelAsync(OrderPartViewModel model, OrderPart part)
     {
         model.ContentItem = part.ContentItem;
-        var products =
-            await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
+        var products = await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
         var lineItems = await Task.WhenAll(part.LineItems.Select(async lineItem =>
         {
             var product = products[lineItem.ProductSku];

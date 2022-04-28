@@ -81,6 +81,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
         writer.WriteStartObject();
         writer.WritePropertyName(ValueName);
         writer.WriteValue(amount.Value);
+
         if (IsKnownCurrency(amount.Currency.CurrencyIsoCode))
         {
             writer.WritePropertyName(CurrencyName);

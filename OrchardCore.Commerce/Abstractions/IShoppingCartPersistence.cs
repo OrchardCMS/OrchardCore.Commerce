@@ -19,7 +19,8 @@ public interface IShoppingCartPersistence
     Task StoreAsync(ShoppingCart items, string shoppingCartId = null);
 
     /// <summary>
-    /// Generates a shopping cart ID from <paramref name="shoppingCartId"/> that's unique to this persistence implementation.
+    /// Generates a shopping cart ID from <paramref name="shoppingCartId"/> that's unique to this persistence
+    /// implementation.
     /// </summary>
     string GetUniqueCartId(string shoppingCartId);
 }

@@ -3,7 +3,7 @@ using Money;
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
-/// Describes a payment trasaction's details.
+/// Describes a payment transaction's details.
 /// </summary>
 public interface IPayment
 {

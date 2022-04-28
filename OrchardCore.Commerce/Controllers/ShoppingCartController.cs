@@ -44,16 +44,14 @@ public class ShoppingCartController : Controller
     public async Task<ActionResult> Index(string shoppingCartId = null)
     {
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
-        var products =
-            await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
+        var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPricesAsync(cart.Items);
         var lines = await Task.WhenAll(items.Select(async item =>
         {
             var product = products[item.ProductSku];
             var price = _priceStrategy.SelectPrice(item.Prices);
             var metaData = await _contentManager.GetContentItemMetadataAsync(product);
-            return new ShoppingCartLineViewModel(
-                attributes: item.Attributes.ToDictionary(attr => attr.AttributeName))
+            return new ShoppingCartLineViewModel(attributes: item.Attributes.ToDictionary(attr => attr.AttributeName))
             {
                 Quantity = item.Quantity,
                 ProductSku = item.ProductSku,
@@ -103,10 +101,7 @@ public class ShoppingCartController : Controller
         {
             await _workflowManager.TriggerEventAsync(
                 nameof(ProductAddedToCartEvent),
-                new
-                {
-                    LineItem = parsedLine,
-                },
+                new { LineItem = parsedLine },
                 "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
         }
 

@@ -8,19 +8,18 @@ namespace OrchardCore.Commerce;
 
 public class AdminMenu : INavigationProvider
 {
-    private readonly IStringLocalizer<AdminMenu> _;
+    private readonly IStringLocalizer<AdminMenu> T;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer) => _ = localizer;
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer) => T = localizer;
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            return Task.CompletedTask;
+        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase)) return Task.CompletedTask;
 
         builder
-            .Add(_["Configuration"], configuration => configuration
-                .Add(_["Settings"], settings => settings
-                    .Add(_["Commerce"], _["Commerce"], entry => entry
+            .Add(T["Configuration"], configuration => configuration
+                .Add(T["Settings"], settings => settings
+                    .Add(T["Commerce"], T["Commerce"], entry => entry
                         .Action("Index", "Admin", new
                         {
                             area = "OrchardCore.Settings",

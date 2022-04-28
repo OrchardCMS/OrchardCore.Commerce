@@ -19,8 +19,8 @@ public interface IPaymentProvider
     public IPayment CreateCharge(string kind, string transactionId, Amount amount, IDictionary<string, string> data);
 
     /// <summary>
-    /// Converts the information from <paramref name="charge"/> into <paramref name="data"/> so it can be used to
-    /// create further charges.
+    /// Converts the information from <paramref name="charge"/> into <paramref name="data"/> so it can be used to create
+    /// further charges.
     /// </summary>
     public void AddData(IPayment charge, IDictionary<string, string> data);
 }

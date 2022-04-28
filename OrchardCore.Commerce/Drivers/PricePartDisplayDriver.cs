@@ -32,7 +32,7 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
         {
             await BuildViewModelAsync(m, part);
 
-            // This is only required for the editor. Not the frontend display.
+            // This is only required for the editor, not the frontend display.
             m.Currencies = GetCurrencySelectionList(pricePartSettings);
         });
     }

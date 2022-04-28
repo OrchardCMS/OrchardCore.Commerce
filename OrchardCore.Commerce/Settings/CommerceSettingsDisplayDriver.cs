@@ -23,7 +23,7 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IMoneyService _moneyService;
-    private readonly IStringLocalizer _s;
+    private readonly IStringLocalizer T;
 
     public CommerceSettingsDisplayDriver(
         IShellHost orchardHost,
@@ -38,7 +38,7 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _moneyService = moneyService;
-        _s = stringLocalizer;
+        T = stringLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(CommerceSettings section, BuildEditorContext context)
@@ -60,7 +60,7 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
                     .OrderBy(currency => currency.CurrencyIsoCode)
                     .Select(currency => new SelectListItem(
                         currency.CurrencyIsoCode,
-                        $"{currency.CurrencyIsoCode} {currency.Symbol} - {_s[currency.EnglishName]}"));
+                        $"{currency.CurrencyIsoCode} {currency.Symbol} - {T[currency.EnglishName]}"));
             })
                 .Location("Content:5")
                 .OnGroup(GroupId),
