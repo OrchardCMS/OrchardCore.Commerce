@@ -127,13 +127,10 @@ public readonly partial struct Currency
 
     private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
 
-    public static ICurrency FromIsoCode(string code, IEnumerable<ICurrencyProvider> providers = null)
-    {
-        var found = _defaultProvider.GetCurrency(code);
-        return found ?? (providers ?? new List<ICurrencyProvider>())
-            .SelectMany(p => p.Currencies)
-            .FirstOrDefault(c => c.CurrencyIsoCode == code);
-    }
+    public static ICurrency FromIsoCode(string code, IEnumerable<ICurrencyProvider> providers = null) =>
+        _defaultProvider.GetCurrency(code) ?? (providers ?? new List<ICurrencyProvider>())
+        .SelectMany(p => p.Currencies)
+        .FirstOrDefault(c => c.CurrencyIsoCode == code);
 
     public static ICurrency FromNativeName(string name, IEnumerable<ICurrencyProvider> providers = null)
     {
