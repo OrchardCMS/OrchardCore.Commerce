@@ -4,8 +4,8 @@
 @{
     var step = Math.Pow(10, 0 - Model.DecimalPlaces);
     var stepAttribute = step.ToString(CultureInfo.InvariantCulture);
-    var minimum = (Model.Minimum.HasValue) ? Math.Round(Model.Minimum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
-    var maximum = (Model.Maximum.HasValue) ? Math.Round(Model.Maximum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
+    var minimum = Model.Minimum.HasValue ? Math.Round(Model.Minimum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
+    var maximum = Model.Maximum.HasValue ? Math.Round(Model.Maximum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
 }
 
 <div class="form-group">
