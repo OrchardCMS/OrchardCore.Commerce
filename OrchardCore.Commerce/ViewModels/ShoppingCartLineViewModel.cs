@@ -21,11 +21,6 @@ public class ShoppingCartLineViewModel
 
     public static bool IsSameProductAs(ShoppingCartLineViewModel line, ShoppingCartLineViewModel other) =>
         other.ProductSku == line.ProductSku &&
-        (
-            (
-                (line.Attributes is null || line.Attributes.Count == 0) &&
-                (other.Attributes is null || other.Attributes.Count == 0)
-            ) ||
-            (line.Attributes?.Count == other.Attributes.Count && !line.Attributes.Except(other.Attributes).Any())
-        );
+        line.Attributes?.Count == other.Attributes.Count &&
+        !line.Attributes.Except(other.Attributes).Any();
 }
