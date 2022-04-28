@@ -20,7 +20,7 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     public PricePartDisplayDriver(IMoneyService moneyService) => _moneyService = moneyService;
 
     public override IDisplayResult Display(PricePart part, BuildPartDisplayContext context) =>
-        Initialize<PricePartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
+        Initialize<PricePartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModelAsync(viewModel, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
@@ -28,19 +28,23 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
     {
         var pricePartSettings = context.TypePartDefinition.GetSettings<PricePartSettings>();
 
-        return Initialize<PricePartViewModel>(GetEditorShapeType(context), async m =>
+        return Initialize<PricePartViewModel>(GetEditorShapeType(context), async viewModel =>
         {
-            await BuildViewModelAsync(m, part);
+            await BuildViewModelAsync(viewModel, part);
 
             // This is only required for the editor, not the frontend display.
-            m.Currencies = GetCurrencySelectionList(pricePartSettings);
+            viewModel.Currencies = GetCurrencySelectionList(pricePartSettings);
         });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(PricePart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
         var updateModel = new PricePartViewModel();
-        if (await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.PriceValue, t => t.PriceCurrency))
+        if (await updater.TryUpdateModelAsync(
+                updateModel,
+                Prefix,
+                viewModel => viewModel.PriceValue,
+                viewModel => viewModel.PriceCurrency))
         {
             part.Price = _moneyService.Create(updateModel.PriceValue, updateModel.PriceCurrency);
         }

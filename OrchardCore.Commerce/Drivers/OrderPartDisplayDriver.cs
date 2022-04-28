@@ -25,16 +25,16 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
-        Initialize<OrderPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, part))
+        Initialize<OrderPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModelAsync(viewModel, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        Initialize<OrderPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, part));
+        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
-        await updater.TryUpdateModelAsync(part, Prefix, t => t.LineItems);
+        await updater.TryUpdateModelAsync(part, Prefix, orderPart => orderPart.LineItems);
 
         return await EditAsync(part, context);
     }

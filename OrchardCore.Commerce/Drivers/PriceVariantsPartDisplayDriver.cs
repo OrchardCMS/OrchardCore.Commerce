@@ -26,21 +26,25 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part))
+        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), m =>
+        Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), viewModel =>
         {
-            BuildViewModel(m, part);
-            m.Currencies = _moneyService.Currencies;
+            BuildViewModel(viewModel, part);
+            viewModel.Currencies = _moneyService.Currencies;
         });
 
     public override async Task<IDisplayResult> UpdateAsync(PriceVariantsPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
         var updateModel = new PriceVariantsPartViewModel();
-        if (await updater.TryUpdateModelAsync(updateModel, Prefix, t => t.VariantsValues, t => t.VariantsCurrencies))
+        if (await updater.TryUpdateModelAsync(
+                updateModel,
+                Prefix,
+                viewModel => viewModel.VariantsValues,
+                viewModel => viewModel.VariantsCurrencies))
         {
             // Remove any content or the variants would be merged and not be cleared
             part.Content.Variants.RemoveAll();
@@ -64,19 +68,21 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         model.ContentItem = part.ContentItem;
         model.PriceVariantsPart = part;
 
-        var allVariantsKeys = _predefinedValuesProductAttributeService.GetProductAttributesCombinations(part.ContentItem);
+        var allVariantsKeys = _predefinedValuesProductAttributeService
+            .GetProductAttributesCombinations(part.ContentItem)
+            .ToList();
 
         var variants = part.Variants ?? new Dictionary<string, Amount>();
 
         var values = allVariantsKeys.ToDictionary(
-            x => x,
-            x => model.Variants.TryGetValue(x, out var amount)
+            key => key,
+            key => model.Variants.TryGetValue(key, out var amount)
                 ? new decimal?(amount.Value)
                 : null);
 
         var currencies = allVariantsKeys.ToDictionary(
-            x => x,
-            x => model.Variants.TryGetValue(x, out var amount)
+            key => key,
+            key => model.Variants.TryGetValue(key, out var amount)
                 ? amount.Currency.CurrencyIsoCode
                 : Currency.UnspecifiedCurrency.CurrencyIsoCode);
 

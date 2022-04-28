@@ -59,8 +59,8 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
         await context.Updater.TryUpdateModelAsync(
             viewModel,
             Prefix,
-            m => m.CurrencySelectionMode,
-            m => m.SpecificCurrencyIsoCode);
+            settings => settings.CurrencySelectionMode,
+            settings => settings.SpecificCurrencyIsoCode);
 
         context.Builder.WithSettings(new PricePartSettings
         {

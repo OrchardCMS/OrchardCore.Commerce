@@ -51,10 +51,10 @@ public class PriceTests
         cart = cart.With(await priceService.AddPricesAsync(cart.Items));
         Assert.Collection(
             cart.Items.Single().Prices,
-            p => Assert.Equal(1.0m, p.Price.Value),
-            p => Assert.Equal(2.0m, p.Price.Value),
-            p => Assert.Equal(3.0m, p.Price.Value),
-            p => Assert.Equal(4.0m, p.Price.Value));
+            price => Assert.Equal(1.0m, price.Price.Value),
+            price => Assert.Equal(2.0m, price.Price.Value),
+            price => Assert.Equal(3.0m, price.Price.Value),
+            price => Assert.Equal(4.0m, price.Price.Value));
     }
 
     [Fact]

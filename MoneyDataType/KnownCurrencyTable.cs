@@ -41,7 +41,7 @@ internal static class KnownCurrencyTable
                 .Select(culture => new Currency(culture))
                 .Cast<ICurrency>()
                 .Distinct(new CurrencyEqualityComparer())
-                .ToDictionary(currency => currency.CurrencyIsoCode, e => e);
+                .ToDictionary(currency => currency.CurrencyIsoCode, currency => currency);
 
             CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
             CurrencyTable.Add("---", Currency.UnspecifiedCurrency);
