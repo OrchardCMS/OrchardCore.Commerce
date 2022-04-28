@@ -66,7 +66,9 @@ public class ShoppingCartController : Controller
         var model = new ShoppingCartViewModel(lines)
         {
             Id = shoppingCartId,
-            Totals = lines.GroupBy(l => l.LinePrice.Currency).Select(g => new Amount(g.Sum(l => l.LinePrice.Value), g.Key)),
+            Totals = lines
+                .GroupBy(viewModel => viewModel.LinePrice.Currency)
+                .Select(group => new Amount(group.Sum(viewModel => viewModel.LinePrice.Value), group.Key)),
         };
         return View(model);
     }

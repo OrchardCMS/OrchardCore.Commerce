@@ -47,9 +47,9 @@ public class ProductAttributeService : IProductAttributeService
     private static IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
         product.OfType<ContentPart>()
             .SelectMany(parts => parts.OfType<ProductAttributeField>())
-            .Select(t => t.GetType())
+            .Select(field => field.GetType())
             .Distinct()
-            .ToDictionary(t => t.Name);
+            .ToDictionary(type => type.Name);
 
     private ProductAttributeFieldSettings GetFieldSettings(ContentPartFieldDefinition partFieldDefinition, ProductAttributeField field) =>
         field

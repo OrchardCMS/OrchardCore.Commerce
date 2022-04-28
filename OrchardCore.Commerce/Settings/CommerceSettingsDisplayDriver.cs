@@ -57,11 +57,13 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
                 model.DefaultCurrency = section.DefaultCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
                 model.CurrentDisplayCurrency = section.CurrentDisplayCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
                 model.Currencies = _moneyService.Currencies
-                    .OrderBy(c => c.CurrencyIsoCode)
-                    .Select(c => new SelectListItem(
-                        c.CurrencyIsoCode,
-                        $"{c.CurrencyIsoCode} {c.Symbol} - {_s[c.EnglishName]}"));
-            }).Location("Content:5").OnGroup(GroupId),
+                    .OrderBy(currency => currency.CurrencyIsoCode)
+                    .Select(currency => new SelectListItem(
+                        currency.CurrencyIsoCode,
+                        $"{currency.CurrencyIsoCode} {currency.Symbol} - {_s[currency.EnglishName]}"));
+            })
+                .Location("Content:5")
+                .OnGroup(GroupId),
         };
 
         return Combine(shapes);

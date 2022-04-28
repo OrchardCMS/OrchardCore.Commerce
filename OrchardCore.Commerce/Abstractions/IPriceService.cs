@@ -13,5 +13,5 @@ public interface IPriceService
     /// Adds prices harvested from all price providers to shopping cart items, in order.
     /// </summary>
     /// <param name="items">The quantities and products to which prices must be added.</param>
-    Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items);
+    Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items);
 }

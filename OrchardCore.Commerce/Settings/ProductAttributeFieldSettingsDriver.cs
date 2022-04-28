@@ -75,9 +75,9 @@ public class TextProductAttributeFieldSettingsDriver
                 MultipleValues = viewModel.MultipleValues,
                 PredefinedValues = (viewModel.PredefinedValues ?? string.Empty)
                     .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(v => v.Trim())
-                    .Where(v => !string.IsNullOrWhiteSpace(v))
-                    .ToArray(),
+                    .Select(line => line.Trim())
+                    .Where(line => !string.IsNullOrWhiteSpace(line))
+                    .ToList(),
             });
         return Edit(model);
     }

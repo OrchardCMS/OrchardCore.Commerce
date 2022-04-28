@@ -22,14 +22,16 @@ public static class PredefinedValuesProductAttributeServiceExtensions
         this IPredefinedValuesProductAttributeService service,
         ContentItem product) =>
         service.GetProductAttributesRestrictedToPredefinedValues(product)
-            .Select(x => (x.Settings as IPredefinedValuesProductAttributeFieldSettings)?.PredefinedValues.ToList())
+            .Where(description => description.Settings is IPredefinedValuesProductAttributeFieldSettings)
+            .Select(description =>
+                ((IPredefinedValuesProductAttributeFieldSettings)description.Settings).PredefinedValues.ToList())
             .ToList();
 
     public static IEnumerable<string> GetProductAttributesCombinations(
         this IPredefinedValuesProductAttributeService service,
         ContentItem product) =>
         CartesianProduct(service.GetProductAttributesPredefinedValues(product))
-            .Select(x => string.Join("-", x));
+            .Select(predefinedValues => string.Join("-", predefinedValues));
 
     private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
     {

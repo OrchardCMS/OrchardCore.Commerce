@@ -24,7 +24,7 @@ public class ProductPartContentAliasProvider : IContentHandleProvider
             var sku = handle[4..].ToUpperInvariant();
 
             var productPartIndex = await _session
-                .Query<ContentItem, ProductPartIndex>(x => x.Sku == sku)
+                .Query<ContentItem, ProductPartIndex>(index => index.Sku == sku)
                 .FirstOrDefaultAsync();
             return productPartIndex?.ContentItemId;
         }

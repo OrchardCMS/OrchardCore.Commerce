@@ -26,7 +26,7 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
         var contentItemIds = (await _session
-                .QueryIndex<ProductPartIndex>(x => x.Sku.IsIn(skus))
+                .QueryIndex<ProductPartIndex>(index => index.Sku.IsIn(skus))
                 .ListAsync())
             .Select(idx => idx.ContentItemId)
             .Distinct()

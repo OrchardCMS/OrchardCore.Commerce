@@ -15,11 +15,12 @@ public class PriceService : IPriceService
 
     public PriceService(IEnumerable<IPriceProvider> priceProviders) => _providers = priceProviders;
 
-    public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items)
+    public async Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        foreach (var priceProvider in _providers.OrderBy(p => p.Order))
+        foreach (var priceProvider in _providers.OrderBy(provider => provider.Order))
         {
-            items = await priceProvider.AddPricesAsync(items);
+            var result = await priceProvider.AddPricesAsync(items);
+            items = result as IList<ShoppingCartItem> ?? result.ToList();
         }
 
         return items;

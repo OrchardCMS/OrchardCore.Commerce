@@ -92,5 +92,5 @@
         <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces)));</text>
         Context.Items["commerce-regions-initialized"] = true;
     }
-    commerceRegionsBind("#@Html.IdFor(m => m.Address.Province)", "#@Html.IdFor(m => m.Address.Region)");
+    commerceRegionsBind("#@Html.IdFor(model => model.Address.Province)", "#@Html.IdFor(model => model.Address.Region)");
 </script>

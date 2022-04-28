@@ -42,11 +42,12 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
             };
             viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
             viewModel.Currencies = _moneyService.Currencies
-                .OrderBy(c => c.CurrencyIsoCode)
-                .Select(c => new SelectListItem(
-                    c.CurrencyIsoCode,
-                    $"{c.CurrencyIsoCode} {c.Symbol} - {_s[c.EnglishName]}"));
-        })).Location("Content");
+                .OrderBy(currency => currency.CurrencyIsoCode)
+                .Select(currency => new SelectListItem(
+                    currency.CurrencyIsoCode,
+                    $"{currency.CurrencyIsoCode} {currency.Symbol} - {_s[currency.EnglishName]}"));
+        }))
+            .Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)

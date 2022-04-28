@@ -23,11 +23,11 @@ public class PriceVariantProvider : IPriceProvider
 
     public int Order => 1;
 
-    public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items)
+    public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
         var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
         var skuProducts = (await _productService.GetProductsAsync(skus))
-            .ToDictionary(p => p.Sku);
+            .ToDictionary(productPart => productPart.Sku);
 
         return items
             .Select(item =>
@@ -35,7 +35,7 @@ public class PriceVariantProvider : IPriceProvider
                 if (skuProducts.TryGetValue(item.ProductSku, out var product))
                 {
                     var priceVariantsPart = product.ContentItem.As<PriceVariantsPart>();
-                    if (priceVariantsPart != null && priceVariantsPart.Variants != null)
+                    if (priceVariantsPart is { Variants: { } })
                     {
                         var attributesRestrictedToPredefinedValues = _predefinedValuesService
                             .GetProductAttributesRestrictedToPredefinedValues(product.ContentItem)
@@ -44,7 +44,7 @@ public class PriceVariantProvider : IPriceProvider
                         var predefinedAttributes = item.Attributes
                             .OfType<IPredefinedValuesProductAttributeValue>()
                             .Where(attribute => attributesRestrictedToPredefinedValues.Contains(attribute.AttributeName))
-                            .OrderBy(x => x.AttributeName);
+                            .OrderBy(value => value.AttributeName);
                         var variantKey = string.Join(
                             "-",
                             predefinedAttributes

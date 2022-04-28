@@ -75,9 +75,9 @@ public class PriceTests
     {
         var product = new ContentItem();
         product.GetOrCreate<PricePart>();
-        product.Alter<PricePart>(p => p.Price = new Amount(price, Currency.Euro));
+        product.Alter<PricePart>(pricePart => pricePart.Price = new Amount(price, Currency.Euro));
         product.GetOrCreate<ProductPart>();
-        product.Alter<ProductPart>(p => p.Sku = sku);
+        product.Alter<ProductPart>(productPart => productPart.Sku = sku);
         return product.As<ProductPart>();
     }
 
@@ -85,7 +85,8 @@ public class PriceTests
     {
         private readonly Dictionary<string, ProductPart> _products;
 
-        public DummyProductService(params ProductPart[] products) => _products = products.ToDictionary(p => p.Sku);
+        public DummyProductService(params ProductPart[] products) =>
+            _products = products.ToDictionary(productPart => productPart.Sku);
 
         public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
             Task.FromResult(skus.Select(sku => _products[sku]));
@@ -102,7 +103,7 @@ public class PriceTests
         public int Order { get; }
         public decimal Price { get; }
 
-        public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items) =>
+        public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
             Task.FromResult(
                 items.Select(item =>
                     item.WithPrice(

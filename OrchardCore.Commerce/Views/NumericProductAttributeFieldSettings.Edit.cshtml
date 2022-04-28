@@ -36,7 +36,7 @@
     <div class="row col-sm">
         <label asp-for="DecimalPlaces">@T["Decimal places"]</label>
         <input asp-for="DecimalPlaces" class="form-control affects-numeric-product-attr-default" min="0" max="5" step="1" type="number"
-               data-related-node="@Html.IdFor(m => m.DefaultValue)" />
+               data-related-node="@Html.IdFor(settings => settings.DefaultValue)" />
         <span class="hint">@T["The number of digits after the decimal point."]</span>
     </div>
 </div>
@@ -45,7 +45,7 @@
     <div class="row col-sm">
         <label asp-for="Minimum">@T["Minimum"]</label>
         <input asp-for="Minimum" class="form-control affects-numeric-product-attr-default"
-               data-related-node="@Html.IdFor(m => m.DefaultValue)" />
+               data-related-node="@Html.IdFor(settings => settings.DefaultValue)" />
         <span class="hint">@T["The minimum value allowed. (optional)"]</span>
     </div>
 </div>
@@ -54,7 +54,7 @@
     <div class="row col-sm">
         <label asp-for="Maximum">@T["Maximum"]</label>
         <input asp-for="Maximum" class="form-control affects-numeric-product-attr-default"
-               data-related-node="@Html.IdFor(m => m.DefaultValue)" />
+               data-related-node="@Html.IdFor(settings => settings.DefaultValue)" />
         <span class="hint">@T["The maximum value allowed. (optional)"]</span>
     </div>
 </div>
@@ -62,9 +62,15 @@
 <div class="form-group">
     <div class="row col-sm">
         <label asp-for="DefaultValue">@T["Default value"]</label>
-        <input asp-for="DefaultValue" class="form-control" min="@minimum" max="@maximum" step="@stepAttribute" type="number"
-               data-related-min="@Html.IdFor(m => m.Minimum)" data-related-max="@Html.IdFor(m => m.Maximum)"
-               data-related-decimal-places="@Html.IdFor(m => m.DecimalPlaces)"/>
+        <input asp-for="DefaultValue"
+               class="form-control"
+               min="@minimum"
+               max="@maximum"
+               step="@stepAttribute"
+               type="number"
+               data-related-min="@Html.IdFor(settings => settings.Minimum)"
+               data-related-max="@Html.IdFor(settings => settings.Maximum)"
+               data-related-decimal-places="@Html.IdFor(settings => settings.DecimalPlaces)"/>
         <span class="hint">@T["The default value. (optional)"]</span>
     </div>
 </div>

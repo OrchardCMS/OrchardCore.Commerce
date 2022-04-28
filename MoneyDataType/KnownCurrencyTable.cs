@@ -38,10 +38,10 @@ internal static class KnownCurrencyTable
             CurrencyTable = CultureInfo
                 .GetCultures(CultureTypes.AllCultures)
                 .Where(IsValid)
-                .Select(c => new Currency(c))
+                .Select(culture => new Currency(culture))
                 .Cast<ICurrency>()
                 .Distinct(new CurrencyEqualityComparer())
-                .ToDictionary(k => k.CurrencyIsoCode, e => e);
+                .ToDictionary(currency => currency.CurrencyIsoCode, e => e);
 
             CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
             CurrencyTable.Add("---", Currency.UnspecifiedCurrency);

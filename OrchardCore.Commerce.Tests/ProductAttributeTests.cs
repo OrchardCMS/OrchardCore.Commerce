@@ -180,11 +180,11 @@ public class ProductAttributeTests
         var productAttributeFields = productAttributeService.GetProductAttributeFields(product).ToArray();
 
         Assert.Equal(2, productAttributeFields.Length);
-        var foobool = productAttributeFields.FirstOrDefault(f => f.Name == "foobool");
+        var foobool = productAttributeFields.FirstOrDefault(field => field.Name == "foobool");
         Assert.Equal("ProductPart1", foobool?.PartName);
         Assert.Equal(boolProductAttribute, foobool?.Field);
         Assert.IsType<BooleanProductAttributeFieldSettings>(foobool?.Settings);
-        var footext = productAttributeFields.FirstOrDefault(f => f.Name == "footext");
+        var footext = productAttributeFields.FirstOrDefault(field => field.Name == "footext");
         Assert.Equal("ProductPart2", footext?.PartName);
         Assert.Equal(textProductAttribute, footext?.Field);
         Assert.IsType<TextProductAttributeFieldSettings>(footext?.Settings);

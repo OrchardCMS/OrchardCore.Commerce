@@ -30,8 +30,8 @@ public class MoneyService : IMoneyService
 
     public IEnumerable<ICurrency> Currencies =>
         _currencyProviders
-            .SelectMany(p => p.Currencies)
-            .OrderBy(c => c.CurrencyIsoCode);
+            .SelectMany(provider => provider.Currencies)
+            .OrderBy(currency => currency.CurrencyIsoCode);
 
     public ICurrency DefaultCurrency
     {
