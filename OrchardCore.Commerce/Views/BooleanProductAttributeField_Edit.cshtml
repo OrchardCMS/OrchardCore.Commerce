@@ -5,11 +5,11 @@
     var name = Model.PartFieldDefinition.DisplayName();
 }
 
-    <fieldset class="form-group">
-        <label>@name @T["(Boolean product attribute)"]</label>
-        <ul>
-            <li class="hint">@T["Label: {0}", settings.Label]</li>
-            <li class="hint">@(settings.DefaultValue ? T["Default value: on"] : T["Default value: off"])</li>
-            <li class="hint">@T["Hint: {0}", settings.Hint]</li>
-        </ul>
-    </fieldset>
+<fieldset class="form-group">
+    <label>@name @T["(Boolean product attribute)"]</label>
+    <ul>
+        <li class="hint">@T["Label: {0}", settings.Label]</li>
+        <li class="hint">@(settings.DefaultValue ? T["Default value: on"] : T["Default value: off"])</li>
+        <li class="hint">@T["Hint: {0}", settings.Hint]</li>
+    </ul>
+</fieldset>
