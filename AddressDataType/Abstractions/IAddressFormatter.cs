@@ -14,12 +14,12 @@ public interface IAddressFormatter
     string Format(Address address) =>
         address is null
         ? "-"
-        : JoinNonNullOrWhiteSpace(
+        : JoinNotNullAndNotWhiteSpace(
             Environment.NewLine,
             address.Department,
             address.Company,
             address.StreetAddress1,
             address.StreetAddress2,
-            JoinNonNullOrWhiteSpace(separator: " ", address.City, address.Province, address.PostalCode),
+            JoinNotNullAndNotWhiteSpace(separator: " ", address.City, address.Province, address.PostalCode),
             address.Region).ToUpperInvariant();
 }
