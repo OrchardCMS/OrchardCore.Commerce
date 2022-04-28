@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -17,7 +18,7 @@ public class PriceVariantsMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition("PriceVariantsPart", builder => builder
+            .AlterPartDefinition(nameof(PriceVariantsPart), builder => builder
                 .Attachable()
                 .WithDescription("A product variants prices based on predefined attributes."));
         return 1;

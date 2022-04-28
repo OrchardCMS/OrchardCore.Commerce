@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -17,7 +18,7 @@ public class PriceMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition("PricePart", builder => builder
+            .AlterPartDefinition(nameof(PricePart), builder => builder
                 .Attachable()
                 .Reusable()
                 .WithDescription("Adds a simple price to a product."));

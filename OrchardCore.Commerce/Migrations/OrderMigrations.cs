@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -19,9 +20,9 @@ public class OrderMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition("OrderPart", builder => builder
-            .Attachable()
-            .WithDescription("Makes a content item into an order."));
+            .AlterPartDefinition(nameof(OrderPart), builder => builder
+                .Attachable()
+                .WithDescription("Makes a content item into an order."));
 
         _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
 

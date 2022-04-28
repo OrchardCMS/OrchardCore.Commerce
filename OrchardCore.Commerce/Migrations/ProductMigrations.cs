@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Indexes;
+using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -19,18 +20,20 @@ public class ProductMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition("ProductPart", builder => builder
+            .AlterPartDefinition(nameof(ProductPart), builder => builder
                 .Attachable()
                 .WithDescription("Makes a content item into a product."));
 
         SchemaBuilder
             .CreateMapIndexTable<ProductPartIndex>(table => table
-                .Column<string>("Sku", column => column.WithLength(128))
-                .Column<string>("ContentItemId", column => column.WithLength(26)));
+                .Column<string>(nameof(ProductPartIndex.Sku), column => column.WithLength(128))
+                .Column<string>(nameof(ProductPartIndex.ContentItemId), column => column.WithLength(26)));
 
         SchemaBuilder
             .AlterTable(nameof(ProductPartIndex), table => table
-                .CreateIndex("IDX_ProductPartIndex_Sku", "Sku"));
+                .CreateIndex(
+                    $"IDX_{nameof(ProductPartIndex)}_{nameof(ProductPartIndex.Sku)}",
+                    nameof(ProductPartIndex.Sku)));
 
         return 1;
     }
