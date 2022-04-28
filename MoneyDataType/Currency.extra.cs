@@ -2,7 +2,6 @@ using Money.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 namespace Money;
 
@@ -129,7 +128,7 @@ public readonly partial struct Currency
 
     public static ICurrency FromIsoCode(string code, IEnumerable<ICurrencyProvider> providers = null) =>
         _defaultProvider.GetCurrency(code) ??
-        providers?.SelectMany(p => p.Currencies).FirstOrDefault(c => c.CurrencyIsoCode == code);
+        providers?.GetFirstCurrency(currency => currency.CurrencyIsoCode == code);
 
     public static ICurrency FromNativeName(string name, IEnumerable<ICurrencyProvider> providers = null)
     {
@@ -138,9 +137,7 @@ public readonly partial struct Currency
             throw new ArgumentException("Must provide a name.", nameof(name));
         }
 
-        return providers
-            ?.SelectMany(p => p.Currencies)
-            .FirstOrDefault(c => c.NativeName == name);
+        return providers?.GetFirstCurrency(currency => currency.NativeName == name);
     }
 
     public static ICurrency FromEnglishName(string name, IEnumerable<ICurrencyProvider> providers = null)
@@ -150,9 +147,7 @@ public readonly partial struct Currency
             throw new ArgumentException("Must provide a name.", nameof(name));
         }
 
-        return providers
-            ?.SelectMany(p => p.Currencies)
-            .FirstOrDefault(c => c.EnglishName == name);
+        return providers?.GetFirstCurrency(currency => currency.EnglishName == name);
     }
 
     public static ICurrency FromRegion(RegionInfo region, IEnumerable<ICurrencyProvider> providers = null)
@@ -167,8 +162,6 @@ public readonly partial struct Currency
     {
         KnownCurrencyTable.EnsureCurrencyTable();
         var temp = new Currency(culture);
-        return providers
-            ?.SelectMany(p => p.Currencies)
-            .FirstOrDefault(c => c.CurrencyIsoCode == temp.CurrencyIsoCode);
+        return providers?.GetFirstCurrency(currency => currency.CurrencyIsoCode == temp.CurrencyIsoCode);
     }
 }
