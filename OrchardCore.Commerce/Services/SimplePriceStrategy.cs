@@ -18,7 +18,7 @@ public class SimplePriceStrategy : IPriceSelectionStrategy
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices)
     {
         var priceCollection = prices as ICollection<PrioritizedPrice> ?? prices?.ToList();
-        if (priceCollection?.Any() != true) return new Amount(0, Currency.UnspecifiedCurrency);
+        if (priceCollection?.Any() != true) return new Amount();
 
         var maxPriority = priceCollection.Max(price => price.Priority);
         return priceCollection

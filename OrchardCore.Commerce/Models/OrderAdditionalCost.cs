@@ -15,7 +15,7 @@ public class OrderAdditionalCost
     public string Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the amount that will br charged on top of the cost of items in the order.
+    /// Gets or sets the amount that will be charged on top of the cost of the items in the order.
     /// </summary>
     public Amount Cost { get; set; }
 }

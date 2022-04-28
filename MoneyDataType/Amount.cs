@@ -16,25 +16,18 @@ namespace Money;
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
     public Amount()
+        : this(0, Money.Currency.UnspecifiedCurrency)
     {
-        Value = 0;
-        Currency = Money.Currency.UnspecifiedCurrency;
     }
 
     public Amount(decimal value, RegionInfo region)
+        : this(value, Money.Currency.FromRegion(region))
     {
-        ArgumentNullException.ThrowIfNull(region);
-
-        Currency = Money.Currency.FromRegion(region);
-        Value = value;
     }
 
     public Amount(decimal value, CultureInfo culture)
+        : this(value, Money.Currency.FromCulture(culture))
     {
-        ArgumentNullException.ThrowIfNull(culture);
-
-        Currency = Money.Currency.FromCulture(culture);
-        Value = value;
     }
 
     public Amount(decimal value, ICurrency currency)

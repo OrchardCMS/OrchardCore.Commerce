@@ -8,5 +8,5 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class PricePart : ContentPart
 {
-    public Amount Price { get; set; } = new Amount(0, Currency.UnspecifiedCurrency);
+    public Amount Price { get; set; }
 }

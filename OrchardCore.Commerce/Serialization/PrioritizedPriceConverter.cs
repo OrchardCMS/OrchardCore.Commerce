@@ -14,7 +14,7 @@ internal class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
     public override PrioritizedPrice Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var priority = int.MinValue;
-        var amount = new Amount(0, Currency.UnspecifiedCurrency);
+        var amount = new Amount();
 
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
