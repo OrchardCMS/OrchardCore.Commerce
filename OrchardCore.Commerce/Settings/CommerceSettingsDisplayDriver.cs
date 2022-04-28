@@ -88,7 +88,7 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
                 section.CurrentDisplayCurrency = model.CurrentDisplayCurrency;
             }
 
-            // Reload the tenant to apply the settings
+            // Reload the tenant to apply the settings.
             await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
         }
 
