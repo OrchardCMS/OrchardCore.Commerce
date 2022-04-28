@@ -11,9 +11,8 @@ namespace OrchardCore.Commerce.Services;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This price selection strategy will fail if the list of amounts
-/// isn't homogeneous in currency, so calling code is responsible for filtering
-/// for a specific currency before calling.
+/// This price selection strategy will fail if the list of amounts isn't homogeneous in currency, so calling code is
+/// responsible for filtering for a specific currency before calling.
 /// </para>
 /// </remarks>
 public class SimplePriceStrategy : IPriceSelectionStrategy
