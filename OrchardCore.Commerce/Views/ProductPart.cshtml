@@ -1,17 +1,26 @@
 @model ProductPartViewModel
+
 @{
-    var i = 0;
     var id = $"product-{Model.Sku}";
+    var attributes = Model
+        .Attributes
+        .Select((attribute, index) => (Attribute: attribute, Index: index));
 }
+
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
     <input type="hidden" name="line.ProductSku" value="@Model.Sku" />
     <label for="@id-quantity">@T["Quantity"]</label>
     <input id="@id-quantity" type="number" name="line.Quantity" step="1" min="1" value="1" class="form-control" />
     <ul class="product-attribute-list">
-        @foreach (var attr in Model.Attributes)
-        {
-        <li><shape Type="@attr.Field.GetType().Name" prop-index="@(i++)" prop-attributeDescription="@attr" prop-idPrefix="@id" /></li>
-        }
+    @foreach (var (attribute, index) in attributes)
+    {
+        <li>
+            <shape Type="@(attribute.Field.GetType().Name)"
+                   prop-index="@index"
+                   prop-attributeDescription="@(attribute)"
+                   prop-idPrefix="@id"/>
+        </li>
+    }
     </ul>
     <button type="submit" class="btn btn-primary" disabled="@(!Model.CanBeBought)">@T["Add to cart"]</button>
 </form>
