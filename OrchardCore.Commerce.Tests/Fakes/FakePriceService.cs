@@ -9,8 +9,11 @@ namespace OrchardCore.Commerce.Tests.Fakes;
 
 public class FakePriceService : IPriceService
 {
-    public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IEnumerable<ShoppingCartItem> items) =>
-        Task.FromResult(
-            items.Select(
-                (item, i) => item.WithPrice(new PrioritizedPrice(0, new Amount(42 + i, Currency.UsDollar)))));
+    public Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
+        Task.FromResult<IList<ShoppingCartItem>>(
+            items
+                .Select((item, index) => item.WithPrice(new PrioritizedPrice(
+                    priority: 0,
+                    price: new Amount(42 + index, Currency.UsDollar))))
+                .ToList());
 }
