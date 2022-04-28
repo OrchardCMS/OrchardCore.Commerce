@@ -43,27 +43,27 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
     {
         if (string.IsNullOrWhiteSpace(nativeName))
         {
-            throw new ArgumentException("NativeName is required", nameof(nativeName));
+            throw new ArgumentException("NativeName is required.", nameof(nativeName));
         }
 
         if (string.IsNullOrWhiteSpace(englishName))
         {
-            throw new ArgumentException("EnglishName is required", nameof(englishName));
+            throw new ArgumentException("EnglishName is required.", nameof(englishName));
         }
 
         if (string.IsNullOrWhiteSpace(symbol))
         {
-            throw new ArgumentException("Symbol is required", nameof(symbol));
+            throw new ArgumentException("Symbol is required.", nameof(symbol));
         }
 
         if (string.IsNullOrWhiteSpace(iSoSymbol))
         {
-            throw new ArgumentException("ISO Symbol is required", nameof(iSoSymbol));
+            throw new ArgumentException("ISO Symbol is required.", nameof(iSoSymbol));
         }
 
         if (decimalDigits < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(decimalDigits), "Decimal Digits must be greater than or equal to zero");
+            throw new ArgumentOutOfRangeException(nameof(decimalDigits), "Decimal Digits must be greater than or equal to zero.");
         }
 
         Culture = null;
