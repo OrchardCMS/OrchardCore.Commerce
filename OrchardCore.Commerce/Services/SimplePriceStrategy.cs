@@ -23,9 +23,10 @@ public class SimplePriceStrategy : IPriceSelectionStrategy
         var priceCollection = prices as ICollection<PrioritizedPrice> ?? prices?.ToList();
         if (priceCollection?.Any() != true) return new Amount();
 
-        var maxPriority = priceCollection.Max(price => price.Priority);
         return priceCollection
-            .Where(pp => pp.Priority == maxPriority)
-            .Min(pp => pp.Price);
+            .GroupBy(prioritizedPrice => prioritizedPrice.Priority)
+            .OrderByDescending(group => group.Key)
+            .First()
+            .Min(prioritizedPrice => prioritizedPrice.Price);
     }
 }

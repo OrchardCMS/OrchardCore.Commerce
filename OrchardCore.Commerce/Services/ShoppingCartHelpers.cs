@@ -112,7 +112,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         }
 
         var cartItems = JsonDocument.Parse(serializedCart).RootElement.GetProperty("Items").EnumerateArray();
-        // Actualize prices
+        // Update prices for all items in the shopping cart.
         foreach (var itemElement in cartItems)
         {
             var item = itemElement.ToObject<ShoppingCartItem>();
