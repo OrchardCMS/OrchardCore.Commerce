@@ -77,8 +77,8 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         var values = allVariantsKeys.ToDictionary(
             key => key,
             key => model.Variants.TryGetValue(key, out var amount)
-                ? new decimal?(amount.Value)
-                : null);
+                ? amount.Value
+                : (decimal?)null);
 
         var currencies = allVariantsKeys.ToDictionary(
             key => key,

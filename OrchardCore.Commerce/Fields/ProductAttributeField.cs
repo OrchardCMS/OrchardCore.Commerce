@@ -9,10 +9,11 @@ public abstract class ProductAttributeField : ContentField
 }
 
 /// <summary>
-/// Adds the ability for a product to be modified with a set of attributes, in particular when
-/// added to a shopping cart.
-/// Examples of attributes can be shirt sizes (S, M, L, XL), dimensions, etc.
+/// Adds the ability for a product to be modified with a set of attributes, in particular when added to a shopping cart.
 /// </summary>
+/// <remarks>
+/// <para>Examples of attributes can be shirt sizes (S, M, L, XL), dimensions, etc.</para>
+/// </remarks>
 public abstract class ProductAttributeField<TSettings> : ProductAttributeField
     where TSettings : ProductAttributeFieldSettings, new()
 {
@@ -39,7 +40,7 @@ public class NumericProductAttributeField : ProductAttributeField<NumericProduct
 }
 
 /// <summary>
-/// A text product attribute, that may also have predefined values and be used as enumerations or flags.
+/// A text product attribute, that may also have predefined values and may be used as enumeration or flags.
 /// </summary>
 public class TextProductAttributeField : ProductAttributeField<TextProductAttributeFieldSettings>
 {

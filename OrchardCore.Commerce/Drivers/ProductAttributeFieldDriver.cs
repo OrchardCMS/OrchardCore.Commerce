@@ -57,7 +57,8 @@ public class TextProductAttributeFieldDriver
     : ProductAttributeFieldDriver<TextProductAttributeField, TextProductAttributeFieldSettings>
 {
     public TextProductAttributeFieldDriver(
-        IStringLocalizer<ProductAttributeFieldDriver<TextProductAttributeField, TextProductAttributeFieldSettings>> localizer)
+        IStringLocalizer<
+            ProductAttributeFieldDriver<TextProductAttributeField, TextProductAttributeFieldSettings>> localizer)
         : base(localizer)
     {
     }

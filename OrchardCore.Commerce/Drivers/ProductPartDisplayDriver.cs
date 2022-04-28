@@ -13,7 +13,8 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 {
     private readonly IProductAttributeService _productAttributeService;
 
-    public ProductPartDisplayDriver(IProductAttributeService productAttributeService) => _productAttributeService = productAttributeService;
+    public ProductPartDisplayDriver(IProductAttributeService productAttributeService) =>
+        _productAttributeService = productAttributeService;
 
     public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
         Initialize<ProductPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
@@ -23,7 +24,10 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) =>
         Initialize<ProductPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part));
 
-    public override async Task<IDisplayResult> UpdateAsync(ProductPart part, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(
+        ProductPart part,
+        IUpdateModel updater,
+        UpdatePartEditorContext context)
     {
         await updater.TryUpdateModelAsync(part, Prefix, productPart => productPart.Sku);
 
