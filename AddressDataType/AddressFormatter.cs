@@ -67,8 +67,8 @@ public class AddressFormatter : IAddressFormatter
             string.Format(CultureInfo.InvariantCulture, _cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
         var withoutEmptyLines = Regex
-            .Replace(rawFormatted, @"\n\n+", "\n", RegexOptions.None, TimeSpan.FromSeconds(1))
-            .Trim('\n');
+            .Replace(rawFormatted, @"(?<first>\r?\n)[\r\n]+", "${first}", RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1))
+            .Trim('\r', '\n');
         return _uppercase
             ? withoutEmptyLines.ToUpperInvariant()
             : withoutEmptyLines;
