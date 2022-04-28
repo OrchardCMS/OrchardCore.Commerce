@@ -27,11 +27,14 @@ public class ShoppingCart
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
     /// </summary>
     /// <param name="items">The list of product variant quantities to copy onto the new cart.</param>
-    public ShoppingCart(IEnumerable<ShoppingCartItem> items)
-    {
-        items ??= Enumerable.Empty<ShoppingCartItem>();
-        _items = items as List<ShoppingCartItem> ?? new List<ShoppingCartItem>(items);
-    }
+    /// <remarks>
+    /// <para>
+    /// The constructor always copies the contents of <paramref name="items"/> into a new list to avoid accidentally
+    /// sharing it and mutating the object passed in.
+    /// </para>
+    /// </remarks>
+    public ShoppingCart(IEnumerable<ShoppingCartItem> items) =>
+        _items = new List<ShoppingCartItem>(items ?? Enumerable.Empty<ShoppingCartItem>());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
