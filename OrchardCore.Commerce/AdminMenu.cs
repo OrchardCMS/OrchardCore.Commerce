@@ -26,8 +26,7 @@ public class AdminMenu : INavigationProvider
                             groupId = CommerceSettingsDisplayDriver.GroupId,
                         })
                         .Permission(Permissions.ManageCommerceSettings)
-                        .LocalNav()
-                    )));
+                        .LocalNav())));
 
         return Task.CompletedTask;
     }

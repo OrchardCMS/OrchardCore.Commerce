@@ -129,8 +129,7 @@ public class SessionCartStorageStartup : StartupBase
             name: "ShoppingCart",
             areaName: "OrchardCore.Commerce",
             pattern: "shoppingcart/{action}",
-            defaults: new { controller = "ShoppingCart", action = "Index" }
-        );
+            defaults: new { controller = "ShoppingCart", action = "Index" });
     }
 }
 

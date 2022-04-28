@@ -55,8 +55,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             .Select(updateModel => new ShoppingCartItem(
                 updateModel.Quantity,
                 updateModel.ProductSku,
-                ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType])
-            ))
+                ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType])))
             .ToList();
         return new ShoppingCart(parsedCart);
     }
@@ -102,8 +101,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                         return _attributeProviders
                             .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attr.Value))
                             .FirstOrDefault(attributeValue => attributeValue != null);
-                    })
-        );
+                    }));
 
     public async Task<ShoppingCart> DeserializeAsync(string serializedCart)
     {

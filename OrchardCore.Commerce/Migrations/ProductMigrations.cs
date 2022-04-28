@@ -25,12 +25,10 @@ public class ProductMigrations : DataMigration
         SchemaBuilder.CreateMapIndexTable<ProductPartIndex>(
             table => table
                 .Column<string>("Sku", column => column.WithLength(128))
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-        );
+                .Column<string>("ContentItemId", column => column.WithLength(26)));
 
         SchemaBuilder.AlterTable(nameof(ProductPartIndex), table => table
-            .CreateIndex("IDX_ProductPartIndex_Sku", "Sku")
-        );
+            .CreateIndex("IDX_ProductPartIndex_Sku", "Sku"));
 
         return 1;
     }
