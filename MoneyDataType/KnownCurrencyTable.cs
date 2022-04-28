@@ -17,13 +17,10 @@ internal static class KnownCurrencyTable
         if (CurrencyTable == null) InitCurrencyCodeTable();
     }
 
-    private sealed class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
+    internal static ICurrency FromIsoCode(string isoCode)
     {
-        public bool Equals(ICurrency left, ICurrency right) =>
-            (left is null && right is null) ||
-            StringComparer.OrdinalIgnoreCase.Equals(left?.CurrencyIsoCode, right?.CurrencyIsoCode);
-
-        public int GetHashCode(ICurrency obj) => StringComparer.OrdinalIgnoreCase.GetHashCode(obj.CurrencyIsoCode);
+        EnsureCurrencyTable();
+        return CurrencyTable[isoCode];
     }
 
     private static void InitCurrencyCodeTable()
@@ -48,9 +45,12 @@ internal static class KnownCurrencyTable
         }
     }
 
-    internal static ICurrency FromIsoCode(string isoCode)
+    private sealed class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
     {
-        EnsureCurrencyTable();
-        return CurrencyTable[isoCode];
+        public bool Equals(ICurrency left, ICurrency right) =>
+            (left is null && right is null) ||
+            StringComparer.OrdinalIgnoreCase.Equals(left?.CurrencyIsoCode, right?.CurrencyIsoCode);
+
+        public int GetHashCode(ICurrency obj) => StringComparer.OrdinalIgnoreCase.GetHashCode(obj.CurrencyIsoCode);
     }
 }

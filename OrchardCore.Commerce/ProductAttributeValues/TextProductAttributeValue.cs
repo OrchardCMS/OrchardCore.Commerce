@@ -8,6 +8,10 @@ namespace OrchardCore.Commerce.ProductAttributeValues;
 public class TextProductAttributeValue
     : BaseProductAttributeValue<IEnumerable<string>>, IPredefinedValuesProductAttributeValue<string>
 {
+    public object UntypedPredefinedValue => PredefinedValue;
+
+    public string PredefinedValue => Value?.FirstOrDefault();
+
     public TextProductAttributeValue(string attributeName, IEnumerable<string> values)
         : base(attributeName, values)
     {
@@ -37,8 +41,4 @@ public class TextProductAttributeValue
         Value is null ? 1.GetHashCode() : Value.Aggregate(1.GetHashCode(), (code, val) => (code, val).GetHashCode());
 
     public override string ToString() => AttributeName + ": " + string.Join(", ", Value);
-
-    public object UntypedPredefinedValue => PredefinedValue;
-
-    public string PredefinedValue => Value?.FirstOrDefault();
 }

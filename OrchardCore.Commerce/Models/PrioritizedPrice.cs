@@ -23,11 +23,11 @@ public class PrioritizedPrice
     /// </summary>
     public Amount Price { get; }
 
+    private string DebuggerDisplay => FormattableString.Invariant($"{Price} ^{Priority}");
+
     public PrioritizedPrice(int priority, Amount price)
     {
         Priority = priority;
         Price = price;
     }
-
-    private string DebuggerDisplay => FormattableString.Invariant($"{Price} ^{Priority}");
 }

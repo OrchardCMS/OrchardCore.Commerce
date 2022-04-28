@@ -13,9 +13,9 @@ public class ProductPartContentAliasProvider : IContentHandleProvider
 {
     private readonly ISession _session;
 
-    public ProductPartContentAliasProvider(ISession session) => _session = session;
-
     public int Order => 57;
+
+    public ProductPartContentAliasProvider(ISession session) => _session = session;
 
     public async Task<string> GetContentItemIdAsync(string handle)
     {

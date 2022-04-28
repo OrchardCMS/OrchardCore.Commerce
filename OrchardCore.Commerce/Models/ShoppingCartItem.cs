@@ -13,25 +13,6 @@ namespace OrchardCore.Commerce.Models;
 [JsonConverter(typeof(ShoppingCartItemConverter))]
 public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 {
-    public ShoppingCartItem(
-        int quantity,
-        string productSku,
-        IEnumerable<IProductAttributeValue> attributes = null,
-        IEnumerable<PrioritizedPrice> prices = null)
-    {
-        ArgumentNullException.ThrowIfNull(productSku);
-        if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
-
-        Quantity = quantity;
-        ProductSku = productSku;
-        Attributes = attributes is null
-            ? new HashSet<IProductAttributeValue>()
-            : new HashSet<IProductAttributeValue>(attributes);
-        Prices = prices is null
-            ? new List<PrioritizedPrice>().AsReadOnly()
-            : new List<PrioritizedPrice>(prices).AsReadOnly();
-    }
-
     /// <summary>
     /// Gets the number of products.
     /// </summary>
@@ -51,6 +32,25 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     /// Gets the available prices.
     /// </summary>
     public IReadOnlyList<PrioritizedPrice> Prices { get; }
+
+    public ShoppingCartItem(
+        int quantity,
+        string productSku,
+        IEnumerable<IProductAttributeValue> attributes = null,
+        IEnumerable<PrioritizedPrice> prices = null)
+    {
+        ArgumentNullException.ThrowIfNull(productSku);
+        if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
+
+        Quantity = quantity;
+        ProductSku = productSku;
+        Attributes = attributes is null
+            ? new HashSet<IProductAttributeValue>()
+            : new HashSet<IProductAttributeValue>(attributes);
+        Prices = prices is null
+            ? new List<PrioritizedPrice>().AsReadOnly()
+            : new List<PrioritizedPrice>(prices).AsReadOnly();
+    }
 
     /// <summary>
     /// Creates a new shopping cart item that is a clone of this, but with prices replaced with new ones.

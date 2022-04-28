@@ -18,6 +18,18 @@ public class ShoppingCart
     /// </summary>
     public IList<ShoppingCartItem> Items => _items;
 
+    /// <summary>
+    /// Gets the number of lines in the cart.
+    /// </summary>
+    [JsonIgnore]
+    public int Count => Items.Count;
+
+    /// <summary>
+    /// Gets the total number of items (i.e. products) in the cart. In other words, the sum of quantities of all lines.
+    /// </summary>
+    [JsonIgnore]
+    public int ItemCount => Items.Sum(item => item.Quantity);
+
     public ShoppingCart()
         : this(items: null)
     {
@@ -44,18 +56,6 @@ public class ShoppingCart
         : this((IList<ShoppingCartItem>)items)
     {
     }
-
-    /// <summary>
-    /// Gets the number of lines in the cart.
-    /// </summary>
-    [JsonIgnore]
-    public int Count => Items.Count;
-
-    /// <summary>
-    /// Gets the total number of items (i.e. products) in the cart. In other words, the sum of quantities of all lines.
-    /// </summary>
-    [JsonIgnore]
-    public int ItemCount => Items.Sum(item => item.Quantity);
 
     /// <summary>
     /// Clones the shopping cart, replacing its list of items with a copy of the one provided.

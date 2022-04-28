@@ -14,6 +14,22 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 {
     public const int DefaultDecimalDigits = 2;
 
+    public int DecimalPlaces { get; }
+
+    public string CurrencyIsoCode { get; }
+
+    public string NativeName { get; }
+
+    public string EnglishName { get; }
+
+    public string Symbol { get; }
+
+    public CultureInfo Culture { get; }
+
+    public static ICurrency UnspecifiedCurrency { get; } = new Currency("Unspecified", "Unspecified", "---", "---");
+
+    private string DebuggerDisplay => CurrencyIsoCode;
+
     public Currency(CultureInfo culture)
     {
         ArgumentNullException.ThrowIfNull(culture);
@@ -76,20 +92,6 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         DecimalPlaces = decimalDigits;
     }
 
-    public int DecimalPlaces { get; }
-
-    public string CurrencyIsoCode { get; }
-
-    public string NativeName { get; }
-
-    public string EnglishName { get; }
-
-    public string Symbol { get; }
-
-    public CultureInfo Culture { get; }
-
-    public static ICurrency UnspecifiedCurrency { get; } = new Currency("Unspecified", "Unspecified", "---", "---");
-
     public bool Equals(Currency other) => Equals(other as ICurrency);
 
     public bool Equals(ICurrency other) =>
@@ -105,8 +107,6 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         Culture is null
             ? $"({CurrencyIsoCode}) {amount.ToString("N" + DecimalPlaces, CultureInfo.InvariantCulture)}"
             : amount.ToString("C" + DecimalPlaces, Culture);
-
-    private string DebuggerDisplay => CurrencyIsoCode;
 
     public static bool operator ==(Currency left, Currency right) => left.Equals(right);
 

@@ -49,13 +49,6 @@ public class ProductAttributeService : IProductAttributeService
             .Where(description => description.Field != null);
     }
 
-    private static IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
-        product.OfType<ContentPart>()
-            .SelectMany(parts => parts.OfType<ProductAttributeField>())
-            .Select(field => field.GetType())
-            .Distinct()
-            .ToDictionary(type => type.Name);
-
     private ProductAttributeFieldSettings GetFieldSettings(
         ContentPartFieldDefinition partFieldDefinition,
         ProductAttributeField field) =>
@@ -66,4 +59,11 @@ public class ProductAttributeService : IProductAttributeService
                 nameof(ProductAttributeField<TextProductAttributeFieldSettings>.GetSettings),
                 BindingFlags.Instance | BindingFlags.Public)
             ?.Invoke(field, new object[] { partFieldDefinition }) as ProductAttributeFieldSettings;
+
+    private static IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
+        product.OfType<ContentPart>()
+            .SelectMany(parts => parts.OfType<ProductAttributeField>())
+            .Select(field => field.GetType())
+            .Distinct()
+            .ToDictionary(type => type.Name);
 }

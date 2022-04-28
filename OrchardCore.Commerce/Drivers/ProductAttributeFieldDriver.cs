@@ -12,11 +12,11 @@ public abstract class ProductAttributeFieldDriver<TField, TFieldSettings> : Cont
     where TField : ProductAttributeField, new()
     where TFieldSettings : ProductAttributeFieldSettings, new()
 {
+    public IStringLocalizer T { get; set; }
+
     protected ProductAttributeFieldDriver(
         IStringLocalizer<ProductAttributeFieldDriver<TField, TFieldSettings>> localizer) =>
         T = localizer;
-
-    public IStringLocalizer T { get; set; }
 
     public override IDisplayResult Edit(TField field, BuildFieldEditorContext context) =>
         Initialize<EditProductAttributeFieldViewModel<TField, TFieldSettings>>(

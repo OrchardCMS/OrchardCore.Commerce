@@ -10,13 +10,13 @@ public class ProductAddedToCartEvent : EventActivity
 {
     private readonly IStringLocalizer<ProductAddedToCartEvent> T;
 
-    public ProductAddedToCartEvent(IStringLocalizer<ProductAddedToCartEvent> localizer) => T = localizer;
-
     public override string Name => nameof(ProductAddedToCartEvent);
 
-    public override LocalizedString DisplayText => T["Product addded to cart"];
+    public override LocalizedString DisplayText => T["Product added to cart"];
 
     public override LocalizedString Category => T["Commerce"];
+
+    public ProductAddedToCartEvent(IStringLocalizer<ProductAddedToCartEvent> localizer) => T = localizer;
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(
         WorkflowExecutionContext workflowContext,

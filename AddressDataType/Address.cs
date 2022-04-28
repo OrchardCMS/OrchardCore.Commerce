@@ -5,6 +5,8 @@ namespace InternationalAddress;
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class Address
 {
+    private string DebuggerDisplay => $"{Name}, {StreetAddress1}, {City}";
+
     public string Name { get; set; }
 
     public string Department { get; set; }
@@ -22,6 +24,4 @@ public class Address
     public string PostalCode { get; set; }
 
     public string Region { get; set; }
-
-    private string DebuggerDisplay => $"{Name}, {StreetAddress1}, {City}";
 }

@@ -8,5 +8,6 @@ public class PricePartSettings
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public CurrencySelectionMode CurrencySelectionMode { get; set; }
+
     public string SpecificCurrencyIsoCode { get; set; }
 }

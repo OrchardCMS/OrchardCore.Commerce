@@ -12,6 +12,8 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
 
+    private ISession Session => _httpContextAccessor.HttpContext?.Session;
+
     public SessionShoppingCartPersistence(
         IHttpContextAccessor httpContextAccessor,
         IShoppingCartHelpers shoppingCartHelpers)
@@ -19,8 +21,6 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
         _httpContextAccessor = httpContextAccessor;
         _shoppingCartHelpers = shoppingCartHelpers;
     }
-
-    private ISession Session => _httpContextAccessor.HttpContext?.Session;
 
     public string GetUniqueCartId(string shoppingCartId) =>
         Session.Id + shoppingCartId;

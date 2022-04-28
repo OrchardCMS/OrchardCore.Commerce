@@ -15,13 +15,13 @@ public class PriceVariantProvider : IPriceProvider
     private readonly IProductService _productService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
 
+    public int Order => 1;
+
     public PriceVariantProvider(IProductService productService, IPredefinedValuesProductAttributeService predefinedValuesService)
     {
         _productService = productService;
         _predefinedValuesService = predefinedValuesService;
     }
-
-    public int Order => 1;
 
     public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {

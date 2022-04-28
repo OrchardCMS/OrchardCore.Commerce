@@ -16,6 +16,16 @@ public interface IMoneyService
     IEnumerable<ICurrency> Currencies { get; }
 
     /// <summary>
+    /// Gets the currency to use or assume when none is provided.
+    /// </summary>
+    ICurrency DefaultCurrency { get; }
+
+    /// <summary>
+    /// Gets the current currency used for displaying prices to the customer.
+    /// </summary>
+    ICurrency CurrentDisplayCurrency { get; }
+
+    /// <summary>
     /// Finds a currency from its ISO code.
     /// </summary>
     /// <param name="currencyIsoCode">The ISO code of the currency to look up.</param>
@@ -35,16 +45,6 @@ public interface IMoneyService
     /// Throws if the currency code is not found from any active provider.
     /// </exception>
     Amount Create(decimal value, string currencyIsoCode);
-
-    /// <summary>
-    /// Gets the currency to use or assume when none is provided.
-    /// </summary>
-    ICurrency DefaultCurrency { get; }
-
-    /// <summary>
-    /// Gets the current currency used for displaying prices to the customer.
-    /// </summary>
-    ICurrency CurrentDisplayCurrency { get; }
 
     /// <summary>
     /// Returns a new <see cref="Amount"/> that has been verified using <see cref="Currency.FromIsoCode"/> to ensure its

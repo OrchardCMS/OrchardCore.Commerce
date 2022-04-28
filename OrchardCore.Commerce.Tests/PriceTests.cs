@@ -94,14 +94,15 @@ public class PriceTests
 
     private class DummyPriceProvider : IPriceProvider
     {
+        public int Order { get; }
+
+        public decimal Price { get; }
+
         public DummyPriceProvider(int priority, decimal price)
         {
             Order = priority;
             Price = price;
         }
-
-        public int Order { get; }
-        public decimal Price { get; }
 
         public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
             Task.FromResult(

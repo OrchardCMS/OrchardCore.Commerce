@@ -7,9 +7,7 @@ namespace Money;
 
 public readonly partial struct Currency
 {
-    public static ICurrency GetByIsoCode(string isoCode) => _defaultProvider.GetCurrency(isoCode);
-
-    public static bool IsKnownCurrency(string isoCode) => _defaultProvider.IsKnownCurrency(isoCode);
+    private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
 
     public static ICurrency UnitedArabEmiratesDirham => _defaultProvider.GetCurrency("AED");
     public static ICurrency AfghanAfghani => _defaultProvider.GetCurrency("AFN");
@@ -124,7 +122,9 @@ public readonly partial struct Currency
     public static ICurrency YemeniRial => _defaultProvider.GetCurrency("YER");
     public static ICurrency SouthAfricanRand => _defaultProvider.GetCurrency("ZAR");
 
-    private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
+    public static ICurrency GetByIsoCode(string isoCode) => _defaultProvider.GetCurrency(isoCode);
+
+    public static bool IsKnownCurrency(string isoCode) => _defaultProvider.IsKnownCurrency(isoCode);
 
     public static ICurrency FromIsoCode(string code, IEnumerable<ICurrencyProvider> providers = null) =>
         _defaultProvider.GetCurrency(code) ??

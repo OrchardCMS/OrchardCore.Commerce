@@ -15,6 +15,8 @@ public class PriceProvider : IPriceProvider
     private readonly IProductService _productService;
     private readonly IMoneyService _moneyService;
 
+    public int Order => 0;
+
     public PriceProvider(
         IProductService productService,
         IMoneyService moneyService)
@@ -22,8 +24,6 @@ public class PriceProvider : IPriceProvider
         _productService = productService;
         _moneyService = moneyService;
     }
-
-    public int Order => 0;
 
     public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {

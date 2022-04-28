@@ -8,10 +8,10 @@ namespace Money;
 /// </summary>
 public class CurrencyProvider : ICurrencyProvider
 {
-    public CurrencyProvider() => KnownCurrencyTable.EnsureCurrencyTable();
-
     public IEnumerable<ICurrency> Currencies =>
         KnownCurrencyTable.CurrencyTable.Values;
+
+    public CurrencyProvider() => KnownCurrencyTable.EnsureCurrencyTable();
 
     public ICurrency GetCurrency(string isoCode)
     {
