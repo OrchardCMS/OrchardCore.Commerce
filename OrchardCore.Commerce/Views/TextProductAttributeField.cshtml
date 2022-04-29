@@ -22,7 +22,7 @@
 else if (settings.MultipleValues)
 {
     <ul>
-        @foreach (string predefinedValue in settings.PredefinedValues)
+        @foreach (var predefinedValue in settings.PredefinedValues)
         {
             var optionId = $"{id}-{optionIndex}";
             optionIndex++;
@@ -42,7 +42,7 @@ else if (settings.RestrictToPredefinedValues)
     if (settings.PredefinedValues.Count() > 5) // Doing radio buttons for less than 5 options
     {
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
-            @foreach (string predefinedValue in settings.PredefinedValues)
+            @foreach (var predefinedValue in settings.PredefinedValues)
             {
                 <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
             }
@@ -51,7 +51,7 @@ else if (settings.RestrictToPredefinedValues)
     else
     {
         <ul>
-            @foreach (string predefinedValue in settings.PredefinedValues)
+            @foreach (var predefinedValue in settings.PredefinedValues)
             {
                 var optionId = $"{id}-{optionIndex}";
                 optionIndex++;
@@ -77,7 +77,7 @@ else
            placeholder="@settings.Placeholder"
            class="form-control" />
     <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select form-control">
-        @foreach (string predefinedValue in settings.PredefinedValues)
+        @foreach (var predefinedValue in settings.PredefinedValues)
         {
             <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
         }
@@ -85,11 +85,11 @@ else
     <script at="Foot" depends-on="jQuery">
         jQuery(function ($) {
             $(".product-attribute-combo-select").on('change', function (e) {
-                var select = $(e.target);
-                select
+                var $select = $(e.target);
+                $select
                     .closest('form')
-                    .find('input[name="' + select.data('related') + '"]')
-                    .val(select.val());
+                    .find('input[name="' + $select.data('related') + '"]')
+                    .val($select.val());
             });
         });
     </script>
