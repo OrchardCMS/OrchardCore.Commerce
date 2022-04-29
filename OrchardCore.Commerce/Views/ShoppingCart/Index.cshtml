@@ -26,7 +26,8 @@
             var name = $"cart.lines[{line}]";
             var attributes = item
                 .Attributes
-                .Select((attribute, index) => (attribute.Value, Type: attribute.GetType().Name, Index: index))
+                .Values
+                .Select((attribute, index) => (Value: attribute, Type: attribute.GetType().Name, Index: index))
                 .Where(tuple => tuple.Value.UntypedValue != null)
                 .ToList();
 
@@ -49,9 +50,12 @@
                     @if (item.Attributes != null)
                     {
                         <ul class="cart-product-attributes list-inline">
-                            @foreach (var attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                            @foreach (var (attribute, type, _) in attributes)
                             {
-                                <shape tag="li" Type="@attr.GetType().Name" prop-attribute="@attr" prop-label="@attr.Label" />
+                                <shape tag="li"
+                                       Type="@type"
+                                       prop-attribute="@(attribute)"
+                                       prop-label="@(attribute.Label)" />
                             }
                         </ul>
                     }

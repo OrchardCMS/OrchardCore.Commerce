@@ -28,9 +28,12 @@
                         @if (item.Attributes != null)
                         {
                             <ul class="cart-product-attributes list-inline">
-                                @foreach (var attr in item.Attributes.Select(attr => attr.Value).Where(val => val.UntypedValue != null))
+                                @foreach (var attribute in item.Attributes.Values.Where(val => val.UntypedValue != null))
                                 {
-                                    <shape tag="li" Type="@attr.GetType().Name" prop-attribute="@attr" prop-label="@attr.Label" />
+                                    <shape tag="li"
+                                           Type="@(attribute.GetType().Name)"
+                                           prop-attribute="@(attribute)"
+                                           prop-label="@(attribute.Label)" />
                                 }
                             </ul>
                         }
