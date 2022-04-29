@@ -1,5 +1,8 @@
 <Project>
   <ItemGroup>
-    <PackageReference Include="Lombiq.Analyzers" Version="2.1.0-alpha.0" />
+    <PackageReference Include="Lombiq.Analyzers" Version="2.1.0-alpha.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers;</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
