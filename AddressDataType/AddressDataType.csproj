@@ -11,6 +11,7 @@
     <Copyright>Copyright © 2020 .NET Foundation</Copyright>
     <PackageTags>Address, Postal</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
+    <Version>1.0.0-pre</Version>
   </PropertyGroup>
 
 </Project>

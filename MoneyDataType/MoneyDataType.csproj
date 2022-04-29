@@ -11,6 +11,7 @@
     <Copyright>Copyright © 2019 .NET Foundation</Copyright>
     <PackageTags>Currency, Money</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
+    <Version>1.0.0-pre</Version>
   </PropertyGroup>
 
   <ItemGroup>
