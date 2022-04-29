@@ -22,7 +22,7 @@
 else if (settings.MultipleValues)
 {
     <ul>
-        @foreach (var predefinedValue in settings.PredefinedValues)
+        @foreach (string predefinedValue in settings.PredefinedValues)
         {
             var optionId = $"{id}-{optionIndex}";
             optionIndex++;
@@ -42,7 +42,7 @@ else if (settings.RestrictToPredefinedValues)
     if (settings.PredefinedValues.Count() > 5) // Doing radio buttons for less than 5 options
     {
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
-            @foreach (var predefinedValue in settings.PredefinedValues)
+            @foreach (string predefinedValue in settings.PredefinedValues)
             {
                 <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
             }
@@ -51,7 +51,7 @@ else if (settings.RestrictToPredefinedValues)
     else
     {
         <ul>
-            @foreach (var predefinedValue in settings.PredefinedValues)
+            @foreach (string predefinedValue in settings.PredefinedValues)
             {
                 var optionId = $"{id}-{optionIndex}";
                 optionIndex++;
@@ -77,7 +77,7 @@ else
            placeholder="@settings.Placeholder"
            class="form-control" />
     <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select form-control">
-        @foreach (var predefinedValue in settings.PredefinedValues)
+        @foreach (string predefinedValue in settings.PredefinedValues)
         {
             <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
         }
