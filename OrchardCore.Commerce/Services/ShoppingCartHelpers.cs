@@ -143,6 +143,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         foreach (var line in cart.Items)
         {
             if (line.Attributes is null) continue;
+
             var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
 
             foreach (var attr in line.Attributes.OfType<RawProductAttributeValue>())

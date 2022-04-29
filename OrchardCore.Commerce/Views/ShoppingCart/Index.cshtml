@@ -27,7 +27,7 @@
             var attributes = item
                 .Attributes
                 .Select((attribute, index) => (attribute.Value, Type: attribute.GetType().Name, Index: index))
-                .Where(pair => pair.Value.UntypedValue != null)
+                .Where(tuple => tuple.Value.UntypedValue != null)
                 .ToList();
 
             <div class="row border-bottom mt-3 pb-2">
