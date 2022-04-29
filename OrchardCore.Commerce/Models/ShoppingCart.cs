@@ -65,7 +65,7 @@ public class ShoppingCart
     [SuppressMessage(
         "Performance",
         "CA1822",
-        Justification = $"Reserved in case {nameof(ShoppingCart)} gets additional properties in the future.")]
+        Justification = $"Keep non-static in case {nameof(ShoppingCart)} gets additional properties in the future.")]
     public ShoppingCart With(IEnumerable<ShoppingCartItem> items) => new(items);
 
     /// <summary>
