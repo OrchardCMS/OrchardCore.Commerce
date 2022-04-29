@@ -50,11 +50,9 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
         Value = value;
     }
 
-    public bool Equals(Amount other)
-    {
-        return Value == other.Value &&
-               ((Currency == null && other.Currency == null) || Currency?.Equals(other.Currency) == true);
-    }
+    public bool Equals(Amount other) =>
+        Value == other.Value &&
+        ((Currency == null && other.Currency == null) || Currency?.Equals(other.Currency) == true);
 
     public override bool Equals(object obj) => obj is Amount other && Equals(other);
 
