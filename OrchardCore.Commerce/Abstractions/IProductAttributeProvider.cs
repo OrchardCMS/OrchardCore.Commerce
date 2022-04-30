@@ -1,24 +1,36 @@
-using System.Text.Json;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Text.Json;
 
-namespace OrchardCore.Commerce.Abstractions
+namespace OrchardCore.Commerce.Abstractions;
+
+/// <summary>
+/// A provider for retrieving <see cref="IProductAttributeValue"/> from an attribute field.
+/// </summary>
+public interface IProductAttributeProvider
 {
-    public interface IProductAttributeProvider
-    {
-        IProductAttributeValue Parse(
-            ContentTypePartDefinition partDefinition,
-            ContentPartFieldDefinition attributeFieldDefinition,
-            string[] value);
+    /// <summary>
+    /// Parses the provided strings.
+    /// </summary>
+    IProductAttributeValue Parse(
+        ContentTypePartDefinition partDefinition,
+        ContentPartFieldDefinition attributeFieldDefinition,
+        string[] value);
 
-        public IProductAttributeValue Parse(
-            ContentTypePartDefinition partDefinition,
-            ContentPartFieldDefinition attributeFieldDefinition,
-            string value)
-            => Parse(partDefinition, attributeFieldDefinition, new[] { value });
+    /// <summary>
+    /// Parses the provided JSON-serialized data.
+    /// </summary>
+    IProductAttributeValue CreateFromJsonElement(
+        ContentTypePartDefinition partDefinition,
+        ContentPartFieldDefinition attributeFieldDefinition,
+        JsonElement value);
+}
 
-        IProductAttributeValue CreateFromJsonElement(
-            ContentTypePartDefinition partDefinition,
-            ContentPartFieldDefinition attributeFieldDefinition,
-            JsonElement value);
-    }
+public static class ProductAttributeProviderExtensions
+{
+    public static IProductAttributeValue Parse(
+        this IProductAttributeProvider provider,
+        ContentTypePartDefinition partDefinition,
+        ContentPartFieldDefinition attributeFieldDefinition,
+        string value) =>
+        provider.Parse(partDefinition, attributeFieldDefinition, new[] { value });
 }

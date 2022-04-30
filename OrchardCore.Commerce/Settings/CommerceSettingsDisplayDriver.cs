@@ -13,84 +13,85 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Settings
+namespace OrchardCore.Commerce.Settings;
+
+public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, CommerceSettings>
 {
-    public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, CommerceSettings>
+    public const string GroupId = "commerce";
+    private readonly IShellHost _orchardHost;
+    private readonly ShellSettings _currentShellSettings;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IMoneyService _moneyService;
+    private readonly IStringLocalizer T;
+
+    public CommerceSettingsDisplayDriver(
+        IShellHost orchardHost,
+        ShellSettings currentShellSettings,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IMoneyService moneyService,
+        IStringLocalizer<CommerceSettingsDisplayDriver> stringLocalizer)
     {
-        public const string GroupId = "commerce";
-        private readonly IShellHost _orchardHost;
-        private readonly ShellSettings _currentShellSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IMoneyService _moneyService;
-        private readonly IStringLocalizer S;
+        _orchardHost = orchardHost;
+        _currentShellSettings = currentShellSettings;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _moneyService = moneyService;
+        T = stringLocalizer;
+    }
 
-        public CommerceSettingsDisplayDriver(
-            IShellHost orchardHost,
-            ShellSettings currentShellSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            IMoneyService moneyService,
-            IStringLocalizer<CommerceSettingsDisplayDriver> stringLocalizer)
+    public override async Task<IDisplayResult> EditAsync(CommerceSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCommerceSettings))
         {
-            _orchardHost = orchardHost;
-            _currentShellSettings = currentShellSettings;
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-            _moneyService = moneyService;
-            S = stringLocalizer;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(CommerceSettings section, BuildEditorContext context)
+        var shapes = new List<IDisplayResult>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCommerceSettings))
+            Initialize<CommerceSettingsViewModel>("CommerceSettings_Edit", model =>
             {
-                return null;
-            }
+                model.DefaultCurrency = section.DefaultCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
+                model.CurrentDisplayCurrency = section.CurrentDisplayCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
+                model.Currencies = _moneyService.Currencies
+                    .OrderBy(currency => currency.CurrencyIsoCode)
+                    .Select(currency => new SelectListItem(
+                        currency.CurrencyIsoCode,
+                        $"{currency.CurrencyIsoCode} {currency.Symbol} - {T[currency.EnglishName]}"));
+            })
+                .Location("Content:5")
+                .OnGroup(GroupId),
+        };
 
-            var shapes = new List<IDisplayResult>
-            {
-                Initialize<CommerceSettingsViewModel>("CommerceSettings_Edit", model =>
-                {
-                    model.DefaultCurrency = section.DefaultCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
-                    model.CurrentDisplayCurrency = section.CurrentDisplayCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
-                    model.Currencies = _moneyService.Currencies
-                        .OrderBy(c => c.CurrencyIsoCode)
-                        .Select(c => new SelectListItem(
-                            c.CurrencyIsoCode,
-                            $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
-                }).Location("Content:5").OnGroup(GroupId)
-            };
+        return Combine(shapes);
+    }
 
-            return Combine(shapes);
+    public override async Task<IDisplayResult> UpdateAsync(CommerceSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCommerceSettings))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CommerceSettings section, BuildEditorContext context)
+        if (context.GroupId == GroupId)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            var model = new CommerceSettingsViewModel();
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCommerceSettings))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                return null;
+                section.DefaultCurrency = model.DefaultCurrency;
+                section.CurrentDisplayCurrency = model.CurrentDisplayCurrency;
             }
 
-            if (context.GroupId == GroupId)
-            {
-                var model = new CommerceSettingsViewModel();
-
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-                {
-                    section.DefaultCurrency = model.DefaultCurrency;
-                    section.CurrentDisplayCurrency = model.CurrentDisplayCurrency;
-                }
-
-                // Reload the tenant to apply the settings
-                await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
-            }
-
-            return await EditAsync(section, context);
+            // Reload the tenant to apply the settings.
+            await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
         }
+
+        return await EditAsync(section, context);
     }
 }

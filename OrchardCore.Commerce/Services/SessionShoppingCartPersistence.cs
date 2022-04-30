@@ -1,40 +1,39 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Services
+namespace OrchardCore.Commerce.Services;
+
+public class SessionShoppingCartPersistence : IShoppingCartPersistence
 {
-    public class SessionShoppingCartPersistence : IShoppingCartPersistence
+    private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart:";
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IShoppingCartHelpers _shoppingCartHelpers;
+
+    private ISession Session => _httpContextAccessor.HttpContext?.Session;
+
+    public SessionShoppingCartPersistence(
+        IHttpContextAccessor httpContextAccessor,
+        IShoppingCartHelpers shoppingCartHelpers)
     {
-        const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart:";
+        _httpContextAccessor = httpContextAccessor;
+        _shoppingCartHelpers = shoppingCartHelpers;
+    }
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShoppingCartHelpers _shoppingCartHelpers;
+    public string GetUniqueCartId(string shoppingCartId) =>
+        Session.Id + shoppingCartId;
 
-        public SessionShoppingCartPersistence(
-            IHttpContextAccessor httpContextAccessor,
-            IShoppingCartHelpers shoppingCartHelpers)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _shoppingCartHelpers = shoppingCartHelpers;
-        }
+    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
+    {
+        var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty));
+        return _shoppingCartHelpers.DeserializeAsync(cartString);
+    }
 
-        private ISession Session => _httpContextAccessor.HttpContext.Session;
-
-        public string GetUniqueCartId(string shoppingCartId)
-            => Session.Id + shoppingCartId;
-
-        public async Task<ShoppingCart> Retrieve(string shoppingCartId = null)
-        {
-            var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? ""));
-            return await _shoppingCartHelpers.Deserialize(cartString);
-        }
-
-        public async Task Store(ShoppingCart cart, string shoppingCartId = null)
-        {
-            var cartString = await _shoppingCartHelpers.Serialize(cart);
-            Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? ""), cartString);
-        }
+    public async Task StoreAsync(ShoppingCart items, string shoppingCartId = null)
+    {
+        var cartString = await _shoppingCartHelpers.SerializeAsync(items);
+        Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty), cartString);
     }
 }

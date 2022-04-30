@@ -1,37 +1,48 @@
 using System;
 using System.Globalization;
+using System.Linq;
 
-namespace OrchardCore.Commerce.Abstractions
+namespace OrchardCore.Commerce.Abstractions;
+
+/// <summary>
+/// A specific value from a product attribute field.
+/// </summary>
+public interface IProductAttributeValue
 {
-    public interface IProductAttributeValue
-    {
-        string AttributeName { get; }
-        object UntypedValue { get; }
+    /// <summary>
+    /// Gets the name of the attribute.
+    /// </summary>
+    string AttributeName { get; }
 
-        string Display(CultureInfo culture = null);
+    /// <summary>
+    /// Gets the value of the attribute without a known type.
+    /// </summary>
+    object UntypedValue { get; }
 
-        public string Label
-        {
-            get
-            {
-                string[] splitName = AttributeName.Split('.');
-                if (splitName.Length < 2) return AttributeName;
-                return splitName[1];
-            }
-        }
+    /// <summary>
+    /// Gets the first part of the <see cref="AttributeName"/>.
+    /// </summary>
+    public string Label => AttributeName?.Split('.').FirstOrDefault();
 
-        public string PartName
-        {
-            get
-            {
-                string[] splitName = AttributeName.Split('.');
-                if (splitName.Length < 2) return null;
-                return splitName[0];
-            }
-        }
-    }
-    public interface IProductAttributeValue<T> : IProductAttributeValue, IEquatable<IProductAttributeValue<T>>
-    {
-        T Value { get; }
-    }
+    /// <summary>
+    /// Gets the second part of the <see cref="AttributeName"/>.
+    /// </summary>
+    public string PartName => AttributeName?.Split('.').Skip(1).FirstOrDefault();
+
+    /// <summary>
+    /// Returns the user-facing string for this attribute value.
+    /// </summary>
+    string Display(CultureInfo culture = null);
+}
+
+/// <summary>
+/// A specific value from a product attribute field of type <typeparamref name="T"/>.
+/// </summary>
+/// <typeparam name="T">The type of <see cref="Value"/>.</typeparam>
+public interface IProductAttributeValue<T> : IProductAttributeValue, IEquatable<IProductAttributeValue<T>>
+{
+    /// <summary>
+    /// Gets the value of the attribute with a known type of <typeparamref name="T"/>.
+    /// </summary>
+    T Value { get; }
 }

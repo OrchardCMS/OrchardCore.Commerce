@@ -1,10 +1,8 @@
-@model OrchardCore.Commerce.ViewModels.EditProductAttributeFieldViewModel<NumericProductAttributeField, NumericProductAttributeFieldSettings>
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Commerce.Fields
-@using OrchardCore.Commerce.Settings
+@model EditProductAttributeFieldViewModel<OrchardCore.Commerce.Fields.NumericProductAttributeField, OrchardCore.Commerce.Settings.NumericProductAttributeFieldSettings>
 @{
     var settings = Model.Settings;
-    string name = Model.PartFieldDefinition.DisplayName();
+    var name = Model.PartFieldDefinition.DisplayName();
 }
 
 <fieldset class="form-group">

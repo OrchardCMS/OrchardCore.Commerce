@@ -1,11 +1,11 @@
-@model OrchardCore.Commerce.Settings.NumericProductAttributeFieldSettings
 @using System.Globalization
+@model OrchardCore.Commerce.Settings.NumericProductAttributeFieldSettings
 
 @{
     var step = Math.Pow(10, 0 - Model.DecimalPlaces);
     var stepAttribute = step.ToString(CultureInfo.InvariantCulture);
-    string minimum = (Model.Minimum.HasValue) ? Math.Round(Model.Minimum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
-    string maximum = (Model.Maximum.HasValue) ? Math.Round(Model.Maximum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
+    var minimum = Model.Minimum.HasValue ? Math.Round(Model.Minimum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
+    var maximum = Model.Maximum.HasValue ? Math.Round(Model.Maximum.Value, Model.DecimalPlaces).ToString(CultureInfo.InvariantCulture) : "";
 }
 
 <div class="form-group">
@@ -26,7 +26,7 @@
 
 <div class="form-group">
     <div class="row col-md">
-        <label for="Placeholder">@T["Watermark (placeholder)"]</label>
+        <label asp-for="Placeholder">@T["Watermark (placeholder)"]</label>
         <input asp-for="Placeholder" type="text" class="form-control" />
         <span class="hint">@T["A hint to display when the input is empty. (optional)"]</span>
     </div>
@@ -34,52 +34,58 @@
 
 <div class="form-group">
     <div class="row col-sm">
-        <label for="DecimalPlaces">@T["Decimal places"]</label>
+        <label asp-for="DecimalPlaces">@T["Decimal places"]</label>
         <input asp-for="DecimalPlaces" class="form-control affects-numeric-product-attr-default" min="0" max="5" step="1" type="number"
-               data-related-node="@Html.IdFor(m => m.DefaultValue)" />
+               data-related-node="@Html.IdFor(settings => settings.DefaultValue)" />
         <span class="hint">@T["The number of digits after the decimal point."]</span>
     </div>
 </div>
 
 <div class="form-group">
     <div class="row col-sm">
-        <label for="Minimum">@T["Minimum"]</label>
+        <label asp-for="Minimum">@T["Minimum"]</label>
         <input asp-for="Minimum" class="form-control affects-numeric-product-attr-default"
-               data-related-node="@Html.IdFor(m => m.DefaultValue)" />
+               data-related-node="@Html.IdFor(settings => settings.DefaultValue)" />
         <span class="hint">@T["The minimum value allowed. (optional)"]</span>
     </div>
 </div>
 
 <div class="form-group">
     <div class="row col-sm">
-        <label for="Maximum">@T["Maximum"]</label>
+        <label asp-for="Maximum">@T["Maximum"]</label>
         <input asp-for="Maximum" class="form-control affects-numeric-product-attr-default"
-               data-related-node="@Html.IdFor(m => m.DefaultValue)" />
+               data-related-node="@Html.IdFor(settings => settings.DefaultValue)" />
         <span class="hint">@T["The maximum value allowed. (optional)"]</span>
     </div>
 </div>
 
 <div class="form-group">
     <div class="row col-sm">
-        <label for="DefaultValue">@T["Default value"]</label>
-        <input asp-for="DefaultValue" class="form-control" min="@minimum" max="@maximum" step="@stepAttribute" type="number"
-               data-related-min="@Html.IdFor(m => m.Minimum)" data-related-max="@Html.IdFor(m => m.Maximum)"
-               data-related-decimal-places="@Html.IdFor(m => m.DecimalPlaces)"/>
+        <label asp-for="DefaultValue">@T["Default value"]</label>
+        <input asp-for="DefaultValue"
+               class="form-control"
+               min="@minimum"
+               max="@maximum"
+               step="@stepAttribute"
+               type="number"
+               data-related-min="@Html.IdFor(settings => settings.Minimum)"
+               data-related-max="@Html.IdFor(settings => settings.Maximum)"
+               data-related-decimal-places="@Html.IdFor(settings => settings.DecimalPlaces)"/>
         <span class="hint">@T["The default value. (optional)"]</span>
     </div>
 </div>
 
-<script at="Foot">
-    $(function () {
+<script at="Foot" depends-on="jQuery">
+    jQuery(function ($) {
         $('.affects-numeric-product-attr-default').on('change', function (e) {
-            var defaultValueField = $('#' + $(e.target).data('related-node'));
-            var decimalPlaces = $('#' + defaultValueField.data('related-decimal-places')).val() || 0;
+            var $defaultValueField = $('#' + $(e.target).data('related-node'));
+            var decimalPlaces = $('#' + $defaultValueField.data('related-decimal-places')).val() || 0;
             var step = Math.pow(10, 0 - decimalPlaces);
-            if (!isNaN(step)) defaultValueField.attr('step', step);
-            var min = Math.round(parseFloat($('#' + defaultValueField.data('related-min')).val()) / step) * step;
-            if (!isNaN(min)) defaultValueField.attr("min", min);
-            var max = Math.round(parseFloat($('#' + defaultValueField.data('related-max')).val()) / step) * step;
-            if (!isNaN(max)) defaultValueField.attr("max", max);
+            if (!isNaN(step)) $defaultValueField.attr('step', step);
+            var min = Math.round(parseFloat($('#' + $defaultValueField.data('related-min')).val()) / step) * step;
+            if (!isNaN(min)) $defaultValueField.attr("min", min);
+            var max = Math.round(parseFloat($('#' + $defaultValueField.data('related-max')).val()) / step) * step;
+            if (!isNaN(max)) $defaultValueField.attr("max", max);
         });
     });
 </script>

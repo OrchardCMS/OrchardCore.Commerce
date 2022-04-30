@@ -1,9 +1,8 @@
-@model OrchardCore.Commerce.ViewModels.AddressFieldViewModel
+@using Newtonsoft.Json
 @using OrchardCore.Commerce.Settings
+@model AddressFieldViewModel
 
-@{
-    var settings = Model.PartFieldDefinition.GetSettings<AddressPartFieldSettings>();
-}
+@{ var settings = Model.PartFieldDefinition.GetSettings<AddressPartFieldSettings>(); }
 <div class="row">
     <div class="form-group col-md-12">
         <label asp-for="Address.Name">@T["Name"]</label>
@@ -88,8 +87,8 @@
 <script at="Foot" depends-on="commerce-regions">
     @if (Context.Items["commerce-regions-initialized"] == null)
     {
-        <text>commerceRegionsInitialize(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Provinces)));</text>
+        <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces)));</text>
         Context.Items["commerce-regions-initialized"] = true;
     }
-    commerceRegionsBind("#@Html.IdFor(m => m.Address.Province)", "#@Html.IdFor(m => m.Address.Region)");
+    commerceRegionsBind("#@Html.IdFor(model => model.Address.Province)", "#@Html.IdFor(model => model.Address.Region)");
 </script>

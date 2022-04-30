@@ -1,0 +1,4 @@
+[submodule "tools/Lombiq.Analyzers"]
+	path = tools/Lombiq.Analyzers
+	url = https://github.com/Lombiq/.NET-Analyzers.git
+	branch = dev

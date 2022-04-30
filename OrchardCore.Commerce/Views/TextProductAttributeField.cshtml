@@ -1,28 +1,37 @@
-@using OrchardCore.Commerce.Settings
 @using OrchardCore.Commerce.Abstractions
-
+@using OrchardCore.Commerce.Settings
 @{
     int index = Model.Index;
     var attr = Model.AttributeDescription as ProductAttributeDescription;
-    var settings = attr.Settings as TextProductAttributeFieldSettings;
+    var settings = attr?.Settings as TextProductAttributeFieldSettings;
     var id = $"{Model.IdPrefix}-attribute-{index}";
-    int optionIndex = 0;
+    var optionIndex = 0;
 }
 
-<label for="@id">@attr.Name</label>
-<input type="hidden" name="line.Attributes[@index].Key" value="@attr.PartName.@attr.Name" />
-@if (settings.PredefinedValues is null || settings.PredefinedValues.Count() == 0)
+<label for="@id">@attr?.Name</label>
+<input type="hidden" name="line.Attributes[@index].Key" value="@attr?.PartName.@attr?.Name" />
+@if (settings?.PredefinedValues is null || !settings.PredefinedValues.Any())
 {
-    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" class="form-control" />
+    <input id="@id"
+           type="text"
+           name="line.Attributes[@index].Value"
+           value="@settings?.DefaultValue"
+           placeholder="@settings?.Placeholder"
+           class="form-control" />
 }
 else if (settings.MultipleValues)
 {
     <ul>
         @foreach (string predefinedValue in settings.PredefinedValues)
         {
-            var optionId = $"{id}-{optionIndex++}";
+            var optionId = $"{id}-{optionIndex}";
+            optionIndex++;
             <li>
-                <input id="optionId" type="checkbox" name="line.Attributes[@index].Value" checked="@(predefinedValue == settings.DefaultValue)" class="form-check-input" />
+                <input id="optionId"
+                       type="checkbox"
+                       name="line.Attributes[@index].Value"
+                       checked="@(predefinedValue == settings.DefaultValue)"
+                       class="form-check-input" />
                 <label for="@optionId" class="form-check-label">@predefinedValue</label>
             </li>
         }
@@ -44,9 +53,15 @@ else if (settings.RestrictToPredefinedValues)
         <ul>
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
-                var optionId = $"{id}-{optionIndex++}";
+                var optionId = $"{id}-{optionIndex}";
+                optionIndex++;
                 <li>
-                    <input id="@optionId" type="radio" name="line.Attributes[@index].Value" value="@predefinedValue" checked="@(predefinedValue == settings.DefaultValue)" class="form-check-input" />
+                    <input id="@optionId"
+                           type="radio"
+                           name="line.Attributes[@index].Value"
+                           value="@predefinedValue"
+                           checked="@(predefinedValue == settings.DefaultValue)"
+                           class="form-check-input" />
                     <label for="@optionId" class="form-check-label">@predefinedValue</label>
                 </li>
             }
@@ -55,26 +70,32 @@ else if (settings.RestrictToPredefinedValues)
 }
 else
 {
-    <input id="@id" type="text" name="line.Attributes[@index].Value" value="@settings.DefaultValue" placeholder="@settings.Placeholder" class="form-control" />
+    <input id="@id"
+           type="text"
+           name="line.Attributes[@index].Value"
+           value="@settings.DefaultValue"
+           placeholder="@settings.Placeholder"
+           class="form-control" />
     <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select form-control">
         @foreach (string predefinedValue in settings.PredefinedValues)
         {
             <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
         }
     </select>
-    <script at="Foot">
-        $(function () {
+    <script at="Foot" depends-on="jQuery">
+        jQuery(function ($) {
             $(".product-attribute-combo-select").on('change', function (e) {
-                var select = $(e.target);
-                select
+                var $select = $(e.target);
+                $select
                     .closest('form')
-                    .find('input[name="' + select.data('related') + '"]')
-                    .val(select.val());
+                    .find('input[name="' + $select.data('related') + '"]')
+                    .val($select.val());
             });
         });
     </script>
 }
-@if (settings.Hint != null)
+
+@if (settings?.Hint != null)
 {
     <div class="hint form-text text-muted">@settings.Hint</div>
 }

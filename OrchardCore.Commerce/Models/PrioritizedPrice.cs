@@ -1,37 +1,33 @@
-using System.Diagnostics;
-using System.Text.Json.Serialization;
 using Money;
 using OrchardCore.Commerce.Serialization;
+using System;
+using System.Diagnostics;
+using System.Text.Json.Serialization;
 
-namespace OrchardCore.Commerce.Models
+namespace OrchardCore.Commerce.Models;
+
+/// <summary>
+/// A price and its priority.
+/// </summary>
+[JsonConverter(typeof(PrioritizedPriceConverter))]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+public class PrioritizedPrice
 {
     /// <summary>
-    /// A price and its priority.
+    /// Gets the priority for the price (higher takes precedence).
     /// </summary>
-    [JsonConverter(typeof(PrioritizedPriceConverter))]
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class PrioritizedPrice
+    public int Priority { get; }
+
+    /// <summary>
+    /// Gets the price.
+    /// </summary>
+    public Amount Price { get; }
+
+    private string DebuggerDisplay => FormattableString.Invariant($"{Price} ^{Priority}");
+
+    public PrioritizedPrice(int priority, Amount price)
     {
-        /// <summary>
-        /// The priority for the price (higher takes precedence).
-        /// </summary>
-        public int Priority { get; }
-        /// <summary>
-        /// The price.
-        /// </summary>
-        public Amount Price { get; }
-
-        /// <summary>
-        /// Builds a new prioritized price from an amount and a priority.
-        /// </summary>
-        /// <param name="priority">The piority.</param>
-        /// <param name="price">The price.</param>
-        public PrioritizedPrice(int priority, Amount price)
-        {
-            Priority = priority;
-            Price = price;
-        }
-
-        private string DebuggerDisplay => $"{Price} ^{Priority}";
+        Priority = priority;
+        Price = price;
     }
 }

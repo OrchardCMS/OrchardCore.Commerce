@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
@@ -11,69 +7,69 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Settings
+namespace OrchardCore.Commerce.Settings;
+
+public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
-    public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    private readonly IStringLocalizer<PricePartSettingsDisplayDriver> T;
+    private readonly IMoneyService _moneyService;
+
+    public PricePartSettingsDisplayDriver(IStringLocalizer<PricePartSettingsDisplayDriver> localizer, IMoneyService moneyService)
     {
-        private readonly IStringLocalizer<PricePartSettingsDisplayDriver> S;
-        private readonly IMoneyService _moneyService;
+        T = localizer;
+        _moneyService = moneyService;
+    }
 
-        public PricePartSettingsDisplayDriver(IStringLocalizer<PricePartSettingsDisplayDriver> localizer, IMoneyService moneyService)
+    public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
+    {
+        if (model.PartDefinition.Name != nameof(PricePart)) return null;
+
+        return Initialize("PricePartSettings_Edit", (Action<PricePartSettingsViewModel>)(viewModel =>
         {
-            S = localizer;
-            _moneyService = moneyService;
-        }
+            var settings = model.GetSettings<PricePartSettings>();
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+            viewModel.CurrencySelectionMode = settings.CurrencySelectionMode;
+            viewModel.CurrencySelectionModes = new List<SelectListItem>
+            {
+                new(CurrencySelectionMode.AllCurrencies.ToString(), T["All Currencies"]),
+                new(CurrencySelectionMode.DefaultCurrency.ToString(), T["Default Currency"]),
+                new(CurrencySelectionMode.SpecificCurrency.ToString(), T["Specific Currency"]),
+            };
+            viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
+            viewModel.Currencies = _moneyService.Currencies
+                .OrderBy(currency => currency.CurrencyIsoCode)
+                .Select(currency => new SelectListItem(
+                    currency.CurrencyIsoCode,
+                    $"{currency.CurrencyIsoCode} {currency.Symbol} - {T[currency.EnglishName]}"));
+        }))
+            .Location("Content");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
+    {
+        if (model.PartDefinition.Name != nameof(PricePart)) return null;
+
+        var viewModel = new PricePartSettingsViewModel();
+
+        await context.Updater.TryUpdateModelAsync(
+            viewModel,
+            Prefix,
+            settings => settings.CurrencySelectionMode,
+            settings => settings.SpecificCurrencyIsoCode);
+
+        context.Builder.WithSettings(new PricePartSettings
         {
-            if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
+            CurrencySelectionMode = viewModel.CurrencySelectionMode,
+            SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionMode.SpecificCurrency
+                    ? viewModel.SpecificCurrencyIsoCode
+                    : null,
+        });
 
-            return Initialize<PricePartSettingsViewModel>("PricePartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<PricePartSettings>();
-
-                model.CurrencySelectionMode = settings.CurrencySelectionMode;
-                model.CurrencySelectionModes = new List<SelectListItem>()
-                {
-                    new SelectListItem(CurrencySelectionModeEnum.AllCurrencies.ToString(), S["All Currencies"]),
-                    new SelectListItem(CurrencySelectionModeEnum.DefaultCurrency.ToString(), S["Default Currency"]),
-                    new SelectListItem(CurrencySelectionModeEnum.SpecificCurrency.ToString(), S["Specific Currency"])
-                };
-                model.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
-                model.Currencies = _moneyService.Currencies
-                        .OrderBy(c => c.CurrencyIsoCode)
-                        .Select(c => new SelectListItem(
-                            c.CurrencyIsoCode,
-                            $"{c.CurrencyIsoCode} {c.Symbol} - {S[c.EnglishName]}"));
-            }).Location("Content");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
-        {
-            if (!String.Equals(nameof(PricePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
-            var model = new PricePartSettingsViewModel();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.CurrencySelectionMode,
-                m => m.SpecificCurrencyIsoCode);
-
-            context.Builder.WithSettings(new PricePartSettings
-            {
-                CurrencySelectionMode = model.CurrencySelectionMode,
-                SpecificCurrencyIsoCode =
-                    model.CurrencySelectionMode == CurrencySelectionModeEnum.SpecificCurrency
-                        ? model.SpecificCurrencyIsoCode : null
-            });
-
-            return Edit(contentTypePartDefinition, context.Updater);
-        }
+        return await EditAsync(model, context.Updater);
     }
 }

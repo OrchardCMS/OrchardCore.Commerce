@@ -1,12 +1,16 @@
-using System.Collections.Generic;
 using Money;
 using OrchardCore.Commerce.Models;
+using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Abstractions
+namespace OrchardCore.Commerce.Abstractions;
+
+/// <summary>
+/// Logic for selecting a price when multiple are available.
+/// </summary>
+public interface IPriceSelectionStrategy
 {
-    public interface IPriceSelectionStrategy
-    {
-        // TODO: include attributes in price strategy
-        Amount SelectPrice(IEnumerable<PrioritizedPrice> prices);
-    }
+    /// <summary>
+    /// Returns a price from the provided collection of <paramref name="prices"/>.
+    /// </summary>
+    Amount SelectPrice(IEnumerable<PrioritizedPrice> prices);
 }

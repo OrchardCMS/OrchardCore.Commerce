@@ -1,24 +1,20 @@
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Handlers;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Handlers
+namespace OrchardCore.Commerce.Handlers;
+
+public class PricePartHandler : ContentPartHandler<PricePart>
 {
-    public class PricePartHandler : ContentPartHandler<PricePart>
+    private readonly IMoneyService _moneyService;
+
+    public PricePartHandler(IMoneyService moneyService) => _moneyService = moneyService;
+
+    public override Task LoadingAsync(LoadContentContext context, PricePart instance)
     {
-        private readonly IMoneyService _moneyService;
+        instance.Price = _moneyService.EnsureCurrency(instance.Price);
 
-        public PricePartHandler(IMoneyService moneyService)
-        {
-            _moneyService = moneyService;
-        }
-
-        public override Task LoadingAsync(LoadContentContext context, PricePart part)
-        {
-            part.Price = _moneyService.EnsureCurrency(part.Price);
-
-            return base.LoadingAsync(context, part);
-        }
+        return base.LoadingAsync(context, instance);
     }
 }

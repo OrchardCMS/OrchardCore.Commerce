@@ -1,24 +1,23 @@
-using System.Collections.Generic;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.ContentManagement;
+using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Models
+namespace OrchardCore.Commerce.Models;
+
+public class OrderPart : ContentPart
 {
-    public class OrderPart : ContentPart
-    {
-        /// <summary>
-        /// The line items in this order.
-        /// </summary>
-        public IList<OrderLineItem> LineItems { get; set; }
+    /// <summary>
+    /// Gets the order's line items.
+    /// </summary>
+    public IList<OrderLineItem> LineItems { get; } = new List<OrderLineItem>();
 
-        /// <summary>
-        /// Additional costs such as taxes and shipping.
-        /// </summary>
-        public IList<OrderAdditionalCost> AdditionalCosts {get;set;}
+    /// <summary>
+    /// Gets additional costs that don't belong to an <see cref="OrderLineItem"/>, such as taxes and shipping.
+    /// </summary>
+    public IList<OrderAdditionalCost> AdditionalCosts { get; } = new List<OrderAdditionalCost>();
 
-        /// <summary>
-        /// Amounts charged on this order. Typically a single credit card charge.
-        /// </summary>
-        public IList<IPayment> Charges { get; set; }
-    }
+    /// <summary>
+    /// Gets the amounts charged for this order. Typically a single credit card charge.
+    /// </summary>
+    public IList<IPayment> Charges { get; } = new List<IPayment>();
 }

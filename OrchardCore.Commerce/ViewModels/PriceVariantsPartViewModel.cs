@@ -1,26 +1,35 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Money;
 using Money.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.ViewModels
+namespace OrchardCore.Commerce.ViewModels;
+
+public class PriceVariantsPartViewModel
 {
-    public class PriceVariantsPartViewModel
+    public IDictionary<string, decimal?> VariantsValues { get; private set; } = new Dictionary<string, decimal?>();
+    public IDictionary<string, string> VariantsCurrencies { get; private set; } = new Dictionary<string, string>();
+
+    public IEnumerable<ICurrency> Currencies { get; set; }
+
+    [BindNever]
+    public ContentItem ContentItem { get; set; }
+
+    [BindNever]
+    public PriceVariantsPart PriceVariantsPart { get; set; }
+
+    [BindNever]
+    public IDictionary<string, Amount> Variants { get; private set; } = new Dictionary<string, Amount>();
+
+    public void InitializeVariants(
+        IDictionary<string, Amount> variants,
+        IDictionary<string, decimal?> values,
+        IDictionary<string, string> currencies)
     {
-        public Dictionary<string, decimal?> VariantsValues { get; set; }
-        public Dictionary<string, string> VariantsCurrencies { get; set; }
-
-        public IEnumerable<ICurrency> Currencies { get; set; }
-
-        [BindNever]
-        public ContentItem ContentItem { get; set; }
-
-        [BindNever]
-        public PriceVariantsPart PriceVariantsPart { get; set; }
-
-        [BindNever]
-        public Dictionary<string, Amount> Variants { get; set; }
+        Variants = variants;
+        VariantsValues = values;
+        VariantsCurrencies = currencies;
     }
 }

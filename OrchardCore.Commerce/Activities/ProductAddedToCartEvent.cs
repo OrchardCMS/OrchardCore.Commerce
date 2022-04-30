@@ -1,28 +1,25 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Activities
+namespace OrchardCore.Commerce.Activities;
+
+public class ProductAddedToCartEvent : EventActivity
 {
-    public class ProductAddedToCartEvent : EventActivity
-    {
-        private readonly IStringLocalizer<ProductAddedToCartEvent> S;
+    private readonly IStringLocalizer<ProductAddedToCartEvent> T;
 
-        public ProductAddedToCartEvent(IStringLocalizer<ProductAddedToCartEvent> localizer)
-        {
-            S = localizer;
-        }
+    public override string Name => nameof(ProductAddedToCartEvent);
 
-        public override string Name => nameof(ProductAddedToCartEvent);
+    public override LocalizedString DisplayText => T["Product added to cart"];
 
-        public override LocalizedString DisplayText => S["Product addded to cart"];
+    public override LocalizedString Category => T["Commerce"];
 
-        public override LocalizedString Category => S["Commerce"];
+    public ProductAddedToCartEvent(IStringLocalizer<ProductAddedToCartEvent> localizer) => T = localizer;
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-            => Outcomes(S["Done"]);
-    }
+    public override IEnumerable<Outcome> GetPossibleOutcomes(
+        WorkflowExecutionContext workflowContext,
+        ActivityContext activityContext) =>
+        Outcomes(new[] { T["Done"] });
 }

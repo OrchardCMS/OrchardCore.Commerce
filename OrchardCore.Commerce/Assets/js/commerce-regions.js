@@ -11,13 +11,13 @@ function commerceRegionsBind(provinceDropDown, regionDropDown) {
 }
 
 function commerceRegionsOnChange(provinceDropDown, regionDropDown) {
-    var provinceEl = $(provinceDropDown);
-    provinceEl.empty();
+    var $province = $(provinceDropDown);
+    $province.empty();
     var regionName = $(regionDropDown).val();
     var region = commerceRegions[regionName];
     if (region) {
         $.each(Object.getOwnPropertyNames(region), function () {
-            provinceEl.append($("<option/>").val(this).text(region[this]));
+            $province.append($("<option/>").val(this).text(region[this]));
         });
     }
 }

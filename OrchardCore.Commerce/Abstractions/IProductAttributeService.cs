@@ -1,10 +1,16 @@
-using System.Collections.Generic;
+using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentManagement;
+using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Abstractions
+namespace OrchardCore.Commerce.Abstractions;
+
+/// <summary>
+/// A service for working with <see cref="ProductAttributeField"/>s.
+/// </summary>
+public interface IProductAttributeService
 {
-    public interface IProductAttributeService
-    {
-        IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product);
-    }
+    /// <summary>
+    /// Returns <see cref="ProductAttributeField"/>s and their settings of a given <paramref name="product"/>.
+    /// </summary>
+    IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product);
 }

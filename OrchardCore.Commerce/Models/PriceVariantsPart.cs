@@ -1,14 +1,13 @@
-using System.Collections.Generic;
 using Money;
 using OrchardCore.ContentManagement;
+using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Models
+namespace OrchardCore.Commerce.Models;
+
+/// <summary>
+/// A product variants prices based on predefined attributes.
+/// </summary>
+public class PriceVariantsPart : ContentPart
 {
-    /// <summary>
-    /// A product variants prices based on predefined attributes.
-    /// </summary>
-    public class PriceVariantsPart : ContentPart
-    {
-        public Dictionary<string, Amount> Variants { get; set; }
-    }
+    public IDictionary<string, Amount> Variants { get; } = new Dictionary<string, Amount>();
 }

@@ -1,15 +1,28 @@
+using OrchardCore.Commerce.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Commerce.Models;
 
-namespace OrchardCore.Commerce.Abstractions
+namespace OrchardCore.Commerce.Abstractions;
+
+/// <summary>
+/// Service for working with <see cref="ProductPart"/>.
+/// </summary>
+public interface IProductService
 {
-    public interface IProductService
-    {
-        Task<ProductPart> GetProduct(string sku);
-        Task<IEnumerable<ProductPart>> GetProducts(IEnumerable<string> skus);
-        async Task<IDictionary<string, ProductPart>> GetProductDictionary(IEnumerable<string> skus)
-            => (await GetProducts(skus)).ToDictionary(product => product.Sku);
-    }
+    /// <summary>
+    /// Returns the products that have the provided SKUs.
+    /// </summary>
+    Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus);
+}
+
+public static class ProductServiceExtensions
+{
+    public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku) =>
+        (await service.GetProductsAsync(new[] { sku })).FirstOrDefault();
+
+    public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(
+        this IProductService service,
+        IEnumerable<string> skus) =>
+        (await service.GetProductsAsync(skus)).ToDictionary(product => product.Sku);
 }

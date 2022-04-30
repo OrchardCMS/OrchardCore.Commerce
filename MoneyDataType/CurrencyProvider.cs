@@ -1,25 +1,24 @@
-using System.Collections.Generic;
 using Money.Abstractions;
+using System.Collections.Generic;
 
-namespace Money
+namespace Money;
+
+/// <summary>
+/// A simple currency provider that uses a static list of the most common predefined currencies.
+/// </summary>
+public class CurrencyProvider : ICurrencyProvider
 {
-    /// <summary>
-    /// A simple currency provider that uses a static list of the most common predefined currencies
-    /// </summary>
-    public class CurrencyProvider : ICurrencyProvider
+    public IEnumerable<ICurrency> Currencies =>
+        KnownCurrencyTable.CurrencyTable.Values;
+
+    public CurrencyProvider() => KnownCurrencyTable.EnsureCurrencyTable();
+
+    public ICurrency GetCurrency(string isoCode)
     {
-        public CurrencyProvider()
-        {
-            KnownCurrencyTable.EnsureCurrencyTable();
-        }
+        if (isoCode is null) return Currency.UnspecifiedCurrency;
 
-        public IEnumerable<ICurrency> Currencies
-            => KnownCurrencyTable.CurrencyTable.Values;
-
-        public ICurrency GetCurrency(string isoSymbol)
-            => isoSymbol is null ? Currency.UnspecifiedCurrency : KnownCurrencyTable.CurrencyTable.TryGetValue(isoSymbol, out var value) ? value : null;
-
-        public bool IsKnownCurrency(string isoCode) 
-            => isoCode is null ? false : KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);
+        return KnownCurrencyTable.CurrencyTable.TryGetValue(isoCode, out var value) ? value : null;
     }
+
+    public bool IsKnownCurrency(string isoCode) => isoCode is not null && KnownCurrencyTable.CurrencyTable.ContainsKey(isoCode);
 }
