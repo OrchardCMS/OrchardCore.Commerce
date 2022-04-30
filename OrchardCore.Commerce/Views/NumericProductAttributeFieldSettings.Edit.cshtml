@@ -79,8 +79,8 @@
     jQuery(function ($) {
         $('.affects-numeric-product-attr-default').on('change', function (e) {
             var $defaultValueField = $('#' + $(e.target).data('related-node'));
-            var $decimalPlaces = $('#' + $defaultValueField.data('related-decimal-places')).val() || 0;
-            var step = Math.pow(10, 0 - $decimalPlaces);
+            var decimalPlaces = $('#' + $defaultValueField.data('related-decimal-places')).val() || 0;
+            var step = Math.pow(10, 0 - decimalPlaces);
             if (!isNaN(step)) $defaultValueField.attr('step', step);
             var min = Math.round(parseFloat($('#' + $defaultValueField.data('related-min')).val()) / step) * step;
             if (!isNaN(min)) $defaultValueField.attr("min", min);
