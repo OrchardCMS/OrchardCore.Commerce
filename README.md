@@ -39,4 +39,4 @@ Globalization should be taken into account at every step.
 
 ## Demo video
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/EVvwS1UaIk4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Watch the video](https://img.youtube.com/vi/EVvwS1UaIk4/maxresdefault.jpg)](https://youtu.be/EVvwS1UaIk4)
