@@ -36,3 +36,7 @@ Globalization should be taken into account at every step.
 2. Build and run the `SampleWebApp` project.
 3. From the admin, enable the module's only feature.
 4. (optional) Start using the features, by creating a new `Product` content type, and adding the product part to it.
+
+## Demo video
+
+[![Watch the video](https://img.youtube.com/vi/EVvwS1UaIk4/maxresdefault.jpg)](https://youtu.be/EVvwS1UaIk4)
