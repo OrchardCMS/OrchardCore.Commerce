@@ -28,8 +28,8 @@ public class UITestBase : OrchardCoreUITestBase
     protected override Task ExecuteTestAsync(
         Action<UITestContext> test,
         Browser browser,
-        Func<UITestContext, Task<Uri>> setupOperation = null,
-        Action<OrchardCoreUITestExecutorConfiguration> changeConfiguration = null) =>
+        Func<UITestContext, Task<Uri>>? setupOperation = null,
+        Action<OrchardCoreUITestExecutorConfiguration>? changeConfiguration = null) =>
         base.ExecuteTestAsync(
             test,
             browser,
