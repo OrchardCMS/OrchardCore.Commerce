@@ -7,7 +7,7 @@ namespace SampleWebApp.Tests.UI.Helpers;
 
 public static class SetupHelpers
 {
-    public const string RecipeId = "Software as a Service";
+    public const string RecipeId = "Blog";
 
     public static async Task<Uri> RunSetupAsync(UITestContext context)
     {
@@ -20,7 +20,7 @@ public static class SetupHelpers
                 SiteTimeZoneValue = "Europe/London",
             });
 
-        context.Exists(By.Id("navbar"));
+        context.Exists(By.Id("mainNav"));
 
         return homepageUri;
     }

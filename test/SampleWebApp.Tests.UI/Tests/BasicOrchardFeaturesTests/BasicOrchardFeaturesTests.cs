@@ -2,7 +2,7 @@
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
-using Shouldly;
+using SampleWebApp.Tests.UI.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,7 +23,23 @@ public class BasicOrchardFeaturesTests : UITestBase
                 await context.SignInDirectlyAsync();
                 await context.GoToDashboardAsync();
 
-                context.Get(By.CssSelector("alert-success h4")).Text.ShouldBe("Welcome to Orchard Core");
+                context.Exists(By.ClassName("alert-success"));
             },
             browser);
+
+    [Theory, Chrome]
+    public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
+        ExecuteTestAsync(
+            context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
+            browser,
+            configuration =>
+            {
+                configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
+                configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
+                    AccessibilityCheckingConfiguration
+                        .ConfigureWcag21aa(axeBuilder)
+                        .DisableRules("color-contrast", "link-name");
+
+                return Task.CompletedTask;
+            });
 }
