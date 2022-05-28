@@ -30,15 +30,15 @@ jobs:
         dotnet build --configuration Release
     - name: Unit Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
     - name: UI Tests
         if: matrix.os == 'windows-latest'
         run: |
-          dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Tests.UI.csproj
+          dotnet test -c Release --no-restore --no-build ./test/SampleWebApp.Tests.UI/SampleWebApp.Tests.UI.csproj
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: ui-test-failure
           path: |
-            test/OrchardCore.Tests.UI/bin/Release/*/FailureDumps
+            test/SampleWebApp.Tests.UI/bin/Release/*/FailureDumps
   
