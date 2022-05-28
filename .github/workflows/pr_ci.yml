@@ -36,8 +36,8 @@ jobs:
         dotnet test -c Release --no-restore --no-build ./test/SampleWebApp.Tests.UI/SampleWebApp.Tests.UI.csproj
     - uses: actions/upload-artifact@v2
       if: failure()
-        with:
-          name: ui-test-failure
-          path: |
-            test/SampleWebApp.Tests.UI/bin/Release/*/FailureDumps
+      with:
+        name: ui-test-failure
+        path: |
+          test/SampleWebApp.Tests.UI/bin/Release/*/FailureDumps
   
