@@ -2,3 +2,6 @@
 	path = tools/Lombiq.Analyzers
 	url = https://github.com/Lombiq/.NET-Analyzers.git
 	branch = dev
+[submodule "test/Lombiq.UITestingToolbox"]
+	path = test/Lombiq.UITestingToolbox
+	url = https://github.com/Lombiq/UI-Testing-Toolbox.git
