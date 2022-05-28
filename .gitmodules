@@ -5,3 +5,9 @@
 [submodule "test/Lombiq.UITestingToolbox"]
 	path = test/Lombiq.UITestingToolbox
 	url = https://github.com/Lombiq/UI-Testing-Toolbox.git
+[submodule "src/Libraries/Lombiq.HelpfulLibraries"]
+	path = src/Libraries/Lombiq.HelpfulLibraries
+	url = https://github.com/Lombiq/Helpful-Libraries.git
+[submodule "src/Utilities/Lombiq.Npm.Targets"]
+	path = src/Utilities/Lombiq.Npm.Targets
+	url = https://github.com/Lombiq/NPM-Targets.git
