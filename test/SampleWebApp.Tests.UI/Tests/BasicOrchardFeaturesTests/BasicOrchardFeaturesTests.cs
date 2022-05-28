@@ -2,7 +2,7 @@
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
-using SampleWebApp.Tests.UI.Helpers;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,24 +16,14 @@ public class BasicOrchardFeaturesTests : UITestBase
     }
 
     [Theory, Chrome]
-    public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
-        ExecuteTestAsync(
-            context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
-            browser,
-            configuration =>
-            {
-                configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
-                configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
-                    AccessibilityCheckingConfiguration
-                        .ConfigureWcag21aa(axeBuilder)
-                        .DisableRules("color-contrast");
-
-                return Task.CompletedTask;
-            });
-
-    [Theory(Skip = "Used to test artifact creation during build."), Chrome]
-    public Task IntentionallyFailingTest(Browser browser) =>
+    public Task AdminDashboardShouldBeAccessible(Browser browser) =>
         ExecuteTestAfterSetupAsync(
-            context => context.Exists(By.Id("failfailfail")),
+            async context =>
+            {
+                await context.SignInDirectlyAsync();
+                await context.GoToDashboardAsync();
+
+                context.Get(By.CssSelector("alert-success h4")).Text.ShouldBe("Welcome to Orchard Core");
+            },
             browser);
 }
