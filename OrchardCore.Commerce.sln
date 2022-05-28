@@ -47,6 +47,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lombiq.HelpfulLibraries.Orc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lombiq.HelpfulLibraries.RestEase", "src\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.RestEase\Lombiq.HelpfulLibraries.RestEase.csproj", "{B3C68A75-056B-4A76-9718-9ED35ED76D9E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{C97579CA-07F0-4DC0-913C-428256BCC4C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lombiq.Npm.Targets", "src\Utilities\Lombiq.Npm.Targets\Lombiq.Npm.Targets.csproj", "{3E364273-C1E1-434F-A7CE-AD3EEE969551}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWebApp.Tests.UI", "test\SampleWebApp.Tests.UI\SampleWebApp.Tests.UI.csproj", "{F1BD8B02-16AD-412A-90BE-C959CA21EFB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +115,14 @@ Global
 		{B3C68A75-056B-4A76-9718-9ED35ED76D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3C68A75-056B-4A76-9718-9ED35ED76D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3C68A75-056B-4A76-9718-9ED35ED76D9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E364273-C1E1-434F-A7CE-AD3EEE969551}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E364273-C1E1-434F-A7CE-AD3EEE969551}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E364273-C1E1-434F-A7CE-AD3EEE969551}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E364273-C1E1-434F-A7CE-AD3EEE969551}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1BD8B02-16AD-412A-90BE-C959CA21EFB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1BD8B02-16AD-412A-90BE-C959CA21EFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1BD8B02-16AD-412A-90BE-C959CA21EFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1BD8B02-16AD-412A-90BE-C959CA21EFB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,5 +141,8 @@ Global
 		{31D32C73-4E79-4367-804B-C9016A3C29CC} = {D654DE3C-EECD-4BE6-AF89-2F0A7DFD384C}
 		{16238FC7-CC04-4636-AF84-386C7B5E5FA5} = {D654DE3C-EECD-4BE6-AF89-2F0A7DFD384C}
 		{B3C68A75-056B-4A76-9718-9ED35ED76D9E} = {D654DE3C-EECD-4BE6-AF89-2F0A7DFD384C}
+		{C97579CA-07F0-4DC0-913C-428256BCC4C3} = {DFF6E50B-679D-407E-AC00-D10EC0E12507}
+		{3E364273-C1E1-434F-A7CE-AD3EEE969551} = {C97579CA-07F0-4DC0-913C-428256BCC4C3}
+		{F1BD8B02-16AD-412A-90BE-C959CA21EFB7} = {7BA6916E-5717-4FAB-9430-2CD8DD9ADA83}
 	EndGlobalSection
 EndGlobal
