@@ -23,16 +23,19 @@ public class UITestBase : OrchardCoreUITestBase
         ExecuteTestAsync(testAsync, browser, SetupHelpers.RunSetupAsync, changeConfigurationAsync);
 
     protected override Task ExecuteTestAsync(
-        Func<UITestContext, Task> testAsync,
+        Action<UITestContext> test,
         Browser browser,
-        Func<UITestContext, Task<Uri>> setupOperation,
-        Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync) =>
+        Func<UITestContext, Task<Uri>>? setupOperation = null,
+        Action<OrchardCoreUITestExecutorConfiguration>? changeConfiguration = null) =>
         base.ExecuteTestAsync(
-            testAsync,
+            test,
             browser,
             setupOperation,
-            async configuration =>
+            configuration =>
             {
-                if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
+                configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
+                configuration.UseSqlServer = true;
+
+                changeConfiguration?.Invoke(configuration);
             });
 }
