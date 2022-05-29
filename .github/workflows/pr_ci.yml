@@ -24,7 +24,6 @@ jobs:
         git submodule init && git submodule update
     - name: Static Code Analysis
       run: |
-        npm install pnpm -g
         dotnet build OrchardCore.Commerce.sln --no-incremental -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzersDuringBuild=true -nologo -consoleLoggerParameters:NoSummary -verbosity:quiet
     - name: Build
       run: |
