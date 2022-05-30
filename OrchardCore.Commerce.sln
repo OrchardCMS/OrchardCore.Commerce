@@ -21,11 +21,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Tests.UI", "OrchardCore.Commerce.Tests.UI\OrchardCore.Commerce.Tests.UI.csproj", "{A3219537-A0CE-4194-A473-1DD0488AB52F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2D057AA-E3F7-404D-A713-C3C59F9DE562}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWebApp", "src\SampleWebApp\SampleWebApp.csproj", "{3E93C123-B953-4EA4-9573-CB63019F0F9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{772AFE42-DF1F-49B1-9F64-7C901E588C00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Tests.UI", "test\OrchardCore.Commerce.Tests.UI\OrchardCore.Commerce.Tests.UI.csproj", "{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,14 +51,14 @@ Global
 		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A3219537-A0CE-4194-A473-1DD0488AB52F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3219537-A0CE-4194-A473-1DD0488AB52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A3219537-A0CE-4194-A473-1DD0488AB52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A3219537-A0CE-4194-A473-1DD0488AB52F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +68,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F} = {B2D057AA-E3F7-404D-A713-C3C59F9DE562}
+		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD} = {772AFE42-DF1F-49B1-9F64-7C901E588C00}
 	EndGlobalSection
 EndGlobal
