@@ -11,6 +11,14 @@
 
   "steps": [
     {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "Blog",
+        "TheAdmin"
+      ]
+    },
+    {
       "name": "themes",
       "site": "Blog",
       "admin": "TheAdmin"
