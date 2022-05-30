@@ -32,7 +32,6 @@ jobs:
       run: |
         dotnet test -c Release --no-restore --no-build ./OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
     - name: UI Tests
-      if: matrix.os == 'windows-latest'
       run: |
         dotnet test -c Release --no-restore --no-build ./OrchardCore.Tests.UI/OrchardCore.Commerce.Tests.UI.csproj
     - uses: actions/upload-artifact@v2

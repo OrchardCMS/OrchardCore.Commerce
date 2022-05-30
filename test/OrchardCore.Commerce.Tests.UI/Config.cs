@@ -9,6 +9,7 @@ public static class Config
             ? AppContext.BaseDirectory
             : Path.Combine(
                 AppContext.BaseDirectory.Split(new[] { "src", "test" }, StringSplitOptions.RemoveEmptyEntries)[0],
+                "src",
                 "SampleWebApp",
                 "bin",
                 "Debug",
