@@ -33,7 +33,7 @@ jobs:
         dotnet test -c Release --no-restore --no-build ./OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
     - name: UI Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./OrchardCore.Tests.UI/OrchardCore.Commerce.Tests.UI.csproj
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Commerce.Tests.UI.csproj
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
