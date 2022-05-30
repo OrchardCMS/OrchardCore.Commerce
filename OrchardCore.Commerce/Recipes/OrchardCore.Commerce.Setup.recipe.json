@@ -11,6 +11,20 @@
 
   "steps": [
     {
+    "name": "recipes",
+    "Values": [
+      // Configuration
+      {
+        "executionid": "OrchardCore.Commerce",
+        "name": "Order"
+      },
+      {
+        "executionid": "OrchardCore.Commerce",
+        "name": "Product"
+      }
+    ]
+    },
+    {
       "name": "feature",
       "disable": [],
       "enable": [
