@@ -15,6 +15,6 @@ public static class Config
                 "Debug",
                 "net6.0");
 
-        return Path.Combine(baseDirectory, "SnowMountain.Web.dll");
+        return Path.Combine(baseDirectory, "SampleWebApp.dll");
     }
 }
