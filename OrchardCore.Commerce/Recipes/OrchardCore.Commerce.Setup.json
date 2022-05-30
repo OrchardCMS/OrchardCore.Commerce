@@ -1,0 +1,20 @@
+﻿{
+  "name": "OrchardCore.Commerce.Setup",
+  "displayName": "OrchardCore Commerce",
+  "description": "Main setup recipe for the OrchardCore Commerce platform.",
+  "author": "OrchardCoreCommerce",
+  "website": "https://www.orchardcorecommerce.com",
+  "version": "1.0",
+  "issetuprecipe": true,
+  "categories": ["orchardcorecommerce"],
+  "tags": [ "setup" ],
+
+  "steps": [
+    {
+      "name": "themes",
+      "site": "Blog",
+      "admin": "TheAdmin"
+    }
+  ]
+}
+
