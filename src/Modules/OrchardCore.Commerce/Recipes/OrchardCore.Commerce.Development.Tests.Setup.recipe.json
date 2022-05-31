@@ -18,13 +18,26 @@
       "Values": [
         {
           "executionid": "OrchardCore.Commerce",
-          "name": "OrchardCore.Commerce.Setup"
+          "name": "OrchardCore.Commerce.Development.Setup"
         }
       ]
     },
     {
       "name": "settings",
       "UseCdn": false
+    },
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "Blog",
+        "TheAdmin"
+        ]
+    },
+    {
+      "name": "themes",
+      "site": "Blog",
+      "admin": "TheAdmin"
     }
   ]
 }

@@ -1,0 +1,30 @@
+﻿{
+  "name": "OrchardCore.Commerce.Development.Setup",
+  "displayName": "OrchardCore Commerce - Development",
+  "description": "Settings and contents required only for development environment.",
+  "author": "OrchardCoreCommerce",
+  "website": "https://www.orchardcorecommerce.com",
+  "version": "1.0",
+  "issetuprecipe": true,
+  "categories": [ "orchardcorecommerce" ],
+  "tags": [],
+
+  "steps": [
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "OrchardCore.Commerce.Setup"
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "SmtpSettings": {
+        "DefaultSender": "portal@occommerce.com",
+        "Host": "127.0.0.1"
+      }
+    }
+  ]
+}

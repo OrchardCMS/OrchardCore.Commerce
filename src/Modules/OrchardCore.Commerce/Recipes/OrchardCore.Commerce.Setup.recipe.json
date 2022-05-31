@@ -11,31 +11,22 @@
 
   "steps": [
     {
-    "name": "recipes",
-    "Values": [
-      // Configuration
-      {
-        "executionid": "OrchardCore.Commerce",
-        "name": "Order"
-      },
-      {
-        "executionid": "OrchardCore.Commerce",
-        "name": "Product"
-      }
-    ]
-    },
-    {
-      "name": "feature",
-      "disable": [],
-      "enable": [
-        "Blog",
-        "TheAdmin"
+      "name": "recipes",
+      "Values": [
+        // Configuration
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "Order"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "Product"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "MultiCurrencyProduct"
+        }
       ]
-    },
-    {
-      "name": "themes",
-      "site": "Blog",
-      "admin": "TheAdmin"
     }
   ]
 }

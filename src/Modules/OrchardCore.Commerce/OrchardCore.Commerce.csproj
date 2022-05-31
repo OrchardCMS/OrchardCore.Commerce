@@ -12,14 +12,10 @@
   <ItemGroup>
     <EmbeddedResource Remove="LICENSE" />
     <EmbeddedResource Remove="README.md" />
-    <EmbeddedResource Remove="Recipes\OrchardCore.Commerce.Development.Tests.Setup.recipe.json" />
     <EmbeddedResource Remove="Recipes\OrchardCore.Commerce.Setup.recipe.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Recipes\OrchardCore.Commerce.Development.Tests.Setup.recipe.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Recipes\OrchardCore.Commerce.Setup.recipe.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
