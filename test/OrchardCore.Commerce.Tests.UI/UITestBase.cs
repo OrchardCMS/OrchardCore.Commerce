@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Tests.UI;
 public class UITestBase : OrchardCoreUITestBase
 {
     protected override string AppAssemblyPath => WebAppConfigHelper
-        .GetAbsoluteApplicationAssemblyPath("SampleWebApp", "net6.0");
+        .GetAbsoluteApplicationAssemblyPath("OrchardCore.Commerce.Web", "net6.0");
 
     protected UITestBase(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
