@@ -12,13 +12,6 @@
   <ItemGroup>
     <EmbeddedResource Remove="LICENSE" />
     <EmbeddedResource Remove="README.md" />
-    <EmbeddedResource Remove="Recipes\OrchardCore.Commerce.Setup.recipe.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Recipes\OrchardCore.Commerce.Setup.recipe.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

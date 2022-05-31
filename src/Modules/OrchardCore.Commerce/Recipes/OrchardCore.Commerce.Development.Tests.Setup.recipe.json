@@ -3,7 +3,7 @@
   "displayName": "TEST: OrchardCore Commerce",
   "description": "OrchardCore Commerce setup recipe for automated UI test execution.",
   "author": "OrchardCoreCommerce",
-  "website": "https://www.orcahrdcorecommerce.com",
+  "website": "https://www.orchardcorecommerce.com",
   "version": "1.0",
   "issetuprecipe": true,
   "categories": [
@@ -25,19 +25,6 @@
     {
       "name": "settings",
       "UseCdn": false
-    },
-    {
-      "name": "feature",
-      "disable": [],
-      "enable": [
-        "Blog",
-        "TheAdmin"
-        ]
-    },
-    {
-      "name": "themes",
-      "site": "Blog",
-      "admin": "TheAdmin"
     }
   ]
 }

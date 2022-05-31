@@ -20,11 +20,18 @@
       ]
     },
     {
-      "name": "settings",
-      "SmtpSettings": {
-        "DefaultSender": "portal@occommerce.com",
-        "Host": "127.0.0.1"
-      }
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "Blog",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "Blog"
     }
   ]
 }

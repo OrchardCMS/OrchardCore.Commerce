@@ -6,7 +6,7 @@
   "website": "https://www.orchardcorecommerce.com",
   "version": "1.0",
   "issetuprecipe": true,
-  "categories": ["orchardcorecommerce"],
+  "categories": [ "orchardcorecommerce" ],
   "tags": [ "setup" ],
 
   "steps": [
