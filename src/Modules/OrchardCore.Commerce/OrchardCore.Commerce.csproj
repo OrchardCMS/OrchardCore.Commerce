@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AddressDataType\AddressDataType.csproj" />
-    <ProjectReference Include="..\..\MoneyDataType\MoneyDataType.csproj" />
+    <ProjectReference Include="..\..\Libraries\AddressDataType\AddressDataType.csproj" />
+    <ProjectReference Include="..\..\Libraries\MoneyDataType\MoneyDataType.csproj" />
   </ItemGroup>
 
 </Project>
