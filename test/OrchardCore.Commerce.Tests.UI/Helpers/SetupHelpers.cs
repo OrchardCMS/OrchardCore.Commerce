@@ -1,4 +1,4 @@
-﻿using Lombiq.Tests.UI.Extensions;
+using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -16,7 +16,6 @@ public static class SetupHelpers
             {
                 SiteName = "Orchard Core Commerce",
                 RecipeId = RecipeId,
-                TablePrefix = "oc",
                 SiteTimeZoneValue = "Europe/London",
             });
 

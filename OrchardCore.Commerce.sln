@@ -3,14 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressDataType", "AddressDataType\AddressDataType.csproj", "{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyDataType", "MoneyDataType\MoneyDataType.csproj", "{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce", "OrchardCore.Commerce\OrchardCore.Commerce.csproj", "{2BD08529-A96A-4783-8784-593DA6DE49D5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests", "OrchardCore.Commerce.Tests\OrchardCore.Commerce.Tests.csproj", "{1245BC54-3984-48C2-9BDC-DB88E7E00A84}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D15D472D-A6EF-441F-8278-6350D89E90D2}"
 	ProjectSection(SolutionItems) = preProject
 		Nuget.config = Nuget.config
@@ -29,28 +21,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{772AFE42-D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Tests.UI", "test\OrchardCore.Commerce.Tests.UI\OrchardCore.Commerce.Tests.UI.csproj", "{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce", "src\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj", "{1BA22A56-B180-40F7-8BCA-A978F2CF01B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneyDataType", "src\MoneyDataType\MoneyDataType.csproj", "{C7D3EEA2-2E24-45E5-BA97-87108A4C34A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddressDataType", "src\AddressDataType\AddressDataType.csproj", "{2D0B7247-7E91-4855-90C1-1B13CF4637D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Tests", "test\OrchardCore.Commerce.Tests\OrchardCore.Commerce.Tests.csproj", "{845CCF2D-EC38-4A4D-AE05-0D3CE6D1CF49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64C30277-2F1E-4EEC-B8E0-2201EB4C9C3F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FFDA451D-2401-4043-9F7D-DF8D2D7C7327}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BD08529-A96A-4783-8784-593DA6DE49D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1245BC54-3984-48C2-9BDC-DB88E7E00A84}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,6 +45,22 @@ Global
 		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BA22A56-B180-40F7-8BCA-A978F2CF01B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BA22A56-B180-40F7-8BCA-A978F2CF01B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BA22A56-B180-40F7-8BCA-A978F2CF01B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BA22A56-B180-40F7-8BCA-A978F2CF01B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7D3EEA2-2E24-45E5-BA97-87108A4C34A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7D3EEA2-2E24-45E5-BA97-87108A4C34A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7D3EEA2-2E24-45E5-BA97-87108A4C34A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7D3EEA2-2E24-45E5-BA97-87108A4C34A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D0B7247-7E91-4855-90C1-1B13CF4637D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D0B7247-7E91-4855-90C1-1B13CF4637D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D0B7247-7E91-4855-90C1-1B13CF4637D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0B7247-7E91-4855-90C1-1B13CF4637D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{845CCF2D-EC38-4A4D-AE05-0D3CE6D1CF49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{845CCF2D-EC38-4A4D-AE05-0D3CE6D1CF49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{845CCF2D-EC38-4A4D-AE05-0D3CE6D1CF49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{845CCF2D-EC38-4A4D-AE05-0D3CE6D1CF49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,5 +71,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3E93C123-B953-4EA4-9573-CB63019F0F9F} = {B2D057AA-E3F7-404D-A713-C3C59F9DE562}
 		{2F8C30AF-0337-427D-A08C-AF7D5658D3BD} = {772AFE42-DF1F-49B1-9F64-7C901E588C00}
+		{E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE} = {B2D057AA-E3F7-404D-A713-C3C59F9DE562}
+		{1BA22A56-B180-40F7-8BCA-A978F2CF01B5} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
+		{C7D3EEA2-2E24-45E5-BA97-87108A4C34A0} = {B2D057AA-E3F7-404D-A713-C3C59F9DE562}
+		{2D0B7247-7E91-4855-90C1-1B13CF4637D4} = {B2D057AA-E3F7-404D-A713-C3C59F9DE562}
+		{845CCF2D-EC38-4A4D-AE05-0D3CE6D1CF49} = {772AFE42-DF1F-49B1-9F64-7C901E588C00}
 	EndGlobalSection
 EndGlobal

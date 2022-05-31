@@ -1,4 +1,4 @@
-﻿using Lombiq.Tests.UI.Attributes;
+using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -29,7 +29,7 @@ public class BasicOrchardFeaturesTests : UITestBase
 
     [Theory, Chrome]
     public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
-        ExecuteTestAsync(
+        ExecuteTestAfterSetupAsync(
             context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
             browser,
             configuration =>
@@ -38,7 +38,7 @@ public class BasicOrchardFeaturesTests : UITestBase
                 configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
                     AccessibilityCheckingConfiguration
                         .ConfigureWcag21aa(axeBuilder)
-                        .DisableRules("color-contrast", "link-name", "html-has-lang", "document-title");
+                        .DisableRules("color-contrast", "element-required-attributes", "element-required-content");
 
                 return Task.CompletedTask;
             });
