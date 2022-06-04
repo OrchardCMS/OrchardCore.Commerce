@@ -106,6 +106,9 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
+
+        // Page
+        services.AddScoped<IDataMigration, PageMigrations>();
     }
 }
 

@@ -38,7 +38,7 @@ public class BasicOrchardFeaturesTests : UITestBase
                 configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
                     AccessibilityCheckingConfiguration
                         .ConfigureWcag21aa(axeBuilder)
-                        .DisableRules("color-contrast", "element-required-attributes", "element-required-content");
+                        .DisableRules("color-contrast");
 
                 return Task.CompletedTask;
             });
