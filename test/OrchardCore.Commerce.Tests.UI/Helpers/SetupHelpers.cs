@@ -1,6 +1,7 @@
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
+using OpenQA.Selenium;
 
 namespace OrchardCore.Commerce.Tests.UI.Helpers;
 
@@ -17,6 +18,8 @@ public static class SetupHelpers
                 RecipeId = RecipeId,
                 SiteTimeZoneValue = "Europe/London",
             });
+
+        context.Exists(By.Id("mainNav"));
 
         return homepageUri;
     }
