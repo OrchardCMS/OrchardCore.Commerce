@@ -29,7 +29,7 @@ public class BasicOrchardFeaturesTests : UITestBase
 
     [Theory, Chrome]
     public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+        ExecuteTestAsync(
             context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
             browser,
             configuration =>

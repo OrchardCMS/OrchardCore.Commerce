@@ -1,7 +1,6 @@
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
-using OpenQA.Selenium;
 
 namespace OrchardCore.Commerce.Tests.UI.Helpers;
 
@@ -14,12 +13,10 @@ public static class SetupHelpers
         var homepageUri = await context.GoToSetupPageAndSetupOrchardCoreAsync(
             new OrchardCoreSetupParameters(context)
             {
-                SiteName = "Orchard Core Commerce",
+                SiteName = "Orchard Setup",
                 RecipeId = RecipeId,
                 SiteTimeZoneValue = "Europe/London",
             });
-
-        context.Exists(By.Id("mainNav"));
 
         return homepageUri;
     }
