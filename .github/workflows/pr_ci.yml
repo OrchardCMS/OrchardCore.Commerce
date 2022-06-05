@@ -30,7 +30,7 @@ jobs:
         dotnet build --configuration Release
     - name: Unit Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj
     - name: UI Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Commerce.Tests.UI/OrchardCore.Commerce.Tests.UI.csproj
