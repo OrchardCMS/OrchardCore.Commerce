@@ -1,0 +1,120 @@
+﻿{
+  "name": "OrchardCore.Commerce.Development.Setup",
+  "displayName": "OrchardCore Commerce - Development",
+  "description": "Settings and contents required only for development environment.",
+  "author": "OrchardCoreCommerce",
+  "website": "https://www.orchardcorecommerce.com",
+  "version": "1.0",
+  "issetuprecipe": true,
+  "categories": [ "orchardcorecommerce" ],
+  "tags": [],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        // SaaS
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.DynamicCache",
+        "OrchardCore.Features",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        // Content Management
+        "OrchardCore.Alias",
+        "OrchardCore.AdminMenu",
+        "OrchardCore.Autoroute",
+        "OrchardCore.Html",
+        "OrchardCore.ContentFields",
+        "OrchardCore.ContentPreview",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.CustomSettings",
+        "OrchardCore.Deployment",
+        "OrchardCore.Deployment.Remote",
+        "OrchardCore.Feeds",
+        "OrchardCore.Flows",
+        "OrchardCore.Indexing",
+        "OrchardCore.Layers",
+        "OrchardCore.Lists",
+        "OrchardCore.Markdown",
+        "OrchardCore.Media",
+        "OrchardCore.Menu",
+        "OrchardCore.Placements",
+        "OrchardCore.Queries",
+        "OrchardCore.Queries.Sql",
+        "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
+        "OrchardCore.Taxonomies",
+        "OrchardCore.Title",
+        "OrchardCore.Templates",
+        "OrchardCore.Widgets",
+
+        // Themes
+        "TheBlogTheme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheBlogTheme"
+    },
+    {
+      "name": "recipes",
+      "Values": [
+        // Configuration
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "Order"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "Product"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "MultiCurrencyProduct"
+        }
+      ]
+    },
+    {
+      "name": "Content",
+      "data": [
+        {
+          "ContentItemId": "welcomepage000000000000000",
+          "ContentItemVersionId": "welcomepage000000000000000",
+          "ContentType": "Page",
+          "DisplayText": "Welcome Page",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2022-06-04T12:45:43.1197779Z",
+          "PublishedUtc": "2022-06-04T12:45:43.1233064Z",
+          "CreatedUtc": "2022-06-04T12:42:14.3908382Z",
+          "Owner": "40x7jep0kvzja675q6ty7m06dr",
+          "Author": "admin",
+          "Page": {},
+          "AutoroutePart": {
+            "Path": "welcome-page",
+            "SetHomepage": true,
+            "Disabled": false,
+            "RouteContainedItems": false,
+            "Absolute": false
+          },
+          "TitlePart": {
+            "Title": "Welcome Page"
+          }
+        }
+      ]
+    }
+  ]
+}

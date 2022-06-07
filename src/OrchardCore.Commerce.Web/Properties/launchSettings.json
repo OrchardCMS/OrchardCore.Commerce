@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SampleWebApp": {
+    "OrchardCore.Commerce.Web": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "https://localhost:5001",

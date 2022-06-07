@@ -24,8 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MoneyDataType\MoneyDataType.csproj" />
-    <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
+    <ProjectReference Include="..\..\src\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
 </Project>
