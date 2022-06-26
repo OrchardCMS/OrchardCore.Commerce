@@ -1,4 +1,3 @@
-
 @model ShoppingCartViewModel
 
 <zone name="Header">
@@ -91,9 +90,7 @@
                     </form>
                 </div>
                 <div class="col-xs-12 col-sm-1">
-                    <form asp-action="Index" asp-controller="Payment" asp-area="OrchardCore.Commerce" id="checkout">
-                        <button type="submit" class="btn btn-primary">@T["Checkout"]</button>
-                    </form>
+                    <a href="~/payment" class="btn btn-primary">@T["Checkout"]</a>
                 </div>
             </div>
         </div>
