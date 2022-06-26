@@ -1,0 +1,75 @@
+@using OrchardCore.Commerce.Abstractions
+@using OrchardCore.Commerce.Controllers
+@using OrchardCore.Commerce.ViewModels;
+
+@inject IShoppingCartPersistence ShoppingCartPersistence
+@model CardPaymentViewModel
+@{
+    ViewData["Title"] = "Payment";
+
+    // Shopping cart ID is null by default currently.
+    var currentShoppingCart = await ShoppingCartPersistence.RetrieveAsync();
+    //TO DO: Check if cart is empty or not, calculate total(s)
+
+    //var cartIsNotEmpty = Model.Lines != null && Model.Lines.Any();
+
+    //// Creating order
+    //if (cartIsNotEmpty)
+    //{
+    //    var order = await ContentManager.NewAsync("Order");
+    //    var orderPart = order.As<OrderPart>();
+
+    //    foreach (var total in Model.Totals)
+    //    {
+    //        var payment = new CreditCardPayment();
+    //        payment.Amount = total;
+    //        orderPart.Charges.Add(payment);
+    //    }
+
+    //    await ContentManager.CreateAsync(order);
+    //}
+}
+
+<script at="Foot" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
+<script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Commerce/Scripts/stripe-card-form.js"></script>
+<style asp-src="~/OrchardCore.Commerce/Styles/credit-card-form.css"></style>
+
+<div class="row">
+    <div class="col-12 mx-auto">
+        <h1>Orchard Core Commerce</h1>
+        <h2>Stripe Payment</h2>
+    </div>
+</div>
+<div class="card-payment-form_containter">
+    <form id="card-payment-form" class="card-payment-form" asp-controller="Payment" asp-action="Index" method="POST">
+        <fieldset>
+            <div class="row">
+                <label for="card-payment-form_name">Name</label>
+                <input id="card-payment-form_name" type="text">
+            </div>
+            <div class="row">
+                <label for="card-payment-form_email">Email</label>
+                <input id="card-payment-form_email" type="email">
+            </div>
+            <div class="row">
+                <label for="card-payment-form_phone">Phone</label>
+                <input id="card-payment-form_phone" type="tel">
+            </div>
+        </fieldset>
+        <fieldset>
+            <div class="row credit-card">
+                <div id="card-payment-form_card"></div>
+            </div>
+        </fieldset>
+        @Html.HiddenFor(model => model.Email, new { id = "hiddenEmail" })
+        @Html.HiddenFor(model => model.Token, new { id = "hiddenToken" })
+        <div class="pay-button-container">
+            <button type="submit" class="pay-button">Pay $1</button>
+        </div>
+        <div class="error" role="alert">
+            <span class="error-message"></span>
+        </div>
+    </form>
+</div>
+
+

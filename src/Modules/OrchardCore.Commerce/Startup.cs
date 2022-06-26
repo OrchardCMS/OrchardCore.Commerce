@@ -25,6 +25,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
+using Stripe;
 using System;
 using YesSql.Indexes;
 
@@ -34,11 +35,16 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // This is a public sample test API key.
+        // Don’t submit any personally identifiable information in requests made with this key.
+        // Sign in to see your own test API key embedded in code samples.
+        StripeConfiguration.ApiKey = "sk_test_51H59owJmQoVhz82aOUNOuCVbK0u1zjyRFKkFp9EfrqzWaUWqQni3oSxljsdTIu2YZ9XvlbeGjZRU7B7ye2EjJQE000Dm2DtMWD";
+
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
         services.AddScoped<IDataMigration, ProductMigrations>();
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
-        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductService, Services.ProductService>();
         services.AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>();
 
@@ -68,7 +74,7 @@ public class Startup : StartupBase
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
 
         services.AddScoped<IPriceProvider, PriceProvider>();
-        services.AddScoped<IPriceService, PriceService>();
+        services.AddScoped<IPriceService, Services.PriceService>();
         services.AddScoped<IPriceSelectionStrategy, SimplePriceStrategy>();
 
         // Price Variants
@@ -109,6 +115,9 @@ public class Startup : StartupBase
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
+
+        // Card Payment
+        services.AddScoped<ICardPaymentService, CardPaymentService>();
     }
 }
 

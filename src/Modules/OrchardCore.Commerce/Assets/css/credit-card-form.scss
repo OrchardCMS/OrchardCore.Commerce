@@ -1,0 +1,22 @@
+.row.credit-card > * {
+    padding: 0;
+    margin: 30px 0;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.pay-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pay-button {
+    width: 50%;
+    color: white;
+    background-color: forestgreen;
+
+    &:hover {
+        background-color: lawngreen;
+    }
+}
