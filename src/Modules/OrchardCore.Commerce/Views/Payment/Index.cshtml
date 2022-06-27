@@ -1,3 +1,4 @@
+@using Money
 @using OrchardCore.Commerce.Abstractions
 @using OrchardCore.Commerce.Controllers
 @using OrchardCore.Commerce.Extensions
@@ -16,10 +17,16 @@
 
     var cartIsNotEmpty = currentShoppingCart.Count != 0;
 
+    IEnumerable<Amount> totals;
+    Amount defaultTotal = new();
+
     if (cartIsNotEmpty)
     {
-        var totals = await currentShoppingCart.CalculateTotalsAsync(PriceService, PriceSelectionStrategy);
-        var asdd = "hi";
+        totals = await currentShoppingCart.CalculateTotalsAsync(PriceService, PriceSelectionStrategy);
+
+        // We can only pay in one currency at a time. Later we have to figure out what to do if there are multiple
+        // totals i.e., multiple currencies.
+        defaultTotal = totals.FirstOrDefault();
     }
 
     //// Creating order
@@ -59,8 +66,8 @@
     {
         <div class="row">
             <div class="col-12 mx-auto">
-                <h1>Orchard Core Commerce</h1>
-                <h2>Stripe Payment</h2>
+                <h1>@T["Orchard Core Commerce"]</h1>
+                <h2>@T["Stripe Payment"]</h2>
             </div>
         </div>
         <div class="card-payment-form_containter">
@@ -87,7 +94,7 @@
                 @Html.HiddenFor(model => model.Email, new { id = "hiddenEmail" })
                 @Html.HiddenFor(model => model.Token, new { id = "hiddenToken" })
                 <div class="pay-button-container">
-                    <button type="submit" class="pay-button">Pay $1</button>
+                    <button type="submit" class="pay-button">@T["Pay"] @(defaultTotal.Currency.Symbol + defaultTotal.Value) </button>
                 </div>
                 <div class="error" role="alert">
                     <span class="error-message"></span>

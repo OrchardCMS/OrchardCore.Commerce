@@ -25,15 +25,15 @@ public class PaymentController : Controller
     public IActionResult Index() =>
         View();
 
-    //[Route("payment")]
-    //[HttpPost]
-    //[ValidateAntiForgeryToken]
-    //public IActionResult Index(CardPaymentViewModel viewModel)
-    //{
-    //    var receiptViewModel = _cardPaymentService.Create(viewModel);
+    [Route("payment")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Index(CardPaymentViewModel viewModel)
+    {
+        var receiptViewModel = _cardPaymentService.Create(viewModel);
 
-    //    return RedirectToAction("Receipt", "Payment", receiptViewModel);
-    //}
+        return RedirectToAction("Receipt", "Payment", receiptViewModel);
+    }
 
     [HttpGet]
     public IActionResult Receipt(CardPaymentReceiptViewModel viewModel) =>

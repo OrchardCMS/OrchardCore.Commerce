@@ -9,7 +9,9 @@ public class CardPaymentService : ICardPaymentService
     private const int PaymentAmountPence = 100;
     private const string PaymentCurrency = "usd";
     private const string PaymentDescription = "Orchard Commerce Test Stripe Card Payment";
-    private const bool CaptureCardPayment = true; // "false" prevents the card being charged!
+    // "false" prevents the card being charged immediately!
+    private const bool CaptureCardPayment = true;
+
     private readonly ChargeService _chargeService;
 
     public CardPaymentService() =>
