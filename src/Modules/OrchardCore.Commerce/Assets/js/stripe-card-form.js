@@ -1,14 +1,10 @@
 var stripe = Stripe
     ('pk_test_51H59owJmQoVhz82aWAoi9M5s8PC6sSAqFI7KfAD2NRKun5riDIOM0dvu2caM25a5f5JbYLMc5Umxw8Dl7dBIDNwM00yVbSX8uS')
 
-function registerElements(elements, className) {
-    var formClass = '.' + className;
-    var example = document.querySelector(formClass);
-
-    var form = example.querySelector('form');
-    var resetButton = example.querySelector('a.reset');
+function registerElements(elements) {
+    var form = document.querySelector('.card-payment-form');
     var error = form.querySelector('.error');
-    var errorMessage = error.querySelector('.message');
+    var errorMessage = error.querySelector('.error-message');
 
     function enableInputs() {
         Array.prototype.forEach.call(
@@ -30,17 +26,6 @@ function registerElements(elements, className) {
                 input.setAttribute('disabled', 'true');
             }
         );
-    }
-
-    function triggerBrowserValidation() {
-        // The only way to trigger HTML5 form validation UI is to fake a user submit
-        // event.
-        var submit = document.createElement('input');
-        submit.type = 'submit';
-        submit.style.display = 'none';
-        form.appendChild(submit);
-        submit.click();
-        submit.remove();
     }
 
     // Listen for errors from each Element, and show error messages in the UI.
@@ -92,19 +77,17 @@ function registerElements(elements, className) {
             return;
         }
 
-        // Show a loading screen...
-        example.classList.add('submitting');
-
-        // Disable all inputs.
         disableInputs();
 
+        var formId = '#card-payment-form';
+
         // Gather additional customer data we may have collected in our form.
-        var name = form.querySelector('#' + className + '_name');
-        var email = form.querySelector('#' + className + '_email');
-        var address1 = form.querySelector('#' + className + '_address');
-        var city = form.querySelector('#' + className + '_city');
-        var state = form.querySelector('#' + className + '_state');
-        var zip = form.querySelector('#' + className + '_zip');
+        var name = form.querySelector(formId + '_name');
+        var email = form.querySelector(formId + '_email');
+        var address1 = form.querySelector(formId + '_address');
+        var city = form.querySelector(formId + '_city');
+        var state = form.querySelector(formId + '_state');
+        var zip = form.querySelector(formId + '_zip');
         var additionalData = {
             name: name ? name.value : undefined,
             address_line1: address1 ? address1.value : undefined,
@@ -118,7 +101,8 @@ function registerElements(elements, className) {
         // in the additional customer data we collected in our form.
         stripe.createToken(elements[0], additionalData).then(function (result) {
             if (result.token) {
-                console.log("Received token = " + result.token.id);
+                // You can test if the token was created:
+                // console.log("Received token = " + result.token.id);
 
                 // Insert the email and token into the form so it gets submitted to the server
                 document.querySelector('#hiddenEmail').value = email.value;
@@ -132,35 +116,21 @@ function registerElements(elements, className) {
             }
         });
     });
-
-    resetButton.addEventListener('click', function (e) {
-        e.preventDefault();
-        // Resetting the form (instead of setting the value to `''` for each input)
-        // helps us clear webkit autofill styles.
-        form.reset();
-
-        // Clear each Element.
-        elements.forEach(function (element) {
-            element.clear();
-        });
-
-        // Reset error state as well.
-        error.classList.remove('visible');
-
-        // Resetting the form does not un-disable inputs, so we need to do it separately:
-        enableInputs();
-        example.classList.remove('submitted');
-    });
 }
 
-var elements = stripe.elements({
-    locale: 'auto'
-});
+// Adding credit card element with Stripe API.
+
+var elements = stripe.elements();
 
 var card = elements.create('card', {
-    iconStyle: 'solid'
+    style: {
+        base: {
+            fontWeight: '500',
+            fontSize: '20px',
+        },
+    },
 });
 
 card.mount('#card-payment-form_card');
 
-registerElements([card], 'card-payment-form');
+registerElements([card]);
