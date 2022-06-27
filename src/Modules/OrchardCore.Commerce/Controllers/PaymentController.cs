@@ -30,7 +30,7 @@ public class PaymentController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Index(CardPaymentViewModel viewModel)
     {
-        var receiptViewModel = _cardPaymentService.Create(viewModel);
+        var receiptViewModel = _cardPaymentService.CreateAsync(viewModel);
 
         return RedirectToAction("Receipt", "Payment", receiptViewModel);
     }

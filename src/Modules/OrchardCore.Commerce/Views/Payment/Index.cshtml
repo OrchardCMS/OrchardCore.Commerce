@@ -44,7 +44,6 @@
 
     //    await ContentManager.CreateAsync(order);
     //}
-    var asd = "hello";
 }
 
 <script at="Foot" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
@@ -74,15 +73,15 @@
             <form id="card-payment-form" class="card-payment-form" asp-controller="Payment" asp-action="Index" method="POST">
                 <fieldset>
                     <div class="row">
-                        <label for="card-payment-form_name">Name</label>
+                        <label for="card-payment-form_name">@T["Name"]</label>
                         <input id="card-payment-form_name" type="text">
                     </div>
                     <div class="row">
-                        <label for="card-payment-form_email">Email</label>
+                        <label for="card-payment-form_email">@T["Email"]</label>
                         <input id="card-payment-form_email" type="email">
                     </div>
                     <div class="row">
-                        <label for="card-payment-form_phone">Phone</label>
+                        <label for="card-payment-form_phone">@T["Phone"]</label>
                         <input id="card-payment-form_phone" type="tel">
                     </div>
                 </fieldset>

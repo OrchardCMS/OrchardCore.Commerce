@@ -1,34 +1,52 @@
+using Money;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using Stripe;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 public class CardPaymentService : ICardPaymentService
 {
-    private const int PaymentAmountPence = 100;
-    private const string PaymentCurrency = "usd";
-    private const string PaymentDescription = "Orchard Commerce Test Stripe Card Payment";
-    // "false" prevents the card being charged immediately!
-    private const bool CaptureCardPayment = true;
-
+    private readonly IShoppingCartPersistence _shoppingCartPersistence;
+    private readonly IPriceService _priceService;
+    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly ChargeService _chargeService;
 
-    public CardPaymentService() =>
+    public CardPaymentService(
+        IShoppingCartPersistence shoppingCartPersistence,
+        IPriceService priceService,
+        IPriceSelectionStrategy priceSelectionStrategy)
+    {
         _chargeService = new ChargeService();
+        _shoppingCartPersistence = shoppingCartPersistence;
+        _priceService = priceService;
+        _priceSelectionStrategy = priceSelectionStrategy;
+    }
 
-    public CardPaymentReceiptViewModel Create(CardPaymentViewModel viewModel)
+    public async Task<CardPaymentReceiptViewModel> CreateAsync(CardPaymentViewModel viewModel)
     {
         var paymentTransactionId = Guid.NewGuid().ToString();
+
+        var totals = await (await _shoppingCartPersistence.RetrieveAsync())
+            .CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
+
+        // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
+        // totals i.e., multiple currencies.
+        var defaultTotal = totals.FirstOrDefault();
 
         var chargeCreateOptions = new ChargeCreateOptions
         {
             TransferGroup = paymentTransactionId,
-            Amount = PaymentAmountPence,
-            Currency = PaymentCurrency,
-            Description = PaymentDescription,
+            Amount = (long?)(defaultTotal.Value * 100),
+            Currency = defaultTotal.Currency.CurrencyIsoCode,
+            Description = "Orchard Commerce Test Stripe Card Payment",
             Source = viewModel.Token,
-            Capture = CaptureCardPayment,
+            Capture = true,
+            // If shipping is implemented, it needs to be added here too.
+            // Shipping =
             ReceiptEmail = viewModel.Email,
         };
 
