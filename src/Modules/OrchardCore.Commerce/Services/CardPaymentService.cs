@@ -28,8 +28,6 @@ public class CardPaymentService : ICardPaymentService
 
     public async Task<CardPaymentReceiptViewModel> CreateAsync(CardPaymentViewModel viewModel)
     {
-        var paymentTransactionId = Guid.NewGuid().ToString();
-
         var totals = await (await _shoppingCartPersistence.RetrieveAsync())
             .CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
 
@@ -39,7 +37,6 @@ public class CardPaymentService : ICardPaymentService
 
         var chargeCreateOptions = new ChargeCreateOptions
         {
-            TransferGroup = paymentTransactionId,
             Amount = (long?)(defaultTotal.Value * 100),
             Currency = defaultTotal.Currency.CurrencyIsoCode,
             Description = "Orchard Commerce Test Stripe Card Payment",

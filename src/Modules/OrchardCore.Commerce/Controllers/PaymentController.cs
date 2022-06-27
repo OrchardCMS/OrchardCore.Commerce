@@ -28,9 +28,9 @@ public class PaymentController : Controller
     [Route("payment")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Index(CardPaymentViewModel viewModel)
+    public async Task<IActionResult> Index(CardPaymentViewModel viewModel)
     {
-        var receiptViewModel = _cardPaymentService.CreateAsync(viewModel);
+        var receiptViewModel = await _cardPaymentService.CreateAsync(viewModel);
 
         return RedirectToAction("Receipt", "Payment", receiptViewModel);
     }
