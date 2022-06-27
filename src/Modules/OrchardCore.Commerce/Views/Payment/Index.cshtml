@@ -1,8 +1,12 @@
 @using OrchardCore.Commerce.Abstractions
 @using OrchardCore.Commerce.Controllers
-@using OrchardCore.Commerce.ViewModels;
+@using OrchardCore.Commerce.Extensions
+@using OrchardCore.Commerce.ViewModels
 
 @inject IShoppingCartPersistence ShoppingCartPersistence
+@inject IPriceService PriceService
+@inject IPriceSelectionStrategy  PriceSelectionStrategy
+
 @model CardPaymentViewModel
 @{
     ViewData["Title"] = "Payment";
@@ -14,7 +18,8 @@
 
     if (cartIsNotEmpty)
     {
-        //calculate total(s)
+        var totals = await currentShoppingCart.CalculateTotalsAsync(PriceService, PriceSelectionStrategy);
+        var asdd = "hi";
     }
 
     //// Creating order
@@ -32,7 +37,7 @@
 
     //    await ContentManager.CreateAsync(order);
     //}
-    var asd = "gello";
+    var asd = "hello";
 }
 
 <script at="Foot" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
