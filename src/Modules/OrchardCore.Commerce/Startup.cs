@@ -37,7 +37,7 @@ public class Startup : StartupBase
     {
         // This is a public sample test API key.
         // Don’t submit any personally identifiable information in requests made with this key.
-        // Sign in to see your own test API key embedded in code samples.
+        // https://stripe.com/docs/keys#:~:text=TYPE-,VALUE,-WHEN%20TO%20USE
         StripeConfiguration.ApiKey = "sk_test_51H59owJmQoVhz82aOUNOuCVbK0u1zjyRFKkFp9EfrqzWaUWqQni3oSxljsdTIu2YZ9XvlbeGjZRU7B7ye2EjJQE000Dm2DtMWD";
 
         // Product
