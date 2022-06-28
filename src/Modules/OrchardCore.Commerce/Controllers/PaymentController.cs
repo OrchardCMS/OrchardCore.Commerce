@@ -20,12 +20,12 @@ public class PaymentController : Controller
         _contentManager = contentManager;
     }
 
-    [Route("payment")]
+    [Route("checkout")]
     [HttpGet]
     public IActionResult Index() =>
         View();
 
-    [Route("payment")]
+    [Route("checkout")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(CardPaymentViewModel viewModel)

@@ -77,8 +77,8 @@
                         <input id="card-payment-form_name" type="text">
                     </div>
                     <div class="row">
-                        <label for="card-payment-form_email">@T["Email"]</label>
-                        <input id="card-payment-form_email" type="email">
+                        <label asp-for="Email">@T["Email"]</label>
+                        <input asp-for="Email" type="email">
                     </div>
                     <div class="row">
                         <label for="card-payment-form_phone">@T["Phone"]</label>
@@ -90,7 +90,6 @@
                         <div id="card-payment-form_card"></div>
                     </div>
                 </fieldset>
-                @Html.HiddenFor(model => model.Email, new { id = "hiddenEmail" })
                 @Html.HiddenFor(model => model.Token, new { id = "hiddenToken" })
                 <div class="pay-button-container">
                     <button type="submit" class="pay-button">@T["Pay"] @(defaultTotal.Currency.Symbol + defaultTotal.Value) </button>

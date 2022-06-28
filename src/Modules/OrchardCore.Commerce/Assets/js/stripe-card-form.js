@@ -6,78 +6,9 @@ function registerElements(elements) {
     var error = form.querySelector('.error');
     var errorMessage = error.querySelector('.error-message');
 
-    function enableInputs() {
-        Array.prototype.forEach.call(
-            form.querySelectorAll(
-                "input[type='text'], input[type='email'], input[type='tel']"
-            ),
-            function (input) {
-                input.removeAttribute('disabled');
-            }
-        );
-    }
-
-    function disableInputs() {
-        Array.prototype.forEach.call(
-            form.querySelectorAll(
-                "input[type='text'], input[type='email'], input[type='tel']"
-            ),
-            function (input) {
-                input.setAttribute('disabled', 'true');
-            }
-        );
-    }
-
-    // Listen for errors from each Element, and show error messages in the UI.
-    var savedErrors = {};
-    elements.forEach(function (element, idx) {
-        element.on('change', function (event) {
-            if (event.error) {
-                error.classList.add('visible');
-                savedErrors[idx] = event.error.message;
-                errorMessage.innerText = event.error.message;
-            } else {
-                savedErrors[idx] = null;
-
-                // Loop over the saved errors and find the first one, if any.
-                var nextError = Object.keys(savedErrors)
-                    .sort()
-                    .reduce(function (maybeFoundError, key) {
-                        return maybeFoundError || savedErrors[key];
-                    }, null);
-
-                if (nextError) {
-                    // Now that they've fixed the current error, show another one.
-                    errorMessage.innerText = nextError;
-                } else {
-                    // The user fixed the last error; no more errors.
-                    error.classList.remove('visible');
-                }
-            }
-        });
-    });
-
-    // Listen on the form's 'submit' handler...
+    // We need to generate a Stripe token before submitting the form.
     form.addEventListener('submit', function (e) {
         e.preventDefault();
-
-        // Trigger HTML5 validation UI on the form if any of the inputs fail
-        // validation.
-        var plainInputsValid = true;
-        Array.prototype.forEach.call(form.querySelectorAll('input'), function (
-            input
-        ) {
-            if (input.checkValidity && !input.checkValidity()) {
-                plainInputsValid = false;
-                return;
-            }
-        });
-        if (!plainInputsValid) {
-            triggerBrowserValidation();
-            return;
-        }
-
-        disableInputs();
 
         var formId = '#card-payment-form';
 
@@ -104,22 +35,17 @@ function registerElements(elements) {
                 // You can test if the token was created:
                 // console.log("Received token = " + result.token.id);
 
-                // Insert the email and token into the form so it gets submitted to the server
-                document.querySelector('#hiddenEmail').value = email.value;
+                // Insert the token into the form so it gets submitted to the server
                 document.querySelector('#hiddenToken').value = result.token.id;
-                // and submit
+
                 document.querySelector('#card-payment-form').submit();
 
-            } else {
-                // Otherwise, un-disable inputs.
-                enableInputs();
             }
         });
     });
 }
 
 // Adding credit card element with Stripe API.
-
 var elements = stripe.elements();
 
 var card = elements.create('card', {
