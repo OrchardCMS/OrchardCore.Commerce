@@ -3,8 +3,16 @@ var stripe = Stripe
 
 function registerElements(elements) {
     var form = document.querySelector('.card-payment-form');
-    var error = form.querySelector('.error');
-    var errorMessage = error.querySelector('.error-message');
+
+    // Displaying card input error.
+    card.on('change', function (event) {
+        var displayError = document.querySelector('.error-message');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
 
     // We need to generate a Stripe token before submitting the form.
     form.addEventListener('submit', function (e) {
@@ -12,9 +20,9 @@ function registerElements(elements) {
 
         var formId = '#card-payment-form';
 
-        // Gather additional customer data we may have collected in our form.
+        // Gather additional customer data we may have collected in our form. To do: Pass shipping data when shipping is
+        // implemented.
         var name = form.querySelector(formId + '_name');
-        var email = form.querySelector(formId + '_email');
         var address1 = form.querySelector(formId + '_address');
         var city = form.querySelector(formId + '_city');
         var state = form.querySelector(formId + '_state');
@@ -27,7 +35,7 @@ function registerElements(elements) {
             address_zip: zip ? zip.value : undefined,
         };
 
-        // Use Stripe.js to create a token. We only need to pass in one Element
+        // Use Stripe.js to create a token. We need to pass an Element
         // from the Element group in order to create a token. We can also pass
         // in the additional customer data we collected in our form.
         stripe.createToken(elements[0], additionalData).then(function (result) {

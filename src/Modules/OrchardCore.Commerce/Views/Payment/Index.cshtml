@@ -74,15 +74,15 @@
                 <fieldset>
                     <div class="row">
                         <label for="card-payment-form_name">@T["Name"]</label>
-                        <input id="card-payment-form_name" type="text">
+                        <input id="card-payment-form_name" type="text" required>
                     </div>
                     <div class="row">
                         <label asp-for="Email">@T["Email"]</label>
-                        <input asp-for="Email" type="email">
+                        <input asp-for="Email" type="email" required>
                     </div>
                     <div class="row">
                         <label for="card-payment-form_phone">@T["Phone"]</label>
-                        <input id="card-payment-form_phone" type="tel">
+                        <input id="card-payment-form_phone" type="tel" required>
                     </div>
                 </fieldset>
                 <fieldset>
