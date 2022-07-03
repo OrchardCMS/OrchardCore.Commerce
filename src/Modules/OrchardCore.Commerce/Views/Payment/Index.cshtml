@@ -10,8 +10,6 @@
 
 @model CardPaymentViewModel
 @{
-    ViewData["Title"] = "Payment";
-
     // Shopping cart ID is null by default currently.
     var currentShoppingCart = await ShoppingCartPersistence.RetrieveAsync();
 
@@ -28,22 +26,6 @@
         // totals i.e., multiple currencies.
         defaultTotal = totals.FirstOrDefault();
     }
-
-    //// Creating order
-    //if (cartIsNotEmpty)
-    //{
-    //    var order = await ContentManager.NewAsync("Order");
-    //    var orderPart = order.As<OrderPart>();
-
-    //    foreach (var total in Model.Totals)
-    //    {
-    //        var payment = new CreditCardPayment();
-    //        payment.Amount = total;
-    //        orderPart.Charges.Add(payment);
-    //    }
-
-    //    await ContentManager.CreateAsync(order);
-    //}
 }
 
 <script at="Foot" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>

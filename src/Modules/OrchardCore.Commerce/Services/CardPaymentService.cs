@@ -1,9 +1,10 @@
 using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using Stripe;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,22 +15,25 @@ public class CardPaymentService : ICardPaymentService
     private readonly IPriceService _priceService;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly ChargeService _chargeService;
+    private readonly IContentManager _contentManager;
 
     public CardPaymentService(
         IShoppingCartPersistence shoppingCartPersistence,
         IPriceService priceService,
-        IPriceSelectionStrategy priceSelectionStrategy)
+        IPriceSelectionStrategy priceSelectionStrategy,
+        IContentManager contentManager)
     {
         _chargeService = new ChargeService();
         _shoppingCartPersistence = shoppingCartPersistence;
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;
+        _contentManager = contentManager;
     }
 
-    public async Task<CardPaymentReceiptViewModel> CreateAsync(CardPaymentViewModel viewModel)
+    public async Task<CardPaymentReceiptViewModel> CreatePaymentAndOrderAsync(CardPaymentViewModel viewModel)
     {
-        var totals = await (await _shoppingCartPersistence.RetrieveAsync())
-            .CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies.
@@ -42,6 +46,7 @@ public class CardPaymentService : ICardPaymentService
             Description = "Orchard Commerce Test Stripe Card Payment",
             Source = viewModel.Token,
             Capture = true,
+
             // If shipping is implemented, it needs to be added here too.
             // Shipping =
             ReceiptEmail = viewModel.Email,
@@ -51,13 +56,45 @@ public class CardPaymentService : ICardPaymentService
 
         try
         {
-            var charge = _chargeService.Create(chargeCreateOptions);
-            finalCharge = charge;
+            finalCharge = _chargeService.Create(chargeCreateOptions);
         }
         catch (StripeException e)
         {
             return ToPaymentReceipt(charge: null, e);
         }
+
+        var order = await _contentManager.NewAsync("Order");
+        var orderPart = order.As<OrderPart>();
+
+        foreach (var total in totals)
+        {
+            var payment = new CreditCardPayment
+            {
+                Amount = total,
+            };
+
+            orderPart.Charges.Add(payment);
+        }
+
+        var linePriceAndItems = (await currentShoppingCart.CalculateLinePricesAsync(_priceService, _priceSelectionStrategy))
+            .Zip(currentShoppingCart.Items, (linePrice, item) => new { LinePrice = linePrice, Item = item });
+
+        foreach (var lineAndItem in linePriceAndItems)
+        {
+            var quantity = lineAndItem.Item.Quantity;
+
+            orderPart.LineItems.Add(
+                new OrderLineItem
+                {
+                    Quantity = lineAndItem.Item.Quantity,
+                    ProductSku = lineAndItem.Item.ProductSku,
+                    LinePrice = lineAndItem.LinePrice,
+                    UnitPrice = new Amount(lineAndItem.LinePrice.Value / quantity, lineAndItem.LinePrice.Currency),
+                });
+        }
+
+        order.Apply(orderPart);
+        await _contentManager.CreateAsync(order);
 
         return ToPaymentReceipt(finalCharge);
     }

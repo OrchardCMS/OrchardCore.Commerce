@@ -30,7 +30,7 @@ public class PaymentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(CardPaymentViewModel viewModel)
     {
-        var receiptViewModel = await _cardPaymentService.CreateAsync(viewModel);
+        var receiptViewModel = await _cardPaymentService.CreatePaymentAndOrderAsync(viewModel);
         var exception = receiptViewModel.Exception;
 
         if (exception == null)
