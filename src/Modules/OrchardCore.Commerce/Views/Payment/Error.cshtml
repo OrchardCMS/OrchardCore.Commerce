@@ -1,0 +1,24 @@
+@using OrchardCore.Commerce.ViewModels
+
+@model CardPaymentErrorViewModel
+@{
+    ViewData["Title"] = "Payment error";
+}
+
+<div class="row pt-md-5">
+    <div class="col-6 mx-auto">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="text-danger text-center">@T["Payment failed!"]</h4>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <b>@T["Description:"] </b>@Model.Descripton<br />
+                    <b>@T["Code:"] </b>@Model.Code<br />
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+

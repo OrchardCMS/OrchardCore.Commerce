@@ -47,14 +47,24 @@ public class CardPaymentService : ICardPaymentService
             ReceiptEmail = viewModel.Email,
         };
 
-        var charge = _chargeService.Create(chargeCreateOptions);
+        Charge finalCharge;
 
-        return ToPaymentReceipt(charge);
+        try
+        {
+            var charge = _chargeService.Create(chargeCreateOptions);
+            finalCharge = charge;
+        }
+        catch (StripeException e)
+        {
+            return ToPaymentReceipt(charge: null, e);
+        }
+
+        return ToPaymentReceipt(finalCharge);
     }
 
-    private static CardPaymentReceiptViewModel ToPaymentReceipt(Charge charge)
-    {
-        var cardPaymentReceiptViewModel = new CardPaymentReceiptViewModel
+    private static CardPaymentReceiptViewModel ToPaymentReceipt(Charge charge, StripeException excpetion = null) =>
+        charge != null
+        ? new CardPaymentReceiptViewModel
         {
             Amount = charge.Amount,
             Currency = charge.Currency,
@@ -64,8 +74,10 @@ public class CardPaymentService : ICardPaymentService
             BalanceTransactionId = charge.BalanceTransactionId,
             Id = charge.Id,
             SourceId = charge.Source.Id,
+            Exception = excpetion,
+        }
+        : new CardPaymentReceiptViewModel
+        {
+            Exception = excpetion,
         };
-
-        return cardPaymentReceiptViewModel;
-    }
 }

@@ -65,6 +65,9 @@ var card = elements.create('card', {
     },
 });
 
-card.mount('#card-payment-form_card');
+var placeOfCard = document.querySelector('#card-payment-form_card');
 
-registerElements([card]);
+if (placeOfCard != null) {
+    card.mount(placeOfCard);
+    registerElements([card]);
+}

@@ -1,3 +1,4 @@
+using Stripe;
 using System;
 
 namespace OrchardCore.Commerce.ViewModels;
@@ -19,4 +20,6 @@ public class CardPaymentReceiptViewModel
     public string Id { get; set; }
 
     public string SourceId { get; set; }
+
+    public StripeException Exception { get; set; }
 }
