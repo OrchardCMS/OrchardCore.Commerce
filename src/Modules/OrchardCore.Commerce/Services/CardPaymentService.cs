@@ -1,7 +1,5 @@
-using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using Stripe;
@@ -64,36 +62,9 @@ public class CardPaymentService : ICardPaymentService
         }
 
         var order = await _contentManager.NewAsync("Order");
-        var orderPart = order.As<OrderPart>();
 
-        foreach (var total in totals)
-        {
-            var payment = new CreditCardPayment
-            {
-                Amount = total,
-            };
+        // To do: Fill the order.
 
-            orderPart.Charges.Add(payment);
-        }
-
-        var linePriceAndItems = (await currentShoppingCart.CalculateLinePricesAsync(_priceService, _priceSelectionStrategy))
-            .Zip(currentShoppingCart.Items, (linePrice, item) => new { LinePrice = linePrice, Item = item });
-
-        foreach (var lineAndItem in linePriceAndItems)
-        {
-            var quantity = lineAndItem.Item.Quantity;
-
-            orderPart.LineItems.Add(
-                new OrderLineItem
-                {
-                    Quantity = lineAndItem.Item.Quantity,
-                    ProductSku = lineAndItem.Item.ProductSku,
-                    LinePrice = lineAndItem.LinePrice,
-                    UnitPrice = new Amount(lineAndItem.LinePrice.Value / quantity, lineAndItem.LinePrice.Currency),
-                });
-        }
-
-        order.Apply(orderPart);
         await _contentManager.CreateAsync(order);
 
         return ToPaymentReceipt(finalCharge);

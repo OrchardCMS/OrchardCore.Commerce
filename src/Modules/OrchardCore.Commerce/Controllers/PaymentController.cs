@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
-using Stripe;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Controllers;
@@ -13,13 +8,9 @@ namespace OrchardCore.Commerce.Controllers;
 public class PaymentController : Controller
 {
     private readonly ICardPaymentService _cardPaymentService;
-    private readonly IContentManager _contentManager;
 
-    public PaymentController(ICardPaymentService cardPaymentService, IContentManager contentManager)
-    {
+    public PaymentController(ICardPaymentService cardPaymentService) =>
         _cardPaymentService = cardPaymentService;
-        _contentManager = contentManager;
-    }
 
     [Route("checkout")]
     public IActionResult Index() =>
@@ -43,7 +34,6 @@ public class PaymentController : Controller
             "Error",
             "Payment",
             new CardPaymentErrorViewModel { Descripton = stripeError.Message, Code = stripeError.Code });
-
     }
 
     [Route("receipt")]
