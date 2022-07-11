@@ -1,0 +1,94 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.ViewModels;
+using OrchardCore.DisplayManagement.Entities;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Settings;
+using System.Threading.Tasks;
+
+namespace OrchardCore.Commerce.Drivers;
+
+public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, StripeApiSettings>
+{
+    public const string GroupId = "StripeApi";
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IShellHost _shellHost;
+    private readonly ShellSettings _shellSettings;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public StripeApiSettingsDisplayDriver(
+        IShellHost shellHost,
+        ShellSettings shellSettings,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IDataProtectionProvider dataProtectionProvider)
+    {
+        _shellHost = shellHost;
+        _shellSettings = shellSettings;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _dataProtectionProvider = dataProtectionProvider;
+    }
+
+    public override async Task<IDisplayResult> EditAsync(StripeApiSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
+        {
+            return null;
+        }
+
+        return Initialize<StripeApiSettingsViewModel>("StripeApiSettings_Edit", model =>
+        {
+            model.PublishableKey = section.PublishableKey;
+            model.SecretKey = section.SecretKey;
+        })
+            .Location("Content")
+            .OnGroup(GroupId);
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(StripeApiSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
+        {
+            return null;
+        }
+
+        if (context.GroupId == GroupId)
+        {
+            var model = new StripeApiSettingsViewModel();
+            var previousSecretKey = section.SecretKey;
+
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                section.PublishableKey = model.PublishableKey?.Trim();
+
+                // Restore secret key if the input is empty, meaning that it has not been reset.
+                if (string.IsNullOrWhiteSpace(model.SecretKey))
+                {
+                    section.SecretKey = previousSecretKey;
+                }
+                else
+                {
+                    // Encrypt secret key.
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
+                    section.SecretKey = protector.Protect(model.SecretKey?.Trim());
+                }
+
+                // Release the tenant to apply settings.
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            }
+        }
+
+        return await EditAsync(section, context);
+    }
+}

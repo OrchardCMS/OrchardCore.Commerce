@@ -25,7 +25,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
-using Stripe;
 using System;
 using YesSql.Indexes;
 
@@ -35,16 +34,11 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        // This is a public sample test API key.
-        // Don’t submit any personally identifiable information in requests made with this key.
-        // https://stripe.com/docs/keys#:~:text=TYPE-,VALUE,-WHEN%20TO%20USE
-        StripeConfiguration.ApiKey = "sk_test_51H59owJmQoVhz82aOUNOuCVbK0u1zjyRFKkFp9EfrqzWaUWqQni3oSxljsdTIu2YZ9XvlbeGjZRU7B7ye2EjJQE000Dm2DtMWD";
-
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
         services.AddScoped<IDataMigration, ProductMigrations>();
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
-        services.AddScoped<IProductService, Services.ProductService>();
+        services.AddScoped<IProductService, ProductService>();
         services.AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>();
 
@@ -74,7 +68,7 @@ public class Startup : StartupBase
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
 
         services.AddScoped<IPriceProvider, PriceProvider>();
-        services.AddScoped<IPriceService, Services.PriceService>();
+        services.AddScoped<IPriceService, PriceService>();
         services.AddScoped<IPriceSelectionStrategy, SimplePriceStrategy>();
 
         // Price Variants
@@ -112,6 +106,8 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
+        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();

@@ -2,14 +2,20 @@
 @using OrchardCore.Commerce.Abstractions
 @using OrchardCore.Commerce.Controllers
 @using OrchardCore.Commerce.Extensions
+@using OrchardCore.Commerce.Models
 @using OrchardCore.Commerce.ViewModels
+@using OrchardCore.Entities
+@using OrchardCore.Settings
 
 @inject IShoppingCartPersistence ShoppingCartPersistence
 @inject IPriceService PriceService
-@inject IPriceSelectionStrategy  PriceSelectionStrategy
+@inject IPriceSelectionStrategy PriceSelectionStrategy
+@inject ISiteService SiteService
 
 @model CardPaymentViewModel
 @{
+
+
     // Shopping cart ID is null by default currently.
     var currentShoppingCart = await ShoppingCartPersistence.RetrieveAsync();
 
@@ -17,6 +23,7 @@
 
     IEnumerable<Amount> totals;
     Amount defaultTotal = new();
+    string publishableKey = string.Empty;
 
     if (cartIsNotEmpty)
     {
@@ -25,12 +32,10 @@
         // We can only pay in one currency at a time. Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies.
         defaultTotal = totals.FirstOrDefault();
+
+        publishableKey = (await SiteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey;
     }
 }
-
-<script at="Foot" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
-<script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Commerce/Scripts/stripe-card-form.js"></script>
-<style asp-src="~/OrchardCore.Commerce/Styles/credit-card-form.css"></style>
 
 <zone name="Header">
     <header class="masthead">
@@ -87,3 +92,13 @@
         <p>@T["Your shopping cart is empty."]</p>
     }
 </section>
+
+@if (!string.IsNullOrEmpty(@publishableKey))
+{
+    <script at="Head" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
+    <script at="Head" type="text/javascript">
+        const stripe = Stripe('@publishableKey');
+    </script>
+    <script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Commerce/Scripts/stripe-card-form.js"></script>
+}
+<style asp-src="~/OrchardCore.Commerce/Styles/credit-card-form.css"></style>

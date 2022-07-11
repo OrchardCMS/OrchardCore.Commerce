@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
 using Stripe;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,18 +19,27 @@ public class CardPaymentService : ICardPaymentService
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly ChargeService _chargeService;
     private readonly IContentManager _contentManager;
+    private readonly ISiteService _siteService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly ILogger<CardPaymentService> _logger;
 
     public CardPaymentService(
         IShoppingCartPersistence shoppingCartPersistence,
         IPriceService priceService,
         IPriceSelectionStrategy priceSelectionStrategy,
-        IContentManager contentManager)
+        IContentManager contentManager,
+        ISiteService siteService,
+        IDataProtectionProvider dataProtectionProvider,
+        ILogger<CardPaymentService> logger)
     {
         _chargeService = new ChargeService();
         _shoppingCartPersistence = shoppingCartPersistence;
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;
         _contentManager = contentManager;
+        _siteService = siteService;
+        _dataProtectionProvider = dataProtectionProvider;
+        _logger = logger;
     }
 
     public async Task<CardPaymentReceiptViewModel> CreatePaymentAndOrderAsync(CardPaymentViewModel viewModel)
@@ -52,9 +66,17 @@ public class CardPaymentService : ICardPaymentService
 
         Charge finalCharge;
 
+        var requestOptions = new RequestOptions
+        {
+            ApiKey = (await _siteService.GetSiteSettingsAsync())
+                .As<StripeApiSettings>()
+                .SecretKey
+                .DecryptStripeApiKey(_dataProtectionProvider, _logger),
+        };
+
         try
         {
-            finalCharge = _chargeService.Create(chargeCreateOptions);
+            finalCharge = _chargeService.Create(chargeCreateOptions, requestOptions);
         }
         catch (StripeException e)
         {
@@ -66,6 +88,11 @@ public class CardPaymentService : ICardPaymentService
         // To do: Fill the order.
 
         await _contentManager.CreateAsync(order);
+
+        currentShoppingCart.Items.Clear();
+
+        // Shopping cart ID is null by default currently.
+        await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
 
         return ToPaymentReceipt(finalCharge);
     }
