@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
@@ -52,22 +53,22 @@ public class OrderMigrations : DataMigration
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField("Status", field => field
+                .WithField(OrderMigrationConstants.Status, field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName("Status")
+                    .WithDisplayName(OrderMigrationConstants.Status)
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
                         Options = new List<ListValueOption>
                         {
-                            new ListValueOption { Name = "Ordered", Value = "ordered" },
+                            new ListValueOption { Name = "Ordered", Value = OrderMigrationConstants.Ordered },
                             new ListValueOption { Name = "Shipped", Value = "shipped" },
                             new ListValueOption { Name = "Arrived", Value = "arrived" },
                         }
                         .ToArray(),
 
-                        DefaultValue = "ordered",
+                        DefaultValue = OrderMigrationConstants.Ordered,
 
                         Editor = EditorOption.Radio,
                     }))
@@ -84,7 +85,10 @@ public class OrderMigrations : DataMigration
         return 2;
     }
 
+    // The Order content type and content part is reworked.
+#pragma warning disable S4144 // Methods should not have identical implementations
     public int UpdateFrom1()
+#pragma warning restore S4144 // Methods should not have identical implementations
     {
         _contentDefinitionManager
             .AlterTypeDefinition("Order", type => type
@@ -110,32 +114,34 @@ public class OrderMigrations : DataMigration
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .Attachable()
                 .WithDescription("Makes a content item into an order.")
-                .WithField(nameof(TextField), field => field
+                .WithField("OrderId", field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField(nameof(TextField), field => field
+                .WithField(OrderMigrationConstants.Status, field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName("Status")
+                    .WithDisplayName(OrderMigrationConstants.Status)
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
                         Options = new List<ListValueOption>
                         {
-                            new ListValueOption { Name = "Ordered", Value = "ordered" },
+                            new ListValueOption { Name = "Ordered", Value = OrderMigrationConstants.Ordered },
                             new ListValueOption { Name = "Shipped", Value = "shipped" },
                             new ListValueOption { Name = "Arrived", Value = "arrived" },
                         }
                         .ToArray(),
 
+                        DefaultValue = OrderMigrationConstants.Ordered,
+
                         Editor = EditorOption.Radio,
                     }))
-                .WithField(nameof(AddressField), field => field
+                .WithField("BillingAddress", field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Billing Address")
                     .WithDescription("The address of the party that should be billed for this order."))
-                .WithField(nameof(AddressField), field => field
+                .WithField("ShippingAddress", field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Shipping Address")
                     .WithDescription("The address where the order should be shipped."))
