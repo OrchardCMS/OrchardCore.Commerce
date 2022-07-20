@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
@@ -16,6 +18,7 @@ namespace OrchardCore.Commerce.Drivers;
 public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, StripeApiSettings>
 {
     public const string GroupId = "StripeApi";
+    private readonly ILogger _logger;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
@@ -27,13 +30,15 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
         ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider)
+        IDataProtectionProvider dataProtectionProvider,
+        ILogger<StripeApiSettingsDisplayDriver> logger)
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
+        _logger = logger;
     }
 
     public override async Task<IDisplayResult> EditAsync(StripeApiSettings section, BuildEditorContext context)
@@ -48,7 +53,9 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
         return Initialize<StripeApiSettingsViewModel>("StripeApiSettings_Edit", model =>
         {
             model.PublishableKey = section.PublishableKey;
-            model.SecretKey = section.SecretKey;
+
+            // Decrypting key.
+            model.SecretKey = section.SecretKey.DecryptStripeApiKey(_dataProtectionProvider, _logger);
         })
             .Location("Content")
             .OnGroup(GroupId);

@@ -21,10 +21,10 @@ The work will focus at first on porting a [minimum viable feature set](https://g
 * Product, price, and inventory parts and/or fields (those were a single part in Nwazet)
   Note: not all products have a price
 * Shopping cart
+* Base infrastructure for payment, plus one implementation (Stripe)
 
 ### To do:
 * Checkout (probably redesigned around Orchard Workflows)
-* Base infrastructure for payment, plus one implementation (Stripe)
 * Order content type and management screens (including a redesign and refactoring of the order part)
 * Workflow activities
 
@@ -36,6 +36,29 @@ Globalization should be taken into account at every step.
 2. Build and run the `SampleWebApp` project.
 3. From the admin, enable the module's only feature.
 4. (optional) Start using the features, by creating a new `Product` content type, and adding the product part to it.
+
+## Test data for Stripe Payment
+
+### API keys
+
+Stripe API uses a secret-publishable key pair. The following API keys are public sample test keys, they can be found in [Stripe's documentation](https://stripe.com/docs/keys#obtain-api-keys).
+
+* Publishable key: `pk_test_51H59owJmQoVhz82aWAoi9M5s8PC6sSAqFI7KfAD2NRKun5riDIOM0dvu2caM25a5f5JbYLMc5Umxw8Dl7dBIDNwM00yVbSX8uS`
+* Secret key: `sk_test_51H59owJmQoVhz82aOUNOuCVbK0u1zjyRFKkFp9EfrqzWaUWqQni3oSxljsdTIu2YZ9XvlbeGjZRU7B7ye2EjJQE000Dm2DtMWD`
+
+**These are just test keys. Don’t submit any personally identifiable information in requests made with this key.**
+
+The Stripe API key pair can be set inside *Dashboard → Settings → Stripe API*.
+
+### Cards
+There are available test cards that can be found in [Stripe's documentation](https://stripe.com/docs/testing).
+
+There are multiple test cards that can simulate any scenario, including error codes. Here are two examples:
+
+| Brand | Number	 | CVC | Date | Result |
+| --------------- | --------------- | --------------- | --------------- |--------------- |
+| Visa | 4242424242424242 | Any 3 digits | Any future date | Success |
+| - | 4000000000009995 | Any 3 digits | Any future date | card_declined,	insufficient_funds |
 
 ## Demo video
 
