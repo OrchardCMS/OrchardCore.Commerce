@@ -1,9 +1,14 @@
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
+using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Html.Models;
+using OrchardCore.Title.Models;
+using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -20,12 +25,122 @@ public class OrderMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition(nameof(OrderPart), builder => builder
-                .Attachable()
-                .WithDescription("Makes a content item into an order."));
+            .AlterTypeDefinition("Order", type => type
+                .Creatable()
+                .Listable()
+                .Securable()
+                .Draftable()
+                .Versionable()
+                .WithPart(nameof(TitlePart), part => part
+                    .WithDescription("The title of the order"))
+                .WithPart(nameof(HtmlBodyPart), part => part
+                    .WithDisplayName("Annotations")
+                    .WithSettings(new ContentTypePartSettings
+                    {
+                        Editor = "Wysiwyg",
+                    })
+                )
+                .WithPart(nameof(OrderPart)));
 
         _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
 
-        return 1;
+        _contentDefinitionManager
+            .AlterPartDefinition(nameof(OrderPart), part => part
+                .Attachable()
+                .WithDescription("Makes a content item into an order.")
+                .WithField("OrderId", field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Order Id")
+                    .WithDescription("The id of the order."))
+                .WithField("Status", field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Status")
+                    .WithDescription("The status of the order.")
+                    .WithEditor("PredefinedList")
+                    .WithSettings(new TextFieldPredefinedListEditorSettings
+                    {
+                        Options = new List<ListValueOption>
+                        {
+                            new ListValueOption { Name = "Ordered", Value = "ordered" },
+                            new ListValueOption { Name = "Shipped", Value = "shipped" },
+                            new ListValueOption { Name = "Arrived", Value = "arrived" },
+                        }
+                        .ToArray(),
+
+                        DefaultValue = "ordered",
+
+                        Editor = EditorOption.Radio,
+                    }))
+                .WithField("BillingAddress", field => field
+                    .OfType(nameof(AddressField))
+                    .WithDisplayName("Billing Address")
+                    .WithDescription("The address of the party that should be billed for this order."))
+                .WithField("ShippingAddress", field => field
+                    .OfType(nameof(AddressField))
+                    .WithDisplayName("Shipping Address")
+                    .WithDescription("The address where the order should be shipped."))
+                );
+
+        return 2;
+    }
+
+    public int UpdateFrom1()
+    {
+        _contentDefinitionManager
+            .AlterTypeDefinition("Order", type => type
+                .Creatable()
+                .Listable()
+                .Securable()
+                .Draftable()
+                .Versionable()
+                .WithPart(nameof(TitlePart), part => part
+                    .WithDescription("The title of the order"))
+                .WithPart(nameof(HtmlBodyPart), part => part
+                    .WithDisplayName("Annotations")
+                    .WithSettings(new ContentTypePartSettings
+                    {
+                        Editor = "Wysiwyg",
+                    })
+                )
+                .WithPart(nameof(OrderPart)));
+
+        _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
+
+        _contentDefinitionManager
+            .AlterPartDefinition(nameof(OrderPart), part => part
+                .Attachable()
+                .WithDescription("Makes a content item into an order.")
+                .WithField(nameof(TextField), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Order Id")
+                    .WithDescription("The id of the order."))
+                .WithField(nameof(TextField), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Status")
+                    .WithDescription("The status of the order.")
+                    .WithEditor("PredefinedList")
+                    .WithSettings(new TextFieldPredefinedListEditorSettings
+                    {
+                        Options = new List<ListValueOption>
+                        {
+                            new ListValueOption { Name = "Ordered", Value = "ordered" },
+                            new ListValueOption { Name = "Shipped", Value = "shipped" },
+                            new ListValueOption { Name = "Arrived", Value = "arrived" },
+                        }
+                        .ToArray(),
+
+                        Editor = EditorOption.Radio,
+                    }))
+                .WithField(nameof(AddressField), field => field
+                    .OfType(nameof(AddressField))
+                    .WithDisplayName("Billing Address")
+                    .WithDescription("The address of the party that should be billed for this order."))
+                .WithField(nameof(AddressField), field => field
+                    .OfType(nameof(AddressField))
+                    .WithDisplayName("Shipping Address")
+                    .WithDescription("The address where the order should be shipped."))
+                );
+
+        return 2;
     }
 }

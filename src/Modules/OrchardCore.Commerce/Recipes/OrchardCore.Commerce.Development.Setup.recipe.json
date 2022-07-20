@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "OrchardCore.Commerce.Development.Setup",
   "displayName": "OrchardCore Commerce - Development",
   "description": "Settings and contents required only for development environment.",
@@ -73,10 +73,10 @@
       "name": "recipes",
       "Values": [
         // Configuration
-        {
-          "executionid": "OrchardCore.Commerce",
-          "name": "Order"
-        },
+        //{
+        //  "executionid": "OrchardCore.Commerce",
+        //  "name": "Order"
+        //},
         {
           "executionid": "OrchardCore.Commerce",
           "name": "Product"

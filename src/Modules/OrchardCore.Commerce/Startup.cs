@@ -91,15 +91,15 @@ public class Startup : StartupBase
         services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
 
         // Orders
-        services.AddScoped<IDataMigration, OrderMigrations>();
-        services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
-
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, AddressFieldSettingsDriver>();
+
+        services.AddScoped<IDataMigration, OrderMigrations>();
+        services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
 
         // Settings
         services.AddScoped<IPermissionProvider, Permissions>();
