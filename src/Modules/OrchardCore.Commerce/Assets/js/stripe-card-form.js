@@ -1,6 +1,3 @@
-var stripe = Stripe
-    ('pk_test_51H59owJmQoVhz82aWAoi9M5s8PC6sSAqFI7KfAD2NRKun5riDIOM0dvu2caM25a5f5JbYLMc5Umxw8Dl7dBIDNwM00yVbSX8uS')
-
 function registerElements(elements) {
     var form = document.querySelector('.card-payment-form');
 
