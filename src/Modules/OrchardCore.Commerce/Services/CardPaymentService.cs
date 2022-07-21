@@ -7,7 +7,10 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
+using OrchardCore.Title.Models;
 using Stripe;
+using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -50,10 +53,18 @@ public class CardPaymentService : ICardPaymentService
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies.
         var defaultTotal = totals.FirstOrDefault();
+        var defaultTotalValue = defaultTotal.Value;
 
         var chargeCreateOptions = new ChargeCreateOptions
         {
-            Amount = (long?)(defaultTotal.Value * 100),
+            // We need to remove the decimal points and convert the value (decimal) to long.
+            // https://stripe.com/docs/currencies#zero-decimal
+            Amount = long
+                .Parse(
+                    string.Join(
+                        string.Empty,
+                        defaultTotalValue.ToString(CultureInfo.InvariantCulture).Where(char.IsDigit)),
+                    CultureInfo.InvariantCulture),
             Currency = defaultTotal.Currency.CurrencyIsoCode,
             Description = "Orchard Commerce Test Stripe Card Payment",
             Source = viewModel.Token,
@@ -78,14 +89,42 @@ public class CardPaymentService : ICardPaymentService
         {
             finalCharge = _chargeService.Create(chargeCreateOptions, requestOptions);
         }
-        catch (StripeException e)
+        catch (StripeException excpetion)
         {
-            return ToPaymentReceipt(charge: null, e);
+            return ToPaymentReceipt(charge: null, 0, excpetion);
         }
 
         var order = await _contentManager.NewAsync("Order");
+        var orderId = Guid.NewGuid();
 
-        // To do: Fill the order.
+        order.Weld<OrderPart>();
+        order.Alter<TitlePart>(titlePart => titlePart.Title = "Order " + orderId);
+
+        // To-do when other parts of the checkout is implemented (notes).
+        // order.Alter<HtmlBodyPart>(htmlBodyPart => htmlBodyPart.
+
+        order.Alter<OrderPart>(orderPart =>
+        {
+            orderPart.Charges.Add(
+                new CreditCardPayment
+                {
+                    ChargeText = finalCharge.Description,
+                    TransactionId = finalCharge.Id,
+                    Amount = defaultTotal,
+                    Created = finalCharge.Created,
+                });
+
+            // Shopping cart
+            // orderPart.LineItems;
+
+            var orderPartContent = orderPart.Content;
+
+            orderPartContent.OrderId.Text = orderId;
+
+            // To-do when shipping is implemented
+            // oderPartContent.BillingAddress
+            // oderPartContent.ShippingAddress
+        });
 
         await _contentManager.CreateAsync(order);
 
@@ -94,21 +133,24 @@ public class CardPaymentService : ICardPaymentService
         // Shopping cart ID is null by default currently.
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
 
-        return ToPaymentReceipt(finalCharge);
+        // Passing decimal value, so we don't need to convert the long back to decimal.
+        return ToPaymentReceipt(finalCharge, defaultTotalValue);
     }
 
-    private static CardPaymentReceiptViewModel ToPaymentReceipt(Charge charge, StripeException excpetion = null) =>
+    private static CardPaymentReceiptViewModel ToPaymentReceipt(
+        Charge charge,
+        decimal value,
+        StripeException excpetion = null) =>
         charge != null
         ? new CardPaymentReceiptViewModel
         {
-            Amount = charge.Amount,
+            Amount = value,
             Currency = charge.Currency,
             Description = charge.Description,
             Status = charge.Status,
             Created = charge.Created,
             BalanceTransactionId = charge.BalanceTransactionId,
             Id = charge.Id,
-            SourceId = charge.Source.Id,
             Exception = excpetion,
         }
         : new CardPaymentReceiptViewModel

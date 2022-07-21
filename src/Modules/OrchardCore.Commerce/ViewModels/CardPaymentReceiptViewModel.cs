@@ -5,7 +5,7 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class CardPaymentReceiptViewModel
 {
-    public long Amount { get; set; }
+    public decimal Amount { get; set; }
 
     public string Currency { get; set; }
 
@@ -18,8 +18,6 @@ public class CardPaymentReceiptViewModel
     public string BalanceTransactionId { get; set; }
 
     public string Id { get; set; }
-
-    public string SourceId { get; set; }
 
     public StripeException Exception { get; set; }
 }

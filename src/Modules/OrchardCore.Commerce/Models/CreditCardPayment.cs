@@ -1,5 +1,6 @@
 using Money;
 using OrchardCore.Commerce.Abstractions;
+using System;
 
 namespace OrchardCore.Commerce.Models;
 
@@ -14,4 +15,6 @@ public class CreditCardPayment : IPayment
     public string ChargeText { get; set; }
 
     public Amount Amount { get; set; }
+
+    public DateTime Created { get; set; }
 }
