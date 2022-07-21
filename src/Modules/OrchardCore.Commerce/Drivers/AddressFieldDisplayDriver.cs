@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using System.Threading.Tasks;
 
@@ -16,22 +17,27 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     public AddressFieldDisplayDriver(IAddressFormatterProvider addressFormatterProvider) =>
         _addressFormatterProvider = addressFormatterProvider;
 
-    public override IDisplayResult Edit(
-        AddressField field,
-        BuildFieldEditorContext context) =>
-        Initialize<AddressFieldViewModel>(GetEditorShapeType(context), model => BuildViewModelAsync(model, field, context));
+    public override IDisplayResult Edit(AddressField field, BuildFieldEditorContext context) =>
+        Initialize<AddressFieldViewModel>(
+            GetEditorShapeType(context),
+            viewModel => PopulateViewModel(field, viewModel, context));
 
-    private ValueTask BuildViewModelAsync(AddressFieldViewModel model, AddressField field, BuildFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AddressField field, IUpdateModel updater, UpdateFieldEditorContext context)
     {
-        model.Address = field.Address;
-        model.AddressHtml =
-            new HtmlString(_addressFormatterProvider.Format(field.Address).Replace(System.Environment.NewLine, "<br/>"));
-        model.Regions = Regions.All;
-        foreach (var (key, value) in Regions.Provinces) model.Provinces[key] = value;
-        model.ContentItem = field.ContentItem;
-        model.AddressPart = field;
-        model.PartFieldDefinition = context.PartFieldDefinition;
+        await updater.TryUpdateModelAsync(field, Prefix, addressField => addressField.Address);
 
-        return default;
+        return await EditAsync(field, context);
+    }
+
+    private void PopulateViewModel(AddressField field, AddressFieldViewModel viewModel, BuildFieldEditorContext context)
+    {
+        viewModel.Address = field.Address;
+        viewModel.AddressHtml =
+            new HtmlString(_addressFormatterProvider.Format(field.Address).Replace(System.Environment.NewLine, "<br/>"));
+        viewModel.Regions = Regions.All;
+        foreach (var (key, value) in Regions.Provinces) viewModel.Provinces[key] = value;
+        viewModel.ContentItem = field.ContentItem;
+        viewModel.AddressPart = field;
+        viewModel.PartFieldDefinition = context.PartFieldDefinition;
     }
 }
