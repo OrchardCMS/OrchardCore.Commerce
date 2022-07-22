@@ -1,3 +1,4 @@
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -19,7 +20,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
     public OrderPartDisplayDriver(
         IProductService productService,
-        IContentManager contentManager)
+        IContentManager contentManager,
+        IMoneyService moneyService)
     {
         _productService = productService;
         _contentManager = contentManager;
@@ -60,11 +62,23 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             };
         }));
 
+        var total = new Amount();
+
         foreach (var item in lineItems)
         {
             model.LineItems.Add(item);
-            model.Total += item.LinePrice;
+
+            if (total.Currency.Equals(Currency.UnspecifiedCurrency))
+            {
+                total = item.LinePrice;
+            }
+            else
+            {
+                total += item.LinePrice;
+            }
         }
+
+        model.Total = total;
 
         model.Charges.AddRange(part.Charges);
 
