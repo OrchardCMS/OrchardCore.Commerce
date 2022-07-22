@@ -38,11 +38,11 @@
                         @foreach (var (attribute, type, index) in attributes)
                         {
                             <shape Type="@(type)"
-                       alternate="@(type)_hidden"
-                       form="shopping-cart-update"
-                       prop-index="@index"
-                       prop-attributeValue="@(attribute)"
-                       prop-namePrefix="@name" />
+                               alternate="@(type)_hidden"
+                               form="shopping-cart-update"
+                               prop-index="@index"
+                               prop-attributeValue="@(attribute)"
+                               prop-namePrefix="@name" />
                         }
                     </div>
                     <div class="col-xs-12 col-sm-9">
@@ -53,9 +53,9 @@
                                 @foreach (var (attribute, type, _) in attributes)
                                 {
                                     <shape tag="li"
-                           Type="@type"
-                           prop-attribute="@(attribute)"
-                           prop-label="@(attribute.Label)" />
+                                       Type="@type"
+                                       prop-attribute="@(attribute)"
+                                       prop-label="@(attribute.Label)" />
                                 }
                             </ul>
                         }
@@ -67,9 +67,9 @@
                             @foreach (var (attribute, type, index) in attributes)
                             {
                                 <shape Type="@type"
-                           alternate="@(type)_hidden"
-                           prop-index="@index"
-                           prop-attributeValue="@(attribute)" />
+                                   alternate="@(type)_hidden"
+                                   prop-index="@index"
+                                   prop-attributeValue="@(attribute)" />
                             }
                             <button type="submit" class="btn btn-primary">@T["Remove"]</button>
                         </form>

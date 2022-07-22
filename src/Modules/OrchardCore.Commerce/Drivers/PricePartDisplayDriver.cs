@@ -58,7 +58,7 @@ public class PricePartDisplayDriver : ContentPartDisplayDriver<PricePart>
 
         model.Price = part.Price;
         model.PriceValue = part.Price.Value;
-        model.PriceCurrency = part.Price.Currency.Equals(Currency.UnspecifiedCurrency)
+        model.PriceCurrency = part.Price.Currency == null || part.Price.Currency.Equals(Currency.UnspecifiedCurrency)
             ? _moneyService.DefaultCurrency.CurrencyIsoCode
             : part.Price.Currency.CurrencyIsoCode;
         model.PricePart = part;

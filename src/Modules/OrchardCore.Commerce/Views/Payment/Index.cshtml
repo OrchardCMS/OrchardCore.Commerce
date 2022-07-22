@@ -77,7 +77,7 @@
                 </fieldset>
                 @Html.HiddenFor(model => model.Token, new { id = "hiddenToken" })
                 <div class="pay-button-container">
-                    <button type="submit" class="pay-button">@T["Pay"] @(defaultTotal.Currency.Symbol + defaultTotal.Value) </button>
+                    <button type="submit" class="pay-button">@T["Pay"] @defaultTotal</button>
                 </div>
                 <div class="error" role="alert">
                     <span class="error-message"></span>

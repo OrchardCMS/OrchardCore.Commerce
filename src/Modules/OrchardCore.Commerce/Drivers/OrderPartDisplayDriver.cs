@@ -20,8 +20,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
     public OrderPartDisplayDriver(
         IProductService productService,
-        IContentManager contentManager,
-        IMoneyService moneyService)
+        IContentManager contentManager)
     {
         _productService = productService;
         _contentManager = contentManager;

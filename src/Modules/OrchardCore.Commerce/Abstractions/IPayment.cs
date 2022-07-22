@@ -1,4 +1,5 @@
 using Money;
+using System;
 
 namespace OrchardCore.Commerce.Abstractions;
 
@@ -26,4 +27,9 @@ public interface IPayment
     /// Gets the amount charged.
     /// </summary>
     Amount Amount { get; }
+
+    /// <summary>
+    /// Gets the creation date and time of the charge.
+    /// </summary>
+    DateTime Created { get; }
 }

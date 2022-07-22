@@ -53,7 +53,6 @@ public class CardPaymentService : ICardPaymentService
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies.
         var defaultTotal = totals.FirstOrDefault();
-        var defaultTotalValue = defaultTotal.Value;
 
         var chargeCreateOptions = new ChargeCreateOptions
         {
@@ -64,7 +63,7 @@ public class CardPaymentService : ICardPaymentService
                 .Parse(
                     string.Join(
                         string.Empty,
-                        defaultTotalValue.ToString(CultureInfo.InvariantCulture).Where(char.IsDigit)),
+                        defaultTotal.ToString().Where(char.IsDigit)),
                     CultureInfo.InvariantCulture),
             Currency = defaultTotal.Currency.CurrencyIsoCode,
             Description = "Orchard Commerce Test Stripe Card Payment",
@@ -143,7 +142,7 @@ public class CardPaymentService : ICardPaymentService
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
 
         // Passing decimal value, so we don't need to convert the long back to decimal.
-        return ToPaymentReceipt(finalCharge, defaultTotalValue);
+        return ToPaymentReceipt(finalCharge, defaultTotal.Value);
     }
 
     private static CardPaymentReceiptViewModel ToPaymentReceipt(
