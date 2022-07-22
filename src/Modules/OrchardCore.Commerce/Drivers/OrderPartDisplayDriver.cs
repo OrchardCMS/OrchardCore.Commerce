@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,10 +56,18 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 UnitPrice = lineItem.UnitPrice,
                 LinePrice = lineItem.LinePrice,
                 ProductRouteValues = metaData.DisplayRouteValues,
-                Attributes = lineItem.Attributes.ToDictionary(attr => attr.Key, attr => attr.Value),
+                Attributes = lineItem.Attributes,
             };
         }));
-        foreach (var item in lineItems) model.LineItems.Add(item);
+
+        foreach (var item in lineItems)
+        {
+            model.LineItems.Add(item);
+            model.Total += item.LinePrice;
+        }
+
+        model.Charges.AddRange(part.Charges);
+
         model.OrderPart = part;
     }
 }

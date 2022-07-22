@@ -31,32 +31,67 @@ public class PriceVariantProvider : IPriceProvider
         return items
             .Select(item =>
             {
-                if (skuProducts.TryGetValue(item.ProductSku, out var product))
+                if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
                 {
-                    var priceVariantsPart = product.ContentItem.As<PriceVariantsPart>();
-                    if (priceVariantsPart is { Variants: { } })
+                    var itemWithPrice = AddPriceToShoppingCartItem(item, productPart);
+
+                    if (itemWithPrice != null)
                     {
-                        var attributesRestrictedToPredefinedValues = _predefinedValuesService
-                            .GetProductAttributesRestrictedToPredefinedValues(product.ContentItem)
-                            .Select(attr => attr.PartName + "." + attr.Name)
-                            .ToHashSet();
-                        var predefinedAttributes = item.Attributes
-                            .OfType<IPredefinedValuesProductAttributeValue>()
-                            .Where(attribute => attributesRestrictedToPredefinedValues.Contains(attribute.AttributeName))
-                            .OrderBy(value => value.AttributeName);
-                        var variantKey = string.Join(
-                            "-",
-                            predefinedAttributes
-                                .Select(attr => attr.UntypedPredefinedValue)
-                                .Where(value => value != null));
-                        if (priceVariantsPart.Variants.ContainsKey(variantKey))
-                        {
-                            return item.WithPrice(new PrioritizedPrice(1, priceVariantsPart.Variants[variantKey]));
-                        }
+                        return itemWithPrice;
                     }
                 }
 
                 return item;
             });
+    }
+
+    public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
+    {
+        var sku = item.ProductSku;
+        var productPart = await _productService.GetProductAsync(sku);
+        var productPartSku = productPart.Sku;
+
+        if (productPartSku == sku)
+        {
+            var itemWithPrice = AddPriceToShoppingCartItem(item, productPart);
+
+            if (itemWithPrice != null)
+            {
+                return itemWithPrice;
+            }
+        }
+
+        return item;
+    }
+
+    private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
+    {
+        var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
+
+        if (priceVariantsPart is { Variants: { } })
+        {
+            var attributesRestrictedToPredefinedValues = _predefinedValuesService
+                .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
+                .Select(attr => attr.PartName + "." + attr.Name)
+                .ToHashSet();
+
+            var predefinedAttributes = item.Attributes
+                .OfType<IPredefinedValuesProductAttributeValue>()
+                .Where(attribute => attributesRestrictedToPredefinedValues.Contains(attribute.AttributeName))
+                .OrderBy(value => value.AttributeName);
+
+            var variantKey = string.Join(
+                "-",
+                predefinedAttributes
+                    .Select(attr => attr.UntypedPredefinedValue)
+                    .Where(value => value != null));
+
+            if (priceVariantsPart.Variants.ContainsKey(variantKey))
+            {
+                return item.WithPrice(new PrioritizedPrice(1, priceVariantsPart.Variants[variantKey]));
+            }
+        }
+
+        return null;
     }
 }

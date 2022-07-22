@@ -20,7 +20,7 @@ public static class ShoppingCartCheckoutExtensions
              .Select(group => new Amount(group.Sum(linePrice => linePrice.Value), group.Key));
     }
 
-    public static async Task<IEnumerable<Amount>> CalculateLinePricesAsync(
+    private static async Task<IEnumerable<Amount>> CalculateLinePricesAsync(
         this ShoppingCart shoppingCart,
         IPriceService priceService,
         IPriceSelectionStrategy priceSelectionStrategy)

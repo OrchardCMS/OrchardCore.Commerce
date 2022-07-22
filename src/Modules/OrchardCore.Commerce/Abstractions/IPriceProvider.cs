@@ -20,4 +20,10 @@ public interface IPriceProvider
     /// </summary>
     /// <param name="items">The quantities and products to which prices must be added.</param>
     Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items);
+
+    /// <summary>
+    /// Adds price to shopping cart item.
+    /// </summary>
+    /// <param name="item">The quantity and product to which prices must be added.</param>
+    Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item);
 }

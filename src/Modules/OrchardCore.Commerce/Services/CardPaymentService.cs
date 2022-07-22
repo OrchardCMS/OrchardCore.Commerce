@@ -7,9 +7,9 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
-using OrchardCore.Title.Models;
 using Stripe;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,6 +57,7 @@ public class CardPaymentService : ICardPaymentService
 
         var chargeCreateOptions = new ChargeCreateOptions
         {
+            // NOT WORKING
             // We need to remove the decimal points and convert the value (decimal) to long.
             // https://stripe.com/docs/currencies#zero-decimal
             Amount = long
@@ -97,11 +98,19 @@ public class CardPaymentService : ICardPaymentService
         var order = await _contentManager.NewAsync("Order");
         var orderId = Guid.NewGuid();
 
-        order.Weld<OrderPart>();
-        order.Alter<TitlePart>(titlePart => titlePart.Title = "Order " + orderId);
+        order.DisplayText = "Order " + orderId;
 
         // To-do when other parts of the checkout is implemented (notes).
         // order.Alter<HtmlBodyPart>(htmlBodyPart => htmlBodyPart.
+
+        IList<OrderLineItem> lineItems = new List<OrderLineItem>();
+
+        // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
+        // void."
+        foreach (var item in currentShoppingCart.Items)
+        {
+            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(_priceSelectionStrategy, _priceService));
+        }
 
         order.Alter<OrderPart>(orderPart =>
         {
@@ -114,8 +123,8 @@ public class CardPaymentService : ICardPaymentService
                     Created = finalCharge.Created,
                 });
 
-            // Shopping cart
-            // orderPart.LineItems;
+            //// Shopping cart
+            orderPart.LineItems.AddRange(lineItems);
 
             var orderPartContent = orderPart.Content;
 
