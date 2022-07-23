@@ -9,21 +9,28 @@
     {
         <div class="container">
             <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
-                <div class="col-xs-12 col-sm-1">@T["Quantity"]</div>
-                <div class="col-xs-12 col-sm-9">@T["Product"]</div>
+                <div class="col-xs-12 col-sm-2">@T["Quantity"]</div>
+                <div class="col-xs-12 col-sm-8">@T["Product"]</div>
                 <div class="col-xs-12 col-sm-1">@T["Price"]</div>
             </div>
 
-            @foreach (var item in Model.LineItems)
+            @for (var line = 0; line < Model.LineItems.Count; line++)
             {
+                var currentItem = Model.LineItems[line];
+
                 <div class="row border-bottom mt-3 pb-2">
-                    <div class="col-xs-12 col-sm-1">@item.Quantity@T[" × "]</div>
-                    <div class="col-xs-12 col-sm-9">
-                        <a href="@Url.RouteUrl(item.ProductRouteValues)">@item.ProductName</a>
-                        @if (item.Attributes != null)
+                    <div class="col-xs-12 col-sm-2 d-flex">
+                        <p class="w-50">@currentItem.Quantity@T[" × "]</p>
+                        <input type="number" min="0" id="OrderPart_LineItems_@(line)_Quantity" name="OrderPart.LineItems[@(line)].Quantity" value="@currentItem.Quantity" class="form-control" />
+                    </div>
+                    <div class="col-xs-12 col-sm-8">
+                        <a href="@Url.RouteUrl(currentItem.ProductRouteValues)">@currentItem.ProductName</a>
+                        <input type="hidden" id="OrderPart_LineItems_@(line)_ProductSku" name="OrderPart.LineItems[@(line)].ProductSku" value="@currentItem.ProductSku" />
+
+                        @if (currentItem.Attributes != null)
                         {
                             <ul class="cart-product-attributes list-inline">
-                                @foreach (var attribute in item.Attributes.Where(val => val.UntypedValue != null))
+                                @foreach (var attribute in currentItem.Attributes.Where(value => value.UntypedValue != null))
                                 {
                                     <shape tag="li"
                                        Type="@(attribute.GetType().Name)"
@@ -33,18 +40,13 @@
                             </ul>
                         }
                     </div>
-                    <div class="col-xs-12 col-sm-1">@item.UnitPrice</div>
+                    <div class="col-xs-12 col-sm-1">@currentItem.UnitPrice</div>
                 </div>
             }
             <div class="row mt-3 mb-3 pb-2">
                 <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
                 <div class="col-xs-12 col-sm-1">
                     <div>@Model.Total</div>
-                </div>
-                <div class="col-xs-12 col-sm-1">
-                    <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
-                        <button type="submit" class="btn btn-primary">@T["Update"]</button>
-                    </form>
                 </div>
             </div>
         </div>

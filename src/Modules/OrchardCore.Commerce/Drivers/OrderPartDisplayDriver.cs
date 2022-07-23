@@ -27,21 +27,41 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
-        Initialize<OrderPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModelAsync(viewModel, part))
+        Initialize<OrderPartViewModel>(GetDisplayShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModelAsync(viewModel, part));
+        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
-        await updater.TryUpdateModelAsync(part, Prefix, orderPart => orderPart.LineItems);
+        var viewModel = new OrderPartViewModel();
+
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        for (var i = 0; i < part.LineItems.Count; i++)
+        {
+            var currentItem = part.LineItems[i];
+
+            var quantity = viewModel.LineItems[i].Quantity;
+
+            if (quantity <= 0)
+            {
+                part.LineItems.RemoveAt(i);
+            }
+            else
+            {
+                currentItem.Quantity = quantity;
+                currentItem.LinePrice = quantity * currentItem.UnitPrice;
+                part.LineItems[i] = currentItem;
+            }
+        }
 
         return await EditAsync(part, context);
     }
 
-    private async ValueTask BuildViewModelAsync(OrderPartViewModel model, OrderPart part)
+    private async ValueTask PopulateViewModelAsync(OrderPartViewModel model, OrderPart part)
     {
         model.ContentItem = part.ContentItem;
         var products = await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
