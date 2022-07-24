@@ -2,7 +2,6 @@ using Money;
 using OrchardCore.Commerce.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Models;
 
