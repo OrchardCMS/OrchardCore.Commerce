@@ -6,5 +6,7 @@
 
   // Add custom rules and overrides here.
   "rules": {
-  }
+  },
+
+  "ignorePatterns": [ "**/*.js" ]
 }
