@@ -73,6 +73,7 @@
       "name": "recipes",
       "Values": [
         // Configuration
+        // The order content part and type is now created with migration.
         //{
         //  "executionid": "OrchardCore.Commerce",
         //  "name": "Order"
