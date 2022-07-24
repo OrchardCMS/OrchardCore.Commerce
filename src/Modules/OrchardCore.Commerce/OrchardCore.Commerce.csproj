@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.3.0" />
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.16" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.3.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.3.0" />
     <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.3.0" />

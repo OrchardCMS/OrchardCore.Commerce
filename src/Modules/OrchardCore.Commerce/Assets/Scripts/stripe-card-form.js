@@ -1,30 +1,45 @@
+// Adding credit card element with Stripe API.
+const stripeElements = stripe.elements();
+
+const card = stripeElements.create('card', {
+    style: {
+        base: {
+            fontWeight: '500',
+            fontSize: '20px',
+        },
+    },
+});
+
+const placeOfCard = document.querySelector('#card-payment-form_card');
+
 function registerElements(elements) {
-    var form = document.querySelector('.card-payment-form');
+    const form = document.querySelector('.card-payment-form');
 
     // Displaying card input error.
-    card.on('change', function (event) {
-        var displayError = document.querySelector('.error-message');
+    card.on('change', (event) => {
+        const displayError = document.querySelector('.error-message');
         if (event.error) {
             displayError.textContent = event.error.message;
-        } else {
+        }
+        else {
             displayError.textContent = '';
         }
     });
 
     // We need to generate a Stripe token before submitting the form.
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        var formId = '#card-payment-form';
+        const formId = '#card-payment-form';
 
         // Gather additional customer data we may have collected in our form. To do: Pass shipping data when shipping is
         // implemented.
-        var name = form.querySelector(formId + '_name');
-        var address1 = form.querySelector(formId + '_address');
-        var city = form.querySelector(formId + '_city');
-        var state = form.querySelector(formId + '_state');
-        var zip = form.querySelector(formId + '_zip');
-        var additionalData = {
+        const name = form.querySelector(formId + '_name');
+        const address1 = form.querySelector(formId + '_address');
+        const city = form.querySelector(formId + '_city');
+        const state = form.querySelector(formId + '_state');
+        const zip = form.querySelector(formId + '_zip');
+        const additionalData = {
             name: name ? name.value : undefined,
             address_line1: address1 ? address1.value : undefined,
             address_city: city ? city.value : undefined,
@@ -35,7 +50,7 @@ function registerElements(elements) {
         // Use Stripe.js to create a token. We need to pass an Element
         // from the Element group in order to create a token. We can also pass
         // in the additional customer data we collected in our form.
-        stripe.createToken(elements[0], additionalData).then(function (result) {
+        stripe.createToken(elements[0], additionalData).then((result) => {
             if (result.token) {
                 // You can test if the token was created:
                 // console.log("Received token = " + result.token.id);
@@ -44,25 +59,10 @@ function registerElements(elements) {
                 document.querySelector('#hiddenToken').value = result.token.id;
 
                 document.querySelector('#card-payment-form').submit();
-
             }
         });
     });
 }
-
-// Adding credit card element with Stripe API.
-var elements = stripe.elements();
-
-var card = elements.create('card', {
-    style: {
-        base: {
-            fontWeight: '500',
-            fontSize: '20px',
-        },
-    },
-});
-
-var placeOfCard = document.querySelector('#card-payment-form_card');
 
 if (placeOfCard != null) {
     card.mount(placeOfCard);
