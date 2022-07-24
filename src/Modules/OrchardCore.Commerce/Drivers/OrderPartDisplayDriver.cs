@@ -69,6 +69,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         {
             var product = products[lineItem.ProductSku];
             var metaData = await _contentManager.GetContentItemMetadataAsync(product);
+
             return new OrderLineItemViewModel
             {
                 Quantity = lineItem.Quantity,
