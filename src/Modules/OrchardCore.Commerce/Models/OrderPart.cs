@@ -21,7 +21,7 @@ public class OrderPart : ContentPart
     /// Gets the amounts charged for this order. Typically a single credit card charge.
     /// </summary>
 
-    // This is a temporal solution, it needs to be reworked in the future!
+    // This is a temporary solution, it needs to be reworked in the future!
 #pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
 #pragma warning disable SCS0028 // TypeNameHandling is set to the other value than 'None'. It may lead to deserialization vulnerability.
     [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
