@@ -2,5 +2,13 @@
   "devDependencies": {
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-only-warn": "^1.0.3"
+  },
+  "scripts": {
+    "build": "npm run compile:scripts",
+    "build:scripts": "npm explore nodejs-extensions -- pnpm run compile:scripts",
+    "clean": "npm run clean:scripts",
+    "clean:scripts": "npm explore nodejs-extensions -- pnpm run clean:scripts",
+    "watch": "npm run watch:scripts",
+    "watch:scripts": "npm explore nodejs-extensions -- pnpm run watch:scripts"
   }
 }
