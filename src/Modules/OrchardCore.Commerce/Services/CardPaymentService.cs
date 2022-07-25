@@ -56,7 +56,6 @@ public class CardPaymentService : ICardPaymentService
 
         var chargeCreateOptions = new ChargeCreateOptions
         {
-            // NOT WORKING
             // We need to remove the decimal points and convert the value (decimal) to long.
             // https://stripe.com/docs/currencies#zero-decimal
             Amount = long
