@@ -60,35 +60,35 @@ public class CardPaymentService : ICardPaymentService
         // totals i.e., multiple currencies.
         var defaultTotal = totals.FirstOrDefault();
 
-        var paymentIntentOptions = new PaymentIntentCreateOptions
-        {
-            // We need to remove the decimal points and convert the value (decimal) to long.
-            // https://stripe.com/docs/currencies#zero-decimal
-            Amount = long
-                .Parse(
-                    string.Join(
-                        string.Empty,
-                        defaultTotal.ToString().Where(char.IsDigit)),
-                    CultureInfo.InvariantCulture),
-            Currency = defaultTotal.Currency.CurrencyIsoCode,
-            Description = "Orchard Commerce Test Stripe Card Payment",
-            ConfirmationMethod = "automatic",
-            PaymentMethod = viewModel.PaymentMethod,
-
-            // If shipping is implemented, it needs to be added here too.
-            // Shipping =
-            ReceiptEmail = viewModel.Email,
-        };
-
-        var paymentIntent = _paymentIntentService.Create(paymentIntentOptions);
-
-        var optionsPaymentIntentConfirmOptions = new PaymentIntentConfirmOptions();
-
         PaymentIntent finalPaymentIntent;
 
         try
         {
-            finalPaymentIntent = _paymentIntentService.Confirm(paymentIntent.Id, optionsPaymentIntentConfirmOptions);
+            var paymentIntentOptions = new PaymentIntentCreateOptions
+            {
+                // We need to remove the decimal points and convert the value (decimal) to long.
+                // https://stripe.com/docs/currencies#zero-decimal
+                Amount = long
+                    .Parse(
+                        string.Join(
+                            string.Empty,
+                            defaultTotal.ToString().Where(char.IsDigit)),
+                        CultureInfo.InvariantCulture),
+                Currency = defaultTotal.Currency.CurrencyIsoCode,
+                Description = "Orchard Commerce Test Stripe Card Payment",
+                ConfirmationMethod = "automatic",
+                PaymentMethod = viewModel.PaymentMethod,
+
+                // If shipping is implemented, it needs to be added here too.
+                // Shipping =
+                ReceiptEmail = viewModel.Email,
+            };
+
+            var paymentIntent = _paymentIntentService.Create(paymentIntentOptions);
+
+            // HERE HANDLE 3DS IF THE STATUS IS requires_action.
+
+            finalPaymentIntent = _paymentIntentService.Confirm(paymentIntent.Id, new PaymentIntentConfirmOptions());
         }
         catch (StripeException excpetion)
         {
@@ -96,6 +96,7 @@ public class CardPaymentService : ICardPaymentService
             return ToPaymentReceipt(paymentIntent: null, 0, excpetion);
         }
 
+        // For safety reasons we are removing the API key.
         StripeConfiguration.ApiKey = null;
 
         var order = await _contentManager.NewAsync("Order");
