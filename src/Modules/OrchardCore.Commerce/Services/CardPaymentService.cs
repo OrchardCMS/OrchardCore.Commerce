@@ -48,11 +48,6 @@ public class CardPaymentService : ICardPaymentService
 
     public async Task<CardPaymentReceiptViewModel> CreatePaymentAndOrderAsync(CardPaymentViewModel viewModel)
     {
-        StripeConfiguration.ApiKey = (await _siteService.GetSiteSettingsAsync())
-            .As<StripeApiSettings>()
-            .SecretKey
-            .DecryptStripeApiKey(_dataProtectionProvider, _logger);
-
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
 
@@ -84,20 +79,24 @@ public class CardPaymentService : ICardPaymentService
                 ReceiptEmail = viewModel.Email,
             };
 
-            var paymentIntent = _paymentIntentService.Create(paymentIntentOptions);
+            var requestOptions = new RequestOptions
+            {
+                ApiKey = (await _siteService.GetSiteSettingsAsync())
+                    .As<StripeApiSettings>()
+                    .SecretKey
+                    .DecryptStripeApiKey(_dataProtectionProvider, _logger),
+            };
+
+            var paymentIntent = _paymentIntentService.Create(paymentIntentOptions, requestOptions);
 
             // HERE HANDLE 3DS IF THE STATUS IS requires_action.
 
-            finalPaymentIntent = _paymentIntentService.Confirm(paymentIntent.Id, new PaymentIntentConfirmOptions());
+            finalPaymentIntent = _paymentIntentService.Confirm(paymentIntent.Id, new PaymentIntentConfirmOptions(), requestOptions);
         }
         catch (StripeException excpetion)
         {
-            StripeConfiguration.ApiKey = null;
             return ToPaymentReceipt(paymentIntent: null, 0, excpetion);
         }
-
-        // For safety reasons we are removing the API key.
-        StripeConfiguration.ApiKey = null;
 
         var order = await _contentManager.NewAsync("Order");
         var orderId = Guid.NewGuid();
