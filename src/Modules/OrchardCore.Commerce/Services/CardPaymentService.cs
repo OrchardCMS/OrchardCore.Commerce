@@ -15,12 +15,13 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
+
 public class CardPaymentService : ICardPaymentService
 {
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IPriceService _priceService;
+    private readonly PaymentIntentService _paymentIntentService;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
-    private readonly ChargeService _chargeService;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -35,7 +36,7 @@ public class CardPaymentService : ICardPaymentService
         IDataProtectionProvider dataProtectionProvider,
         ILogger<CardPaymentService> logger)
     {
-        _chargeService = new ChargeService();
+        _paymentIntentService = new PaymentIntentService();
         _shoppingCartPersistence = shoppingCartPersistence;
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;
@@ -47,6 +48,11 @@ public class CardPaymentService : ICardPaymentService
 
     public async Task<CardPaymentReceiptViewModel> CreatePaymentAndOrderAsync(CardPaymentViewModel viewModel)
     {
+        StripeConfiguration.ApiKey = (await _siteService.GetSiteSettingsAsync())
+            .As<StripeApiSettings>()
+            .SecretKey
+            .DecryptStripeApiKey(_dataProtectionProvider, _logger);
+
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
 
@@ -54,7 +60,7 @@ public class CardPaymentService : ICardPaymentService
         // totals i.e., multiple currencies.
         var defaultTotal = totals.FirstOrDefault();
 
-        var chargeCreateOptions = new ChargeCreateOptions
+        var paymentIntentOptions = new PaymentIntentCreateOptions
         {
             // We need to remove the decimal points and convert the value (decimal) to long.
             // https://stripe.com/docs/currencies#zero-decimal
@@ -66,32 +72,31 @@ public class CardPaymentService : ICardPaymentService
                     CultureInfo.InvariantCulture),
             Currency = defaultTotal.Currency.CurrencyIsoCode,
             Description = "Orchard Commerce Test Stripe Card Payment",
-            Source = viewModel.Token,
-            Capture = true,
+            ConfirmationMethod = "automatic",
+            PaymentMethod = viewModel.PaymentMethod,
 
             // If shipping is implemented, it needs to be added here too.
             // Shipping =
             ReceiptEmail = viewModel.Email,
         };
 
-        Charge finalCharge;
+        var paymentIntent = _paymentIntentService.Create(paymentIntentOptions);
 
-        var requestOptions = new RequestOptions
-        {
-            ApiKey = (await _siteService.GetSiteSettingsAsync())
-                .As<StripeApiSettings>()
-                .SecretKey
-                .DecryptStripeApiKey(_dataProtectionProvider, _logger),
-        };
+        var optionsPaymentIntentConfirmOptions = new PaymentIntentConfirmOptions();
+
+        PaymentIntent finalPaymentIntent;
 
         try
         {
-            finalCharge = _chargeService.Create(chargeCreateOptions, requestOptions);
+            finalPaymentIntent = _paymentIntentService.Confirm(paymentIntent.Id, optionsPaymentIntentConfirmOptions);
         }
         catch (StripeException excpetion)
         {
-            return ToPaymentReceipt(charge: null, 0, excpetion);
+            StripeConfiguration.ApiKey = null;
+            return ToPaymentReceipt(paymentIntent: null, 0, excpetion);
         }
+
+        StripeConfiguration.ApiKey = null;
 
         var order = await _contentManager.NewAsync("Order");
         var orderId = Guid.NewGuid();
@@ -115,10 +120,10 @@ public class CardPaymentService : ICardPaymentService
             orderPart.Charges.Add(
                 new CreditCardPayment
                 {
-                    ChargeText = finalCharge.Description,
-                    TransactionId = finalCharge.Id,
+                    ChargeText = finalPaymentIntent.Description,
+                    TransactionId = finalPaymentIntent.Id,
                     Amount = defaultTotal,
-                    Created = finalCharge.Created,
+                    Created = finalPaymentIntent.Created,
                 });
 
             //// Shopping cart
@@ -141,23 +146,22 @@ public class CardPaymentService : ICardPaymentService
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
 
         // Passing decimal value, so we don't need to convert the long back to decimal.
-        return ToPaymentReceipt(finalCharge, defaultTotal.Value);
+        return ToPaymentReceipt(finalPaymentIntent, defaultTotal.Value);
     }
 
     private static CardPaymentReceiptViewModel ToPaymentReceipt(
-        Charge charge,
+        PaymentIntent paymentIntent,
         decimal value,
         StripeException excpetion = null) =>
-        charge != null
+        paymentIntent != null
         ? new CardPaymentReceiptViewModel
         {
             Amount = value,
-            Currency = charge.Currency,
-            Description = charge.Description,
-            Status = charge.Status,
-            Created = charge.Created,
-            BalanceTransactionId = charge.BalanceTransactionId,
-            Id = charge.Id,
+            Currency = paymentIntent.Currency,
+            Description = paymentIntent.Description,
+            Status = paymentIntent.Status,
+            Created = paymentIntent.Created,
+            Id = paymentIntent.Id,
             Exception = excpetion,
         }
         : new CardPaymentReceiptViewModel

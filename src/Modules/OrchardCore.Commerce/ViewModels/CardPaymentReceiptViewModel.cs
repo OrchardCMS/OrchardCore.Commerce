@@ -15,8 +15,6 @@ public class CardPaymentReceiptViewModel
 
     public DateTime Created { get; set; }
 
-    public string BalanceTransactionId { get; set; }
-
     public string Id { get; set; }
 
     public StripeException Exception { get; set; }

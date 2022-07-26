@@ -75,7 +75,7 @@
                         <div id="card-payment-form_card"></div>
                     </div>
                 </fieldset>
-                @Html.HiddenFor(model => model.Token, new { id = "hiddenToken" })
+                @Html.HiddenFor(model => model.PaymentMethod, new { id = "paymentMethod" })
                 <div class="pay-button-container">
                     <button type="submit" class="pay-button">@T["Pay"] @defaultTotal</button>
                 </div>
