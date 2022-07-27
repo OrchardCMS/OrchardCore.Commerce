@@ -1,5 +1,6 @@
 // Adding credit card element with Stripe API.
 const stripeElements = stripe.elements();
+const errorContainer = document.querySelector('.error-message');
 
 const card = stripeElements.create('card', {
     style: {
@@ -12,53 +13,93 @@ const card = stripeElements.create('card', {
 
 const placeOfCard = document.querySelector('#card-payment-form_card');
 
+function handleStripeJsResult(result) {
+    const error = response.error;
+    if (error) {
+        // Show error in payment form.
+        errorContainer.textContent = error;
+    } else {
+        // The card action has been handled.
+        // The PaymentIntent can be confirmed again on the server.
+        fetch('/pay', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ payment_intent_id: result.paymentIntent.id })
+        }).then(function (confirmResult) {
+            return confirmResult.json();
+        }).then(handleServerResponse);
+    }
+}
+
+function handleServerResponse(response) {
+    const error = response.error;
+    if (error) {
+        // Show error in payment form.
+        errorContainer.textContent = error;
+    } else if (response.requires_action) {
+        // Use Stripe.js to handle required card action (like 3DS authentication).
+        stripe.handleCardAction(
+            response.payment_intent_client_secret
+        ).then(handleStripeJsResult);
+    } else {
+        // Show success message.
+        console.log("succes");
+    }
+}
+
+function stripePaymentMethodHandler(result) {
+    const error = result.error;
+    if (error) {
+        // Show error in payment form.
+        errorContainer.textContent = error;
+    } else {
+        // Otherwise send paymentMethod.id to the server.
+        fetch('/pay', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                payment_method_id: result.paymentMethod.id,
+            })
+        }).then(function (result) {
+            // Handle server response.
+            result.json().then(function (json) {
+                handleServerResponse(json);
+            })
+        });
+    }
+}
 
 function registerElements(elements) {
     const form = document.querySelector('.card-payment-form');
 
     // Displaying card input error.
     card.on('change', (event) => {
-        const displayError = document.querySelector('.error-message');
         if (event.error) {
-            displayError.textContent = event.error.message;
+            errorContainer.textContent = event.error.message;
         }
         else {
-            displayError.textContent = '';
+            errorContainer.textContent = '';
         }
     });
 
-    // We need to generate a Stripe token before submitting the form.
     form.addEventListener('submit', (e) => {
-        e.preventDefault();
+        // We don't want to let default form submission happen here,
+        // which would refresh the page.
+        event.preventDefault();
 
-        //const formId = '#card-payment-form';
-
-        // Gather additional customer data we may have collected in our form. To do: Pass shipping data when shipping is
-        // implemented.
-        //const name = form.querySelector(formId + '_name');
-        //const address1 = form.querySelector(formId + '_address');
-        //const city = form.querySelector(formId + '_city');
-        //const state = form.querySelector(formId + '_state');
-        //const zip = form.querySelector(formId + '_zip');
-        //const additionalData = {
-        //    name: name ? name.value : undefined,
-        //    address_line1: address1 ? address1.value : undefined,
-        //    address_city: city ? city.value : undefined,
-        //    address_state: state ? state.value : undefined,
-        //    address_zip: zip ? zip.value : undefined,
-        //};
-
-        // Later if we wish, we can add more payment methods.
         stripe.createPaymentMethod({
             type: 'card',
             card: card,
             billing_details: {
                 // Include any additional collected billing details.
             },
-        }).then((result) => {
-            document.querySelector('#paymentMethod').value = result.paymentMethod.id;
-            document.querySelector('#card-payment-form').submit();
-        });
+        }).then(stripePaymentMethodHandler);
     });
 }
 

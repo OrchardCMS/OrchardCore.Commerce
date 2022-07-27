@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -46,7 +47,7 @@ public class CardPaymentService : ICardPaymentService
         _logger = logger;
     }
 
-    public async Task<CardPaymentReceiptViewModel> CreatePaymentAndOrderAsync(CardPaymentViewModel viewModel)
+    public async Task<PaymentIntent> CreatePaymentAsync(ConfirmPaymentRequest request)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
@@ -55,31 +56,33 @@ public class CardPaymentService : ICardPaymentService
         // totals i.e., multiple currencies.
         var defaultTotal = totals.FirstOrDefault();
 
-        PaymentIntent finalPaymentIntent;
+        var paymentIntent = new PaymentIntent();
+        var requestOptions = new RequestOptions();
 
-        try
+        if (request.PaymentMethodId != null)
         {
             var paymentIntentOptions = new PaymentIntentCreateOptions
             {
                 // We need to remove the decimal points and convert the value (decimal) to long.
                 // https://stripe.com/docs/currencies#zero-decimal
                 Amount = long
-                    .Parse(
-                        string.Join(
-                            string.Empty,
-                            defaultTotal.ToString().Where(char.IsDigit)),
-                        CultureInfo.InvariantCulture),
+                .Parse(
+                    string.Join(
+                        string.Empty,
+                        defaultTotal.ToString().Where(char.IsDigit)),
+                    CultureInfo.InvariantCulture),
                 Currency = defaultTotal.Currency.CurrencyIsoCode,
                 Description = "Orchard Commerce Test Stripe Card Payment",
-                ConfirmationMethod = "automatic",
-                PaymentMethod = viewModel.PaymentMethod,
+                ConfirmationMethod = "manual",
+                Confirm = true,
+                PaymentMethod = request.PaymentMethodId,
 
                 // If shipping is implemented, it needs to be added here too.
                 // Shipping =
-                ReceiptEmail = viewModel.Email,
+                // ReceiptEmail = viewModel.Email,
             };
 
-            var requestOptions = new RequestOptions
+            requestOptions = new RequestOptions
             {
                 ApiKey = (await _siteService.GetSiteSettingsAsync())
                     .As<StripeApiSettings>()
@@ -87,16 +90,45 @@ public class CardPaymentService : ICardPaymentService
                     .DecryptStripeApiKey(_dataProtectionProvider, _logger),
             };
 
-            var paymentIntent = _paymentIntentService.Create(paymentIntentOptions, requestOptions);
-
-            // HERE HANDLE 3DS IF THE STATUS IS requires_action.
-
-            finalPaymentIntent = _paymentIntentService.Confirm(paymentIntent.Id, new PaymentIntentConfirmOptions(), requestOptions);
+            paymentIntent = _paymentIntentService.Create(paymentIntentOptions, requestOptions);
         }
-        catch (StripeException excpetion)
+
+        if (request.PaymentIntentId != null)
         {
-            return ToPaymentReceipt(paymentIntent: null, 0, excpetion);
+            paymentIntent = _paymentIntentService.Confirm(
+                request.PaymentIntentId,
+                new PaymentIntentConfirmOptions(),
+                requestOptions);
         }
+
+        return paymentIntent;
+    }
+
+    public CardPaymentReceiptViewModel ToPaymentReceipt(
+        PaymentIntent paymentIntent,
+        decimal value,
+        StripeException excpetion = null) =>
+        paymentIntent != null
+        ? new CardPaymentReceiptViewModel
+        {
+            Amount = value,
+            Currency = paymentIntent.Currency,
+            Description = paymentIntent.Description,
+            Status = paymentIntent.Status,
+            Created = paymentIntent.Created,
+            Id = paymentIntent.Id,
+            Exception = excpetion,
+        }
+        : new CardPaymentReceiptViewModel
+        {
+            Exception = excpetion,
+        };
+
+    public async Task CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
+    {
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
+        var defaultTotal = totals.FirstOrDefault();
 
         var order = await _contentManager.NewAsync("Order");
         var orderId = Guid.NewGuid();
@@ -120,10 +152,10 @@ public class CardPaymentService : ICardPaymentService
             orderPart.Charges.Add(
                 new CreditCardPayment
                 {
-                    ChargeText = finalPaymentIntent.Description,
-                    TransactionId = finalPaymentIntent.Id,
+                    ChargeText = paymentIntent.Description,
+                    TransactionId = paymentIntent.Id,
                     Amount = defaultTotal,
-                    Created = finalPaymentIntent.Created,
+                    Created = paymentIntent.Created,
                 });
 
             //// Shopping cart
@@ -144,28 +176,5 @@ public class CardPaymentService : ICardPaymentService
 
         // Shopping cart ID is null by default currently.
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
-
-        // Passing decimal value, so we don't need to convert the long back to decimal.
-        return ToPaymentReceipt(finalPaymentIntent, defaultTotal.Value);
     }
-
-    private static CardPaymentReceiptViewModel ToPaymentReceipt(
-        PaymentIntent paymentIntent,
-        decimal value,
-        StripeException excpetion = null) =>
-        paymentIntent != null
-        ? new CardPaymentReceiptViewModel
-        {
-            Amount = value,
-            Currency = paymentIntent.Currency,
-            Description = paymentIntent.Description,
-            Status = paymentIntent.Status,
-            Created = paymentIntent.Created,
-            Id = paymentIntent.Id,
-            Exception = excpetion,
-        }
-        : new CardPaymentReceiptViewModel
-        {
-            Exception = excpetion,
-        };
 }

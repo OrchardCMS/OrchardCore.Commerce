@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.ViewModels;
+using OrchardCore.Commerce.Models;
+using Stripe;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Controllers;
@@ -12,35 +13,47 @@ public class PaymentController : Controller
     public PaymentController(ICardPaymentService cardPaymentService) =>
         _cardPaymentService = cardPaymentService;
 
-    [Route("checkout")]
-    public IActionResult Index() =>
-        View();
-
-    [Route("checkout")]
+    [Route("pay")]
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Index(CardPaymentViewModel viewModel)
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> Index([FromBody] ConfirmPaymentRequest request)
     {
-        var receiptViewModel = await _cardPaymentService.CreatePaymentAndOrderAsync(viewModel);
-        var exception = receiptViewModel.Exception;
+        PaymentIntent paymentIntent;
 
-        if (exception == null)
+        try
         {
-            return RedirectToAction("Receipt", "Payment", receiptViewModel);
+            paymentIntent = await _cardPaymentService.CreatePaymentAsync(request);
+        }
+        catch (StripeException exception)
+        {
+            return Json(new { error = exception.StripeError.Message });
         }
 
-        var stripeError = exception.StripeError;
-        return RedirectToAction(
-            "Error",
-            "Payment",
-            new CardPaymentErrorViewModel { Descripton = stripeError.Message, Code = stripeError.Code });
+        return await GeneratePaymentResponseAsync(paymentIntent);
     }
 
-    [Route("receipt")]
-    public IActionResult Receipt(CardPaymentReceiptViewModel viewModel) =>
-        View(viewModel);
+    private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
+    {
+        if (paymentIntent.Status == "requires_action" &&
+            paymentIntent.NextAction.Type == "use_stripe_sdk")
+        {
+            // Tell the client to handle the action.
+            return Json(new
+            {
+                requires_action = true,
+                payment_intent_client_secret = paymentIntent.ClientSecret,
+            });
+        }
 
-    [Route("error")]
-    public IActionResult Error(CardPaymentErrorViewModel viewModel) =>
-        View("Error", viewModel);
+        if (paymentIntent.Status == "succeeded")
+        {
+            // The payment didn’t need any additional actions and completed!
+            await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
+
+            return Json(new { success = true });
+        }
+
+        // Invalid status.
+        return StatusCode(500, new { error = "Invalid PaymentIntent status" });
+    }
 }
