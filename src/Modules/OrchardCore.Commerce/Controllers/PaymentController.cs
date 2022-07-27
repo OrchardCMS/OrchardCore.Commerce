@@ -13,6 +13,14 @@ public class PaymentController : Controller
     public PaymentController(ICardPaymentService cardPaymentService) =>
         _cardPaymentService = cardPaymentService;
 
+    [Route("checkout")]
+    public IActionResult Index() =>
+        View();
+
+    [Route("success")]
+    public IActionResult Success() =>
+        View();
+
     [Route("pay")]
     [HttpPost]
     [IgnoreAntiforgeryToken]
@@ -31,14 +39,6 @@ public class PaymentController : Controller
 
         return await GeneratePaymentResponseAsync(paymentIntent);
     }
-
-    [Route("success")]
-    public IActionResult Success() =>
-        View();
-
-    [Route("checkout")]
-    public IActionResult Index() =>
-        View();
 
     private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
     {
