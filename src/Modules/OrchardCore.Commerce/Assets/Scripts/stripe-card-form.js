@@ -14,10 +14,10 @@ const card = stripeElements.create('card', {
 const placeOfCard = document.querySelector('#card-payment-form_card');
 
 function handleStripeJsResult(result) {
-    const error = response.error;
+    const error = result.error;
+    // Show error in payment form.
     if (error) {
-        // Show error in payment form.
-        errorContainer.textContent = error;
+        displayError(eventError);
     } else {
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
@@ -37,8 +37,7 @@ function handleStripeJsResult(result) {
 function handleServerResponse(response) {
     const error = response.error;
     if (error) {
-        // Show error in payment form.
-        errorContainer.textContent = error;
+        displayError(error);
     } else if (response.requires_action) {
         // Use Stripe.js to handle required card action (like 3DS authentication).
         stripe.handleCardAction(
@@ -54,7 +53,7 @@ function stripePaymentMethodHandler(result) {
     const error = result.error;
     if (error) {
         // Show error in payment form.
-        errorContainer.textContent = error;
+        displayError(error);
     } else {
         // Otherwise send paymentMethod.id to the server.
         fetch('/pay', {
@@ -80,11 +79,14 @@ function registerElements(elements) {
 
     // Displaying card input error.
     card.on('change', (event) => {
-        if (event.error) {
-            errorContainer.textContent = event.error.message;
+        const eventError = event.error
+        if (eventError) {
+            displayError(eventError);
+            canSubmit = false;
         }
         else {
             errorContainer.textContent = '';
+            canSubmit = true;
         }
     });
 
@@ -101,6 +103,15 @@ function registerElements(elements) {
             },
         }).then(stripePaymentMethodHandler);
     });
+}
+
+function displayError(error) {
+    if (error.hasOwnProperty('message')) {
+        errorContainer.textContent = error.message;
+    }
+    else {
+        errorContainer.textContent = error;
+    }
 }
 
 if (placeOfCard != null) {
