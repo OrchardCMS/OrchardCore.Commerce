@@ -12,7 +12,6 @@
 @inject IPriceSelectionStrategy PriceSelectionStrategy
 @inject ISiteService SiteService
 
-@model CardPaymentViewModel
 @{
     // Shopping cart ID is null by default currently.
     var currentShoppingCart = await ShoppingCartPersistence.RetrieveAsync();
@@ -55,15 +54,15 @@
             </div>
         </div>
         <div class="card-payment-form_containter">
-            <form id="card-payment-form" class="card-payment-form" asp-controller="Payment" asp-action="Index" method="POST">
+            <form id="card-payment-form" class="card-payment-form">
                 <fieldset>
                     <div class="row">
                         <label for="card-payment-form_name">@T["Name"]</label>
                         <input id="card-payment-form_name" type="text" required>
                     </div>
                     <div class="row">
-                        <label asp-for="Email">@T["Email"]</label>
-                        <input asp-for="Email" type="email" required>
+                        <label for="card-payment-form_email">@T["Email"]</label>
+                        <input id="card-payment-form_email" type="email" required>
                     </div>
                     <div class="row">
                         <label for="card-payment-form_phone">@T["Phone"]</label>
@@ -75,7 +74,6 @@
                         <div id="card-payment-form_card"></div>
                     </div>
                 </fieldset>
-                @Html.HiddenFor(model => model.Token, new { id = "hiddenToken" })
                 <div class="pay-button-container">
                     <button type="submit" class="pay-button">@T["Pay"] @defaultTotal</button>
                 </div>

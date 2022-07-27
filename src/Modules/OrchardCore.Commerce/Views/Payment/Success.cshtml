@@ -1,17 +1,12 @@
-@using OrchardCore.Commerce.ViewModels
-
-@model CardPaymentErrorViewModel
-
 <div class="row pt-md-5">
     <div class="col-6 mx-auto">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h4 class="text-danger text-center">@T["Payment failed!"]</h4>
+                <h4 class="text-success text-center">@T["Thank you for your purchase!"]</h4>
             </div>
             <div class="panel-body">
                 <p>
-                    <b>@T["Description:"] </b>@Model.Descripton<br />
-                    <b>@T["Code:"] </b>@Model.Code<br />
+                    <b>@T["The receipt will be sent to your email address!"] </b>
                 </p>
             </div>
         </div>
