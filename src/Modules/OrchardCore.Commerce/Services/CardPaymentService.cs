@@ -103,26 +103,6 @@ public class CardPaymentService : ICardPaymentService
         return paymentIntent;
     }
 
-    public CardPaymentReceiptViewModel ToPaymentReceipt(
-        PaymentIntent paymentIntent,
-        decimal value,
-        StripeException excpetion = null) =>
-        paymentIntent != null
-        ? new CardPaymentReceiptViewModel
-        {
-            Amount = value,
-            Currency = paymentIntent.Currency,
-            Description = paymentIntent.Description,
-            Status = paymentIntent.Status,
-            Created = paymentIntent.Created,
-            Id = paymentIntent.Id,
-            Exception = excpetion,
-        }
-        : new CardPaymentReceiptViewModel
-        {
-            Exception = excpetion,
-        };
-
     public async Task CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();

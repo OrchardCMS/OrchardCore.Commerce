@@ -1,6 +1,8 @@
 // Adding credit card element with Stripe API.
 const stripeElements = stripe.elements();
 const errorContainer = document.querySelector('.error-message');
+const form = document.querySelector('.card-payment-form');
+const submitButton = form.querySelector('button[type="submit"]');
 
 const card = stripeElements.create('card', {
     style: {
@@ -13,11 +15,18 @@ const card = stripeElements.create('card', {
 
 const placeOfCard = document.querySelector('#card-payment-form_card');
 
+if (placeOfCard != null) {
+    card.mount(placeOfCard);
+    registerElements([card]);
+}
+
+const formElements = form.elements;
+
 function handleStripeJsResult(result) {
     const error = result.error;
     // Show error in payment form.
     if (error) {
-        displayError(eventError);
+        displayError(error);
     } else {
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
@@ -36,6 +45,7 @@ function handleStripeJsResult(result) {
 
 function handleServerResponse(response) {
     const error = response.error;
+    // Show error in payment form.
     if (error) {
         displayError(error);
     } else if (response.requires_action) {
@@ -45,14 +55,14 @@ function handleServerResponse(response) {
         ).then(handleStripeJsResult);
     } else {
         // Show success message.
-        console.log("succes");
+        window.location.href = '/success';
     }
 }
 
 function stripePaymentMethodHandler(result) {
     const error = result.error;
+    // Show error in payment form.
     if (error) {
-        // Show error in payment form.
         displayError(error);
     } else {
         // Otherwise send paymentMethod.id to the server.
@@ -75,18 +85,16 @@ function stripePaymentMethodHandler(result) {
 }
 
 function registerElements(elements) {
-    const form = document.querySelector('.card-payment-form');
+
 
     // Displaying card input error.
     card.on('change', (event) => {
         const eventError = event.error
         if (eventError) {
             displayError(eventError);
-            canSubmit = false;
         }
         else {
             errorContainer.textContent = '';
-            canSubmit = true;
         }
     });
 
@@ -94,6 +102,8 @@ function registerElements(elements) {
         // We don't want to let default form submission happen here,
         // which would refresh the page.
         event.preventDefault();
+
+        disableInputs();
 
         stripe.createPaymentMethod({
             type: 'card',
@@ -112,9 +122,21 @@ function displayError(error) {
     else {
         errorContainer.textContent = error;
     }
+
+    // Enable inputs.
+    for (var i = 0, length = formElements.length; i < length; ++i) {
+        formElements[i].readOnly = false;
+    }
+    card.update({ disabled: false });
+
+    submitButton.disabled = false;
 }
 
-if (placeOfCard != null) {
-    card.mount(placeOfCard);
-    registerElements([card]);
+function disableInputs() {
+    for (var i = 0, length = formElements.length; i < length; ++i) {
+        formElements[i].readOnly = true;
+    }
+    card.update({ disabled: true });
+
+    submitButton.disabled = true;
 }

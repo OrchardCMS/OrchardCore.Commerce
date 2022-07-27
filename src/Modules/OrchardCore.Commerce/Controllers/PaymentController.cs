@@ -16,7 +16,7 @@ public class PaymentController : Controller
     [Route("pay")]
     [HttpPost]
     [IgnoreAntiforgeryToken]
-    public async Task<IActionResult> Index([FromBody] ConfirmPaymentRequest request)
+    public async Task<IActionResult> Pay([FromBody] ConfirmPaymentRequest request)
     {
         PaymentIntent paymentIntent;
 
@@ -31,6 +31,14 @@ public class PaymentController : Controller
 
         return await GeneratePaymentResponseAsync(paymentIntent);
     }
+
+    [Route("success")]
+    public IActionResult Success() =>
+        View();
+
+    [Route("checkout")]
+    public IActionResult Index() =>
+        View();
 
     private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
     {
