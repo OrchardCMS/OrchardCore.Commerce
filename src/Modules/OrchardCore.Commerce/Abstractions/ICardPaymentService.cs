@@ -1,5 +1,4 @@
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.ViewModels;
 using Stripe;
 using System.Threading.Tasks;
 
