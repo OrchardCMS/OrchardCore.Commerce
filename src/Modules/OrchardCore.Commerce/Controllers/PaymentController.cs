@@ -56,6 +56,7 @@ public class PaymentController : Controller
         if (paymentIntent.Status == "succeeded")
         {
             // The payment didn’t need any additional actions and completed!
+            // Create the order content item.
             await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
 
             return Json(new { success = true });

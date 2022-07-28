@@ -55,6 +55,14 @@ public class CardPaymentService : ICardPaymentService
         var defaultTotal = totals.FirstOrDefault();
 
         var paymentIntent = new PaymentIntent();
+        var requestOptions =
+            new RequestOptions
+            {
+                ApiKey = (await _siteService.GetSiteSettingsAsync())
+                    .As<StripeApiSettings>()
+                    .SecretKey
+                    .DecryptStripeApiKey(_dataProtectionProvider, _logger),
+            };
 
         if (request.PaymentMethodId != null)
         {
@@ -79,7 +87,7 @@ public class CardPaymentService : ICardPaymentService
                 // ReceiptEmail = viewModel.Email,
             };
 
-            paymentIntent = _paymentIntentService.Create(paymentIntentOptions, await CreateRequestOptionsAsync());
+            paymentIntent = _paymentIntentService.Create(paymentIntentOptions, requestOptions);
         }
 
         if (request.PaymentIntentId != null)
@@ -87,7 +95,7 @@ public class CardPaymentService : ICardPaymentService
             paymentIntent = _paymentIntentService.Confirm(
                 request.PaymentIntentId,
                 new PaymentIntentConfirmOptions(),
-                await CreateRequestOptionsAsync());
+                requestOptions);
         }
 
         return paymentIntent;
@@ -146,13 +154,4 @@ public class CardPaymentService : ICardPaymentService
         // Shopping cart ID is null by default currently.
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
     }
-
-    private async Task<RequestOptions> CreateRequestOptionsAsync() =>
-         new RequestOptions
-         {
-             ApiKey = (await _siteService.GetSiteSettingsAsync())
-            .As<StripeApiSettings>()
-            .SecretKey
-            .DecryptStripeApiKey(_dataProtectionProvider, _logger),
-         };
 }
