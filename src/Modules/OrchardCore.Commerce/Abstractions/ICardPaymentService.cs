@@ -10,7 +10,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface ICardPaymentService
 {
     /// <summary>
-    /// Handles the payment and creates an order after a successful payment based on the current shopping cart content./>.
+    /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
     /// <returns>A new instance of <see cref="ConfirmPaymentRequest"/> for the current payment.</returns>
     Task<PaymentIntent> CreatePaymentAsync(ConfirmPaymentRequest request);
