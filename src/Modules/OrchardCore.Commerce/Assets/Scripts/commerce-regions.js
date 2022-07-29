@@ -14,10 +14,8 @@ function commerceRegionsOnChange(provinceDropDown, regionDropDown) {
     const $province = $(provinceDropDown);
     $province.empty();
     const regionName = $(regionDropDown).val();
-    const region = commerceRegions[regionName];
-    if (region) {
-        $.each(Object.getOwnPropertyNames(region), function () {
-            $province.append($('<option/>').val(this).text(region[this]));
-        });
-    }
+    const region = commerceRegions[regionName] || { '--': "---" };
+    $.each(Object.getOwnPropertyNames(region), function () {
+        $province.append($('<option/>').val(this).text(region[this]));
+    });
 }
