@@ -24,6 +24,7 @@ const formElements = form.elements;
 
 function handleStripeJsResult(result) {
     const error = result.error;
+
     // Show error in payment form.
     if (error) {
         displayError(error);
@@ -46,15 +47,18 @@ function handleStripeJsResult(result) {
 
 function handleServerResponse(response) {
     const error = response.error;
+
     // Show error in payment form.
     if (error) {
         displayError(error);
-    } else if (response.requires_action) {
+    }
+    else if (response.requires_action) {
         // Use Stripe.js to handle required card action (like 3DS authentication).
         stripe.handleCardAction(
             response.payment_intent_client_secret
         ).then(handleStripeJsResult);
-    } else {
+    }
+    else {
         // Show success message.
         window.location.href = '/success';
     }
@@ -62,10 +66,12 @@ function handleServerResponse(response) {
 
 function stripePaymentMethodHandler(result) {
     const error = result.error;
+
     // Show error in payment form.
     if (error) {
         displayError(error);
-    } else {
+    }
+    else {
         // Otherwise send paymentMethod.id to the server.
         fetch('/pay', {
             method: 'POST',
@@ -86,8 +92,6 @@ function stripePaymentMethodHandler(result) {
 }
 
 function registerElements(elements) {
-
-
     // Displaying card input error.
     card.on('change', (event) => {
         const eventError = event.error
@@ -137,6 +141,7 @@ function disableInputs() {
     for (var i = 0, length = formElements.length; i < length; ++i) {
         formElements[i].readOnly = true;
     }
+
     card.update({ disabled: true });
 
     submitButton.disabled = true;
