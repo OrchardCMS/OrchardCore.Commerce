@@ -14,11 +14,11 @@ public class OrderLineItem
     public ISet<IProductAttributeValue> Attributes { get; }
 
     public OrderLineItem(
-    int quantity,
-    string productSku,
-    Amount unitPrice,
-    Amount linePrice,
-    IEnumerable<IProductAttributeValue> attributes = null)
+        int quantity,
+        string productSku,
+        Amount unitPrice,
+        Amount linePrice,
+        IEnumerable<IProductAttributeValue> attributes = null)
     {
         ArgumentNullException.ThrowIfNull(productSku);
         if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));

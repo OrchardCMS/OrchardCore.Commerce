@@ -26,6 +26,13 @@ public class OrderMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
+            .AlterPartDefinition(nameof(OrderPart), builder => builder
+                .Attachable()
+                .WithDescription("Makes a content item into an order."));
+
+        _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
+
+        _contentDefinitionManager
             .AlterTypeDefinition("Order", type => type
                 .Creatable()
                 .Listable()
@@ -42,8 +49,6 @@ public class OrderMigrations : DataMigration
                     })
                 )
                 .WithPart(nameof(OrderPart)));
-
-        _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
 
         _contentDefinitionManager
             .AlterPartDefinition(nameof(OrderPart), part => part
@@ -85,10 +90,7 @@ public class OrderMigrations : DataMigration
         return 2;
     }
 
-    // The Order content type and content part is reworked.
-#pragma warning disable S4144 // Methods should not have identical implementations
     public int UpdateFrom1()
-#pragma warning restore S4144 // Methods should not have identical implementations
     {
         _contentDefinitionManager
             .AlterTypeDefinition("Order", type => type
@@ -107,8 +109,6 @@ public class OrderMigrations : DataMigration
                     })
                 )
                 .WithPart(nameof(OrderPart)));
-
-        _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
 
         _contentDefinitionManager
             .AlterPartDefinition(nameof(OrderPart), part => part

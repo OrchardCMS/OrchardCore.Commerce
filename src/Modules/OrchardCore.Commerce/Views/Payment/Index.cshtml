@@ -1,9 +1,7 @@
 @using Money
 @using OrchardCore.Commerce.Abstractions
-@using OrchardCore.Commerce.Controllers
 @using OrchardCore.Commerce.Extensions
 @using OrchardCore.Commerce.Models
-@using OrchardCore.Commerce.ViewModels
 @using OrchardCore.Entities
 @using OrchardCore.Settings
 
@@ -18,17 +16,17 @@
 
     var cartIsNotEmpty = currentShoppingCart.Count != 0;
 
-    IEnumerable<Amount> totals;
+
     Amount defaultTotal = new();
     string publishableKey = string.Empty;
 
     if (cartIsNotEmpty)
     {
-        totals = await currentShoppingCart.CalculateTotalsAsync(PriceService, PriceSelectionStrategy);
+        var totals = await currentShoppingCart.CalculateTotalsAsync(PriceService, PriceSelectionStrategy);
 
         // We can only pay in one currency at a time. Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies.
-        defaultTotal = totals.FirstOrDefault();
+        defaultTotal = totals.SingleOrDefault();
 
         publishableKey = (await SiteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey;
     }
@@ -75,7 +73,7 @@
                     </div>
                 </fieldset>
                 <div class="pay-button-container">
-                    <button type="submit" class="pay-button">@T["Pay"] @defaultTotal</button>
+                    <button type="submit" class="pay-button">@T["Pay {0}", defaultTotal]</button>
                 </div>
                 <div class="error pt-4" role="alert">
                     <span class="error-message"></span>

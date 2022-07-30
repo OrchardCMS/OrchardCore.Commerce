@@ -9,19 +9,20 @@ public static class StripeApiKeyExtensions
         this string encryptedKey, IDataProtectionProvider dataProtectionProvider, ILogger logger
 )
     {
-        if (!string.IsNullOrWhiteSpace(encryptedKey))
+        if (string.IsNullOrWhiteSpace(encryptedKey))
         {
-            try
-            {
-                var protector = dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
-                return protector.Unprotect(encryptedKey);
-            }
-            catch
-            {
-                logger.LogError("The Stripe secret key could not be decrypted. It may have been encrypted using a different key.");
-            }
+            return null;
         }
 
-        return null;
+        try
+        {
+            var protector = dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
+            return protector.Unprotect(encryptedKey);
+        }
+        catch
+        {
+            logger.LogError("The Stripe secret key could not be decrypted. It may have been encrypted using a different key.");
+            return null;
+        }
     }
 }

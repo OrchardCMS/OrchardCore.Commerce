@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using Stripe;
@@ -9,9 +10,13 @@ namespace OrchardCore.Commerce.Controllers;
 public class PaymentController : Controller
 {
     private readonly ICardPaymentService _cardPaymentService;
+    private readonly IStringLocalizer T;
 
-    public PaymentController(ICardPaymentService cardPaymentService) =>
+    public PaymentController(ICardPaymentService cardPaymentService, IStringLocalizer<PaymentController> stringLocalizer)
+    {
         _cardPaymentService = cardPaymentService;
+        T = stringLocalizer;
+    }
 
     [Route("checkout")]
     public IActionResult Index() =>
@@ -63,6 +68,6 @@ public class PaymentController : Controller
         }
 
         // Invalid status.
-        return StatusCode(500, new { error = "Invalid PaymentIntent status" });
+        return StatusCode(500, new { error = T["Invalid PaymentIntent status"].Value });
     }
 }

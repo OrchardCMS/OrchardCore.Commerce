@@ -11,8 +11,8 @@ public static class Program
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-        .ConfigureLogging(logging => logging.ClearProviders())
-        .ConfigureWebHostDefaults(webBuilder => webBuilder
-            .UseNLogWeb()
-            .UseStartup<Startup>());
+            .ConfigureLogging(logging => logging.ClearProviders())
+            .ConfigureWebHostDefaults(webBuilder => webBuilder
+                .UseNLogWeb()
+                .UseStartup<Startup>());
 }

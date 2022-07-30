@@ -40,22 +40,21 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
         await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        for (var i = 0; i < part.LineItems.Count; i++)
-        {
-            var currentItem = part.LineItems[i];
-            var quantity = viewModel.LineItems[i].Quantity;
+        var lineItems = part.LineItems
+             .Where(lineItem => lineItem != null)
+             .Select((lineItem, index) =>
+             {
+                 var quantity = viewModel.LineItems[index].Quantity;
+                 lineItem.Quantity = quantity;
+                 lineItem.LinePrice = quantity * lineItem.UnitPrice;
 
-            if (quantity <= 0)
-            {
-                part.LineItems.RemoveAt(i);
-            }
-            else
-            {
-                currentItem.Quantity = quantity;
-                currentItem.LinePrice = quantity * currentItem.UnitPrice;
-                part.LineItems[i] = currentItem;
-            }
-        }
+                 return lineItem;
+             })
+             .Where(lineItem => lineItem.Quantity != 0)
+             .ToList();
+
+        part.LineItems.Clear();
+        part.LineItems.AddRange(lineItems);
 
         return await EditAsync(part, context);
     }
@@ -83,16 +82,14 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
         var total = new Amount();
 
-        foreach (var item in lineItems)
+        if (lineItems.Any())
         {
-            model.LineItems.Add(item);
+            total = new Amount(0, lineItems.FirstOrDefault().LinePrice.Currency);
 
-            if (total.Currency.Equals(Currency.UnspecifiedCurrency))
+            foreach (var item in lineItems)
             {
-                total = item.LinePrice;
-            }
-            else
-            {
+                model.LineItems.Add(item);
+
                 total += item.LinePrice;
             }
         }

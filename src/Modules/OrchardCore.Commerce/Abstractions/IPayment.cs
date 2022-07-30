@@ -29,7 +29,7 @@ public interface IPayment
     Amount Amount { get; }
 
     /// <summary>
-    /// Gets the creation date and time of the charge.
+    /// Gets the UTC creation date and time of the charge.
     /// </summary>
-    DateTime Created { get; }
+    DateTime CreatedUtc { get; }
 }

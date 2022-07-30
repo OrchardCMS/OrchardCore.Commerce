@@ -16,5 +16,5 @@ public class CreditCardPayment : IPayment
 
     public Amount Amount { get; set; }
 
-    public DateTime Created { get; set; }
+    public DateTime CreatedUtc { get; set; }
 }

@@ -12,7 +12,7 @@
 </zone>
 
 <section id="shopping-cart">
-    @if (Model.LineItems != null && Model.LineItems.Any())
+    @if (Model.Charges?.Any() == true)
     {
         <div class="container">
             <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
@@ -33,9 +33,9 @@
                                 @foreach (var attribute in item.Attributes.Where(value => value.UntypedValue != null))
                                 {
                                     <shape tag="li"
-                                       Type="@(attribute.GetType().Name)"
-                                       prop-attribute="@(attribute)"
-                                       prop-label="@(attribute.Label)" />
+                                           Type="@(attribute.GetType().Name)"
+                                           prop-attribute="@(attribute)"
+                                           prop-label="@(attribute.Label)"/>
                                 }
                             </ul>
                         }
@@ -97,7 +97,7 @@
                         <span>@T["Created:"]</span>
                     </div>
                     <div class="col-md-6 col-lg-4">
-                        <span>@charge.Created</span>
+                        <span>@charge.CreatedUtc</span>
                     </div>
                 </div>
 

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
@@ -25,7 +27,10 @@ public class CardPaymentService : ICardPaymentService
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<CardPaymentService> _logger;
+    private readonly IStringLocalizer T;
 
+    // We need to use that many this cannot be avoided.
+#pragma warning disable S107 // Methods should not have too many parameters
     public CardPaymentService(
         IShoppingCartPersistence shoppingCartPersistence,
         IPriceService priceService,
@@ -33,7 +38,9 @@ public class CardPaymentService : ICardPaymentService
         IContentManager contentManager,
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
-        ILogger<CardPaymentService> logger)
+        ILogger<CardPaymentService> logger,
+        IStringLocalizer<CardPaymentService> stringLocalizer)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -43,6 +50,7 @@ public class CardPaymentService : ICardPaymentService
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
+        T = stringLocalizer;
     }
 
     public async Task<PaymentIntent> CreatePaymentAsync(ConfirmPaymentRequest request)
@@ -50,15 +58,19 @@ public class CardPaymentService : ICardPaymentService
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
 
+        CheckTotals(totals);
+
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies.
-        var defaultTotal = totals.FirstOrDefault();
+        var defaultTotal = totals.SingleOrDefault();
+
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
         var paymentIntent = new PaymentIntent();
         var requestOptions =
             new RequestOptions
             {
-                ApiKey = (await _siteService.GetSiteSettingsAsync())
+                ApiKey = siteSettings
                     .As<StripeApiSettings>()
                     .SecretKey
                     .DecryptStripeApiKey(_dataProtectionProvider, _logger),
@@ -77,7 +89,7 @@ public class CardPaymentService : ICardPaymentService
                         defaultTotal.ToString().Where(char.IsDigit)),
                     CultureInfo.InvariantCulture),
                 Currency = defaultTotal.Currency.CurrencyIsoCode,
-                Description = "Orchard Commerce Test Stripe Card Payment",
+                Description = T["Payment for {0}", siteSettings.SiteName].Value,
                 ConfirmationMethod = "manual",
                 Confirm = true,
                 PaymentMethod = request.PaymentMethodId,
@@ -87,12 +99,12 @@ public class CardPaymentService : ICardPaymentService
                 // ReceiptEmail = viewModel.Email,
             };
 
-            paymentIntent = _paymentIntentService.Create(paymentIntentOptions, requestOptions);
+            paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, requestOptions);
         }
 
         if (request.PaymentIntentId != null)
         {
-            paymentIntent = _paymentIntentService.Confirm(
+            paymentIntent = await _paymentIntentService.ConfirmAsync(
                 request.PaymentIntentId,
                 new PaymentIntentConfirmOptions(),
                 requestOptions);
@@ -105,7 +117,10 @@ public class CardPaymentService : ICardPaymentService
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
-        var defaultTotal = totals.FirstOrDefault();
+
+        CheckTotals(totals);
+
+        var defaultTotal = totals.SingleOrDefault();
 
         var order = await _contentManager.NewAsync("Order");
         var orderId = Guid.NewGuid();
@@ -132,10 +147,10 @@ public class CardPaymentService : ICardPaymentService
                     ChargeText = paymentIntent.Description,
                     TransactionId = paymentIntent.Id,
                     Amount = defaultTotal,
-                    Created = paymentIntent.Created,
+                    CreatedUtc = paymentIntent.Created,
                 });
 
-            //// Shopping cart
+            // Shopping cart
             orderPart.LineItems.AddRange(lineItems);
 
             var orderPartContent = orderPart.Content;
@@ -153,5 +168,13 @@ public class CardPaymentService : ICardPaymentService
 
         // Shopping cart ID is null by default currently.
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
+    }
+
+    private static void CheckTotals(IEnumerable<Amount> totals)
+    {
+        if (!totals.Any())
+        {
+            throw new InvalidOperationException("Cannot create a payment without shopping cart total(s)!");
+        }
     }
 }
