@@ -10,6 +10,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
+using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -33,7 +34,7 @@ public class OrderMigrations : DataMigration
         _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
 
         _contentDefinitionManager
-            .AlterTypeDefinition("Order", type => type
+            .AlterTypeDefinition(Order, type => type
                 .Creatable()
                 .Listable()
                 .Securable()
@@ -93,7 +94,7 @@ public class OrderMigrations : DataMigration
     public int UpdateFrom1()
     {
         _contentDefinitionManager
-            .AlterTypeDefinition("Order", type => type
+            .AlterTypeDefinition(Order, type => type
                 .Creatable()
                 .Listable()
                 .Securable()
