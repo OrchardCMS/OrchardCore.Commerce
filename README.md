@@ -62,7 +62,7 @@ There are multiple test cards that can simulate any scenario, including error co
 | Visa | 4242424242424242 | Any 3 digits | Any future date | Success |
 | - | 4000000000009995 | Any 3 digits | Any future date | card_declined,	insufficient_funds |
 
-You can also test 3DS authentication with: `4000000000003220`
+You can also test 3DS authentication with: `4000000000003220`.
 
 ## Demo video
 
