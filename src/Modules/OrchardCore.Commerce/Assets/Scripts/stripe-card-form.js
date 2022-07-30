@@ -27,7 +27,8 @@ function handleStripeJsResult(result) {
     // Show error in payment form.
     if (error) {
         displayError(error);
-    } else {
+    }
+    else {
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
         fetch('/pay', {
