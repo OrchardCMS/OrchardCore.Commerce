@@ -129,7 +129,7 @@ function displayError(error) {
     }
 
     // Enable inputs.
-    for (var i = 0, length = formElements.length; i < length; ++i) {
+    for (let i = 0, length = formElements.length; i < length; ++i) {
         formElements[i].readOnly = false;
     }
     card.update({ disabled: false });
