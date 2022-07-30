@@ -138,7 +138,7 @@ function displayError(error) {
 }
 
 function disableInputs() {
-    for (var i = 0, length = formElements.length; i < length; ++i) {
+    for (let i = 0, length = formElements.length; i < length; ++i) {
         formElements[i].readOnly = true;
     }
 
