@@ -43,7 +43,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         for (var i = 0; i < part.LineItems.Count; i++)
         {
             var currentItem = part.LineItems[i];
-
             var quantity = viewModel.LineItems[i].Quantity;
 
             if (quantity <= 0)
