@@ -15,7 +15,7 @@ const card = stripeElements.create('card', {
 
 const placeOfCard = document.querySelector('#card-payment-form_card');
 
-if (placeOfCard != null) {
+if (placeOfCard) {
     card.mount(placeOfCard);
     registerElements([card]);
 }
