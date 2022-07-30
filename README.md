@@ -50,7 +50,7 @@ Stripe API uses a secret-publishable key pair. The following API keys are public
 
 **These are just test keys. Don’t submit any personally identifiable information in requests made with this key.**
 
-The Stripe API key pair can be set inside *Dashboard → Settings → Stripe API*.
+The Stripe API key pair can be set inside _Dashboard → Settings → Stripe API_.
 
 ### Cards
 There are available test cards that can be found in [Stripe's documentation](https://stripe.com/docs/testing).
