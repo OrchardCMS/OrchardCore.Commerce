@@ -104,8 +104,7 @@ function registerElements(elements) {
     });
 
     form.addEventListener('submit', (event) => {
-        // We don't want to let default form submission happen here,
-        // which would refresh the page.
+        // We don't want to let default form submission happen here, which would refresh the page.
         event.preventDefault();
 
         disableInputs();
