@@ -107,7 +107,14 @@ public class PriceTests
         public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
             Task.FromResult(
                 items.Select(item =>
-                    item.WithPrice(
-                        new PrioritizedPrice(0, new Amount(Price, Currency.UsDollar)))));
+                    AddPriceToShoppingCartItem(item)));
+
+        public Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item) =>
+            Task.FromResult(
+                AddPriceToShoppingCartItem(item));
+
+        private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item) =>
+             item.WithPrice(
+                    new PrioritizedPrice(0, new Amount(Price, Currency.UsDollar)));
     }
 }

@@ -20,5 +20,5 @@ public class OrderLineItemViewModel
     public string ProductImageUrl { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
-    public IDictionary<string, IProductAttributeValue> Attributes { get; set; }
+    public ISet<IProductAttributeValue> Attributes { get; set; }
 }

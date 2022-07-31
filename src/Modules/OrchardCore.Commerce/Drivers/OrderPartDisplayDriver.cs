@@ -1,3 +1,4 @@
+using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -6,6 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,21 +27,39 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
-        Initialize<OrderPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModelAsync(viewModel, part))
+        Initialize<OrderPartViewModel>(GetDisplayShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModelAsync(viewModel, part));
+        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
-        await updater.TryUpdateModelAsync(part, Prefix, orderPart => orderPart.LineItems);
+        var viewModel = new OrderPartViewModel();
+
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        var lineItems = part.LineItems
+             .Where(lineItem => lineItem != null)
+             .Select((lineItem, index) =>
+             {
+                 var quantity = viewModel.LineItems[index].Quantity;
+                 lineItem.Quantity = quantity;
+                 lineItem.LinePrice = quantity * lineItem.UnitPrice;
+
+                 return lineItem;
+             })
+             .Where(lineItem => lineItem.Quantity != 0)
+             .ToList();
+
+        part.LineItems.Clear();
+        part.LineItems.AddRange(lineItems);
 
         return await EditAsync(part, context);
     }
 
-    private async ValueTask BuildViewModelAsync(OrderPartViewModel model, OrderPart part)
+    private async ValueTask PopulateViewModelAsync(OrderPartViewModel model, OrderPart part)
     {
         model.ContentItem = part.ContentItem;
         var products = await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
@@ -47,6 +67,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         {
             var product = products[lineItem.ProductSku];
             var metaData = await _contentManager.GetContentItemMetadataAsync(product);
+
             return new OrderLineItemViewModel
             {
                 Quantity = lineItem.Quantity,
@@ -55,10 +76,28 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 UnitPrice = lineItem.UnitPrice,
                 LinePrice = lineItem.LinePrice,
                 ProductRouteValues = metaData.DisplayRouteValues,
-                Attributes = lineItem.Attributes.ToDictionary(attr => attr.Key, attr => attr.Value),
+                Attributes = lineItem.Attributes,
             };
         }));
-        foreach (var item in lineItems) model.LineItems.Add(item);
+
+        var total = new Amount();
+
+        if (lineItems.Any())
+        {
+            total = new Amount(0, lineItems.FirstOrDefault().LinePrice.Currency);
+
+            foreach (var item in lineItems)
+            {
+                model.LineItems.Add(item);
+
+                total += item.LinePrice;
+            }
+        }
+
+        model.Total = total;
+
+        model.Charges.AddRange(part.Charges);
+
         model.OrderPart = part;
     }
 }

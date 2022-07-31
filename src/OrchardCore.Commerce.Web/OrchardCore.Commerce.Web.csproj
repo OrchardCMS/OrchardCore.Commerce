@@ -9,45 +9,11 @@
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="3.4.0" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="3.4.0" />
     <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.Logging.NLog" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="AsyncFixer" Version="1.6.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Meziantou.Analyzer" Version="1.0.708">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.CodeAnalysis.Compilers" Version="4.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.Net.Compilers.Toolset" Version="4.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="SecurityCodeScan.VS2019" Version="5.6.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="SonarAnalyzer.CSharp" Version="8.42.0.51121">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
+  
 </Project>

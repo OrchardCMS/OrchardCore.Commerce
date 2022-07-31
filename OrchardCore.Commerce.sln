@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		README.md = README.md
 		.gitattributes = .gitattributes
+		.github\workflows\pr_ci.yml = .github\workflows\pr_ci.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2D057AA-E3F7-404D-A713-C3C59F9DE562}"

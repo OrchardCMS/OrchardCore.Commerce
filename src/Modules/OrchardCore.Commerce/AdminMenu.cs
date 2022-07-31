@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Navigation;
 using System;
@@ -26,7 +27,11 @@ public class AdminMenu : INavigationProvider
                             groupId = CommerceSettingsDisplayDriver.GroupId,
                         })
                         .Permission(Permissions.ManageCommerceSettings)
-                        .LocalNav())));
+                        .LocalNav())
+                    .Add(T["Stripe API"], T["Stripe API"], stripeApi => stripeApi
+                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = StripeApiSettingsDisplayDriver.GroupId })
+                    .Permission(Permissions.ManageStripeApiSettings)
+                    .LocalNav())));
 
         return Task.CompletedTask;
     }

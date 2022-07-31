@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -25,46 +25,22 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Scripts\" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.3.0" />
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.16" />
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.3.0" />
+    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.3.0" />
+    <PackageReference Include="OrchardCore.Html" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.3.0" />
+    <PackageReference Include="OrchardCore.Navigation.Core" Version="1.3.0" />
+    <PackageReference Include="OrchardCore.Title" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.3.0" />
+    <PackageReference Include="Stripe.net" Version="39.126.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\AddressDataType\AddressDataType.csproj" />
     <ProjectReference Include="..\..\Libraries\MoneyDataType\MoneyDataType.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="AsyncFixer" Version="1.6.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Meziantou.Analyzer" Version="1.0.708">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.CodeAnalysis.Compilers" Version="4.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.Net.Compilers.Toolset" Version="4.2.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="SecurityCodeScan.VS2019" Version="5.6.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="SonarAnalyzer.CSharp" Version="8.42.0.51121">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>

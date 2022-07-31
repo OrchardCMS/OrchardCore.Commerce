@@ -1,55 +1,47 @@
 @model OrderPartViewModel
 
-<zone name="Header">
-    <header class="masthead">
-        <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in"></div>
-                <div class="intro-heading text-uppercase">@T["Order items"]</div>
-            </div>
-        </div>
-    </header>
-</zone>
 <section id="shopping-cart">
-    @if (Model.LineItems != null && Model.LineItems.Any())
+    @if (Model.Charges?.Any() == true)
     {
         <div class="container">
-            <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
-                <div class="col-xs-12 col-sm-1">@T["Quantity"]</div>
-                <div class="col-xs-12 col-sm-9">@T["Product"]</div>
-                <div class="col-xs-12 col-sm-1">@T["Price"]</div>
-            </div>
-            @foreach (var item in Model.LineItems)
-            {
-                <div class="row border-bottom mt-3 pb-2">
-                    <div class="col-xs-12 col-sm-1">@item.Quantity@T[" × "]</div>
-                    <div class="col-xs-12 col-sm-9">
-                        <a href="@Url.RouteUrl(item.ProductRouteValues)">@item.ProductName</a>
-                        @if (item.Attributes != null)
-                        {
-                            <ul class="cart-product-attributes list-inline">
-                                @foreach (var attribute in item.Attributes.Values.Where(value => value.UntypedValue != null))
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">@T["Quantity"]</th>
+                        <th scope="col">@T["Product"]</th>
+                        <th scope="col">@T["Attributes"]</th>
+                        <th scope="col">@T["Price"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.LineItems)
+                    {
+                        <tr>
+                            <td>@item.Quantity@T[" × "]</td>
+                            <td><a href="@Url.RouteUrl(item.ProductRouteValues)">@item.ProductName</a></td>
+                            <td>
+                                @if (item.Attributes != null)
                                 {
-                                    <shape tag="li"
-                                           Type="@(attribute.GetType().Name)"
-                                           prop-attribute="@(attribute)"
-                                           prop-label="@(attribute.Label)" />
+                                    <ul class="cart-product-attributes list-inline">
+                                        @foreach (var attribute in item.Attributes.Where(value => value.UntypedValue != null))
+                                        {
+                                            <shape tag="li"
+                                                   Type="@(attribute.GetType().Name)"
+                                                   prop-attribute="@(attribute)"
+                                                   prop-label="@(attribute.Label)" />
+                                        }
+                                    </ul>
                                 }
-                            </ul>
-                        }
-                    </div>
-                    <div class="col-xs-12 col-sm-1">@item.UnitPrice</div>
-                </div>
-            }
+                            </td>
+                            <td>@item.UnitPrice</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
             <div class="row mt-3 mb-3 pb-2">
                 <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
                 <div class="col-xs-12 col-sm-1">
                     <div>@Model.Total</div>
-                </div>
-                <div class="col-xs-12 col-sm-1">
-                    <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
-                        <button type="submit" class="btn btn-primary">@T["Update"]</button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -59,3 +51,40 @@
         <p>@T["This order is empty."]</p>
     }
 </section>
+<div class="form-group">
+    <div class="panel-heading">
+        <label>@T["Charges"]</label>
+    </div>
+    @if (Model.Charges?.Any() == true)
+    {
+        @foreach (var charge in Model.Charges)
+        {
+            <table class="table">
+                <tr>
+                    <th>@T["Kind:"]</th>
+                    <td>@charge.Kind</td>
+                </tr>
+                <tr>
+                    <th>@T["Amount:"]</th>
+                    <td>@charge.Amount</td>
+                </tr>
+                <tr>
+                    <th>@T["Transaction Id:"]</th>
+                    <td>@charge.TransactionId</td>
+                </tr>
+                <tr>
+                    <th>@T["Created:"]</th>
+                    <td>@charge.CreatedUtc</td>
+                </tr>
+                <tr>
+                    <th>@T["Charge Text:"]</th>
+                    <td>@charge.ChargeText</td>
+                </tr>
+            </table>
+        }
+    }
+    else
+    {
+        <p>@T["There are no charges stored in this order."]</p>
+    }
+</div>
