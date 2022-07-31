@@ -10,7 +10,7 @@ node_modules/
 .pnpm-debug.log
 *.sln
 *.po
-/SampleWebApp/App_Data/
-/SampleWebApp/wwwroot/is-cache/
+/OrchardCore.Commerce.Web/App_Data/
+/OrchardCore.Commerce.Web/wwwroot/is-cache/
 *.placeholder
 /.editorconfig
