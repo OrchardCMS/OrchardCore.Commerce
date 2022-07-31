@@ -15,6 +15,8 @@ const card = stripeElements.create('card', {
 
 const placeOfCard = document.querySelector('#card-payment-form_card');
 
+const fetchErrorText = 'There was an error during fetching!';
+
 if (placeOfCard) {
     card.mount(placeOfCard);
     registerElements([card]);
@@ -32,12 +34,13 @@ function handleStripeJsResult(result) {
     else {
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
-        fetchPay(JSON.stringify({
-            payment_intent_id: result.paymentIntent.id
-        }))
+        fetchPay(JSON.stringify({ payment_intent_id: result.paymentIntent.id }))
             .then(confirmResult =>
-                confirmResult.json()
-            ).then(handleServerResponse);
+                confirmResult.json())
+            .then(handleServerResponse)
+            .catch((error) => {
+                console.log(fetchErrorText, error)
+            });;
     }
 }
 
@@ -69,14 +72,16 @@ function stripePaymentMethodHandler(result) {
     }
     else {
         // Otherwise send paymentMethod.id to the server.
-        fetchPay(JSON.stringify({
-            payment_method_id: result.paymentMethod.id
-        }))
+        fetchPay(JSON.stringify({ payment_method_id: result.paymentMethod.id }))
             .then(function (result) {
                 // Handle server response.
-                result.json().then(function (json) {
-                    handleServerResponse(json);
-                })
+                result.json()
+                    .then(function (json) {
+                        handleServerResponse(json);
+                    })
+                    .catch((error) => {
+                        console.log(fetchErrorText, error)
+                    });
             });
     }
 }
@@ -146,3 +151,4 @@ function fetchPay(fetchBody) {
         body: fetchBody
     })
 }
+
