@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Money;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
@@ -11,7 +12,6 @@ using OrchardCore.Settings;
 using Stripe;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -76,18 +76,33 @@ public class CardPaymentService : ICardPaymentService
                     .DecryptStripeApiKey(_dataProtectionProvider, _logger),
             };
 
+        var defaultTotalValue = defaultTotal.Value;
+        long amountForPayment;
+        var currencyType = defaultTotal.Currency.CurrencyIsoCode;
+
+        // If I convert it to conditional expression, it will warn me to extract it again.
+#pragma warning disable IDE0045 // Convert to conditional expression
+        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(currencyType))
+        {
+            amountForPayment = (long)Math.Round(defaultTotalValue);
+        }
+        else if (CurrencyCollectionConstants.SpecialCases.Contains(currencyType))
+        {
+            amountForPayment = (long)Math.Round(defaultTotalValue / 100m) * 10000;
+        }
+        else
+        {
+            amountForPayment = (long)Math.Round(defaultTotalValue * 100);
+        }
+#pragma warning restore IDE0045 // Convert to conditional expression
+
         if (request.PaymentMethodId != null)
         {
             var paymentIntentOptions = new PaymentIntentCreateOptions
             {
                 // We need to remove the decimal points and convert the value (decimal) to long.
                 // https://stripe.com/docs/currencies#zero-decimal
-                Amount = long
-                .Parse(
-                    string.Join(
-                        string.Empty,
-                        defaultTotal.ToString().Where(char.IsDigit)),
-                    CultureInfo.InvariantCulture),
+                Amount = amountForPayment,
                 Currency = defaultTotal.Currency.CurrencyIsoCode,
                 Description = T["Payment for {0}", siteSettings.SiteName].Value,
                 ConfirmationMethod = "manual",
