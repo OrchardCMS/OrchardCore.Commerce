@@ -1,5 +1,5 @@
 name: PR - CI
-on: 
+on:
   pull_request:
     branches: [ main ]
 env:
@@ -24,7 +24,7 @@ jobs:
         git submodule init && git submodule update
     - name: Static Code Analysis
       run: |
-        dotnet build OrchardCore.Commerce.sln --no-incremental -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzersDuringBuild=true -nologo -consoleLoggerParameters:NoSummary -verbosity:quiet
+        dotnet build OrchardCore.Commerce.sln --no-incremental -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzersDuringBuild=true -nologo
     - name: Build
       run: |
         dotnet build --configuration Release
@@ -40,4 +40,4 @@ jobs:
         name: ui-test-failure
         path: |
           test/OrchardCore.Tests.UI/bin/Debug/*/FailureDumps
-  
+
