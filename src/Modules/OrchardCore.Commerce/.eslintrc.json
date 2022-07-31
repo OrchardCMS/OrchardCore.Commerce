@@ -4,8 +4,6 @@
 
   "extends": "./node_modules/nodejs-extensions/config/.eslintrc.lombiq-base.js",
 
-  "ignorePatterns": [ "**/*.js" ],
-
   // Add custom rules and overrides here.
   "rules": {
   }
