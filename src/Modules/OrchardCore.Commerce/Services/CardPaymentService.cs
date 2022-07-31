@@ -110,7 +110,7 @@ public class CardPaymentService : ICardPaymentService
                 PaymentMethod = request.PaymentMethodId,
 
                 // If shipping is implemented, it needs to be added here too.
-                // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/131
+                // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
                 // Shipping =
                 // ReceiptEmail = viewModel.Email,
             };
@@ -144,7 +144,7 @@ public class CardPaymentService : ICardPaymentService
         order.DisplayText = "Order " + orderId;
 
         // To-do when other parts of the checkout is implemented (notes).
-        // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/131
+        // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
         // order.Alter<HtmlBodyPart>(htmlBodyPart => htmlBodyPart.
 
         IList<OrderLineItem> lineItems = new List<OrderLineItem>();
@@ -174,7 +174,7 @@ public class CardPaymentService : ICardPaymentService
 
             orderPartContent.OrderId.Text = orderId;
 
-            // To-do when shipping is implemented. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/131
+            // To-do when shipping is implemented. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
             // oderPartContent.BillingAddress
             // oderPartContent.ShippingAddress
         });

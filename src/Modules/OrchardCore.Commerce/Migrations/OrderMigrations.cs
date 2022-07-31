@@ -1,4 +1,3 @@
-using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
@@ -6,11 +5,13 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Data.Migration;
 using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
 using static OrchardCore.Commerce.Constants.ContentTypes;
+using static OrchardCore.Commerce.Constants.OrderMigrationConstants;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -59,22 +60,22 @@ public class OrderMigrations : DataMigration
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField(OrderMigrationConstants.Status, field => field
+                .WithField(Status, field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName(OrderMigrationConstants.Status)
+                    .WithDisplayName(Status)
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
                         Options = new List<ListValueOption>
                         {
-                            new ListValueOption { Name = "Ordered", Value = OrderMigrationConstants.Ordered },
-                            new ListValueOption { Name = "Shipped", Value = "shipped" },
-                            new ListValueOption { Name = "Arrived", Value = "arrived" },
+                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
+                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
+                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
                         }
                         .ToArray(),
 
-                        DefaultValue = OrderMigrationConstants.Ordered,
+                        DefaultValue = Ordered.HtmlClassify(),
 
                         Editor = EditorOption.Radio,
                     }))
@@ -119,22 +120,22 @@ public class OrderMigrations : DataMigration
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField(OrderMigrationConstants.Status, field => field
+                .WithField(Status, field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName(OrderMigrationConstants.Status)
+                    .WithDisplayName(Status)
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
                         Options = new List<ListValueOption>
                         {
-                            new ListValueOption { Name = "Ordered", Value = OrderMigrationConstants.Ordered },
-                            new ListValueOption { Name = "Shipped", Value = "shipped" },
-                            new ListValueOption { Name = "Arrived", Value = "arrived" },
+                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
+                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
+                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
                         }
                         .ToArray(),
 
-                        DefaultValue = OrderMigrationConstants.Ordered,
+                        DefaultValue = Ordered.HtmlClassify(),
 
                         Editor = EditorOption.Radio,
                     }))

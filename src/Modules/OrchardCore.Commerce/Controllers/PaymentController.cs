@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
@@ -68,6 +69,6 @@ public class PaymentController : Controller
         }
 
         // Invalid status.
-        return StatusCode(500, new { error = T["Invalid PaymentIntent status"].Value });
+        return StatusCode(StatusCodes.Status500InternalServerError, new { error = T["Invalid PaymentIntent status"].Value });
     }
 }

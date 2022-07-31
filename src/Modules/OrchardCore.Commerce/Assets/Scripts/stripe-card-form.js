@@ -93,9 +93,9 @@ function handleStripeJsResult(result) {
         fetchPay(JSON.stringify({ payment_intent_id: result.paymentIntent.id }))
             .then((confirmResult) => confirmResult.json())
             .then(handleServerResponse)
-            .catch((fetchPayError) => {
-                displayError(fetchErrorText + ' ' + fetchPayError);
-            });
+            .catch((fetchPayError) =>
+                displayError(fetchErrorText + ' ' + fetchPayError)
+            );
     }
 }
 
@@ -115,9 +115,9 @@ function stripePaymentMethodHandler(result) {
                     .then((json) => {
                         handleServerResponse(json);
                     })
-                    .catch((fetchPayError) => {
-                        displayError(fetchErrorText + ' ' + fetchPayError);
-                    });
+                    .catch((fetchPayError) =>
+                        displayError(fetchErrorText + ' ' + fetchPayError)
+                    );
             });
     }
 }
