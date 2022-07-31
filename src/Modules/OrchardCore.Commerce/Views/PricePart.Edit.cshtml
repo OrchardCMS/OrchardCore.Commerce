@@ -5,7 +5,8 @@
         <div class="input-group">
             <input asp-for="PriceValue" class="form-control text-muted" />
             <div class="input-group-append">
-                <select asp-for="PriceCurrency" class="form-select"
+                <select asp-for="PriceCurrency"
+                        class="form-select"
                         asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
             </div>
         </div>
