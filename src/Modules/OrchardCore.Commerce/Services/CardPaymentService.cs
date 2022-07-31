@@ -61,7 +61,7 @@ public class CardPaymentService : ICardPaymentService
         CheckTotals(totals);
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
-        // totals i.e., multiple currencies.
+        // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         var defaultTotal = totals.SingleOrDefault();
 
         var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -82,6 +82,8 @@ public class CardPaymentService : ICardPaymentService
 
         // If I convert it to conditional expression, it will warn me to extract it again.
 #pragma warning disable IDE0045 // Convert to conditional expression
+        // We need to convert the value (decimal) to long.
+        // https://stripe.com/docs/currencies#zero-decimal
         if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(currencyType))
         {
             amountForPayment = (long)Math.Round(defaultTotalValue);
@@ -100,8 +102,6 @@ public class CardPaymentService : ICardPaymentService
         {
             var paymentIntentOptions = new PaymentIntentCreateOptions
             {
-                // We need to remove the decimal points and convert the value (decimal) to long.
-                // https://stripe.com/docs/currencies#zero-decimal
                 Amount = amountForPayment,
                 Currency = defaultTotal.Currency.CurrencyIsoCode,
                 Description = T["Payment for {0}", siteSettings.SiteName].Value,
@@ -110,6 +110,7 @@ public class CardPaymentService : ICardPaymentService
                 PaymentMethod = request.PaymentMethodId,
 
                 // If shipping is implemented, it needs to be added here too.
+                // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/131
                 // Shipping =
                 // ReceiptEmail = viewModel.Email,
             };
@@ -143,6 +144,7 @@ public class CardPaymentService : ICardPaymentService
         order.DisplayText = "Order " + orderId;
 
         // To-do when other parts of the checkout is implemented (notes).
+        // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/131
         // order.Alter<HtmlBodyPart>(htmlBodyPart => htmlBodyPart.
 
         IList<OrderLineItem> lineItems = new List<OrderLineItem>();
@@ -172,7 +174,7 @@ public class CardPaymentService : ICardPaymentService
 
             orderPartContent.OrderId.Text = orderId;
 
-            // To-do when shipping is implemented
+            // To-do when shipping is implemented. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/131
             // oderPartContent.BillingAddress
             // oderPartContent.ShippingAddress
         });

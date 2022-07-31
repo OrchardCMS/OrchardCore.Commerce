@@ -25,7 +25,7 @@
         var totals = await currentShoppingCart.CalculateTotalsAsync(PriceService, PriceSelectionStrategy);
 
         // We can only pay in one currency at a time. Later we have to figure out what to do if there are multiple
-        // totals i.e., multiple currencies.
+        // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         defaultTotal = totals.SingleOrDefault();
 
         publishableKey = (await SiteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey;
