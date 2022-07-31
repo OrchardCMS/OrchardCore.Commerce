@@ -32,16 +32,12 @@ function handleStripeJsResult(result) {
     else {
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
-        fetch('/pay', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ payment_intent_id: result.paymentIntent.id })
-        }).then(confirmResult =>
-            confirmResult.json()
-        ).then(handleServerResponse);
+        fetchPay(JSON.stringify({
+            payment_intent_id: result.paymentIntent.id
+        }))
+            .then(confirmResult =>
+                confirmResult.json()
+            ).then(handleServerResponse);
     }
 }
 
@@ -73,21 +69,15 @@ function stripePaymentMethodHandler(result) {
     }
     else {
         // Otherwise send paymentMethod.id to the server.
-        fetch('/pay', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                payment_method_id: result.paymentMethod.id,
-            })
-        }).then(function (result) {
-            // Handle server response.
-            result.json().then(function (json) {
-                handleServerResponse(json);
-            })
-        });
+        fetchPay(JSON.stringify({
+            payment_method_id: result.paymentMethod.id
+        }))
+            .then(function (result) {
+                // Handle server response.
+                result.json().then(function (json) {
+                    handleServerResponse(json);
+                })
+            });
     }
 }
 
@@ -144,4 +134,15 @@ function disableInputs() {
     card.update({ disabled: true });
 
     submitButton.disabled = true;
+}
+
+function fetchPay(fetchBody) {
+    return fetch('/pay', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: fetchBody
+    })
 }
