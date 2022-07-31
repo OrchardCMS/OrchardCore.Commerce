@@ -25,4 +25,15 @@ public class PriceService : IPriceService
 
         return items;
     }
+
+    public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
+    {
+        foreach (var priceProvider in _providers.OrderBy(provider => provider.Order))
+        {
+            var result = await priceProvider.AddPriceAsync(item);
+            item = result;
+        }
+
+        return item;
+    }
 }

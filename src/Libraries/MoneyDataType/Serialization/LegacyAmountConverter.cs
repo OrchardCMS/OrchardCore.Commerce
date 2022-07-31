@@ -75,7 +75,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
     {
         if (amount.Currency is null)
         {
-            throw new InvalidOperationException("Amount must have a currency applied to allow serialization.");
+            return;
         }
 
         writer.WriteStartObject();

@@ -91,9 +91,6 @@ public class Startup : StartupBase
         services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
 
         // Orders
-        services.AddScoped<IDataMigration, OrderMigrations>();
-        services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
-
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
 
@@ -101,14 +98,22 @@ public class Startup : StartupBase
             .UseDisplayDriver<AddressFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, AddressFieldSettingsDriver>();
 
+        services.AddScoped<IDataMigration, OrderMigrations>();
+        services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
+
         // Settings
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
+        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
+
+        // Card Payment
+        services.AddScoped<ICardPaymentService, CardPaymentService>();
     }
 }
 

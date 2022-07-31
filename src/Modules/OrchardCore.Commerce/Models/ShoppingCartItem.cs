@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Models;
 
@@ -90,4 +91,21 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
     public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
+
+    public async Task<OrderLineItem> CreateOrderLineFromShoppingCartItemAsync(
+    IPriceSelectionStrategy priceSelectionStrategy,
+    IPriceService priceService)
+    {
+        var quantity = Quantity;
+
+        var item = await priceService.AddPriceAsync(this);
+        var price = priceSelectionStrategy.SelectPrice(item.Prices);
+
+        return new OrderLineItem(
+            quantity,
+            ProductSku,
+            price,
+            quantity * price,
+            Attributes);
+    }
 }

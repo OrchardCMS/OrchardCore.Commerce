@@ -32,17 +32,36 @@ public class PriceProvider : IPriceProvider
         return items
             .Select(item =>
             {
-                if (skuProducts.TryGetValue(item.ProductSku, out var product))
+                if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
                 {
-                    var newPrices = product
-                        .ContentItem
-                        .OfType<PricePart>()
-                        .Where(pricePart => pricePart.Price.Currency.Equals(_moneyService.CurrentDisplayCurrency))
-                        .Select(pricePart => new PrioritizedPrice(0, pricePart.Price));
-                    return item.WithPrices(newPrices);
+                    return AddPriceToShoppingCartItem(item, productPart);
                 }
 
                 return item;
             });
+    }
+
+    public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
+    {
+        var sku = item.ProductSku;
+        var productPart = await _productService.GetProductAsync(sku);
+        var productPartSku = productPart.Sku;
+
+        if (productPartSku == sku)
+        {
+            return AddPriceToShoppingCartItem(item, productPart);
+        }
+
+        return item;
+    }
+
+    private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
+    {
+        var newPrices = productPart
+            .ContentItem
+            .OfType<PricePart>()
+            .Where(pricePart => pricePart.Price.Currency.Equals(_moneyService.CurrentDisplayCurrency))
+            .Select(pricePart => new PrioritizedPrice(0, pricePart.Price));
+        return item.WithPrices(newPrices);
     }
 }

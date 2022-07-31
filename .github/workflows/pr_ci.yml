@@ -1,5 +1,5 @@
 name: PR - CI
-on: 
+on:
   pull_request:
     branches: [ main ]
 env:
@@ -40,4 +40,4 @@ jobs:
         name: ui-test-failure
         path: |
           test/OrchardCore.Tests.UI/bin/Debug/*/FailureDumps
-  
+
