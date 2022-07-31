@@ -5,7 +5,8 @@
 
     <div class="input-group">
         <div class="input-group-append">
-            <select asp-for="CurrencySelectionMode" class="form-select"
+            <select asp-for="CurrencySelectionMode"
+                    class="form-select"
                     asp-items="@(new SelectList(Model.CurrencySelectionModes, "Text", "Value"))"></select>
         </div>
     </div>
