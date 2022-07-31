@@ -57,7 +57,7 @@ There are available test cards that can be found in [Stripe's documentation](htt
 
 There are multiple test cards that can simulate any scenario, including error codes. Here are two examples:
 
-| Brand |      Number	   |      CVC     |       Date      |     Result                        |
+| Brand |      Number	     |      CVC     |       Date      |     Result                        |
 | ----- | ---------------- | ------------ | --------------- | --------------------------------- |
 | Visa  | 4242424242424242 | Any 3 digits | Any future date | Success                           |
 | Visa  | 4000000000009995 | Any 3 digits | Any future date | card_declined, insufficient_funds |
