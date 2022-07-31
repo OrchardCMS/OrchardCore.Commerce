@@ -15,7 +15,8 @@
     <fieldset class="input-group" id="@Html.IdFor(model => model.SpecificCurrencyIsoCode)-Group">
         <div class="input-group">
             <div class="input-group-append">
-                <select asp-for="SpecificCurrencyIsoCode" class="form-select"
+                <select asp-for="SpecificCurrencyIsoCode"
+                        class="form-select"
                         asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
             </div>
         </div>
