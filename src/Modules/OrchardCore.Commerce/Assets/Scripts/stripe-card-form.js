@@ -1,6 +1,6 @@
 // 'stripe' is not defined
 // It is in the view and we have to pass an API key to it there.
-// eslint-disable-next-line
+/* global stripe */
 const stripeElements = stripe.elements();
 const errorContainer = document.querySelector('.error-message');
 const form = document.querySelector('.card-payment-form');
@@ -21,9 +21,7 @@ const placeOfCard = document.querySelector('#card-payment-form_card');
 const fetchErrorText = 'There was an error during fetching!';
 
 function disableInputs() {
-    for (let i = 0, length = formElements.length; i < length; ++i) {
-        formElements[i].readOnly = true;
-    }
+    formElements.forEach((element) => { element.readOnly = true; });
 
     card.update({ disabled: true });
 
@@ -39,9 +37,8 @@ function displayError(error) {
     }
 
     // Enable inputs.
-    for (let i = 0, length = formElements.length; i < length; ++i) {
-        formElements[i].readOnly = false;
-    }
+    formElements.forEach((element) => { element.readOnly = false; });
+
     card.update({ disabled: false });
 
     submitButton.disabled = false;
@@ -67,7 +64,6 @@ function handleServerResponse(response) {
     }
     else if (response.requires_action) {
         // Use Stripe.js to handle required card action (like 3DS authentication).
-        // eslint-disable-next-line
         stripe.handleCardAction(response.payment_intent_client_secret)
             // 'handleStripeJsResult' was used before it was defined.
             // Since handleServerResponse and handleStripeJsResult are used by each other, one has to be the second.
@@ -93,8 +89,7 @@ function handleStripeJsResult(result) {
         fetchPay(JSON.stringify({ payment_intent_id: result.paymentIntent.id }))
             .then((confirmResult) => confirmResult.json())
             .then(handleServerResponse)
-            .catch((fetchPayError) =>
-                displayError(fetchErrorText + ' ' + fetchPayError)
+            .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
             );
     }
 }
@@ -115,8 +110,7 @@ function stripePaymentMethodHandler(result) {
                     .then((json) => {
                         handleServerResponse(json);
                     })
-                    .catch((fetchPayError) =>
-                        displayError(fetchErrorText + ' ' + fetchPayError)
+                    .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
                     );
             });
     }
@@ -140,7 +134,6 @@ function registerElements() {
 
         disableInputs();
 
-        // eslint-disable-next-line
         stripe.createPaymentMethod({
             type: 'card',
             card: card,

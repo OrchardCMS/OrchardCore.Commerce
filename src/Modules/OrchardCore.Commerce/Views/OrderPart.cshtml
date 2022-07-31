@@ -1,16 +1,5 @@
 @model OrderPartViewModel
 
-<zone name="Header">
-    <header class="masthead">
-        <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in"></div>
-                <div class="intro-heading text-uppercase">@T["Order items"]</div>
-            </div>
-        </div>
-    </header>
-</zone>
-
 <section id="shopping-cart">
     @if (Model.Charges?.Any() == true)
     {
