@@ -1,11 +1,12 @@
 @model PricePartViewModel
 
-    <div class="form-group" asp-validation-class-for="Price">
+    <div class="mb-3" asp-validation-class-for="Price">
         <label asp-for="Price">@T["Price"] </label>
         <div class="input-group">
             <input asp-for="PriceValue" class="form-control text-muted" />
             <div class="input-group-append">
                 <select asp-for="PriceCurrency"
+                        class="form-select"
                         asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
             </div>
         </div>

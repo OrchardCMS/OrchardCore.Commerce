@@ -1,11 +1,12 @@
 @model PricePartSettingsViewModel
 
-<fieldset class="form-group" asp-validation-class-for="PricePartSettings">
+<fieldset class="mb-3" asp-validation-class-for="PricePartSettings">
     <label asp-for="CurrencySelectionMode">@T["Currency selection mode"]</label>
 
     <div class="input-group">
         <div class="input-group-append">
             <select asp-for="CurrencySelectionMode"
+                    class="form-select"
                     asp-items="@(new SelectList(Model.CurrencySelectionModes, "Text", "Value"))"></select>
         </div>
     </div>
@@ -16,6 +17,7 @@
         <div class="input-group">
             <div class="input-group-append">
                 <select asp-for="SpecificCurrencyIsoCode"
+                        class="form-select"
                         asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
             </div>
         </div>

@@ -6,12 +6,13 @@
     @foreach (var variantKey in Model.VariantsValues.Keys)
     {
         <div class="col-md-3">
-            <div class="form-group" asp-validation-class-for="VariantsValues[variantKey]">
+            <div class="mb-3" asp-validation-class-for="VariantsValues[variantKey]">
                 <label asp-for="VariantsValues[variantKey]">@variantKey @T["Price"] </label>
                 <div class="input-group">
                     <input asp-for="VariantsValues[variantKey]" class="form-control text-muted variant-price-value" />
                     <div class="input-group-append">
                         <select asp-for="VariantsCurrencies[variantKey]"
+                                class="form-select"
                                 asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
                     </div>
                 </div>

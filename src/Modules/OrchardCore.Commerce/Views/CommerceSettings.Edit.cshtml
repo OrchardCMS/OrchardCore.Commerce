@@ -2,12 +2,12 @@
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
-<fieldset class="form-group" asp-validation-class-for="Currency">
+<fieldset class="mb-3" asp-validation-class-for="Currency">
     <label asp-for="DefaultCurrency">@T["Default currency"]</label>
 
     <div class="input-group">
         <div class="input-group-append">
-            <select asp-for="DefaultCurrency"
+            <select asp-for="DefaultCurrency" class="form-select"
                     asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
         </div>
     </div>
@@ -20,7 +20,7 @@
 
     <div class="input-group">
         <div class="input-group-append">
-            <select asp-for="CurrentDisplayCurrency"
+            <select asp-for="CurrentDisplayCurrency" class="form-select"
                     asp-items="@(new SelectList(Model.Currencies, "Text", "Value"))"></select>
         </div>
     </div>

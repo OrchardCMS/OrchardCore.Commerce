@@ -6,14 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="3.0.0" />
-    <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="3.0.0" />
-    <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.3.0" />
-    <PackageReference Include="OrchardCore.Logging.NLog" Version="1.3.0" />
+    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="3.4.0" />
+    <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="3.4.0" />
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.Logging.NLog" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
-
+  
 </Project>
