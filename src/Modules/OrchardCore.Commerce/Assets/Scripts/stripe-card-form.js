@@ -5,7 +5,7 @@ const stripeElements = stripe.elements();
 const errorContainer = document.querySelector('.error-message');
 const form = document.querySelector('.card-payment-form');
 const submitButton = form.querySelector('button[type="submit"]');
-let formElements = form.elements;
+let formElements = Array.from(form.elements);
 
 const card = stripeElements.create('card', {
     style: {
@@ -148,6 +148,6 @@ if (placeOfCard) {
     card.mount(placeOfCard);
 
     // Refreshing form elements with the card input.
-    formElements = form.elements;
+    formElements = Array.from(form.elements);
     registerElements([card]);
 }
