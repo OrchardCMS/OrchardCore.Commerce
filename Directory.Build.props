@@ -1,4 +1,10 @@
 <Project>
+  <!-- Uncomment this to run static code analysis on build.
+  <PropertyGroup>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+  </PropertyGroup>
+  -->
+
   <ItemGroup>
     <PackageReference Include="Lombiq.Analyzers" Version="2.1.1-osoe-110.14" />
   </ItemGroup>
