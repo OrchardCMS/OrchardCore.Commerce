@@ -11,10 +11,12 @@ public class Startup
 
     public Startup(IConfiguration configuration) => _configuration = configuration;
 
-    public void ConfigureServices(IServiceCollection services) =>
+    public void ConfigureServices(IServiceCollection services)
+    {
         services.AddOrchardCms(builder => builder
             .ConfigureUITesting(_configuration, enableShortcutsDuringUITesting: true)
             .AddSetupFeatures("OrchardCore.AutoSetup"));
+    }
 
     public void Configure(IApplicationBuilder app, IHostEnvironment env)
     {
