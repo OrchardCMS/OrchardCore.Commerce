@@ -1,3 +1,5 @@
 <Project>
-  <Import Project="tools/Lombiq.Analyzers/Build.props" />
+  <ItemGroup>
+    <PackageReference Include="Lombiq.Analyzers" Version="2.1.1-osoe-110.14" />
+  </ItemGroup>
 </Project>
