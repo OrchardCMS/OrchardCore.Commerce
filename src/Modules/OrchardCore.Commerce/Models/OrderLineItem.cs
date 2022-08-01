@@ -30,5 +30,5 @@ public class OrderLineItem
         Attributes = attributes is null
             ? new HashSet<IProductAttributeValue>()
             : new HashSet<IProductAttributeValue>(attributes);
-        }
+    }
 }
