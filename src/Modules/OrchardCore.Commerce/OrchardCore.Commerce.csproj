@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Scripts\" />
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.5.0" />
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.16" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.4.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.4.0" />
@@ -32,6 +31,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\AddressDataType\AddressDataType.csproj" />
     <ProjectReference Include="..\..\Libraries\MoneyDataType\MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(NuGetBuild)' != 'true'">
+    <ProjectReference Include="..\..\..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(NuGetBuild)' == 'true'">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.5.0" />
   </ItemGroup>
 
 </Project>
