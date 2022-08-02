@@ -1,3 +1,6 @@
 <Project>
+  <PropertyGroup>
+	<NuGetBuild>true</NuGetBuild>
+  </PropertyGroup>
   <Import Project="tools/Lombiq.Analyzers/Build.props" />
 </Project>
