@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Settings;
 public class CommerceSettings
 {
     /// <summary>
-    /// Gets or sets the default currency ISO code.
+    /// Gets or sets the default currency ISO code. Their initial value is "USD".
     /// </summary>
     public string DefaultCurrency { get; set; } = Currency.UsDollar.CurrencyIsoCode;
 
