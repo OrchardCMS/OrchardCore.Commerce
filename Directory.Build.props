@@ -1,6 +1,3 @@
 <Project>
-  <PropertyGroup>
-    <LombiqHelpfulLibrariesPath>$(MSBuildThisFileDirectory)\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
-  </PropertyGroup>
   <Import Project="tools/Lombiq.Analyzers/Build.props" />
 </Project>
