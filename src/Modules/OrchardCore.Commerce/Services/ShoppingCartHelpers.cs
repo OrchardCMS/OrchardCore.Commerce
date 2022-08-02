@@ -83,7 +83,10 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         {
             await _notifier.AddAsync(
                 NotifyType.Error,
-                T["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
+                T[
+                    "Can't add product {0} because it doesn't have a price, or its currency doesn't match with the " +
+                    "current display currency.",
+                    line.ProductSku]);
             return null;
         }
 
