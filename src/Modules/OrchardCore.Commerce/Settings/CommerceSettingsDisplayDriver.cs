@@ -61,7 +61,7 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
                     .Select(currency => new SelectListItem(
                         currency.CurrencyIsoCode,
                         $"{currency.CurrencyIsoCode} {currency.Symbol} - " +
-                        $"{(string.IsNullOrEmpty(currency.EnglishName) ? T["Unspecified"] : T[currency.EnglishName])}"));
+                        (string.IsNullOrEmpty(currency.EnglishName) ? T["Unspecified"] : T[currency.EnglishName])));
             })
                 .Location("Content:5")
                 .OnGroup(GroupId),
