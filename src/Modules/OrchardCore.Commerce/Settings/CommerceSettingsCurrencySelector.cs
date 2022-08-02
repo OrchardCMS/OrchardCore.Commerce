@@ -18,7 +18,6 @@ public class CommerceSettingsCurrencySelector : ICurrencySelector
                 ? Currency.UsDollar
                 : Currency.FromIsoCode(defaultIsoCode) ?? Currency.UsDollar;
         }
-
     }
 
     public CommerceSettingsCurrencySelector(IOptions<CommerceSettings> options) => _options = options.Value;

@@ -2,17 +2,18 @@
 
 @{
     var currentDisplayCurrencyIsoCode = Model.CurrentDisplayCurrency.CurrencyIsoCode;
+    var modelPriceCurrency = Model.PriceCurrency;
     var modelPrice = Model.Price.ToString();
 }
 
 <div class="product-price pb-3">
-    @if (Model.PriceCurrency == null)
-    {
-        @T["The product doesn't have a price."]
-    }
-    else if (currentDisplayCurrencyIsoCode == Model.PriceCurrency)
+    @if (currentDisplayCurrencyIsoCode == modelPriceCurrency)
     {
         @modelPrice
+    }
+    else if (modelPriceCurrency == null || modelPriceCurrency == "---")
+    {
+        @T["The product doesn't have a price, or its price is in unspecified currency."]
     }
     else
     {
