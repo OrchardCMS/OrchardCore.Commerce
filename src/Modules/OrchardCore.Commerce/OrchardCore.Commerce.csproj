@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -32,6 +32,10 @@
     <ProjectReference Include="..\..\Libraries\AddressDataType\AddressDataType.csproj" />
     <ProjectReference Include="..\..\Libraries\MoneyDataType\MoneyDataType.csproj" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <LombiqHelpfulLibrariesPath>..\..\..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
+  </PropertyGroup>
 
   <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
