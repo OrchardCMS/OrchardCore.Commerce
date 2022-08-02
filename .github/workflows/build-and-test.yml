@@ -9,7 +9,7 @@ on:
 
 jobs:
   call-build-and-test-workflow:
-    name: Build and Test - root solution
+    name: Build and Test
     uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
     with:
       machine-types: "[\"ubuntu-latest\", \"windows-latest\"]"
