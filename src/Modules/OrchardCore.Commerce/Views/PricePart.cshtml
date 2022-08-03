@@ -1,6 +1,26 @@
 @model PricePartViewModel
 
-@if (Model.CurrentDisplayCurrency.CurrencyIsoCode == Model.PriceCurrency)
-{
-<div class="product-price">@Model.Price.ToString()</div>
+@{
+    var currentDisplayCurrencyIsoCode = Model.CurrentDisplayCurrency.CurrencyIsoCode;
+    var modelPriceCurrency = Model.PriceCurrency;
+    var modelPrice = Model.Price;
 }
+
+<div class="product-price pb-3">
+    @if (currentDisplayCurrencyIsoCode == modelPriceCurrency)
+    {
+        @modelPrice
+    }
+    else if (modelPriceCurrency == null)
+    {
+        @T["The product doesn't have a price."]
+    }
+    else
+    {
+        @T["The product has a price but its currency doesn't match with the current display currency which is {0}.", currentDisplayCurrencyIsoCode]
+
+        <div>
+            @T["The current price is {0}.", modelPrice]
+        </div>
+    }
+</div>

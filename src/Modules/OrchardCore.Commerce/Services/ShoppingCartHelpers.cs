@@ -83,7 +83,10 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         {
             await _notifier.AddAsync(
                 NotifyType.Error,
-                T["Can't add product {0} because it doesn't have a price.", line.ProductSku]);
+                // Localized strings need to be in one line.
+#pragma warning disable S103 // Long line (which is greater than 150 authorized)
+                T["Can't add product {0} because it doesn't have a price, or its currency doesn't match with the current display currency.", line.ProductSku]);
+#pragma warning restore S103 // Long line (which is greater than 150 authorized)
             return null;
         }
 
