@@ -37,8 +37,8 @@ Globalization should be taken into account at every step.
 2. Build and run the `OrchardCore.Commerce.Web` project, then run the `OrchardCore Commerce - Development` recipe on the setup screen.
 3. Go to _Features_.
 4. Search for “Commerce” and turn on everything.
-6. Go to _Settings → Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
-7. Go to Content Items, and create a `Product`.
+5. Go to _Settings → Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
+6. Go to Content Items, and create a `Product`.
 
 ## Test data for Stripe Payment
 
