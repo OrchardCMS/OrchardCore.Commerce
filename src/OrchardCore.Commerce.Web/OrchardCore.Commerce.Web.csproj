@@ -3,10 +3,15 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
+
+    <NodeJsExtensionsMarkdownAnalysisMode>solution</NodeJsExtensionsMarkdownAnalysisMode>
+    <ExecDotnetPostcleanCommand>false</ExecDotnetPostcleanCommand>
+    <ExecDotnetPrebuildCommand>false</ExecDotnetPrebuildCommand>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Lombiq.Analyzers.PowerShell" Version="1.0.0" />
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.17" />
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="3.4.0" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="3.4.0" />
     <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.4.0" />
