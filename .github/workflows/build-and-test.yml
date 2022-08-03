@@ -1,0 +1,16 @@
+name: Build and Test
+
+# Runs for PRs opened for any branch, and pushes to the main branch.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  call-build-and-test-workflow:
+    name: Build and Test
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    with:
+      machine-types: "[\"ubuntu-latest\", \"windows-latest\"]"
+      timeout-minutes: 60
