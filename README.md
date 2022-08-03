@@ -19,11 +19,12 @@ The work will focus at first on porting a [minimum viable feature set](https://g
 ### Done
 
 - Product, price, and inventory parts and/or fields (those were a single part in Nwazet)
-  Note: not all products have a price
+  - Note: not all products have a price
 - Shopping cart
 - Base infrastructure for payment, plus one implementation (Stripe)
 
 ### To do
+
 - Checkout (probably redesigned around Orchard Workflows)
 - Order content type and management screens (including a redesign and refactoring of the order part)
 - Workflow activities
@@ -34,10 +35,10 @@ Globalization should be taken into account at every step.
 
 1. Clone this repository.
 2. Build and run the `OrchardCore.Commerce.Web` project, then run the `OrchardCore Commerce - Development` recipe on the setup screen.
-3. Go to _Features_, search for “Commerce” and turn on everything.
-4. Go to _Settings → Commerce_, and save it (by default, this setting has no value, so you need to save it, it’s a bug, and it will need to be fixed in the future, it can break the product sites).
-5. Go to _Settings → Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
-6. Go to Content Items, and create a `Product`.
+3. Go to _Features_.
+4. Search for “Commerce” and turn on everything.
+6. Go to _Settings → Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
+7. Go to Content Items, and create a `Product`.
 
 ## Test data for Stripe Payment
 
