@@ -50,7 +50,8 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
                 viewModel => viewModel.VariantsCurrencies))
         {
             // Remove any content or the variants would be merged and not be cleared
-            part.Content.Variants.RemoveAll();
+            part.Variants.RemoveAll();
+            updateModel.Variants.RemoveAll();
 
             foreach (var x in updateModel.VariantsValues)
             {
@@ -79,13 +80,13 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 
         var values = allVariantsKeys.ToDictionary(
             key => key,
-            key => model.Variants.TryGetValue(key, out var amount)
+            key => part.Variants.TryGetValue(key, out var amount)
                 ? amount.Value
                 : (decimal?)null);
 
         var currencies = allVariantsKeys.ToDictionary(
             key => key,
-            key => model.Variants.TryGetValue(key, out var amount)
+            key => part.Variants.TryGetValue(key, out var amount)
                 ? amount.Currency.CurrencyIsoCode
                 : Currency.UnspecifiedCurrency.CurrencyIsoCode);
 
