@@ -30,7 +30,10 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
             .QueryContentItem(PublicationStatus.Published)
             .ListAsync()).AsList();
 
-        var isNotUnique = products.Any(sku => sku.As<ProductPart>()?.Sku == instance.Sku);
+        var isNotUnique = products
+            .Any(sku =>
+                sku.As<ProductPart>()?.Sku == instance.Sku &&
+                sku.ContentItem.ContentItemId != instance.ContentItem.ContentItemId);
 
         if (isNotUnique)
         {
