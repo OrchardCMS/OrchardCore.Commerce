@@ -58,6 +58,9 @@
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
 
+        "OrchardCore.Commerce",
+        "OrchardCore.Commerce.SessionCartStorage",
+        "OrchardCore.Commerce.CommerceSettingsCurrencySelector",
         // Themes
         "TheBlogTheme",
         "TheAdmin",
@@ -80,10 +83,6 @@
         {
           "executionid": "OrchardCore.Commerce",
           "name": "MultiCurrencyProduct"
-        },
-        {
-          "executionid": "OrchardCore.Commerce",
-          "name": "PriceVariants"
         }
       ]
     },
