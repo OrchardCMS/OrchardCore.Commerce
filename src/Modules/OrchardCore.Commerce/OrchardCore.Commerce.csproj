@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Scripts\" />
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.5.0" />
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.17" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.4.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.4.0" />
@@ -32,6 +31,17 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\AddressDataType\AddressDataType.csproj" />
     <ProjectReference Include="..\..\Libraries\MoneyDataType\MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <LombiqHelpfulLibrariesPath>..\..\..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.5.0" />
   </ItemGroup>
 
 </Project>
