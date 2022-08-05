@@ -12,7 +12,6 @@ namespace OrchardCore.Commerce.Handlers;
 
 public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
 {
-    private readonly IContentManager _contentManager;
     private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -21,7 +20,6 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
         ISession session,
         IUpdateModelAccessor updateModelAccessor)
     {
-        _contentManager = contentManager;
         _session = session;
         _updateModelAccessor = updateModelAccessor;
     }
