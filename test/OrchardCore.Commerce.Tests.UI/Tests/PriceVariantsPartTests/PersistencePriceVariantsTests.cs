@@ -39,7 +39,7 @@ public class PersistencePriceVariantsTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//a[. = 'Edit']"));
 
                 context.Get(By.Id("ProductPart_Sku")).GetDomProperty("value").ShouldBe(sku);
-                context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999,00");
+                context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999.00");
             },
             browser);
 }
