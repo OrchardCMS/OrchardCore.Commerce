@@ -80,6 +80,10 @@
         {
           "executionid": "OrchardCore.Commerce",
           "name": "MultiCurrencyProduct"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "PriceVariants"
         }
       ]
     },
