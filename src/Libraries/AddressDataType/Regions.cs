@@ -85,7 +85,7 @@ public static class Regions
                 ["WA"] = "Washington",
                 ["WV"] = "West Virginia",
                 ["WI"] = "Wisconsin",
-                ["WY"] = "Wyoming",
+                ["WY"] = "Wyoming"
             },
             ["CA"] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -101,7 +101,7 @@ public static class Regions
                 { "PE", "Prince Edward Island" },
                 { "QC", "Quebec" },
                 { "SK", "Saskatchewan" },
-                { "YT", "Yukon" },
+                { "YT", "Yukon" }
             },
         };
 }
