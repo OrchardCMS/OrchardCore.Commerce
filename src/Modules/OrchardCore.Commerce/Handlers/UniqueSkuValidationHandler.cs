@@ -37,7 +37,9 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
 
         if (isNotUnique)
         {
-            _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(instance.Sku), "SKU must be unique.");
+            _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
+                nameof(instance.Sku),
+                "SKU must be unique. A product with the given SKU already exists.");
         }
     }
 }
