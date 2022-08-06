@@ -6,6 +6,8 @@
   -->
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.Analyzers" Version="2.1.1-osoe-110.14" />
+    <PackageReference Include="Lombiq.Analyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
