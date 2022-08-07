@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove=".ps1-analyzer-stamp" />
+  </ItemGroup>
+
 </Project>
