@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+﻿using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -26,12 +26,12 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
     public override async Task UpdatedAsync(UpdateContentContext context, ProductPart instance)
     {
         var isProductSkuAlreadyExisting = (await _session
-            .QueryContentItem(PublicationStatus.Published)
-            .ListAsync())
+                .Query<ContentItem, ProductPartIndex>(index =>
+                    index.Sku == instance.Sku &&
+                    index.ContentItemId != instance.ContentItem.ContentItemId)
+                .ListAsync())
             .AsList()
-            .Any(sku =>
-                sku.As<ProductPart>()?.Sku == instance.Sku &&
-                sku.ContentItem.ContentItemId != instance.ContentItem.ContentItemId);
+            .Any();
 
         if (isProductSkuAlreadyExisting)
         {
