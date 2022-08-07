@@ -25,16 +25,15 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
 
     public override async Task UpdatedAsync(UpdateContentContext context, ProductPart instance)
     {
-        var products = (await _session
+        var isProductSkuAlreadyExisting = (await _session
             .QueryContentItem(PublicationStatus.Published)
-            .ListAsync()).AsList();
-
-        var isNotUnique = products
+            .ListAsync())
+            .AsList()
             .Any(sku =>
                 sku.As<ProductPart>()?.Sku == instance.Sku &&
                 sku.ContentItem.ContentItemId != instance.ContentItem.ContentItemId);
 
-        if (isNotUnique)
+        if (isProductSkuAlreadyExisting)
         {
             _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(instance.Sku),
