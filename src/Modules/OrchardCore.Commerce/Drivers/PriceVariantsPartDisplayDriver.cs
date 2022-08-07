@@ -18,16 +18,16 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 {
     private readonly IMoneyService _moneyService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
-    private readonly IOptions<CommerceSettings> _options;
+    private readonly IOptions<CommerceSettings> _currencyOptions;
 
     public PriceVariantsPartDisplayDriver(
         IMoneyService moneyService,
         IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
-        IOptions<CommerceSettings> options)
+        IOptions<CommerceSettings> currencyOptions)
     {
         _moneyService = moneyService;
         _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
-        _options = options;
+        _currencyOptions = currencyOptions;
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
@@ -54,7 +54,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
                 viewModel => viewModel.VariantsValues,
                 viewModel => viewModel.VariantsCurrencies))
         {
-            // Remove any content or the variants would be merged and not be cleared
+            // Restoring variants so that only the new values are stored.
             part.Variants.RemoveAll();
             updateModel.Variants.RemoveAll();
 
@@ -93,7 +93,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             key => key,
             key => part.Variants.TryGetValue(key, out var amount)
                 ? amount.Currency.CurrencyIsoCode
-                : _options.Value.CurrentDisplayCurrency);
+                : _currencyOptions.Value.CurrentDisplayCurrency);
 
         model.InitializeVariants(variants, values, currencies);
     }

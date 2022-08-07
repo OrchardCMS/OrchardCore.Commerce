@@ -61,6 +61,7 @@
         "OrchardCore.Commerce",
         "OrchardCore.Commerce.SessionCartStorage",
         "OrchardCore.Commerce.CommerceSettingsCurrencySelector",
+        
         // Themes
         "TheBlogTheme",
         "TheAdmin",
