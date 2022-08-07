@@ -16,7 +16,6 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     public UniqueSkuValidationHandler(
-        IContentManager contentManager,
         ISession session,
         IUpdateModelAccessor updateModelAccessor)
     {
