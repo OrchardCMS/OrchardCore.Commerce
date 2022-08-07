@@ -34,10 +34,11 @@ Globalization should be taken into account at every step.
 ## Setting up your dev environment
 
 1. Clone this repository.
-2. Build and run the `OrchardCore.Commerce.Web` project, then run the `OrchardCore Commerce - Development` recipe on the setup screen.
-3. Go to _Features_.
-4. Search for “Commerce” and turn on everything.
-5. Go to _Settings → Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
+2. Build and run the `OrchardCore.Commerce.Web` project.
+   - You must have [Node.js](https://nodejs.org/) installed for the build to succeed. On Unix-like systems we suggest installing it as user, preferably via the [Node Version Manager](https://github.com/nvm-sh/nvm).
+3. Run the `OrchardCore Commerce - Development` recipe on the setup screen.
+4. Go to _Features_, search for “Commerce” and turn on everything.
+5. Go to _Settings_ → _Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
 6. Go to Content Items, and create a `Product`.
 
 ## Test data for Stripe Payment
