@@ -33,6 +33,12 @@ Globalization should be taken into account at every step.
 
 ## Setting up your dev environment
 
+### Pre-requisites
+
+This project uses `Lombiq Node.js Extensions` to compile and lint client-side assets. See its pre-requisites [here](https://github.com/Lombiq/NodeJs-Extensions/tree/dev#pre-requisites). 
+
+### Setup
+
 1. Clone this repository.
 2. Build and run the `OrchardCore.Commerce.Web` project.
    - You must have [Node.js](https://nodejs.org/) installed for the build to succeed. On Unix-like systems we suggest installing it as user, preferably via the [Node Version Manager](https://github.com/nvm-sh/nvm).
