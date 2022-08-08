@@ -45,6 +45,7 @@
         "OrchardCore.Indexing",
         "OrchardCore.Layers",
         "OrchardCore.Lists",
+        "OrchardCore.Localization",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
@@ -61,7 +62,7 @@
         "OrchardCore.Commerce",
         "OrchardCore.Commerce.SessionCartStorage",
         "OrchardCore.Commerce.CommerceSettingsCurrencySelector",
-        
+
         // Themes
         "TheBlogTheme",
         "TheAdmin",
