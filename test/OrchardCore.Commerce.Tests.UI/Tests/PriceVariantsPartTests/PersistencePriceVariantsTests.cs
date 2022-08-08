@@ -30,7 +30,7 @@ public class PersistencePriceVariantsTests : UITestBase
 
                 await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), sku);
                 await context.ClickAndFillInWithRetriesAsync(By.Id("PriceVariantsPart_VariantsValues__"), price);
-                await context.SetDropdownByTextAsync("PriceVariantsPart_VariantsCurrencies__", "USD");
+                await context.SetDropdownByTextAsync("PriceVariantsPart_VariantsCurrencies__", "HUF");
 
                 await context.ClickReliablyOnSubmitAsync();
                 context.ShouldBeSuccess();
@@ -39,6 +39,12 @@ public class PersistencePriceVariantsTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//a[. = 'Edit']"));
 
                 context.Get(By.Id("ProductPart_Sku")).GetDomProperty("value").ShouldBe(sku);
+
+                context.Get(By.CssSelector("#PriceVariantsPart_VariantsCurrencies__ option:checked")
+                        .OfAnyVisibility())
+                    .Text
+                    .ShouldBe("HUF");
+
                 context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999.00");
             },
             browser);
