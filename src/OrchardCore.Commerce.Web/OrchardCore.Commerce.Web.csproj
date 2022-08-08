@@ -9,8 +9,14 @@
     <ExecDotnetPrebuildCommand>false</ExecDotnetPrebuildCommand>
   </PropertyGroup>
 
+  <!-- Currently we don't have any ps1/psm1/psd1 files in the repo, so this is commented out. Add the ProjectReference
+       below when this changes.
   <ItemGroup>
-    <PackageReference Include="Lombiq.Analyzers.PowerShell" Version="1.0.0" />
+    <PackageReference Include="Lombiq.Analyzers.PowerShell" Version="1.0.1-occ-15.0" />
+  </ItemGroup> -->
+
+  <ItemGroup>
+    <PackageReference Include="Lombiq.Analyzers.PowerShell" Version="1.0.1-occ-15.0" />
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.17" />
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="3.4.0" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="3.4.0" />
