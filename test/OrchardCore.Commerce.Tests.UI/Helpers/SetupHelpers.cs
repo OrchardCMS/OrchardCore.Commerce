@@ -1,7 +1,7 @@
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
-using Shouldly;
+using OpenQA.Selenium;
 
 namespace OrchardCore.Commerce.Tests.UI.Helpers;
 
@@ -19,7 +19,7 @@ public static class SetupHelpers
                 SiteTimeZoneValue = "Europe/London",
             });
 
-        context.Driver.Title.ShouldBe("Orchard Setup");
+        context.Exists(By.Id("mainNav"));
 
         return homepageUri;
     }
