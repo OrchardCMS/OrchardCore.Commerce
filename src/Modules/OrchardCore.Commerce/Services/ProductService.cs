@@ -16,8 +16,6 @@ public class ProductService : IProductService
 {
     private readonly ISession _session;
     private readonly IContentManager _contentManager;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
     private readonly IContentDisplayHandler _contentDisplayHandler;
 
     public ProductService(
@@ -29,8 +27,6 @@ public class ProductService : IProductService
     {
         _session = session;
         _contentManager = contentManager;
-        _contentDefinitionManager = contentDefinitionManager;
-        _contentPartFactory = contentPartTypeActivatorFactory;
         _contentDisplayHandler = contentDisplayHandler;
     }
 
