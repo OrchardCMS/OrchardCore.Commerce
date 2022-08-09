@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,8 +20,6 @@ public class ProductService : IProductService
     public ProductService(
         ISession session,
         IContentManager contentManager,
-        IContentDefinitionManager contentDefinitionManager,
-        ITypeActivatorFactory<ContentPart> contentPartTypeActivatorFactory,
         IContentDisplayHandler contentDisplayHandler)
     {
         _session = session;
