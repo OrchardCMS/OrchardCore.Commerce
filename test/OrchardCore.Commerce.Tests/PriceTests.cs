@@ -113,6 +113,9 @@ public class PriceTests
             Task.FromResult(
                 AddPriceToShoppingCartItem(item));
 
+        public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items) =>
+             Task.FromResult(true);
+
         private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item) =>
              item.WithPrice(
                     new PrioritizedPrice(0, new Amount(Price, Currency.UsDollar)));
