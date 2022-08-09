@@ -110,6 +110,5 @@ public class PriceVariantProvider : IPriceProvider
 
                 return false;
             });
-
     }
 }
