@@ -26,4 +26,10 @@ public interface IPriceProvider
     /// </summary>
     /// <param name="item">The quantity and product to which prices must be added.</param>
     Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item);
+
+    /// <summary>
+    /// Checks whether or not the provider is applicable for the products.
+    /// </summary>
+    /// <param name="items">The quantities and products that needs to be checked.</param>
+    Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items);
 }

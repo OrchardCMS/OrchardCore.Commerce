@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Helpers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
@@ -25,8 +26,7 @@ public class PriceVariantProvider : IPriceProvider
 
     public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
-        var skuProducts = (await _productService.GetProductsAsync(skus)).ToDictionary(productPart => productPart.Sku);
+        var skuProducts = await PriceProviderHelpers.GetSkuProductsAsync(items, _productService);
 
         return items
             .Select(item =>
@@ -93,5 +93,23 @@ public class PriceVariantProvider : IPriceProvider
         }
 
         return null;
+    }
+
+    public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items)
+    {
+        var skuProducts = await PriceProviderHelpers.GetSkuProductsAsync(items, _productService);
+
+        return items
+            .All(item =>
+            {
+                if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
+                {
+                    var contentItem = productPart.ContentItem;
+                    return contentItem.OfType<PricePart>().Any() || contentItem.OfType<PriceVariantsPart>().Any();
+                }
+
+                return false;
+            });
+
     }
 }
