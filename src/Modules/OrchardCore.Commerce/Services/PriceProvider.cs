@@ -30,16 +30,9 @@ public class PriceProvider : IPriceProvider
     {
         var skuProducts = await PriceProviderHelpers.GetSkuProductsAsync(items, _productService);
 
-        return items
-            .Select(item =>
-            {
-                if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
-                {
-                    return AddPriceToShoppingCartItem(item, productPart);
-                }
-
-                return item;
-            });
+        return items.Select(item => skuProducts.TryGetValue(item.ProductSku, out var productPart)
+            ? AddPriceToShoppingCartItem(item, productPart)
+            : item);
     }
 
     public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
