@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
 using Money;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -16,13 +18,16 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 {
     private readonly IMoneyService _moneyService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
+    private readonly IOptions<CommerceSettings> _currencyOptions;
 
     public PriceVariantsPartDisplayDriver(
         IMoneyService moneyService,
-        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService)
+        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
+        IOptions<CommerceSettings> currencyOptions)
     {
         _moneyService = moneyService;
         _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
+        _currencyOptions = currencyOptions;
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
@@ -49,8 +54,9 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
                 viewModel => viewModel.VariantsValues,
                 viewModel => viewModel.VariantsCurrencies))
         {
-            // Remove any content or the variants would be merged and not be cleared
-            part.Content.Variants.RemoveAll();
+            // Restoring variants so that only the new values are stored.
+            part.Variants.RemoveAll();
+            updateModel.Variants.RemoveAll();
 
             foreach (var x in updateModel.VariantsValues)
             {
@@ -79,15 +85,15 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 
         var values = allVariantsKeys.ToDictionary(
             key => key,
-            key => model.Variants.TryGetValue(key, out var amount)
+            key => part.Variants.TryGetValue(key, out var amount)
                 ? amount.Value
                 : (decimal?)null);
 
         var currencies = allVariantsKeys.ToDictionary(
             key => key,
-            key => model.Variants.TryGetValue(key, out var amount)
+            key => part.Variants.TryGetValue(key, out var amount)
                 ? amount.Currency.CurrencyIsoCode
-                : Currency.UnspecifiedCurrency.CurrencyIsoCode);
+                : _currencyOptions.Value.CurrentDisplayCurrency);
 
         model.InitializeVariants(variants, values, currencies);
     }
