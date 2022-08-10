@@ -29,9 +29,9 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
             .Query<ContentItem, ProductPartIndex>(index =>
                 index.Sku == instance.Sku &&
                 index.ContentItemId != instance.ContentItem.ContentItemId)
-            .CountAsync();
+            .CountAsync() > 0;
 
-        if (isProductSkuAlreadyExisting > 0)
+        if (isProductSkuAlreadyExisting)
         {
             _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(instance.Sku),
