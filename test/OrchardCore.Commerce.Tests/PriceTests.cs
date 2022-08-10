@@ -109,10 +109,6 @@ public class PriceTests
                 items.Select(item =>
                     AddPriceToShoppingCartItem(item)));
 
-        public Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item) =>
-            Task.FromResult(
-                AddPriceToShoppingCartItem(item));
-
         public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items) =>
              Task.FromResult(true);
 

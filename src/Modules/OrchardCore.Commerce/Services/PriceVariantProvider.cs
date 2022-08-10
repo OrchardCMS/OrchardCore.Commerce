@@ -1,5 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Helpers;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
@@ -45,25 +45,6 @@ public class PriceVariantProvider : IPriceProvider
             });
     }
 
-    public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
-    {
-        var sku = item.ProductSku;
-        var productPart = await _productService.GetProductAsync(sku);
-        var productPartSku = productPart.Sku;
-
-        if (productPartSku == sku)
-        {
-            var itemWithPrice = AddPriceToShoppingCartItem(item, productPart);
-
-            if (itemWithPrice != null)
-            {
-                return itemWithPrice;
-            }
-        }
-
-        return item;
-    }
-
     private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
     {
         var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
@@ -99,9 +80,8 @@ public class PriceVariantProvider : IPriceProvider
     {
         var skuProducts = await _productService.GetSkuProductsAsync(items);
 
-        return items
-            .All(item => (skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
-                productPart.ContentItem.OfType<PricePart>().Any()) ||
-                productPart.ContentItem.OfType<PriceVariantsPart>().Any());
+        return items.All(item =>
+                skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
+                productPart.ContentItem.Has<PriceVariantsPart>());
     }
 }

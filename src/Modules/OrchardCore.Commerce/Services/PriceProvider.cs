@@ -1,5 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Helpers;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
@@ -35,27 +35,13 @@ public class PriceProvider : IPriceProvider
             : item);
     }
 
-    public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
-    {
-        var sku = item.ProductSku;
-        var productPart = await _productService.GetProductAsync(sku);
-        var productPartSku = productPart.Sku;
-
-        if (productPartSku == sku)
-        {
-            return AddPriceToShoppingCartItem(item, productPart);
-        }
-
-        return item;
-    }
-
     public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items)
     {
         var skuProducts = await _productService.GetSkuProductsAsync(items);
 
         return items.All(item =>
             skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
-            productPart.ContentItem.OfType<PricePart>().Any());
+            productPart.ContentItem.Has<PricePart>());
     }
 
     private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)

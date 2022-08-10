@@ -15,9 +15,6 @@ public class FakePriceService : IPriceService
                 .Select((item, index) => AddPriceToShoppingCartItem(item, index))
                 .ToList());
 
-    public Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item) =>
-        Task.FromResult(AddPriceToShoppingCartItem(item));
-
     private static ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, int index = 0) =>
         item.WithPrice(new PrioritizedPrice(priority: 0, price: new Amount(42 + index, Currency.UsDollar)));
 }

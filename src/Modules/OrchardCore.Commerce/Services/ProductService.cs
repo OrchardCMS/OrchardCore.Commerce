@@ -40,13 +40,10 @@ public class ProductService : IProductService
 
         // We need BuildDisplayAsync to fill part.Elements with the fields. We could extract the logic from
         // BuildDisplayAsync, but we would have to copy almost everything from there.
-        if (contentItems.Any())
-        {
             foreach (var contentItem in contentItems)
             {
                 await _contentDisplayHandler.BuildDisplayAsync(contentItem, context: null);
             }
-        }
 
         return contentItems.Select(item => item.As<ProductPart>());
     }
