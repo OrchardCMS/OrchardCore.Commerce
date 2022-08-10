@@ -1,4 +1,4 @@
-﻿using Atata;
+using Atata;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
@@ -22,7 +22,7 @@ public class PersistencePriceVariantsTests : UITestBase
             async context =>
             {
                 await context.SignInDirectlyAsync();
-                await context.CreateNewContentItemAsync("PriceVariantsProduct");
+                await context.CreateNewContentItemAsync("TestProduct");
 
                 const string sku = "UITESTSKU";
                 const string price = "9999";
