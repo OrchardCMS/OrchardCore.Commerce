@@ -60,16 +60,9 @@ public class PriceProvider : IPriceProvider
     {
         var skuProducts = await PriceProviderHelpers.GetSkuProductsAsync(items, _productService);
 
-        return items
-            .All(item =>
-            {
-                if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
-                {
-                    return productPart.ContentItem.OfType<PricePart>().Any();
-                }
-
-                return false;
-            });
+        return items.All(item =>
+            skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
+            productPart.ContentItem.OfType<PricePart>().Any());
     }
 
     private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
