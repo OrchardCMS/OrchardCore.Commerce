@@ -97,12 +97,7 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "ContentDefinition",
-      "ContentTypes": [
+        },
         {
           "Name": "PriceVariantsProduct",
           "DisplayName": "PriceVariantsProduct",
@@ -117,20 +112,48 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "ProductPart",
-              "Name": "ProductPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
+              "PartName": "PriceVariantsProduct",
+              "Name": "PriceVariantsProduct",
+              "Settings": {}
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {}
             },
             {
               "PartName": "PriceVariantsPart",
               "Name": "PriceVariantsPart",
+              "Settings": {}
+            },
+            {
+              "PartName": "ProductPart",
+              "Name": "ProductPart",
+              "Settings": {}
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "PriceVariantsProduct",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextProductAttributeField",
+              "Name": "Size",
               "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Size"
+                },
+                "TextProductAttributeFieldSettings": {
+                  "PredefinedValues": [
+                    "Small",
+                    "Medium",
+                    "Large"
+                  ],
+                  "RestrictToPredefinedValues": true,
+                  "DefaultValue": "Small"
                 }
               }
             }
@@ -145,16 +168,19 @@
           "ContentItemId": "testpricevariantproduct000",
           "ContentItemVersionId": "testpricevariantproduct000",
           "ContentType": "PriceVariantsProduct",
-          "DisplayText": null,
+          "DisplayText": "TestPriceVariantProduct",
           "Latest": true,
           "Published": true,
-          "ModifiedUtc": "2022-08-05T15:23:20.7238509Z",
-          "PublishedUtc": "2022-08-05T15:23:20.7280649Z",
-          "CreatedUtc": "2022-08-05T15:23:20.7238509Z",
-          "Owner": "4kha4cdv0ax4cyv4hejag8znck",
+          "ModifiedUtc": "2022-08-10T20:27:55.221899Z",
+          "PublishedUtc": "2022-08-10T20:27:55.2244171Z",
+          "CreatedUtc": "2022-08-10T20:27:55.221899Z",
+          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
           "Author": "admin",
-          "ProductPart": {
-            "Sku": "TESTPRODUCTVARIANT"
+          "PriceVariantsProduct": {
+            "Size": {}
+          },
+          "TitlePart": {
+            "Title": "TestPriceVariantProduct"
           },
           "PriceVariantsPart": {
             "Variants": {
@@ -172,10 +198,45 @@
               }
             }
           },
-          "Product": {},
-          "PriceVariantsProduct": {
-            "Size": {}
+          "ProductPart": {
+            "Sku": "TESTPRODUCTVARIANT"
           }
+        },
+        {
+          "ContentItemId": "testproduct000",
+          "ContentItemVersionId": "testproduct000",
+          "ContentType": "Product",
+          "DisplayText": "TestProduct",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
+          "PublishedUtc": "2022-08-10T19:34:57.2716912Z",
+          "CreatedUtc": "2022-08-10T19:34:57.2678948Z",
+          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
+          "Author": "admin",
+          "TitlePart": {
+            "Title": "TestProduct"
+          },
+          "AutoroutePart": {
+            "Path": "testproduct",
+            "SetHomepage": false,
+            "Disabled": false,
+            "RouteContainedItems": false,
+            "Absolute": false
+          },
+          "HtmlBodyPart": {
+            "Html": ""
+          },
+          "ProductPart": {
+            "Sku": "testproduct"
+          },
+          "PricePart": {
+            "Price": {
+              "value": 5.0,
+              "currency": "USD"
+            }
+          },
+          "Product": {}
         }
       ]
     }
