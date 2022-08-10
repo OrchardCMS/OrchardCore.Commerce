@@ -51,7 +51,7 @@ public class PriceProvider : IPriceProvider
 
     public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items)
     {
-        var skuProducts = await PriceProviderHelpers.GetSkuProductsAsync(items, _productService);
+        var skuProducts = await _productService.GetSkuProductsAsync(items);
 
         return items.All(item =>
             skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
