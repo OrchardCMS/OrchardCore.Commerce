@@ -30,6 +30,6 @@ public interface IPriceProvider
     /// <summary>
     /// Checks whether or not the provider is applicable for the shopping cart items.
     /// </summary>
-    /// <param name="items">The quantities and products that needs to be checked.</param>
+    /// <param name="items">The quantities and products that need to be checked.</param>
     Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items);
 }
