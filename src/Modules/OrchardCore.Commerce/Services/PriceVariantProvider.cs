@@ -100,15 +100,8 @@ public class PriceVariantProvider : IPriceProvider
         var skuProducts = await _productService.GetSkuProductsAsync(items);
 
         return items
-            .All(item =>
-            {
-                if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
-                {
-                    var contentItem = productPart.ContentItem;
-                    return contentItem.OfType<PricePart>().Any() || contentItem.OfType<PriceVariantsPart>().Any();
-                }
-
-                return false;
-            });
+            .All(item => (skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
+                productPart.ContentItem.OfType<PricePart>().Any()) ||
+                productPart.ContentItem.OfType<PriceVariantsPart>().Any());
     }
 }
