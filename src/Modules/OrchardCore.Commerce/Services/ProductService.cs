@@ -33,17 +33,16 @@ public class ProductService : IProductService
                 .QueryIndex<ProductPartIndex>(index => index.Sku.IsIn(skus))
                 .ListAsync())
             .Select(idx => idx.ContentItemId)
-            .Distinct()
-            .ToArray();
+            .Distinct();
 
         var contentItems = await _contentManager.GetAsync(contentItemIds);
 
         // We need BuildDisplayAsync to fill part.Elements with the fields. We could extract the logic from
         // BuildDisplayAsync, but we would have to copy almost everything from there.
-            foreach (var contentItem in contentItems)
-            {
-                await _contentDisplayHandler.BuildDisplayAsync(contentItem, context: null);
-            }
+        foreach (var contentItem in contentItems)
+        {
+            await _contentDisplayHandler.BuildDisplayAsync(contentItem, context: null);
+        }
 
         return contentItems.Select(item => item.As<ProductPart>());
     }
