@@ -28,7 +28,7 @@ public class PriceProvider : IPriceProvider
 
     public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        var skuProducts = await PriceProviderHelpers.GetSkuProductsAsync(items, _productService);
+        var skuProducts = await _productService.GetSkuProductsAsync(items);
 
         return items.Select(item => skuProducts.TryGetValue(item.ProductSku, out var productPart)
             ? AddPriceToShoppingCartItem(item, productPart)
