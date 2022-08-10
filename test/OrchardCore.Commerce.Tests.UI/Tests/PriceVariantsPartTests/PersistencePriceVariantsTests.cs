@@ -22,7 +22,7 @@ public class PersistencePriceVariantsTests : UITestBase
             async context =>
             {
                 await context.SignInDirectlyAsync();
-                await context.CreateNewContentItemAsync("TestProduct");
+                await context.CreateNewContentItemAsync("TestPriceVariantsProduct");
 
                 const string sku = "UITESTSKU";
                 const string price = "9999";
