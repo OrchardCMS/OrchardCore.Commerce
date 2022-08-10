@@ -3,8 +3,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 
