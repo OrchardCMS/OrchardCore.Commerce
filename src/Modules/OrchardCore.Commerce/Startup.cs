@@ -40,7 +40,8 @@ public class Startup : StartupBase
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
         services.AddScoped<IProductService, ProductService>();
         services.AddContentPart<ProductPart>()
-            .UseDisplayDriver<ProductPartDisplayDriver>();
+            .UseDisplayDriver<ProductPartDisplayDriver>()
+            .AddHandler<UniqueSkuValidationHandler>();
 
         // Attributes
         services.AddContentField<BooleanProductAttributeField>()
