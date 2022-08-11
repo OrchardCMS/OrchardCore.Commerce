@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,22 +54,26 @@ public class ProductService : IProductService
 
                 foreach (var field in contentFields)
                 {
-                    // We can only get the type of field in a string, so we need to convert that to an actual type.
-
-                    var typeOfField = Type.GetType("OrchardCore.Commerce.Fields." + field.FieldDefinition.Name);
-
-                    if (typeOfField != null)
-                    {
-                        var fieldName = field.Name;
-
-                        // We won't do anything with the result because we don't need to, but this is what fills the
-                        // fields in the original code.
-                        part.Get(typeOfField, fieldName);
-                    }
+                    FillField(part, field);
                 }
             }
         }
 
         return contentItems.Select(item => item.As<ProductPart>());
+    }
+
+    private static void FillField(ContentPart part, ContentPartFieldDefinition field)
+    {
+        // We can only get the type of field in a string, so we need to convert that to an actual type.
+        var typeOfField = Type.GetType("OrchardCore.Commerce.Fields." + field.FieldDefinition.Name);
+
+        if (typeOfField == null)
+        {
+            var fieldName = field.Name;
+
+            // We won't do anything with the result because we don't need to, but this is what fills the
+            // fields in the original code.
+            part.Get(typeOfField, fieldName);
+        }
     }
 }
