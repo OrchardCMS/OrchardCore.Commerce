@@ -38,7 +38,7 @@ public class ProductService : IProductService
 
         var contentItems = await _contentManager.GetAsync(contentItemIds);
 
-        // We need to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
+        // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
         foreach (var contentItem in contentItems)
         {
