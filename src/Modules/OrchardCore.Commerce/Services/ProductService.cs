@@ -44,7 +44,9 @@ public class ProductService : IProductService
         {
             var contentItemsPartName = contentItem.ContentType;
 
-            var contentItemsPartFields = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType).Parts
+            var contentItemsPartFields = _contentDefinitionManager
+                .GetTypeDefinition(contentItem.ContentType)
+                .Parts
                 .FirstOrDefault(contentPartDefinition =>
                     contentPartDefinition.PartDefinition.Name == contentItemsPartName)
                 .PartDefinition
