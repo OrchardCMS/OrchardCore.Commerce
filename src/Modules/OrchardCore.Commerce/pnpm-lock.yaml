@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   eslint: ^8.20.0
@@ -281,7 +281,7 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-module-utils/2.7.3_a2e9ad6bb1d60475ebc0dfc5e76a2549:
+  /eslint-module-utils/2.7.3_ulu2225r2ychl26a37c6o2rfje:
     resolution: {integrity: sha512-088JEC7O3lDZM9xGe0RerkOMd0EjFl+Yvd1jPWIkMT5u3H9+HC34mWWPnqPrN13gieT9pBOO+Qt07Nb/6TresQ==}
     engines: {node: '>=4'}
     peerDependencies:
@@ -322,7 +322,7 @@ packages:
       doctrine: 2.1.0
       eslint: 8.20.0
       eslint-import-resolver-node: 0.3.6
-      eslint-module-utils: 2.7.3_a2e9ad6bb1d60475ebc0dfc5e76a2549
+      eslint-module-utils: 2.7.3_ulu2225r2ychl26a37c6o2rfje
       has: 1.0.3
       is-core-module: 2.9.0
       is-glob: 4.0.3

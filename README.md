@@ -14,29 +14,37 @@ Orchard Core represents a major evolution of the Orchard design principles, and 
 
 This work is in its initial design phases. There's a lot of work to do, and yes, we do welcome participation in any shape or form.
 
-The work will focus at first on porting a [minimum viable feature set](https://github.com/OrchardCMS/OrchardCore.Commerce/milestone/1).
+The work will focus at first on porting a [minimum viable feature set](https://github.com/OrchardCMS/OrchardCore.Commerce/issues/3).
 
-### Done:
+### Done
 
-* Product, price, and inventory parts and/or fields (those were a single part in Nwazet)
-  Note: not all products have a price
-* Shopping cart
-* Base infrastructure for payment, plus one implementation (Stripe)
+- Product, price, and inventory parts and/or fields (those were a single part in Nwazet)
+  - Note: not all products have a price
+- Shopping cart
+- Base infrastructure for payment, plus one implementation (Stripe)
 
-### To do:
-* Checkout (probably redesigned around Orchard Workflows)
-* Order content type and management screens (including a redesign and refactoring of the order part)
-* Workflow activities
+### To do
+
+- Checkout (probably redesigned around Orchard Workflows)
+- Order content type and management screens (including a redesign and refactoring of the order part)
+- Workflow activities
 
 Globalization should be taken into account at every step.
 
 ## Setting up your dev environment
 
+### Pre-requisites
+
+This project uses `Lombiq Node.js Extensions` to compile and lint client-side assets. See its pre-requisites [here](https://github.com/Lombiq/NodeJs-Extensions/tree/dev#pre-requisites).
+
+### Setup
+
 1. Clone this repository.
-2. Build and run the `OrchardCore.Commerce.Web` project, then run the `OrchardCore Commerce - Development` recipe on the setup screen.
-3. Go to *Features*, search for “Commerce” and turn on everything.
-4. Go to *Settings → Stripe API*. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
-5. Go to Content Items, and create a `Product`.
+2. Build and run the `OrchardCore.Commerce.Web` project.
+3. Run the `OrchardCore Commerce - Development` recipe on the setup screen.
+4. Go to _Features_, search for “Commerce” and turn on everything.
+5. Go to _Settings_ → _Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
+6. Go to Content Items, and create a `Product`.
 
 ## Test data for Stripe Payment
 
@@ -44,19 +52,20 @@ Globalization should be taken into account at every step.
 
 Stripe API uses a secret-publishable key pair. The following API keys are public sample test keys, they can be found in [Stripe's documentation](https://stripe.com/docs/keys#obtain-api-keys).
 
-* Publishable key: `pk_test_51H59owJmQoVhz82aWAoi9M5s8PC6sSAqFI7KfAD2NRKun5riDIOM0dvu2caM25a5f5JbYLMc5Umxw8Dl7dBIDNwM00yVbSX8uS`
-* Secret key: `sk_test_51H59owJmQoVhz82aOUNOuCVbK0u1zjyRFKkFp9EfrqzWaUWqQni3oSxljsdTIu2YZ9XvlbeGjZRU7B7ye2EjJQE000Dm2DtMWD`
+- Publishable key: `pk_test_51H59owJmQoVhz82aWAoi9M5s8PC6sSAqFI7KfAD2NRKun5riDIOM0dvu2caM25a5f5JbYLMc5Umxw8Dl7dBIDNwM00yVbSX8uS`
+- Secret key: `sk_test_51H59owJmQoVhz82aOUNOuCVbK0u1zjyRFKkFp9EfrqzWaUWqQni3oSxljsdTIu2YZ9XvlbeGjZRU7B7ye2EjJQE000Dm2DtMWD`
 
 **These are just test keys. Don’t submit any personally identifiable information in requests made with this key.**
 
 The Stripe API key pair can be set inside _Dashboard → Settings → Stripe API_.
 
 ### Cards
+
 There are available test cards that can be found in [Stripe's documentation](https://stripe.com/docs/testing).
 
 There are multiple test cards that can simulate any scenario, including error codes. Here are two examples:
 
-| Brand |      Number	     |      CVC     |       Date      |                  Result                  |
+| Brand |      Number      |      CVC     |       Date      |                  Result                  |
 | ----- | ---------------- | ------------ | --------------- | ---------------------------------------- |
 | Visa  | 4242424242424242 | Any 3 digits | Any future date | success                                  |
 | Visa  | 4000000000009995 | Any 3 digits | Any future date | card_declined, insufficient_funds        |

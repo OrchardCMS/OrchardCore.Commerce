@@ -7,7 +7,8 @@ namespace InternationalAddress;
 /// <summary>
 /// A flexible address formatter that can be built with a couple format strings.
 /// </summary>
-public class AddressFormatter : IAddressFormatter
+public class AddressFormatter :
+    IAddressFormatter
 {
     private readonly string _addressFormat;
     private readonly string _cityLineFormat;

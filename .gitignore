@@ -14,3 +14,4 @@ node_modules/
 /src/OrchardCore.Commerce.Web/wwwroot/is-cache/
 *.placeholder
 /.editorconfig
+.ps1-analyzer-stamp

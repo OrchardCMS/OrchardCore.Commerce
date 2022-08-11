@@ -85,7 +85,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                 NotifyType.Error,
                 // Localized strings need to be in one line.
 #pragma warning disable S103 // Long line (which is greater than 150 authorized)
-                T["Can't add product {0} because it doesn't have a price, or its currency doesn't match with the current display currency.", line.ProductSku]);
+                T["Can't add product {0} because it doesn't have a price, or its currency doesn't match the current display currency.", line.ProductSku]);
 #pragma warning restore S103 // Long line (which is greater than 150 authorized)
             return null;
         }
