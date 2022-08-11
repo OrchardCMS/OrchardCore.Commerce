@@ -67,7 +67,7 @@ public class ProductService : IProductService
         // We can only get the type of field in a string, so we need to convert that to an actual type.
         var typeOfField = Type.GetType("OrchardCore.Commerce.Fields." + field.FieldDefinition.Name);
 
-        if (typeOfField == null)
+        if (typeOfField != null)
         {
             var fieldName = field.Name;
 
