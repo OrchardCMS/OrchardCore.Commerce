@@ -36,11 +36,6 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "TestPriceVariantsProduct",
-              "Name": "TestPriceVariantsProduct",
-              "Settings": {}
-            },
-            {
               "PartName": "PriceVariantsPart",
               "Name": "PriceVariantsPart",
               "Settings": {}
