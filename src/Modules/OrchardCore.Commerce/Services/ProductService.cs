@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,38 +43,29 @@ public class ProductService : IProductService
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
         foreach (var contentItem in contentItems)
         {
-            var contentItemsPartName = contentItem.ContentType;
-
-            var contentItemsPartFields = _contentDefinitionManager
+            var contentItemsPartDefinitions = _contentDefinitionManager
                 .GetTypeDefinition(contentItem.ContentType)
-                .Parts
-                .FirstOrDefault(contentPartDefinition =>
-                    contentPartDefinition.PartDefinition.Name == contentItemsPartName)
-                .PartDefinition
-                .Fields;
+                .Parts;
 
-            var part = contentItem.Get<ContentPart>(contentItemsPartName);
-
-            foreach (var field in contentItemsPartFields)
+            foreach (var partDefinition in contentItemsPartDefinitions)
             {
-                var fieldName = field.Name;
+                var contentFields = partDefinition.PartDefinition.Fields;
+                var part = contentItem.Get<ContentPart>(partDefinition.Name);
 
-                switch (field.FieldDefinition.Name)
+                foreach (var field in contentFields)
                 {
-                    case nameof(BooleanProductAttributeField):
-                        part.Get<BooleanProductAttributeField>(fieldName);
-                        break;
+                    // We can only get the type of field in a string, so we need to convert that to an actual type.
 
-                    case nameof(NumericProductAttributeField):
-                        part.Get<NumericProductAttributeField>(fieldName);
-                        break;
+                    var typeOfField = Type.GetType("OrchardCore.Commerce.Fields." + field.FieldDefinition.Name);
 
-                    case nameof(TextProductAttributeField):
-                        part.Get<TextProductAttributeField>(fieldName);
-                        break;
+                    if (typeOfField != null)
+                    {
+                        var fieldName = field.Name;
 
-                    default:
-                        continue;
+                        // We won't do anything with the result because we don't need to, but this is what fills the
+                        // fields in the original code.
+                        part.Get(typeOfField, fieldName);
+                    }
                 }
             }
         }
