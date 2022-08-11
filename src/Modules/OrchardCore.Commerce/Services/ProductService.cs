@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using System.Collections.Generic;
