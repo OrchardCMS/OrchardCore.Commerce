@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Serialization;
 using System;
 using System.Collections.Generic;

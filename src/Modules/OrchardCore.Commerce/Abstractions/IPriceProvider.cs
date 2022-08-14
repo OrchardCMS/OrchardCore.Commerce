@@ -22,8 +22,8 @@ public interface IPriceProvider
     Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items);
 
     /// <summary>
-    /// Adds price to shopping cart item.
+    /// Checks whether or not the provider is applicable for the shopping cart items.
     /// </summary>
-    /// <param name="item">The quantity and product to which prices must be added.</param>
-    Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item);
+    /// <param name="items">The quantities and products that need to be checked.</param>
+    Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items);
 }

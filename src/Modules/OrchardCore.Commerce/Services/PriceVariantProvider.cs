@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
@@ -25,8 +26,7 @@ public class PriceVariantProvider : IPriceProvider
 
     public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        var skus = items.Select(item => item.ProductSku).Distinct().ToArray();
-        var skuProducts = (await _productService.GetProductsAsync(skus)).ToDictionary(productPart => productPart.Sku);
+        var skuProducts = await _productService.GetSkuProductsAsync(items);
 
         return items
             .Select(item =>
@@ -43,25 +43,6 @@ public class PriceVariantProvider : IPriceProvider
 
                 return item;
             });
-    }
-
-    public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
-    {
-        var sku = item.ProductSku;
-        var productPart = await _productService.GetProductAsync(sku);
-        var productPartSku = productPart.Sku;
-
-        if (productPartSku == sku)
-        {
-            var itemWithPrice = AddPriceToShoppingCartItem(item, productPart);
-
-            if (itemWithPrice != null)
-            {
-                return itemWithPrice;
-            }
-        }
-
-        return item;
     }
 
     private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
@@ -93,5 +74,14 @@ public class PriceVariantProvider : IPriceProvider
         }
 
         return null;
+    }
+
+    public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items)
+    {
+        var skuProducts = await _productService.GetSkuProductsAsync(items);
+
+        return items.All(item =>
+                skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
+                productPart.ContentItem.Has<PriceVariantsPart>());
     }
 }

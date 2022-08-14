@@ -1,4 +1,4 @@
-﻿using Atata;
+using Atata;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
@@ -22,7 +22,7 @@ public class PersistencePriceVariantsTests : UITestBase
             async context =>
             {
                 await context.SignInDirectlyAsync();
-                await context.CreateNewContentItemAsync("PriceVariantsProduct");
+                await context.CreateNewContentItemAsync("TestPriceVariantsProduct");
 
                 const string sku = "UITESTSKU";
                 const string price = "9999";
@@ -34,7 +34,7 @@ public class PersistencePriceVariantsTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
                 context.ShouldBeSuccess();
 
-                await context.GoToContentItemListAsync("PriceVariantsProduct");
+                await context.GoToContentItemListAsync("TestPriceVariantsProduct");
                 await context.ClickReliablyOnAsync(By.XPath("//a[. = 'Edit']"));
 
                 context.Get(By.Id("ProductPart_Sku")).GetDomProperty("value").ShouldBe(sku);

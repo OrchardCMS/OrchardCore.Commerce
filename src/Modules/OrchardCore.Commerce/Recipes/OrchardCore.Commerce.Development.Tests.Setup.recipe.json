@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "OrchardCore.Commerce.Development.Tests.Setup",
   "displayName": "TEST: OrchardCore Commerce",
   "description": "OrchardCore Commerce setup recipe for automated UI test execution.",
@@ -19,6 +19,10 @@
         {
           "executionid": "OrchardCore.Commerce",
           "name": "OrchardCore.Commerce.Development.Setup"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "TestProduct"
         }
       ]
     },

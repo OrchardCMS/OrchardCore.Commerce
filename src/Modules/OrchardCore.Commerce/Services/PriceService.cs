@@ -17,23 +17,16 @@ public class PriceService : IPriceService
 
     public async Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        foreach (var priceProvider in _providers.OrderBy(provider => provider.Order))
+        var providers = await _providers
+            .OrderBy(provider => provider.Order)
+            .WhereAsync(provider => provider.IsApplicableAsync(items));
+
+        foreach (var priceProvider in providers)
         {
             var result = await priceProvider.AddPricesAsync(items);
             items = result as IList<ShoppingCartItem> ?? result.ToList();
         }
 
         return items;
-    }
-
-    public async Task<ShoppingCartItem> AddPriceAsync(ShoppingCartItem item)
-    {
-        foreach (var priceProvider in _providers.OrderBy(provider => provider.Order))
-        {
-            var result = await priceProvider.AddPriceAsync(item);
-            item = result;
-        }
-
-        return item;
     }
 }
