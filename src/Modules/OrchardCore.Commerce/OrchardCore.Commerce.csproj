@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj" />
-    <ProjectReference Include="..\..\Libraries\MoneyDataType\MoneyDataType.csproj" />
+    <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -32,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.AddressDataType", "src\Libraries\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj", "{251C019B-180B-431A-9D1A-0319316A67FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyDataType", "src\Libraries\MoneyDataType\MoneyDataType.csproj", "{885A0D49-EDF9-4F61-8768-E789D59E68B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.MoneyDataType", "src\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj", "{885A0D49-EDF9-4F61-8768-E789D59E68B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
