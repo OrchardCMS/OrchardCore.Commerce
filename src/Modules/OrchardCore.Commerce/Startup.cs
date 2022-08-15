@@ -1,4 +1,3 @@
-using InternationalAddress;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +6,8 @@ using Money;
 using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
+using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;

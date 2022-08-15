@@ -1,4 +1,5 @@
-using InternationalAddress;
+using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.AddressDataType.Abstractions;
 using Shouldly;
 using Xunit;
 

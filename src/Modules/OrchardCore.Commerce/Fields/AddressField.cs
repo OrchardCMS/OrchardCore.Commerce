@@ -1,4 +1,4 @@
-using InternationalAddress;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Fields;

@@ -1,7 +1,8 @@
+using OrchardCore.Commerce.AddressDataType.Abstractions;
 using System;
 using System.Collections.Generic;
 
-namespace InternationalAddress;
+namespace OrchardCore.Commerce.AddressDataType;
 
 internal static class KnownAddressFormatters
 {

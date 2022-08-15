@@ -1,7 +1,7 @@
 using System;
-using static InternationalAddress.ConcatenationHelper;
+using static OrchardCore.Commerce.AddressDataType.ConcatenationHelper;
 
-namespace InternationalAddress;
+namespace OrchardCore.Commerce.AddressDataType.Abstractions;
 
 /// <summary>
 /// Formats an address.

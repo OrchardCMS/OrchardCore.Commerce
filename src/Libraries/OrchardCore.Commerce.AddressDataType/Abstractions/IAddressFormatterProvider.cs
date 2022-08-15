@@ -1,4 +1,4 @@
-namespace InternationalAddress;
+namespace OrchardCore.Commerce.AddressDataType.Abstractions;
 
 /// <summary>
 /// A service that selects the right address formatter for a culture.

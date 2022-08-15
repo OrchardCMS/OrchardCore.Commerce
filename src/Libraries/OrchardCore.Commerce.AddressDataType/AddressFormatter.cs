@@ -1,8 +1,9 @@
+using OrchardCore.Commerce.AddressDataType.Abstractions;
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace InternationalAddress;
+namespace OrchardCore.Commerce.AddressDataType;
 
 /// <summary>
 /// A flexible address formatter that can be built with a couple format strings.

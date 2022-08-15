@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace InternationalAddress;
+namespace OrchardCore.Commerce.AddressDataType;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class Address

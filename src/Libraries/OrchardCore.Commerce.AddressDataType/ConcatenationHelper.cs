@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace InternationalAddress;
+namespace OrchardCore.Commerce.AddressDataType;
 
 public static class ConcatenationHelper
 {
