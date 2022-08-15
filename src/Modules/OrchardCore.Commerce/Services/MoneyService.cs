@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
-using Money;
-using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Settings;
 using System;
 using System.Collections.Generic;

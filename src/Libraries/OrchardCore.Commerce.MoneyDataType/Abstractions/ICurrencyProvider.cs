@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Money.Abstractions;
+namespace OrchardCore.Commerce.MoneyDataType.Abstractions;
 
 /// <summary>
 /// A service that provides a set of currencies.

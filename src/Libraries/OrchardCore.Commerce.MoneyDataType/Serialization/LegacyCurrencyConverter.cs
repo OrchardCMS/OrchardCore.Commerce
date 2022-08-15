@@ -1,8 +1,8 @@
-using Money.Abstractions;
 using Newtonsoft.Json;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 
-namespace Money.Serialization;
+namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
 internal class LegacyCurrencyConverter : JsonConverter<ICurrency>
 {

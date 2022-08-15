@@ -1,8 +1,8 @@
-using Money.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Text.Json;
 
-namespace Money.Serialization;
+namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
 internal class CurrencyConverter : System.Text.Json.Serialization.JsonConverter<ICurrency>
 {

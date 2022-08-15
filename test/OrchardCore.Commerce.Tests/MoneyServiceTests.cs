@@ -1,4 +1,4 @@
-using Money;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.Tests.Fakes;

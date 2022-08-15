@@ -1,10 +1,10 @@
-using Money.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Money;
+namespace OrchardCore.Commerce.MoneyDataType;
 
 internal static class KnownCurrencyTable
 {

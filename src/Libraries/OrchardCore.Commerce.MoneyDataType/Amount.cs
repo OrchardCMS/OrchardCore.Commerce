@@ -1,11 +1,11 @@
-using Money.Abstractions;
-using Money.Serialization;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
 
-namespace Money;
+namespace OrchardCore.Commerce.MoneyDataType;
 
 /// <summary>
 /// A money amount, which is represented by a decimal number and a currency.
@@ -28,17 +28,17 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     public ICurrency Currency { get; }
 
     public Amount()
-        : this(0, Money.Currency.UnspecifiedCurrency)
+        : this(0, MoneyDataType.Currency.UnspecifiedCurrency)
     {
     }
 
     public Amount(decimal value, RegionInfo region)
-        : this(value, Money.Currency.FromRegion(region))
+        : this(value, MoneyDataType.Currency.FromRegion(region))
     {
     }
 
     public Amount(decimal value, CultureInfo culture)
-        : this(value, Money.Currency.FromCulture(culture))
+        : this(value, MoneyDataType.Currency.FromCulture(culture))
     {
     }
 

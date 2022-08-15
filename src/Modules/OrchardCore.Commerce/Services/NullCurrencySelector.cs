@@ -1,5 +1,5 @@
-using Money.Abstractions;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 
 namespace OrchardCore.Commerce.Services;
 

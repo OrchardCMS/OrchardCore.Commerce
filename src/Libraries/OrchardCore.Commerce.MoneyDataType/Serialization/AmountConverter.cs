@@ -1,10 +1,10 @@
-using Money.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static Money.Currency;
+using static OrchardCore.Commerce.MoneyDataType.Currency;
 
-namespace Money.Serialization;
+namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
 internal class AmountConverter : JsonConverter<Amount>
 {

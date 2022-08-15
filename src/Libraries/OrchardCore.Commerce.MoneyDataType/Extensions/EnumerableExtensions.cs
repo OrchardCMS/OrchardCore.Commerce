@@ -1,7 +1,9 @@
-﻿using Money.Abstractions;
+﻿using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace System.Collections.Generic;
+namespace OrchardCore.Commerce.MoneyDataType.Extensions;
 
 public static class EnumerableExtensions
 {

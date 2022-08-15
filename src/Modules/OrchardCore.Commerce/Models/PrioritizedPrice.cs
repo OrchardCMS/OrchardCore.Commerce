@@ -1,4 +1,4 @@
-using Money;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Serialization;
 using System;
 using System.Diagnostics;

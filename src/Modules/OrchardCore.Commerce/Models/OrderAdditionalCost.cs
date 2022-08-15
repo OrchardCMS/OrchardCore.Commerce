@@ -1,4 +1,4 @@
-using Money;
+using OrchardCore.Commerce.MoneyDataType;
 
 namespace OrchardCore.Commerce.Models;
 

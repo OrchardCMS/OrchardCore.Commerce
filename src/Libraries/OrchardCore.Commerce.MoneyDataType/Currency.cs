@@ -1,11 +1,11 @@
-using Money.Abstractions;
-using Money.Serialization;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
 
-namespace Money;
+namespace OrchardCore.Commerce.MoneyDataType;
 
 [JsonConverter(typeof(CurrencyConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(LegacyCurrencyConverter))]

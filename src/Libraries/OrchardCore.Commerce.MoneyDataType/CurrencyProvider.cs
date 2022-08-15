@@ -1,7 +1,7 @@
-using Money.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System.Collections.Generic;
 
-namespace Money;
+namespace OrchardCore.Commerce.MoneyDataType;
 
 /// <summary>
 /// A simple currency provider that uses a static list of the most common predefined currencies.

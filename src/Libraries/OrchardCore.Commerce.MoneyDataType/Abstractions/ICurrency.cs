@@ -1,6 +1,6 @@
 using System;
 
-namespace Money.Abstractions;
+namespace OrchardCore.Commerce.MoneyDataType.Abstractions;
 
 /// <summary>
 /// Currency representation.

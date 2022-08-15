@@ -1,9 +1,10 @@
-using Money.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace Money;
+namespace OrchardCore.Commerce.MoneyDataType;
 
 public readonly partial struct Currency
 {
