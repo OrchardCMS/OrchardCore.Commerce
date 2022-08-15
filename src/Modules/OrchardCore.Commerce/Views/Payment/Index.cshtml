@@ -94,7 +94,7 @@
     <script at="Head" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
     <script at="Head" type="text/javascript">
         const stripe = Stripe('@publishableKey');
-        const urlPrefix = @urlPrefix;
+        const urlPrefix = @urlPrefix.JsonHtmlContent();
     </script>
     <script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
 }
