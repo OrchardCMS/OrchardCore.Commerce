@@ -30,6 +30,8 @@
 
         publishableKey = (await SiteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey;
     }
+
+    var urlPrefix = Url.Content("~/").TrimEnd('/');
 }
 
 <zone name="Header">
@@ -92,6 +94,7 @@
     <script at="Head" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
     <script at="Head" type="text/javascript">
         const stripe = Stripe('@publishableKey');
+        const urlPrefix = @urlPrefix;
     </script>
     <script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
 }

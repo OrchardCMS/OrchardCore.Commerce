@@ -1,6 +1,6 @@
 // 'stripe' is not defined
 // It is in the view and we have to pass an API key to it there.
-/* global stripe */
+/* global stripe, tenantName */
 const stripeElements = stripe.elements();
 const errorContainer = document.querySelector('.error-message');
 const form = document.querySelector('.card-payment-form');
@@ -45,7 +45,7 @@ function displayError(error) {
 }
 
 function fetchPay(fetchBody) {
-    return fetch('/pay', {
+    return fetch(`${urlPrefix}/pay`, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -72,7 +72,7 @@ function handleServerResponse(response) {
     }
     else {
         // Show success message.
-        window.location.href = '/success';
+        window.location.href = `${urlPrefix}/success`;
     }
 }
 
