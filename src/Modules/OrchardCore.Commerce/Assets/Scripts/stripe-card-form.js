@@ -1,4 +1,4 @@
-function stripeCardForm(stripe, urlPrefix) {
+function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
     const stripeElements = stripe.elements();
     const errorContainer = document.querySelector('.error-message');
     const form = document.querySelector('.card-payment-form');
@@ -15,8 +15,6 @@ function stripeCardForm(stripe, urlPrefix) {
     });
 
     const placeOfCard = document.querySelector('#card-payment-form_card');
-
-    const fetchErrorText = 'There was an error during fetching!';
 
     function disableInputs() {
         formElements.forEach((element) => {
