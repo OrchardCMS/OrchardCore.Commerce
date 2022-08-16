@@ -4,6 +4,7 @@
 @using OrchardCore.Commerce.Models
 @using OrchardCore.Entities
 @using OrchardCore.Settings
+@using Microsoft.AspNetCore.Mvc.Localization
 
 @inject IShoppingCartPersistence ShoppingCartPersistence
 @inject IPriceService PriceService
@@ -30,6 +31,8 @@
 
         publishableKey = (await SiteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey;
     }
+
+    var urlPrefix = Url.Content("~/").TrimEnd('/');
 }
 
 <zone name="Header">
@@ -89,10 +92,14 @@
 
 @if (!string.IsNullOrEmpty(publishableKey))
 {
-    <script at="Head" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
-    <script at="Head" type="text/javascript">
-        const stripe = Stripe('@publishableKey');
+    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
+    <script at="Head" asp-name="StripeCardForm" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
+    <script at="Foot" depends-on="StripeJs,StripeCardForm">
+        stripeCardForm(
+            Stripe(@publishableKey.JsonHtmlContent()),
+            @urlPrefix.JsonHtmlContent(),
+            @T["There was an error during fetching!"].Json());
     </script>
-    <script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
 }
+
 <style asp-src="~/OrchardCore.Commerce/css/credit-card-form.min.css"></style>
