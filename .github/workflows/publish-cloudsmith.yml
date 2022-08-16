@@ -1,0 +1,15 @@
+name: Publish to CloudSmith
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  call-publish-workflow:
+    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@issue/OCC-29
+    with:
+      source: https://nuget.cloudsmith.io/orchardcore/commerce/v3/index.json
+      publish-version: "USE_GITHUB_RUN_NUMBER"
+    secrets:
+      API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}

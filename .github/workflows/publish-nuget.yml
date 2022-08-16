@@ -1,0 +1,12 @@
+name: Publish to NuGet
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  call-publish-workflow:
+    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@issue/OCC-29
+    secrets:
+      API_KEY: ${{ secrets.NUGET_API_KEY }}
