@@ -91,11 +91,13 @@
 
 @if (!string.IsNullOrEmpty(publishableKey))
 {
-    <script at="Head" type="text/javascript" asp-src="https://js.stripe.com/v3/"></script>
-    <script at="Head" type="text/javascript">
-        const stripe = Stripe('@publishableKey');
-        const urlPrefix = @urlPrefix.JsonHtmlContent();
+    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
+    <script at="Head" asp-name="StripeCardForm" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
+    <script at="Foot" depends-on="StripeJs,StripeCardForm">
+        stripeCardForm(
+            Stripe(@publishableKey.JsonHtmlContent()),
+            @urlPrefix.JsonHtmlContent());
     </script>
-    <script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
 }
+
 <style asp-src="~/OrchardCore.Commerce/css/credit-card-form.min.css"></style>
