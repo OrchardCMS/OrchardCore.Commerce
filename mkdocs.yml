@@ -82,4 +82,4 @@ plugins:
 nav:
   - About Orchard Core Commerce: README.md
   - Releases:
-      - 0.0.1: docs/releases/0.01.md
+      - 0.0.1: docs/releases/0.0.1.md
