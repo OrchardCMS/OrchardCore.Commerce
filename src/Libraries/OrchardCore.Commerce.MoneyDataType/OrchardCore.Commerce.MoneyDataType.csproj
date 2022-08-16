@@ -2,20 +2,27 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Orchard Core Commerce - Address Data Type</Title>
     <Authors>Bertrand Le Roy, Allan Nielsen</Authors>
-    <Product>MoneyDataType</Product>
+    <Copyright>Copyright © 2018 .NET Foundation</Copyright>
     <Description>New data type representing monetary values.</Description>
-    <Copyright>Copyright © 2019 .NET Foundation</Copyright>
-    <PackageTags>Currency, Money</PackageTags>
-    <NeutralLanguage>en</NeutralLanguage>
-    <Version>1.0.0-pre</Version>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Currency;Money</PackageTags>
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/src/Libraries/OrchardCore.Commerce.MoneyDataType/Readme.md</PackageProjectUrl>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+    <None Include="License.md" Pack="true" PackagePath=""/>
+    <None Include="Readme.md"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+    <PackageReference Include="System.Text.Json" Version="6.0.5"/>
   </ItemGroup>
 
 </Project>

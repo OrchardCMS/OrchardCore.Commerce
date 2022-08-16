@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 		Directory.Build.props = Directory.Build.props
-		LICENSE = LICENSE
 		Nuget.config = Nuget.config
-		README.md = README.md
+		License.md = License.md
+		Readme.md = Readme.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2D057AA-E3F7-404D-A713-C3C59F9DE562}"
