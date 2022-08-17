@@ -11,7 +11,7 @@
       <PackageReference Include="Lombiq.Tests.UI" Version="3.4.0" />
       <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="3.4.0" />
       <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="3.4.0" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
       <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
