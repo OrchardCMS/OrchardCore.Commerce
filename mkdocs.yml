@@ -73,6 +73,6 @@ plugins:
 
 # Page tree
 nav:
-  - About: README.md
+  - About: --8<-- "README.md"
   - Releases:
       - 0.0.1: releases/0.0.1.md
