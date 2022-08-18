@@ -1,7 +1,7 @@
 site_name: Orchard Core Commerce
 theme:
   name: material
-  custom_dir: theme
+  custom_dir: docs/theme
   logo: assets/images/orchard-logo.png
   favicon: assets/images/favicon.png
   features:
