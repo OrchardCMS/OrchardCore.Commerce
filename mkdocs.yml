@@ -73,6 +73,6 @@ plugins:
 
 # Page tree
 nav:
-  - About Orchard Core Commerce: README.md
+  - About: README.md
   - Releases:
       - 0.0.1: releases/0.0.1.md
