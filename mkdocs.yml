@@ -1,7 +1,7 @@
 site_name: Orchard Core Commerce
 theme:
   name: material
-  custom_dir: src/docs/theme
+  custom_dir: docs/theme
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon.png
   features:
@@ -40,9 +40,6 @@ repo_name: OrchardCMS/OrchardCore.Commerce
 repo_url: https://github.com/OrchardCMS/OrchardCore.Commerce
 edit_uri: edit/main/src/
 
-# Options
-docs_dir: src
-
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
@@ -50,9 +47,6 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
-  # - mdx_truly_sane_lists:
-  #     nested_indent: 2
-  #     truly_sane: True
   - pymdownx.b64
   - pymdownx.caret
   - pymdownx.details
@@ -67,7 +61,6 @@ markdown_extensions:
   - pymdownx.tilde
   - toc:
       permalink: true
-#  - markdown.extensions.nl2br
 
 plugins:
   - search
