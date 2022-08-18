@@ -1,9 +1,9 @@
 site_name: Orchard Core Commerce
 theme:
   name: material
-  custom_dir: docs/theme
-  logo: docs/assets/images/orchard-logo.png
-  favicon: docs/assets/images/favicon.png
+  custom_dir: theme
+  logo: assets/images/orchard-logo.png
+  favicon: assets/images/favicon.png
   features:
     - header.autohide
     - navigation.instant
@@ -75,4 +75,4 @@ plugins:
 nav:
   - About Orchard Core Commerce: README.md
   - Releases:
-      - 0.0.1: docs/releases/0.0.1.md
+      - 0.0.1: releases/0.0.1.md
