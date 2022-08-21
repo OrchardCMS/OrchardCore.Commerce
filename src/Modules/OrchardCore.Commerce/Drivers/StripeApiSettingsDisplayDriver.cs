@@ -22,20 +22,20 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _hca;
     private readonly IAuthorizationService _authorizationService;
 
     public StripeApiSettingsDisplayDriver(
         IShellHost shellHost,
         ShellSettings shellSettings,
-        IHttpContextAccessor httpContextAccessor,
+        IHttpContextAccessor hca,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<StripeApiSettingsDisplayDriver> logger)
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
-        _httpContextAccessor = httpContextAccessor;
+        _hca = hca;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
@@ -43,7 +43,7 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
 
     public override async Task<IDisplayResult> EditAsync(StripeApiSettings section, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _hca.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
         {
@@ -63,7 +63,7 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
 
     public override async Task<IDisplayResult> UpdateAsync(StripeApiSettings section, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _hca.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
         {
