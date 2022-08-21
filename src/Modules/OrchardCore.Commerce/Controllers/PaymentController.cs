@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -12,16 +13,33 @@ public class PaymentController : Controller
 {
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IStringLocalizer T;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _hca;
 
-    public PaymentController(ICardPaymentService cardPaymentService, IStringLocalizer<PaymentController> stringLocalizer)
+    public PaymentController(
+        ICardPaymentService cardPaymentService,
+        IStringLocalizer<PaymentController> stringLocalizer,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor hca)
     {
         _cardPaymentService = cardPaymentService;
+        _authorizationService = authorizationService;
+        _hca = hca;
         T = stringLocalizer;
     }
 
     [Route("checkout")]
-    public IActionResult Index() =>
-        View();
+    public async Task<IActionResult> Index()
+    {
+        var user = _hca.HttpContext?.User;
+
+        if (user != null && !await _authorizationService.AuthorizeAsync(user, Permissions.Checkout))
+        {
+            return user.Identity.IsAuthenticated ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
+        }
+
+        return View();
+    }
 
     [Route("success")]
     public IActionResult Success() =>
