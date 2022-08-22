@@ -45,8 +45,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9450AEA4-413D-470D-A4A1-798F127FF12D}"
+	ProjectSection(SolutionItems) = preProject
+		docs\index.md = docs\index.md
+		docs\requirements.txt = docs\requirements.txt
+	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Docs", "docs\OrchardCore.Commerce.Docs.csproj", "{4BA4DEF0-1259-4F5A-8DAE-ED527C260A15}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{8D2DD0E5-5702-409F-8975-FA53F3D0EC38}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{342B6B16-A3F0-488F-92D4-A012E664E4EF}"
+	ProjectSection(SolutionItems) = preProject
+		docs\assets\images\orchard-logo.png = docs\assets\images\orchard-logo.png
+		docs\assets\images\favicon.png = docs\assets\images\favicon.png
+		docs\assets\images\favicon.ico = docs\assets\images\favicon.ico
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "releases", "releases", "{81011B26-1E95-47C9-8F73-B4DBB5738D9C}"
+	ProjectSection(SolutionItems) = preProject
+		docs\releases\0.0.1.md = docs\releases\0.0.1.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "theme", "theme", "{1A97849C-AD9B-4D1D-A53D-E56A42513E19}"
+	ProjectSection(SolutionItems) = preProject
+		docs\theme\main.html = docs\theme\main.html
+		docs\theme\404.html = docs\theme\404.html
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,10 +100,6 @@ Global
 		{885A0D49-EDF9-4F61-8768-E789D59E68B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{885A0D49-EDF9-4F61-8768-E789D59E68B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{885A0D49-EDF9-4F61-8768-E789D59E68B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BA4DEF0-1259-4F5A-8DAE-ED527C260A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BA4DEF0-1259-4F5A-8DAE-ED527C260A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BA4DEF0-1259-4F5A-8DAE-ED527C260A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BA4DEF0-1259-4F5A-8DAE-ED527C260A15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,8 +113,11 @@ Global
 		{90913510-3D7F-4BCC-B55E-56343128F049} = {B2D057AA-E3F7-404D-A713-C3C59F9DE562}
 		{251C019B-180B-431A-9D1A-0319316A67FB} = {90913510-3D7F-4BCC-B55E-56343128F049}
 		{885A0D49-EDF9-4F61-8768-E789D59E68B4} = {90913510-3D7F-4BCC-B55E-56343128F049}
-		{4BA4DEF0-1259-4F5A-8DAE-ED527C260A15} = {9450AEA4-413D-470D-A4A1-798F127FF12D}
 		{A4CAB4D8-DD0C-4689-868E-DF45106E2DD1} = {4561F321-6E57-484B-950C-AC46798B1F40}
+		{8D2DD0E5-5702-409F-8975-FA53F3D0EC38} = {9450AEA4-413D-470D-A4A1-798F127FF12D}
+		{342B6B16-A3F0-488F-92D4-A012E664E4EF} = {8D2DD0E5-5702-409F-8975-FA53F3D0EC38}
+		{81011B26-1E95-47C9-8F73-B4DBB5738D9C} = {9450AEA4-413D-470D-A4A1-798F127FF12D}
+		{1A97849C-AD9B-4D1D-A53D-E56A42513E19} = {9450AEA4-413D-470D-A4A1-798F127FF12D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}
