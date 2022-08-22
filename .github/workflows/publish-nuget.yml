@@ -7,6 +7,6 @@ on:
 
 jobs:
   call-publish-workflow:
-    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@issue/OCC-29
+    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
     secrets:
       API_KEY: ${{ secrets.NUGET_API_KEY }}
