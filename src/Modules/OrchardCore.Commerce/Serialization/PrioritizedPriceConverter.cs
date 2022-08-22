@@ -1,5 +1,5 @@
-using Money;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;

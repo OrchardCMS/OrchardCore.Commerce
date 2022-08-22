@@ -1,4 +1,4 @@
-using Money;
+using OrchardCore.Commerce.MoneyDataType;
 using System;
 
 namespace OrchardCore.Commerce.Abstractions;

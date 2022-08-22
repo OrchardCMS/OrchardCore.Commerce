@@ -1,5 +1,6 @@
-using InternationalAddress;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
