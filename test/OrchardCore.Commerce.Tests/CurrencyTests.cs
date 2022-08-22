@@ -1,8 +1,8 @@
-using Money;
-using Money.Abstractions;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using Xunit;
-using static Money.Currency;
+using static OrchardCore.Commerce.MoneyDataType.Currency;
 
 namespace OrchardCore.Commerce.Tests;
 

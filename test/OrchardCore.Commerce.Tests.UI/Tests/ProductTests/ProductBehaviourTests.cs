@@ -6,7 +6,7 @@ using OpenQA.Selenium;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace OrchardCore.Commerce.Tests.UI.Tests.PriceVariantsPartTests;
+namespace OrchardCore.Commerce.Tests.UI.Tests.ProductTests;
 
 public class ProductBehaviourTests : UITestBase
 {

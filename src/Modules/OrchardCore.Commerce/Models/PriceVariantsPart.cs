@@ -1,4 +1,4 @@
-using Money;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 

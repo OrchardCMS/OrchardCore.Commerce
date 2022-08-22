@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		mkdocs.yml = mkdocs.yml
 		Nuget.config = Nuget.config
-		README.md = README.md
+		Readme.md = Readme.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2D057AA-E3F7-404D-A713-C3C59F9DE562}"
@@ -31,9 +31,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{90913510-3D7F-4BCC-B55E-56343128F049}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressDataType", "src\Libraries\AddressDataType\AddressDataType.csproj", "{251C019B-180B-431A-9D1A-0319316A67FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.AddressDataType", "src\Libraries\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj", "{251C019B-180B-431A-9D1A-0319316A67FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoneyDataType", "src\Libraries\MoneyDataType\MoneyDataType.csproj", "{885A0D49-EDF9-4F61-8768-E789D59E68B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.MoneyDataType", "src\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj", "{885A0D49-EDF9-4F61-8768-E789D59E68B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{4561F321-6E57-484B-950C-AC46798B1F40}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A4CAB4D8-DD0C-4689-868E-DF45106E2DD1}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
+		.github\workflows\publish-cloudsmith.yml = .github\workflows\publish-cloudsmith.yml
+		.github\workflows\publish-nuget.yml = .github\workflows\publish-nuget.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9450AEA4-413D-470D-A4A1-798F127FF12D}"
 EndProject
@@ -87,6 +96,7 @@ Global
 		{251C019B-180B-431A-9D1A-0319316A67FB} = {90913510-3D7F-4BCC-B55E-56343128F049}
 		{885A0D49-EDF9-4F61-8768-E789D59E68B4} = {90913510-3D7F-4BCC-B55E-56343128F049}
 		{4BA4DEF0-1259-4F5A-8DAE-ED527C260A15} = {9450AEA4-413D-470D-A4A1-798F127FF12D}
+		{A4CAB4D8-DD0C-4689-868E-DF45106E2DD1} = {4561F321-6E57-484B-950C-AC46798B1F40}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}

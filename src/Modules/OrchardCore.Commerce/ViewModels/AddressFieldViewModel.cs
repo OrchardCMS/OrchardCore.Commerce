@@ -1,6 +1,6 @@
-using InternationalAddress;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
