@@ -28,6 +28,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "bleroy",
+      "name": "Bertrand Le Roy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1165609?v=4",
+      "profile": "http://bertrandleroy.net/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
