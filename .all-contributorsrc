@@ -109,6 +109,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Piedone",
+      "name": "Zoltán Lehóczky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1976647?v=4",
+      "profile": "https://lombiq.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
