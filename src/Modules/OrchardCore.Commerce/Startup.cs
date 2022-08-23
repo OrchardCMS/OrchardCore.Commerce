@@ -120,6 +120,7 @@ public class Startup : StartupBase
 
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
+        services.AddScoped<IDataMigration, StripeMigrations>();
     }
 }
 

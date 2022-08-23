@@ -32,9 +32,13 @@
                     <input id="card-payment-form_phone" type="tel" required>
                 </div>
             </fieldset>
+
+            @await DisplayAsync(Model.NewOrderEditor)
+
             <shape type="StripeCheckout"
                    prop-DefaultTotal="@Model.SingleCurrencyTotal"
                    prop-PublishableKey="@Model.StripePublishableKey" />
+
             <div class="error pt-4" role="alert">
                 <span class="error-message"></span>
             </div>
