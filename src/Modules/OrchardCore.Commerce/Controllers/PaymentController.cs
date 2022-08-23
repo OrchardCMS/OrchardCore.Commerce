@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,18 +12,17 @@ namespace OrchardCore.Commerce.Controllers;
 
 public class PaymentController : Controller
 {
+    private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IStringLocalizer T;
-    private readonly IAuthorizationService _authorizationService;
 
     public PaymentController(
         ICardPaymentService cardPaymentService,
-        IStringLocalizer<PaymentController> stringLocalizer,
-        IAuthorizationService authorizationService)
+        IOrchardServices<PaymentController> services)
     {
+        _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
-        _authorizationService = authorizationService;
-        T = stringLocalizer;
+        T = services.StringLocalizer.Value;
     }
 
     [Route("checkout")]
