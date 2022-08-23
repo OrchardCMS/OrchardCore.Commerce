@@ -40,15 +40,19 @@ public class PriceTests
     [Fact]
     public async Task PriceServiceAddsPricesInOrder()
     {
-        var priceService = new PriceService(new List<IPriceProvider>
-        {
-            new DummyPriceProvider(4, 4.0m),
-            new DummyPriceProvider(2, 2.0m),
-            new DummyPriceProvider(1, 1.0m),
-            new DummyPriceProvider(3, 3.0m),
-        });
+        var priceService = new PriceService(
+            new List<IPriceProvider>
+            {
+                new DummyPriceProvider(4, 4.0m),
+                new DummyPriceProvider(2, 2.0m),
+                new DummyPriceProvider(1, 1.0m),
+                new DummyPriceProvider(3, 3.0m),
+            },
+            priceSelectionStrategy: null);
+
         var cart = new ShoppingCart(new ShoppingCartItem(1, "foo"));
         cart = cart.With(await priceService.AddPricesAsync(cart.Items));
+
         Assert.Collection(
             cart.Items.Single().Prices,
             price => Assert.Equal(1.0m, price.Price.Value),

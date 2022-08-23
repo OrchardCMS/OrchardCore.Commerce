@@ -1,3 +1,10 @@
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
@@ -5,9 +12,15 @@ using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.Modules;
+using OrchardCore.Settings;
+using OrchardCore.Users;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Tests;
 
@@ -186,17 +199,26 @@ public class ShoppingCartControllerTests
     private ShoppingCartController GetController() =>
         new(
             shoppingCartPersistence: _cartStorage,
-            shoppingCartHelpers: new ShoppingCartHelpers(
-                attributeProviders: new[] { new ProductAttributeProvider() },
-                productService: new FakeProductService(),
-                moneyService: new TestMoneyService(),
-                contentDefinitionManager: new FakeContentDefinitionManager(),
-                priceService: new FakePriceService(),
-                notifier: null,
-                localizer: null),
-            productService: new FakeProductService(),
+            notifier: null,
+            services: new OrchardServices<ShoppingCartController>(
+                new Lazy<IAuthorizationService>(() => null),
+                new Lazy<IClock>(() => null),
+                new Lazy<IContentHandleManager>(() => null),
+                new Lazy<IContentManager>(() => null),
+                new Lazy<IHttpContextAccessor>(() => null),
+                new Lazy<ILogger<ShoppingCartController>>(() => null),
+                new Lazy<ISession>(() => null),
+                new Lazy<ISiteService>(() => null),
+                new Lazy<IStringLocalizer<ShoppingCartController>>(() => null),
+                new Lazy<IHtmlLocalizer<ShoppingCartController>>(() => null),
+                new Lazy<UserManager<IUser>>(() => null)
+            ),
             priceService: new FakePriceService(),
-            priceStrategy: new SimplePriceStrategy(),
-            contentManager: new FakeContentManager(),
+            productService: new FakeProductService(),
+            shoppingCartSerializer: new ShoppingCartSerializer(
+                attributeProviders: new[] { new ProductAttributeProvider() },
+                contentDefinitionManager: new FakeContentDefinitionManager(),
+                moneyService: new TestMoneyService(),
+                productService: new FakeProductService()),
             workflowManager: null);
 }
