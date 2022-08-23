@@ -64,6 +64,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Skrypt",
+      "name": "Jasmin Savard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3228637?v=4",
+      "profile": "https://github.com/Skrypt",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
