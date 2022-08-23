@@ -1,3 +1,11 @@
+@using OrchardCore.ContentManagement
+
+@inject IContentManager contentManager
+
+@{
+    var order = await contentManager.GetAsync(Context.Request.Query["Order"]);
+}
+
 <zone name="Header">
     <header class="masthead">
         <div class="container">
@@ -23,5 +31,7 @@
         </div>
     </div>
 </div>
-
+<div class="pt-5">
+    @await Orchard.DisplayAsync(order, "Success")
+</div>
 
