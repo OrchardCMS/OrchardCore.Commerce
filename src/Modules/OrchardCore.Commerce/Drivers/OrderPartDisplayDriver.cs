@@ -1,6 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Helpers;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -59,6 +59,45 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         return await EditAsync(part, context);
     }
 
-    private ValueTask PopulateViewModelAsync(OrderPartViewModel model, OrderPart part) =>
-         OrderPartDisplayDriverHelpers.PopulateViewModelAsync(model, part, _productService, _contentManager);
+    private async ValueTask PopulateViewModelAsync(OrderPartViewModel model, OrderPart part)
+    {
+        model.ContentItem = part.ContentItem;
+        var products = await _productService.GetProductDictionaryAsync(part.LineItems.Select(line => line.ProductSku));
+        var lineItems = await Task.WhenAll(part.LineItems.Select(async lineItem =>
+        {
+            var product = products[lineItem.ProductSku];
+            var metaData = await _contentManager.GetContentItemMetadataAsync(product);
+
+            return new OrderLineItemViewModel
+            {
+                Quantity = lineItem.Quantity,
+                ProductSku = lineItem.ProductSku,
+                ProductName = product.ContentItem.DisplayText,
+                UnitPrice = lineItem.UnitPrice,
+                LinePrice = lineItem.LinePrice,
+                ProductRouteValues = metaData.DisplayRouteValues,
+                Attributes = lineItem.Attributes,
+            };
+        }));
+
+        var total = new Amount();
+
+        if (lineItems.Any())
+        {
+            total = new Amount(0, lineItems.FirstOrDefault().LinePrice.Currency);
+
+            foreach (var item in lineItems)
+            {
+                model.LineItems.Add(item);
+
+                total += item.LinePrice;
+            }
+        }
+
+        model.Total = total;
+
+        model.Charges.AddRange(part.Charges);
+
+        model.OrderPart = part;
+    }
 }

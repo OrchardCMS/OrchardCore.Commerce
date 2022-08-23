@@ -1,0 +1,8 @@
+@using OrchardCore.ContentManagement
+
+@model dynamic
+
+@{
+    var order = (ContentItem)Model.ContentItem;
+}
+@await Orchard.DisplayAsync(order)

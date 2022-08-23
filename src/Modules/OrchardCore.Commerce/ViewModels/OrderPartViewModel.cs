@@ -3,12 +3,11 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class OrderPartViewModel : ShapeViewModel
+public class OrderPartViewModel
 {
     public IList<OrderLineItemViewModel> LineItems { get; } = new List<OrderLineItemViewModel>();
 
@@ -20,6 +19,4 @@ public class OrderPartViewModel : ShapeViewModel
 
     [BindNever]
     public OrderPart OrderPart { get; set; }
-
-    public OrderPartViewModel() => Metadata.Type = "OrderPart";
 }
