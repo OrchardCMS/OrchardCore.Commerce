@@ -90,6 +90,7 @@ public class Startup : StartupBase
 
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
+        services.AddScoped<IShoppingCartSerializer, ShoppingCartSerializer>();
         services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
 
         // Orders
