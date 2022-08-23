@@ -55,6 +55,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "microposmp",
+      "name": "Magnus Pettersson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49494169?v=4",
+      "profile": "https://github.com/microposmp",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
