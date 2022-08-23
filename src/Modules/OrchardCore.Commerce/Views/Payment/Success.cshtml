@@ -1,9 +1,25 @@
+@using OrchardCore.Commerce.Abstractions
+@using OrchardCore.Commerce.Drivers
+@using OrchardCore.Commerce.Helpers
+@using OrchardCore.Commerce.Models
 @using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Display
+@using OrchardCore.ContentManagement.Display.ContentDisplay
 
 @inject IContentManager contentManager
+@inject IContentManager contentManager
+@inject IProductService productService
 
 @{
     var order = await contentManager.GetAsync(Context.Request.Query["Order"]);
+
+    var orderPartViewModel = new OrderPartViewModel();
+
+    await OrderPartDisplayDriverHelpers.PopulateViewModelAsync(
+        orderPartViewModel,
+        order.As<OrderPart>(),
+        productService,
+        contentManager);
 }
 
 <zone name="Header">
@@ -32,6 +48,6 @@
     </div>
 </div>
 <div class="pt-5">
-    @await Orchard.DisplayAsync(order, "Success")
+    @await DisplayAsync(orderPartViewModel)
 </div>
 
