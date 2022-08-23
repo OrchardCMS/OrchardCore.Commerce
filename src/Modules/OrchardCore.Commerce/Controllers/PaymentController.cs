@@ -9,9 +9,10 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
 using Stripe;
 using System.Threading.Tasks;
-
 using CommerceContentTypes = OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
@@ -21,6 +22,8 @@ public class PaymentController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IShoppingCartHelpers _shoppingCartHelpers;
+    private readonly ISiteService _siteService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentManager _contentManager;
     private readonly IStringLocalizer T;
@@ -29,11 +32,15 @@ public class PaymentController : Controller
         ICardPaymentService cardPaymentService,
         IContentItemDisplayManager contentItemDisplayManager,
         IOrchardServices<PaymentController> services,
+        IShoppingCartHelpers shoppingCartHelpers,
+        ISiteService siteService,
         IUpdateModelAccessor updateModelAccessor)
     {
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _shoppingCartHelpers = shoppingCartHelpers;
+        _siteService = siteService;
         _updateModelAccessor = updateModelAccessor;
         _contentManager = services.ContentManager.Value;
         T = services.StringLocalizer.Value;
@@ -47,10 +54,17 @@ public class PaymentController : Controller
             return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
+        if (await _shoppingCartHelpers.CalculateSingleCurrencyTotalAsync() is not { } total) return View("CartEmpty");
+
         var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
 
-        return View(new CheckoutViewModel { NewOrderEditor = editor });
+        return View(new CheckoutViewModel
+        {
+            NewOrderEditor = editor,
+            SingleCurrencyTotal = total,
+            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+        });
     }
 
     [Route("success")]

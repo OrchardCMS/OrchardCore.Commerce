@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,8 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddOrchardServices();
+
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
         services.AddScoped<IDataMigration, ProductMigrations>();

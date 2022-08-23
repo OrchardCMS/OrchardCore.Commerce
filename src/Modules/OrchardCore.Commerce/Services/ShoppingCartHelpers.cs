@@ -30,7 +30,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     public async Task<Amount?> CalculateSingleCurrencyTotalAsync()
     {
         var totals = await CalculateMultipleCurrencyTotalsAsync();
-        return totals.Single().Value;
+        return totals.Count > 0 ? totals.Single().Value : null;
     }
 
     public async Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync()
