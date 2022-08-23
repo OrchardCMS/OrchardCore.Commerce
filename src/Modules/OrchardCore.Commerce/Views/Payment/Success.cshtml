@@ -13,6 +13,8 @@
 @{
     var order = await contentManager.GetAsync(Context.Request.Query["Order"]);
 
+    // We could display the whole order content item, but for the user, it contains unimportant information and also
+    // adds another header to the page. So we are just displaying the part itself.
     var orderPartViewModel = new OrderPartViewModel();
 
     await OrderPartDisplayDriverHelpers.PopulateViewModelAsync(
