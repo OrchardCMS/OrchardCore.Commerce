@@ -1,0 +1,25 @@
+{
+  "projectName": "OrchardCore.Commerce",
+  "projectOwner": "OrchardCMS",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "Contributors.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributorsPerLine": 6,
+  "contributors": [
+    {
+      "login": "DAud-IcI",
+      "name": "Dávid El-Saig",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4007293?v=4",
+      "profile": "https://github.com/DAud-IcI",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "skipCi": true
+}
