@@ -82,6 +82,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jhgbrt",
+      "name": "jhgbrt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126034?v=4",
+      "profile": "https://github.com/jhgbrt",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
