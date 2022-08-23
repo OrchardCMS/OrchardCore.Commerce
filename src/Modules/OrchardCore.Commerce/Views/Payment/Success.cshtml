@@ -1,6 +1,5 @@
 @using OrchardCore.Commerce.Abstractions
 @using OrchardCore.Commerce.Drivers
-@using OrchardCore.Commerce.Helpers
 @using OrchardCore.Commerce.Models
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Display
@@ -13,27 +12,9 @@
 @{
     var order = await contentManager.GetAsync(Context.Request.Query["Order"]);
 
-    // We could display the whole order content item, but for the user, it contains unimportant information and also
-    // adds another header to the page. So we are just displaying the part itself.
-    var orderPartViewModel = new OrderPartViewModel();
-
-    await OrderPartDisplayDriverHelpers.PopulateViewModelAsync(
-        orderPartViewModel,
-        order.As<OrderPart>(),
-        productService,
-        contentManager);
+    order.DisplayText = T["Success"].Value;
 }
 
-<zone name="Header">
-    <header class="masthead">
-        <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in"></div>
-                <div class="intro-heading text-uppercase">@T["Success"]</div>
-            </div>
-        </div>
-    </header>
-</zone>
 <div class="row pt-md-5">
     <div class="col-6 mx-auto">
         <div class="panel panel-primary">
@@ -50,6 +31,6 @@
     </div>
 </div>
 <div class="pt-5">
-    @await DisplayAsync(orderPartViewModel)
+    @await Orchard.DisplayAsync(order, "Success")
 </div>
 
