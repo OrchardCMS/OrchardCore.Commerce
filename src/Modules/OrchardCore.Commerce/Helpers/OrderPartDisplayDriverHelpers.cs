@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Helpers;
+
 public static class OrderPartDisplayDriverHelpers
 {
     public static async ValueTask PopulateViewModelAsync(
