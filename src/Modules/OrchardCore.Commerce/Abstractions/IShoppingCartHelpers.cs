@@ -1,4 +1,3 @@
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
@@ -15,14 +14,6 @@ public interface IShoppingCartHelpers
     /// Returns the first line in <paramref name="cart"/> that has the product that <paramref name="line"/> refers to.
     /// </summary>
     ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line);
-
-    /// <summary>
-    /// Validates and updates the <paramref name="parsedLine"/>. If fails sends notification and returns <see
-    /// langword="null"/>.
-    /// </summary>
-    Task<ShoppingCartItem> ValidateParsedCartLineAsync(
-        ShoppingCartLineUpdateModel line,
-        ShoppingCartItem parsedLine);
 
     /// <summary>
     /// Calculate the total value in the cart. All prices must be of a single currency.
