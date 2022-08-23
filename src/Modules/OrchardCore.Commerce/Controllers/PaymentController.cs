@@ -5,8 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using Stripe;
 using System.Threading.Tasks;
+
+using CommerceContentTypes = OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -14,26 +20,37 @@ public class PaymentController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IContentManager _contentManager;
     private readonly IStringLocalizer T;
 
     public PaymentController(
         ICardPaymentService cardPaymentService,
-        IOrchardServices<PaymentController> services)
+        IContentItemDisplayManager contentItemDisplayManager,
+        IOrchardServices<PaymentController> services,
+        IUpdateModelAccessor updateModelAccessor)
     {
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
+        _contentItemDisplayManager = contentItemDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
+        _contentManager = services.ContentManager.Value;
         T = services.StringLocalizer.Value;
     }
 
     [Route("checkout")]
     public async Task<IActionResult> Index()
     {
-        if (User != null && !await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
-            return User.Identity.IsAuthenticated ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
+            return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        return View();
+        var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
+        var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
+
+        return View(new CheckoutViewModel { NewOrderEditor = editor });
     }
 
     [Route("success")]

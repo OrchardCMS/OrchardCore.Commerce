@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="License.md" Pack="true" PackagePath=""/>
-    <None Include="..\..\..\Readme.md"/>
+    <None Include="License.md" Pack="true" PackagePath="" />
+    <None Include="..\..\..\Readme.md" />
   </ItemGroup>
 
   <ItemGroup>
