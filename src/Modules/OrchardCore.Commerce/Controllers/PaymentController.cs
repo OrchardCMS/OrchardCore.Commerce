@@ -45,7 +45,10 @@ public class PaymentController : Controller
     {
         var order = await _contentManager.GetAsync(orderId);
 
-        order.DisplayText = T["Success"].Value;
+        if (order != null)
+        {
+            order.DisplayText = T["Success"].Value;
+        }
 
         return View(order);
     }
