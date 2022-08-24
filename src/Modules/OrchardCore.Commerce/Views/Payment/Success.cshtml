@@ -1,12 +1,6 @@
 @using OrchardCore.ContentManagement
 
-@inject IContentManager contentManager
-
-@{
-    var order = await contentManager.GetAsync(Context.Request.Query["Order"]);
-
-    order.DisplayText = T["Success"].Value;
-}
+@model ContentItem
 
 <div class="row pt-md-5">
     <div class="col-6 mx-auto">
@@ -24,6 +18,6 @@
     </div>
 </div>
 <div class="pt-5">
-    @await Orchard.DisplayAsync(order)
+    @await Orchard.DisplayAsync(Model)
 </div>
 

@@ -20,7 +20,7 @@
   "TextField": [
     {
       "contentType": [ "Order" ],
-      "path": [ "~/success" ],
+      "path": [ "~/success*" ],
       "place": "-"
     }
   ]
