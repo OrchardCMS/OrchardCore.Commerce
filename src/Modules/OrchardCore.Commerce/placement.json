@@ -16,5 +16,12 @@
       "displayType": "SummaryAdmin",
       "place": "-"
     }
+  ],
+  "TextField": [
+    {
+      "contentType": [ "Order" ],
+      "path": [ "~/success" ],
+      "place": "-"
+    }
   ]
 }

@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Models;
+using OrchardCore.ContentManagement;
 using Stripe;
 using System.Threading.Tasks;
 
@@ -19,5 +20,5 @@ public interface ICardPaymentService
     /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see
     /// cref="ShoppingCart"/> content.
     /// </summary>
-    Task CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent);
+    Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent);
 }

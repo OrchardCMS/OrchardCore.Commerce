@@ -107,9 +107,9 @@ public class PaymentController : Controller
         {
             // The payment didn’t need any additional actions and completed!
             // Create the order content item.
-            await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
+            var order = await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
 
-            return Json(new { success = true });
+            return Json(new { success = true, order_content_item_id = order.ContentItemId });
         }
 
         // Invalid status.

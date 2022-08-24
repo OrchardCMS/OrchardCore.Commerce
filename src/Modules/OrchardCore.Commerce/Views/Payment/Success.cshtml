@@ -1,13 +1,13 @@
-<zone name="Header">
-    <header class="masthead">
-        <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in"></div>
-                <div class="intro-heading text-uppercase">@T["Success"]</div>
-            </div>
-        </div>
-    </header>
-</zone>
+@using OrchardCore.ContentManagement
+
+@inject IContentManager contentManager
+
+@{
+    var order = await contentManager.GetAsync(Context.Request.Query["Order"]);
+
+    order.DisplayText = T["Success"].Value;
+}
+
 <div class="row pt-md-5">
     <div class="col-6 mx-auto">
         <div class="panel panel-primary">
@@ -23,5 +23,7 @@
         </div>
     </div>
 </div>
-
+<div class="pt-5">
+    @await Orchard.DisplayAsync(order)
+</div>
 
