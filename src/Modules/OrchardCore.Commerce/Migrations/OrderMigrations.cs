@@ -67,13 +67,13 @@ public class OrderMigrations : DataMigration
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
-                        Options = new List<ListValueOption>
+                        Options = new[]
                         {
+                            new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
                             new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
                             new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
                             new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
-                        }
-                        .ToArray(),
+                        },
 
                         DefaultValue = Ordered.HtmlClassify(),
 
@@ -89,7 +89,7 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The address where the order should be shipped."))
                 );
 
-        return 2;
+        return 3;
     }
 
     public int UpdateFrom1()
@@ -150,5 +150,33 @@ public class OrderMigrations : DataMigration
                 );
 
         return 2;
+    }
+
+    public int UpdateFrom2()
+    {
+        _contentDefinitionManager
+            .AlterPartDefinition(nameof(OrderPart), part => part
+                .WithField(Status, field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName(Status)
+                    .WithDescription("The status of the order.")
+                    .WithEditor("PredefinedList")
+                    .WithSettings(new TextFieldPredefinedListEditorSettings
+                    {
+                        Options = new[]
+                        {
+                            new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
+                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
+                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
+                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
+                        },
+
+                        DefaultValue = Pending.HtmlClassify(),
+
+                        Editor = EditorOption.Radio,
+                    }))
+                );
+
+        return 3;
     }
 }

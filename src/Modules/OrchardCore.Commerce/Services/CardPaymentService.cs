@@ -174,6 +174,8 @@ public class CardPaymentService : ICardPaymentService
 
             orderPartContent.OrderId.Text = orderId;
 
+            orderPart.Status.Text = OrderMigrationConstants.Ordered;
+
             // To-do when shipping is implemented. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
             // oderPartContent.BillingAddress
             // oderPartContent.ShippingAddress

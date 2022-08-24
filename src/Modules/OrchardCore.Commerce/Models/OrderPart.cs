@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 
@@ -7,6 +8,8 @@ namespace OrchardCore.Commerce.Models;
 
 public class OrderPart : ContentPart
 {
+    public TextField Status { get; set; } = new();
+
     /// <summary>
     /// Gets the order's line items.
     /// </summary>
