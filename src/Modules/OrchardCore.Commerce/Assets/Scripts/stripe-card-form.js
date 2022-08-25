@@ -69,7 +69,7 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
                 .then(handleStripeJsResult);
         } else {
             // Show success message.
-            window.location.href = `${urlPrefix}/success/${response.OrderContentItemId}`;
+            window.location.href = `${urlPrefix}/success/${response.orderContentItemId}`;
         }
     }
 

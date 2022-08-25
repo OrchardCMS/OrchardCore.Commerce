@@ -45,10 +45,12 @@ public class PaymentController : Controller
     {
         var order = await _contentManager.GetAsync(orderId);
 
-        if (order != null)
+        if (order == null)
         {
-            order.DisplayText = T["Success"].Value;
+            return NotFound();
         }
+
+        order.DisplayText = T["Success"].Value;
 
         return View(order);
     }
