@@ -3,7 +3,7 @@
   "displayName": "OrchardCore Commerce - Development",
   "description": "Settings and contents required only for development environment.",
   "author": "OrchardCoreCommerce",
-  "website": "https://www.orchardcorecommerce.com",
+  "website": "https://commerce.orchardcore.net",
   "version": "1.0",
   "issetuprecipe": true,
   "categories": [ "orchardcorecommerce" ],
