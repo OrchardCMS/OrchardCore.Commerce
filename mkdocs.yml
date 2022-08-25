@@ -74,5 +74,7 @@ plugins:
 # Page tree
 nav:
   - About: index.md
+  - Resources:
+      - Libraries: resources/libraries/README.md
   - Releases:
       - 0.0.1: releases/0.0.1.md
