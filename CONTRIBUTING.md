@@ -14,15 +14,15 @@ Security issues should be reported privately, via email, to contact@orchardcore.
 
 Our team members also monitor other discussion forums:
 
-* [GitHub Discussions](https://github.com/OrchardCMS/OrchardCore.Commerce/discussions).
+- [GitHub Discussions](https://github.com/OrchardCMS/OrchardCore.Commerce/discussions).
 
 ## Contributing code and content
 
 We accept fixes and features! Here are some resources to help you get started on how to contribute code or new content.
 
-* Look at the [documentation](/docs/).
-* ["Help wanted" issues](https://github.com/OrchardCMS/OrchardCore.Commerce/labels/help%20wanted) - these issues are up for grabs. Comment on an issue if you want to create a fix.
-* ["Good first issue" issues](https://github.com/OrchardCMS/OrchardCore.Commerce/labels/good%20first%20issue) - we think these are a good for newcomers.
+- Look at the [documentation](/docs/).
+- ["Help wanted" issues](https://github.com/OrchardCMS/OrchardCore.Commerce/labels/help%20wanted) - these issues are up for grabs. Comment on an issue if you want to create a fix.
+- ["Good first issue" issues](https://github.com/OrchardCMS/OrchardCore.Commerce/labels/good%20first%20issue) - we think these are a good for newcomers.
 
 ### Identifying the scale
 
@@ -32,7 +32,7 @@ If you would like to contribute, first identify the scale of what you would like
 
 You will need to sign a [Contributor License Agreement](https://cla.dotnetfoundation.org/) when submitting your pull request. To complete the Contributor License Agreement (CLA), you will need to follow the instructions provided by the CLA bot when you send the pull request. This needs to only be done once for any .NET Foundation OSS project.
 
-If you don't know what a pull request is read this article: https://help.github.com/articles/using-pull-requests. Make sure the repository can build and all tests pass. Familiarize yourself with the project workflow and our coding conventions. The coding, style, and general engineering guidelines are published on the [Engineering guidelines](https://github.com/dotnet/aspnetcore/wiki/Engineering-guidelines) page.
+If you don't know what a pull request is read this article: <https://help.github.com/articles/using-pull-requests>. Make sure the repository can build and all tests pass. Familiarize yourself with the project workflow and our coding conventions. The coding, style, and general engineering guidelines are published on the [Engineering guidelines](https://github.com/dotnet/aspnetcore/wiki/Engineering-guidelines) page.
 
 ### Feedback
 
