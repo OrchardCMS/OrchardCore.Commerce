@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.ContentManagement;
 using Stripe;
 using System.Threading.Tasks;
 
@@ -14,14 +15,17 @@ public class PaymentController : Controller
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IStringLocalizer T;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IContentManager _contentManager;
 
     public PaymentController(
         ICardPaymentService cardPaymentService,
         IStringLocalizer<PaymentController> stringLocalizer,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IContentManager contentManager)
     {
         _cardPaymentService = cardPaymentService;
         _authorizationService = authorizationService;
+        _contentManager = contentManager;
         T = stringLocalizer;
     }
 
@@ -36,9 +40,20 @@ public class PaymentController : Controller
         return View();
     }
 
-    [Route("success")]
-    public IActionResult Success() =>
-        View();
+    [Route("success/{orderId}")]
+    public async Task<IActionResult> Success(string orderId)
+    {
+        var order = await _contentManager.GetAsync(orderId);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        order.DisplayText = T["Success"].Value;
+
+        return View(order);
+    }
 
     [Route("pay")]
     [HttpPost]
@@ -76,9 +91,9 @@ public class PaymentController : Controller
         {
             // The payment didn’t need any additional actions and completed!
             // Create the order content item.
-            await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
+            var order = await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
 
-            return Json(new { success = true });
+            return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
         }
 
         // Invalid status.

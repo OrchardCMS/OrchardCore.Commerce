@@ -129,7 +129,7 @@ public class CardPaymentService : ICardPaymentService
         return paymentIntent;
     }
 
-    public async Task CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
+    public async Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
@@ -185,6 +185,8 @@ public class CardPaymentService : ICardPaymentService
 
         // Shopping cart ID is null by default currently.
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
+
+        return order;
     }
 
     private static void CheckTotals(IEnumerable<Amount> totals)
