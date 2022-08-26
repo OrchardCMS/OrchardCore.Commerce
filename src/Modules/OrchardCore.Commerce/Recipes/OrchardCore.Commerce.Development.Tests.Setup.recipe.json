@@ -3,7 +3,7 @@
   "displayName": "TEST: OrchardCore Commerce",
   "description": "OrchardCore Commerce setup recipe for automated UI test execution.",
   "author": "OrchardCoreCommerce",
-  "website": "https://www.orchardcorecommerce.com",
+  "website": "https://commerce.orchardcore.net",
   "version": "1.0",
   "issetuprecipe": true,
   "categories": [

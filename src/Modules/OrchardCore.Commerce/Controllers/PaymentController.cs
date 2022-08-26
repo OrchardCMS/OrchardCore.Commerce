@@ -22,10 +22,10 @@ public class PaymentController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IContentManager _contentManager;
     private readonly IStringLocalizer T;
 
     public PaymentController(
@@ -40,6 +40,7 @@ public class PaymentController : Controller
         _cardPaymentService = cardPaymentService;
         _contentItemDisplayManager = contentItemDisplayManager;
         _shoppingCartHelpers = shoppingCartHelpers;
+        _contentManager = services.ContentManager.Value;
         _siteService = siteService;
         _updateModelAccessor = updateModelAccessor;
         _contentManager = services.ContentManager.Value;
@@ -67,9 +68,20 @@ public class PaymentController : Controller
         });
     }
 
-    [Route("success")]
-    public IActionResult Success() =>
-        View();
+    [Route("success/{orderId}")]
+    public async Task<IActionResult> Success(string orderId)
+    {
+        var order = await _contentManager.GetAsync(orderId);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        order.DisplayText = T["Success"].Value;
+
+        return View(order);
+    }
 
     [Route("pay")]
     [HttpPost]
@@ -109,7 +121,7 @@ public class PaymentController : Controller
             // Create the order content item.
             var order = await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
 
-            return Json(new { success = true, order_content_item_id = order.ContentItemId });
+            return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
         }
 
         // Invalid status.
