@@ -75,7 +75,7 @@ public class OrderMigrations : DataMigration
                             new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
                         },
 
-                        DefaultValue = Ordered.HtmlClassify(),
+                        DefaultValue = Pending.HtmlClassify(),
 
                         Editor = EditorOption.Radio,
                     }))
@@ -135,7 +135,7 @@ public class OrderMigrations : DataMigration
                         }
                         .ToArray(),
 
-                        DefaultValue = Ordered.HtmlClassify(),
+                        DefaultValue = Pending.HtmlClassify(),
 
                         Editor = EditorOption.Radio,
                     }))
