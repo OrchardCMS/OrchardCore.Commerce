@@ -83,6 +83,7 @@
 {
     <span class="hint">@settings.Hint</span>
 }
+
 <script asp-name="commerce-regions" asp-src="~/OrchardCore.Commerce/js/commerce-regions.min.js" at="Foot" depends-on="jQuery"></script>
 <script at="Foot" depends-on="commerce-regions">
     @if (Context.Items["commerce-regions-initialized"] == null)
@@ -90,5 +91,5 @@
         <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces)));</text>
         Context.Items["commerce-regions-initialized"] = true;
     }
-    commerceRegionsBind("#@Html.IdFor(model => model.Address.Province)", "#@Html.IdFor(model => model.Address.Region)");
+    commerceRegionsBind('#@Html.IdFor(model => model.Address.Province)', '.row', '#@Html.IdFor(model => model.Address.Region)');
 </script>
