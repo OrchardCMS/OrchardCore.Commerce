@@ -8,6 +8,7 @@ namespace OrchardCore.Commerce.Models;
 
 public class OrderPart : ContentPart
 {
+    public TextField OrderId { get; set; } = new();
     public TextField Status { get; set; } = new();
 
     /// <summary>

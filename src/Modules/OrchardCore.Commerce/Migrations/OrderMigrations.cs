@@ -11,7 +11,7 @@ using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
 using static OrchardCore.Commerce.Constants.ContentTypes;
-using static OrchardCore.Commerce.Constants.OrderMigrationConstants;
+using static OrchardCore.Commerce.Constants.OrderStatuses;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -56,13 +56,13 @@ public class OrderMigrations : DataMigration
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .Attachable()
                 .WithDescription("Makes a content item into an order.")
-                .WithField("OrderId", field => field
+                .WithField(nameof(OrderPart.OrderId), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField(Status, field => field
+                .WithField(nameof(OrderPart.Status), field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName(Status)
+                    .WithDisplayName(nameof(OrderPart.Status))
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
@@ -116,13 +116,13 @@ public class OrderMigrations : DataMigration
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .Attachable()
                 .WithDescription("Makes a content item into an order.")
-                .WithField("OrderId", field => field
+                .WithField(nameof(OrderPart.OrderId), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField(Status, field => field
+                .WithField(nameof(OrderPart.Status), field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName(Status)
+                    .WithDisplayName(nameof(OrderPart.Status))
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
@@ -156,9 +156,9 @@ public class OrderMigrations : DataMigration
     {
         _contentDefinitionManager
             .AlterPartDefinition(nameof(OrderPart), part => part
-                .WithField(Status, field => field
+                .WithField(nameof(OrderPart.Status), field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName(Status)
+                    .WithDisplayName(nameof(OrderPart.Status))
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
