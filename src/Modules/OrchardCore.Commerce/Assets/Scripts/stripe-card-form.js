@@ -1,4 +1,4 @@
-function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
+window.stripeCardForm = function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
     const stripeElements = stripe.elements();
     const errorContainer = document.querySelector('.error-message');
     const form = document.querySelector('.card-payment-form');
@@ -21,7 +21,7 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
             element.readOnly = true;
         });
 
-        card.update({disabled: true});
+        card.update({ disabled: true });
 
         submitButton.disabled = true;
     }
@@ -29,7 +29,8 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
     function displayError(error) {
         if (Object.prototype.hasOwnProperty.call(error, 'message')) {
             errorContainer.textContent = error.message;
-        } else {
+        }
+        else {
             errorContainer.textContent = error;
         }
 
@@ -38,7 +39,7 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
             element.readOnly = false;
         });
 
-        card.update({disabled: false});
+        card.update({ disabled: false });
 
         submitButton.disabled = false;
     }
@@ -54,27 +55,27 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
         });
     }
 
+    let handleStripeJsResult;
     function handleServerResponse(response) {
         const error = response.error;
 
         // Show error in payment form.
         if (error) {
             displayError(error);
-        } else if (response.requires_action) {
+        }
+        else if (response.requires_action) {
             // Use Stripe.js to handle required card action (like 3DS authentication).
             stripe.handleCardAction(response.payment_intent_client_secret)
-                // 'handleStripeJsResult' was used before it was defined.
-                // Since handleServerResponse and handleStripeJsResult are used by each other, one has to be the second.
-                // eslint-disable-next-line
                 .then(handleStripeJsResult);
-        } else {
+        }
+        else {
             // Show success message.
-            //window.location.href = `${urlPrefix}/success/${response.orderContentItemId}`;
+            // window.location.href = `${urlPrefix}/success/${response.orderContentItemId}`;
             document.querySelector('.pay-button-submit').click();
         }
     }
 
-    function handleStripeJsResult(result) {
+    handleStripeJsResult = function (result) {
         const error = result.error;
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
@@ -82,16 +83,17 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
         // Show error in payment form.
         if (error) {
             displayError(error);
-        } else {
+        }
+        else {
             // The card action has been handled.
             // The PaymentIntent can be confirmed again on the server.
-            fetchPay(JSON.stringify({payment_intent_id: result.paymentIntent.id}))
+            fetchPay(JSON.stringify({ payment_intent_id: result.paymentIntent.id }))
                 .then((confirmResult) => confirmResult.json())
                 .then(handleServerResponse)
                 .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
                 );
         }
-    }
+    };
 
     function stripePaymentMethodHandler(result) {
         const error = result.error;
@@ -101,9 +103,10 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
         // Show error in payment form.
         if (error) {
             displayError(error);
-        } else {
+        }
+        else {
             // Otherwise send paymentMethod.id to the server.
-            fetchPay(JSON.stringify({payment_method_id: result.paymentMethod.id}))
+            fetchPay(JSON.stringify({ payment_method_id: result.paymentMethod.id }))
                 .then((fetchPayResult) => {
                     // Handle server response.
                     fetchPayResult.json()
@@ -122,7 +125,8 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
             const eventError = event.error;
             if (eventError) {
                 displayError(eventError);
-            } else {
+            }
+            else {
                 errorContainer.textContent = '';
             }
         });
@@ -150,4 +154,4 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
         formElements = Array.from(form.elements);
         registerElements([card]);
     }
-}
+};
