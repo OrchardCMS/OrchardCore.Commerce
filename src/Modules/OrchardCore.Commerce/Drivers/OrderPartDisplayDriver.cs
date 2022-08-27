@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -15,15 +16,18 @@ namespace OrchardCore.Commerce.Drivers;
 
 public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 {
-    private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
+    private readonly IHttpContextAccessor _hca;
+    private readonly IProductService _productService;
 
     public OrderPartDisplayDriver(
-        IProductService productService,
-        IContentManager contentManager)
+        IContentManager contentManager,
+        IHttpContextAccessor hca,
+        IProductService productService)
     {
-        _productService = productService;
         _contentManager = contentManager;
+        _hca = hca;
+        _productService = productService;
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
@@ -32,7 +36,11 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part));
+        _hca.HttpContext?.Request.Path.Value?.Contains("/checkout") == true
+            ? null
+            : Initialize<OrderPartViewModel>(
+                GetEditorShapeType(context),
+                viewModel => PopulateViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
@@ -84,7 +92,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
         if (lineItems.Any())
         {
-            total = new Amount(0, lineItems.FirstOrDefault().LinePrice.Currency);
+            total = new Amount(0, lineItems[0].LinePrice.Currency);
 
             foreach (var item in lineItems)
             {
