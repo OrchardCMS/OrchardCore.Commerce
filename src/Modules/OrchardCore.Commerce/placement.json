@@ -37,5 +37,17 @@
       "path": [ "~/checkout" ],
       "place": "-"
     }
+  ],
+  "TextField_Edit": [
+    {
+      "differentiator": "OrderPart-OrderId",
+      "path": [ "~/checkout" ],
+      "place": "-"
+    },
+    {
+      "differentiator": "OrderPart-Status",
+      "path": [ "~/checkout" ],
+      "place": "-"
+    }
   ]
 }
