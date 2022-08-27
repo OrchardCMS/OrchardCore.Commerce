@@ -2,7 +2,7 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
     const stripeElements = stripe.elements();
     const errorContainer = document.querySelector('.error-message');
     const form = document.querySelector('.card-payment-form');
-    const submitButton = form.querySelector('button[type="submit"]');
+    const submitButton = form.querySelector('.pay-button');
     let formElements = Array.from(form.elements);
 
     const card = stripeElements.create('card', {
@@ -69,12 +69,15 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
                 .then(handleStripeJsResult);
         } else {
             // Show success message.
-            window.location.href = `${urlPrefix}/success/${response.orderContentItemId}`;
+            //window.location.href = `${urlPrefix}/success/${response.orderContentItemId}`;
+            document.querySelector('.pay-button-submit').click();
         }
     }
 
     function handleStripeJsResult(result) {
         const error = result.error;
+
+        document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
 
         // Show error in payment form.
         if (error) {
@@ -92,6 +95,8 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
 
     function stripePaymentMethodHandler(result) {
         const error = result.error;
+
+        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentMethod.id;
 
         // Show error in payment form.
         if (error) {
@@ -122,7 +127,7 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
             }
         });
 
-        form.addEventListener('submit', (event) => {
+        submitButton.addEventListener('click', (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
 
