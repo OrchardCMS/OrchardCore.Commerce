@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using Stripe;
 using System.Threading.Tasks;
@@ -39,11 +42,10 @@ public class PaymentController : Controller
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
         _contentItemDisplayManager = contentItemDisplayManager;
-        _shoppingCartHelpers = shoppingCartHelpers;
         _contentManager = services.ContentManager.Value;
+        _shoppingCartHelpers = shoppingCartHelpers;
         _siteService = siteService;
         _updateModelAccessor = updateModelAccessor;
-        _contentManager = services.ContentManager.Value;
         T = services.StringLocalizer.Value;
     }
 
@@ -71,16 +73,26 @@ public class PaymentController : Controller
     [Route("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
     {
-        var order = await _contentManager.GetAsync(orderId);
+        if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
-        if (order == null)
-        {
-            return NotFound();
-        }
-
-        order.DisplayText = T["Success"].Value;
-
+        order.DisplayText = T["Success"].Value; // This is only for display, intentionally not saved.
         return View(order);
+    }
+
+    [Route("success/{orderId}")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SuccessPost(string orderId)
+    {
+        if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
+
+        await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+        order.Alter<OrderPart>(part => part.Status =
+            new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() });
+        order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
+        await _contentManager.UpdateAsync(order);
+
+        return Redirect($"~/success/{order.ContentItemId}");
     }
 
     [Route("pay")]

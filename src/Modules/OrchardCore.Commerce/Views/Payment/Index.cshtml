@@ -18,6 +18,7 @@
     </div>
     <div class="card-payment-form_container">
         <form id="card-payment-form" class="card-payment-form">
+            @Html.AntiForgeryToken()
             <fieldset>
                 <div class="row">
                     <label for="card-payment-form_name">@T["Name"]</label>
@@ -37,7 +38,7 @@
 
             <shape type="StripeCheckout"
                    prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                   prop-PublishableKey="@Model.StripePublishableKey" />
+                   prop-PublishableKey="@Model.StripePublishableKey"/>
 
             <div class="error pt-4" role="alert">
                 <span class="error-message"></span>

@@ -70,8 +70,10 @@ window.stripeCardForm = function stripeCardForm(stripe, urlPrefix, fetchErrorTex
         }
         else {
             // Show success message.
-            // window.location.href = `${urlPrefix}/success/${response.orderContentItemId}`;
-            document.querySelector('.pay-button-submit').click();
+            const form = document.querySelector('.card-payment-form');
+            form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
+            form.method = 'POST';
+            form.submit();
         }
     }
 

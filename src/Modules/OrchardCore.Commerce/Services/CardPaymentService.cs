@@ -141,7 +141,7 @@ public class CardPaymentService : ICardPaymentService
         var order = await _contentManager.NewAsync("Order");
         var orderId = Guid.NewGuid();
 
-        order.DisplayText = "Order " + orderId;
+        order.DisplayText = T["Order {0}", orderId];
 
         // To-do when other parts of the checkout is implemented (notes).
         // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
@@ -170,11 +170,8 @@ public class CardPaymentService : ICardPaymentService
             // Shopping cart
             orderPart.LineItems.AddRange(lineItems);
 
-            var orderPartContent = orderPart.Content;
-
-            orderPartContent.OrderId.Text = orderId;
-
-            orderPart.Status.Text = OrderMigrationConstants.Ordered;
+            orderPart.OrderId.Text = orderId.ToString();
+            orderPart.Status.Text = OrderStatuses.Ordered;
 
             // To-do when shipping is implemented. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
             // oderPartContent.BillingAddress
