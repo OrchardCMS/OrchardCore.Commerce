@@ -10,7 +10,7 @@
     string publishableKey = Model.PublishableKey ?? string.Empty;
 }
 
-<h2>@T["Stripe Payment"]</h2>
+<h3>@T["Stripe Payment"]</h3>
 
 <fieldset>
     <div class="row credit-card">
@@ -20,6 +20,10 @@
 
 <div class="pay-button-container">
     <button type="submit" class="pay-button">@T["Pay {0}", defaultTotal]</button>
+</div>
+
+<div class="error pt-4" role="alert">
+    <span class="error-message"></span>
 </div>
 
 @if (!string.IsNullOrEmpty(publishableKey))
