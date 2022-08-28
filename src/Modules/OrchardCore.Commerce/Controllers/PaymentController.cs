@@ -101,7 +101,7 @@ public class PaymentController : Controller
 
     [Route("pay")]
     [HttpPost]
-    [IgnoreAntiforgeryToken]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Pay(string paymentMethodId, string paymentIntentId)
     {
         PaymentIntent paymentIntent;

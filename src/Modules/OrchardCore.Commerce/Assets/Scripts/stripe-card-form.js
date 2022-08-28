@@ -1,4 +1,4 @@
-window.stripeCardForm = function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
+window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText) {
     const stripeElements = stripe.elements();
     const errorContainer = document.querySelector('.error-message');
     const form = document.querySelector('.card-payment-form');
@@ -44,14 +44,19 @@ window.stripeCardForm = function stripeCardForm(stripe, urlPrefix, fetchErrorTex
         submitButton.disabled = false;
     }
 
-    function fetchPay(fetchBody) {
+    function fetchPay(data) {
+        data['__RequestVerificationToken'] = antiForgeryToken;
+
         return fetch(`${urlPrefix}/pay`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: fetchBody,
+            body: Object
+                .entries(data)
+                .map((pair) => pair.map(encodeURIComponent).join('='))
+                .join('&'),
         });
     }
 
@@ -70,7 +75,6 @@ window.stripeCardForm = function stripeCardForm(stripe, urlPrefix, fetchErrorTex
         }
         else {
             // Show success message.
-            const form = document.querySelector('.card-payment-form');
             form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
             form.method = 'POST';
             form.submit();
@@ -89,7 +93,7 @@ window.stripeCardForm = function stripeCardForm(stripe, urlPrefix, fetchErrorTex
         else {
             // The card action has been handled.
             // The PaymentIntent can be confirmed again on the server.
-            fetchPay(JSON.stringify({ paymentIntentId: result.paymentIntent.id }))
+            fetchPay({ paymentIntentId: result.paymentIntent.id })
                 .then((confirmResult) => confirmResult.json())
                 .then(handleServerResponse)
                 .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
@@ -108,7 +112,7 @@ window.stripeCardForm = function stripeCardForm(stripe, urlPrefix, fetchErrorTex
         }
         else {
             // Otherwise send paymentMethod.id to the server.
-            fetchPay(JSON.stringify({ paymentMethodId: result.paymentMethod.id }))
+            fetchPay({ paymentMethodId: result.paymentMethod.id })
                 .then((fetchPayResult) => {
                     // Handle server response.
                     fetchPayResult.json()
