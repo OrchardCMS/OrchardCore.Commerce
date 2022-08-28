@@ -19,21 +19,6 @@
     <div class="card-payment-form_container">
         <form id="card-payment-form" class="card-payment-form">
             @Html.AntiForgeryToken()
-            <fieldset>
-                <div class="row">
-                    <label for="card-payment-form_name">@T["Name"]</label>
-                    <input id="card-payment-form_name" type="text" required>
-                </div>
-                <div class="row">
-                    <label for="card-payment-form_email">@T["Email"]</label>
-                    <input id="card-payment-form_email" type="email" required>
-                </div>
-                <div class="row">
-                    <label for="card-payment-form_phone">@T["Phone"]</label>
-                    <input id="card-payment-form_phone" type="tel" required>
-                </div>
-            </fieldset>
-
             @await DisplayAsync(Model.NewOrderEditor)
 
             <shape type="StripeCheckout"
@@ -44,3 +29,9 @@
 </section>
 
 <style asp-src="~/OrchardCore.Commerce/css/credit-card-form.min.css"></style>
+
+<script at="Foot">
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('OrderPart_Email_Text').value = @Model.UserEmail.JsonHtmlContent();
+    });
+</script>

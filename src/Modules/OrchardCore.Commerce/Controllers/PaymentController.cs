@@ -1,6 +1,7 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
+using OrchardCore.Users;
 using Stripe;
 using System;
 using System.Threading.Tasks;
@@ -32,6 +34,7 @@ public class PaymentController : Controller
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
 
     public PaymentController(
@@ -50,6 +53,7 @@ public class PaymentController : Controller
         _shoppingCartHelpers = shoppingCartHelpers;
         _siteService = siteService;
         _updateModelAccessor = updateModelAccessor;
+        _userManager = services.UserManager.Value;
         T = services.StringLocalizer.Value;
     }
 
@@ -65,12 +69,16 @@ public class PaymentController : Controller
 
         var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
+        var email = User.Identity?.IsAuthenticated == true
+            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
+            : null;
 
         return View(new CheckoutViewModel
         {
             NewOrderEditor = editor,
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            UserEmail = email ?? string.Empty,
         });
     }
 

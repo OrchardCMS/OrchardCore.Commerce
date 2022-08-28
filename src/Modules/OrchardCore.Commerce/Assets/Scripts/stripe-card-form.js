@@ -141,16 +141,27 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         submitButton.addEventListener('click', (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-
             disableInputs();
 
-            stripe.createPaymentMethod({
-                type: 'card',
-                card: card,
-                billing_details: {
-                    // Include any additional collected billing details.
-                },
-            }).then(stripePaymentMethodHandler);
+            stripe
+                .createPaymentMethod({
+                    type: 'card',
+                    card: card,
+                    billing_details: {
+                        email: document.getElementById('OrderPart_Email_Text').value,
+                        name: document.getElementById('OrderPart_BillingAddress_Address_Name').value,
+                        phone: document.getElementById('OrderPart_Phone_Text').value,
+                        address: {
+                            city: document.getElementById('OrderPart_BillingAddress_Address_City').value,
+                            country: document.getElementById('OrderPart_BillingAddress_Address_Region').value,
+                            line1: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1').value,
+                            line2: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2').value,
+                            postal_code: document.getElementById('OrderPart_BillingAddress_Address_PostalCode').value,
+                            state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
+                        },
+                    },
+                })
+                .then(stripePaymentMethodHandler);
         });
     }
 
