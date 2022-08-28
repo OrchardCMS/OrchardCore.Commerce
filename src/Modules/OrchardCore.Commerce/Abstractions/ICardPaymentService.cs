@@ -14,7 +14,7 @@ public interface ICardPaymentService
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
     /// <returns>A new instance of <see cref="ConfirmPaymentRequest"/> for the current payment.</returns>
-    Task<PaymentIntent> CreatePaymentAsync(ConfirmPaymentRequest request);
+    Task<PaymentIntent> CreatePaymentAsync(string paymentMethodId, string paymentIntentId);
 
     /// <summary>
     /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see

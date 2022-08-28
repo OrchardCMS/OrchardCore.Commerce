@@ -53,10 +53,10 @@ public class CardPaymentService : ICardPaymentService
         T = stringLocalizer;
     }
 
-    public async Task<PaymentIntent> CreatePaymentAsync(ConfirmPaymentRequest request)
+    public async Task<PaymentIntent> CreatePaymentAsync(string paymentMethodId, string paymentIntentId)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
+        var totals = (await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy)).AsList();
 
         CheckTotals(totals);
 
@@ -98,7 +98,7 @@ public class CardPaymentService : ICardPaymentService
         }
 #pragma warning restore IDE0045 // Convert to conditional expression
 
-        if (request.PaymentMethodId != null)
+        if (!string.IsNullOrEmpty(paymentMethodId))
         {
             var paymentIntentOptions = new PaymentIntentCreateOptions
             {
@@ -107,7 +107,7 @@ public class CardPaymentService : ICardPaymentService
                 Description = T["Payment for {0}", siteSettings.SiteName].Value,
                 ConfirmationMethod = "manual",
                 Confirm = true,
-                PaymentMethod = request.PaymentMethodId,
+                PaymentMethod = paymentMethodId,
 
                 // If shipping is implemented, it needs to be added here too.
                 // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
@@ -117,11 +117,10 @@ public class CardPaymentService : ICardPaymentService
 
             paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, requestOptions);
         }
-
-        if (request.PaymentIntentId != null)
+        else if (!string.IsNullOrEmpty(paymentIntentId))
         {
             paymentIntent = await _paymentIntentService.ConfirmAsync(
-                request.PaymentIntentId,
+                paymentIntentId,
                 new PaymentIntentConfirmOptions(),
                 requestOptions);
         }
@@ -132,7 +131,7 @@ public class CardPaymentService : ICardPaymentService
     public async Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
+        var totals = (await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy)).AsList();
 
         CheckTotals(totals);
 

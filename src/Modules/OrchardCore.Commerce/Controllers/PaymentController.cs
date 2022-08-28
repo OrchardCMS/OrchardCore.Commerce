@@ -102,13 +102,13 @@ public class PaymentController : Controller
     [Route("pay")]
     [HttpPost]
     [IgnoreAntiforgeryToken]
-    public async Task<IActionResult> Pay([FromBody] ConfirmPaymentRequest request)
+    public async Task<IActionResult> Pay(string paymentMethodId, string paymentIntentId)
     {
         PaymentIntent paymentIntent;
 
         try
         {
-            paymentIntent = await _cardPaymentService.CreatePaymentAsync(request);
+            paymentIntent = await _cardPaymentService.CreatePaymentAsync(paymentMethodId, paymentIntentId);
         }
         catch (StripeException exception)
         {
