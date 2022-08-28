@@ -34,6 +34,9 @@ public class OrderPart : ContentPart
 #pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
     public IList<IPayment> Charges { get; } = new List<IPayment>();
 
+    public TextField Email { get; set; } = new();
+    public TextField Phone { get; set; } = new();
+
     public AddressField BillingAddress { get; set; } = new();
     public AddressField ShippingAddress { get; set; } = new();
 }

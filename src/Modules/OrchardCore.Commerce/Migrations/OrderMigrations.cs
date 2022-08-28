@@ -79,6 +79,14 @@ public class OrderMigrations : DataMigration
 
                         Editor = EditorOption.Radio,
                     }))
+                .WithField(nameof(OrderPart.Email), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("E-mail")
+                    .WithSettings(new TextFieldSettings { Required = true }))
+                .WithField(nameof(OrderPart.Phone), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Phone Number")
+                    .WithSettings(new TextFieldSettings { Required = true }))
                 .WithField(nameof(OrderPart.BillingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Billing Address")
@@ -129,9 +137,9 @@ public class OrderMigrations : DataMigration
                     {
                         Options = new List<ListValueOption>
                         {
-                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
-                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
-                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
+                            new() { Name = Ordered, Value = Ordered.HtmlClassify() },
+                            new() { Name = Shipped, Value = Shipped.HtmlClassify() },
+                            new() { Name = Arrived, Value = Arrived.HtmlClassify() },
                         }
                         .ToArray(),
 
@@ -156,6 +164,14 @@ public class OrderMigrations : DataMigration
     {
         _contentDefinitionManager
             .AlterPartDefinition(nameof(OrderPart), part => part
+                .WithField(nameof(OrderPart.Email), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("E-mail")
+                    .WithSettings(new TextFieldSettings { Required = true }))
+                .WithField(nameof(OrderPart.Phone), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Phone Number")
+                    .WithSettings(new TextFieldSettings { Required = true }))
                 .WithField(nameof(OrderPart.Status), field => field
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
