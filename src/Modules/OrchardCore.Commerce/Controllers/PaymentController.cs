@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
@@ -15,6 +16,7 @@ using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using Stripe;
+using System;
 using System.Threading.Tasks;
 using CommerceContentTypes = OrchardCore.Commerce.Constants.ContentTypes;
 
@@ -25,6 +27,7 @@ public class PaymentController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly ILogger _logger;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
@@ -42,6 +45,7 @@ public class PaymentController : Controller
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
         _siteService = siteService;
@@ -109,6 +113,11 @@ public class PaymentController : Controller
         catch (StripeException exception)
         {
             return Json(new { error = exception.StripeError.Message });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError("An error has occurred while processing the payment: {Exception}", exception);
+            return Json(new { error = T["An error has occurred while processing the payment."].Value });
         }
 
         return await GeneratePaymentResponseAsync(paymentIntent);
