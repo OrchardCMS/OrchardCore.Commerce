@@ -45,6 +45,7 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
     }
 
     function fetchPay(data) {
+        // eslint-disable-next-line dot-notation -- That would throw "no-underscore-dangle". This looks better anyway.
         data['__RequestVerificationToken'] = antiForgeryToken;
 
         return fetch(`${urlPrefix}/pay`, {
