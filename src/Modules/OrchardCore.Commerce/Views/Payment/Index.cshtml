@@ -1,21 +1,8 @@
 @model OrchardCore.Commerce.ViewModels.CheckoutViewModel
 
-<zone name="Header">
-    <header class="masthead">
-        <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in"></div>
-                <div class="intro-heading text-uppercase">@T["Checkout"]</div>
-            </div>
-        </div>
-    </header>
-</zone>
+<mvc-title text="@T["Checkout"]" />
+
 <section id="checkout">
-    <div class="row">
-        <div class="col-12 mx-auto">
-            <h1>@T["Checkout"]</h1>
-        </div>
-    </div>
     <div class="card-payment-form_container">
         <form id="card-payment-form" class="card-payment-form">
             @Html.AntiForgeryToken()
