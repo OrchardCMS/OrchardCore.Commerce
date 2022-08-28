@@ -111,7 +111,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             Attributes);
     }
 
-    public static async Task<LocalizedHtmlString> GetError(
+    public static async Task<LocalizedHtmlString> GetErrorAsync(
         string sku,
         ShoppingCartItem item,
         IHtmlLocalizer localizer,

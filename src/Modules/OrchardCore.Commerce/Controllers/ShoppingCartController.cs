@@ -94,7 +94,7 @@ public class ShoppingCartController : Controller
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
         var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
-        if (await ShoppingCartItem.GetError(line.ProductSku, parsedLine, T, _priceService) is { } error)
+        if (await ShoppingCartItem.GetErrorAsync(line.ProductSku, parsedLine, T, _priceService) is { } error)
         {
             await _notifier.ErrorAsync(error);
         }
