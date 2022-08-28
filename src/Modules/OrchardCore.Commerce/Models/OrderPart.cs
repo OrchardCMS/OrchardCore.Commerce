@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
@@ -32,4 +33,7 @@ public class OrderPart : ContentPart
 #pragma warning restore SCS0028 // TypeNameHandling is set to the other value than 'None'. It may lead to deserialization vulnerability.
 #pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
     public IList<IPayment> Charges { get; } = new List<IPayment>();
+
+    public AddressField BillingAddress { get; set; } = new();
+    public AddressField ShippingAddress { get; set; } = new();
 }

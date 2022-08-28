@@ -79,11 +79,11 @@ public class OrderMigrations : DataMigration
 
                         Editor = EditorOption.Radio,
                     }))
-                .WithField("BillingAddress", field => field
+                .WithField(nameof(OrderPart.BillingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Billing Address")
                     .WithDescription("The address of the party that should be billed for this order."))
-                .WithField("ShippingAddress", field => field
+                .WithField(nameof(OrderPart.ShippingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Shipping Address")
                     .WithDescription("The address where the order should be shipped."))
@@ -139,11 +139,11 @@ public class OrderMigrations : DataMigration
 
                         Editor = EditorOption.Radio,
                     }))
-                .WithField("BillingAddress", field => field
+                .WithField(nameof(OrderPart.BillingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Billing Address")
                     .WithDescription("The address of the party that should be billed for this order."))
-                .WithField("ShippingAddress", field => field
+                .WithField(nameof(OrderPart.ShippingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Shipping Address")
                     .WithDescription("The address where the order should be shipped."))
