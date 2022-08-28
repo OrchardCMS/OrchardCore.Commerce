@@ -116,8 +116,9 @@ public class PaymentController : Controller
         }
         catch (Exception exception)
         {
-            _logger.LogError("An error has occurred while processing the payment: {Exception}", exception);
-            return Json(new { error = T["An error has occurred while processing the payment."].Value });
+            _logger.LogError(exception, "Payment processing failed.");
+            var message = T["An error has occurred while processing the payment. Please verify and try again."];
+            return Json(new { error = message.Value });
         }
 
         return await GeneratePaymentResponseAsync(paymentIntent);

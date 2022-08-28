@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Services;
+using System;
 
 namespace OrchardCore.Commerce.Extensions;
 public static class StripeApiKeyExtensions
@@ -19,9 +20,11 @@ public static class StripeApiKeyExtensions
             var protector = dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
             return protector.Unprotect(encryptedKey);
         }
-        catch
+        catch (Exception exception)
         {
-            logger.LogError("The Stripe secret key could not be decrypted. It may have been encrypted using a different key.");
+            logger.LogError(
+                exception,
+                "The Stripe secret key could not be decrypted. It may have been encrypted using a different key.");
             return null;
         }
     }
