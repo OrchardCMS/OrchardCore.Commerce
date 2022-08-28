@@ -13,7 +13,7 @@ public interface ICardPaymentService
     /// <summary>
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
-    /// <returns>A new instance of <see cref="ConfirmPaymentRequest"/> for the current payment.</returns>
+    /// <returns>A new instance of <see cref="PaymentIntent"/> for the current payment.</returns>
     Task<PaymentIntent> CreatePaymentAsync(string paymentMethodId, string paymentIntentId);
 
     /// <summary>

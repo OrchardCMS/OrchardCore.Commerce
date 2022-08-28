@@ -157,10 +157,6 @@ public class OrderMigrations : DataMigration
         _contentDefinitionManager
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .WithField(nameof(OrderPart.Status), field => field
-                    .OfType(nameof(TextField))
-                    .WithDisplayName(nameof(OrderPart.Status))
-                    .WithDescription("The status of the order.")
-                    .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
                         Options = new[]
