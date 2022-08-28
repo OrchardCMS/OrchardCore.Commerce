@@ -17,6 +17,7 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
+using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
@@ -36,7 +37,10 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // Infrastructure
         services.AddOrchardServices();
+        services.AddScoped<IDataMigration, MvcTitleMigrations>();
+        services.AddTagHelpers<MvcTitleTagHelper>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
