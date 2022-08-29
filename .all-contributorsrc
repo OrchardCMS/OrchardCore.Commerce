@@ -1,0 +1,126 @@
+{
+  "projectName": "OrchardCore.Commerce",
+  "projectOwner": "OrchardCMS",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "Contributors.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributorsPerLine": 6,
+  "contributors": [
+    {
+      "login": "DAud-IcI",
+      "name": "Dávid El-Saig",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4007293?v=4",
+      "profile": "https://github.com/DAud-IcI",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "DemeSzabolcs",
+      "name": "Szabolcs Deme",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80963259?v=4",
+      "profile": "https://github.com/DemeSzabolcs",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bleroy",
+      "name": "Bertrand Le Roy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1165609?v=4",
+      "profile": "http://bertrandleroy.net/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Psichorex",
+      "name": "Roland Márkus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/92299130?v=4",
+      "profile": "https://github.com/Psichorex",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "agriffard",
+      "name": "Antoine Griffard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/703248?v=4",
+      "profile": "http://antoinegriffard.com/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "microposmp",
+      "name": "Magnus Pettersson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/49494169?v=4",
+      "profile": "https://github.com/microposmp",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Skrypt",
+      "name": "Jasmin Savard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3228637?v=4",
+      "profile": "https://github.com/Skrypt",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "DrewBrasher",
+      "name": "Drew Brasher",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9272802?v=4",
+      "profile": "https://drewbrasher.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jhgbrt",
+      "name": "jhgbrt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126034?v=4",
+      "profile": "https://github.com/jhgbrt",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "0liver",
+      "name": "0liver",
+      "avatar_url": "https://avatars.githubusercontent.com/u/164360?v=4",
+      "profile": "https://github.com/0liver",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "TRiV07",
+      "name": "Alexandr Ponomarenko",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5490329?v=4",
+      "profile": "https://github.com/TRiV07",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Piedone",
+      "name": "Zoltán Lehóczky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1976647?v=4",
+      "profile": "https://lombiq.com/",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "skipCi": true
+}
