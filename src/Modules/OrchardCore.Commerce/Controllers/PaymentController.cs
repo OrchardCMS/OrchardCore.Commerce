@@ -60,18 +60,17 @@ public class PaymentController : Controller
     [Route("checkout")]
     public async Task<IActionResult> Index()
     {
+        var isAuthenticated = User.Identity?.IsAuthenticated == true;
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
-            return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
+            return isAuthenticated ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
         if (await _shoppingCartHelpers.CalculateSingleCurrencyTotalAsync() is not { } total) return View("CartEmpty");
 
         var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
-        var email = User.Identity?.IsAuthenticated == true
-            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
-            : null;
+        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : null;
 
         return View(new CheckoutViewModel
         {
