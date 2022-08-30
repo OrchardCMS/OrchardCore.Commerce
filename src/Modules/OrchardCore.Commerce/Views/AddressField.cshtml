@@ -1,2 +1,13 @@
 @model AddressFieldViewModel
-@Model.AddressHtml
+
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<dl class="field field-type-addressfield field-name-@name">
+    <dt>@Model.PartFieldDefinition.DisplayName()</dt>
+    <dl>@Model.AddressHtml</dl>
+</dl>

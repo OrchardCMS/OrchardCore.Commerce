@@ -22,6 +22,14 @@
       "contentType": [ "Order" ],
       "path": [ "~/success*" ],
       "place": "-"
+    },
+    {
+      "contentPart": [ "StripePaymentPart" ],
+      "place": "-"
+    },
+    {
+      "differentiator": "OrderPart-OrderId",
+      "place": "-"
     }
   ],
   "TitlePart_Edit": [
