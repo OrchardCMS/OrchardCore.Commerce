@@ -13,8 +13,12 @@ public static class Regions
     public static IList<RegionInfo> All { get; } =
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
-            .Select(culture => new RegionInfo(culture.LCID))
-            .Where(region => region.TwoLetterISORegionName.Length == 2) // Filter out world and other 3-digit regions
+            .Select(culture =>
+            {
+                try { return new RegionInfo(culture.LCID); }
+                catch { return null; }
+            })
+            .Where(region => region?.TwoLetterISORegionName.Length == 2) // Filter out world and other 3-digit regions
             .Distinct()
             .ToList();
 

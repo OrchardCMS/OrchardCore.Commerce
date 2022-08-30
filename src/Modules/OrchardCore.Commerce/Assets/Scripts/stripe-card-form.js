@@ -1,8 +1,8 @@
-function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
+window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText) {
     const stripeElements = stripe.elements();
     const errorContainer = document.querySelector('.error-message');
     const form = document.querySelector('.card-payment-form');
-    const submitButton = form.querySelector('button[type="submit"]');
+    const submitButton = form.querySelector('.pay-button');
     let formElements = Array.from(form.elements);
 
     const card = stripeElements.create('card', {
@@ -21,7 +21,7 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
             element.readOnly = true;
         });
 
-        card.update({disabled: true});
+        card.update({ disabled: true });
 
         submitButton.disabled = true;
     }
@@ -29,7 +29,8 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
     function displayError(error) {
         if (Object.prototype.hasOwnProperty.call(error, 'message')) {
             errorContainer.textContent = error.message;
-        } else {
+        }
+        else {
             errorContainer.textContent = error;
         }
 
@@ -38,67 +39,81 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
             element.readOnly = false;
         });
 
-        card.update({disabled: false});
+        card.update({ disabled: false });
 
         submitButton.disabled = false;
     }
 
-    function fetchPay(fetchBody) {
+    function fetchPay(data) {
+        // eslint-disable-next-line dot-notation -- That would throw "no-underscore-dangle". This looks better anyway.
+        data['__RequestVerificationToken'] = antiForgeryToken;
+
         return fetch(`${urlPrefix}/pay`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: fetchBody,
+            body: Object
+                .entries(data)
+                .map((pair) => pair.map(encodeURIComponent).join('='))
+                .join('&'),
         });
     }
 
+    let handleStripeJsResult;
     function handleServerResponse(response) {
         const error = response.error;
 
         // Show error in payment form.
         if (error) {
             displayError(error);
-        } else if (response.requires_action) {
+        }
+        else if (response.requires_action) {
             // Use Stripe.js to handle required card action (like 3DS authentication).
             stripe.handleCardAction(response.payment_intent_client_secret)
-                // 'handleStripeJsResult' was used before it was defined.
-                // Since handleServerResponse and handleStripeJsResult are used by each other, one has to be the second.
-                // eslint-disable-next-line
                 .then(handleStripeJsResult);
-        } else {
+        }
+        else {
             // Show success message.
-            window.location.href = `${urlPrefix}/success/${response.orderContentItemId}`;
+            form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
+            form.method = 'POST';
+            form.submit();
         }
     }
 
-    function handleStripeJsResult(result) {
+    handleStripeJsResult = function (result) {
         const error = result.error;
+
+        document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
 
         // Show error in payment form.
         if (error) {
             displayError(error);
-        } else {
+        }
+        else {
             // The card action has been handled.
             // The PaymentIntent can be confirmed again on the server.
-            fetchPay(JSON.stringify({payment_intent_id: result.paymentIntent.id}))
+            fetchPay({ paymentIntentId: result.paymentIntent.id })
                 .then((confirmResult) => confirmResult.json())
                 .then(handleServerResponse)
                 .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
                 );
         }
-    }
+    };
 
     function stripePaymentMethodHandler(result) {
         const error = result.error;
 
+        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentMethod.id;
+
         // Show error in payment form.
         if (error) {
             displayError(error);
-        } else {
+        }
+        else {
             // Otherwise send paymentMethod.id to the server.
-            fetchPay(JSON.stringify({payment_method_id: result.paymentMethod.id}))
+            fetchPay({ paymentMethodId: result.paymentMethod.id })
                 .then((fetchPayResult) => {
                     // Handle server response.
                     fetchPayResult.json()
@@ -117,24 +132,36 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
             const eventError = event.error;
             if (eventError) {
                 displayError(eventError);
-            } else {
+            }
+            else {
                 errorContainer.textContent = '';
             }
         });
 
-        form.addEventListener('submit', (event) => {
+        submitButton.addEventListener('click', (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-
             disableInputs();
 
-            stripe.createPaymentMethod({
-                type: 'card',
-                card: card,
-                billing_details: {
-                    // Include any additional collected billing details.
-                },
-            }).then(stripePaymentMethodHandler);
+            stripe
+                .createPaymentMethod({
+                    type: 'card',
+                    card: card,
+                    billing_details: {
+                        email: document.getElementById('OrderPart_Email_Text').value,
+                        name: document.getElementById('OrderPart_BillingAddress_Address_Name').value,
+                        phone: document.getElementById('OrderPart_Phone_Text').value,
+                        address: {
+                            city: document.getElementById('OrderPart_BillingAddress_Address_City').value,
+                            country: document.getElementById('OrderPart_BillingAddress_Address_Region').value,
+                            line1: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1').value,
+                            line2: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2').value,
+                            postal_code: document.getElementById('OrderPart_BillingAddress_Address_PostalCode').value,
+                            state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
+                        },
+                    },
+                })
+                .then(stripePaymentMethodHandler);
         });
     }
 
@@ -145,4 +172,4 @@ function stripeCardForm(stripe, urlPrefix, fetchErrorText) {
         formElements = Array.from(form.elements);
         registerElements([card]);
     }
-}
+};

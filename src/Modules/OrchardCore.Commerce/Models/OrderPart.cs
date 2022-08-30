@@ -1,5 +1,7 @@
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Fields;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 
@@ -7,6 +9,9 @@ namespace OrchardCore.Commerce.Models;
 
 public class OrderPart : ContentPart
 {
+    public TextField OrderId { get; set; } = new();
+    public TextField Status { get; set; } = new();
+
     /// <summary>
     /// Gets the order's line items.
     /// </summary>
@@ -28,4 +33,10 @@ public class OrderPart : ContentPart
 #pragma warning restore SCS0028 // TypeNameHandling is set to the other value than 'None'. It may lead to deserialization vulnerability.
 #pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
     public IList<IPayment> Charges { get; } = new List<IPayment>();
+
+    public TextField Email { get; set; } = new();
+    public TextField Phone { get; set; } = new();
+
+    public AddressField BillingAddress { get; set; } = new();
+    public AddressField ShippingAddress { get; set; } = new();
 }

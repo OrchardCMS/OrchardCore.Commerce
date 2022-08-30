@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Scripts\" />
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.occ-15.3" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.4.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.4.0" />

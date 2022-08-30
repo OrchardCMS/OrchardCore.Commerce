@@ -1,2 +1,14 @@
 @model AddressFieldViewModel
-@Model.AddressHtml
+
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var definition = Model.PartFieldDefinition;
+    var name = $"{definition.PartDefinition.Name}-{definition.Name}".HtmlClassify();
+}
+
+<dl class="field field-type-addressfield field-name-@name">
+    <dt>@Model.PartFieldDefinition.DisplayName()</dt>
+    <dl>@Model.AddressHtml</dl>
+</dl>

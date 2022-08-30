@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,8 +13,15 @@ namespace OrchardCore.Commerce.Services;
 public class PriceService : IPriceService
 {
     private readonly IEnumerable<IPriceProvider> _providers;
+    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
 
-    public PriceService(IEnumerable<IPriceProvider> priceProviders) => _providers = priceProviders;
+    public PriceService(
+        IEnumerable<IPriceProvider> priceProviders,
+        IPriceSelectionStrategy priceSelectionStrategy)
+    {
+        _providers = priceProviders;
+        _priceSelectionStrategy = priceSelectionStrategy;
+    }
 
     public async Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
@@ -29,4 +37,7 @@ public class PriceService : IPriceService
 
         return items;
     }
+
+    public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices) =>
+        _priceSelectionStrategy.SelectPrice(prices);
 }

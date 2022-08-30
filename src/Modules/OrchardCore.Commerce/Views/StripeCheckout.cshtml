@@ -1,0 +1,40 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.Commerce.MoneyDataType
+
+@{
+    if (Model.DefaultTotal is not Amount defaultTotal)
+    {
+        throw new InvalidOperationException("Missing DefaultTotal");
+    }
+
+    string publishableKey = Model.PublishableKey ?? string.Empty;
+}
+
+<h3>@T["Stripe Payment"]</h3>
+
+<fieldset>
+    <div class="row credit-card">
+        <div id="card-payment-form_card">@T["Stripe payment is not configured for this site."]</div>
+    </div>
+</fieldset>
+
+<div class="pay-button-container">
+    <button type="submit" class="pay-button">@T["Pay {0}", defaultTotal]</button>
+</div>
+
+<div class="error pt-4" role="alert">
+    <span class="error-message"></span>
+</div>
+
+@if (!string.IsNullOrEmpty(publishableKey))
+{
+    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
+    <script at="Head" asp-name="StripeCardForm" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
+    <script at="Foot" depends-on="StripeJs,StripeCardForm">
+        stripeCardForm(
+            Stripe(@publishableKey.JsonHtmlContent()),
+            document.querySelector('input[name="__RequestVerificationToken"]').value,
+            @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
+            @T["There was an error during fetching!"].Json());
+    </script>
+}

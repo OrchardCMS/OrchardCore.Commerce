@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,4 +15,10 @@ public interface IPriceService
     /// </summary>
     /// <param name="items">The quantities and products to which prices must be added.</param>
     Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items);
+
+    /// <summary>
+    /// Returns a price from the provided collection of <paramref name="prices"/> using the default <see
+    /// cref="IPriceSelectionStrategy"/>.
+    /// </summary>
+    Amount SelectPrice(IEnumerable<PrioritizedPrice> prices);
 }

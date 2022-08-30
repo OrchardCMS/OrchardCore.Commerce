@@ -1,105 +1,24 @@
-@using OrchardCore.Commerce.Abstractions
-@using OrchardCore.Commerce.Extensions
-@using OrchardCore.Commerce.Models
-@using OrchardCore.Commerce.MoneyDataType
-@using OrchardCore.Entities
-@using OrchardCore.Settings
-@using Microsoft.AspNetCore.Mvc.Localization
+@model OrchardCore.Commerce.ViewModels.CheckoutViewModel
 
-@inject IShoppingCartPersistence ShoppingCartPersistence
-@inject IPriceService PriceService
-@inject IPriceSelectionStrategy PriceSelectionStrategy
-@inject ISiteService SiteService
+<mvc-title text="@T["Checkout"]" />
 
-@{
-    // Shopping cart ID is null by default currently.
-    var currentShoppingCart = await ShoppingCartPersistence.RetrieveAsync();
-
-    var cartIsNotEmpty = currentShoppingCart.Count != 0;
-
-
-    Amount defaultTotal = new();
-    string publishableKey = string.Empty;
-
-    if (cartIsNotEmpty)
-    {
-        var totals = await currentShoppingCart.CalculateTotalsAsync(PriceService, PriceSelectionStrategy);
-
-        // We can only pay in one currency at a time. Later we have to figure out what to do if there are multiple
-        // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
-        defaultTotal = totals.SingleOrDefault();
-
-        publishableKey = (await SiteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey;
-    }
-
-    var urlPrefix = Url.Content("~/").TrimEnd('/');
-}
-
-<zone name="Header">
-    <header class="masthead">
-        <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in"></div>
-                <div class="intro-heading text-uppercase">@T["Checkout"]</div>
-            </div>
-        </div>
-    </header>
-</zone>
 <section id="checkout">
-    @if (cartIsNotEmpty)
-    {
-        <div class="row">
-            <div class="col-12 mx-auto">
-                <h1>@T["Orchard Core Commerce"]</h1>
-                <h2>@T["Stripe Payment"]</h2>
-            </div>
-        </div>
-        <div class="card-payment-form_containter">
-            <form id="card-payment-form" class="card-payment-form">
-                <fieldset>
-                    <div class="row">
-                        <label for="card-payment-form_name">@T["Name"]</label>
-                        <input id="card-payment-form_name" type="text" required>
-                    </div>
-                    <div class="row">
-                        <label for="card-payment-form_email">@T["Email"]</label>
-                        <input id="card-payment-form_email" type="email" required>
-                    </div>
-                    <div class="row">
-                        <label for="card-payment-form_phone">@T["Phone"]</label>
-                        <input id="card-payment-form_phone" type="tel" required>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <div class="row credit-card">
-                        <div id="card-payment-form_card">@T["Stripe payment is not configured for this site."]</div>
-                    </div>
-                </fieldset>
-                <div class="pay-button-container">
-                    <button type="submit" class="pay-button">@T["Pay {0}", defaultTotal]</button>
-                </div>
-                <div class="error pt-4" role="alert">
-                    <span class="error-message"></span>
-                </div>
-            </form>
-        </div>
-    }
-    else
-    {
-        <p>@T["Your shopping cart is empty."]</p>
-    }
+    <div class="card-payment-form_container">
+        <form id="card-payment-form" class="card-payment-form">
+            @Html.AntiForgeryToken()
+            @await DisplayAsync(Model.NewOrderEditor)
+
+            <shape type="StripeCheckout"
+                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                   prop-PublishableKey="@Model.StripePublishableKey"/>
+        </form>
+    </div>
 </section>
 
-@if (!string.IsNullOrEmpty(publishableKey))
-{
-    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
-    <script at="Head" asp-name="StripeCardForm" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
-    <script at="Foot" depends-on="StripeJs,StripeCardForm">
-        stripeCardForm(
-            Stripe(@publishableKey.JsonHtmlContent()),
-            @urlPrefix.JsonHtmlContent(),
-            @T["There was an error during fetching!"].Json());
-    </script>
-}
-
 <style asp-src="~/OrchardCore.Commerce/css/credit-card-form.min.css"></style>
+
+<script at="Foot">
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('OrderPart_Email_Text').value = @Model.UserEmail.JsonHtmlContent();
+    });
+</script>

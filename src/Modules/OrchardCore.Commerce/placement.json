@@ -22,6 +22,44 @@
       "contentType": [ "Order" ],
       "path": [ "~/success*" ],
       "place": "-"
+    },
+    {
+      "differentiator": "OrderPart-OrderId",
+      "place": "-"
+    },
+    {
+      "differentiator": "StripePaymentPart-PaymentMethodId",
+      "place": "-"
+    },
+    {
+      "differentiator": "StripePaymentPart-PaymentIntentId",
+      "place": "-"
+    }
+  ],
+  "TitlePart_Edit": [
+    {
+      "contentType": [ "Order" ],
+      "path": [ "~/checkout" ],
+      "place": "-"
+    }
+  ],
+  "HtmlBodyPart_Edit": [
+    {
+      "contentType": [ "Order" ],
+      "path": [ "~/checkout" ],
+      "place": "-"
+    }
+  ],
+  "TextField_Edit": [
+    {
+      "differentiator": "OrderPart-OrderId",
+      "path": [ "~/checkout" ],
+      "place": "-"
+    },
+    {
+      "differentiator": "OrderPart-Status",
+      "path": [ "~/checkout" ],
+      "place": "-"
     }
   ]
 }

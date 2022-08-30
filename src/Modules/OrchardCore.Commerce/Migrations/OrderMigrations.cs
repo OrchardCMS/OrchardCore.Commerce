@@ -11,7 +11,7 @@ using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
 using static OrchardCore.Commerce.Constants.ContentTypes;
-using static OrchardCore.Commerce.Constants.OrderMigrationConstants;
+using static OrchardCore.Commerce.Constants.OrderStatuses;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -56,40 +56,48 @@ public class OrderMigrations : DataMigration
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .Attachable()
                 .WithDescription("Makes a content item into an order.")
-                .WithField("OrderId", field => field
+                .WithField(nameof(OrderPart.OrderId), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField(Status, field => field
+                .WithField(nameof(OrderPart.Status), field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName(Status)
+                    .WithDisplayName(nameof(OrderPart.Status))
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
-                        Options = new List<ListValueOption>
+                        Options = new[]
                         {
+                            new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
                             new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
                             new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
                             new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
-                        }
-                        .ToArray(),
+                        },
 
-                        DefaultValue = Ordered.HtmlClassify(),
+                        DefaultValue = Pending.HtmlClassify(),
 
                         Editor = EditorOption.Radio,
                     }))
-                .WithField("BillingAddress", field => field
+                .WithField(nameof(OrderPart.Email), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("E-mail")
+                    .WithSettings(new TextFieldSettings { Required = true }))
+                .WithField(nameof(OrderPart.Phone), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Phone Number")
+                    .WithSettings(new TextFieldSettings { Required = true }))
+                .WithField(nameof(OrderPart.BillingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Billing Address")
                     .WithDescription("The address of the party that should be billed for this order."))
-                .WithField("ShippingAddress", field => field
+                .WithField(nameof(OrderPart.ShippingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Shipping Address")
                     .WithDescription("The address where the order should be shipped."))
                 );
 
-        return 2;
+        return 3;
     }
 
     public int UpdateFrom1()
@@ -116,39 +124,71 @@ public class OrderMigrations : DataMigration
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .Attachable()
                 .WithDescription("Makes a content item into an order.")
-                .WithField("OrderId", field => field
+                .WithField(nameof(OrderPart.OrderId), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
-                .WithField(Status, field => field
+                .WithField(nameof(OrderPart.Status), field => field
                     .OfType(nameof(TextField))
-                    .WithDisplayName(Status)
+                    .WithDisplayName(nameof(OrderPart.Status))
                     .WithDescription("The status of the order.")
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
                         Options = new List<ListValueOption>
                         {
-                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
-                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
-                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
+                            new() { Name = Ordered, Value = Ordered.HtmlClassify() },
+                            new() { Name = Shipped, Value = Shipped.HtmlClassify() },
+                            new() { Name = Arrived, Value = Arrived.HtmlClassify() },
                         }
                         .ToArray(),
 
-                        DefaultValue = Ordered.HtmlClassify(),
+                        DefaultValue = Pending.HtmlClassify(),
 
                         Editor = EditorOption.Radio,
                     }))
-                .WithField("BillingAddress", field => field
+                .WithField(nameof(OrderPart.BillingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Billing Address")
                     .WithDescription("The address of the party that should be billed for this order."))
-                .WithField("ShippingAddress", field => field
+                .WithField(nameof(OrderPart.ShippingAddress), field => field
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Shipping Address")
                     .WithDescription("The address where the order should be shipped."))
                 );
 
         return 2;
+    }
+
+    public int UpdateFrom2()
+    {
+        _contentDefinitionManager
+            .AlterPartDefinition(nameof(OrderPart), part => part
+                .WithField(nameof(OrderPart.Email), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("E-mail")
+                    .WithSettings(new TextFieldSettings { Required = true }))
+                .WithField(nameof(OrderPart.Phone), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("Phone Number")
+                    .WithSettings(new TextFieldSettings { Required = true }))
+                .WithField(nameof(OrderPart.Status), field => field
+                    .WithSettings(new TextFieldPredefinedListEditorSettings
+                    {
+                        Options = new[]
+                        {
+                            new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
+                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
+                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
+                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
+                        },
+
+                        DefaultValue = Pending.HtmlClassify(),
+
+                        Editor = EditorOption.Radio,
+                    }))
+                );
+
+        return 3;
     }
 }

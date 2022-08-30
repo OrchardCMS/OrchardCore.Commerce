@@ -11,9 +11,9 @@ public class FakePriceService : IPriceService
 {
     public Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
         Task.FromResult<IList<ShoppingCartItem>>(
-            items
-                .Select((item, index) => AddPriceToShoppingCartItem(item, index))
-                .ToList());
+            items.Select(AddPriceToShoppingCartItem).ToList());
+
+    public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices) => prices.First().Price;
 
     private static ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, int index = 0) =>
         item.WithPrice(new PrioritizedPrice(priority: 0, price: new Amount(42 + index, Currency.UsDollar)));

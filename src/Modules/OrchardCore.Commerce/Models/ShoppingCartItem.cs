@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Serialization;
@@ -108,5 +109,23 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             price,
             quantity * price,
             Attributes);
+    }
+
+    public static async Task<LocalizedHtmlString> GetErrorAsync(
+        string sku,
+        ShoppingCartItem item,
+        IHtmlLocalizer localizer,
+        IPriceService priceService)
+    {
+        if (item is null)
+        {
+            return localizer["Product with SKU {0} not found.", sku];
+        }
+
+        item = (await priceService.AddPricesAsync(new[] { item })).Single();
+
+        return item.Prices.Any()
+            ? null
+            : localizer["Can't add product {0} because it doesn't have a price, or its currency doesn't match the current display currency.", sku];
     }
 }

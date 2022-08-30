@@ -1,10 +1,13 @@
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Workflows.Services;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,30 +16,32 @@ namespace OrchardCore.Commerce.Controllers;
 
 public class ShoppingCartController : Controller
 {
-    private readonly IShoppingCartPersistence _shoppingCartPersistence;
-    private readonly IShoppingCartHelpers _shoppingCartHelpers;
-    private readonly IProductService _productService;
-    private readonly IPriceService _priceService;
-    private readonly IPriceSelectionStrategy _priceStrategy;
     private readonly IContentManager _contentManager;
+    private readonly INotifier _notifier;
+    private readonly IPriceService _priceService;
+    private readonly IProductService _productService;
+    private readonly IShoppingCartPersistence _shoppingCartPersistence;
+    private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
+    private readonly IHtmlLocalizer<ShoppingCartController> T;
 
     public ShoppingCartController(
-        IShoppingCartPersistence shoppingCartPersistence,
-        IShoppingCartHelpers shoppingCartHelpers,
-        IProductService productService,
+        INotifier notifier,
+        IOrchardServices<ShoppingCartController> services,
         IPriceService priceService,
-        IPriceSelectionStrategy priceStrategy,
-        IContentManager contentManager,
+        IProductService productService,
+        IShoppingCartPersistence shoppingCartPersistence,
+        IShoppingCartSerializer shoppingCartSerializer,
         IWorkflowManager workflowManager)
     {
-        _shoppingCartPersistence = shoppingCartPersistence;
-        _shoppingCartHelpers = shoppingCartHelpers;
-        _productService = productService;
+        _contentManager = services.ContentManager.Value;
+        _notifier = notifier;
         _priceService = priceService;
-        _priceStrategy = priceStrategy;
-        _contentManager = contentManager;
+        _productService = productService;
+        _shoppingCartPersistence = shoppingCartPersistence;
+        _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
+        T = services.HtmlLocalizer.Value;
     }
 
     [HttpGet]
@@ -49,7 +54,7 @@ public class ShoppingCartController : Controller
         var lines = await Task.WhenAll(items.Select(async item =>
         {
             var product = products[item.ProductSku];
-            var price = _priceStrategy.SelectPrice(item.Prices);
+            var price = _priceService.SelectPrice(item.Prices);
             var metaData = await _contentManager.GetContentItemMetadataAsync(product);
             return new ShoppingCartLineViewModel(attributes: item.Attributes.ToDictionary(attr => attr.AttributeName))
             {
@@ -75,7 +80,7 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
-        var parsedCart = await _shoppingCartHelpers.ParseCartAsync(cart);
+        var parsedCart = await _shoppingCartSerializer.ParseCartAsync(cart);
         await _shoppingCartPersistence.StoreAsync(parsedCart, shoppingCartId);
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
@@ -88,9 +93,12 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartHelpers.ValidateParsedCartLineAsync(
-            line,
-            await _shoppingCartHelpers.ParseCartLineAsync(line));
+        var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
+
+        if (await ShoppingCartItem.GetErrorAsync(line.ProductSku, parsedLine, T, _priceService) is { } error)
+        {
+            await _notifier.ErrorAsync(error);
+        }
 
         if (parsedLine == null) return RedirectToAction(nameof(Index), new { shoppingCartId });
 
@@ -112,7 +120,7 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartHelpers.ParseCartLineAsync(line);
+        var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         cart.RemoveItem(parsedLine);
         await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);

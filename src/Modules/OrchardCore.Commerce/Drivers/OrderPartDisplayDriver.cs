@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -15,15 +16,18 @@ namespace OrchardCore.Commerce.Drivers;
 
 public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 {
-    private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
+    private readonly IHttpContextAccessor _hca;
+    private readonly IProductService _productService;
 
     public OrderPartDisplayDriver(
-        IProductService productService,
-        IContentManager contentManager)
+        IContentManager contentManager,
+        IHttpContextAccessor hca,
+        IProductService productService)
     {
-        _productService = productService;
         _contentManager = contentManager;
+        _hca = hca;
+        _productService = productService;
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
@@ -32,10 +36,16 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part));
+        IsFrontEnd()
+            ? null
+            : Initialize<OrderPartViewModel>(
+                GetEditorShapeType(context),
+                viewModel => PopulateViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
+        if (IsFrontEnd()) return await EditAsync(part, context);
+
         var viewModel = new OrderPartViewModel();
 
         await updater.TryUpdateModelAsync(viewModel, Prefix);
@@ -84,7 +94,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
         if (lineItems.Any())
         {
-            total = new Amount(0, lineItems.FirstOrDefault().LinePrice.Currency);
+            total = new Amount(0, lineItems[0].LinePrice.Currency);
 
             foreach (var item in lineItems)
             {
@@ -100,4 +110,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
         model.OrderPart = part;
     }
+
+    // There is no need to show the line items editor in the front end, as the user should only edit that in the cart
+    // rather than the order.
+    private bool IsFrontEnd() => _hca.HttpContext?.Request.Path.Value?.Contains("/checkout") == true;
 }

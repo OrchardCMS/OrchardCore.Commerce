@@ -29,16 +29,13 @@ public class SerializationTests
                     new NumericProductAttributeValue("ProductPart3.attr3", 42.0M),
                 },
                 new[] { new PrioritizedPrice(0, new Amount(12, Currency.UsDollar)) }));
-        var helpers = new ShoppingCartHelpers(
+        var serializer = new ShoppingCartSerializer(
             attributeProviders: new[] { new ProductAttributeProvider() },
             productService: new FakeProductService(),
             moneyService: new TestMoneyService(),
-            contentDefinitionManager: new FakeContentDefinitionManager(),
-            priceService: null,
-            notifier: null,
-            localizer: null);
-        var serialized = await helpers.SerializeAsync(cart);
-        var deserialized = await helpers.DeserializeAsync(serialized);
+            contentDefinitionManager: new FakeContentDefinitionManager());
+        var serialized = await serializer.SerializeAsync(cart);
+        var deserialized = await serializer.DeserializeAsync(serialized);
 
         Assert.Equal(cart.Count, deserialized.Count);
         Assert.Equal(cart.ItemCount, deserialized.ItemCount);

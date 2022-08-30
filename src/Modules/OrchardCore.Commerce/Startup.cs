@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
+using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
@@ -35,6 +37,11 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        // Infrastructure
+        services.AddOrchardServices();
+        services.AddScoped<IDataMigration, MvcTitleMigrations>();
+        services.AddTagHelpers<MvcTitleTagHelper>();
+
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
         services.AddScoped<IDataMigration, ProductMigrations>();
@@ -90,6 +97,7 @@ public class Startup : StartupBase
 
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
+        services.AddScoped<IShoppingCartSerializer, ShoppingCartSerializer>();
         services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
 
         // Orders
@@ -116,6 +124,7 @@ public class Startup : StartupBase
 
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
+        services.AddScoped<IDataMigration, StripeMigrations>();
     }
 }
 

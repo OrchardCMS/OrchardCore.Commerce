@@ -1,0 +1,10 @@
+ <div class="field field-type-textfield field-name-status">
+    @(Model.Text switch
+    {
+        "pending" => T["Pending"],
+        "ordered" => T["Ordered"],
+        "arrived" => T["Arrived"],
+        "shipped" => T["Shipped"],
+        _ => T["Unknown"],
+    })
+</div>
