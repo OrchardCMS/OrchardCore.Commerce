@@ -24,11 +24,15 @@
       "place": "-"
     },
     {
-      "contentPart": [ "StripePaymentPart" ],
+      "differentiator": "OrderPart-OrderId",
       "place": "-"
     },
     {
-      "differentiator": "OrderPart-OrderId",
+      "differentiator": "StripePaymentPart-PaymentMethodId",
+      "place": "-"
+    },
+    {
+      "differentiator": "StripePaymentPart-PaymentIntentId",
       "place": "-"
     }
   ],

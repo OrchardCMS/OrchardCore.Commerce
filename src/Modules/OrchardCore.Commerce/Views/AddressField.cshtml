@@ -4,7 +4,8 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
-    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    var definition = Model.PartFieldDefinition;
+    var name = $"{definition.PartDefinition.Name}-{definition.Name}".HtmlClassify();
 }
 
 <dl class="field field-type-addressfield field-name-@name">
