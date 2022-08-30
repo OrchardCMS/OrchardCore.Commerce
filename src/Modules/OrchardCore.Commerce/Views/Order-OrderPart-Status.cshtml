@@ -1,12 +1,4 @@
-@using OrchardCore.Mvc.Utilities
-@using OrchardCore.ContentManagement.Metadata.Models
-
-@{
-    ContentPartFieldDefinition definition = Model.PartFieldDefinition;
-    var name = $"{definition.PartDefinition.Name}-{definition.Name}".HtmlClassify();
-}
-
-<div class="field field-type-textfield field-name-@name">
+ <div class="field field-type-textfield field-name-status">
     @(Model.Text switch
     {
         "pending" => T["Pending"],
