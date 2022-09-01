@@ -29,6 +29,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
 using System;
+using System.Reflection.Metadata;
 using YesSql.Indexes;
 
 namespace OrchardCore.Commerce;
@@ -125,6 +126,9 @@ public class Startup : StartupBase
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
+
+        // Tax
+        services.AddScoped<IDataMigration, TaxMigrations>();
     }
 }
 
