@@ -1,0 +1,25 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model PriceFieldEditViewModel
+@{
+    var settings = Model.Settings;
+    var label = string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label;
+}
+
+<div class="mb-3" asp-validation-class-for="Value">
+    <label asp-for="Value">@label</label>
+
+    <div class="input-group">
+        <input asp-for="Value" class="form-control text-muted" />
+        <div class="input-group-append">
+            <select asp-for="Currency" class="form-select" asp-items="@Model.Currencies"></select>
+        </div>
+    </div>
+    <span asp-validation-for="Value"></span>
+    <span asp-validation-for="Currency"></span>
+
+    @if (!string.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint dashed">@settings.Hint</span>
+    }
+</div>

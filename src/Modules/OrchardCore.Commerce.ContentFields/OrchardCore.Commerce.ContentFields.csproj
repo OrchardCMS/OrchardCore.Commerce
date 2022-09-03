@@ -21,10 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.3.0-preview-16386" />
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.3.0-preview-16386" />
-    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.3.0-preview-16386" />
-    <PackageReference Include="OrchardCore.DisplayManagement" Version="1.3.0-preview-16386" />
+    <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.DisplayManagement" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,7 +37,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views" />
+    <EmbeddedResource Update="Views\PriceField.cshtml">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\_ViewImports.cshtml">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\PriceFieldSettings.Edit.cshtml">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\PriceField.Edit.cshtml" />
   </ItemGroup>
 
 </Project>

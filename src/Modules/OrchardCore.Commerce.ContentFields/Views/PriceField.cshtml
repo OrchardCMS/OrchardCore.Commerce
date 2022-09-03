@@ -1,0 +1,26 @@
+@model PriceFieldDisplayViewModel
+
+@{
+    var currentDisplayCurrencyIsoCode = Model.CurrentDisplayCurrency.CurrencyIsoCode;
+    var modelPriceCurrency = Model.Field.Amount?.Currency.CurrencyIsoCode;
+    var modelPrice = Model.Field.Amount;
+}
+
+<div class="product-price pb-3">
+    @if (modelPriceCurrency == currentDisplayCurrencyIsoCode)
+    {
+        @modelPrice
+    }
+    else if (modelPriceCurrency == null)
+    {
+        @T["The product doesn't have a price."]
+    }
+    else
+    {
+        @T["The product has a price but its currency doesn't match the current display currency which is {0}.", currentDisplayCurrencyIsoCode]
+
+        <div>
+            @T["The current price is {0}.", modelPrice]
+        </div>
+    }
+</div>
