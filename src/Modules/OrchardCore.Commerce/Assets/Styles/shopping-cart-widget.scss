@@ -1,0 +1,19 @@
+.widget-shopping-cart-widget {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.shopping-cart-link {
+    position: relative;
+
+    // Making sure widget is always visible.
+    z-index: 9999;
+}
+
+.item-count {
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 25px;
+}
