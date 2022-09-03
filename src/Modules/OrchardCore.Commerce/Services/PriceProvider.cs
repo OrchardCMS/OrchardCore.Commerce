@@ -1,6 +1,7 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;

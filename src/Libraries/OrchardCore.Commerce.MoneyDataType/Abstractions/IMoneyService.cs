@@ -1,9 +1,7 @@
-using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.MoneyDataType.Abstractions;
 
 /// <summary>
 /// Contains a set of utilities to more easily work with currency providers.
@@ -39,12 +37,14 @@ public interface IMoneyService
     /// Creates an amount object from a value and a currency symbol.
     /// </summary>
     /// <param name="value">The decimal value of the amount.</param>
-    /// <param name="currencyIsoCode">The ISO code of the currency.</param>
+    /// <param name="currencyIsoCode">
+    /// The ISO code of the currency. If <see langword="null"/> then the <see cref="DefaultCurrency"/> is used.
+    /// </param>
     /// <returns>The amount.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Throws if the currency code is not found from any active provider.
     /// </exception>
-    Amount Create(decimal value, string currencyIsoCode);
+    Amount Create(decimal value, string currencyIsoCode = null);
 
     /// <summary>
     /// Returns a new <see cref="Amount"/> that has been verified using <see cref="Currency.FromIsoCode"/> to ensure its
