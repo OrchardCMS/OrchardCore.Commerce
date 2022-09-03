@@ -68,8 +68,6 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
                 decimalDigits.GetValueOrDefault(DefaultDecimalDigits));
         }
 
-        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
-
         return new Amount(value, currency);
     }
 
