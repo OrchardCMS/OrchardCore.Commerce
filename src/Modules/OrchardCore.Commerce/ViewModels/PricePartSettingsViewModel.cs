@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Commerce.ContentFields.Settings;
 using OrchardCore.Commerce.Settings;
 using System.Collections.Generic;
 

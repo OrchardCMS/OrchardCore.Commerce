@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.ContentFields.Settings;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
@@ -43,6 +43,7 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
             };
             viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
             viewModel.Currencies = _moneyService.Currencies
+                .Where(currency => !string.IsNullOrEmpty(currency.EnglishName))
                 .OrderBy(currency => currency.CurrencyIsoCode)
                 .Select(currency => new SelectListItem(
                     currency.CurrencyIsoCode,
