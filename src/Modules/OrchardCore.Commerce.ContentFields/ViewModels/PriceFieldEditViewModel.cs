@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.ContentFields.Settings;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.ContentManagement.Metadata.Models;
-using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ContentFields.ViewModels;
 

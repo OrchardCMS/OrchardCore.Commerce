@@ -9,8 +9,8 @@ namespace OrchardCore.Commerce.MoneyDataType.Abstractions;
 public static class MoneyServiceExtensions
 {
     /// <summary>
-    /// Creates a <see cref="SelectList"/> from the applicable array of <see cref="ICurrency"/> objects. If <see
-    /// cref="localizer"/> is not <see langword="null"/> then the display text will be long form including the
+    /// Creates a <see cref="SelectList"/> from the applicable array of <see cref="ICurrency"/> objects. If <paramref
+    /// name="localizer"/> is not <see langword="null"/> then the display text will be long form including the
     /// currency's localized name.
     /// </summary>
     public static SelectList GetSelectableCurrencies(

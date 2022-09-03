@@ -35,11 +35,11 @@ public class PriceFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<
 
                 viewModel.CurrencySelectionMode = settings.CurrencySelectionMode;
                 viewModel.CurrencySelectionModes = new SelectList(
-                    new CurrencySelectionModeItem[]
+                    new[]
                     {
-                        new(CurrencySelectionMode.AllCurrencies, T["All Currencies"]),
-                        new(CurrencySelectionMode.DefaultCurrency, T["Default Currency"]),
-                        new(CurrencySelectionMode.SpecificCurrency, T["Specific Currency"]),
+                        new CurrencySelectionModeItem(CurrencySelectionMode.AllCurrencies, T["All Currencies"]),
+                        new CurrencySelectionModeItem(CurrencySelectionMode.DefaultCurrency, T["Default Currency"]),
+                        new CurrencySelectionModeItem(CurrencySelectionMode.SpecificCurrency, T["Specific Currency"]),
                     },
                     nameof(CurrencySelectionModeItem.Value),
                     nameof(CurrencySelectionModeItem.Text),

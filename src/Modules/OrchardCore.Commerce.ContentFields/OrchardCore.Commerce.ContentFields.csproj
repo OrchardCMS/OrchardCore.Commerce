@@ -23,16 +23,11 @@
   <ItemGroup>
     <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.4.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.DisplayManagement" Version="1.4.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="License.md">
-      <Pack>true</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="License.md" Pack="true" PackagePath="" />
     <None Include="Readme.md" />
   </ItemGroup>
 
