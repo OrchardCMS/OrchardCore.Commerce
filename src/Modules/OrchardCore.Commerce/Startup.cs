@@ -99,6 +99,9 @@ public class Startup : StartupBase
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
         services.AddScoped<IShoppingCartSerializer, ShoppingCartSerializer>();
         services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
+        services.AddScoped<IDataMigration, ShoppingCartWidgetMigrations>();
+        services.AddContentPart<ShoppingCartWidgetPart>()
+            .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>();
 
         // Orders
         services.AddContentPart<OrderPart>()
