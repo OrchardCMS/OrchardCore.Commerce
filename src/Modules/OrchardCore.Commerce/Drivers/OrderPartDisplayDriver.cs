@@ -90,7 +90,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             };
         }));
 
-        var total = new Amount();
+        var total = Amount.Unspecified;
 
         if (lineItems.Any())
         {

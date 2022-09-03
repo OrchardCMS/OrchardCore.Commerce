@@ -15,6 +15,8 @@ namespace OrchardCore.Commerce.MoneyDataType;
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
+    public static Amount Unspecified { get; } = new Amount(0, MoneyDataType.Currency.UnspecifiedCurrency);
+
     private string DebuggerDisplay => ToString();
 
     /// <summary>
@@ -27,6 +29,7 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     /// </summary>
     public ICurrency Currency { get; }
 
+    [Obsolete($"Use {nameof(Unspecified)} instead.")]
     public Amount()
         : this(0, MoneyDataType.Currency.UnspecifiedCurrency)
     {

@@ -56,7 +56,9 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (!IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
+        if (string.IsNullOrEmpty(currency?.CurrencyIsoCode)) return Amount.Unspecified;
+
+        if (!IsKnownCurrency(currency.CurrencyIsoCode))
         {
             currency = new Currency(
                 nativeName,
