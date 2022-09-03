@@ -19,6 +19,8 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
     public static Amount Unspecified { get; } = new(0, MoneyDataType.Currency.UnspecifiedCurrency);
 
+    private readonly ICurrency? _currency;
+
     private string DebuggerDisplay => ToString();
 
     /// <summary>
@@ -29,7 +31,7 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     /// <summary>
     /// Gets the currency.
     /// </summary>
-    public ICurrency Currency { get; }
+    public ICurrency Currency => _currency ?? MoneyDataType.Currency.UnspecifiedCurrency;
 
     /// <summary>
     /// Gets a value indicating whether this <see cref="Amount"/> has usable values.
@@ -56,18 +58,13 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount(decimal value, ICurrency currency)
     {
-        ArgumentNullException.ThrowIfNull(currency);
-
-        Currency = string.IsNullOrEmpty(currency.CurrencyIsoCode)
-            ? MoneyDataType.Currency.UnspecifiedCurrency
-            : currency;
-
+        _currency = currency;
         Value = value;
     }
 
     public bool Equals(Amount other) =>
         Value == other.Value &&
-        Currency?.Equals(other.Currency) == true;
+        Currency.Equals(other.Currency);
 
     public override bool Equals(object? obj) => obj is Amount other && Equals(other);
 
