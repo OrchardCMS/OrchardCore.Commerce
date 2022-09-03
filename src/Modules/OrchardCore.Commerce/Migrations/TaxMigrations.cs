@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.ContentFields.Settings;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
@@ -26,13 +27,12 @@ public class TaxMigrations : DataMigration
                     .WithDescription("Adds tax information to a product."))
                 .WithField(part => part.ProductTaxCode, field => field
                     .WithDisplayName("Product Tax Code"))
-                // TODO AmountField GrossPrice
-                // .WithField(part => part.GrossPrice, field => field
-                //     .WithDisplayName("Gross Price")
-                //     .WithSettings(new AmountFieldSettings
-                //     {
-                //         Hint = "The price including local tax. If filled then Gross Price Tax Rate must be filled out as well.",
-                //     }))
+                .WithField(part => part.GrossPrice, field => field
+                    .WithDisplayName("Gross Price")
+                    .WithSettings(new PriceFieldSettings
+                    {
+                        Hint = "The price including local tax. If filled then Gross Price Tax Rate must be filled out as well.",
+                    }))
                 .WithField(part => part.GrossPriceRate, field => field
                     .WithDisplayName("Gross Price Tax Rate")
                     .WithSettings(new NumericFieldSettings
