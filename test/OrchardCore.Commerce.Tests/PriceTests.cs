@@ -32,7 +32,7 @@ public class PriceTests
             Assert.Single(item.Prices);
             Assert.Equal(
                 item.Prices.Single().Price.Value,
-                (await productService.GetProductAsync(item.ProductSku)).ContentItem.As<PricePart>().Price.Value,
+                (await productService.GetProductAsync(item.ProductSku)).ContentItem.As<PricePart>().PriceField.Amount.Value,
                 precision: 2);
         }
     }

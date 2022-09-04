@@ -1,7 +1,8 @@
+using Newtonsoft.Json;
 using OrchardCore.Commerce.ContentFields.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
-using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Models;
 
@@ -10,6 +11,8 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class PricePart : ContentPart
 {
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Amount Price
     {
         get => PriceField.Amount;
@@ -17,8 +20,4 @@ public class PricePart : ContentPart
     }
 
     public PriceField PriceField { get; set; } = new();
-
-    // Prevents JSON.Net serialization, see https://stackoverflow.com/a/24224465/14748624 for details.
-    [SuppressMessage("Minor Code Smell", "S3400:Methods should not return constants", Justification = "JSON.Net")]
-    public bool ShouldSerializePrice() => false;
 }

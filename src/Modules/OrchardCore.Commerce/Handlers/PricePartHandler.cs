@@ -29,7 +29,7 @@ public class PricePartHandler : ContentPartHandler<PricePart>
             instance.Content.PriceField?.Amount.ToString() != instance.Content.Price.ToString())
         {
             instance.Content.PriceField = JObject.FromObject(new PriceField { Amount = price });
-            instance.Content.Price = JObject.FromObject(price);
+            ((JObject)instance.Content).Remove(nameof(PricePart.Price));
 
             _session.Save(instance.ContentItem);
         }
