@@ -2,7 +2,6 @@ using Newtonsoft.Json;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 using static OrchardCore.Commerce.MoneyDataType.Currency;
 
