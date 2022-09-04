@@ -8,12 +8,12 @@ using YesSql;
 
 namespace OrchardCore.Commerce.Handlers;
 
-public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
+public class SkuValidationHandler : ContentPartHandler<ProductPart>
 {
     private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
-    public UniqueSkuValidationHandler(
+    public SkuValidationHandler(
         ISession session,
         IUpdateModelAccessor updateModelAccessor)
     {
@@ -23,6 +23,12 @@ public class UniqueSkuValidationHandler : ContentPartHandler<ProductPart>
 
     public override async Task UpdatedAsync(UpdateContentContext context, ProductPart instance)
     {
+        if (string.IsNullOrWhiteSpace(instance.Sku))
+        {
+            _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(instance.Sku), "SKU must not be empty.");
+            return;
+        }
+
         var isProductSkuAlreadyExisting = await _session
             .Query<ContentItem, ProductPartIndex>(index =>
                 index.Sku == instance.Sku &&

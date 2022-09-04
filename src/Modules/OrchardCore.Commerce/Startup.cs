@@ -49,7 +49,7 @@ public class Startup : StartupBase
         services.AddScoped<IProductService, ProductService>();
         services.AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>()
-            .AddHandler<UniqueSkuValidationHandler>();
+            .AddHandler<SkuValidationHandler>();
 
         // Attributes
         services.AddContentField<BooleanProductAttributeField>()
