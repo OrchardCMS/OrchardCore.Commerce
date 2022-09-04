@@ -10,9 +10,7 @@ namespace OrchardCore.Commerce.ContentFields.ViewModels;
 
 public class PriceFieldDisplayViewModel
 {
-    public IEnumerable<ICurrency> Currencies { get; set; }
-
-    public ICurrency CurrentDisplayCurrency { get; set; }
+    public string AllowedIsoCode { get; set; }
 
     [BindNever]
     public PriceField Field { get; set; }
@@ -22,7 +20,4 @@ public class PriceFieldDisplayViewModel
 
     [BindNever]
     public ContentPartFieldDefinition PartFieldDefinition { get; set; }
-
-    [BindNever]
-    public PriceFieldSettings PriceFieldSettings { get; set; }
 }

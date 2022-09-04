@@ -11,6 +11,9 @@ public class PriceFieldEditViewModel
     public string Currency { get; set; }
 
     [BindNever]
+    public bool IsValid { get; set; }
+
+    [BindNever]
     public ContentPartFieldDefinition PartFieldDefinition { get; set; }
 
     [BindNever]
@@ -18,4 +21,7 @@ public class PriceFieldEditViewModel
 
     [BindNever]
     public PriceFieldSettings Settings { get; set; }
+
+    [BindNever]
+    public string PreferredCurrencyIsoCode { get; set; }
 }
