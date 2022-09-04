@@ -72,7 +72,6 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, PriceMigrations>();
 
         services.AddContentPart<PricePart>()
-            .UseDisplayDriver<PricePartDisplayDriver>()
             .AddHandler<PricePartHandler>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
 
