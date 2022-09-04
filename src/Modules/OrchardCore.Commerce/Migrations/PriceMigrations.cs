@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.ContentFields.Settings;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -18,10 +19,34 @@ public class PriceMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition(nameof(PricePart), builder => builder
-                .Attachable()
-                .Reusable()
-                .WithDescription("Adds a simple price to a product."));
-        return 1;
+            .AlterPartDefinition<PricePart>(builder => builder
+                .Configure(part => part
+                    .Attachable()
+                    .Reusable()
+                    .WithDescription("Adds a simple price to a product."))
+                .WithField(part => part.PriceField, field => field
+                    .WithDisplayName("Price")
+                    .WithSettings(new PriceFieldSettings
+                    {
+                        Required = true,
+                        Hint = "The base price of the product.",
+                    })));
+
+        return 2;
+    }
+
+    public int UpdateFrom1()
+    {
+        _contentDefinitionManager
+            .AlterPartDefinition<PricePart>(builder => builder
+                .WithField(part => part.PriceField, field => field
+                    .WithDisplayName("Price")
+                    .WithSettings(new PriceFieldSettings
+                    {
+                        Required = true,
+                        Hint = "The base price of the product.",
+                    })));
+
+        return 2;
     }
 }
