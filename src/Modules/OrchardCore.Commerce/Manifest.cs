@@ -18,6 +18,7 @@ using OrchardCore.Modules.Manifest;
     {
         "OrchardCore.Contents",
         "OrchardCore.Workflows",
+        "OrchardCore.Commerce.ContentFields",
     }
 )]
 
