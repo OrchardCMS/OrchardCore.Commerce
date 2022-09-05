@@ -32,10 +32,10 @@ public static class MoneyServiceExtensions
             .Where(currency => !string.IsNullOrEmpty(currency.EnglishName))
             .OrderBy(currency => currency.CurrencyIsoCode)
             .Select(currency => new SelectListItem(
-                currency.CurrencyIsoCode,
                 localizer == null
                     ? currency.CurrencyIsoCode
-                    : $"{currency.CurrencyIsoCode} {currency.Symbol} - {localizer[currency.EnglishName]}"))
+                    : $"{currency.CurrencyIsoCode} {currency.Symbol} - {localizer[currency.EnglishName]}",
+                currency.CurrencyIsoCode))
             .ToList();
 
         return new(
