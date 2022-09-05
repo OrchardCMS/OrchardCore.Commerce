@@ -48,24 +48,24 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         IUpdateModel updater,
         UpdatePartEditorContext context)
     {
-        var updateModel = new PriceVariantsPartViewModel();
+        var viewModel = new PriceVariantsPartViewModel();
         if (await updater.TryUpdateModelAsync(
-                updateModel,
+                viewModel,
                 Prefix,
                 viewModel => viewModel.VariantsValues,
                 viewModel => viewModel.VariantsCurrencies))
         {
             // Restoring variants so that only the new values are stored.
             part.Variants.RemoveAll();
-            updateModel.Variants.RemoveAll();
+            viewModel.Variants.RemoveAll();
 
-            foreach (var x in updateModel.VariantsValues)
+            foreach (var x in viewModel.VariantsValues)
             {
                 if (x.Value.HasValue &&
-                    updateModel.VariantsCurrencies?.ContainsKey(x.Key) == true &&
-                    updateModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
+                    viewModel.VariantsCurrencies?.ContainsKey(x.Key) == true &&
+                    viewModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
                 {
-                    part.Variants[x.Key] = _moneyService.Create(x.Value.Value, updateModel.VariantsCurrencies[x.Key]);
+                    part.Variants[x.Key] = _moneyService.Create(x.Value.Value, viewModel.VariantsCurrencies[x.Key]);
                 }
             }
         }
