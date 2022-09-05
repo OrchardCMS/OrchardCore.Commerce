@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
 public class ShoppingCartWidgetMigrations : DataMigration
@@ -14,7 +15,7 @@ public class ShoppingCartWidgetMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterTypeDefinition("ShoppingCartWidget", type => type
+            .AlterTypeDefinition(ShoppingCartWidget, type => type
             .WithPart(nameof(ShoppingCartWidgetPart))
             .Stereotype("Widget"));
 

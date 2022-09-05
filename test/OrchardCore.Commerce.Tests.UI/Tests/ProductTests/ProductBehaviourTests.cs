@@ -25,11 +25,11 @@ public class ProductBehaviourTests : UITestBase
                 await context.GoToContentItemByIdAsync("testproduct000");
 
                 // Also testing shopping cart widget.
-                ShoppingCartItemCountShouldBe(context, "0");
+                ShoppingCartItemCountShouldBe(context, 0);
 
                 await context.ClickReliablyOnSubmitAsync();
 
-                ShoppingCartItemCountShouldBe(context, "1");
+                ShoppingCartItemCountShouldBe(context, 1);
 
                 context.Get(By.ClassName("widget-shopping-cart-widget")).Click();
 
@@ -51,6 +51,6 @@ public class ProductBehaviourTests : UITestBase
         },
         browser);
 
-    private static void ShoppingCartItemCountShouldBe(UITestContext context, string count) =>
-        context.Get(By.ClassName("item-count")).Text.ShouldBe(count);
+    private static void ShoppingCartItemCountShouldBe(UITestContext context, int count) =>
+        context.Get(By.ClassName("item-count")).Text.ShouldBeAsString(count);
 }

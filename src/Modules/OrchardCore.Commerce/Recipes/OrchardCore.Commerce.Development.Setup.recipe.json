@@ -101,11 +101,11 @@
                 "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
                 "Value": true,
                 "Name": "BooleanCondition",
-                "ConditionId": "45njstmdjvxrv11m0zb80mjtw0"
+                "ConditionId": "[js:uuid()]"
               }
             ],
             "Name": null,
-            "ConditionId": "4dt7eswwkkdjh5aryba5z86vws"
+            "ConditionId": "[js:uuid()]"
           }
         }
       ]
@@ -148,8 +148,8 @@
           }
         },
         {
-          "ContentItemId": "4ksqj76p3rgm176x3dq0vqf4w9",
-          "ContentItemVersionId": "492d414zqgnj3wvfagfv14nxce",
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "ShoppingCartWidget",
           "DisplayText": "Shopping Cart Widget",
           "Latest": true,

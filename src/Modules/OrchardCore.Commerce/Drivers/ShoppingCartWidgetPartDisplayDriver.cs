@@ -25,6 +25,6 @@ public class ShoppingCartWidgetPartDisplayDriver : ContentPartDisplayDriver<Shop
         // Shopping cart ID is null by default currently.
         var cart = await _shoppingCartPersistence.RetrieveAsync();
 
-        model.ItemCount = cart != null ? cart.ItemCount : 0;
+        model.ItemCount = cart?.ItemCount ?? 0;
     }
 }
