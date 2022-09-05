@@ -80,6 +80,7 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
         UpdateFieldEditorContext context)
     {
         var viewModel = new PriceFieldEditViewModel();
+
         if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             var settings = context.PartFieldDefinition.GetSettings<PriceFieldSettings>();
