@@ -57,18 +57,19 @@ public class PriceFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<
     {
         var viewModel = new PriceFieldSettingsEditViewModel();
 
-        if (!await context.Updater.TryUpdateModelAsync(viewModel, Prefix)) return await EditAsync(model, context.Updater);
-
-        context.Builder.WithSettings(new PriceFieldSettings
+        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            Hint = viewModel.Hint,
-            Label = viewModel.Label,
-            Required = viewModel.Required,
-            CurrencySelectionMode = viewModel.CurrencySelectionMode,
-            SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionMode.SpecificCurrency
+            context.Builder.WithSettings(new PriceFieldSettings
+            {
+                Hint = viewModel.Hint,
+                Label = viewModel.Label,
+                Required = viewModel.Required,
+                CurrencySelectionMode = viewModel.CurrencySelectionMode,
+                SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionMode.SpecificCurrency
                     ? viewModel.SpecificCurrencyIsoCode
                     : null,
-        });
+            });
+        }
 
         return await EditAsync(model, context.Updater);
     }

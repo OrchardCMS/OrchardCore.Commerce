@@ -79,11 +79,12 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
         IUpdateModel updater,
         UpdateFieldEditorContext context)
     {
-        var updateModel = new PriceFieldEditViewModel();
-        if (await updater.TryUpdateModelAsync(updateModel, Prefix))
+        var viewModel = new PriceFieldEditViewModel();
+
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             var settings = context.PartFieldDefinition.GetSettings<PriceFieldSettings>();
-            var isInvalid = IsCurrencyInvalid(updateModel.Currency);
+            var isInvalid = IsCurrencyInvalid(viewModel.Currency);
 
             if (isInvalid && settings.Required)
             {
@@ -91,13 +92,13 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
                     ? context.PartFieldDefinition.DisplayName()
                     : settings.Label;
                 updater.ModelState.AddModelError(
-                    nameof(updateModel.Currency),
+                    nameof(viewModel.Currency),
                     T["The field {0} is invalid.", label].Value);
             }
 
             field.Amount = isInvalid
                 ? Amount.Unspecified
-                : _moneyService.Create(updateModel.Value, updateModel.Currency);
+                : _moneyService.Create(viewModel.Value, viewModel.Currency);
         }
 
         return await EditAsync(field, context);

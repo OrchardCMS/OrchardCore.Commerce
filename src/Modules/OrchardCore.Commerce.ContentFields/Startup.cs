@@ -14,10 +14,8 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<PriceField>();
-        });
+        services.Configure<TemplateOptions>(option =>
+            option.MemberAccessStrategy.Register<PriceField>());
 
         // Price Field
         services.AddContentField<PriceField>()
