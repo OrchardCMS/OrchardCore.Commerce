@@ -21,14 +21,13 @@ public class PricePartHandler : ContentPartHandler<PricePart>
 
     public override Task LoadingAsync(LoadContentContext context, PricePart instance)
     {
-        var price = _moneyService.EnsureCurrency(instance.Price);
-        instance.Price = price;
+        var amount = _moneyService.EnsureCurrency(instance.Price);
+        instance.Price = amount;
 
         // Migrate objects to use PriceField instead of PricePart.Amount.
-        if (instance.Content.Price != null &&
-            instance.Content.PriceField?.Amount.ToString() != instance.Content.Price.ToString())
+        if (instance.Content.Price is { } price && instance.Content.PriceField?.Amount.ToString() != price.ToString())
         {
-            instance.Content.PriceField = JObject.FromObject(new PriceField { Amount = price });
+            instance.Content.PriceField = JObject.FromObject(new PriceField { Amount = amount });
             ((JObject)instance.Content).Remove(nameof(PricePart.Price));
 
             _session.Save(instance.ContentItem);
