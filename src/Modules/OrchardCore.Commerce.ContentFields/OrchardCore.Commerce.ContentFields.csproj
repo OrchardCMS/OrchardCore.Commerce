@@ -32,23 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Views\PriceField.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Views\_ViewImports.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Views\PriceFieldSettings.Edit.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\PriceField.Edit.cshtml" />
   </ItemGroup>
 
 </Project>
