@@ -52,5 +52,5 @@ public class ProductBehaviourTests : UITestBase
         browser);
 
     private static void ShoppingCartItemCountShouldBe(UITestContext context, int count) =>
-        context.Get(By.ClassName("item-count")).Text.ShouldBeAsString(count);
+        context.Get(By.ClassName("shopping-cart-item-count")).Text.ShouldBeAsString(count);
 }
