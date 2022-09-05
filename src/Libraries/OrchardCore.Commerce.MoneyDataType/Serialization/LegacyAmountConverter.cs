@@ -47,6 +47,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
                     break;
                 case Iso:
                     iso = reader.ReadAsString();
+                    currency = FromIsoCode(iso);
                     break;
                 case DecimalDigits:
                     decimalDigits = reader.ReadAsInt32();
@@ -56,9 +57,13 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (string.IsNullOrEmpty(currency?.CurrencyIsoCode)) return Amount.Unspecified;
+        var currencyIsEmpty = string.IsNullOrEmpty(currency?.CurrencyIsoCode);
+        if (currencyIsEmpty && (string.IsNullOrEmpty(iso) || iso == UnspecifiedCurrency.CurrencyIsoCode))
+        {
+            return Amount.Unspecified;
+        }
 
-        if (!IsKnownCurrency(currency.CurrencyIsoCode))
+        if (currencyIsEmpty || !IsKnownCurrency(currency.CurrencyIsoCode))
         {
             currency = new Currency(
                 nativeName,
