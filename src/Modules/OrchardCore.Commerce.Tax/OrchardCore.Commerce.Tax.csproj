@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.4.0" />
     <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
   </ItemGroup>
 
@@ -33,12 +33,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Views\_ViewImports.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
