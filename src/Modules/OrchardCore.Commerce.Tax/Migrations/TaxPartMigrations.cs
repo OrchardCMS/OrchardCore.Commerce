@@ -35,14 +35,14 @@ public class TaxPartMigrations : DataMigration
                     .WithDisplayName("Gross Price")
                     .WithSettings(new PriceFieldSettings
                     {
-                        Hint = "The price with tax. If specified along with the Gross Price Rate, then Price content " +
-                               "part is updated to the calculated net value on publish..",
+                        Hint = "The price with tax. If specified along with the Tax Rate, then Price content part is " +
+                               "updated to the calculated net value on publish..",
                     }))
-                .WithField(part => part.GrossPriceRate, part => part
-                    .WithDisplayName("Gross Price Rate")
+                .WithField(part => part.TaxRate, part => part
+                    .WithDisplayName("Tax Rate")
                     .WithSettings(new NumericFieldSettings
                     {
-                        Hint = "The tax percentage of the net price which is added to get the gross price.",
+                        Hint = "The tax percentage of the net price, which is added to get the gross price.",
                         Minimum = 0,
                         Maximum = 100,
                     }))

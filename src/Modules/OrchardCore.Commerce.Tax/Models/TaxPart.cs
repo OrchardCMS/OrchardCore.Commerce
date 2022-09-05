@@ -8,5 +8,5 @@ public class TaxPart : ContentPart
 {
     public TextField ProductTaxCode { get; set; } = new();
     public PriceField GrossPrice { get; set; } = new();
-    public NumericField GrossPriceRate { get; set; } = new();
+    public NumericField TaxRate { get; set; } = new();
 }
