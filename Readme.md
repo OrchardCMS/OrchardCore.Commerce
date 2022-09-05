@@ -71,6 +71,8 @@ There are multiple test cards that can simulate any scenario, including error co
 | Visa  | 4000000000009995 | Any 3 digits | Any future date | card_declined, insufficient_funds        |
 | Visa  | 4000000000003220 | Any 3 digits | Any future date | success, goes through 3DS authentication |
 
+[Demo video](https://youtu.be/bIXwss2NpKs) about Stripe Payment integration.
+
 ## Demo video
 
 [![Watch the video](https://img.youtube.com/vi/EVvwS1UaIk4/maxresdefault.jpg)](https://youtu.be/EVvwS1UaIk4)
