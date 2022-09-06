@@ -92,6 +92,38 @@
       ]
     },
     {
+      "name": "Layers",
+      "Layers": [
+        {
+          "Name": "Always",
+          "Rule": null,
+          "Description": null,
+          "LayerRule": {
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
+                "Value": true,
+                "Name": "BooleanCondition",
+                "ConditionId": "[js:uuid()]"
+              }
+            ],
+            "Name": null,
+            "ConditionId": "[js:uuid()]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "LayerSettings": {
+        "Zones": [
+          "Header",
+          "Content",
+          "Footer"
+        ]
+      }
+    },
+    {
       "name": "Content",
       "data": [
         {
@@ -116,6 +148,26 @@
           },
           "TitlePart": {
             "Title": "Welcome Page"
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ShoppingCartWidget",
+          "DisplayText": "Shopping Cart Widget",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2022-09-03T15:34:06.3853461Z",
+          "PublishedUtc": "2022-09-03T15:34:06.3874627Z",
+          "CreatedUtc": "2022-09-03T15:34:06.3853461Z",
+          "Owner": "4wwrveewhrxs42xhqgxe4t2vmv",
+          "Author": "admin",
+          "ShoppingCartWidgetPart": {},
+          "LayerMetadata": {
+            "RenderTitle": false,
+            "Position": 1.0,
+            "Zone": "Header",
+            "Layer": "Always"
           }
         }
       ]
