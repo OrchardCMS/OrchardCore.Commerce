@@ -1,0 +1,59 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using OrchardCore.Commerce.MoneyDataType
+
+@model PriceFieldEditViewModel
+
+@{
+    var settings = Model.Settings;
+    var label = string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label;
+
+    var uniqueId = Guid.NewGuid();
+    var switchId = $"priceField__switch_{uniqueId:N}";
+    var contentClass = $"priceField__content_{uniqueId:N}";
+}
+
+<div class="mb-3" asp-validation-class-for="Value">
+    @if (!settings.Required)
+    {
+        <input id="@switchId" type="checkbox" class="form-check-input content-preview-select" checked="@Model.Value" />
+    }
+    <label for="@switchId">@label</label>
+
+    <div class="input-group @contentClass">
+        <input asp-for="Value" class="form-control text-muted" />
+        <div class="input-group-append">
+            <select asp-for="Currency" class="form-select" asp-items="@Model.Currencies"></select>
+        </div>
+    </div>
+    <span class="@contentClass" asp-validation-for="Value"></span>
+    <span class="@contentClass" asp-validation-for="Currency"></span>
+
+    @if (!string.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint dashed">@settings.Hint</span>
+    }
+</div>
+
+@if (!settings.Required)
+{
+    <script at="Foot" depends-on="jQuery">
+        jQuery(function () {
+            $('#@switchId')
+                .change(function () {
+                    const currencyDropdown = document.getElementById(@Html.IdFor(model => model.Currency).JsonHtmlContent());
+                    $('.@contentClass').toggle(this.checked);
+
+                    if (this.checked) {
+                        currencyDropdown.value = @Model.PreferredCurrencyIsoCode.JsonHtmlContent();
+                    }
+                    else {
+                        document.getElementById(@Html.IdFor(model => model.Value).JsonHtmlContent()).value = 0;
+                        currencyDropdown.value = @Currency.UnspecifiedCurrency.CurrencyIsoCode.JsonHtmlContent();
+                    }
+                })
+                .prop('checked', @(Model.IsValid ? "true" : "false"))
+                .change();
+        });
+    </script>
+}

@@ -1,0 +1,34 @@
+@using OrchardCore.ContentManagement.Utilities
+@using OrchardCore.ContentManagement.Metadata.Models
+@model PriceFieldDisplayViewModel
+
+@{
+    var allowedIsoCode = Model.AllowedIsoCode;
+    var price = Model.Field.Amount;
+
+    var definition = Model.PartFieldDefinition;
+    var settings = definition.GetSettings<PriceFieldSettings>();
+
+    var name = (definition.PartDefinition.Name + "-" + definition.Name).HtmlClassify();
+    var label = string.IsNullOrEmpty(settings.Label) ? definition.DisplayName() : settings.Label;
+}
+
+<div class="pb-3 field field-type-pricefield field-name-@name">
+    <strong class="field-type-pricefield-title">@label:</strong>
+    @if (!price.IsValid)
+    {
+        @T["The product doesn't have a price."]
+    }
+    else if (allowedIsoCode == null || allowedIsoCode == price.Currency.CurrencyIsoCode)
+    {
+        @price
+    }
+    else
+    {
+        @T["The product has a price but its currency doesn't match the current display currency which is {0}.", allowedIsoCode]
+
+        <div>
+            @T["The current price is {0}.", price]
+        </div>
+    }
+</div>

@@ -1,0 +1,71 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@model PriceFieldSettingsEditViewModel
+
+@{
+    var specificCurrency = (int)CurrencySelectionMode.SpecificCurrency;
+}
+
+<div class="mb-3" asp-validation-class-for="Hint">
+    <div class="w-md-75 w-xl-50 pe-md-3">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+    </div>
+    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="Label">
+    <div class="w-sm-75 w-md-50 w-lg-25 pe-md-3">
+        <label asp-for="Label">@T["Label"]</label>
+        <input asp-for="Label" class="form-control" />
+    </div>
+    <span class="hint">@T["The text above the field."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="Required">
+    <div class="w-sm-75 w-md-50 w-lg-25 pe-md-3">
+        <input asp-for="Required" type="checkbox" class="form-check-input content-preview-select" checked="@Model.Required" />
+        <label asp-for="Required" class="form-check-label">@T["Required"]</label>
+    </div>
+    <span class="hint">@T["If unchecked then the field is optional, otherwise the amount is initialized to 0 on publish."]</span>
+</div>
+
+<fieldset class="mb-3" asp-validation-class-for="CurrencySelectionMode">
+    <label asp-for="CurrencySelectionMode">@T["Currency selection mode"]</label>
+
+    <div class="input-group">
+        <div class="input-group-append">
+            <select asp-for="CurrencySelectionMode"
+                    class="form-select"
+                    asp-items="@Model.CurrencySelectionModes"></select>
+        </div>
+    </div>
+
+    <span class="hint">@T["Specifies the currency configuration for this PricePart."]</span>
+
+    <fieldset class="input-group" id="@Html.IdFor(model => model.SpecificCurrencyIsoCode)-Group">
+        <div class="input-group">
+            <div class="input-group-append">
+                <select asp-for="SpecificCurrencyIsoCode"
+                        class="form-select"
+                        asp-items="@Model.Currencies"></select>
+            </div>
+        </div>
+
+        <span class="hint">@T["Currency used for specific currency selection mode."]</span>
+    </fieldset>
+</fieldset>
+
+<script at="Foot" depends-on="jQuery">
+    jQuery(function ($) {
+        $('#@Html.IdFor(model => model.CurrencySelectionMode)')
+            .change(function () {
+                SpecificCurrencyGroupVisibility($(this), $('#@Html.IdFor(model => model.SpecificCurrencyIsoCode)-Group'));
+            })
+            .change();
+
+        function SpecificCurrencyGroupVisibility($element, $group) {
+            $group.toggle('@specificCurrency' === $element.val());
+        }
+    });
+</script>

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;

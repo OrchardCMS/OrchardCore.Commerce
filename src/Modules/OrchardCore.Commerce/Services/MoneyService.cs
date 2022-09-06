@@ -46,8 +46,8 @@ public class MoneyService : IMoneyService
         _currencySelector = currencySelector;
     }
 
-    public Amount Create(decimal value, string currencyIsoCode) =>
-        new(value, GetCurrency(currencyIsoCode));
+    public Amount Create(decimal value, string currencyIsoCode = null) =>
+        new(value, currencyIsoCode == null ? DefaultCurrency : GetCurrency(currencyIsoCode));
 
     public Amount EnsureCurrency(Amount amount) =>
         new(amount.Value, GetCurrency(amount.Currency.CurrencyIsoCode));

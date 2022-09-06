@@ -49,7 +49,7 @@ public class Startup : StartupBase
         services.AddScoped<IProductService, ProductService>();
         services.AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>()
-            .AddHandler<UniqueSkuValidationHandler>();
+            .AddHandler<SkuValidationHandler>();
 
         // Attributes
         services.AddContentField<BooleanProductAttributeField>()
@@ -72,7 +72,6 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, PriceMigrations>();
 
         services.AddContentPart<PricePart>()
-            .UseDisplayDriver<PricePartDisplayDriver>()
             .AddHandler<PricePartHandler>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
 

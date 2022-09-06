@@ -11,7 +11,7 @@ public class AmountTests
 {
     [Fact]
     public void CantConstructAnAmountWithNullCurrency() =>
-        Assert.Throws<ArgumentNullException>(() => new Amount(1, (ICurrency)null));
+        Assert.Equal(new Amount(1, (ICurrency)null), new Amount(1, UnspecifiedCurrency));
 
     [Fact]
     public void AmountsCanBeAdded() =>

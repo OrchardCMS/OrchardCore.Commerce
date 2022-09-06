@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Orchard Core Commerce</Title>
+    <Authors>Bertrand Le Roy</Authors>
+    <Copyright>Copyright © 2018 .NET Foundation</Copyright>
+    <Description>Commerce-specific content fields.</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;ContentFields</PackageTags>
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/src/Modules/OrchardCore.Commerce.ContentFields/Readme.md</PackageProjectUrl>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="License.md" Pack="true" PackagePath="" />
+    <None Include="Readme.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
+  </ItemGroup>
+
+</Project>

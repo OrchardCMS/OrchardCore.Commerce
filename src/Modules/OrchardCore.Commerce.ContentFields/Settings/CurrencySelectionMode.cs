@@ -1,4 +1,4 @@
-namespace OrchardCore.Commerce.Settings;
+namespace OrchardCore.Commerce.ContentFields.Settings;
 
 public enum CurrencySelectionMode
 {

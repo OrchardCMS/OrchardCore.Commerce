@@ -1,3 +1,5 @@
+#nullable enable
+
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
@@ -15,6 +17,10 @@ namespace OrchardCore.Commerce.MoneyDataType;
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
+    public static Amount Unspecified { get; } = new(0, MoneyDataType.Currency.UnspecifiedCurrency);
+
+    private readonly ICurrency? _currency;
+
     private string DebuggerDisplay => ToString();
 
     /// <summary>
@@ -25,8 +31,16 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     /// <summary>
     /// Gets the currency.
     /// </summary>
-    public ICurrency Currency { get; }
+    public ICurrency Currency => _currency ?? MoneyDataType.Currency.UnspecifiedCurrency;
 
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="Amount"/> has usable values.
+    /// </summary>
+    public bool IsValid =>
+        Value >= 0 &&
+        Currency.CurrencyIsoCode != MoneyDataType.Currency.UnspecifiedCurrency.CurrencyIsoCode;
+
+    [Obsolete($"Use {nameof(Unspecified)} instead.")]
     public Amount()
         : this(0, MoneyDataType.Currency.UnspecifiedCurrency)
     {
@@ -44,21 +58,19 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount(decimal value, ICurrency currency)
     {
-        ArgumentNullException.ThrowIfNull(currency);
-
-        Currency = currency;
+        _currency = currency;
         Value = value;
     }
 
     public bool Equals(Amount other) =>
         Value == other.Value &&
-        ((Currency == null && other.Currency == null) || Currency?.Equals(other.Currency) == true);
+        Currency.Equals(other.Currency);
 
-    public override bool Equals(object obj) => obj is Amount other && Equals(other);
+    public override bool Equals(object? obj) => obj is Amount other && Equals(other);
 
     public override int GetHashCode() => (Value, Currency).GetHashCode();
 
-    public override string ToString() => Currency?.ToString(Value);
+    public override string ToString() => Currency.ToString(Value);
 
     public int CompareTo(Amount other)
     {

@@ -20,7 +20,7 @@ public class SimplePriceStrategy : IPriceSelectionStrategy
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices)
     {
         var priceCollection = prices as ICollection<PrioritizedPrice> ?? prices?.ToList();
-        if (priceCollection?.Any() != true) return new Amount();
+        if (priceCollection?.Any() != true) return Amount.Unspecified;
 
         return priceCollection
             .GroupBy(prioritizedPrice => prioritizedPrice.Priority)

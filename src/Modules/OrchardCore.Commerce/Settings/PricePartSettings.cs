@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OrchardCore.Commerce.ContentFields.Settings;
 
 namespace OrchardCore.Commerce.Settings;
 
