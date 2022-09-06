@@ -18,6 +18,7 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
+using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
@@ -157,4 +158,13 @@ public class CommerceSettingsCurrencySettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
         services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
+}
+
+[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
+public class TaxStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services
+            .AddContentPart<PricePart>()
+            .AddHandler<TaxPartAndPricePartHandler>();
 }
