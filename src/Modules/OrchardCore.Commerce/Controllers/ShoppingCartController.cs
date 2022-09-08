@@ -51,6 +51,7 @@ public class ShoppingCartController : Controller
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPricesAsync(cart.Items);
+
         var lines = await Task.WhenAll(items.Select(async item =>
         {
             var product = products[item.ProductSku];
@@ -66,6 +67,9 @@ public class ShoppingCartController : Controller
                 ProductUrl = Url.RouteUrl(metaData.DisplayRouteValues),
             };
         }));
+
+        if (!lines.Any()) return RedirectToAction(nameof(Empty));
+
         var model = new ShoppingCartViewModel(lines)
         {
             Id = shoppingCartId,
@@ -73,8 +77,13 @@ public class ShoppingCartController : Controller
                 .GroupBy(viewModel => viewModel.LinePrice.Currency)
                 .Select(group => new Amount(group.Sum(viewModel => viewModel.LinePrice.Value), group.Key)),
         };
+
         return View(model);
     }
+
+    [HttpGet]
+    [Route("cart-empty")]
+    public IActionResult Empty() => View();
 
     [HttpPost]
     [ValidateAntiForgeryToken]

@@ -66,7 +66,10 @@ public class PaymentController : Controller
             return isAuthenticated ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await _shoppingCartHelpers.CalculateSingleCurrencyTotalAsync() is not { } total) return View("CartEmpty");
+        if (await _shoppingCartHelpers.CalculateSingleCurrencyTotalAsync() is not { } total)
+        {
+            return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
+        }
 
         var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);

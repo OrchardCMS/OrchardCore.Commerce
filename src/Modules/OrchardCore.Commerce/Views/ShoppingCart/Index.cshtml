@@ -3,92 +3,85 @@
 <mvc-title text="@T["Your cart"]" />
 
 <section id="shopping-cart">
-    @if (Model.Lines != null && Model.Lines.Any())
-    {
-        <div class="container">
-            <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
-                <div class="col-xs-12 col-sm-1">@T["Quantity"]</div>
-                <div class="col-xs-12 col-sm-9">@T["Product"]</div>
-                <div class="col-xs-12 col-sm-1">@T["Price"]</div>
-                <div class="col-xs-12 col-sm-1">@T["Action"]</div>
-            </div>
-            @for (var line = 0; line < Model.Lines.Count; line++)
-            {
-                var item = Model.Lines[line];
-                var name = $"cart.lines[{line}]";
-                var attributes = item
-                    .Attributes
-                    .Values
-                    .Select((attribute, index) => (Value: attribute, Type: attribute.GetType().Name, Index: index))
-                    .Where(tuple => tuple.Value.UntypedValue != null)
-                    .ToList();
+    <div class="container">
+        <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
+            <div class="col-xs-12 col-sm-1">@T["Quantity"]</div>
+            <div class="col-xs-12 col-sm-9">@T["Product"]</div>
+            <div class="col-xs-12 col-sm-1">@T["Price"]</div>
+            <div class="col-xs-12 col-sm-1">@T["Action"]</div>
+        </div>
+        @for (var line = 0; line < Model.Lines.Count; line++)
+        {
+            var item = Model.Lines[line];
+            var name = $"cart.lines[{line}]";
+            var attributes = item
+                .Attributes
+                .Values
+                .Select((attribute, index) => (Value: attribute, Type: attribute.GetType().Name, Index: index))
+                .Where(tuple => tuple.Value.UntypedValue != null)
+                .ToList();
 
-                <div class="row border-bottom mt-3 pb-2">
-                    <div class="col-xs-12 col-sm-1">
-                        <input form="shopping-cart-update" type="number" min="0" name="@(name).Quantity" value="@item.Quantity" class="form-control" />
-                        <input form="shopping-cart-update" type="hidden" name="@(name).ProductSku" value="@item.ProductSku" />
-                        @foreach (var (attribute, type, index) in attributes)
-                        {
-                            <shape Type="@(type)"
-                                   alternate="@(type)_hidden"
-                                   form="shopping-cart-update"
-                                   prop-index="@index"
-                                   prop-attributeValue="@(attribute)"
-                                   prop-namePrefix="@name" />
-                        }
-                    </div>
-                    <div class="col-xs-12 col-sm-9">
-                        <a href="@item.ProductUrl">@item.ProductName</a>
-                        @if (item.Attributes != null)
-                        {
-                            <ul class="cart-product-attributes list-inline">
-                                @foreach (var (attribute, type, _) in attributes)
-                                {
-                                    <shape tag="li"
-                                           Type="@type"
-                                           prop-attribute="@(attribute)"
-                                           prop-label="@(attribute.Label)" />
-                                }
-                            </ul>
-                        }
-                    </div>
-                    <div class="col-xs-12 col-sm-1">@item.UnitPrice</div>
-                    <div class="col-xs-12 col-sm-1">
-                        <form asp-action="RemoveItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
-                            <input type="hidden" name="line.ProductSku" value="@item.ProductSku" />
-                            @foreach (var (attribute, type, index) in attributes)
-                            {
-                                <shape Type="@type"
-                                       alternate="@(type)_hidden"
-                                       prop-index="@index"
-                                       prop-attributeValue="@(attribute)" />
-                            }
-                            <button type="submit" class="btn btn-primary">@T["Remove"]</button>
-                        </form>
-                    </div>
-                </div>
-            }
-            <div class="row mt-3 mb-3 pb-2">
-                <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
+            <div class="row border-bottom mt-3 pb-2">
                 <div class="col-xs-12 col-sm-1">
-                    @foreach (var total in Model.Totals)
+                    <input form="shopping-cart-update" type="number" min="0" name="@(name).Quantity" value="@item.Quantity" class="form-control" />
+                    <input form="shopping-cart-update" type="hidden" name="@(name).ProductSku" value="@item.ProductSku" />
+                    @foreach (var (attribute, type, index) in attributes)
                     {
-                        <div>@total</div>
+                        <shape Type="@(type)"
+                               alternate="@(type)_hidden"
+                               form="shopping-cart-update"
+                               prop-index="@index"
+                               prop-attributeValue="@(attribute)"
+                               prop-namePrefix="@name" />
                     }
                 </div>
+                <div class="col-xs-12 col-sm-9">
+                    <a href="@item.ProductUrl">@item.ProductName</a>
+                    @if (item.Attributes != null)
+                    {
+                        <ul class="cart-product-attributes list-inline">
+                            @foreach (var (attribute, type, _) in attributes)
+                            {
+                                <shape tag="li"
+                                       Type="@type"
+                                       prop-attribute="@(attribute)"
+                                       prop-label="@(attribute.Label)" />
+                            }
+                        </ul>
+                    }
+                </div>
+                <div class="col-xs-12 col-sm-1">@item.UnitPrice</div>
                 <div class="col-xs-12 col-sm-1">
-                    <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
-                        <button type="submit" class="btn btn-primary">@T["Update"]</button>
+                    <form asp-action="RemoveItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
+                        <input type="hidden" name="line.ProductSku" value="@item.ProductSku" />
+                        @foreach (var (attribute, type, index) in attributes)
+                        {
+                            <shape Type="@type"
+                                   alternate="@(type)_hidden"
+                                   prop-index="@index"
+                                   prop-attributeValue="@(attribute)" />
+                        }
+                        <button type="submit" class="btn btn-primary">@T["Remove"]</button>
                     </form>
                 </div>
-                <div class="col-xs-12 col-sm-1">
-                    <a asp-action="Index" asp-controller="Payment" asp-area="OrchardCore.Commerce"  class="btn btn-primary">@T["Checkout"]</a>
-                </div>
+            </div>
+        }
+        <div class="row mt-3 mb-3 pb-2">
+            <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
+            <div class="col-xs-12 col-sm-1">
+                @foreach (var total in Model.Totals)
+                {
+                    <div>@total</div>
+                }
+            </div>
+            <div class="col-xs-12 col-sm-1">
+                <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
+                    <button type="submit" class="btn btn-primary">@T["Update"]</button>
+                </form>
+            </div>
+            <div class="col-xs-12 col-sm-1">
+                <a asp-action="Index" asp-controller="Payment" asp-area="OrchardCore.Commerce"  class="btn btn-primary">@T["Checkout"]</a>
             </div>
         </div>
-    }
-    else
-    {
-        <p>@T["Your shopping cart is empty."]</p>
-    }
+    </div>
 </section>
