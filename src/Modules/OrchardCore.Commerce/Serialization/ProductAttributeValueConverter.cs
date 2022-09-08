@@ -21,24 +21,17 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
         bool hasExistingValue,
         JsonSerializer serializer)
     {
-        IDictionary<string, JToken> propertiesAndValues = new Dictionary<string, JToken>();
-        while (reader.Read() && reader.TokenType == JsonToken.PropertyName)
+        var attribute = (JObject)JToken.Load(reader);
+
+        var attributeName = attribute.Get<string>(AttributeName);
+        var typeName = attribute.Get<string>(Type);
+
+        return typeName switch
         {
-            var propertyName = reader.Value.ToString();
-            reader.Read();
-            var propertyValue = JToken.ReadFrom(reader);
-
-            propertiesAndValues.Add(propertyName, propertyValue);
-        }
-
-        var attributeName = propertiesAndValues[AttributeName].ToString();
-
-        return propertiesAndValues[Type].ToString() switch
-        {
-            nameof(TextProductAttributeValue) => new TextProductAttributeValue(attributeName, propertiesAndValues[Value].ToString()),
-            nameof(BooleanProductAttributeValue) => new BooleanProductAttributeValue(attributeName, propertiesAndValues[Value].ToObject<bool>()),
-            nameof(NumericProductAttributeValue) => new NumericProductAttributeValue(attributeName, propertiesAndValues[Value].ToObject<decimal>()),
-            _ => null,
+            nameof(TextProductAttributeValue) => new TextProductAttributeValue(attributeName, attribute.Get<string>(Value)),
+            nameof(BooleanProductAttributeValue) => new BooleanProductAttributeValue(attributeName, attribute.Get<bool>(Value)),
+            nameof(NumericProductAttributeValue) => new NumericProductAttributeValue(attributeName, attribute.Get<decimal>(Value)),
+            _ => throw new InvalidOperationException($"Unknown or unsupported type \"{typeName}\"."),
         };
     }
 
