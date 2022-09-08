@@ -1,7 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,9 +22,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _priceSelectionStrategy = priceSelectionStrategy;
         _shoppingCartPersistence = shoppingCartPersistence;
     }
-
-    public ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line) =>
-        cart.Lines.FirstOrDefault(viewModel => ShoppingCartLineViewModel.IsSameProductAs(viewModel, line));
 
     public async Task<Amount?> CalculateSingleCurrencyTotalAsync()
     {
