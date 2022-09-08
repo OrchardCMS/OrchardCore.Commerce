@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using Newtonsoft.Json.Linq;
 using System;
 using static OrchardCore.Commerce.MoneyDataType.Currency;
 using static OrchardCore.Commerce.MoneyDataType.Serialization.AmountConverter;
@@ -15,47 +15,16 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
         bool hasExistingValue,
         JsonSerializer serializer)
     {
-        decimal value = default;
-        ICurrency currency = null;
-        string nativeName = null;
-        string englishName = null;
-        string symbol = null;
-        string iso = null;
-        int? decimalDigits = null;
+        var attribute = (JObject)JToken.Load(reader);
 
-        while (reader.Read() && reader.TokenType == JsonToken.PropertyName)
-        {
-            var propertyName = reader.Value;
-
-            switch (propertyName)
-            {
-                case ValueName:
-                    value = reader.ReadAsDecimal().Value;
-                    break;
-                case CurrencyName:
-                    currency = FromIsoCode(reader.ReadAsString());
-                    break;
-                case Name: // Kept for backwards compatibility
-                case NativeName:
-                    nativeName = reader.ReadAsString();
-                    break;
-                case EnglishName:
-                    englishName = reader.ReadAsString();
-                    break;
-                case Symbol:
-                    symbol = reader.ReadAsString();
-                    break;
-                case Iso:
-                    iso = reader.ReadAsString();
-                    currency = FromIsoCode(iso);
-                    break;
-                case DecimalDigits:
-                    decimalDigits = reader.ReadAsInt32();
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unknown property name \"{propertyName}\".");
-            }
-        }
+        var value = attribute.Get<decimal>(ValueName);
+        var currencyCode = attribute.Get<string>(CurrencyName);
+        var nativeName = attribute.Get<string>(Name, NativeName);
+        var englishName = attribute.Get<string>(EnglishName);
+        var symbol = attribute.Get<string>(Symbol);
+        var iso = attribute.Get<string>(Iso);
+        var decimalDigits = attribute.Get<int?>(DecimalDigits);
+        var currency = string.IsNullOrEmpty(currencyCode ?? iso) ? null : FromIsoCode(currencyCode ?? iso);
 
         var currencyIsEmpty = string.IsNullOrEmpty(currency?.CurrencyIsoCode);
         if (currencyIsEmpty && (string.IsNullOrEmpty(iso) || iso == UnspecifiedCurrency.CurrencyIsoCode))
