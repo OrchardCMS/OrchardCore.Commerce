@@ -4,7 +4,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.ProductAttributeValues;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Commerce.Serialization;
 
@@ -28,7 +27,7 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
 
         return typeName switch
         {
-            nameof(TextProductAttributeValue) => new TextProductAttributeValue(attributeName, attribute.Get<string>(Value)),
+            nameof(TextProductAttributeValue) => new TextProductAttributeValue(attributeName, attribute.Get<IEnumerable<string>>(Value)),
             nameof(BooleanProductAttributeValue) => new BooleanProductAttributeValue(attributeName, attribute.Get<bool>(Value)),
             nameof(NumericProductAttributeValue) => new NumericProductAttributeValue(attributeName, attribute.Get<decimal>(Value)),
             _ => throw new InvalidOperationException($"Unknown or unsupported type \"{typeName}\"."),
@@ -53,7 +52,14 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
 
         if (typeName == nameof(TextProductAttributeValue))
         {
-            writer.WriteValue((productAttributeValue.UntypedValue as IEnumerable<string>).FirstOrDefault());
+            writer.WriteStartArray();
+
+            foreach (var value in productAttributeValue.UntypedValue as IEnumerable<string>)
+            {
+                writer.WriteValue(value);
+            }
+
+            writer.WriteEndArray();
         }
         else
         {
