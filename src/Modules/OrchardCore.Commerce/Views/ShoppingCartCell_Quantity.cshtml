@@ -1,0 +1,26 @@
+@using OrchardCore.Commerce.Abstractions
+@using OrchardCore.DisplayManagement.TagHelpers
+
+@{
+    var name = Model.Name;
+    var line = (ShoppingCartLineViewModel)Model.Line;
+    var attributes = (IList<(IProductAttributeValue Value, string Type, int Index)>)Model.ProductAttributes;
+}
+
+<input form="shopping-cart-update"
+       type="number"
+       min="0"
+       name="@(name).Quantity"
+       value="@line.Quantity"
+       class="form-control shopping-cart-table-quantity"/>
+<input form="shopping-cart-update" type="hidden" name="@(name).ProductSku" value="@line.ProductSku"/>
+
+@foreach (var (attribute, type, index) in attributes)
+{
+    <shape Type="@(type)"
+           alternate="@(type)_hidden"
+           form="shopping-cart-update"
+           prop-index="@index"
+           prop-attributeValue="@(attribute)"
+           prop-namePrefix="@name"/>
+}

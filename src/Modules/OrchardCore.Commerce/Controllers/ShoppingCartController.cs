@@ -7,8 +7,12 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Workflows.Services;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,16 +24,22 @@ public class ShoppingCartController : Controller
     private readonly INotifier _notifier;
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
+    private readonly IShapeFactory _shapeFactory;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
-    private readonly IHtmlLocalizer<ShoppingCartController> T;
+    private readonly IHtmlLocalizer<ShoppingCartController> H;
 
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "The shopping cart needs all of them.")]
     public ShoppingCartController(
         INotifier notifier,
         IOrchardServices<ShoppingCartController> services,
         IPriceService priceService,
         IProductService productService,
+        IShapeFactory shapeFactory,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IWorkflowManager workflowManager)
@@ -38,10 +48,11 @@ public class ShoppingCartController : Controller
         _notifier = notifier;
         _priceService = priceService;
         _productService = productService;
+        _shapeFactory = shapeFactory;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
-        T = services.HtmlLocalizer.Value;
+        H = services.HtmlLocalizer.Value;
     }
 
     [HttpGet]
@@ -70,13 +81,51 @@ public class ShoppingCartController : Controller
 
         if (!lines.Any()) return RedirectToAction(nameof(Empty));
 
-        var model = new ShoppingCartViewModel(lines)
+        var model = new ShoppingCartViewModel
         {
             Id = shoppingCartId,
             Totals = lines
                 .GroupBy(viewModel => viewModel.LinePrice.Currency)
                 .Select(group => new Amount(group.Sum(viewModel => viewModel.LinePrice.Value), group.Key)),
         };
+
+        model.Headers.AddRange(new[]
+        {
+            H["Quantity"],
+            H["Product"],
+            H["Price"],
+            H["Action"],
+        });
+
+        for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+        {
+            var row = new List<IShape>();
+            var line = lines[lineIndex];
+
+            var attributes = line
+                .Attributes
+                .Values
+                .Select((attribute, index) => (Value: attribute, Type: attribute.GetType().Name, Index: index))
+                .Where(tuple => tuple.Value.UntypedValue != null)
+                .ToList();
+
+            for (var columnIndex = 0; columnIndex < model.Headers.Count; columnIndex++)
+            {
+                var columnName = model.Headers[columnIndex].Name.HtmlClassify().ToPascalCase('-');
+                var cellShape = await _shapeFactory.CreateAsync<ShoppingCartCellViewModel>(
+                    "ShoppingCartCell_" + columnName,
+                    model =>
+                    {
+                        model.LineIndex = lineIndex;
+                        model.ColumnIndex = columnIndex;
+                        model.Line = line;
+                        model.ProductAttributes.AddRange(attributes);
+                    });
+                row.Add(cellShape);
+            }
+
+            model.Lines.Add(row);
+        }
 
         return View(model);
     }
@@ -104,7 +153,7 @@ public class ShoppingCartController : Controller
     {
         var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
 
-        if (await ShoppingCartItem.GetErrorAsync(line.ProductSku, parsedLine, T, _priceService) is { } error)
+        if (await ShoppingCartItem.GetErrorAsync(line.ProductSku, parsedLine, H, _priceService) is { } error)
         {
             await _notifier.ErrorAsync(error);
         }
