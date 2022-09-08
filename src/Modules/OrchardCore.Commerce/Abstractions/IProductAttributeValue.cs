@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using OrchardCore.Commerce.Serialization;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -7,6 +9,7 @@ namespace OrchardCore.Commerce.Abstractions;
 /// <summary>
 /// A specific value from a product attribute field.
 /// </summary>
+[JsonConverter(typeof(ProductAttributeValueConverter))]
 public interface IProductAttributeValue
 {
     /// <summary>
@@ -39,6 +42,7 @@ public interface IProductAttributeValue
 /// A specific value from a product attribute field of type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The type of <see cref="Value"/>.</typeparam>
+[JsonConverter(typeof(ProductAttributeValueConverter))]
 public interface IProductAttributeValue<T> : IProductAttributeValue, IEquatable<IProductAttributeValue<T>>
 {
     /// <summary>
