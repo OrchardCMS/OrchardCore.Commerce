@@ -25,6 +25,7 @@ public class ShoppingCartController : Controller
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
@@ -40,6 +41,7 @@ public class ShoppingCartController : Controller
         IPriceService priceService,
         IProductService productService,
         IShapeFactory shapeFactory,
+        IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IWorkflowManager workflowManager)
@@ -49,6 +51,7 @@ public class ShoppingCartController : Controller
         _priceService = priceService;
         _productService = productService;
         _shapeFactory = shapeFactory;
+        _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
@@ -71,6 +74,7 @@ public class ShoppingCartController : Controller
             return new ShoppingCartLineViewModel(attributes: item.Attributes.ToDictionary(attr => attr.AttributeName))
             {
                 Quantity = item.Quantity,
+                Product = product,
                 ProductSku = item.ProductSku,
                 ProductName = product.ContentItem.DisplayText,
                 UnitPrice = price,
@@ -81,13 +85,7 @@ public class ShoppingCartController : Controller
 
         if (!lines.Any()) return RedirectToAction(nameof(Empty));
 
-        var model = new ShoppingCartViewModel
-        {
-            Id = shoppingCartId,
-            Totals = lines
-                .GroupBy(viewModel => viewModel.LinePrice.Currency)
-                .Select(group => new Amount(group.Sum(viewModel => viewModel.LinePrice.Value), group.Key)),
-        };
+        var model = new ShoppingCartViewModel { Id = shoppingCartId };
 
         model.Headers.AddRange(new[]
         {
@@ -96,6 +94,16 @@ public class ShoppingCartController : Controller
             H["Price"],
             H["Action"],
         });
+
+        model.Totals.AddRange(lines
+            .GroupBy(viewModel => viewModel.LinePrice.Currency)
+            .Select(group => new Amount(group.Sum(viewModel => viewModel.LinePrice.Value), group.Key)));
+
+        foreach (var shoppingCartEvent in _shoppingCartEvents)
+        {
+            await shoppingCartEvent.LinesDisplayingAsync(model.Headers, lines);
+            await shoppingCartEvent.TotalsDisplayingAsync(model.Totals, lines);
+        }
 
         for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
         {

@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,9 @@ public class ShoppingCartLineViewModel
     public string ProductImageUrl { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
+
+    [BindNever]
+    public ProductPart Product { get; set; }
 
     public ShoppingCartLineViewModel(IDictionary<string, IProductAttributeValue> attributes = null) =>
         Attributes = attributes ?? new Dictionary<string, IProductAttributeValue>();

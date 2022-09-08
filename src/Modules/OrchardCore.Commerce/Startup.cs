@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.Drivers;
+using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
@@ -102,6 +103,7 @@ public class Startup : StartupBase
         services.AddContentPart<ShoppingCartWidgetPart>()
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
+        services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
