@@ -220,5 +220,6 @@ public class ShoppingCartControllerTests
                 contentDefinitionManager: new FakeContentDefinitionManager(),
                 moneyService: new TestMoneyService(),
                 productService: new FakeProductService()),
-            workflowManager: null);
+            workflowManager: null,
+            shapeFactory: null);
 }

@@ -53,5 +53,8 @@
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
     <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Events" />
+  </ItemGroup>
 
 </Project>
