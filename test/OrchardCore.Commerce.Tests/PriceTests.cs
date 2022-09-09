@@ -25,7 +25,7 @@ public class PriceTests
             BuildProduct("bar", 30.0M),
             BuildProduct("baz", 10.0M));
         var priceProvider = new PriceProvider(productService, new TestMoneyService());
-        cart = cart.With(await priceProvider.AddPricesAsync(cart.Items));
+        cart = cart.With(await priceProvider.UpdateAsync(cart.Items));
 
         foreach (var item in cart.Items)
         {
@@ -108,10 +108,10 @@ public class PriceTests
             Price = price;
         }
 
-        public Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
-            Task.FromResult(
-                items.Select(item =>
-                    AddPriceToShoppingCartItem(item)));
+        public Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model) =>
+            Task.FromResult<IList<ShoppingCartItem>>(model
+                .Select(AddPriceToShoppingCartItem)
+                .ToList());
 
         public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items) =>
              Task.FromResult(true);

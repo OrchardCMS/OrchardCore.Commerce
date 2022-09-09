@@ -31,7 +31,7 @@ public class PriceService : IPriceService
 
         foreach (var priceProvider in providers)
         {
-            var result = await priceProvider.AddPricesAsync(items);
+            var result = await priceProvider.UpdateAsync(items);
             items = result as IList<ShoppingCartItem> ?? result.ToList();
         }
 
