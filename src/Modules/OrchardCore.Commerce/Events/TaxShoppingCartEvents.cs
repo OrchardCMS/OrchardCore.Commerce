@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
@@ -24,13 +23,17 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
         _taxProviders = taxProviders;
     }
 
-    public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers)> DisplayingAsync(
+    public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
-        ShoppingCartLineViewModel[] lines)
+        IList<ShoppingCartLineViewModel> lines)
     {
         var context = new TaxProviderContext(lines, totals);
-        if (await _taxProviders.GetFirstApplicableProviderAsync(context) is not { } provider) return (totals, headers);
+
+        if (await _taxProviders.GetFirstApplicableProviderAsync(context) is not { } provider)
+        {
+            return (totals, headers, lines);
+        }
 
         // Update lines and get new totals
         context = await provider.UpdateAsync(context);
@@ -43,6 +46,6 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
             .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
             .ToList();
 
-        return (context.TotalsByCurrency.ToList(), newHeaders);
+        return (context.TotalsByCurrency.ToList(), newHeaders, lines);
     }
 }

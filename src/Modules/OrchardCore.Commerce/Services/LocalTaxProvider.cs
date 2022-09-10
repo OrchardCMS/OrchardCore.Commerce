@@ -1,7 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
@@ -14,12 +13,8 @@ namespace OrchardCore.Commerce.Services;
 
 public class LocalTaxProvider : ITaxProvider
 {
-    private readonly IShoppingCartHelpers _shoppingCartHelpers;
     // This is the simplest, lowest priority option and if anything else is applicable it should supersede this.
     public int Order => int.MaxValue;
-
-    public LocalTaxProvider(IShoppingCartHelpers shoppingCartHelpers) =>
-        _shoppingCartHelpers = shoppingCartHelpers;
 
     public Task<TaxProviderContext> UpdateAsync(TaxProviderContext model)
     {

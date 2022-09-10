@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
@@ -20,12 +18,9 @@ namespace OrchardCore.Commerce.Controllers;
 
 public class ShoppingCartController : Controller
 {
-    private readonly IContentManager _contentManager;
     private readonly INotifier _notifier;
     private readonly IPriceService _priceService;
-    private readonly IProductService _productService;
     private readonly IShapeFactory _shapeFactory;
-    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
@@ -40,20 +35,15 @@ public class ShoppingCartController : Controller
         INotifier notifier,
         IOrchardServices<ShoppingCartController> services,
         IPriceService priceService,
-        IProductService productService,
         IShapeFactory shapeFactory,
-        IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IWorkflowManager workflowManager)
     {
-        _contentManager = services.ContentManager.Value;
         _notifier = notifier;
         _priceService = priceService;
-        _productService = productService;
         _shapeFactory = shapeFactory;
-        _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
@@ -65,52 +55,15 @@ public class ShoppingCartController : Controller
     [Route("cart")]
     public async Task<ActionResult> Index(string shoppingCartId = null)
     {
-        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
-        var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
-        var items = await _priceService.AddPricesAsync(cart.Items);
-
-        var lines = await Task.WhenAll(items.Select(async item =>
+        if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } model)
         {
-            var product = products[item.ProductSku];
-            var price = _priceService.SelectPrice(item.Prices);
-            var metaData = await _contentManager.GetContentItemMetadataAsync(product);
-            return new ShoppingCartLineViewModel(attributes: item.Attributes.ToDictionary(attr => attr.AttributeName))
-            {
-                Quantity = item.Quantity,
-                Product = product,
-                ProductSku = item.ProductSku,
-                ProductName = product.ContentItem.DisplayText,
-                UnitPrice = price,
-                LinePrice = item.Quantity * price,
-                ProductUrl = Url.RouteUrl(metaData.DisplayRouteValues),
-            };
-        }));
-
-        if (!lines.Any()) return RedirectToAction(nameof(Empty));
-
-        var model = new ShoppingCartViewModel { Id = shoppingCartId };
-
-        IList<LocalizedHtmlString> headers = new[]
-        {
-            H["Quantity"],
-            H["Product"],
-            H["Price"],
-            H["Action"],
-        };
-        IList<Amount> totals = (await _shoppingCartHelpers.CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
-
-        foreach (var shoppingCartEvent in _shoppingCartEvents)
-        {
-            (totals, headers) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
+            return RedirectToAction(nameof(Empty));
         }
 
-        model.Totals.AddRange(totals);
-        model.Headers.AddRange(headers);
-
-        for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+        for (var lineIndex = 0; lineIndex < model.Lines.Count; lineIndex++)
         {
             var row = new List<IShape>();
-            var line = lines[lineIndex];
+            var line = model.Lines[lineIndex];
 
             var attributes = line
                 .Attributes
@@ -134,7 +87,7 @@ public class ShoppingCartController : Controller
                 row.Add(cellShape);
             }
 
-            model.Lines.Add(row);
+            model.TableShapes.Add(row);
         }
 
         return View(model);

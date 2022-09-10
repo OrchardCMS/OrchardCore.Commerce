@@ -1,15 +1,19 @@
 @using OrchardCore.Commerce.Abstractions
+@using OrchardCore.ContentManagement
 @using OrchardCore.DisplayManagement.TagHelpers
+@using OrchardCore
+
+@inject IContentManager ContentManager
 
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
     var attributes = (IList<(IProductAttributeValue Value, string Type, int Index)>)Model.ProductAttributes;
 }
 
-<a href="@line.ProductUrl">@line.ProductName</a>
+<a href="@Orchard.GetItemDisplayUrlAsync(line.Product.ContentItem)">@line.ProductName</a>
 @if (line.Attributes != null)
 {
-    <ul class="cart-product-attributes list-inline">
+    <ul class="cart-product-attributes list-inline">1
         @foreach (var (attribute, type, _) in attributes)
         {
             <shape tag="li"

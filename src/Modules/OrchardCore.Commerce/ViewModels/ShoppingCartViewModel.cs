@@ -9,6 +9,7 @@ public class ShoppingCartViewModel
 {
     public string Id { get; set; }
     public IList<LocalizedHtmlString> Headers { get; } = new List<LocalizedHtmlString>();
-    public IList<List<IShape>> Lines { get; } = new List<List<IShape>>();
+    public IList<List<IShape>> TableShapes { get; } = new List<List<IShape>>();
+    public IList<ShoppingCartLineViewModel> Lines { get; } = new List<ShoppingCartLineViewModel>();
     public IList<Amount> Totals { get; } = new List<Amount>();
 }
