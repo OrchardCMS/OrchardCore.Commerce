@@ -47,10 +47,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
 
     public override void WriteJson(JsonWriter writer, Amount amount, JsonSerializer serializer)
     {
-        if (amount.Currency is null)
-        {
-            return;
-        }
+        if (amount.Currency is null) return;
 
         writer.WriteStartObject();
         writer.WritePropertyName(ValueName);
@@ -71,6 +68,7 @@ internal class LegacyAmountConverter : JsonConverter<Amount>
             writer.WriteValue(amount.Currency.Symbol);
             writer.WritePropertyName(Iso);
             writer.WriteValue(amount.Currency.CurrencyIsoCode);
+
             if (amount.Currency.DecimalPlaces != DefaultDecimalDigits)
             {
                 writer.WritePropertyName(DecimalDigits);
