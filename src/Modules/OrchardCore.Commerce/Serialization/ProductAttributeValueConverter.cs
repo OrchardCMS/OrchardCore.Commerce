@@ -36,10 +36,7 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
 
     public override void WriteJson(JsonWriter writer, IProductAttributeValue productAttributeValue, JsonSerializer serializer)
     {
-        if (productAttributeValue is null)
-        {
-            return;
-        }
+        if (productAttributeValue is null) return;
 
         writer.WriteStartObject();
 
