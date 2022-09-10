@@ -42,9 +42,11 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
         writer.WritePropertyName(Type);
         writer.WriteValue(productAttributeValue.GetType().Name);
 
+        var untypedValue = productAttributeValue.UntypedValue;
+
         writer.WritePropertyName(Value);
 
-        if (productAttributeValue.UntypedValue is IEnumerable<object> values)
+        if (untypedValue is IEnumerable<object> values)
         {
             writer.WriteStartArray();
 
@@ -57,7 +59,7 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
         }
         else
         {
-            writer.WriteValue(productAttributeValue.UntypedValue);
+            writer.WriteValue(untypedValue);
         }
 
         writer.WritePropertyName(AttributeName);
