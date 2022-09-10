@@ -39,19 +39,16 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
         if (productAttributeValue is null) return;
 
         writer.WriteStartObject();
-
-        var typeName = productAttributeValue.GetType().Name;
-
         writer.WritePropertyName(Type);
-        writer.WriteValue(typeName);
+        writer.WriteValue(productAttributeValue.GetType().Name);
 
         writer.WritePropertyName(Value);
 
-        if (typeName == nameof(TextProductAttributeValue))
+        if (productAttributeValue.UntypedValue is IEnumerable<object> values)
         {
             writer.WriteStartArray();
 
-            foreach (var value in productAttributeValue.UntypedValue as IEnumerable<string>)
+            foreach (var value in values)
             {
                 writer.WriteValue(value);
             }
