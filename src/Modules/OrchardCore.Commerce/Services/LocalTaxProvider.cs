@@ -18,28 +18,26 @@ public class LocalTaxProvider : ITaxProvider
 
     public Task<TaxProviderContext> UpdateAsync(TaxProviderContext model)
     {
-        var subtotals = model.Subtotals.AsList();
-        var products = model.Contents.AsList();
+        var items = model.Items.AsList();
 
         var updatedTotals = model
             .TotalsByCurrency
-            .Select((total, index) =>
+            .Select(total =>
             {
                 var currency = total.Currency.CurrencyIsoCode;
-                return subtotals
-                    .Where(amount => amount.Currency.CurrencyIsoCode == currency)
-                    .Select(amount => amount.WithTax(products[index]))
+                return items
+                    .Where(item => item.Subtotal.Currency.CurrencyIsoCode == currency)
+                    .Select(item => item.Subtotal.WithTax(item.Content))
                     .Sum();
             });
 
         return Task.FromResult(new TaxProviderContext(
-            products,
-            products.Select(content => content.ContentItem.As<TaxPart>().GrossPrice.Amount),
+            items.Select(item => item with { UnitPrice = item.Content.As<TaxPart>().GrossPrice.Amount }),
             updatedTotals));
     }
 
     public Task<bool> IsApplicableAsync(TaxProviderContext model) =>
-        Task.FromResult(IsApplicable(model.Contents.Select(content => content.ContentItem.As<TaxPart>()).ToList()));
+        Task.FromResult(IsApplicable(model.Items.Select(item => item.Content.ContentItem.As<TaxPart>()).ToList()));
 
     private static bool IsApplicable(IList<TaxPart> taxParts)
     {

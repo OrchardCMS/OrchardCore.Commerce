@@ -19,6 +19,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class CardPaymentService : ICardPaymentService
 {
+    private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IPriceService _priceService;
     private readonly PaymentIntentService _paymentIntentService;
@@ -32,6 +33,7 @@ public class CardPaymentService : ICardPaymentService
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
     public CardPaymentService(
+        IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IPriceService priceService,
         IPriceSelectionStrategy priceSelectionStrategy,
@@ -43,6 +45,7 @@ public class CardPaymentService : ICardPaymentService
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
+        _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;
@@ -55,9 +58,7 @@ public class CardPaymentService : ICardPaymentService
 
     public async Task<PaymentIntent> CreatePaymentAsync(string paymentMethodId, string paymentIntentId)
     {
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        var totals = (await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy)).AsList();
-
+        var totals = (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId: null)).Totals;
         CheckTotals(totals);
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -131,8 +132,8 @@ public class CardPaymentService : ICardPaymentService
     public async Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        var totals = (await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy)).AsList();
 
+        var totals = (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId: null)).Totals;
         CheckTotals(totals);
 
         var defaultTotal = totals.SingleOrDefault();

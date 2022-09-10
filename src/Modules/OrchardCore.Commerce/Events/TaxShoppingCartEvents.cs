@@ -37,7 +37,7 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
 
         // Update lines and get new totals
         context = await provider.UpdateAsync(context);
-        foreach (var (subtotal, index) in context.Subtotals.Select((subtotal, index) => (subtotal, index)))
+        foreach (var (subtotal, index) in context.Items.Select((item, index) => (item.Subtotal, index)))
         {
             lines[index].AdditionalData[Keys.GrossPrice] = JToken.FromObject(subtotal);
         }

@@ -100,18 +100,20 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         if (_taxProviders.Any())
         {
             var taxContext = new TaxProviderContext(
-                lineItems.Select(item => products[item.ProductSku]),
-                lineItems.Select(item => item.LinePrice),
+                lineItems.Select(item => new TaxProviderContextLineItem(
+                    products[item.ProductSku],
+                    item.UnitPrice,
+                    item.Quantity)),
                 new[] { total });
 
             taxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxContext);
             total = taxContext.TotalsByCurrency.Single();
 
-            foreach (var (subtotal, index) in taxContext.Subtotals.Select((subtotal, index) => (subtotal, index)))
+            foreach (var (item, index) in taxContext.Items.Select((item, index) => (item, index)))
             {
-                var item = lineItems[index];
-                item.LinePrice = subtotal;
-                item.UnitPrice = subtotal / item.Quantity;
+                var lineItem = lineItems[index];
+                lineItem.LinePrice = item.UnitPrice;
+                lineItem.UnitPrice = item.Subtotal;
             }
         }
 

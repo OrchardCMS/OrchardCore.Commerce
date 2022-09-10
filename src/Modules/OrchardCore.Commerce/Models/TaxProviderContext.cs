@@ -7,17 +7,20 @@ using System.Linq;
 namespace OrchardCore.Commerce.Models;
 
 public record TaxProviderContext(
-    IEnumerable<IContent> Contents,
-    IEnumerable<Amount> Subtotals,
+    IEnumerable<TaxProviderContextLineItem> Items,
     IEnumerable<Amount> TotalsByCurrency)
 {
     public TaxProviderContext(
         ICollection<ShoppingCartLineViewModel> lines,
         IEnumerable<Amount> totalsByCurrency)
         : this(
-            lines.Select(line => line.Product),
-            lines.Select(line => line.LinePrice),
+            lines.Select(line => new TaxProviderContextLineItem(line.Product, line.UnitPrice, line.Quantity)),
             totalsByCurrency)
     {
     }
+}
+
+public record TaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity)
+{
+    public Amount Subtotal => UnitPrice * Quantity;
 }
