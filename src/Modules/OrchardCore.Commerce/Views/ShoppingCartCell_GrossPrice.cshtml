@@ -1,10 +1,9 @@
-@using OrchardCore.Commerce.Models
-@using OrchardCore.Commerce.Tax.Models
-@using OrchardCore.ContentManagement
+@using OrchardCore.Commerce.Tax.Constants
+@using OrchardCore.Commerce.MoneyDataType
 
 @{
-    var product = (ProductPart)Model.Line.Product;
-    var price = product.ContentItem.As<TaxPart>().GrossPrice.Amount;
+    var line = (ShoppingCartLineViewModel)Model.Line;
+    var price = line.AdditionalData[Keys.GrossPrice].ToObject<Amount>();
 }
 
 <div class="shopping-cart-table-unti-price">@price</div>

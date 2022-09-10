@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using OrchardCore.Commerce.Tax.Models;
+using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,50 +15,34 @@ namespace OrchardCore.Commerce.Events;
 public class TaxShoppingCartEvents : IShoppingCartEvents
 {
     private readonly IHtmlLocalizer<TaxShoppingCartEvents> H;
-    public TaxShoppingCartEvents(IHtmlLocalizer<TaxShoppingCartEvents> htmlLocalizer) =>
+    private readonly IEnumerable<ITaxProvider> _taxProviders;
+    public TaxShoppingCartEvents(
+        IHtmlLocalizer<TaxShoppingCartEvents> htmlLocalizer,
+        IEnumerable<ITaxProvider> taxProviders)
+    {
         H = htmlLocalizer;
-
-    public Task LinesDisplayingAsync(IList<LocalizedHtmlString> headers, ShoppingCartLineViewModel[] lines)
-    {
-        if (IsApplicable(lines))
-        {
-            var priceHeaderIndex = headers.IndexOf(headers.Single(header => header.Name == "Price"));
-            headers[priceHeaderIndex] = H["Gross Price"];
-        }
-
-        return Task.CompletedTask;
+        _taxProviders = taxProviders;
     }
 
-    public Task TotalsDisplayingAsync(IList<Amount> totals, ShoppingCartLineViewModel[] lines)
+    public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers)> DisplayingAsync(
+        IList<Amount> totals,
+        IList<LocalizedHtmlString> headers,
+        ShoppingCartLineViewModel[] lines)
     {
-        if (IsApplicable(lines))
+        var context = new TaxProviderContext(lines, totals);
+        if (await _taxProviders.GetFirstApplicableProviderAsync(context) is not { } provider) return (totals, headers);
+
+        // Update lines and get new totals
+        context = await provider.UpdateAsync(context);
+        foreach (var (subtotal, index) in context.Subtotals.Select((subtotal, index) => (subtotal, index)))
         {
-            for (var i = 0; i < totals.Count; i++)
-            {
-                var currency = totals[i].Currency.CurrencyIsoCode;
-                totals[i] = lines
-                    .Where(line => line.LinePrice.Currency.CurrencyIsoCode == currency)
-                    .Select(line => line.LinePrice.WithTax(line.Product))
-                    .Sum();
-            }
+            lines[index].AdditionalData[Keys.GrossPrice] = JToken.FromObject(subtotal);
         }
 
-        return Task.CompletedTask;
-    }
+        var newHeaders = headers
+            .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
+            .ToList();
 
-    private static bool IsApplicable(ShoppingCartLineViewModel[] lines)
-    {
-        var countWithGrossPrice = lines
-            .Select(line => line.Product.ContentItem.As<TaxPart>())
-            .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value > 0);
-
-        if (countWithGrossPrice == 0) return false;
-
-        if (countWithGrossPrice < lines.Length)
-        {
-            throw new InvalidOperationException("Some, but not all products have gross price. This is invalid.");
-        }
-
-        return true;
+        return (context.TotalsByCurrency.ToList(), newHeaders);
     }
 }

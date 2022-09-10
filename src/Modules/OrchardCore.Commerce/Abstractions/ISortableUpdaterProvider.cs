@@ -23,19 +23,14 @@ public interface ISortableUpdaterProvider<TModel>
     Task<TModel> UpdateAsync(TModel model);
 
     /// <summary>
-    /// Checks whether or not the provider is applicable for the <see cref="model"/>.
+    /// Checks whether or not the provider is applicable for the <paramref name="model"/>.
     /// </summary>
     Task<bool> IsApplicableAsync(TModel model);
 }
 
 public static class SortableUpdaterProviderExtensions
 {
-    /// <summary>
-    /// Select the first provider where <see cref="ISortableUpdaterProvider{TModel}.IsApplicableAsync"/> evaluates to
-    /// <see langword="true"/>, then calls <see cref="ISortableUpdaterProvider{TModel}.UpdateAsync"/> and returns the
-    /// result. If none of the providers are applicable, it returns the provided <paramref name="model"/>.
-    /// </summary>
-    public static async Task<TModel> UpdateWithFirstProviderAsync<TModel>(
+    public static async Task<ISortableUpdaterProvider<TModel>> GetFirstApplicableProviderAsync<TModel>(
         this IEnumerable<ISortableUpdaterProvider<TModel>> providers,
         TModel model)
     {
@@ -43,10 +38,22 @@ public static class SortableUpdaterProviderExtensions
         {
             if (await provider.IsApplicableAsync(model))
             {
-                return await provider.UpdateAsync(model);
+                return provider;
             }
         }
 
-        return model;
+        return null;
     }
+
+    /// <summary>
+    /// Select the first provider where <see cref="ISortableUpdaterProvider{TModel}.IsApplicableAsync"/> evaluates to
+    /// <see langword="true"/>, then calls <see cref="ISortableUpdaterProvider{TModel}.UpdateAsync"/> and returns the
+    /// result. If none of the providers are applicable, it returns the provided <paramref name="model"/>.
+    /// </summary>
+    public static async Task<TModel> UpdateWithFirstApplicableProviderAsync<TModel>(
+        this IEnumerable<ISortableUpdaterProvider<TModel>> providers,
+        TModel model) =>
+        await GetFirstApplicableProviderAsync(providers, model) is { } provider
+            ? await provider.UpdateAsync(model)
+            : model;
 }

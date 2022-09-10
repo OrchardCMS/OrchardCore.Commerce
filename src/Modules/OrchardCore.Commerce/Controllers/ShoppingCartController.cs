@@ -26,6 +26,7 @@ public class ShoppingCartController : Controller
     private readonly IProductService _productService;
     private readonly IShapeFactory _shapeFactory;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
+    private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
@@ -42,6 +43,7 @@ public class ShoppingCartController : Controller
         IProductService productService,
         IShapeFactory shapeFactory,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
+        IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IWorkflowManager workflowManager)
@@ -52,6 +54,7 @@ public class ShoppingCartController : Controller
         _productService = productService;
         _shapeFactory = shapeFactory;
         _shoppingCartEvents = shoppingCartEvents;
+        _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
@@ -87,23 +90,22 @@ public class ShoppingCartController : Controller
 
         var model = new ShoppingCartViewModel { Id = shoppingCartId };
 
-        model.Headers.AddRange(new[]
+        IList<LocalizedHtmlString> headers = new[]
         {
             H["Quantity"],
             H["Product"],
             H["Price"],
             H["Action"],
-        });
-
-        model.Totals.AddRange(lines
-            .GroupBy(viewModel => viewModel.LinePrice.Currency)
-            .Select(group => new Amount(group.Sum(viewModel => viewModel.LinePrice.Value), group.Key)));
+        };
+        IList<Amount> totals = (await _shoppingCartHelpers.CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
 
         foreach (var shoppingCartEvent in _shoppingCartEvents)
         {
-            await shoppingCartEvent.LinesDisplayingAsync(model.Headers, lines);
-            await shoppingCartEvent.TotalsDisplayingAsync(model.Totals, lines);
+            (totals, headers) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
         }
+
+        model.Totals.AddRange(totals);
+        model.Headers.AddRange(headers);
 
         for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
         {

@@ -24,7 +24,7 @@ public class PriceService : IPriceService
     }
 
     public Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
-        _priceProviders.UpdateWithFirstProviderAsync(items);
+        _priceProviders.UpdateWithFirstApplicableProviderAsync(items);
 
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices) =>
         _priceSelectionStrategy.SelectPrice(prices);

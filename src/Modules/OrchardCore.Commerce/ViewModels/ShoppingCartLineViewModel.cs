@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -17,6 +18,8 @@ public class ShoppingCartLineViewModel
     public string ProductImageUrl { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
+
+    public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
 
     [BindNever]
     public ProductPart Product { get; set; }

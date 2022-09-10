@@ -168,8 +168,12 @@ public class CommerceSettingsCurrencySettingsStartup : StartupBase
 [RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
 public class TaxStartup : StartupBase
 {
-    public override void ConfigureServices(IServiceCollection services) =>
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services
             .AddContentPart<PricePart>()
             .AddHandler<TaxPartAndPricePartHandler>();
+
+        services.AddScoped<ITaxProvider, LocalTaxProvider>();
+    }
 }

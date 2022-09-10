@@ -13,18 +13,14 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IShoppingCartEvents
 {
     /// <summary>
-    /// Invoked when the line items of the shopping cart are displayed.
+    /// Invoked after the shopping card data is prepared, but before the shapes are rendered.
     /// </summary>
-    /// <param name="headers">The column headers used in the display table.</param>
-    /// <param name="lines">The line items used to render the table.</param>
-    Task LinesDisplayingAsync(IList<LocalizedHtmlString> headers, ShoppingCartLineViewModel[] lines) =>
-        Task.CompletedTask;
-
-    /// <summary>
-    /// Invoked when the total cost of the shopping cart are displayed.
-    /// </summary>
-    /// <param name="totals">The totals </param>
+    /// <param name="totals">The line items grouped by currency and summed up.</param>
+    /// <param name="headers">The column headers of the line items table.</param>
     /// <param name="lines">The line items.</param>
-    /// <returns></returns>
-    Task TotalsDisplayingAsync(IList<Amount> totals, ShoppingCartLineViewModel[] lines);
+    /// <returns>The new versions of the matching parameters.</returns>
+    Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers)> DisplayingAsync(
+        IList<Amount> totals,
+        IList<LocalizedHtmlString> headers,
+        ShoppingCartLineViewModel[] lines);
 }
