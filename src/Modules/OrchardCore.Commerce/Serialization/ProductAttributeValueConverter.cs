@@ -11,7 +11,7 @@ internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeV
 {
     private const string Type = "type";
     private const string Value = "value";
-    private const string AttributeName = "attributename";
+    private const string AttributeName = "attributeName";
 
     public override IProductAttributeValue ReadJson(
         JsonReader reader,
