@@ -19,15 +19,18 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IContentManager _contentManager;
     private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
+    private readonly IEnumerable<ITaxProvider> _taxProviders;
 
     public OrderPartDisplayDriver(
         IContentManager contentManager,
         IHttpContextAccessor hca,
-        IProductService productService)
+        IProductService productService,
+        IEnumerable<ITaxProvider> taxProviders)
     {
         _contentManager = contentManager;
         _hca = hca;
         _productService = productService;
+        _taxProviders = taxProviders;
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
@@ -90,24 +93,31 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             };
         }));
 
-        var total = Amount.Unspecified;
+        var total = lineItems.Any()
+            ? new Amount(lineItems.Select(item => item.LinePrice.Value).Sum(), lineItems[0].LinePrice.Currency)
+            : Amount.Unspecified;
 
-        if (lineItems.Any())
+        if (_taxProviders.Any())
         {
-            total = new Amount(0, lineItems[0].LinePrice.Currency);
+            var taxContext = new TaxProviderContext(
+                lineItems.Select(item => products[item.ProductSku]),
+                lineItems.Select(item => item.LinePrice),
+                new[] { total });
 
-            foreach (var item in lineItems)
+            taxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxContext);
+            total = taxContext.TotalsByCurrency.Single();
+
+            foreach (var (subtotal, index) in taxContext.Subtotals.Select((subtotal, index) => (subtotal, index)))
             {
-                model.LineItems.Add(item);
-
-                total += item.LinePrice;
+                var item = lineItems[index];
+                item.LinePrice = subtotal;
+                item.UnitPrice = subtotal / item.Quantity;
             }
         }
 
         model.Total = total;
-
+        model.LineItems.AddRange(lineItems);
         model.Charges.AddRange(part.Charges);
-
         model.OrderPart = part;
     }
 
