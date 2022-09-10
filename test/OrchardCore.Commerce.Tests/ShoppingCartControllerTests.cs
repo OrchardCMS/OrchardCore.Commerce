@@ -214,7 +214,7 @@ public class ShoppingCartControllerTests
                 new Lazy<UserManager<IUser>>(() => null)
             ),
             priceService: new FakePriceService(),
-            productService: new FakeProductService(),
+            shoppingCartHelpers: null,
             shoppingCartSerializer: new ShoppingCartSerializer(
                 attributeProviders: new[] { new ProductAttributeProvider() },
                 contentDefinitionManager: new FakeContentDefinitionManager(),

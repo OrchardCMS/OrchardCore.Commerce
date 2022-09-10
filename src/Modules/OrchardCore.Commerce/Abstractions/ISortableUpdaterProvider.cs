@@ -44,16 +44,4 @@ public static class SortableUpdaterProviderExtensions
 
         return null;
     }
-
-    /// <summary>
-    /// Select the first provider where <see cref="ISortableUpdaterProvider{TModel}.IsApplicableAsync"/> evaluates to
-    /// <see langword="true"/>, then calls <see cref="ISortableUpdaterProvider{TModel}.UpdateAsync"/> and returns the
-    /// result. If none of the providers are applicable, it returns the provided <paramref name="model"/>.
-    /// </summary>
-    public static async Task<TModel> UpdateWithFirstApplicableProviderAsync<TModel>(
-        this IEnumerable<ISortableUpdaterProvider<TModel>> providers,
-        TModel model) =>
-        await GetFirstApplicableProviderAsync(providers, model) is { } provider
-            ? await provider.UpdateAsync(model)
-            : model;
 }

@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -22,8 +23,20 @@ public class PriceService : IPriceService
         _priceSelectionStrategy = priceSelectionStrategy;
     }
 
-    public Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
-        _priceProviders.UpdateWithFirstApplicableProviderAsync(items);
+    public async Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
+    {
+        var providers = await _priceProviders
+            .OrderBy(provider => provider.Order)
+            .WhereAsync(provider => provider.IsApplicableAsync(items));
+
+        foreach (var priceProvider in providers)
+        {
+            var result = await priceProvider.UpdateAsync(items);
+            items = result.AsList();
+        }
+
+        return items;
+    }
 
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices) =>
         _priceSelectionStrategy.SelectPrice(prices);

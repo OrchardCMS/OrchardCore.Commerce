@@ -43,10 +43,10 @@ public class PriceTests
         var priceService = new PriceService(
             new List<IPriceProvider>
             {
-                new DummyPriceProvider(4, 4.0m),
-                new DummyPriceProvider(2, 2.0m),
-                new DummyPriceProvider(1, 1.0m),
-                new DummyPriceProvider(3, 3.0m),
+                new DummyPriceProvider(4, 4.0m, isApplicable: false),
+                new DummyPriceProvider(2, 2.0m, isApplicable: true),
+                new DummyPriceProvider(1, 1.0m, isApplicable: false),
+                new DummyPriceProvider(3, 3.0m, isApplicable: true),
             },
             priceSelectionStrategy: null);
 
@@ -55,10 +55,8 @@ public class PriceTests
 
         Assert.Collection(
             cart.Items.Single().Prices,
-            price => Assert.Equal(1.0m, price.Price.Value),
             price => Assert.Equal(2.0m, price.Price.Value),
-            price => Assert.Equal(3.0m, price.Price.Value),
-            price => Assert.Equal(4.0m, price.Price.Value));
+            price => Assert.Equal(3.0m, price.Price.Value));
     }
 
     [Fact]
@@ -98,12 +96,14 @@ public class PriceTests
 
     private class DummyPriceProvider : IPriceProvider
     {
+        private readonly bool _isApplicable;
         public int Order { get; }
 
         public decimal Price { get; }
 
-        public DummyPriceProvider(int priority, decimal price)
+        public DummyPriceProvider(int priority, decimal price, bool isApplicable)
         {
+            _isApplicable = isApplicable;
             Order = priority;
             Price = price;
         }
@@ -114,7 +114,7 @@ public class PriceTests
                 .ToList());
 
         public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items) =>
-             Task.FromResult(true);
+             Task.FromResult(_isApplicable);
 
         private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item) =>
              item.WithPrice(
