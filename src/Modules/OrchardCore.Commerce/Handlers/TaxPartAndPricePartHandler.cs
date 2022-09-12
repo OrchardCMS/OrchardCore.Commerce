@@ -67,6 +67,6 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
 
         _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
             nameof(TaxPart.GrossPrice),
-            T["You must either provide both {GrossPriceName} and {TaxRateName}, or neither of them.", grossPriceName, taxRateName]);
+            T["You must either provide both {0} and {1}, or neither of them.", grossPriceName, taxRateName]);
     }
 }
