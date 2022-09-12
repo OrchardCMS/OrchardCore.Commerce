@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Tax.Models;
@@ -17,14 +18,18 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IStringLocalizer<TaxPartAndPricePartHandler> T;
+
     public TaxPartAndPricePartHandler(
         IContentDefinitionManager contentDefinitionManager,
         ISession session,
+        IStringLocalizer<TaxPartAndPricePartHandler> stringLocalizer,
         IUpdateModelAccessor updateModelAccessor)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _session = session;
         _updateModelAccessor = updateModelAccessor;
+        T = stringLocalizer;
     }
 
     public override Task UpdatedAsync(UpdateContentContext context, PricePart instance)
@@ -62,6 +67,6 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
 
         _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
             nameof(TaxPart.GrossPrice),
-            $"You must either provide both {grossPriceName} and {taxRateName}, or neither of them.");
+            T["You must either provide both {GrossPriceName} and {TaxRateName}, or neither of them.", grossPriceName, taxRateName]);
     }
 }
