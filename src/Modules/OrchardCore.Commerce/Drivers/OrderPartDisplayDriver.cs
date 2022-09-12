@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -93,9 +93,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             };
         }));
 
-        var total = lineItems.Any()
-            ? new Amount(lineItems.Select(item => item.LinePrice.Value).Sum(), lineItems[0].LinePrice.Currency)
-            : Amount.Unspecified;
+        var total = lineItems.Select(item => item.LinePrice).Sum();
 
         if (_taxProviders.Any())
         {
@@ -112,8 +110,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             foreach (var (item, index) in taxContext.Items.Select((item, index) => (item, index)))
             {
                 var lineItem = lineItems[index];
-                lineItem.LinePrice = item.UnitPrice;
-                lineItem.UnitPrice = item.Subtotal;
+                lineItem.LinePrice = item.Subtotal;
+                lineItem.UnitPrice = item.UnitPrice;
             }
         }
 

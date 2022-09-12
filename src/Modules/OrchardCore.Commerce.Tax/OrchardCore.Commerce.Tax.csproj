@@ -35,8 +35,4 @@
     <ProjectReference Include="..\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Handlers" />
-  </ItemGroup>
-
 </Project>
