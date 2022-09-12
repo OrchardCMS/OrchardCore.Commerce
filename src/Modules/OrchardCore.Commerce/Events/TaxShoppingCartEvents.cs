@@ -35,7 +35,7 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
             return (totals, headers, lines);
         }
 
-        // Update lines and get new totals
+        // Update lines and get new totals.
         context = await provider.UpdateAsync(context);
         foreach (var (subtotal, index) in context.Items.Select((item, index) => (item.Subtotal, index)))
         {
