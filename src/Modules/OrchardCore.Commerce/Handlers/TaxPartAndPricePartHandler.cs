@@ -1,6 +1,5 @@
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -16,17 +15,14 @@ namespace OrchardCore.Commerce.Handlers;
 public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IMoneyService _moneyService;
     private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     public TaxPartAndPricePartHandler(
         IContentDefinitionManager contentDefinitionManager,
-        IMoneyService moneyService,
         ISession session,
         IUpdateModelAccessor updateModelAccessor)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _moneyService = moneyService;
         _session = session;
         _updateModelAccessor = updateModelAccessor;
     }
@@ -54,12 +50,7 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
 
     private void UpdatePricePart(ContentItem contentItem, Amount grossPrice, decimal taxRate)
     {
-        var netMultiplier = 1 + (taxRate / 100);
-        contentItem.Alter<PricePart>(instance =>
-            instance.PriceField.Amount = _moneyService.Create(
-                grossPrice.Value / netMultiplier,
-                grossPrice.Currency.CurrencyIsoCode));
-
+        contentItem.Alter<PricePart>(instance => instance.PriceField.Amount = grossPrice.WithoutTax(taxRate));
         _session.Save(contentItem);
     }
 

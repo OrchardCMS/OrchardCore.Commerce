@@ -5,12 +5,14 @@ namespace OrchardCore.Commerce.MoneyDataType;
 
 public static class AmountExtensions
 {
-    public static Amount WithTax(this Amount amount, decimal taxRate)
-    {
-        var multiplier = 1 + (taxRate / 100m);
-        return new Amount(amount.Value * multiplier, amount.Currency);
-    }
+    public static Amount WithTax(this Amount netAmount, decimal taxRate) =>
+        new(netAmount.Value * ToMultiplier(taxRate), netAmount.Currency);
 
-    public static Amount WithTax(this Amount amount, IContent contentWithTaxPart) =>
-        WithTax(amount, contentWithTaxPart.As<TaxPart>().TaxRate.Value!.Value);
+    public static Amount WithTax(this Amount netAmount, IContent contentWithTaxPart) =>
+        WithTax(netAmount, contentWithTaxPart.As<TaxPart>().TaxRate.Value!.Value);
+
+    public static Amount WithoutTax(this Amount grossAmount, decimal taxRate) =>
+        new(grossAmount.Value / ToMultiplier(taxRate), grossAmount.Currency);
+
+    private static decimal ToMultiplier(decimal taxRate) => 1 + (taxRate / 100m);
 }
