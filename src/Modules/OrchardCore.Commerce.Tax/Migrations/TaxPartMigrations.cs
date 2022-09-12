@@ -36,7 +36,7 @@ public class TaxPartMigrations : DataMigration
                     .WithSettings(new PriceFieldSettings
                     {
                         Hint = "The price with tax. If specified along with the Tax Rate, then Price content part is " +
-                               "updated to the calculated net value on publish..",
+                               "updated to the calculated net value on publish.",
                     }))
                 .WithField(part => part.TaxRate, part => part
                     .WithDisplayName("Tax Rate")
