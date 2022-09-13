@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Tax.Constants;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,9 +36,9 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
 
         // Update lines and get new totals.
         context = await provider.UpdateAsync(context);
-        foreach (var (subtotal, index) in context.Items.Select((item, index) => (item.Subtotal, index)))
+        foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
         {
-            lines[index].AdditionalData[Keys.GrossPrice] = JToken.FromObject(subtotal);
+            lines[index].AdditionalData.SetGrossPrice(price);
         }
 
         var newHeaders = headers

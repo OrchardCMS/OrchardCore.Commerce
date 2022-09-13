@@ -1,9 +1,8 @@
-@using OrchardCore.Commerce.Tax.Constants
-@using OrchardCore.Commerce.MoneyDataType
+@using OrchardCore.Commerce.Tax.Extensions
 
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
-    var price = line.AdditionalData[Keys.GrossPrice].ToObject<Amount>();
+    var price = line.AdditionalData.GetGrossPrice();
 }
 
 <div class="shopping-cart-table-unit-price">@price</div>
