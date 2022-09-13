@@ -24,11 +24,11 @@ public class PriceVariantProvider : IPriceProvider
         _predefinedValuesService = predefinedValuesService;
     }
 
-    public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
+    public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
     {
-        var skuProducts = await _productService.GetSkuProductsAsync(items);
+        var skuProducts = await _productService.GetSkuProductsAsync(model);
 
-        return items
+        return model
             .Select(item =>
             {
                 if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
@@ -42,7 +42,8 @@ public class PriceVariantProvider : IPriceProvider
                 }
 
                 return item;
-            });
+            })
+            .ToList();
     }
 
     private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
@@ -76,11 +77,11 @@ public class PriceVariantProvider : IPriceProvider
         return null;
     }
 
-    public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items)
+    public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model)
     {
-        var skuProducts = await _productService.GetSkuProductsAsync(items);
+        var skuProducts = await _productService.GetSkuProductsAsync(model);
 
-        return items.All(item =>
+        return model.All(item =>
                 skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
                 productPart.ContentItem.Has<PriceVariantsPart>());
     }

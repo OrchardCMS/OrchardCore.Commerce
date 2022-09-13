@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.Drivers;
+using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
@@ -18,6 +19,7 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
+using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
@@ -101,6 +103,7 @@ public class Startup : StartupBase
         services.AddContentPart<ShoppingCartWidgetPart>()
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
+        services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
@@ -160,4 +163,17 @@ public class CommerceSettingsCurrencySettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
         services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
+}
+
+[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
+public class TaxStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddContentPart<PricePart>()
+            .AddHandler<TaxPartAndPricePartHandler>();
+
+        services.AddScoped<ITaxProvider, LocalTaxProvider>();
+    }
 }

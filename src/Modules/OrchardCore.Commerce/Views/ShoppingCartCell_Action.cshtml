@@ -1,0 +1,18 @@
+@using OrchardCore.Commerce.Abstractions
+@using OrchardCore.DisplayManagement.TagHelpers
+
+@{
+    var line = (ShoppingCartLineViewModel)Model.Line;
+    var attributes = (IList<(IProductAttributeValue Value, string Type, int Index)>)Model.ProductAttributes;
+}
+<form asp-action="RemoveItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
+    <input type="hidden" name="line.ProductSku" value="@line.ProductSku"/>
+    @foreach (var (attribute, type, index) in attributes)
+    {
+        <shape Type="@type"
+               alternate="@(type)_hidden"
+               prop-index="@index"
+               prop-attributeValue="@(attribute)"/>
+    }
+    <button type="submit" class="btn btn-primary">@T["Remove"]</button>
+</form>

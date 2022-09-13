@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 

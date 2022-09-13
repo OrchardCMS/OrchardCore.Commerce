@@ -1,0 +1,10 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@model OrchardCore.ContentFields.ViewModels.DisplayNumericFieldViewModel
+
+@if (Model.Value is { } value && value > 0)
+{
+    <div class="field field-type-numericfield field-name-tax-part-tax-rate">
+        <strong class="field-name-tax-part-tax-rate-title">@Model.PartFieldDefinition.DisplayName()</strong>
+        @T["{0}%", value]
+    </div>
+}

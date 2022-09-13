@@ -12,27 +12,27 @@ namespace OrchardCore.Commerce.Services;
 /// </summary>
 public class PriceService : IPriceService
 {
-    private readonly IEnumerable<IPriceProvider> _providers;
+    private readonly IEnumerable<IPriceProvider> _priceProviders;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
 
     public PriceService(
         IEnumerable<IPriceProvider> priceProviders,
         IPriceSelectionStrategy priceSelectionStrategy)
     {
-        _providers = priceProviders;
+        _priceProviders = priceProviders;
         _priceSelectionStrategy = priceSelectionStrategy;
     }
 
     public async Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        var providers = await _providers
+        var providers = await _priceProviders
             .OrderBy(provider => provider.Order)
             .WhereAsync(provider => provider.IsApplicableAsync(items));
 
         foreach (var priceProvider in providers)
         {
-            var result = await priceProvider.AddPricesAsync(items);
-            items = result as IList<ShoppingCartItem> ?? result.ToList();
+            var result = await priceProvider.UpdateAsync(items);
+            items = result.AsList();
         }
 
         return items;

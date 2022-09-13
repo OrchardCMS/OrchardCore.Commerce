@@ -64,6 +64,7 @@
         "OrchardCore.Commerce.CommerceSettingsCurrencySelector",
 
         "OrchardCore.Commerce.ContentFields",
+        "OrchardCore.Commerce.Tax",
 
         // Themes
         "TheBlogTheme",

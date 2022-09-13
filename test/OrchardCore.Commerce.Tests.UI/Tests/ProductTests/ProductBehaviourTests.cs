@@ -6,6 +6,7 @@ using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
+using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.ProductTests;
 
@@ -22,7 +23,7 @@ public class ProductBehaviourTests : UITestBase
             async context =>
             {
                 await context.SignInDirectlyAsync();
-                await context.GoToContentItemByIdAsync("testproduct000");
+                await context.GoToContentItemByIdAsync(TestProduct);
 
                 // Also testing shopping cart widget.
                 ShoppingCartItemCountShouldBe(context, 0);

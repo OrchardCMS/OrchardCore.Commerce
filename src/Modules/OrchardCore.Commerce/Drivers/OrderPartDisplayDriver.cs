@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -19,15 +19,18 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IContentManager _contentManager;
     private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
+    private readonly IEnumerable<ITaxProvider> _taxProviders;
 
     public OrderPartDisplayDriver(
         IContentManager contentManager,
         IHttpContextAccessor hca,
-        IProductService productService)
+        IProductService productService,
+        IEnumerable<ITaxProvider> taxProviders)
     {
         _contentManager = contentManager;
         _hca = hca;
         _productService = productService;
+        _taxProviders = taxProviders;
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
@@ -90,24 +93,31 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             };
         }));
 
-        var total = Amount.Unspecified;
+        var total = lineItems.Select(item => item.LinePrice).Sum();
 
-        if (lineItems.Any())
+        if (_taxProviders.Any())
         {
-            total = new Amount(0, lineItems[0].LinePrice.Currency);
+            var taxContext = new TaxProviderContext(
+                lineItems.Select(item => new TaxProviderContextLineItem(
+                    products[item.ProductSku],
+                    item.UnitPrice,
+                    item.Quantity)),
+                new[] { total });
 
-            foreach (var item in lineItems)
+            taxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxContext);
+            total = taxContext.TotalsByCurrency.Single();
+
+            foreach (var (item, index) in taxContext.Items.Select((item, index) => (item, index)))
             {
-                model.LineItems.Add(item);
-
-                total += item.LinePrice;
+                var lineItem = lineItems[index];
+                lineItem.LinePrice = item.Subtotal;
+                lineItem.UnitPrice = item.UnitPrice;
             }
         }
 
         model.Total = total;
-
+        model.LineItems.AddRange(lineItems);
         model.Charges.AddRange(part.Charges);
-
         model.OrderPart = part;
     }
 

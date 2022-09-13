@@ -88,11 +88,20 @@
               }
             },
             {
+              "PartName": "TaxPart",
+              "Name": "TaxPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "5"
+                }
+              }
+            },
+            {
               "PartName": "Product",
               "Name": "Product",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "5"
+                  "Position": "999"
                 }
               }
             }

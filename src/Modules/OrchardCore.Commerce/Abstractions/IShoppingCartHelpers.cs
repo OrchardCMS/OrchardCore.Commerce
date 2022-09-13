@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.DisplayManagement;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,9 +12,10 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IShoppingCartHelpers
 {
     /// <summary>
-    /// Returns the first line in <paramref name="cart"/> that has the product that <paramref name="line"/> refers to.
+    /// Creates a model from the current shopping cart. This includes everything except the <see cref="IShape"/>
+    /// collection in <see cref="ShoppingCartViewModel.TableShapes"/>.
     /// </summary>
-    ShoppingCartLineViewModel GetExistingLine(ShoppingCartViewModel cart, ShoppingCartLineViewModel line);
+    Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(string shoppingCartId);
 
     /// <summary>
     /// Calculate the total value in the cart. All prices must be of a single currency.

@@ -19,6 +19,7 @@ using OrchardCore.Settings;
 using OrchardCore.Users;
 using Stripe;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CommerceContentTypes = OrchardCore.Commerce.Constants.ContentTypes;
 
@@ -58,7 +59,7 @@ public class PaymentController : Controller
     }
 
     [Route("checkout")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string shoppingCartId = null)
     {
         var isAuthenticated = User.Identity?.IsAuthenticated == true;
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -66,8 +67,12 @@ public class PaymentController : Controller
             return isAuthenticated ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await _shoppingCartHelpers.CalculateSingleCurrencyTotalAsync() is not { } total) return View("CartEmpty");
+        if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart)
+        {
+            return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
+        }
 
+        var total = cart.Totals.Single();
         var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
         var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : null;

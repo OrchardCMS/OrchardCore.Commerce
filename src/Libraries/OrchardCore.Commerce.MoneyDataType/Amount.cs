@@ -129,6 +129,18 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     public static Amount operator *(Amount amount, double quantity) =>
         new((decimal)quantity * amount.Value, amount.Currency);
 
+    public static Amount operator /(Amount amount, int quantity) =>
+        new(amount.Value / quantity, amount.Currency);
+
+    public static Amount operator /(Amount amount, decimal quantity) =>
+        new(amount.Value / quantity, amount.Currency);
+
+    public static Amount operator /(Amount amount, float quantity) =>
+        amount / (decimal)quantity;
+
+    public static Amount operator /(Amount amount, double quantity) =>
+        amount / (decimal)quantity;
+
     public static bool operator ==(Amount first, Amount second) => first.Equals(second);
 
     public static bool operator !=(Amount first, Amount second) => !first.Equals(second);

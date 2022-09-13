@@ -27,20 +27,22 @@ public class PriceProvider : IPriceProvider
         _moneyService = moneyService;
     }
 
-    public async Task<IEnumerable<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
+    public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
     {
-        var skuProducts = await _productService.GetSkuProductsAsync(items);
+        var skuProducts = await _productService.GetSkuProductsAsync(model);
 
-        return items.Select(item => skuProducts.TryGetValue(item.ProductSku, out var productPart)
-            ? AddPriceToShoppingCartItem(item, productPart)
-            : item);
+        return model
+            .Select(item => skuProducts.TryGetValue(item.ProductSku, out var productPart)
+                ? AddPriceToShoppingCartItem(item, productPart)
+                : item)
+            .ToList();
     }
 
-    public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items)
+    public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model)
     {
-        var skuProducts = await _productService.GetSkuProductsAsync(items);
+        var skuProducts = await _productService.GetSkuProductsAsync(model);
 
-        return items.All(item =>
+        return model.All(item =>
             skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
             productPart.ContentItem.Has<PricePart>());
     }

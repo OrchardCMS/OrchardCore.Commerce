@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;
