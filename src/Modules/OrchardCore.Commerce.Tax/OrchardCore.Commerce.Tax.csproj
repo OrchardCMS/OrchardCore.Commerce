@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.1-alpha.walma-15.1" />
   </ItemGroup>
 
   <ItemGroup>
