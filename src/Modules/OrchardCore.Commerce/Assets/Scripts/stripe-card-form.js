@@ -85,13 +85,13 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
     handleStripeJsResult = function (result) {
         const error = result.error;
 
-        document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
-
         // Show error in payment form.
         if (error) {
             displayError(error);
         }
         else {
+            document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
+
             // The card action has been handled.
             // The PaymentIntent can be confirmed again on the server.
             fetchPay({ paymentIntentId: result.paymentIntent.id })
@@ -105,13 +105,13 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
     function stripePaymentMethodHandler(result) {
         const error = result.error;
 
-        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentMethod.id;
-
         // Show error in payment form.
         if (error) {
             displayError(error);
         }
         else {
+            document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentMethod.id;
+
             // Otherwise send paymentMethod.id to the server.
             fetchPay({ paymentMethodId: result.paymentMethod.id })
                 .then((fetchPayResult) => {
