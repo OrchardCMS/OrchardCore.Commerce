@@ -32,7 +32,7 @@ public class ProductBehaviourTests : UITestBase
 
                 ShoppingCartItemCountShouldBe(context, 1);
 
-                context.Get(By.ClassName("widget-shopping-cart-widget")).Click();
+                context.Get(By.ClassName("shopping-cart-widget")).Click();
 
                 context.Driver.Exists(By.XPath($"//a[contains(text(), 'TestProduct')]").Visible());
             },
