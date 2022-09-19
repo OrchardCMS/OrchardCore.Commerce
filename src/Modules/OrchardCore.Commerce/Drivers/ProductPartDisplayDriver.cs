@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -12,9 +13,15 @@ namespace OrchardCore.Commerce.Drivers;
 public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 {
     private readonly IProductAttributeService _productAttributeService;
+    private readonly IStringLocalizer T;
 
-    public ProductPartDisplayDriver(IProductAttributeService productAttributeService) =>
+    public ProductPartDisplayDriver(
+        IProductAttributeService productAttributeService,
+        IStringLocalizer<ProductPartDisplayDriver> stringLocalizer)
+    {
         _productAttributeService = productAttributeService;
+        T = stringLocalizer;
+    }
 
     public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
         Initialize<ProductPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
@@ -29,7 +36,15 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         IUpdateModel updater,
         UpdatePartEditorContext context)
     {
-        await updater.TryUpdateModelAsync(part, Prefix, productPart => productPart.Sku);
+        await updater.TryUpdateModelAsync(part, Prefix);
+
+        if (part.Sku.Contains('-'))
+        {
+            updater.ModelState.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
+            return await EditAsync(part, context);
+        }
+
+        part.Sku = part.Sku.ToUpperInvariant();
 
         return await EditAsync(part, context);
     }
