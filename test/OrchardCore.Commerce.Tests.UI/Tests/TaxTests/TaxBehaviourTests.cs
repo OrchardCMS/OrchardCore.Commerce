@@ -69,8 +69,6 @@ public class TaxBehaviourTests : UITestBase
 
     private static void FieldShouldBe(UITestContext context, string id, decimal value) =>
         decimal
-            .Parse(
-                context.Get(By.Id(id)).GetAttribute("value").Replace(',', '.'),
-                CultureInfo.InvariantCulture)
+            .Parse(context.Get(By.Id(id)).GetAttribute("value"), CultureInfo.InvariantCulture)
             .ShouldBe(value);
 }
