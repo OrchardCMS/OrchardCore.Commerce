@@ -1,0 +1,45 @@
+@{
+    var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
+}
+
+<table class="table shopping-cart-table">
+    <thead>
+    <tr>
+        @foreach (var header in viewModel.Headers)
+        {
+            <th scope="col">@header</th>
+        }
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var line in viewModel.TableShapes)
+    {
+        <tr>
+            @foreach (var cell in line)
+            {
+                <td>
+                    @await DisplayAsync(cell)
+                </td>
+            }
+        </tr>
+    }
+    </tbody>
+
+    <tfoot>
+    <tr>
+        <td class="font-weight-bold">@T["Total"]</td>
+        <td colspan="@(viewModel.Headers.Count - 2)" class="shopping-cart-table-totals">
+            @foreach (var total in viewModel.Totals)
+            {
+                <div>@total</div>
+            }
+        </td>
+        <td>
+            <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
+                <button type="submit" class="btn btn-primary">@T["Update"]</button>
+            </form>
+        </td>
+    </tr>
+    </tfoot>
+</table>

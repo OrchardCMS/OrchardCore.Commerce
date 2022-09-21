@@ -5,47 +5,7 @@
 <mvc-title text="@T["Your cart"]"/>
 
 <section id="shopping-cart">
-    <table class="table shopping-cart-table">
-        <thead>
-        <tr>
-            @foreach (var header in Model.Headers)
-            {
-                <th scope="col">@header</th>
-            }
-        </tr>
-        </thead>
-
-        <tbody>
-        @foreach (var line in Model.TableShapes)
-        {
-            <tr>
-                @foreach (var cell in line)
-                {
-                    <td>
-                        @await DisplayAsync(cell)
-                    </td>
-                }
-            </tr>
-        }
-        </tbody>
-
-        <tfoot>
-        <tr>
-            <td class="font-weight-bold">@T["Total"]</td>
-            <td colspan="@(Model.Headers.Count - 2)" class="shopping-cart-table-totals">
-                @foreach (var total in Model.Totals)
-                {
-                    <div>@total</div>
-                }
-            </td>
-            <td>
-                <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
-                    <button type="submit" class="btn btn-primary">@T["Update"]</button>
-                </form>
-            </td>
-        </tr>
-        </tfoot>
-    </table>
+    <shape type="ShoppingCartTable" prop-ShoppingCartViewModel="@Model"></shape>
 
     <div class="col-xs-12 col-sm-1">
         <a asp-action="Index" asp-controller="Payment" asp-area="OrchardCore.Commerce" class="btn btn-primary">@T["Checkout"]</a>
