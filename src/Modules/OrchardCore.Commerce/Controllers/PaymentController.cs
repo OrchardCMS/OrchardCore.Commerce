@@ -17,6 +17,7 @@ using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
+using OrchardCore.Users.Models;
 using Stripe;
 using System;
 using System.Linq;
@@ -72,8 +73,20 @@ public class PaymentController : Controller
             return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
         }
 
-        var total = cart.Totals.Single();
         var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
+
+        if (await _userManager.GetUserAsync(User) is User user &&
+            user.As<ContentItem>(CommerceContentTypes.UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
+        {
+            order.Alter<OrderPart>(part =>
+            {
+                if (userAddresses.BillingAddress != null) part.BillingAddress = userAddresses.BillingAddress;
+                if (userAddresses.ShippingAddress != null) part.ShippingAddress = userAddresses.ShippingAddress;
+            });
+        }
+
+
+        var total = cart.Totals.Single();
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
         var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : null;
 
