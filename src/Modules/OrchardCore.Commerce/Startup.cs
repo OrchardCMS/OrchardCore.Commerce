@@ -177,3 +177,12 @@ public class TaxStartup : StartupBase
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
     }
 }
+
+[RequireFeatures(CommerceConstants.Features.Core, "OrchardCore.Users.CustomUserSettings")]
+public class UserSettingsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services
+            .AddContentPart<UserAddressesPart>()
+            .WithMigration<UserAddressesMigrations>();
+}
