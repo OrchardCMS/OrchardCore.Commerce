@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.4.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.1-alpha.walma-15.1" />
   </ItemGroup>
 
   <ItemGroup>
