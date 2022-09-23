@@ -20,7 +20,9 @@ function commerceRegionsOnChange(provinceDropDown, container, regionDropDown) {
     $province.val(provinceIds[0]);
 
     // If there are no provinces, hide the whole row.
-    $container.toggle(provinceIds[0] !== '');
+    const hasProvinces = provinceIds[0] !== '';
+    $container.toggle(hasProvinces);
+    $province.prop('required', hasProvinces);
 }
 
 // Same as above.
