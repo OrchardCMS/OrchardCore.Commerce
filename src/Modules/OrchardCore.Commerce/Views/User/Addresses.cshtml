@@ -1,0 +1,8 @@
+@model OrchardCore.DisplayManagement.IShape
+
+<mvc-title text="@T["Your Addresses"]"/>
+
+<form asp-action="AddressesPost" method="post">
+    @await DisplayAsync(Model)
+    <input type="submit" class="btn btn-primary" value="@T["Save"]">
+</form>

@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
@@ -26,6 +27,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -185,4 +187,14 @@ public class UserSettingsStartup : StartupBase
         services
             .AddContentPart<UserAddressesPart>()
             .WithMigration<UserAddressesMigrations>();
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        base.Configure(app, routes, serviceProvider);
+        routes.MapAreaControllerRoute(
+            name: nameof(UserController),
+            areaName: "OrchardCore.Commerce",
+            pattern: "user/{action}",
+            defaults: new { controller = typeof(UserController).ControllerName(), action = "Index" });
+    }
 }

@@ -5,6 +5,6 @@ namespace OrchardCore.Commerce.Models;
 
 public class UserAddressesPart : ContentPart
 {
-    public AddressField ShippingAddress { get; set; }
-    public AddressField BillingAddress { get; set; }
+    public AddressField ShippingAddress { get; set; } = new();
+    public AddressField BillingAddress { get; set; } = new();
 }
