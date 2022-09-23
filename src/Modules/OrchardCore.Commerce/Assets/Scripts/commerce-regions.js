@@ -27,8 +27,11 @@ function commerceRegionsOnChange(provinceDropDown, container, regionDropDown) {
 
 // Same as above.
 // eslint-disable-next-line
-function commerceRegionsBind(provinceDropDown, container, regionDropDown) {
+function commerceRegionsBind(provinceDropDown, container, regionDropDown, provinceValue) {
     $(regionDropDown)
         .change(() => commerceRegionsOnChange(provinceDropDown, container, regionDropDown))
+        .change();
+    $(provinceDropDown)
+        .val(provinceValue)
         .change();
 }
