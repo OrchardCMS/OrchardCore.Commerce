@@ -74,6 +74,8 @@ public class PaymentController : Controller
         }
 
         var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
+        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
+        order.Alter<OrderPart>(part => part.Email.Text = email);
 
         if (await _userManager.GetUserAsync(User) is User user &&
             user.As<ContentItem>(CommerceContentTypes.UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
@@ -85,17 +87,15 @@ public class PaymentController : Controller
             });
         }
 
-
         var total = cart.Totals.Single();
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
-        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : null;
 
         return View(new CheckoutViewModel
         {
             NewOrderEditor = editor,
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            UserEmail = email ?? string.Empty,
+            UserEmail = email,
         });
     }
 
