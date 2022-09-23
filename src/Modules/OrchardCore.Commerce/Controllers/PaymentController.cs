@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
@@ -22,7 +23,8 @@ using Stripe;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceContentTypes = OrchardCore.Commerce.Constants.ContentTypes;
+
+using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -73,19 +75,26 @@ public class PaymentController : Controller
             return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
         }
 
-        var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
-        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
-        order.Alter<OrderPart>(part => part.Email.Text = email);
+        var order = await _contentManager.NewAsync(Order);
 
         if (await _userManager.GetUserAsync(User) is User user &&
-            user.As<ContentItem>(CommerceContentTypes.UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
+            (user.Properties[UserAddresses] as JObject)?[nameof(UserAddressesPart)] is JObject userAddressesJson &&
+            userAddressesJson.ToObject<UserAddressesPart>() is { } userAddresses)
         {
             order.Alter<OrderPart>(part =>
             {
-                if (userAddresses.BillingAddress != null) part.BillingAddress = userAddresses.BillingAddress;
-                if (userAddresses.ShippingAddress != null) part.ShippingAddress = userAddresses.ShippingAddress;
+                part.BillingAddress.Address = userAddresses.BillingAddress.Address;
+                part.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
             });
         }
+
+        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
+        order.Alter<OrderPart>(part =>
+        {
+            part.Email.Text = email;
+            part.ShippingAddress.UserAddressToSave = nameof(part.ShippingAddress);
+            part.BillingAddress.UserAddressToSave = nameof(part.BillingAddress);
+        });
 
         var total = cart.Totals.Single();
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
