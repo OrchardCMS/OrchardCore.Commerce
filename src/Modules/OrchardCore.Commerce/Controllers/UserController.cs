@@ -11,6 +11,7 @@ using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
@@ -18,8 +19,9 @@ namespace OrchardCore.Commerce.Controllers;
 public class UserController : Controller
 {
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IContentManager _contentManager;
     private readonly INotifier _notifier;
-    private readonly YesSql.ISession _session;
+    private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly UserManager<IUser> _userManager;
 
@@ -29,10 +31,11 @@ public class UserController : Controller
         IContentItemDisplayManager contentItemDisplayManager,
         INotifier notifier,
         IOrchardServices<UserController> services,
-        YesSql.ISession session,
+        ISession session,
         IUpdateModelAccessor updateModelAccessor)
     {
         _contentItemDisplayManager = contentItemDisplayManager;
+        _contentManager = services.ContentManager.Value;
         _notifier = notifier;
         _session = session;
         _updateModelAccessor = updateModelAccessor;
@@ -44,12 +47,9 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Addresses()
     {
-        if (await _userManager.GetUserAsync(User) is not User user ||
-            user.As<ContentItem>(UserAddresses) is not { } userAddresses)
-        {
-            return NotFound();
-        }
+        if (await _userManager.GetUserAsync(User) is not User user) return NotFound();
 
+        var userAddresses = await GetUserAddressesAsync(user);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(
             userAddresses,
             _updateModelAccessor.ModelUpdater,
@@ -68,7 +68,7 @@ public class UserController : Controller
             return NotFound();
         }
 
-        var userAddresses = user.As<ContentItem>(UserAddresses) ?? new ContentItem();
+        var userAddresses = await GetUserAddressesAsync(user);
         await _contentItemDisplayManager.UpdateEditorAsync(userAddresses, _updateModelAccessor.ModelUpdater, isNew: false);
 
         if (_updateModelAccessor.ModelUpdater.ModelState.IsValid)
@@ -90,5 +90,14 @@ public class UserController : Controller
         }
 
         return RedirectToAction(nameof(Addresses));
+    }
+
+    private async Task<ContentItem> GetUserAddressesAsync(User user)
+    {
+        var userAddresses = user.As<ContentItem>(UserAddresses);
+
+        return string.IsNullOrEmpty(userAddresses?.ContentType)
+            ? await _contentManager.NewAsync(UserAddresses)
+            : userAddresses;
     }
 }

@@ -10,7 +10,7 @@
         region.DisplayName,
         region.TwoLetterISORegionName));
 
-    var province = Model.Address.Province ?? string.Empty;
+    var province = Model.Address?.Province ?? string.Empty;
 }
 
 <h3>@Model.PartFieldDefinition.DisplayName()</h3>
