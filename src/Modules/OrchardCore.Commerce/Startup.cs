@@ -29,6 +29,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
@@ -45,6 +46,7 @@ public class Startup : StartupBase
         services.AddOrchardServices();
         services.AddScoped<IDataMigration, MvcTitleMigrations>();
         services.AddTagHelpers<MvcTitleTagHelper>();
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();

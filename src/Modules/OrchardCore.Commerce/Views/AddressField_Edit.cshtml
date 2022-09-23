@@ -98,8 +98,9 @@
     <span class="hint">@hint</span>
 }
 
-<script asp-name="commerce-regions" asp-src="~/OrchardCore.Commerce/js/commerce-regions.min.js" at="Foot" depends-on="jQuery"></script>
-<script at="Foot" depends-on="commerce-regions">
+
+<script asp-name="@ResourceNames.CommerceRegions" at="Foot"></script>
+<script at="Foot" depends-on="@ResourceNames.CommerceRegions">
     @if (Context.Items["commerce-regions-initialized"] == null)
     {
         <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces)));</text>
