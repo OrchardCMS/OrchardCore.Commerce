@@ -53,8 +53,5 @@
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
     <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ShoppingCartTable.cshtml" />
-  </ItemGroup>
 
 </Project>
