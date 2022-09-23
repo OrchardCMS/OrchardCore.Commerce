@@ -1,5 +1,3 @@
-using Npgsql;
-
 namespace OrchardCore.Commerce.Constants;
 
 public static class ResourceNames
