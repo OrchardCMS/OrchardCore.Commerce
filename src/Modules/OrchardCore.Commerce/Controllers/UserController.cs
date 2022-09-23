@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
+using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 
@@ -16,9 +17,9 @@ namespace OrchardCore.Commerce.Controllers;
 
 public class UserController : Controller
 {
-    private readonly IContentManager _contentManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly INotifier _notifier;
+    private readonly YesSql.ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly UserManager<IUser> _userManager;
 
@@ -28,11 +29,12 @@ public class UserController : Controller
         IContentItemDisplayManager contentItemDisplayManager,
         INotifier notifier,
         IOrchardServices<UserController> services,
+        YesSql.ISession session,
         IUpdateModelAccessor updateModelAccessor)
     {
-        _contentManager = services.ContentManager.Value;
         _contentItemDisplayManager = contentItemDisplayManager;
         _notifier = notifier;
+        _session = session;
         _updateModelAccessor = updateModelAccessor;
         _userManager = services.UserManager.Value;
 
@@ -69,8 +71,23 @@ public class UserController : Controller
         var userAddresses = user.As<ContentItem>(UserAddresses) ?? new ContentItem();
         await _contentItemDisplayManager.UpdateEditorAsync(userAddresses, _updateModelAccessor.ModelUpdater, isNew: false);
 
-        await _contentManager.UpdateAsync(userAddresses);
-        await _notifier.SuccessAsync(H["Your addresses have been updated."]);
+        if (_updateModelAccessor.ModelUpdater.ModelState.IsValid)
+        {
+            user.Put(UserAddresses, userAddresses);
+            _session.Save(user);
+            await _notifier.SuccessAsync(H["Your addresses have been updated."]);
+        }
+        else
+        {
+            var errors = _updateModelAccessor
+                .ModelUpdater
+                .ModelState
+                .Values
+                .SelectMany(entry => entry.Errors)
+                .Where(error => !string.IsNullOrWhiteSpace(error.ErrorMessage));
+
+            foreach (var error in errors) await _notifier.ErrorAsync(H[error.ErrorMessage]);
+        }
 
         return RedirectToAction(nameof(Addresses));
     }
