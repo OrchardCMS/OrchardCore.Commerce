@@ -18,8 +18,8 @@ public class UserAddressesMigrations : DataMigration
     {
         _contentDefinitionManager
             .AlterPartDefinition<UserAddressesPart>(builder => builder
-                .WithField(part => part.ShippingAddress, part => part.WithDisplayName("Shipping Address"))
-                .WithField(part => part.BillingAddress, part => part.WithDisplayName("Billing Address")));
+                .WithField(part => part.BillingAddress, part => part.WithDisplayName("Billing Address"))
+                .WithField(part => part.ShippingAddress, part => part.WithDisplayName("Shipping Address")));
 
         _contentDefinitionManager
             .AlterTypeDefinition(UserAddresses, builder => builder
