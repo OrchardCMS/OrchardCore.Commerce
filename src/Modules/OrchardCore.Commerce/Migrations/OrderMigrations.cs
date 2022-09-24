@@ -97,8 +97,7 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The address where the order should be shipped."))
                 .WithField(nameof(OrderPart.BillingAndShippingAddressesMatch), field => field
                     .OfType(nameof(BooleanField))
-                    .WithDisplayName("Shipping Address and Billing Address are the same.")
-                    .WithSettings(new BooleanFieldSettings { DefaultValue = true }))
+                    .WithDisplayName("Shipping Address and Billing Address are the same."))
                 );
 
         return 3;
@@ -202,8 +201,7 @@ public class OrderMigrations : DataMigration
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .WithField(nameof(OrderPart.BillingAndShippingAddressesMatch), field => field
                     .OfType(nameof(BooleanField))
-                    .WithDisplayName("Shipping Address and Billing Address are the same.")
-                    .WithSettings(new BooleanFieldSettings { DefaultValue = true }))
+                    .WithDisplayName("Shipping Address and Billing Address are the same."))
                 );
 
         return 4;
