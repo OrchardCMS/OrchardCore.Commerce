@@ -92,15 +92,6 @@ public class UserPersistenceTests : UITestBase
                     .ToArray()
                     .ShouldBe(new[]
                     {
-                        ShippingName,
-                        ShippingDepartment,
-                        string.Empty,
-                        ShippingAddress,
-                        string.Empty,
-                        ShippingCity,
-                        string.Empty,
-                        ShippingPostalCode,
-                        ShippingCountryCode,
                         BillingName,
                         BillingDepartment,
                         BillingCompany,
@@ -110,6 +101,15 @@ public class UserPersistenceTests : UITestBase
                         BillingStateCode,
                         BillingPostalCode,
                         BillingCountryCode,
+                        ShippingName,
+                        ShippingDepartment,
+                        string.Empty,
+                        ShippingAddress,
+                        string.Empty,
+                        ShippingCity,
+                        string.Empty,
+                        ShippingPostalCode,
+                        ShippingCountryCode,
                     });
             },
             browser);
