@@ -20,7 +20,7 @@
         <label asp-for="Address.Name">@T["Name"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.Name">
-        <input asp-for="Address.Name" class="form-control content-preview-text" required />
+        <input asp-for="Address.Name" class="form-control content-preview-text address__name" required />
     </div>
 </div>
 <div class="row">
@@ -28,7 +28,7 @@
         <label asp-for="Address.Department">@T["Department"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.Department">
-        <input asp-for="Address.Department" class="form-control content-preview-text" />
+        <input asp-for="Address.Department" class="form-control content-preview-text address__department" />
     </div>
 </div>
 <div class="row">
@@ -36,7 +36,7 @@
         <label asp-for="Address.Company">@T["Company or institution"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.Company">
-        <input asp-for="Address.Company" class="form-control content-preview-text" />
+        <input asp-for="Address.Company" class="form-control content-preview-text address__company" />
     </div>
 </div>
 <div class="row">
@@ -44,7 +44,7 @@
         <label asp-for="Address.StreetAddress1">@T["First street address"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.StreetAddress1">
-        <input asp-for="Address.StreetAddress1" class="form-control content-preview-text" required />
+        <input asp-for="Address.StreetAddress1" class="form-control content-preview-text address__street address__street_first" required />
     </div>
 </div>
 <div class="row">
@@ -52,7 +52,7 @@
         <label asp-for="Address.StreetAddress2">@T["Second street address"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.StreetAddress2">
-        <input asp-for="Address.StreetAddress2" class="form-control content-preview-text" />
+        <input asp-for="Address.StreetAddress2" class="form-control content-preview-text address__street address__street_second" />
     </div>
 </div>
 <div class="row">
@@ -60,7 +60,7 @@
         <label asp-for="Address.City">@T["City"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.City">
-        <input asp-for="Address.City" class="form-control content-preview-text" required />
+        <input asp-for="Address.City" class="form-control content-preview-text address__city" required />
     </div>
 </div>
 <div class="row">
@@ -68,7 +68,7 @@
         <label asp-for="Address.Province">@T["State or province"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.Province">
-        <select asp-for="Address.Province" class="form-control content-preview-text" required></select>
+        <select asp-for="Address.Province" class="form-control content-preview-text address__province" required></select>
     </div>
 </div>
 <div class="row">
@@ -76,7 +76,7 @@
         <label asp-for="Address.PostalCode">@T["Postal code"]</label>
     </div>
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.PostalCode">
-        <input asp-for="Address.PostalCode" class="form-control content-preview-text" />
+        <input asp-for="Address.PostalCode" class="form-control content-preview-text address__postalCode" />
     </div>
 </div>
 <div class="row">
@@ -86,16 +86,16 @@
     <div class="mb-3 col-md-6" asp-validation-class-for="Address.Region">
         <select asp-for="Address.Region"
                 asp-items="@regionOptions"
-                class="form-control content-preview-text"
+                class="form-control content-preview-text address__region"
                 required></select>
     </div>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.UserAddressToSave))
 {
-    <input type="hidden" asp-for="UserAddressToSave" />
+    <input type="hidden" asp-for="UserAddressToSave" class="address__userAddressToSave" />
     <label>
-        <input type="checkbox" asp-for="ToBeSaved">
+        <input type="checkbox" asp-for="ToBeSaved" class="address__toBeSaved">
         @T["Save this address"]
     </label>
 }
