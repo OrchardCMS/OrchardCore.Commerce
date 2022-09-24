@@ -39,4 +39,5 @@ public class OrderPart : ContentPart
 
     public AddressField BillingAddress { get; set; } = new();
     public AddressField ShippingAddress { get; set; } = new();
+    public BooleanField BillingAndShippingAddressesMatch { get; set; } = new();
 }
