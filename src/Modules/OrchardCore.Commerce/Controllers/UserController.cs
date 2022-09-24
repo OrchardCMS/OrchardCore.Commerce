@@ -47,6 +47,7 @@ public class UserController : Controller
     [HttpGet]
     public async Task<IActionResult> Addresses()
     {
+        if (User.Identity?.IsAuthenticated != true) return LocalRedirect("~/Login?ReturnUrl=~/user/addresses");
         if (await _userManager.GetUserAsync(User) is not User user) return NotFound();
 
         var userAddresses = await GetUserAddressesAsync(user);
@@ -63,6 +64,7 @@ public class UserController : Controller
     [Route("user/addresses")]
     public async Task<IActionResult> AddressesPost()
     {
+        if (User.Identity?.IsAuthenticated != true) return LocalRedirect("~/Login?ReturnUrl=~/user/addresses");
         if (await _userManager.GetUserAsync(User) is not User user) return NotFound();
 
         var userAddresses = await GetUserAddressesAsync(user);
