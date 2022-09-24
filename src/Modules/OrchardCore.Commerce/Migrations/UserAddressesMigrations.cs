@@ -3,6 +3,8 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
+using static OrchardCore.Commerce.Constants.ContentTypes;
+
 namespace OrchardCore.Commerce.Migrations;
 
 public class UserAddressesMigrations : DataMigration
@@ -20,7 +22,7 @@ public class UserAddressesMigrations : DataMigration
                 .WithField(part => part.BillingAddress, part => part.WithDisplayName("Billing Address")));
 
         _contentDefinitionManager
-            .AlterTypeDefinition(Constants.ContentTypes.UserAddresses, builder => builder
+            .AlterTypeDefinition(UserAddresses, builder => builder
                 .Stereotype("CustomUserSettings")
                 .WithPart(nameof(UserAddressesPart)));
 
