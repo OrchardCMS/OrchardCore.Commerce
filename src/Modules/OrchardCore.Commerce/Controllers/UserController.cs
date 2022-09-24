@@ -63,10 +63,7 @@ public class UserController : Controller
     [Route("user/addresses")]
     public async Task<IActionResult> AddressesPost()
     {
-        if (await _userManager.GetUserAsync(User) is not User user)
-        {
-            return NotFound();
-        }
+        if (await _userManager.GetUserAsync(User) is not User user) return NotFound();
 
         var userAddresses = await GetUserAddressesAsync(user);
         await _contentItemDisplayManager.UpdateEditorAsync(userAddresses, _updateModelAccessor.ModelUpdater, isNew: false);
