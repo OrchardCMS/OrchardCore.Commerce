@@ -6,3 +6,11 @@
     @await DisplayAsync(Model)
     <button type="submit" class="btn btn-primary">@T["Save"]</button>
 </form>
+
+<script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
+<script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
+    initializeToggleSecondAddress(
+        document.getElementById('UserAddressesPart_BillingAndShippingAddressesMatch_Value'),
+        document.querySelector('.address_billing-address'),
+        document.querySelector('.address_shipping-address'));
+</script>

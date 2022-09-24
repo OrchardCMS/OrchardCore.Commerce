@@ -16,3 +16,11 @@
 </section>
 
 <style asp-name="@ResourceNames.CreditCardForm"></style>
+
+<script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
+<script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
+    initializeToggleSecondAddress(
+        document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value'),
+        document.querySelector('.address_billing-address'),
+        document.querySelector('.address_shipping-address'));
+</script>
