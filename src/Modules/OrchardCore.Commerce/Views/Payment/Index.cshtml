@@ -15,10 +15,4 @@
     </div>
 </section>
 
-<style asp-src="~/OrchardCore.Commerce/css/credit-card-form.min.css"></style>
-
-<script at="Foot">
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('OrderPart_Email_Text').value = @Model.UserEmail.JsonHtmlContent();
-    });
-</script>
+<style asp-name="@ResourceNames.CreditCardForm"></style>

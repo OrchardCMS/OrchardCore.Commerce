@@ -13,6 +13,9 @@ public class AddressFieldViewModel
 {
     public Address Address { get; set; }
 
+    public string UserAddressToSave { get; set; }
+    public bool ToBeSaved { get; set; }
+
     [BindNever]
     public HtmlString AddressHtml { get; set; }
 
