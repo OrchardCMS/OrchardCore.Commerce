@@ -7,7 +7,7 @@ window.initializeToggleSecondAddress = function(
         const selector = '.address__' + elementName;
         const target = secondAddressRow.querySelector(selector);
         target.value = firstAddressRow.querySelector(selector).value;
-        target.change();
+        target.dispatchEvent(new Event('change'));
     }
 
     function onCheckboxChange() {
@@ -27,4 +27,8 @@ window.initializeToggleSecondAddress = function(
 
     checkbox.addEventListener('change', onCheckboxChange);
     onCheckboxChange();
+
+    console.log(Array.from(firstAddressRow.querySelectorAll('input, select')));
+    Array.from(firstAddressRow.querySelectorAll('input, select'))
+        .forEach((input) => input.addEventListener('change', onCheckboxChange));
 };
