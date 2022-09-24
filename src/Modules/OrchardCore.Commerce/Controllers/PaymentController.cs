@@ -85,6 +85,7 @@ public class PaymentController : Controller
             {
                 part.BillingAddress.Address = userAddresses.BillingAddress.Address;
                 part.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+                part.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
             });
         }
 
