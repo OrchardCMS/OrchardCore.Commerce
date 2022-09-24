@@ -50,6 +50,13 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
                 "~/OrchardCore.Commerce/js/stripe-card-form.min.js",
                 "~/OrchardCore.Commerce/js/stripe-card-form.js")
             .SetVersion("1.0.0");
+
+        _manifest
+            .DefineScript(ToggleSecondAddress)
+            .SetUrl(
+                "~/OrchardCore.Commerce/js/toggle-second-address.min.js",
+                "~/OrchardCore.Commerce/js/toggle-second-address.js")
+            .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options) => options.ResourceManifests.Add(_manifest);
