@@ -17,7 +17,7 @@ public class UserPersistenceTests : UITestBase
     }
 
     [Theory, Chrome]
-    public Task TaxPartShouldUpdatePrice(Browser browser) =>
+    public Task UserAddressEditorSholdPersist(Browser browser) =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
