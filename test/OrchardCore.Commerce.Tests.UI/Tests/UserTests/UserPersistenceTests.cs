@@ -11,6 +11,22 @@ namespace OrchardCore.Commerce.Tests.UI.Tests.UserTests;
 
 public class UserPersistenceTests : UITestBase
 {
+    private const string ShippingName = "Recipient";
+    private const string ShippingDepartment = "Recipient Department";
+    private const string ShippingAddress = "Test str. 1.";
+    private const string ShippingCity = "Budapest";
+    private const string ShippingPostalCode = "1234";
+    private const string ShippingCountryCode = "HU";
+
+    private const string BillingName = "Accountant";
+    private const string BillingDepartment = "Accounting";
+    private const string BillingCompany = "Recipient's Company";
+    private const string BillingAddress = "Test str. 1.";
+    private const string BillingCity = "Budapest";
+    private const string BillingPostalCode = "30110";
+    private const string BillingCountryCode = "US";
+    private const string BillingStateCode = "GA";
+
     public UserPersistenceTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
@@ -26,41 +42,41 @@ public class UserPersistenceTests : UITestBase
 
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_ShippingAddress_Address_Name"),
-                    "Recipient");
+                    ShippingName);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_ShippingAddress_Address_Department"),
-                    "Recipient Department");
+                    ShippingDepartment);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_ShippingAddress_Address_StreetAddress1"),
-                    "Test str. 1.");
+                    ShippingAddress);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_ShippingAddress_Address_City"),
-                    "Budapest");
+                    ShippingCity);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_ShippingAddress_Address_PostalCode"),
-                    "1234");
-                await context.SetDropdownByTextAsync("UserAddressesPart_ShippingAddress_Address_Region", "Magyarország");
+                    ShippingPostalCode);
+                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_ShippingAddress_Address_Region"), ShippingCountryCode);
 
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_BillingAddress_Address_Name"),
-                    "Accountant");
+                    BillingName);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_BillingAddress_Address_Department"),
-                    "Accounting");
+                    BillingDepartment);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_BillingAddress_Address_Company"),
-                    "Recipient's Company");
+                    BillingCompany);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_BillingAddress_Address_StreetAddress1"),
-                    "Test str. 2.");
+                    BillingAddress);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_BillingAddress_Address_City"),
-                    "Budapest");
+                    BillingCity);
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_BillingAddress_Address_PostalCode"),
-                    "30110");
-                await context.SetDropdownByTextAsync("UserAddressesPart_BillingAddress_Address_Region", "United States");
-                await context.SetDropdownByTextAsync("UserAddressesPart_BillingAddress_Address_Province", "Georgia");
+                    BillingPostalCode);
+                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Region"), BillingCountryCode);
+                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Province"), BillingStateCode);
 
                 await context.ClickReliablyOnSubmitAsync();
                 context.ShouldBeSuccess("Your addresses have been updated.");
@@ -76,24 +92,24 @@ public class UserPersistenceTests : UITestBase
                     .ToArray()
                     .ShouldBe(new[]
                     {
-                        "Recipient",
-                        "Recipient Department",
+                        ShippingName,
+                        ShippingDepartment,
                         string.Empty,
-                        "Test str. 1.",
+                        ShippingAddress,
                         string.Empty,
-                        "Budapest",
+                        ShippingCity,
                         string.Empty,
-                        "1234",
-                        "HU",
-                        "Accountant",
-                        "Accounting",
-                        "Recipient's Company",
-                        "Test str. 2.",
+                        ShippingPostalCode,
+                        ShippingCountryCode,
+                        BillingName,
+                        BillingDepartment,
+                        BillingCompany,
+                        BillingAddress,
                         string.Empty,
-                        "Budapest",
-                        "GA",
-                        "30110",
-                        "US",
+                        BillingCity,
+                        BillingStateCode,
+                        BillingPostalCode,
+                        BillingCountryCode,
                     });
             },
             browser);
