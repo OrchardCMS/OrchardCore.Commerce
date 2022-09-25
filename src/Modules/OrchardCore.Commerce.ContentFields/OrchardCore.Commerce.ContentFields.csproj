@@ -23,7 +23,6 @@
   <ItemGroup>
     <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.4.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +32,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <LombiqHelpfulLibrariesPath>..\..\..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.6.1-alpha.walma-15.1" />
   </ItemGroup>
 
 </Project>
