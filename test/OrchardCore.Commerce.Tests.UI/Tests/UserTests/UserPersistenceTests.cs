@@ -33,7 +33,7 @@ public class UserPersistenceTests : UITestBase
     }
 
     [Theory, Chrome]
-    public Task UserAddressEditorSholdPersist(Browser browser) =>
+    public Task UserAddressEditorShouldPersist(Browser browser) =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
