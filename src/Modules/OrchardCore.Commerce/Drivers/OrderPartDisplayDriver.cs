@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -123,5 +124,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
     // There is no need to show the line items editor in the front end, as the user should only edit that in the cart
     // rather than the order.
-    private bool IsFrontEnd() => _hca.HttpContext?.Request.Path.Value?.Contains("/checkout") == true;
+    private bool IsFrontEnd() =>
+        _hca.HttpContext?.Request.Path.Value?.StartsWithOrdinalIgnoreCase("/checkout") == true ||
+        _hca.HttpContext?.Request.Path.Value?.StartsWithOrdinalIgnoreCase("/success") == true;
 }
