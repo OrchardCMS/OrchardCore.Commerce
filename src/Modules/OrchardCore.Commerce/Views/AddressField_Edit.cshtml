@@ -98,10 +98,18 @@
     @if (!string.IsNullOrEmpty(Model.UserAddressToSave))
     {
         <input type="hidden" asp-for="UserAddressToSave" class="address__userAddressToSave" />
-        <label>
-            <input type="checkbox" asp-for="ToBeSaved" class="address__toBeSaved">
-            @T["Save this address"]
-        </label>
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input content-preview-select address__toBeSaved"
+                       data-val="true"
+                       data-val-required="The Value field is required."
+                       asp-for="ToBeSaved">
+                <label class="form-check-label" asp-for="ToBeSaved">
+                    @T["Save this address"]
+                </label>
+            </div>
+        </div>
     }
 
     @if (!string.IsNullOrWhiteSpace(hint))
