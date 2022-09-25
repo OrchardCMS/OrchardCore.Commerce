@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
@@ -81,8 +80,7 @@ public class PaymentController : Controller
         var order = await _contentManager.NewAsync(Order);
 
         if (await _userManager.GetUserAsync(User) is User user &&
-            (user.Properties[UserAddresses] as JObject)?[nameof(UserAddressesPart)] is JObject userAddressesJson &&
-            userAddressesJson.ToObject<UserAddressesPart>() is { } userAddresses)
+            user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
         {
             order.Alter<OrderPart>(part =>
             {
@@ -109,6 +107,7 @@ public class PaymentController : Controller
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
+            BillingAndShippingAddressesMatch = order.As<OrderPart>().BillingAndShippingAddressesMatch.Value,
         });
     }
 

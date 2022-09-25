@@ -19,8 +19,10 @@
 
 <script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
 <script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
+    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
+    checkbox.checked = @Json.Serialize(Model.BillingAndShippingAddressesMatch);
     initializeToggleSecondAddress(
-        document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value'),
+        checkbox,
         document.querySelector('.address_billing-address'),
         document.querySelector('.address_shipping-address'));
 </script>

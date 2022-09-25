@@ -20,7 +20,7 @@ public class UserAddressesMigrations : DataMigration
                 .WithField(part => part.BillingAddress, field => field.WithDisplayName("Billing Address"))
                 .WithField(part => part.ShippingAddress, field => field.WithDisplayName("Shipping Address"))
                 .WithField(part => part.BillingAndShippingAddressesMatch, field => field
-                    .WithDisplayName("Shipping Address and Billing Address are the same.")));
+                    .WithDisplayName("Shipping Address and Billing Address are the same")));
 
         _contentDefinitionManager
             .AlterTypeDefinition(UserAddresses, builder => builder

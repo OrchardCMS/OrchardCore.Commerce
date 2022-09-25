@@ -33,7 +33,6 @@ window.initializeToggleSecondAddress = function(
     checkbox.addEventListener('change', onCheckboxChange);
     onCheckboxChange();
 
-    console.log(Array.from(firstAddressRow.querySelectorAll('input, select')));
     Array.from(firstAddressRow.querySelectorAll('input, select'))
         .forEach((input) => input.addEventListener('change', onCheckboxChange));
 };
