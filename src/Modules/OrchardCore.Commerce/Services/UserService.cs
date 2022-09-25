@@ -28,7 +28,7 @@ public class UserService : IUserService
     }
 
     public async Task<User> GetFullUserAsync(ClaimsPrincipal claimsPrincipal) =>
-        await _userManager.GetUserAsync(claimsPrincipal) as User;
+        claimsPrincipal == null ? null : await _userManager.GetUserAsync(claimsPrincipal) as User;
 
     public async Task AlterUserSettingAsync(User user, string contentType, Func<JObject, JObject> updateContentItemJson)
     {

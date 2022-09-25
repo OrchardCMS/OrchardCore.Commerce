@@ -48,7 +48,9 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
-        if (IsFrontEnd()) return await EditAsync(part, context);
+        // There is no need to show the line items editor in the front end, as the user should only edit that in the
+        // cart rather than the order.
+        if (_hca.IsCheckoutFrontEnd()) return await EditAsync(part, context);
 
         var viewModel = new OrderPartViewModel();
 
@@ -122,8 +124,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         model.OrderPart = part;
     }
 
-    // There is no need to show the line items editor in the front end, as the user should only edit that in the cart
-    // rather than the order.
     private bool IsFrontEnd() =>
         _hca.HttpContext?.Request.Path.Value?.StartsWithOrdinalIgnoreCase("/checkout") == true ||
         _hca.HttpContext?.Request.Path.Value?.StartsWithOrdinalIgnoreCase("/success") == true;

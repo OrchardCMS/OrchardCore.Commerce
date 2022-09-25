@@ -72,8 +72,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 
         if (viewModel.ToBeSaved &&
             !string.IsNullOrEmpty(viewModel.UserAddressToSave) &&
-            _hca.HttpContext?.User.Identity?.IsAuthenticated == true &&
-            await _userService.GetFullUserAsync(_hca.HttpContext.User) is { } user)
+            await _userService.GetCurrentFullUserAsync(_hca) is { } user)
         {
             await _userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
             {

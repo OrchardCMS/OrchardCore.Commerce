@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Users.Models;
 using System;
@@ -21,4 +22,13 @@ public interface IUserService
     /// user then also creates it.
     /// </summary>
     Task AlterUserSettingAsync(User user, string contentType, Func<JObject, JObject> updateContentItemJson);
+}
+
+public static class UserServiceExtensions
+{
+    public static Task<User> GetCurrentFullUserAsync(this IUserService service, IHttpContextAccessor hca) =>
+        hca.HttpContext?.User is { } user &&
+        hca.HttpContext.User.Identity?.IsAuthenticated == true
+            ? service.GetFullUserAsync(user)
+            : Task.FromResult<User>(null);
 }
