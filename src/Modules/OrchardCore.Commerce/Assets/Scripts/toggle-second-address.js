@@ -6,7 +6,11 @@ window.initializeToggleSecondAddress = function(
     function copyValue(elementName) {
         const selector = '.address__' + elementName;
         const target = secondAddressRow.querySelector(selector);
-        target.value = firstAddressRow.querySelector(selector).value;
+        const source = firstAddressRow.querySelector(selector);
+        if (!target || !source) return;
+
+        target.value = source.value;
+        target.checked = source.checked;
         target.dispatchEvent(new Event('change'));
     }
 
@@ -23,6 +27,7 @@ window.initializeToggleSecondAddress = function(
         copyValue('postalCode');
         copyValue('region');
         copyValue('province');
+        copyValue('toBeSaved');
     }
 
     checkbox.addEventListener('change', onCheckboxChange);
