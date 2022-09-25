@@ -15,6 +15,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
@@ -72,7 +73,9 @@ public class PaymentController : Controller
 
         if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart)
         {
-            return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
+            return RedirectToAction(
+                nameof(ShoppingCartController.Empty),
+                typeof(ShoppingCartController).ControllerName());
         }
 
         var order = await _contentManager.NewAsync(Order);
