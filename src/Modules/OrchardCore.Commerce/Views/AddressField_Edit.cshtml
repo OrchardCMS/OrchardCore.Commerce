@@ -1,6 +1,7 @@
 @using Newtonsoft.Json
 @using OrchardCore.Commerce.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Mvc.Utilities
 @model AddressFieldViewModel
 
 @{
@@ -11,99 +12,111 @@
         region.TwoLetterISORegionName));
 
     var province = Model.Address?.Province ?? string.Empty;
+
+    var addressElementName = "address_" + Model.PartFieldDefinition.Name.HtmlClassify();
 }
 
-<h3>@Model.PartFieldDefinition.DisplayName()</h3>
+<div class="@addressElementName">
+    <h3>@Model.PartFieldDefinition.DisplayName()</h3>
 
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.Name">@T["Name"]</label>
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.Name">@T["Name"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.Name">
+            <input asp-for="Address.Name" class="form-control content-preview-text address__name" required />
+        </div>
     </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.Name">
-        <input asp-for="Address.Name" class="form-control content-preview-text" required />
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.Department">@T["Department"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.Department">
+            <input asp-for="Address.Department" class="form-control content-preview-text address__department" />
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.Department">@T["Department"]</label>
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.Company">@T["Company or institution"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.Company">
+            <input asp-for="Address.Company" class="form-control content-preview-text address__company" />
+        </div>
     </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.Department">
-        <input asp-for="Address.Department" class="form-control content-preview-text" />
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.StreetAddress1">@T["First street address"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.StreetAddress1">
+            <input asp-for="Address.StreetAddress1" class="form-control content-preview-text address__street address__street_first" required />
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.Company">@T["Company or institution"]</label>
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.StreetAddress2">@T["Second street address"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.StreetAddress2">
+            <input asp-for="Address.StreetAddress2" class="form-control content-preview-text address__street address__street_second" />
+        </div>
     </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.Company">
-        <input asp-for="Address.Company" class="form-control content-preview-text" />
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.City">@T["City"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.City">
+            <input asp-for="Address.City" class="form-control content-preview-text address__city" required />
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.StreetAddress1">@T["First street address"]</label>
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.Province">@T["State or province"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.Province">
+            <select asp-for="Address.Province" class="form-control content-preview-text address__province" required></select>
+        </div>
     </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.StreetAddress1">
-        <input asp-for="Address.StreetAddress1" class="form-control content-preview-text" required />
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.PostalCode">@T["Postal code"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.PostalCode">
+            <input asp-for="Address.PostalCode" class="form-control content-preview-text address__postalCode" />
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.StreetAddress2">@T["Second street address"]</label>
+    <div class="row">
+        <div class="mb-3 col-md-12">
+            <label asp-for="Address.Region">@T["Country or region"]</label>
+        </div>
+        <div class="mb-3 col-md-6" asp-validation-class-for="Address.Region">
+            <select asp-for="Address.Region"
+                    asp-items="@regionOptions"
+                    class="form-control content-preview-text address__region"
+                    required></select>
+        </div>
     </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.StreetAddress2">
-        <input asp-for="Address.StreetAddress2" class="form-control content-preview-text" />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.City">@T["City"]</label>
-    </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.City">
-        <input asp-for="Address.City" class="form-control content-preview-text" required />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.Province">@T["State or province"]</label>
-    </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.Province">
-        <select asp-for="Address.Province" class="form-control content-preview-text" required></select>
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.PostalCode">@T["Postal code"]</label>
-    </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.PostalCode">
-        <input asp-for="Address.PostalCode" class="form-control content-preview-text" />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label asp-for="Address.Region">@T["Country or region"]</label>
-    </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Address.Region">
-        <select asp-for="Address.Region"
-                asp-items="@regionOptions"
-                class="form-control content-preview-text"
-                required></select>
-    </div>
-</div>
 
-@if (!string.IsNullOrEmpty(Model.UserAddressToSave))
-{
-    <input type="hidden" asp-for="UserAddressToSave" />
-    <label>
-        <input type="checkbox" asp-for="ToBeSaved">
-        @T["Save this address"]
-    </label>
-}
+    @if (!string.IsNullOrEmpty(Model.UserAddressToSave))
+    {
+        <input type="hidden" asp-for="UserAddressToSave" class="address__userAddressToSave" />
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input content-preview-select address__toBeSaved"
+                       data-val="true"
+                       data-val-required="The Value field is required."
+                       asp-for="ToBeSaved">
+                <label class="form-check-label" asp-for="ToBeSaved">
+                    @T["Save this address"]
+                </label>
+            </div>
+        </div>
+    }
 
-@if (!string.IsNullOrWhiteSpace(hint))
-{
-    <span class="hint">@hint</span>
-}
+    @if (!string.IsNullOrWhiteSpace(hint))
+    {
+        <span class="hint">@hint</span>
+    }
+</div>
 
 <script asp-name="@ResourceNames.CommerceRegions" at="Foot"></script>
 <script at="Foot" depends-on="@ResourceNames.CommerceRegions">

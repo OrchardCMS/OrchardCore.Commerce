@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.Fields;
@@ -12,12 +12,10 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Users;
-using OrchardCore.Users.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Constants.ContentTypes;
-using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -25,19 +23,16 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 {
     private readonly IAddressFormatterProvider _addressFormatterProvider;
     private readonly IHttpContextAccessor _hca;
-    private readonly ISession _session;
-    private readonly UserManager<IUser> _userManager;
+    private readonly IUserService _userService;
 
     public AddressFieldDisplayDriver(
         IAddressFormatterProvider addressFormatterProvider,
         IHttpContextAccessor hca,
-        ISession session,
-        UserManager<IUser> userManager)
+        IUserService userService)
     {
         _addressFormatterProvider = addressFormatterProvider;
         _hca = hca;
-        _session = session;
-        _userManager = userManager;
+        _userService = userService;
     }
 
     public override IDisplayResult Display(AddressField field, BuildFieldDisplayContext fieldDisplayContext) =>
@@ -71,27 +66,32 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     {
         var viewModel = new AddressFieldViewModel();
 
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            field.Address = viewModel.Address;
+        if (!await updater.TryUpdateModelAsync(viewModel, Prefix)) return await EditAsync(field, context);
 
-            if (viewModel.ToBeSaved &&
-                !string.IsNullOrEmpty(viewModel.UserAddressToSave) &&
-                _hca.HttpContext?.User.Identity?.IsAuthenticated == true &&
-                await _userManager.GetUserAsync(_hca.HttpContext.User) is User user &&
-                user.Properties.TryGetValue(UserAddresses, out var userAddressesToken) &&
-                userAddressesToken is JObject userAddresses &&
-                userAddresses.TryGetValue(nameof(UserAddressesPart), out var partToken) &&
-                partToken is JObject part)
+        field.Address = viewModel.Address;
+
+        if (viewModel.ToBeSaved &&
+            !string.IsNullOrEmpty(viewModel.UserAddressToSave) &&
+            await _userService.GetCurrentFullUserAsync(_hca) is { } user)
+        {
+            await _userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
             {
+                var part = contentItem.GetJObject(nameof(UserAddressesPart));
+
                 if (part[viewModel.UserAddressToSave] is not JObject)
                 {
                     part[viewModel.UserAddressToSave] = JObject.FromObject(new AddressField());
                 }
 
-                ((JObject)part[viewModel.UserAddressToSave])![nameof(AddressField.Address)] = JToken.FromObject(viewModel.Address);
-                _session.Save(user);
-            }
+                if (part.GetJObject(viewModel.UserAddressToSave) is not { } userAddressToSave)
+                {
+                    throw new InvalidOperationException(
+                        $"The property {viewModel.UserAddressToSave} is missing from {nameof(UserAddressesPart)}.");
+                }
+
+                userAddressToSave[nameof(AddressField.Address)] = JToken.FromObject(viewModel.Address);
+                return contentItem;
+            });
         }
 
         return await EditAsync(field, context);

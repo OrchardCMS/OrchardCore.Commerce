@@ -23,6 +23,7 @@ using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
@@ -47,6 +48,7 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, MvcTitleMigrations>();
         services.AddTagHelpers<MvcTitleTagHelper>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddScoped<IUserService, UserService>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
@@ -112,6 +114,7 @@ public class Startup : StartupBase
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
+        services.AddScoped<IContentHandler, OrderHandler>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();

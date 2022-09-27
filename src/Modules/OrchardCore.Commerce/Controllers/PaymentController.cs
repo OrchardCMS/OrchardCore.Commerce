@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
@@ -15,6 +14,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
@@ -72,19 +72,21 @@ public class PaymentController : Controller
 
         if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart)
         {
-            return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
+            return RedirectToAction(
+                nameof(ShoppingCartController.Empty),
+                typeof(ShoppingCartController).ControllerName());
         }
 
         var order = await _contentManager.NewAsync(Order);
 
         if (await _userManager.GetUserAsync(User) is User user &&
-            (user.Properties[UserAddresses] as JObject)?[nameof(UserAddressesPart)] is JObject userAddressesJson &&
-            userAddressesJson.ToObject<UserAddressesPart>() is { } userAddresses)
+            user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
         {
             order.Alter<OrderPart>(part =>
             {
                 part.BillingAddress.Address = userAddresses.BillingAddress.Address;
                 part.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+                part.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
             });
         }
 
@@ -105,6 +107,7 @@ public class PaymentController : Controller
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
+            BillingAndShippingAddressesMatch = order.As<OrderPart>().BillingAndShippingAddressesMatch.Value,
         });
     }
 

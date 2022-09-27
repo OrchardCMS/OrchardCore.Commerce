@@ -8,5 +8,6 @@ public class CheckoutViewModel
     public IShape NewOrderEditor { get; init; }
     public Amount SingleCurrencyTotal { get; init; }
     public string StripePublishableKey { get; init; }
-    public string UserEmail { get; set; }
+    public string UserEmail { get; init; }
+    public bool BillingAndShippingAddressesMatch { get; init; }
 }
