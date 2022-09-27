@@ -40,7 +40,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        IsFrontEnd()
+        _hca.IsCheckoutFrontEnd()
             ? null
             : Initialize<OrderPartViewModel>(
                 GetEditorShapeType(context),
@@ -123,8 +123,4 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         model.Charges.AddRange(part.Charges);
         model.OrderPart = part;
     }
-
-    private bool IsFrontEnd() =>
-        _hca.HttpContext?.Request.Path.Value?.StartsWithOrdinalIgnoreCase("/checkout") == true ||
-        _hca.HttpContext?.Request.Path.Value?.StartsWithOrdinalIgnoreCase("/success") == true;
 }
