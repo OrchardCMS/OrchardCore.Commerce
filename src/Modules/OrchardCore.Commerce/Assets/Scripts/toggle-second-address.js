@@ -1,4 +1,4 @@
-window.initializeToggleSecondAddress = function(
+window.initializeToggleSecondAddress = function (
     checkbox,
     firstAddressRow,
     secondAddressRow) {
