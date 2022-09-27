@@ -1,9 +1,5 @@
 @model ShoppingCartWidgetPartViewModel
 
-<style asp-src="~/OrchardCore.Commerce/css/shopping-cart-widget.min.css"></style>
+<div class="shopping-cart-item-count text-white bg-danger text-center">@Model.ItemCount</div>
 
-<a class="shopping-cart-link nav-link d-flex" href="~/cart">
-    <i class="fa-2x fa-solid fa-cart-shopping text-white"></i>
-    <div class="shopping-cart-item-count text-white bg-danger text-center">@Model.ItemCount</div>
-</a>
 

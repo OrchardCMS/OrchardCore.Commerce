@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
@@ -17,11 +18,13 @@ using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
+using OrchardCore.Users.Models;
 using Stripe;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceContentTypes = OrchardCore.Commerce.Constants.ContentTypes;
+
+using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -72,17 +75,36 @@ public class PaymentController : Controller
             return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
         }
 
+        var order = await _contentManager.NewAsync(Order);
+
+        if (await _userManager.GetUserAsync(User) is User user &&
+            (user.Properties[UserAddresses] as JObject)?[nameof(UserAddressesPart)] is JObject userAddressesJson &&
+            userAddressesJson.ToObject<UserAddressesPart>() is { } userAddresses)
+        {
+            order.Alter<OrderPart>(part =>
+            {
+                part.BillingAddress.Address = userAddresses.BillingAddress.Address;
+                part.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+            });
+        }
+
+        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
+        order.Alter<OrderPart>(part =>
+        {
+            part.Email.Text = email;
+            part.ShippingAddress.UserAddressToSave = nameof(part.ShippingAddress);
+            part.BillingAddress.UserAddressToSave = nameof(part.BillingAddress);
+        });
+
         var total = cart.Totals.Single();
-        var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
-        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : null;
 
         return View(new CheckoutViewModel
         {
             NewOrderEditor = editor,
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            UserEmail = email ?? string.Empty,
+            UserEmail = email,
         });
     }
 

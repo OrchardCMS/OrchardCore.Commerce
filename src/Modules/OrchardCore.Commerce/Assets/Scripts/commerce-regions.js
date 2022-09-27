@@ -20,13 +20,18 @@ function commerceRegionsOnChange(provinceDropDown, container, regionDropDown) {
     $province.val(provinceIds[0]);
 
     // If there are no provinces, hide the whole row.
-    $container.toggle(provinceIds[0] !== '');
+    const hasProvinces = provinceIds[0] !== '';
+    $container.toggle(hasProvinces);
+    $province.prop('required', hasProvinces);
 }
 
 // Same as above.
 // eslint-disable-next-line
-function commerceRegionsBind(provinceDropDown, container, regionDropDown) {
+function commerceRegionsBind(provinceDropDown, container, regionDropDown, provinceValue) {
     $(regionDropDown)
         .change(() => commerceRegionsOnChange(provinceDropDown, container, regionDropDown))
+        .change();
+    $(provinceDropDown)
+        .val(provinceValue)
         .change();
 }

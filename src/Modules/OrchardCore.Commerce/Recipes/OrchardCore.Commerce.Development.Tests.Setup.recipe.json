@@ -14,6 +14,25 @@
   ],
   "steps": [
     {
+      "name": "settings",
+      "UseCdn": false,
+      // To make sure that e.g. numbers and dates are formatted the same way on all machines we have to specify the
+      // culture too.
+      "LocalizationSettings": {
+        "DefaultCulture": "en-US",
+        "SupportedCultures": [
+          "en-US"
+        ]
+      }
+    },
+    {
+      "name": "feature",
+      "enable": [
+        // Needed for consistent, machine-independent locale setting.
+        "OrchardCore.Localization"
+      ]
+    },
+    {
       "name": "recipes",
       "Values": [
         {
@@ -133,10 +152,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "settings",
-      "UseCdn": false
     }
   ]
 }

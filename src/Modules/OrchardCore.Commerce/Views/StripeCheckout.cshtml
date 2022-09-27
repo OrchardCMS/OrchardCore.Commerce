@@ -29,7 +29,7 @@
 @if (!string.IsNullOrEmpty(publishableKey))
 {
     <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
-    <script at="Head" asp-name="StripeCardForm" asp-src="~/OrchardCore.Commerce/js/stripe-card-form.min.js"></script>
+    <script at="Head" asp-name="@ResourceNames.StripeCardForm"></script>
     <script at="Foot" depends-on="StripeJs,StripeCardForm">
         stripeCardForm(
             Stripe(@publishableKey.JsonHtmlContent()),
