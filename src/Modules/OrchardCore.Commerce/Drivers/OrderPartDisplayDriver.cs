@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
