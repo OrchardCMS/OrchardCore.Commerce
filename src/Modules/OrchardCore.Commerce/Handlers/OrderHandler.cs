@@ -37,6 +37,7 @@ public class OrderHandler : ContentHandlerBase
                 var part = contentItem.ContainsKey(nameof(UserAddressesPart))
                     ? contentItem[nameof(UserAddressesPart)].ToObject<UserAddressesPart>()!
                     : new UserAddressesPart();
+                    
                 part.BillingAndShippingAddressesMatch.Value = isSame;
                 contentItem[nameof(UserAddressesPart)] = JToken.FromObject(part);
                 return contentItem;
