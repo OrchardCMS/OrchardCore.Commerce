@@ -14,14 +14,17 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
+using OrchardCore.Users.Models;
 using Stripe;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CommerceContentTypes = OrchardCore.Commerce.Constants.ContentTypes;
+
+using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -69,20 +72,42 @@ public class PaymentController : Controller
 
         if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart)
         {
-            return RedirectToAction(nameof(ShoppingCartController.Empty), nameof(ShoppingCartController));
+            return RedirectToAction(
+                nameof(ShoppingCartController.Empty),
+                typeof(ShoppingCartController).ControllerName());
         }
 
+        var order = await _contentManager.NewAsync(Order);
+
+        if (await _userManager.GetUserAsync(User) is User user &&
+            user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
+        {
+            order.Alter<OrderPart>(part =>
+            {
+                part.BillingAddress.Address = userAddresses.BillingAddress.Address;
+                part.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+                part.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
+            });
+        }
+
+        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
+        order.Alter<OrderPart>(part =>
+        {
+            part.Email.Text = email;
+            part.ShippingAddress.UserAddressToSave = nameof(part.ShippingAddress);
+            part.BillingAddress.UserAddressToSave = nameof(part.BillingAddress);
+        });
+
         var total = cart.Totals.Single();
-        var order = await _contentManager.NewAsync(CommerceContentTypes.Order);
         var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
-        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : null;
 
         return View(new CheckoutViewModel
         {
             NewOrderEditor = editor,
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            UserEmail = email ?? string.Empty,
+            UserEmail = email,
+            BillingAndShippingAddressesMatch = order.As<OrderPart>().BillingAndShippingAddressesMatch.Value,
         });
     }
 

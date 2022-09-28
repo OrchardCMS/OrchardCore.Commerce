@@ -6,4 +6,5 @@ namespace OrchardCore.Commerce.Fields;
 public class AddressField : ContentField
 {
     public Address Address { get; set; }
+    public string UserAddressToSave { get; set; }
 }

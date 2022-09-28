@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
@@ -22,11 +23,14 @@ using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
@@ -43,6 +47,8 @@ public class Startup : StartupBase
         services.AddOrchardServices();
         services.AddScoped<IDataMigration, MvcTitleMigrations>();
         services.AddTagHelpers<MvcTitleTagHelper>();
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddScoped<IUserService, UserService>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
@@ -108,6 +114,7 @@ public class Startup : StartupBase
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
+        services.AddScoped<IContentHandler, OrderHandler>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
@@ -175,5 +182,24 @@ public class TaxStartup : StartupBase
             .AddHandler<TaxPartAndPricePartHandler>();
 
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
+    }
+}
+
+[RequireFeatures(CommerceConstants.Features.Core, "OrchardCore.Users.CustomUserSettings")]
+public class UserSettingsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services
+            .AddContentPart<UserAddressesPart>()
+            .WithMigration<UserAddressesMigrations>();
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        base.Configure(app, routes, serviceProvider);
+        routes.MapAreaControllerRoute(
+            name: nameof(UserController),
+            areaName: "OrchardCore.Commerce",
+            pattern: "user/{action}",
+            defaults: new { controller = typeof(UserController).ControllerName(), action = "Index" });
     }
 }

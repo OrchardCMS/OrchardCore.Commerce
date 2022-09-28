@@ -15,10 +15,14 @@
     </div>
 </section>
 
-<style asp-src="~/OrchardCore.Commerce/css/credit-card-form.min.css"></style>
+<style asp-name="@ResourceNames.CreditCardForm"></style>
 
-<script at="Foot">
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('OrderPart_Email_Text').value = @Model.UserEmail.JsonHtmlContent();
-    });
+<script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
+<script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
+    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
+    checkbox.checked = @Json.Serialize(Model.BillingAndShippingAddressesMatch);
+    initializeToggleSecondAddress(
+        checkbox,
+        document.querySelector('.address_billing-address'),
+        document.querySelector('.address_shipping-address'));
 </script>
