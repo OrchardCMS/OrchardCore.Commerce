@@ -8,8 +8,6 @@
 @{
     var hint = Model.PartFieldDefinition.GetSettings<AddressPartFieldSettings>().Hint;
 
-    var regionOptions = Model.Regions.CreateSelectListOptions();
-
     var province = Model.Address?.Province ?? string.Empty;
 
     var addressElementName = "address_" + Model.PartFieldDefinition.Name.HtmlClassify();
@@ -88,7 +86,7 @@
         </div>
         <div class="mb-3 col-md-6" asp-validation-class-for="Address.Region">
             <select asp-for="Address.Region"
-                    asp-items="@regionOptions"
+                    asp-items="Model.Regions"
                     class="form-control content-preview-text address__region"
                     required></select>
         </div>
