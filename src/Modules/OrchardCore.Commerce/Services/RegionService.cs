@@ -1,5 +1,6 @@
 using GraphQL;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Settings;
 using System.Collections.Generic;
@@ -15,5 +16,6 @@ public class RegionService : IRegionService
         _siteService = siteService;
 
     public async Task<IEnumerable<RegionInfo>> GetAvailableRegionsAsync() =>
-        (await _siteService.GetSiteSettingsAsync()).As<RegionSettings>().AllowedRegions;
+        (await _siteService.GetSiteSettingsAsync())
+            .As<RegionSettings>().AllowedRegions.GetRegionInfosFromTwoLetterRegionIsos();
 }

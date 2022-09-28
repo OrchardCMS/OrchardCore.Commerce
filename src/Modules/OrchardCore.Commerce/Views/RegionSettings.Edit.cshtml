@@ -1,10 +1,6 @@
 @using OrchardCore.Commerce.Extensions
 @model RegionSettingsViewModel
 
-@{
-    var regionOptions = Model.Regions.CreateSelectListOptions();
-}
-
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
 <fieldset class="mb-3" asp-validation-class-for="AllowedRegions">
@@ -13,7 +9,7 @@
     <div class="input-group">
         <div class="input-group-append">
             <select asp-for="AllowedRegions"
-                    asp-items="@regionOptions"
+                    asp-items="Model.Regions"
                     class="form-control content-preview-text"></select>
         </div>
     </div>

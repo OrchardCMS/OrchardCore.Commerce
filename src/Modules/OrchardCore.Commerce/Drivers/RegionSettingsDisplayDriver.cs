@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -50,7 +51,7 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
         {
             model.AllowedRegions = section.AllowedRegions;
 
-            model.Regions = Regions.All;
+            model.Regions = Regions.All.AsEnumerable().CreateSelectListOptions();
         })
             .Location("Content")
             .OnGroup(GroupId);
@@ -73,7 +74,12 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
             {
                 var allowedRegions = model.AllowedRegions;
 
-                section.AllowedRegions = allowedRegions.Any() ? allowedRegions : Regions.All;
+                var allRegionTwoLetterIsoRegionNames = Regions.All.Select(region => region.TwoLetterISORegionName);
+
+                section.AllowedRegions = allowedRegions != null && allowedRegions.Any()
+                    ? allRegionTwoLetterIsoRegionNames
+                        .Where(regionTwoLetterIsoRegionName => allowedRegions.Contains(regionTwoLetterIsoRegionName))
+                    : allRegionTwoLetterIsoRegionNames;
 
                 // Release the tenant to apply settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
