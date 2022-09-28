@@ -123,6 +123,9 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, OrderMigrations>();
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
 
+        // Region
+        services.AddScoped<IRegionService, RegionService>();
+
         // Settings
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
