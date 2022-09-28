@@ -130,6 +130,8 @@ public class Startup : StartupBase
         services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
+        services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<RegionSettings>, RegionSettingsConfiguration>();
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();

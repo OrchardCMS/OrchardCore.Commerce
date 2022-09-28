@@ -2,14 +2,13 @@
 @using OrchardCore.Commerce.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Commerce.Extensions
 @model AddressFieldViewModel
 
 @{
     var hint = Model.PartFieldDefinition.GetSettings<AddressPartFieldSettings>().Hint;
 
-    var regionOptions = Model.Regions.OrderBy(region => region.DisplayName).Select(region => new SelectListItem(
-        region.DisplayName,
-        region.TwoLetterISORegionName));
+    var regionOptions = Model.Regions.CreateSelectListOptions();
 
     var province = Model.Address?.Province ?? string.Empty;
 

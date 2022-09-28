@@ -31,6 +31,10 @@ public class AdminMenu : INavigationProvider
                     .Add(T["Stripe API"], T["Stripe API"], stripeApi => stripeApi
                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = StripeApiSettingsDisplayDriver.GroupId })
                     .Permission(Permissions.ManageStripeApiSettings)
+                    .LocalNav())
+                    .Add(T["Region"], T["Region"], region => region
+                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegionSettingsDisplayDriver.GroupId })
+                    .Permission(Permissions.ManageRegionSettings)
                     .LocalNav())));
 
         return Task.CompletedTask;
