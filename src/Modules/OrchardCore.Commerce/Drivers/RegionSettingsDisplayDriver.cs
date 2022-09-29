@@ -1,3 +1,4 @@
+using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -70,11 +71,11 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                var allowedRegions = model.AllowedRegions;
+                var allowedRegions = model.AllowedRegions.AsList();
 
                 var allRegionTwoLetterIsoRegionNames = Regions.All.Select(region => region.TwoLetterISORegionName);
 
-                section.AllowedRegions = allowedRegions != null && allowedRegions.Any()
+                section.AllowedRegions = allowedRegions?.Any() == true
                     ? allRegionTwoLetterIsoRegionNames
                         .Where(regionTwoLetterIsoRegionName => allowedRegions.Contains(regionTwoLetterIsoRegionName))
                     : allRegionTwoLetterIsoRegionNames;
