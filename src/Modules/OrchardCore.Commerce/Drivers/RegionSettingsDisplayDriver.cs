@@ -19,6 +19,7 @@ namespace OrchardCore.Commerce.Drivers;
 public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSettings>
 {
     public const string GroupId = "Region";
+
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _hca;
