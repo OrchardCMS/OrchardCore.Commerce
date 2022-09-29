@@ -43,10 +43,7 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
     {
         var user = _hca.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings))
-        {
-            return null;
-        }
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings)) return null;
 
         return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
         {
