@@ -2,6 +2,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
@@ -26,6 +27,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -33,6 +35,7 @@ using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Workflows.Helpers;
 using System;
 using YesSql.Indexes;
@@ -142,6 +145,26 @@ public class Startup : StartupBase
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegionSettings>>();
+        services.AddScoped<IDisplayDriver<DeploymentStep>>(serviceProvider =>
+            {
+                // It's the IStringLocalizer.
+#pragma warning disable SA1312 // Variable names should begin with lower-case letter
+                var T = serviceProvider.GetService<IStringLocalizer<DeploymentStartup>>();
+#pragma warning restore SA1312 // Variable names should begin with lower-case letter
+                return new SiteSettingsPropertyDeploymentStepDriver<RegionSettings>(
+                    T["Region settings"],
+                    T["Exports the region settings."]);
+            });
+        services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<RegionSettings>());
     }
 }
 
