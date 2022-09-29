@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
-/// When implemented a service for handling regions.
+/// A service for accessing and customizing regions.
 /// </summary>
 public interface IRegionService
 {
