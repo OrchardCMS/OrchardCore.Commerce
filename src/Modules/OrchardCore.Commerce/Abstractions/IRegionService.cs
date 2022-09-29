@@ -10,7 +10,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IRegionService
 {
     /// <summary>
-    /// Gets the available regions from the site settings./>.
+    /// Gets the available regions from the site settings.
     /// </summary>
     /// <returns>A collection of <see cref="RegionInfo"/>.</returns>
     Task<IEnumerable<RegionInfo>> GetAvailableRegionsAsync();
