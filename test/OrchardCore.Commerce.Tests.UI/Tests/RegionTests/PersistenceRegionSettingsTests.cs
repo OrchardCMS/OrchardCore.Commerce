@@ -26,16 +26,11 @@ public class PersistenceRegionSettingsTests : UITestBase
 
                 await context.CreateNewContentItemAsync("Order");
 
-                var selectListOptions = context
-                    .GetAll(By.XPath("//select[@id='OrderPart_BillingAddress_Address_Region']/option"));
-
-                selectListOptions.Count.ShouldBe(3);
-
-                var selectListTexts = selectListOptions.Select(selectListOption => selectListOption.Text).AsList();
-
-                selectListTexts[0].ShouldBe("Argentina");
-                selectListTexts[1].ShouldBe("Luxemburg");
-                selectListTexts[2].ShouldBe("Magyarország");
+                context
+                    .GetAll(By.XPath("id('OrderPart_BillingAddress_Address_Region')/option"))
+                    .Select(selectListOption => selectListOption.Text)
+                    .ToArray()
+                    .ShouldBe(new[] { "Argentina", "Luxemburg", "Magyarország" });
             },
             browser);
 }
