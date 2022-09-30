@@ -1,0 +1,23 @@
+{
+  "name": "RegionTest",
+  "displayName": "RegionTest",
+  "description": "Limits the available regions for testing.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "1.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "regions" ],
+  "steps": [
+    {
+      "name": "Settings",
+      "RegionSettings": {
+        "AllowedRegions": [
+          "LU",
+          "AR",
+          "HU"
+        ]
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -24,15 +25,18 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     private readonly IAddressFormatterProvider _addressFormatterProvider;
     private readonly IHttpContextAccessor _hca;
     private readonly IUserService _userService;
+    private readonly IRegionService _regionService;
 
     public AddressFieldDisplayDriver(
         IAddressFormatterProvider addressFormatterProvider,
         IHttpContextAccessor hca,
-        IUserService userService)
+        IUserService userService,
+        IRegionService regionService)
     {
         _addressFormatterProvider = addressFormatterProvider;
         _hca = hca;
         _userService = userService;
+        _regionService = regionService;
     }
 
     public override IDisplayResult Display(AddressField field, BuildFieldDisplayContext fieldDisplayContext) =>
@@ -53,11 +57,11 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     public override IDisplayResult Edit(AddressField field, BuildFieldEditorContext context) =>
         Initialize<AddressFieldViewModel>(
             GetEditorShapeType(context),
-            viewModel =>
+            async viewModel =>
             {
                 viewModel.UserAddressToSave = field.UserAddressToSave;
 
-                viewModel.Regions = Regions.All;
+                viewModel.Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions();
                 viewModel.Provinces.AddRange(Regions.Provinces);
                 PopulateViewModel(field, viewModel, context.PartFieldDefinition);
             });
