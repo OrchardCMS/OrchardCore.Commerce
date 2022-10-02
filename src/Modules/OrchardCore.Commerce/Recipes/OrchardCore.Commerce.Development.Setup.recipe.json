@@ -1,6 +1,6 @@
 {
   "name": "OrchardCore.Commerce.Development.Setup",
-  "displayName": "OrchardCore Commerce - Development",
+  "displayName": "Orchard Core Commerce - Development",
   "description": "Settings and contents required only for development environment.",
   "author": "OrchardCoreCommerce",
   "website": "https://commerce.orchardcore.net",

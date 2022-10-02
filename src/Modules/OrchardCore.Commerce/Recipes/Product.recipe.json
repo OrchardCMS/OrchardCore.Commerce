@@ -1,6 +1,6 @@
 {
   "name": "Product",
-  "displayName": "Product",
+  "displayName": "Orchard Core Commerce - Content - Product",
   "description": "Creates a Product content type with a Product Part and a Price Part.",
   "author": "The Orchard Team",
   "website": "https://orchardproject.net",

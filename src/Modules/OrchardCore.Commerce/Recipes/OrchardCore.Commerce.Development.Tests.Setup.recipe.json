@@ -1,6 +1,6 @@
 {
   "name": "OrchardCore.Commerce.Development.Tests.Setup",
-  "displayName": "TEST: OrchardCore Commerce",
+  "displayName": "TEST: Orchard Core Commerce",
   "description": "OrchardCore Commerce setup recipe for automated UI test execution.",
   "author": "OrchardCoreCommerce",
   "website": "https://commerce.orchardcore.net",
