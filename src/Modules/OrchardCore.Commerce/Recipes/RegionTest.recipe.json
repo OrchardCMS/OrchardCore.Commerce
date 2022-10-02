@@ -7,7 +7,7 @@
   "version": "1.0",
   "issetuprecipe": false,
   "categories": [ "commerce" ],
-  "tags": [ "regions" ],
+  "tags": [ "regions", "sample" ],
   "steps": [
     {
       "name": "Settings",
