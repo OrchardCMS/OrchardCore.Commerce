@@ -1,5 +1,5 @@
 {
-  "name": "Product",
+  "name": "OrchardCore.Commerce.Content.Product",
   "displayName": "Orchard Core Commerce - Content - Product",
   "description": "Creates a Product content type with a Product Part and a Price Part.",
   "author": "The Orchard Team",
@@ -167,85 +167,6 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "Content",
-      "data": [
-        {
-          "ContentItemId": "testpricevariantproduct000",
-          "ContentItemVersionId": "testpricevariantproduct000",
-          "ContentType": "PriceVariantsProduct",
-          "DisplayText": "TestPriceVariantProduct",
-          "Latest": true,
-          "Published": true,
-          "ModifiedUtc": "2022-08-10T20:27:55.221899Z",
-          "PublishedUtc": "2022-08-10T20:27:55.2244171Z",
-          "CreatedUtc": "2022-08-10T20:27:55.221899Z",
-          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
-          "Author": "admin",
-          "PriceVariantsProduct": {
-            "Size": {}
-          },
-          "TitlePart": {
-            "Title": "TestPriceVariantProduct"
-          },
-          "PriceVariantsPart": {
-            "Variants": {
-              "Small": {
-                "value": 10.0,
-                "currency": "USD"
-              },
-              "Medium": {
-                "value": 20.0,
-                "currency": "USD"
-              },
-              "Large": {
-                "value": 30.0,
-                "currency": "USD"
-              }
-            }
-          },
-          "ProductPart": {
-            "Sku": "TESTPRODUCTVARIANT"
-          }
-        },
-        {
-          "ContentItemId": "testproduct000",
-          "ContentItemVersionId": "testproduct000",
-          "ContentType": "Product",
-          "DisplayText": "TestProduct",
-          "Latest": true,
-          "Published": true,
-          "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
-          "PublishedUtc": "2022-08-10T19:34:57.2716912Z",
-          "CreatedUtc": "2022-08-10T19:34:57.2678948Z",
-          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
-          "Author": "admin",
-          "TitlePart": {
-            "Title": "TestProduct"
-          },
-          "AutoroutePart": {
-            "Path": "testproduct",
-            "SetHomepage": false,
-            "Disabled": false,
-            "RouteContainedItems": false,
-            "Absolute": false
-          },
-          "HtmlBodyPart": {
-            "Html": ""
-          },
-          "ProductPart": {
-            "Sku": "TESTPRODUCT"
-          },
-          "PricePart": {
-            "Price": {
-              "value": 5.0,
-              "currency": "USD"
-            }
-          },
-          "Product": {}
         }
       ]
     }

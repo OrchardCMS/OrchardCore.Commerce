@@ -81,10 +81,13 @@
     {
       "name": "recipes",
       "Values": [
-        // Configuration
         {
           "executionid": "OrchardCore.Commerce",
-          "name": "Product"
+          "name": "OrchardCore.Commerce.Content.Product"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "OrchardCore.Commerce.Samples.Product"
         },
         {
           "executionid": "OrchardCore.Commerce",
