@@ -22,7 +22,7 @@ public class PersistenceRegionSettingsTests : UITestBase
             async context =>
             {
                 await context.SignInDirectlyAsync();
-                await context.ExecuteRecipeDirectlyAsync("RegionTest");
+                await context.ExecuteRecipeDirectlyAsync("OrchardCore.Commerce.Samples.RegionSettings");
 
                 await context.CreateNewContentItemAsync("Order");
 
