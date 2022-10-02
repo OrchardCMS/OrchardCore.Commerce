@@ -91,7 +91,7 @@
         },
         {
           "executionid": "OrchardCore.Commerce",
-          "name": "MultiCurrencyProduct"
+          "name": "OrchardCore.Commerce.Content.MultiCurrencyProduct"
         }
       ]
     },

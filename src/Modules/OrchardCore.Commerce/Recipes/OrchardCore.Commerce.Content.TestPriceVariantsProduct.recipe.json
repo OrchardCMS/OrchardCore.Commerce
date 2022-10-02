@@ -1,5 +1,5 @@
 {
-  "name": "TestProduct",
+  "name": "OrchardCore.Commerce.Content.TestPriceVariantsProduct",
   "displayName": "Orchard Core Commerce - Content - TestPriceVariantsProduct",
   "description": "Creates a product content type with a Product Part and a Price Variants Part.",
   "author": "The Orchard Team",

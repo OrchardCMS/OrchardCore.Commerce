@@ -1,5 +1,5 @@
 {
-  "name": "Order",
+  "name": "OrchardCore.Commerce.Content.Order",
   "displayName": "Orchard Core Commerce - Content - Order",
   "description": "Creates an order content type with an order Part, a shipping address and a billing address.",
   "author": "The Orchard Team",

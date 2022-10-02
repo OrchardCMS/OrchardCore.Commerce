@@ -41,7 +41,7 @@
         },
         {
           "executionid": "OrchardCore.Commerce",
-          "name": "TestProduct"
+          "name": "OrchardCore.Commerce.Content.TestPriceVariantsProduct"
         }
       ]
     },

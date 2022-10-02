@@ -1,5 +1,5 @@
 {
-  "name": "MultiCurrencyProduct",
+  "name": "OrchardCore.Commerce.Content.MultiCurrencyProduct",
   "displayName": "Orchard Core Commerce - Content - Multi-Currency Product",
   "description": "Creates a Product content type with a Product Part and multiple Price Parts.",
   "author": "The Orchard Team",
