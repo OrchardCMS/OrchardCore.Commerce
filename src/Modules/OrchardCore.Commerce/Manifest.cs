@@ -2,7 +2,7 @@ using OrchardCore.Commerce;
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "OrchardCore.Commerce - Core",
+    Name = "OrchardCore.Commerce",
     Author = "The Orchard Team",
     Website = "https://github.com/OrchardCMS/OrchardCore.Commerce",
     Version = "0.0.1",
@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = CommerceConstants.Features.Core,
-    Name = "Orchard Core Commerce",
+    Name = "Orchard Core Commerce - Core",
     Category = "Commerce",
     Description = "Registers the core components used by the Commerce features.",
     Dependencies = new[]
