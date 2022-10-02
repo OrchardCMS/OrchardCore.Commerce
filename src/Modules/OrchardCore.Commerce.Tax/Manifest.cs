@@ -6,5 +6,5 @@ using OrchardCore.Modules.Manifest;
     Website = "https://github.com/OrchardCMS/OrchardCore.Commerce",
     Version = "0.0.1",
     Description = "Taxation module for Orchard Core Commerce for sales tax or VAT.",
-    Category = "Content Management"
+    Category = "Commerce"
 )]

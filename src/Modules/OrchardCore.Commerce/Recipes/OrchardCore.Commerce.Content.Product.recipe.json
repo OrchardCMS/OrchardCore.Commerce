@@ -1,7 +1,7 @@
 {
-  "name": "MultiCurrencyProduct",
-  "displayName": "MultiCurrencyProduct",
-  "description": "Creates a Product content type with a Product Part and multiple Price Parts.",
+  "name": "OrchardCore.Commerce.Content.Product",
+  "displayName": "Orchard Core Commerce - Content - Product",
+  "description": "Creates a Product content type with a Product Part and a Price Part.",
   "author": "The Orchard Team",
   "website": "https://orchardproject.net",
   "version": "2.0",
@@ -23,8 +23,8 @@
       "name": "ContentDefinition",
       "ContentTypes": [
         {
-          "Name": "MultiPriceProduct",
-          "DisplayName": "MultiPriceProduct",
+          "Name": "Product",
+          "DisplayName": "Product",
           "Settings": {
             "ContentTypeSettings": {
               "Creatable": true,
@@ -36,7 +36,7 @@
             "FullTextAspectSettings": {}
           },
           "ContentTypePartDefinitionRecords": [
-          	{
+            {
               "PartName": "TitlePart",
               "Name": "TitlePart",
               "Settings": {
@@ -51,6 +51,10 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "1"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ ContentItem | display_text | slugify }}"
                 }
               }
             },
@@ -58,11 +62,11 @@
               "PartName": "HtmlBodyPart",
               "Name": "HtmlBodyPart",
               "Settings": {
+                "HtmlBodyPartSettings": {},
                 "ContentTypePartSettings": {
                   "Position": "2",
                   "Editor": "Wysiwyg"
-                },
-                "HtmlBodyPartSettings": {}
+                }
               }
             },
             {
@@ -76,54 +80,89 @@
             },
             {
               "PartName": "PricePart",
-              "Name": "PriceUSD",
+              "Name": "PricePart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "DisplayName": "Price USD",
-                  "Description": "Adds a simple price to a product.",
                   "Position": "4"
-                },
-                "PricePartSettings": {
-                  "CurrencySelectionMode": "DefaultCurrency"
                 }
               }
             },
             {
-              "PartName": "PricePart",
-              "Name": "PriceSEK",
+              "PartName": "TaxPart",
+              "Name": "TaxPart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "DisplayName": "Price SEK",
-                  "Description": "Adds a simple price to a product.",
                   "Position": "5"
-                },
-                "PricePartSettings": {
-                  "CurrencySelectionMode": "SpecificCurrency",
-                  "SpecificCurrencyIsoCode": "SEK"
                 }
               }
             },
             {
-              "PartName": "PricePart",
-              "Name": "PriceNOK",
+              "PartName": "Product",
+              "Name": "Product",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "DisplayName": "Price NOK",
-                  "Description": "Adds a simple price to a product.",
-                  "Position": "6"
-                },
-                "PricePartSettings": {
-                  "CurrencySelectionMode": "SpecificCurrency",
-                  "SpecificCurrencyIsoCode": "NOK"
+                  "Position": "999"
                 }
               }
+            }
+          ]
+        },
+        {
+          "Name": "PriceVariantsProduct",
+          "DisplayName": "PriceVariantsProduct",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "PriceVariantsProduct",
+              "Name": "PriceVariantsProduct",
+              "Settings": {}
             },
             {
-              "PartName": "MultiPriceProduct",
-              "Name": "MultiPriceProduct",
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {}
+            },
+            {
+              "PartName": "PriceVariantsPart",
+              "Name": "PriceVariantsPart",
+              "Settings": {}
+            },
+            {
+              "PartName": "ProductPart",
+              "Name": "ProductPart",
+              "Settings": {}
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "PriceVariantsProduct",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextProductAttributeField",
+              "Name": "Size",
               "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "7"
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Size"
+                },
+                "TextProductAttributeFieldSettings": {
+                  "PredefinedValues": [
+                    "Small",
+                    "Medium",
+                    "Large"
+                  ],
+                  "RestrictToPredefinedValues": true,
+                  "DefaultValue": "Small"
                 }
               }
             }

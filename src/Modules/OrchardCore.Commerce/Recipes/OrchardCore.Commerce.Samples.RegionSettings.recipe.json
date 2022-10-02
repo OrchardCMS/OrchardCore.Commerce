@@ -1,13 +1,13 @@
 {
-  "name": "RegionTest",
-  "displayName": "RegionTest",
+  "name": "OrchardCore.Commerce.Samples.RegionSettings",
+  "displayName": "Orchard Core Commerce - Samples - Region Settings",
   "description": "Limits the available regions for testing.",
   "author": "The Orchard Team",
   "website": "https://orchardproject.net",
   "version": "1.0",
   "issetuprecipe": false,
   "categories": [ "commerce" ],
-  "tags": [ "regions" ],
+  "tags": [ "regions", "sample" ],
   "steps": [
     {
       "name": "Settings",
