@@ -24,7 +24,6 @@ using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -117,7 +116,6 @@ public class Startup : StartupBase
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
-        services.AddScoped<IContentHandler, OrderHandler>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
