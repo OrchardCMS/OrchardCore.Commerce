@@ -93,6 +93,12 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
 
     public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
     {
+        var testSku = "what-ever-then";
+
+        var testVariantKey = _productService.GetVariantKey(testSku);
+        var testProductThatDoesNotExist = await _productService.GetProductAsync(testSku);
+
+
         var product = await _productService.GetProductAsync(line.ProductSku);
         if (product is null) return null;
         var type = GetTypeDefinition(product);

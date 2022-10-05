@@ -4,6 +4,7 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,6 +93,12 @@ public class PriceTests
 
         public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
             Task.FromResult(skus.Select(sku => _products[sku]));
+
+        public string GetVariantKey(string sku)
+        {
+            var dashIndex = sku.IndexOf(value: "-", StringComparison.InvariantCulture);
+            return dashIndex == -1 ? sku : sku[dashIndex..];
+        }
     }
 
     private class DummyPriceProvider : IPriceProvider

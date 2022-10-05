@@ -15,6 +15,11 @@ public interface IProductService
     /// Returns the products that have the provided SKUs.
     /// </summary>
     Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus);
+
+    /// <summary>
+    /// Returns the key the variant is identified by.
+    /// </summary>
+    string GetVariantKey(string sku);
 }
 
 public static class ProductServiceExtensions

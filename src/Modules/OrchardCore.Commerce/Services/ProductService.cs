@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,5 +76,11 @@ public class ProductService : IProductService
             // fields in the original code.
             part.Get(typeOfField, fieldName);
         }
+    }
+
+    public string GetVariantKey(string sku)
+    {
+        var dashIndex = sku.IndexOf(value: "-", StringComparison.InvariantCulture);
+        return dashIndex == -1 ? sku : sku[(dashIndex + 1)..];
     }
 }
