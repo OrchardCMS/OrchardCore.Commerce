@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -17,18 +16,15 @@ namespace OrchardCore.Commerce.Drivers;
 public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 {
     private readonly IContentManager _contentManager;
-    private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
 
     public OrderPartDisplayDriver(
         IContentManager contentManager,
-        IHttpContextAccessor hca,
         IProductService productService,
         IEnumerable<ITaxProvider> taxProviders)
     {
         _contentManager = contentManager;
-        _hca = hca;
         _productService = productService;
         _taxProviders = taxProviders;
     }
@@ -39,18 +35,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        _hca.IsCheckoutFrontEnd()
-            ? null
-            : Initialize<OrderPartViewModel>(
-                GetEditorShapeType(context),
-                viewModel => PopulateViewModelAsync(viewModel, part));
+        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
-        // There is no need to show the line items editor in the front end, as the user should only edit that in the
-        // cart rather than the order.
-        if (_hca.IsCheckoutFrontEnd()) return await EditAsync(part, context);
-
         var viewModel = new OrderPartViewModel();
 
         await updater.TryUpdateModelAsync(viewModel, Prefix);

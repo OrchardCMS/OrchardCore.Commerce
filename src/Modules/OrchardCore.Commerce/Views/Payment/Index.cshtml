@@ -1,16 +1,269 @@
+@using Newtonsoft.Json
+@using OrchardCore.Commerce.Settings
 @model OrchardCore.Commerce.ViewModels.CheckoutViewModel
 
 <mvc-title text="@T["Checkout"]" />
+@{
+    var orderPart = Model.OrderPart;
+
+    var billingAddressProvince = orderPart.BillingAddress.Address?.Province ?? string.Empty;
+
+    var shippingAddressProvince = orderPart.ShippingAddress.Address?.Province ?? string.Empty;
+}
 
 <section id="checkout">
     <div class="card-payment-form_container">
         <form id="card-payment-form" class="card-payment-form">
             @Html.AntiForgeryToken()
-            @await DisplayAsync(Model.NewOrderEditor)
+
+            <div class="mb-3">
+                <label asp-for="OrderPart.Email.Text">@T["E-mail"]</label>
+                <input asp-for="OrderPart.Email.Text" class="form-control content-preview-text" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="OrderPart.Phone.Text">@T["Phone Number"]</label>
+                <input asp-for="OrderPart.Phone.Text" class="form-control content-preview-text" required />
+            </div>
+            <div class="address_billing-address">
+                <h3>@T["Billing Address"]</h3>
+
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.Name">@T["Name"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.Name">
+                        <input asp-for="OrderPart.BillingAddress.Address.Name" class="form-control content-preview-text address__name" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.Department">@T["Department"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.Department">
+                        <input asp-for="OrderPart.BillingAddress.Address.Department" class="form-control content-preview-text address__department" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.Company">@T["Company or institution"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.Company">
+                        <input asp-for="OrderPart.BillingAddress.Address.Company" class="form-control content-preview-text address__company" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.StreetAddress1">@T["First street address"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.StreetAddress1">
+                        <input asp-for="OrderPart.BillingAddress.Address.StreetAddress1"
+                               class="form-control content-preview-text address__street address__street_first" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.StreetAddress2">@T["Second street address"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.StreetAddress2">
+                        <input asp-for="OrderPart.BillingAddress.Address.StreetAddress2"
+                               class="form-control content-preview-text address__street address__street_second" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.City">@T["City"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.City">
+                        <input asp-for="OrderPart.BillingAddress.Address.City" class="form-control content-preview-text address__city" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.Province">@T["State or province"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.Province">
+                        <select asp-for="OrderPart.BillingAddress.Address.Province" class="form-control content-preview-text address__province"
+                                required></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.PostalCode">@T["Postal code"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.PostalCode">
+                        <input asp-for="OrderPart.BillingAddress.Address.PostalCode" class="form-control content-preview-text address__postalCode" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.BillingAddress.Address.Region">@T["Country or region"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.BillingAddress.Address.Region">
+                        <select asp-for="OrderPart.BillingAddress.Address.Region"
+                                asp-items="Model.Regions"
+                                class="form-control content-preview-text address__region"
+                                required></select>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(orderPart.BillingAddress.UserAddressToSave))
+                {
+                    <input type="hidden" asp-for="OrderPart.BillingAddress.UserAddressToSave" class="address__userAddressToSave" />
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox"
+                               class="form-check-input content-preview-select address__toBeSaved"
+                               data-val="true"
+                               data-val-required="The Value field is required."
+                               id="OrderPart_BillingAddress_ToBeSaved"
+                               name="OrderPart.BillingAddress.ToBeSaved"
+                               value="true">
+                            <input name="OrderPart.BillingAddress.ToBeSaved" type="hidden" value="false">
+                            <label class="form-check-label" for="OrderPart_BillingAddress_ToBeSaved">
+                                @T["Save this address"]
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="address_shipping-address">
+                <h3>@T["Shipping Address"]</h3>
+
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.Name">@T["Name"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.Name">
+                        <input asp-for="OrderPart.ShippingAddress.Address.Name" class="form-control content-preview-text address__name" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.Department">@T["Department"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.Department">
+                        <input asp-for="OrderPart.ShippingAddress.Address.Department" class="form-control content-preview-text address__department" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.Company">@T["Company or institution"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.Company">
+                        <input asp-for="OrderPart.ShippingAddress.Address.Company" class="form-control content-preview-text address__company" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.StreetAddress1">@T["First street address"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.StreetAddress1">
+                        <input asp-for="OrderPart.ShippingAddress.Address.StreetAddress1"
+                               class="form-control content-preview-text address__street address__street_first" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.StreetAddress2">@T["Second street address"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.StreetAddress2">
+                        <input asp-for="OrderPart.ShippingAddress.Address.StreetAddress2"
+                               class="form-control content-preview-text address__street address__street_second" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.City">@T["City"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.City">
+                        <input asp-for="OrderPart.ShippingAddress.Address.City" class="form-control content-preview-text address__city" required />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.Province">@T["State or province"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.Province">
+                        <select asp-for="OrderPart.ShippingAddress.Address.Province" class="form-control content-preview-text address__province"
+                                required></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.PostalCode">@T["Postal code"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.PostalCode">
+                        <input asp-for="OrderPart.ShippingAddress.Address.PostalCode" class="form-control content-preview-text address__postalCode" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-12">
+                        <label asp-for="OrderPart.ShippingAddress.Address.Region">@T["Country or region"]</label>
+                    </div>
+                    <div class="mb-3 col-md-6" asp-validation-class-for="OrderPart.ShippingAddress.Address.Region">
+                        <select asp-for="OrderPart.ShippingAddress.Address.Region"
+                                asp-items="Model.Regions"
+                                class="form-control content-preview-text address__region"
+                                required></select>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(orderPart.ShippingAddress.UserAddressToSave))
+                {
+                    <input type="hidden" asp-for="OrderPart.ShippingAddress.UserAddressToSave" class="address__userAddressToSave" />
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox"
+                               class="form-check-input content-preview-select address__toBeSaved"
+                               data-val="true"
+                               data-val-required="The Value field is required."
+                               id="OrderPart_ShippingAddress_ToBeSaved"
+                               name="OrderPart.ShippingAddress.ToBeSaved"
+                               value="true">
+                            <input name="OrderPart.ShippingAddress.ToBeSaved" type="hidden" value="false">
+                            <label class="form-check-label" for="OrderPart_ShippingAddress_ToBeSaved">
+                                @T["Save this address"]
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox"
+                           asp-for="BillingAndShippingAddressesMatch"
+                           class="form-check-input content-preview-select"
+                           data-val="true"
+                           data-val-required="The Value field is required.">
+                    <label asp-for="BillingAndShippingAddressesMatch" class="form-check-label">
+                        @T["Shipping Address and Billing Address are the same"]
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="StripePaymentPart_PaymentIntentId_Text">PaymentIntentId</label>
+                <input class="form-control content-preview-text"
+                       dir="ltr"
+                       type="text"
+                       id="StripePaymentPart_PaymentIntentId_Text"
+                       name="StripePaymentPart.PaymentIntentId.Text">
+            </div>
+
+            <div class="mb-3">
+                <label for="StripePaymentPart_PaymentMethodId_Text">PaymentMethodId</label>
+                <input class="form-control content-preview-text"
+                       dir="ltr"
+                       type="text"
+                       id="StripePaymentPart_PaymentMethodId_Text"
+                       name="StripePaymentPart.PaymentMethodId.Text">
+            </div>
 
             <shape type="StripeCheckout"
                    prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                   prop-PublishableKey="@Model.StripePublishableKey"/>
+                   prop-PublishableKey="@Model.StripePublishableKey" />
         </form>
     </div>
 </section>
@@ -19,10 +272,30 @@
 
 <script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
 <script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
-    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
+    const checkbox = document.getElementById('BillingAndShippingAddressesMatch');
     checkbox.checked = @Json.Serialize(Model.BillingAndShippingAddressesMatch);
     initializeToggleSecondAddress(
         checkbox,
         document.querySelector('.address_billing-address'),
         document.querySelector('.address_shipping-address'));
+</script>
+
+<script asp-name="@ResourceNames.CommerceRegions" at="Foot"></script>
+<script at="Foot" depends-on="@ResourceNames.CommerceRegions">
+    @if (Context.Items["commerce-regions-initialized"] == null)
+    {
+        <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces))); </text>
+        Context.Items["commerce-regions-initialized"] = true;
+    }
+        commerceRegionsBind(
+            '#@Html.IdFor(model => model.OrderPart.BillingAddress.Address.Province)',
+            '.row',
+            '#@Html.IdFor(model => model.OrderPart.BillingAddress.Address.Region)',
+    @billingAddressProvince.JsonHtmlContent());
+
+    commerceRegionsBind(
+        '#@Html.IdFor(model => model.OrderPart.ShippingAddress.Address.Province)',
+        '.row',
+        '#@Html.IdFor(model => model.OrderPart.ShippingAddress.Address.Region)',
+    @shippingAddressProvince.JsonHtmlContent());
 </script>

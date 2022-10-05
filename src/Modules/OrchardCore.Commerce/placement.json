@@ -17,6 +17,17 @@
       "place": "-"
     }
   ],
+  "BooleanField": [
+    {
+      "contentType": [ "Order" ],
+      "path": [ "~/success*" ],
+      "place": "-"
+    },
+    {
+      "differentiator": "OrderPart-BillingAndShippingAddressesMatch",
+      "place": "-"
+    }
+  ],
   "TextField": [
     {
       "contentType": [ "Order" ],
@@ -33,32 +44,6 @@
     },
     {
       "differentiator": "StripePaymentPart-PaymentIntentId",
-      "place": "-"
-    }
-  ],
-  "TitlePart_Edit": [
-    {
-      "contentType": [ "Order" ],
-      "path": [ "~/checkout" ],
-      "place": "-"
-    }
-  ],
-  "HtmlBodyPart_Edit": [
-    {
-      "contentType": [ "Order" ],
-      "path": [ "~/checkout" ],
-      "place": "-"
-    }
-  ],
-  "TextField_Edit": [
-    {
-      "differentiator": "OrderPart-OrderId",
-      "path": [ "~/checkout" ],
-      "place": "-"
-    },
-    {
-      "differentiator": "OrderPart-Status",
-      "path": [ "~/checkout" ],
       "place": "-"
     }
   ]
