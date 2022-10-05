@@ -1,3 +1,4 @@
+using GraphQL;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -100,12 +101,12 @@ public class PriceTests
             return dashIndex == -1 ? sku : sku[dashIndex..];
         }
 
-        public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
+        public Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
         {
-            var productPart = await ProductServiceExtensions.GetProductAsync(this, sku);
+            var productPart = _products[sku];
             var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
 
-            return (priceVariantsPart, GetVariantKey(sku));
+            return Task.FromResult((priceVariantsPart, GetVariantKey(sku)));
         }
     }
 
