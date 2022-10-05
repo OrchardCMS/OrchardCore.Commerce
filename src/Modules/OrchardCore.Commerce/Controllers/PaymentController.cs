@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
@@ -21,6 +23,7 @@ using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using Stripe;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,6 +43,7 @@ public class PaymentController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
+    private readonly IRegionService _regionService;
 
     public PaymentController(
         ICardPaymentService cardPaymentService,
@@ -47,7 +51,8 @@ public class PaymentController : Controller
         IOrchardServices<PaymentController> services,
         IShoppingCartHelpers shoppingCartHelpers,
         ISiteService siteService,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IRegionService regionService)
     {
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
@@ -58,6 +63,7 @@ public class PaymentController : Controller
         _siteService = siteService;
         _updateModelAccessor = updateModelAccessor;
         _userManager = services.UserManager.Value;
+        _regionService = regionService;
         T = services.StringLocalizer.Value;
     }
 
@@ -77,38 +83,37 @@ public class PaymentController : Controller
                 typeof(ShoppingCartController).ControllerName());
         }
 
-        var order = await _contentManager.NewAsync(Order);
+        var orderPart = new OrderPart();
 
         if (await _userManager.GetUserAsync(User) is User user &&
             user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
         {
-            order.Alter<OrderPart>(part =>
-            {
-                part.BillingAddress.Address = userAddresses.BillingAddress.Address;
-                part.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
-                part.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
-            });
+            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
+            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
         }
 
         var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
-        order.Alter<OrderPart>(part =>
-        {
-            part.Email.Text = email;
-            part.ShippingAddress.UserAddressToSave = nameof(part.ShippingAddress);
-            part.BillingAddress.UserAddressToSave = nameof(part.BillingAddress);
-        });
+
+        orderPart.Email.Text = email;
+        orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
+        orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
 
         var total = cart.Totals.Single();
-        var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
 
-        return View(new CheckoutViewModel
+        var checkoutViewModel = new CheckoutViewModel
         {
-            NewOrderEditor = editor,
+            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
+            OrderPart = orderPart,
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
-            BillingAndShippingAddressesMatch = order.As<OrderPart>().BillingAndShippingAddressesMatch.Value,
-        });
+            BillingAndShippingAddressesMatch = orderPart.BillingAndShippingAddressesMatch.Value,
+        };
+
+        checkoutViewModel.Provinces.AddRange(Regions.Provinces);
+
+        return View(checkoutViewModel);
     }
 
     [Route("success/{orderId}")]
