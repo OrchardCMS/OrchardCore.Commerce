@@ -20,6 +20,11 @@ public interface IProductService
     /// Returns the key the variant is identified by.
     /// </summary>
     string GetVariantKey(string sku);
+
+    /// <summary>
+    /// Returns the exact variant, as well as its identifying key, associated with the provided SKU.
+    /// </summary>
+    Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku);
 }
 
 public static class ProductServiceExtensions

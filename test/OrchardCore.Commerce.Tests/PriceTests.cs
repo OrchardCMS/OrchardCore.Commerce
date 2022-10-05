@@ -99,6 +99,14 @@ public class PriceTests
             var dashIndex = sku.IndexOf(value: "-", StringComparison.InvariantCulture);
             return dashIndex == -1 ? sku : sku[dashIndex..];
         }
+
+        public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
+        {
+            var productPart = await ProductServiceExtensions.GetProductAsync(this, sku);
+            var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
+
+            return (priceVariantsPart, GetVariantKey(sku));
+        }
     }
 
     private class DummyPriceProvider : IPriceProvider
