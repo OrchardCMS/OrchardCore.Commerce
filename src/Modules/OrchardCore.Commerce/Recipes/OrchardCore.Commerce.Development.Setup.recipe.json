@@ -1,6 +1,6 @@
 {
   "name": "OrchardCore.Commerce.Development.Setup",
-  "displayName": "OrchardCore Commerce - Development",
+  "displayName": "Orchard Core Commerce - Development",
   "description": "Settings and contents required only for development environment.",
   "author": "OrchardCoreCommerce",
   "website": "https://commerce.orchardcore.net",
@@ -81,14 +81,17 @@
     {
       "name": "recipes",
       "Values": [
-        // Configuration
         {
           "executionid": "OrchardCore.Commerce",
-          "name": "Product"
+          "name": "OrchardCore.Commerce.Content.Product"
         },
         {
           "executionid": "OrchardCore.Commerce",
-          "name": "MultiCurrencyProduct"
+          "name": "OrchardCore.Commerce.Samples.Product"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "OrchardCore.Commerce.Content.MultiCurrencyProduct"
         }
       ]
     },

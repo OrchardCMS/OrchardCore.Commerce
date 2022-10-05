@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace OrchardCore.Commerce.ViewModels;
 
@@ -20,7 +20,7 @@ public class AddressFieldViewModel
     public HtmlString AddressHtml { get; set; }
 
     [BindNever]
-    public IEnumerable<RegionInfo> Regions { get; set; }
+    public IEnumerable<SelectListItem> Regions { get; set; }
 
     [BindNever]
     public IDictionary<string, IDictionary<string, string>> Provinces { get; } =

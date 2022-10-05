@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = CommerceConstants.Features.Core,
-    Name = "Orchard Core Commerce",
+    Name = "Orchard Core Commerce - Core",
     Category = "Commerce",
     Description = "Registers the core components used by the Commerce features.",
     Dependencies = new[]
@@ -24,7 +24,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = CommerceConstants.Features.SessionCartStorage,
-    Name = "Orchard Core Commerce Session Cart Storage",
+    Name = "Orchard Core Commerce - Session Cart Storage",
     Category = "Commerce",
     Description = "Registers session-based shopping cart persistence.",
     Dependencies = new[]
@@ -36,7 +36,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = CommerceConstants.Features.CommerceSettingsCurrencySelector,
-    Name = "Orchard Core Commerce Settings Currency Selector",
+    Name = "Orchard Core Commerce - Settings Currency Selector",
     Category = "Commerce",
     Description = "Currency selector that uses display currency configured in settings. Useful for Dev/Test scenarios.",
     Dependencies = new[]
