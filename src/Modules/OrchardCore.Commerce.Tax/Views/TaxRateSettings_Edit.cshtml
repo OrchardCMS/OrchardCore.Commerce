@@ -114,7 +114,7 @@ jQuery(function ($) {
     rates.forEach((data, index) => addRow(data, index));
 
     $addButton.click(function () {
-        addRow({}, ++rowCount);
+        addRow({}, rowCount++);
         return false;
     });
 });
