@@ -95,19 +95,11 @@ public class PriceTests
         public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
             Task.FromResult(skus.Select(sku => _products[sku]));
 
-        public string GetVariantKey(string sku)
-        {
-            var dashIndex = sku.IndexOf(value: "-", StringComparison.InvariantCulture);
-            return dashIndex == -1 ? sku : sku[dashIndex..];
-        }
+        // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
+        public Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku) => throw new NotSupportedException();
 
-        public Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
-        {
-            var productPart = _products[sku];
-            var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
-
-            return Task.FromResult((priceVariantsPart, GetVariantKey(sku)));
-        }
+        // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
+        public string GetVariantKey(string sku) => throw new NotSupportedException();
     }
 
     private class DummyPriceProvider : IPriceProvider

@@ -17,17 +17,9 @@ public class FakeProductService : IProductService
             ContentItem = new ContentItem { ContentType = "Product" },
         }));
 
-    public string GetVariantKey(string sku)
-    {
-        var dashIndex = sku.IndexOf(value: "-", StringComparison.InvariantCulture);
-        return dashIndex == -1 ? sku : sku[dashIndex..];
-    }
+    // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
+    public Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku) => throw new NotSupportedException();
 
-    public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
-    {
-        var productPart = await ProductServiceExtensions.GetProductAsync(this, sku);
-        var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
-
-        return (priceVariantsPart, GetVariantKey(sku));
-    }
+    // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
+    public string GetVariantKey(string sku) => throw new NotSupportedException();
 }
