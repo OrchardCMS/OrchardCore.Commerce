@@ -29,9 +29,11 @@ public interface IProductService
 
 public static class ProductServiceExtensions
 {
+    public static int GetDashIndex(string sku) => sku.IndexOf(value: "-", StringComparison.InvariantCulture);
+
     public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku)
     {
-        var dashIndex = sku.IndexOf(value: "-", StringComparison.InvariantCulture);
+        var dashIndex = GetDashIndex(sku);
         return (await service.GetProductsAsync(new[] { dashIndex == -1 ? sku : sku[..dashIndex] })).FirstOrDefault();
     }
 

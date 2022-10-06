@@ -79,14 +79,14 @@ public class ProductService : IProductService
 
     public string GetVariantKey(string sku)
     {
-        var dashIndex = sku.IndexOf(value: "-", StringComparison.InvariantCulture);
+        var dashIndex = ProductServiceExtensions.GetDashIndex(sku);
         return dashIndex == -1 ? sku : sku[(dashIndex + 1)..];
     }
 
     public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
     {
         var productPart = await ProductServiceExtensions.GetProductAsync(this, sku);
-        var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
+        var priceVariantsPart = productPart?.ContentItem.As<PriceVariantsPart>();
 
         return (priceVariantsPart, GetVariantKey(sku));
     }
