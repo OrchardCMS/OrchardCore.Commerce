@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -49,13 +50,6 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
         if (context.GroupId == nameof(TaxRateSettings) &&
             await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            Validate(context, model.SourceStreetAddress1);
-            Validate(context, model.SourceStreetAddress2);
-            Validate(context, model.SourceCity);
-            Validate(context, model.SourceProvince);
-            Validate(context, model.SourcePostalCode);
-            Validate(context, model.SourceRegion);
-
             foreach (var rate in model.Rates)
             {
                 Validate(context, rate.DestinationStreetAddress1);
@@ -68,7 +62,18 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
                 Validate(context, rate.TaxCode);
             }
 
-            if (!context.Updater.ModelState.IsValid) section.CopyFrom(model);
+            if (context.Updater.ModelState.IsValid)
+            {
+                section.CopyFrom(model);
+                section.Rates.RemoveAll(rate =>
+                    string.IsNullOrEmpty(rate.DestinationStreetAddress1) &&
+                    string.IsNullOrEmpty(rate.DestinationStreetAddress2) &&
+                    string.IsNullOrEmpty(rate.DestinationCity) &&
+                    string.IsNullOrEmpty(rate.DestinationProvince) &&
+                    string.IsNullOrEmpty(rate.DestinationPostalCode) &&
+                    string.IsNullOrEmpty(rate.DestinationRegion) &&
+                    string.IsNullOrEmpty(rate.TaxCode));
+            }
         }
 
         return await EditAsync(section, context);

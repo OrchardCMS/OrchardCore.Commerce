@@ -1,0 +1,93 @@
+@model TaxRateSettings
+
+@{
+    const string regexDocsUrl = "https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions";
+
+    const string blockName = "taxRateSettings";
+    const string addButtonElement = blockName + "__addButton";
+
+    var blockGuid = Guid.NewGuid().ToString("N");
+    var addButtonElementId = $"{addButtonElement}_{blockGuid}";
+}
+
+<h2>@T["Source Address"]</h2>
+
+<div class="mb-3" asp-validation-class-for="SourceStreetAddress1">
+    <label asp-for="SourceStreetAddress1">@T["First street address"]</label>
+    <input asp-for="SourceStreetAddress1" class="form-control" type="text"/>
+    <span asp-validation-for="SourceStreetAddress1"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SourceStreetAddress2">
+    <label asp-for="SourceStreetAddress2">@T["Second street address"]</label>
+    <input asp-for="SourceStreetAddress2" class="form-control" type="text"/>
+    <span asp-validation-for="SourceStreetAddress2"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SourceCity">
+    <label asp-for="SourceCity">@T["City"]</label>
+    <input asp-for="SourceCity" class="form-control" type="text"/>
+    <span asp-validation-for="SourceCity"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SourceProvince">
+    <label asp-for="SourceProvince">@T["State or province"]</label>
+    <input asp-for="SourceProvince" class="form-control" type="text"/>
+    <span asp-validation-for="SourceProvince"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SourcePostalCode">
+    <label asp-for="SourcePostalCode">@T["Postal code"]</label>
+    <input asp-for="SourcePostalCode" class="form-control" type="text"/>
+    <span asp-validation-for="SourcePostalCode"></span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SourceRegion">
+    <label asp-for="SourceRegion">@T["Country or region"]</label>
+    <input asp-for="SourceRegion" class="form-control" type="text"/>
+    <span asp-validation-for="SourceRegion"></span>
+</div>
+
+<h2>@T["Recipients and Tax Codes"]</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>@T["First street address"]</th>
+        <th>@T["Second street address"]</th>
+        <th>@T["City"]</th>
+        <th>@T["State or province"]</th>
+        <th>@T["Postal code"]</th>
+        <th>@T["Country or region code"]</th>
+        <th>@T["Tax Code"]</th>
+        <th>@T["Tax Rate (%)"]</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var (row, index) in Model.Rates.Select((row, index) => (row, index)))
+    {
+        <tr>
+            <td>
+                <input name="@Html.NameFor(model => model.Rates[index].DestinationStreetAddress1)" value="@row.DestinationStreetAddress1" />
+                <input name="@Html.NameFor(model => model.Rates[index].DestinationStreetAddress2)" value="@row.DestinationStreetAddress2" />
+                <input name="@Html.NameFor(model => model.Rates[index].DestinationCity)" value="@row.DestinationCity" />
+                <input name="@Html.NameFor(model => model.Rates[index].DestinationProvince)" value="@row.DestinationProvince" />
+                <input name="@Html.NameFor(model => model.Rates[index].DestinationPostalCode)" value="@row.DestinationPostalCode" />
+                <input name="@Html.NameFor(model => model.Rates[index].DestinationRegion)" value="@row.DestinationRegion" />
+                <input name="@Html.NameFor(model => model.Rates[index].TaxCode)" value="@row.TaxCode" />
+                <input name="@Html.NameFor(model => model.Rates[index].TaxRate)" value="@row.TaxRate" type="number" min="0" max="100" />
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="mb-3">
+    <span class="hint">
+        @T["All text fields in the table have to be either empty or contain a valid regular expression."]
+        @T["Learn more about regular expressions in .NET <a href=\"{0}\">here</a>.", regexDocsUrl]
+    </span>
+</div>
+
+<button id="@addButtonElementId" class="@addButtonElement btn btn-secondary">@T["Add Row"]</button>

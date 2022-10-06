@@ -13,7 +13,7 @@ public class TaxRateSettings
     public string SourcePostalCode { get; set; }
     public string SourceRegion { get; set; }
 
-    public IEnumerable<TaxRateSetting> Rates { get; set; } = Array.Empty<TaxRateSetting>();
+    public IList<TaxRateSetting> Rates { get; } = new List<TaxRateSetting>();
 
     public void CopyFrom(TaxRateSettings other)
     {
@@ -23,7 +23,9 @@ public class TaxRateSettings
         SourceProvince = other.SourceProvince;
         SourcePostalCode = other.SourcePostalCode;
         SourceRegion = other.SourceRegion;
-        Rates = other.Rates.ToList();
+
+        Rates.Clear();
+        Rates.AddRange(other.Rates);
     }
 }
 
