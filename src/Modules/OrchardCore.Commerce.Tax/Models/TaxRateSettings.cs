@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Commerce.Tax.Models;
 
@@ -11,7 +13,18 @@ public class TaxRateSettings
     public string SourcePostalCode { get; set; }
     public string SourceRegion { get; set; }
 
-    public IEnumerable<TaxRateSetting> Type { get; set; }
+    public IEnumerable<TaxRateSetting> Rates { get; set; } = Array.Empty<TaxRateSetting>();
+
+    public void CopyFrom(TaxRateSettings other)
+    {
+        SourceStreetAddress1 = other.SourceStreetAddress1;
+        SourceStreetAddress2 = other.SourceStreetAddress2;
+        SourceCity = other.SourceCity;
+        SourceProvince = other.SourceProvince;
+        SourcePostalCode = other.SourcePostalCode;
+        SourceRegion = other.SourceRegion;
+        Rates = other.Rates.ToList();
+    }
 }
 
 public class TaxRateSetting
@@ -24,4 +37,6 @@ public class TaxRateSetting
     public string DestinationRegion { get; set; }
 
     public string TaxCode { get; set; }
+
+    public decimal TaxRate { get; set; }
 }
