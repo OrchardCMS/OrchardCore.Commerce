@@ -26,6 +26,7 @@ public class CustomTaxRatesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, TaxRatePermissions>();
+
         services.AddScoped<IDisplayDriver<ISite>, TaxRateSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<TaxRateSettings>, TaxRateSettingsConfiguration>();
     }
