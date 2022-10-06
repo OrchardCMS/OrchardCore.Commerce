@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -35,7 +35,11 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
     public override async Task<IDisplayResult> EditAsync(TaxRateSettings section, BuildEditorContext context) =>
         _hca.HttpContext?.User is { } user &&
         await _authorizationService.AuthorizeAsync(user, TaxRatePermissions.ManageCustomTaxRates)
-            ? Initialize<TaxRateSettings>($"{nameof(TaxRateSettings)}_Edit", model => model.CopyFrom(section))
+            ? Initialize<TaxRateSettings>($"{nameof(TaxRateSettings)}_Edit", model =>
+                {
+                    model.CopyFrom(section);
+                    if (!model.Rates.Any()) model.Rates.Add(new TaxRateSetting());
+                })
                 .Location(CommonLocationNames.Content)
                 .OnGroup(nameof(TaxRateSettings))
             : null;
@@ -65,14 +69,18 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
             if (context.Updater.ModelState.IsValid)
             {
                 section.CopyFrom(model);
-                section.Rates.RemoveAll(rate =>
-                    string.IsNullOrEmpty(rate.DestinationStreetAddress1) &&
-                    string.IsNullOrEmpty(rate.DestinationStreetAddress2) &&
-                    string.IsNullOrEmpty(rate.DestinationCity) &&
-                    string.IsNullOrEmpty(rate.DestinationProvince) &&
-                    string.IsNullOrEmpty(rate.DestinationPostalCode) &&
-                    string.IsNullOrEmpty(rate.DestinationRegion) &&
-                    string.IsNullOrEmpty(rate.TaxCode));
+
+                section.Rates
+                    .Where(rate =>
+                        string.IsNullOrEmpty(rate.DestinationStreetAddress1) &&
+                        string.IsNullOrEmpty(rate.DestinationStreetAddress2) &&
+                        string.IsNullOrEmpty(rate.DestinationCity) &&
+                        string.IsNullOrEmpty(rate.DestinationProvince) &&
+                        string.IsNullOrEmpty(rate.DestinationPostalCode) &&
+                        string.IsNullOrEmpty(rate.DestinationRegion) &&
+                        string.IsNullOrEmpty(rate.TaxCode))
+                    .ToList()
+                    .ForEach(rate => section.Rates.Remove(rate));
             }
         }
 

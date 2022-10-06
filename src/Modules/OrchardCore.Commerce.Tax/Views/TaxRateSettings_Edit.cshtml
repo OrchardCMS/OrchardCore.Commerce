@@ -4,9 +4,11 @@
     const string regexDocsUrl = "https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions";
 
     const string blockName = "taxRateSettings";
+    const string tableElement = blockName + "__table";
     const string addButtonElement = blockName + "__addButton";
 
     var blockGuid = Guid.NewGuid().ToString("N");
+    var tableElementId = $"{tableElement}_{blockGuid}";
     var addButtonElementId = $"{addButtonElement}_{blockGuid}";
 }
 
@@ -50,7 +52,7 @@
 
 <h2>@T["Recipients and Tax Codes"]</h2>
 
-<table class="table">
+<table id="@tableElementId" class="table @tableElement">
     <thead>
     <tr>
         <th>@T["First street address"]</th>
@@ -65,21 +67,6 @@
     </thead>
 
     <tbody>
-    @foreach (var (row, index) in Model.Rates.Select((row, index) => (row, index)))
-    {
-        <tr>
-            <td>
-                <input name="@Html.NameFor(model => model.Rates[index].DestinationStreetAddress1)" value="@row.DestinationStreetAddress1" />
-                <input name="@Html.NameFor(model => model.Rates[index].DestinationStreetAddress2)" value="@row.DestinationStreetAddress2" />
-                <input name="@Html.NameFor(model => model.Rates[index].DestinationCity)" value="@row.DestinationCity" />
-                <input name="@Html.NameFor(model => model.Rates[index].DestinationProvince)" value="@row.DestinationProvince" />
-                <input name="@Html.NameFor(model => model.Rates[index].DestinationPostalCode)" value="@row.DestinationPostalCode" />
-                <input name="@Html.NameFor(model => model.Rates[index].DestinationRegion)" value="@row.DestinationRegion" />
-                <input name="@Html.NameFor(model => model.Rates[index].TaxCode)" value="@row.TaxCode" />
-                <input name="@Html.NameFor(model => model.Rates[index].TaxRate)" value="@row.TaxRate" type="number" min="0" max="100" />
-            </td>
-        </tr>
-    }
     </tbody>
 </table>
 
@@ -90,4 +77,45 @@
     </span>
 </div>
 
-<button id="@addButtonElementId" class="@addButtonElement btn btn-secondary">@T["Add Row"]</button>
+<button id="@addButtonElementId" class="@addButtonElement btn btn-secondary mb-3">@T["Add Row"]</button>
+
+<script at="Foot" depends-on="jQuery">
+jQuery(function ($) {
+    const $addButton = $("#@addButtonElementId");
+    const $tbody = $("#@tableElementId tbody");
+
+    function addRow(data, index) {
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+            <td><input name="ISite.Rates[${index}].DestinationStreetAddress1" class="address1"></td>
+            <td><input name="ISite.Rates[${index}].DestinationStreetAddress2" class="address2"></td>
+            <td><input name="ISite.Rates[${index}].DestinationCity" class="city"></td>
+            <td><input name="ISite.Rates[${index}].DestinationProvince" class="province"></td>
+            <td><input name="ISite.Rates[${index}].DestinationPostalCode" class="postal-code"></td>
+            <td><input name="ISite.Rates[${index}].DestinationRegion" class="region"></td>
+            <td><input name="ISite.Rates[${index}].TaxCode" class="tax-code"></td>
+            <td><input name="ISite.Rates[${index}].TaxRate" class="tax-rate" value="0" type="number" min="0" max="100"></td>`;
+
+        tr.querySelector('.address1').value = data.destinationStreetAddress1 ?? '';
+        tr.querySelector('.address2').value = data.destinationStreetAddress2 ?? '';
+        tr.querySelector('.city').value = data.destinationCity ?? '';
+        tr.querySelector('.province').value = data.destinationProvince ?? '';
+        tr.querySelector('.postal-code').value = data.destinationPostalCode ?? '';
+        tr.querySelector('.region').value = data.destinationRegion ?? '';
+        tr.querySelector('.tax-code').value = data.taxCode ?? '';
+        if (!Number.isNaN(data.taxRate)) tr.querySelector('.tax-rate').value = data.taxRate;
+
+        $tbody.append(tr);
+    }
+
+    const rates = @Json.Serialize(Model.Rates);
+    let rowCount = rates.length;
+    rates.forEach((data, index) => addRow(data, index));
+
+    $addButton.click(function () {
+        addRow({}, ++rowCount);
+        return false;
+    });
+});
+</script>
