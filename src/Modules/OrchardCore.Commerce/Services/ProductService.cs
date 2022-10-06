@@ -80,7 +80,7 @@ public class ProductService : IProductService
     public string GetVariantKey(string sku)
     {
         var dashIndex = ProductServiceExtensions.GetDashIndex(sku);
-        return dashIndex == -1 ? sku : sku[(dashIndex + 1)..];
+        return dashIndex == -1 ? sku : sku[(dashIndex + 1)..].ToUpperInvariant();
     }
 
     public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
