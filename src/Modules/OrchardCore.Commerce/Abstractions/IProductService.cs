@@ -1,5 +1,4 @@
 using OrchardCore.Commerce.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,13 +28,8 @@ public interface IProductService
 
 public static class ProductServiceExtensions
 {
-    public static int GetDashIndex(string sku) => sku.IndexOf(value: "-", StringComparison.InvariantCulture);
-
-    public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku)
-    {
-        var dashIndex = GetDashIndex(sku);
-        return (await service.GetProductsAsync(new[] { dashIndex == -1 ? sku : sku[..dashIndex] })).FirstOrDefault();
-    }
+    public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku) =>
+        (await service.GetProductsAsync(new[] { sku })).SingleOrDefault();
 
     public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(
         this IProductService service,
