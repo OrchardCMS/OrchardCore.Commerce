@@ -30,7 +30,8 @@
         <label for="@(idPrefix + nameof(Address.Name))">@T["Name"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input id="@(idPrefix + nameof(Address.Name))"
+        <input type="text"
+               id="@(idPrefix + nameof(Address.Name))"
                name="@(namePrefix + nameof(Address.Name))"
                value="@address?.Name"
                class="form-control content-preview-text address__name" required />
@@ -41,7 +42,8 @@
         <label for="@(idPrefix + nameof(Address.Department))">@T["Department"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input id="@(idPrefix + nameof(Address.Department))"
+        <input type="text"
+               id="@(idPrefix + nameof(Address.Department))"
                name="@(namePrefix + nameof(Address.Department))"
                value="@address?.Department"
                class="form-control content-preview-text address__department" />
@@ -52,7 +54,8 @@
         <label for="@(idPrefix + nameof(Address.Company))">@T["Company or institution"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input id="@(idPrefix + nameof(Address.Company))"
+        <input type="text"
+               id="@(idPrefix + nameof(Address.Company))"
                name="@(namePrefix + nameof(Address.Company))"
                value="@address?.Company"
                class="form-control content-preview-text address__company" />
@@ -63,7 +66,8 @@
         <label for="@(idPrefix + nameof(Address.StreetAddress1))">@T["First street address"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input id="@(idPrefix + nameof(Address.StreetAddress1))"
+        <input type="text"
+               id="@(idPrefix + nameof(Address.StreetAddress1))"
                name="@(namePrefix + nameof(Address.StreetAddress1))"
                value="@address?.StreetAddress1"
                class="form-control content-preview-text address__street address__street_first" required />
@@ -74,7 +78,8 @@
         <label for="@(idPrefix + nameof(Address.StreetAddress2))">@T["Second street address"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input id="@(idPrefix + nameof(Address.StreetAddress2))"
+        <input type="text"
+               id="@(idPrefix + nameof(Address.StreetAddress2))"
                name="@(namePrefix + nameof(Address.StreetAddress2))"
                value="@address?.StreetAddress2"
                class="form-control content-preview-text address__street address__street_second" />
@@ -85,7 +90,8 @@
         <label for="@(idPrefix + nameof(Address.City))">@T["City"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input id="@(idPrefix + nameof(Address.City))"
+        <input type="text"
+               id="@(idPrefix + nameof(Address.City))"
                name="@(namePrefix + nameof(Address.City))"
                value="@address?.City"
                class="form-control content-preview-text address__city" required />
@@ -107,7 +113,8 @@
         <label for="@(idPrefix + nameof(Address.PostalCode))">@T["Postal code"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input id="@(idPrefix + nameof(Address.PostalCode))"
+        <input type="text"
+               id="@(idPrefix + nameof(Address.PostalCode))"
                name="@(namePrefix + nameof(Address.PostalCode))"
                value="@address?.PostalCode"
                class="form-control content-preview-text address__postalCode" />
@@ -127,26 +134,26 @@
 
 @if (!string.IsNullOrEmpty(Model.AddressField.UserAddressToSave))
 {
-    <input type="hidden"
+            <input type="hidden"
        id="@(idPrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
        name="@(namePrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
        value="@Model.AddressField.UserAddressToSave"
        class="address__userAddressToSave" />
-    <div class="mb-3">
-        <div class="form-check">
-            <input type="checkbox"
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox"
                class="form-check-input content-preview-select address__toBeSaved"
                data-val="true"
                data-val-required="The Value field is required."
                value="true"
                id="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))"
                name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
-            <input name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))" type="hidden" value="false">
-            <label class="form-check-label" for="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
+                    <input name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))" type="hidden" value="false">
+                    <label class="form-check-label" for="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
                 @T["Save this address"]
-            </label>
-        </div>
-    </div>
+                    </label>
+                </div>
+            </div>
 }
 
 <script asp-name="@ResourceNames.CommerceRegions" at="Foot"></script>
