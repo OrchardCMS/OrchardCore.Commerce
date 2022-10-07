@@ -63,10 +63,52 @@
         <th>@T["Country or region code"]</th>
         <th>@T["Tax Code"]</th>
         <th>@T["Tax Rate (%)"]</th>
+        <th>@T["Actions"]</th>
     </tr>
     </thead>
 
     <tbody>
+    <tr v-for="(rate, index) in rates">
+        <td>
+            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress1'" :value="rate.destinationStreetAddress1 ?? ''">
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress2'" :value="rate.destinationStreetAddress2 ?? ''">
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].DestinationCity'" :value="rate.destinationCity ?? ''">
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].DestinationProvince'" :value="rate.destinationProvince ?? ''">
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].DestinationPostalCode'" :value="rate.destinationPostalCode ?? ''">
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].DestinationRegion'" :value="rate.destinationRegion ?? ''">
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].TaxCode'" :value="rate.taxCode ?? ''">
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].TaxRate'" :value="rate.taxRate" type="number" min="0" max="100">
+        </td>
+        <td>
+            <button class="btn btn-danger" @@click.prevent="rates.splice(index, 1)">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+            <button class="btn btn-secondary"
+                    :disabled="index + 1 == rates.length"
+                    @@click.prevent="rates.splice(index, 2, rates[index + 1], rate)">
+                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            </button>
+            <button class="btn btn-secondary"
+                    :disabled="index == 0"
+                    @@click.prevent="rates.splice(index - 1, 2, rates[index - 1], rate)">
+                <i class="fa fa-arrow-up" aria-hidden="true"></i>
+            </button>
+        </td>
+    </tr>
     </tbody>
 </table>
 
@@ -79,43 +121,18 @@
 
 <button id="@addButtonElementId" class="@addButtonElement btn btn-secondary mb-3">@T["Add Row"]</button>
 
-<script at="Foot" depends-on="jQuery">
-jQuery(function ($) {
-    const $addButton = $("#@addButtonElementId");
-    const $tbody = $("#@tableElementId tbody");
+<script at="Head" asp-name="vuejs"></script>
+<script at="Foot" depends-on="vuejs">
+const vueQuery = '#@tableElementId tbody';
+const rates = @Json.Serialize(Model.Rates);
 
-    function addRow(data, index) {
-        const tr = document.createElement('tr');
+var table = new Vue({
+    el: vueQuery,
+    data: { rates: rates },
+});
 
-        tr.innerHTML = `
-            <td><input name="ISite.Rates[${index}].DestinationStreetAddress1" class="address1"></td>
-            <td><input name="ISite.Rates[${index}].DestinationStreetAddress2" class="address2"></td>
-            <td><input name="ISite.Rates[${index}].DestinationCity" class="city"></td>
-            <td><input name="ISite.Rates[${index}].DestinationProvince" class="province"></td>
-            <td><input name="ISite.Rates[${index}].DestinationPostalCode" class="postal-code"></td>
-            <td><input name="ISite.Rates[${index}].DestinationRegion" class="region"></td>
-            <td><input name="ISite.Rates[${index}].TaxCode" class="tax-code"></td>
-            <td><input name="ISite.Rates[${index}].TaxRate" class="tax-rate" value="0" type="number" min="0" max="100"></td>`;
-
-        tr.querySelector('.address1').value = data.destinationStreetAddress1 ?? '';
-        tr.querySelector('.address2').value = data.destinationStreetAddress2 ?? '';
-        tr.querySelector('.city').value = data.destinationCity ?? '';
-        tr.querySelector('.province').value = data.destinationProvince ?? '';
-        tr.querySelector('.postal-code').value = data.destinationPostalCode ?? '';
-        tr.querySelector('.region').value = data.destinationRegion ?? '';
-        tr.querySelector('.tax-code').value = data.taxCode ?? '';
-        if (!Number.isNaN(data.taxRate)) tr.querySelector('.tax-rate').value = data.taxRate;
-
-        $tbody.append(tr);
-    }
-
-    const rates = @Json.Serialize(Model.Rates);
-    let rowCount = rates.length;
-    rates.forEach((data, index) => addRow(data, index));
-
-    $addButton.click(function () {
-        addRow({}, rowCount++);
-        return false;
-    });
+document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
+    event.preventDefault();
+    table.rates.push({ taxRate: 0 });
 });
 </script>
