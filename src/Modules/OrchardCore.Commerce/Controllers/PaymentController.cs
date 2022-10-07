@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
@@ -44,7 +45,11 @@ public class PaymentController : Controller
     private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
     private readonly IRegionService _regionService;
+    private readonly Lazy<IUserService> _userServiceLazy;
+    private readonly IHttpContextAccessor _hca;
 
+    // We need all of them.
+#pragma warning disable S107 // Methods should not have too many parameters
     public PaymentController(
         ICardPaymentService cardPaymentService,
         IContentItemDisplayManager contentItemDisplayManager,
@@ -52,7 +57,10 @@ public class PaymentController : Controller
         IShoppingCartHelpers shoppingCartHelpers,
         ISiteService siteService,
         IUpdateModelAccessor updateModelAccessor,
-        IRegionService regionService)
+        IRegionService regionService,
+        Lazy<IUserService> userServiceLazy,
+        IHttpContextAccessor hca)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
@@ -64,6 +72,8 @@ public class PaymentController : Controller
         _updateModelAccessor = updateModelAccessor;
         _userManager = services.UserManager.Value;
         _regionService = regionService;
+        _userServiceLazy = userServiceLazy;
+        _hca = hca;
         T = services.StringLocalizer.Value;
     }
 
@@ -108,7 +118,6 @@ public class PaymentController : Controller
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
-            BillingAndShippingAddressesMatch = orderPart.BillingAndShippingAddressesMatch.Value,
         };
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
@@ -133,6 +142,27 @@ public class PaymentController : Controller
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+
+        // Saving addresses.
+        var userService = _userServiceLazy.Value;
+        var orderPart = order.As<OrderPart>();
+
+        if (await userService.GetCurrentFullUserAsync(_hca) is { } user)
+        {
+            var isSame = orderPart.BillingAndShippingAddressesMatch.Value;
+
+            await userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
+            {
+                var part = contentItem.ContainsKey(nameof(UserAddressesPart))
+                    ? contentItem[nameof(UserAddressesPart)].ToObject<UserAddressesPart>()!
+                    : new UserAddressesPart();
+
+                part.BillingAndShippingAddressesMatch.Value = isSame;
+                contentItem[nameof(UserAddressesPart)] = JToken.FromObject(part);
+                return contentItem;
+            });
+        }
+
         order.Alter<OrderPart>(part => part.Status =
             new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() });
         order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];

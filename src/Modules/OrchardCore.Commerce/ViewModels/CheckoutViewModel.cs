@@ -20,7 +20,5 @@ public class CheckoutViewModel : ShapeViewModel
         new Dictionary<string, IDictionary<string, string>>();
     public string StripePublishableKey { get; init; }
     public string UserEmail { get; init; }
-    public bool BillingAndShippingAddressesMatch { get; init; }
-
     public CheckoutViewModel() => Metadata.Type = "Checkout";
 }

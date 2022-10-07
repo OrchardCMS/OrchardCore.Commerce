@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
@@ -16,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -32,8 +29,6 @@ public class CardPaymentService : ICardPaymentService
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<CardPaymentService> _logger;
     private readonly IStringLocalizer T;
-    private readonly Lazy<IUserService> _userServiceLazy;
-    private readonly IHttpContextAccessor _hca;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -46,9 +41,7 @@ public class CardPaymentService : ICardPaymentService
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<CardPaymentService> logger,
-        IStringLocalizer<CardPaymentService> stringLocalizer,
-        Lazy<IUserService> userServiceLazy,
-        IHttpContextAccessor hca)
+        IStringLocalizer<CardPaymentService> stringLocalizer)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -60,8 +53,6 @@ public class CardPaymentService : ICardPaymentService
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
-        _userServiceLazy = userServiceLazy;
-        _hca = hca;
         T = stringLocalizer;
     }
 
@@ -175,26 +166,6 @@ public class CardPaymentService : ICardPaymentService
         });
 
         await _contentManager.CreateAsync(order);
-
-        // Saving addresses.
-        var userService = _userServiceLazy.Value;
-        var orderPart = order.As<OrderPart>();
-
-        if (await userService.GetCurrentFullUserAsync(_hca) is { } user)
-        {
-            var isSame = orderPart.BillingAndShippingAddressesMatch.Value;
-
-            await userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
-            {
-                var part = contentItem.ContainsKey(nameof(UserAddressesPart))
-                    ? contentItem[nameof(UserAddressesPart)].ToObject<UserAddressesPart>()!
-                    : new UserAddressesPart();
-
-                part.BillingAndShippingAddressesMatch.Value = isSame;
-                contentItem[nameof(UserAddressesPart)] = JToken.FromObject(part);
-                return contentItem;
-            });
-        }
 
         currentShoppingCart.Items.Clear();
 

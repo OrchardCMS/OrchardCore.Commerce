@@ -27,36 +27,37 @@
                 <h3>@T["Billing Address"]</h3>
 
                 @await DisplayAsync(
-                new AddressFieldFrontendEditViewModel
-                {
-                AddressField = orderPart.BillingAddress,
-                CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
-                Regions = regions,
-                Provinces = provinces,
-                })
+                    new AddressFieldFrontendEditViewModel
+                    {
+                        AddressField = orderPart.BillingAddress,
+                        CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
+                        Regions = regions,
+                        Provinces = provinces,
+                    })
             </div>
 
             <div class="address_shipping-address">
                 <h3>@T["Shipping Address"]</h3>
 
                 @await DisplayAsync(
-                new AddressFieldFrontendEditViewModel
-                {
-                AddressField = orderPart.ShippingAddress,
-                CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
-                Regions = regions,
-                Provinces = provinces,
-                })
+                    new AddressFieldFrontendEditViewModel
+                    {
+                        AddressField = orderPart.ShippingAddress,
+                        CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
+                        Regions = regions,
+                        Provinces = provinces,
+                    })
             </div>
 
             <div class="mb-3">
                 <div class="form-check">
                     <input type="checkbox"
-                           asp-for="BillingAndShippingAddressesMatch"
+                           asp-for="OrderPart.BillingAndShippingAddressesMatch.Value"
                            class="form-check-input content-preview-select"
                            data-val="true"
-                           data-val-required="The Value field is required.">
-                    <label asp-for="BillingAndShippingAddressesMatch" class="form-check-label">
+                           data-val-required="The Value field is required."
+                           value="true">
+                    <label asp-for="OrderPart.BillingAndShippingAddressesMatch.Value" class="form-check-label">
                         @T["Shipping Address and Billing Address are the same"]
                     </label>
                 </div>
@@ -73,8 +74,8 @@
 
 <script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
 <script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
-    const checkbox = document.getElementById('BillingAndShippingAddressesMatch');
-    checkbox.checked = @Json.Serialize(Model.BillingAndShippingAddressesMatch);
+    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
+    checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
     initializeToggleSecondAddress(
         checkbox,
         document.querySelector('.address_billing-address'),

@@ -31,10 +31,10 @@
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
-            id="@(idPrefix + nameof(Address.Name))"
-            name="@(namePrefix + nameof(Address.Name))"
-            value="@address?.Name"
-            class="form-control content-preview-text address__name" required />
+               id="@(idPrefix + nameof(Address.Name))"
+               name="@(namePrefix + nameof(Address.Name))"
+               value="@address?.Name"
+               class="form-control content-preview-text address__name" required />
     </div>
 </div>
 <div class="row">
@@ -43,10 +43,10 @@
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
-            id="@(idPrefix + nameof(Address.Department))"
-            name="@(namePrefix + nameof(Address.Department))"
-            value="@address?.Department"
-            class="form-control content-preview-text address__department" />
+               id="@(idPrefix + nameof(Address.Department))"
+               name="@(namePrefix + nameof(Address.Department))"
+               value="@address?.Department"
+               class="form-control content-preview-text address__department" />
     </div>
 </div>
 <div class="row">
@@ -55,10 +55,10 @@
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
-            id="@(idPrefix + nameof(Address.Company))"
-            name="@(namePrefix + nameof(Address.Company))"
-            value="@address?.Company"
-            class="form-control content-preview-text address__company" />
+               id="@(idPrefix + nameof(Address.Company))"
+               name="@(namePrefix + nameof(Address.Company))"
+               value="@address?.Company"
+               class="form-control content-preview-text address__company" />
     </div>
 </div>
 <div class="row">
@@ -67,10 +67,10 @@
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
-            id="@(idPrefix + nameof(Address.StreetAddress1))"
-            name="@(namePrefix + nameof(Address.StreetAddress1))"
-            value="@address?.StreetAddress1"
-            class="form-control content-preview-text address__street address__street_first" required />
+               id="@(idPrefix + nameof(Address.StreetAddress1))"
+               name="@(namePrefix + nameof(Address.StreetAddress1))"
+               value="@address?.StreetAddress1"
+               class="form-control content-preview-text address__street address__street_first" required />
     </div>
 </div>
 <div class="row">
@@ -79,10 +79,10 @@
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
-            id="@(idPrefix + nameof(Address.StreetAddress2))"
-            name="@(namePrefix + nameof(Address.StreetAddress2))"
-            value="@address?.StreetAddress2"
-            class="form-control content-preview-text address__street address__street_second" />
+               id="@(idPrefix + nameof(Address.StreetAddress2))"
+               name="@(namePrefix + nameof(Address.StreetAddress2))"
+               value="@address?.StreetAddress2"
+               class="form-control content-preview-text address__street address__street_second" />
     </div>
 </div>
 <div class="row">
@@ -91,10 +91,10 @@
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
-            id="@(idPrefix + nameof(Address.City))"
-            name="@(namePrefix + nameof(Address.City))"
-            value="@address?.City"
-            class="form-control content-preview-text address__city" required />
+               id="@(idPrefix + nameof(Address.City))"
+               name="@(namePrefix + nameof(Address.City))"
+               value="@address?.City"
+               class="form-control content-preview-text address__city" required />
     </div>
 </div>
 <div class="row">
@@ -103,9 +103,9 @@
     </div>
     <div class="mb-3 col-md-6">
         <select id="@(idPrefix + nameof(Address.Province))"
-            name="@(namePrefix + nameof(Address.Province))"
-            value="@address?.Province"
-            class="form-control content-preview-text address__province" required></select>
+                name="@(namePrefix + nameof(Address.Province))"
+                value="@address?.Province"
+                class="form-control content-preview-text address__province" required></select>
     </div>
 </div>
 <div class="row">
@@ -114,10 +114,10 @@
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
-            id="@(idPrefix + nameof(Address.PostalCode))"
-            name="@(namePrefix + nameof(Address.PostalCode))"
-            value="@address?.PostalCode"
-            class="form-control content-preview-text address__postalCode" />
+               id="@(idPrefix + nameof(Address.PostalCode))"
+               name="@(namePrefix + nameof(Address.PostalCode))"
+               value="@address?.PostalCode"
+               class="form-control content-preview-text address__postalCode" />
     </div>
 </div>
 <div class="row">
@@ -126,41 +126,41 @@
     </div>
     <div class="mb-3 col-md-6">
         <select id="@(idPrefix + nameof(Address.Region))"
-            name="@(namePrefix + nameof(Address.Region))"
-            asp-items="regions"
-            class="form-control content-preview-text address__region" required></select>
+                name="@(namePrefix + nameof(Address.Region))"
+                asp-items="regions"
+                class="form-control content-preview-text address__region" required></select>
     </div>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.AddressField.UserAddressToSave))
 {
     <input type="hidden"
-       id="@(idPrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
-       name="@(namePrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
-       value="@Model.AddressField.UserAddressToSave"
-       class="address__userAddressToSave" />
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox"
-                       class="form-check-input content-preview-select address__toBeSaved"
-                       data-val="true"
-                       data-val-required="The Value field is required."
-                       value="true"
-                       id="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))"
-                       name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
-                    <input name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))" type="hidden" value="false">
-                    <label class="form-check-label" for="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
+           id="@(idPrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
+           name="@(namePrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
+           value="@Model.AddressField.UserAddressToSave"
+           class="address__userAddressToSave" />
+    <div class="mb-3">
+        <div class="form-check">
+            <input type="checkbox"
+                   class="form-check-input content-preview-select address__toBeSaved"
+                   data-val="true"
+                   data-val-required="The Value field is required."
+                   value="true"
+                   id="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))"
+                   name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
+            <input name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))" type="hidden" value="false">
+            <label class="form-check-label" for="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
                 @T["Save this address"]
-                    </label>
-                </div>
-            </div>
+            </label>
+        </div>
+    </div>
 }
 
 <script asp-name="@ResourceNames.CommerceRegions" at="Foot"></script>
 <script at="Foot" depends-on="@ResourceNames.CommerceRegions">
     @if (Context.Items["commerce-regions-initialized"] == null)
     {
-        <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces))); </text>
+        <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces)));</text>
         Context.Items["commerce-regions-initialized"] = true;
     }
         commerceRegionsBind(
