@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class CheckoutViewModel
+public class CheckoutViewModel : ShapeViewModel
 {
     public Amount SingleCurrencyTotal { get; init; }
     public OrderPart OrderPart { get; init; }
@@ -16,8 +17,10 @@ public class CheckoutViewModel
 
     [BindNever]
     public IDictionary<string, IDictionary<string, string>> Provinces { get; } =
-    new Dictionary<string, IDictionary<string, string>>();
+        new Dictionary<string, IDictionary<string, string>>();
     public string StripePublishableKey { get; init; }
     public string UserEmail { get; init; }
     public bool BillingAndShippingAddressesMatch { get; init; }
+
+    public CheckoutViewModel() => Metadata.Type = "Checkout";
 }
