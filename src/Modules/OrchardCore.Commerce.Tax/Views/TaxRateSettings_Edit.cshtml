@@ -70,28 +70,28 @@
     <tbody>
     <tr v-for="(rate, index) in rates">
         <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress1'" :value="rate.destinationStreetAddress1 ?? ''">
+            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress1'" v-model="rate.destinationStreetAddress1">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress2'" :value="rate.destinationStreetAddress2 ?? ''">
+            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress2'" v-model="rate.destinationStreetAddress2">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationCity'" :value="rate.destinationCity ?? ''">
+            <input :name="'ISite.Rates[' + index + '].DestinationCity'" v-model="rate.destinationCity">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationProvince'" :value="rate.destinationProvince ?? ''">
+            <input :name="'ISite.Rates[' + index + '].DestinationProvince'" v-model="rate.destinationProvince">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationPostalCode'" :value="rate.destinationPostalCode ?? ''">
+            <input :name="'ISite.Rates[' + index + '].DestinationPostalCode'" v-model="rate.destinationPostalCode">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationRegion'" :value="rate.destinationRegion ?? ''">
+            <input :name="'ISite.Rates[' + index + '].DestinationRegion'" v-model="rate.destinationRegion">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].TaxCode'" :value="rate.taxCode ?? ''">
+            <input :name="'ISite.Rates[' + index + '].TaxCode'" v-model="rate.taxCode">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].TaxRate'" :value="rate.taxRate" type="number" min="0" max="100">
+            <input :name="'ISite.Rates[' + index + '].TaxRate'" v-model="rate.taxRate" type="number" min="0" max="100">
         </td>
         <td>
             <button class="btn btn-danger" @@click.prevent="rates.splice(index, 1)">
@@ -133,6 +133,15 @@ var table = new Vue({
 
 document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
     event.preventDefault();
-    table.rates.push({ taxRate: 0 });
+    table.rates.push({
+        "destinationStreetAddress1": null,
+        "destinationStreetAddress2": null,
+        "destinationCity": null,
+        "destinationProvince": null,
+        "destinationPostalCode": null,
+        "destinationRegion": null,
+        "taxCode": null,
+        "taxRate": 0
+    });
 });
 </script>
