@@ -168,9 +168,10 @@
         <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces)));</text>
         Context.Items["commerce-regions-initialized"] = true;
     }
-        commerceRegionsBind(
-            '#@(idPrefix + nameof(Address.Province))',
-            '.row',
-            '#@(idPrefix + nameof(Address.Region))',
-    @province.JsonHtmlContent());
+
+    commerceRegionsBind(
+        '#@(idPrefix + nameof(Address.Province))',
+        '.row',
+        '#@(idPrefix + nameof(Address.Region))',
+        @province.JsonHtmlContent());
 </script>
