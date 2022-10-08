@@ -21,5 +21,5 @@ public class AddressFieldEditorViewModel : ShapeViewModel
 #pragma warning restore CA2227 // Collection properties should be read only
         new Dictionary<string, IDictionary<string, string>>();
 
-    public AddressFieldEditorViewModel() => Metadata.Type = "AddressFieldFrontendEdit";
+    public AddressFieldEditorViewModel() => Metadata.Type = "AddressFieldEditor";
 }
