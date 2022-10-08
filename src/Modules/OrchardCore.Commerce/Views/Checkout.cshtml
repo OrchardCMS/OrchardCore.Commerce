@@ -27,7 +27,7 @@
                 <h3>@T["Billing Address"]</h3>
 
                 @await DisplayAsync(
-                    new AddressFieldFrontendEditViewModel
+                    new AddressFieldEditorViewModel
                     {
                         AddressField = orderPart.BillingAddress,
                         CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
@@ -40,7 +40,7 @@
                 <h3>@T["Shipping Address"]</h3>
 
                 @await DisplayAsync(
-                    new AddressFieldFrontendEditViewModel
+                    new AddressFieldEditorViewModel
                     {
                         AddressField = orderPart.ShippingAddress,
                         CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),

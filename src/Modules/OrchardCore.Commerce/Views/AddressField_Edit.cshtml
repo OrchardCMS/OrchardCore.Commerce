@@ -17,7 +17,7 @@
     <h3>@Model.PartFieldDefinition.DisplayName()</h3>
 
     @await DisplayAsync(
-        new AddressFieldFrontendEditViewModel
+        new AddressFieldEditorViewModel
         {
             AddressField = Model.AddressPart,
             CityName = Html.NameFor(model => model.Address.City),

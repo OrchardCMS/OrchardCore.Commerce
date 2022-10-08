@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class AddressFieldFrontendEditViewModel : ShapeViewModel
+public class AddressFieldEditorViewModel : ShapeViewModel
 {
     public AddressField AddressField { get; set; }
     public string CityName { get; set; }
@@ -21,5 +21,5 @@ public class AddressFieldFrontendEditViewModel : ShapeViewModel
 #pragma warning restore CA2227 // Collection properties should be read only
         new Dictionary<string, IDictionary<string, string>>();
 
-    public AddressFieldFrontendEditViewModel() => Metadata.Type = "AddressFieldFrontendEdit";
+    public AddressFieldEditorViewModel() => Metadata.Type = "AddressFieldFrontendEdit";
 }
