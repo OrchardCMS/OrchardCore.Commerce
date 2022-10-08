@@ -34,7 +34,8 @@
                id="@(idPrefix + nameof(Address.Name))"
                name="@(namePrefix + nameof(Address.Name))"
                value="@address?.Name"
-               class="form-control content-preview-text address__name" required />
+               class="form-control content-preview-text address__name"
+               required />
     </div>
 </div>
 <div class="row">
@@ -70,7 +71,8 @@
                id="@(idPrefix + nameof(Address.StreetAddress1))"
                name="@(namePrefix + nameof(Address.StreetAddress1))"
                value="@address?.StreetAddress1"
-               class="form-control content-preview-text address__street address__street_first" required />
+               class="form-control content-preview-text address__street address__street_first"
+               required />
     </div>
 </div>
 <div class="row">
@@ -94,7 +96,8 @@
                id="@(idPrefix + nameof(Address.City))"
                name="@(namePrefix + nameof(Address.City))"
                value="@address?.City"
-               class="form-control content-preview-text address__city" required />
+               class="form-control content-preview-text address__city"
+               required />
     </div>
 </div>
 <div class="row">
@@ -105,7 +108,8 @@
         <select id="@(idPrefix + nameof(Address.Province))"
                 name="@(namePrefix + nameof(Address.Province))"
                 value="@address?.Province"
-                class="form-control content-preview-text address__province" required></select>
+                class="form-control content-preview-text address__province"
+                required></select>
     </div>
 </div>
 <div class="row">
@@ -128,7 +132,8 @@
         <select id="@(idPrefix + nameof(Address.Region))"
                 name="@(namePrefix + nameof(Address.Region))"
                 asp-items="regions"
-                class="form-control content-preview-text address__region" required></select>
+                class="form-control content-preview-text address__region"
+                required></select>
     </div>
 </div>
 
