@@ -46,7 +46,6 @@ public class PaymentController : Controller
     private readonly IStringLocalizer T;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
-    private readonly IHttpContextAccessor _hca;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -58,8 +57,7 @@ public class PaymentController : Controller
         ISiteService siteService,
         IUpdateModelAccessor updateModelAccessor,
         IRegionService regionService,
-        Lazy<IUserService> userServiceLazy,
-        IHttpContextAccessor hca)
+        Lazy<IUserService> userServiceLazy)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -73,7 +71,6 @@ public class PaymentController : Controller
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
-        _hca = hca;
         T = services.StringLocalizer.Value;
     }
 
@@ -147,7 +144,7 @@ public class PaymentController : Controller
         var userService = _userServiceLazy.Value;
         var orderPart = order.As<OrderPart>();
 
-        if (await userService.GetCurrentFullUserAsync(_hca) is { } user)
+        if (await userService.GetFullUserAsync(User) is { } user)
         {
             var isSame = orderPart.BillingAndShippingAddressesMatch.Value;
 
