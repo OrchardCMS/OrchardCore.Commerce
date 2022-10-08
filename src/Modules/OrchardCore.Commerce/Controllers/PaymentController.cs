@@ -5,8 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
@@ -21,6 +24,7 @@ using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using Stripe;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,14 +44,21 @@ public class PaymentController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
+    private readonly IRegionService _regionService;
+    private readonly Lazy<IUserService> _userServiceLazy;
 
+    // We need all of them.
+#pragma warning disable S107 // Methods should not have too many parameters
     public PaymentController(
         ICardPaymentService cardPaymentService,
         IContentItemDisplayManager contentItemDisplayManager,
         IOrchardServices<PaymentController> services,
         IShoppingCartHelpers shoppingCartHelpers,
         ISiteService siteService,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IRegionService regionService,
+        Lazy<IUserService> userServiceLazy)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
@@ -58,6 +69,8 @@ public class PaymentController : Controller
         _siteService = siteService;
         _updateModelAccessor = updateModelAccessor;
         _userManager = services.UserManager.Value;
+        _regionService = regionService;
+        _userServiceLazy = userServiceLazy;
         T = services.StringLocalizer.Value;
     }
 
@@ -77,38 +90,36 @@ public class PaymentController : Controller
                 typeof(ShoppingCartController).ControllerName());
         }
 
-        var order = await _contentManager.NewAsync(Order);
+        var orderPart = new OrderPart();
 
         if (await _userManager.GetUserAsync(User) is User user &&
             user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
         {
-            order.Alter<OrderPart>(part =>
-            {
-                part.BillingAddress.Address = userAddresses.BillingAddress.Address;
-                part.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
-                part.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
-            });
+            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
+            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
         }
 
         var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
-        order.Alter<OrderPart>(part =>
-        {
-            part.Email.Text = email;
-            part.ShippingAddress.UserAddressToSave = nameof(part.ShippingAddress);
-            part.BillingAddress.UserAddressToSave = nameof(part.BillingAddress);
-        });
+
+        orderPart.Email.Text = email;
+        orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
+        orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
 
         var total = cart.Totals.Single();
-        var editor = await _contentItemDisplayManager.BuildEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: true);
 
-        return View(new CheckoutViewModel
+        var checkoutViewModel = new CheckoutViewModel
         {
-            NewOrderEditor = editor,
+            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
+            OrderPart = orderPart,
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
-            BillingAndShippingAddressesMatch = order.As<OrderPart>().BillingAndShippingAddressesMatch.Value,
-        });
+        };
+
+        checkoutViewModel.Provinces.AddRange(Regions.Provinces);
+
+        return View(checkoutViewModel);
     }
 
     [Route("success/{orderId}")]
@@ -128,6 +139,27 @@ public class PaymentController : Controller
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+
+        // Saving addresses.
+        var userService = _userServiceLazy.Value;
+        var orderPart = order.As<OrderPart>();
+
+        if (await userService.GetFullUserAsync(User) is { } user)
+        {
+            var isSame = orderPart.BillingAndShippingAddressesMatch.Value;
+
+            await userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
+            {
+                var part = contentItem.ContainsKey(nameof(UserAddressesPart))
+                    ? contentItem[nameof(UserAddressesPart)].ToObject<UserAddressesPart>()!
+                    : new UserAddressesPart();
+
+                part.BillingAndShippingAddressesMatch.Value = isSame;
+                contentItem[nameof(UserAddressesPart)] = JToken.FromObject(part);
+                return contentItem;
+            });
+        }
+
         order.Alter<OrderPart>(part => part.Status =
             new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() });
         order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
