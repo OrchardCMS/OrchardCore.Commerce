@@ -18,6 +18,11 @@ public record TaxProviderContext(
             totalsByCurrency)
     {
     }
+
+    public TaxProviderContext(ICollection<TaxProviderContextLineItem> items)
+        : this(items, items.Select(item => item.Subtotal))
+    {
+    }
 }
 
 public record TaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity)

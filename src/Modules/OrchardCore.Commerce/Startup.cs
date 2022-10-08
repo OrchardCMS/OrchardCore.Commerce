@@ -213,6 +213,13 @@ public class TaxStartup : StartupBase
     }
 }
 
+[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.CustomTaxRates)]
+public class TaxRateStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services.AddScoped<ITaxProvider, TaxRateTaxProvider>();
+}
+
 [RequireFeatures(CommerceConstants.Features.Core, "OrchardCore.Users.CustomUserSettings")]
 public class UserSettingsStartup : StartupBase
 {

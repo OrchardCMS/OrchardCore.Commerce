@@ -37,20 +37,7 @@ public class LocalTaxProvider : ITaxProvider
     }
 
     public Task<bool> IsApplicableAsync(TaxProviderContext model) =>
-        Task.FromResult(IsApplicable(model.Items.Select(item => item.Content.ContentItem.As<TaxPart>()).ToList()));
-
-    private static bool IsApplicable(IList<TaxPart> taxParts)
-    {
-        var countWithGrossPrice = taxParts
-            .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value > 0);
-
-        if (countWithGrossPrice == 0) return false;
-
-        if (countWithGrossPrice < taxParts.Count)
-        {
-            throw new InvalidOperationException("Some, but not all products have gross price. This is invalid.");
-        }
-
-        return true;
-    }
+        ITaxProvider.AllOrNoneAsync(model, items => items
+            .Select(item => item.Content.ContentItem.As<TaxPart>())
+            .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value > 0));
 }
