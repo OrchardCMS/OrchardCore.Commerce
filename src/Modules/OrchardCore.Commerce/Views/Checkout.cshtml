@@ -1,0 +1,83 @@
+@using Newtonsoft.Json
+@using OrchardCore.Commerce.Settings
+@model OrchardCore.Commerce.ViewModels.CheckoutViewModel
+
+<mvc-title text="@T["Checkout"]" />
+@{
+    var orderPart = Model.OrderPart;
+
+    var regions = Model.Regions;
+    var provinces = Model.Provinces;
+}
+
+<section id="checkout">
+    <div class="card-payment-form_container">
+        <form id="card-payment-form" class="card-payment-form">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="OrderPart.Email.Text">@T["E-mail"]</label>
+                <input asp-for="OrderPart.Email.Text" class="form-control content-preview-text" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="OrderPart.Phone.Text">@T["Phone Number"]</label>
+                <input asp-for="OrderPart.Phone.Text" class="form-control content-preview-text" required />
+            </div>
+            <div class="address_billing-address">
+                <h3>@T["Billing Address"]</h3>
+
+                @await DisplayAsync(
+                    new AddressFieldEditorViewModel
+                    {
+                        AddressField = orderPart.BillingAddress,
+                        CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
+                        Regions = regions,
+                        Provinces = provinces,
+                    })
+            </div>
+
+            <div class="address_shipping-address">
+                <h3>@T["Shipping Address"]</h3>
+
+                @await DisplayAsync(
+                    new AddressFieldEditorViewModel
+                    {
+                        AddressField = orderPart.ShippingAddress,
+                        CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
+                        Regions = regions,
+                        Provinces = provinces,
+                    })
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox"
+                           asp-for="OrderPart.BillingAndShippingAddressesMatch.Value"
+                           class="form-check-input content-preview-select"
+                           data-val="true"
+                           data-val-required="The Value field is required."
+                           value="true">
+                    <label asp-for="OrderPart.BillingAndShippingAddressesMatch.Value" class="form-check-label">
+                        @T["Shipping Address and Billing Address are the same"]
+                    </label>
+                </div>
+            </div>
+
+            <shape type="StripeCheckout"
+                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                   prop-PublishableKey="@Model.StripePublishableKey" />
+        </form>
+    </div>
+</section>
+
+<style asp-name="@ResourceNames.CreditCardForm"></style>
+
+<script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
+<script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
+    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
+    checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
+    initializeToggleSecondAddress(
+        checkbox,
+        document.querySelector('.address_billing-address'),
+        document.querySelector('.address_shipping-address'));
+</script>

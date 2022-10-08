@@ -1,28 +1,3 @@
 @model OrchardCore.Commerce.ViewModels.CheckoutViewModel
 
-<mvc-title text="@T["Checkout"]" />
-
-<section id="checkout">
-    <div class="card-payment-form_container">
-        <form id="card-payment-form" class="card-payment-form">
-            @Html.AntiForgeryToken()
-            @await DisplayAsync(Model.NewOrderEditor)
-
-            <shape type="StripeCheckout"
-                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                   prop-PublishableKey="@Model.StripePublishableKey"/>
-        </form>
-    </div>
-</section>
-
-<style asp-name="@ResourceNames.CreditCardForm"></style>
-
-<script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
-<script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
-    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
-    checkbox.checked = @Json.Serialize(Model.BillingAndShippingAddressesMatch);
-    initializeToggleSecondAddress(
-        checkbox,
-        document.querySelector('.address_billing-address'),
-        document.querySelector('.address_shipping-address'));
-</script>
+@await DisplayAsync(Model)

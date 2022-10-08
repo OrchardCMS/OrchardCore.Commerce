@@ -109,11 +109,6 @@ public class CardPaymentService : ICardPaymentService
                 ConfirmationMethod = "manual",
                 Confirm = true,
                 PaymentMethod = paymentMethodId,
-
-                // If shipping is implemented, it needs to be added here too.
-                // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
-                // Shipping =
-                // ReceiptEmail = viewModel.Email,
             };
 
             paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, requestOptions);
@@ -143,10 +138,6 @@ public class CardPaymentService : ICardPaymentService
 
         order.DisplayText = T["Order {0}", orderId];
 
-        // To-do when other parts of the checkout is implemented (notes).
-        // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
-        // order.Alter<HtmlBodyPart>(htmlBodyPart => htmlBodyPart.
-
         IList<OrderLineItem> lineItems = new List<OrderLineItem>();
 
         // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
@@ -172,10 +163,6 @@ public class CardPaymentService : ICardPaymentService
 
             orderPart.OrderId.Text = orderId.ToString();
             orderPart.Status.Text = OrderStatuses.Ordered;
-
-            // To-do when shipping is implemented. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/4
-            // oderPartContent.BillingAddress
-            // oderPartContent.ShippingAddress
         });
 
         await _contentManager.CreateAsync(order);

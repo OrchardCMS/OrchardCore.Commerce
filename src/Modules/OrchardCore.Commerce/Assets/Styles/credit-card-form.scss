@@ -24,13 +24,3 @@
 .error {
     color: red;
 }
-
-// Hide editor buttons.
-.edit-item-actions {
-    display: none;
-}
-
-// Hide StripePaymentPart editor inputs, as these are updated by the script.
-input[id^="StripePaymentPart_"], label[for^="StripePaymentPart_"] {
-    display: none;
-}
