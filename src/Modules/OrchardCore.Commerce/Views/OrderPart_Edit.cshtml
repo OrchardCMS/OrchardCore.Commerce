@@ -5,7 +5,7 @@
         <label>@T["Ordered Items"]</label>
     </div>
 
-    @if (Model.Charges?.Any() == true)
+    @if (Model.LineItems?.Any() == true)
     {
         <div class="container">
             <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
@@ -63,7 +63,7 @@
     <div class="panel-heading">
         <label>@T["Charges"]</label>
     </div>
-    @if (Model.Charges != null && Model.Charges.Any())
+    @if (Model.Charges?.Any() == true)
     {
         @foreach (var charge in Model.Charges)
         {
