@@ -58,18 +58,7 @@ public class PriceVariantProvider : IPriceProvider
                 .Select(attr => attr.PartName + "." + attr.Name)
                 .ToHashSet();
 
-            var predefinedAttributes = item.Attributes
-                .OfType<IPredefinedValuesProductAttributeValue>()
-                .Where(attribute => attributesRestrictedToPredefinedValues.Contains(attribute.AttributeName))
-                .OrderBy(value => value.AttributeName);
-
-            var variantKey = string.Join(
-                "-",
-                predefinedAttributes
-                    .Select(attr => attr.UntypedPredefinedValue)
-                    .Where(value => value != null))
-                .HtmlClassify()
-                .ToUpperInvariant();
+            var variantKey = item.GetVariantKeyFromAttributes(item, attributesRestrictedToPredefinedValues);
 
             if (priceVariantsPart.Variants.ContainsKey(variantKey))
             {
