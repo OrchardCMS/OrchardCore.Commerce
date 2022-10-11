@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -66,7 +67,9 @@ public class PriceVariantProvider : IPriceProvider
                 "-",
                 predefinedAttributes
                     .Select(attr => attr.UntypedPredefinedValue)
-                    .Where(value => value != null));
+                    .Where(value => value != null))
+                .HtmlClassify()
+                .ToUpperInvariant();
 
             if (priceVariantsPart.Variants.ContainsKey(variantKey))
             {

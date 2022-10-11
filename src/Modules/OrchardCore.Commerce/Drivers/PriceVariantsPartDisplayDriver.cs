@@ -1,3 +1,4 @@
+using GraphQL;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
@@ -7,6 +8,7 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
@@ -80,6 +82,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 
         var allVariantsKeys = _predefinedValuesProductAttributeService
             .GetProductAttributesCombinations(part.ContentItem)
+            .Select(attr => attr.HtmlClassify().ToUpperInvariant())
             .ToList();
 
         var variants = part.Variants ?? new Dictionary<string, Amount>();
