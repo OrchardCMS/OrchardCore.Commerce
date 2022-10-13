@@ -46,14 +46,17 @@
 
                     const unspecifiedCurrency = @Currency.UnspecifiedCurrency.CurrencyIsoCode.JsonHtmlContent();
                     const currentCurrency = @Model.Currency.JsonHtmlContent();
+                    const priceInput = document.getElementById(@Html.IdFor(model => model.Value).JsonHtmlContent());
 
                     if (this.checked) {
                         currencyDropdown.value = currentCurrency == unspecifiedCurrency
                             ? @Model.PreferredCurrencyIsoCode.JsonHtmlContent()
                             : currentCurrency;
+
+                        priceInput.value = @Model.Value;
                     }
                     else {
-                        document.getElementById(@Html.IdFor(model => model.Value).JsonHtmlContent()).value = 0;
+                        priceInput.value = 0;
                         currencyDropdown.value = unspecifiedCurrency;
                     }
                 })
