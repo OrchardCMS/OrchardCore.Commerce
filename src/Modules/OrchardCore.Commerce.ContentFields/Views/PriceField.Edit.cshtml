@@ -48,11 +48,10 @@
                     const currentCurrency = @Model.Currency.JsonHtmlContent();
 
                     if (this.checked) {
-                        if (currentCurrency == unspecifiedCurrency)
-                        {
+                        if (currentCurrency == unspecifiedCurrency) {
                             currencyDropdown.value = @Model.PreferredCurrencyIsoCode.JsonHtmlContent();
                         }
-                        else{
+                        else {
                             currencyDropdown.value = currentCurrency;
                         }
                     }
