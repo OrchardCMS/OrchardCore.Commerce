@@ -1,10 +1,9 @@
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Extensions;
+namespace OrchardCore.Commerce.Abstractions;
 
 public static class ProductServiceExtensions
 {

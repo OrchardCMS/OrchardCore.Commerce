@@ -1,5 +1,4 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
