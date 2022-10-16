@@ -24,15 +24,6 @@ public static class Regions
             .ToList();
 
     /// <summary>
-    /// Gets region names mapped to two-letter ISO region codes.
-    /// </summary>
-    public static IDictionary<string, string> RegionCodes { get; } =
-        All.ToDictionary(
-            region => region.EnglishName,
-            region => region.TwoLetterISORegionName,
-            StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>
     /// Gets two-letter regions codes mapped to region names.
     /// </summary>
     public static IDictionary<string, IDictionary<string, string>> Provinces { get; } =
