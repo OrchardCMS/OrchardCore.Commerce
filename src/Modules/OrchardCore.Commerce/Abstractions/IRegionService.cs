@@ -11,6 +11,11 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IRegionService
 {
     /// <summary>
+    /// Gets all regions and applies localization to their <see cref="Region.DisplayName"/> properties.
+    /// </summary>
+    IEnumerable<Region> GetAllRegions();
+
+    /// <summary>
     /// Gets the available regions from the site settings.
     /// </summary>
     /// <returns>A collection of <see cref="RegionInfo"/>.</returns>

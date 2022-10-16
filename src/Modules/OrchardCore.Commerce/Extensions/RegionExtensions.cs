@@ -11,7 +11,4 @@ public static class RegionExtensions
         regionInfos.OrderBy(region => region.EnglishName).Select(region => new SelectListItem(
             region.EnglishName,
             region.TwoLetterISORegionName));
-
-    public static IEnumerable<Region> GetRegionInfosFromTwoLetterRegionIsos(this IEnumerable<string> twoLetterRegionISOs) =>
-        Regions.All.Where(region => twoLetterRegionISOs.Contains(region.TwoLetterISORegionName));
 }

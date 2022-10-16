@@ -1,6 +1,6 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -12,13 +12,28 @@ namespace OrchardCore.Commerce.Services;
 public class RegionService : IRegionService
 {
     private readonly ISiteService _siteService;
+    private readonly IStringLocalizer<RegionService> T;
 
-    public RegionService(ISiteService siteService) =>
+    public RegionService(ISiteService siteService, IStringLocalizer<RegionService> stringLocalizer)
+    {
         _siteService = siteService;
+        T = stringLocalizer;
+    }
 
-    public async Task<IEnumerable<Region>> GetAvailableRegionsAsync() =>
-        (await _siteService.GetSiteSettingsAsync()).As<RegionSettings>()?.AllowedRegions is { } regions &&
-        regions.Any()
-            ? regions.GetRegionInfosFromTwoLetterRegionIsos()
-            : Regions.All;
+    public IEnumerable<Region> GetAllRegions() =>
+#pragma warning disable CS0618
+        Regions.All.Select(region => region with { DisplayName = T[region.EnglishName] });
+#pragma warning restore CS0618
+
+    public async Task<IEnumerable<Region>> GetAvailableRegionsAsync()
+    {
+        var settings = await _siteService.GetSiteSettingsAsync();
+        var allowedRegionCodes = (settings.As<RegionSettings>()?.AllowedRegions ?? Enumerable.Empty<string>()).AsList();
+
+        var allRegions = GetAllRegions();
+
+        if (!allowedRegionCodes.Any()) return allRegions;
+
+        return allRegions.Where(region => allowedRegionCodes.Contains(region.TwoLetterISORegionName));
+    }
 }
