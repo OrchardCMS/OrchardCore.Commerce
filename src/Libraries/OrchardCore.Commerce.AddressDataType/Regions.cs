@@ -10,13 +10,15 @@ public static class Regions
     /// <summary>
     /// Gets the list of regions.
     /// </summary>
+    [Obsolete("Use service! This is a temporary attribute.")]
     public static IList<Region> All { get; } =
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
-            .Where(culture => !culture.Equals(CultureInfo.InvariantCulture)) //Remove the invariant culture as a region cannot be created from it.
-            .Where(culture => !culture.IsNeutralCulture) //Remove nuetral cultures as a region cannot be created from them.
+            .Where(culture => !culture.Equals(CultureInfo.InvariantCulture) && !culture.IsNeutralCulture)
             .Select(culture => new RegionInfo(culture.LCID))
-            .Where(region => region?.TwoLetterISORegionName.Length == 2) // Filter out world and other 3-digit regions
+            .Where(region =>
+                region.TwoLetterISORegionName.Length == 2 && // Filter out world and other 3-digit regions.
+                !string.IsNullOrEmpty(region.EnglishName))
             .Distinct()
             .Select(region => new Region(region))
             .ToList();
