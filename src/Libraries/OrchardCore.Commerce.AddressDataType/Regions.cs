@@ -13,11 +13,9 @@ public static class Regions
     public static IList<Region> All { get; } =
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
-            .Select(culture =>
-            {
-                try { return new RegionInfo(culture.LCID); }
-                catch { return null; }
-            })
+            .Where(culture => !culture.Equals(CultureInfo.InvariantCulture)) //Remove the invariant culture as a region cannot be created from it.
+            .Where(culture => !culture.IsNeutralCulture) //Remove nuetral cultures as a region cannot be created from them.
+            .Select(culture => new RegionInfo(culture.LCID))
             .Where(region => region?.TwoLetterISORegionName.Length == 2) // Filter out world and other 3-digit regions
             .Distinct()
             .Select(region => new Region(region))
