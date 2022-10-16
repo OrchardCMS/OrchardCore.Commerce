@@ -30,7 +30,7 @@ public class PersistenceRegionSettingsTests : UITestBase
                     .GetAll(By.XPath("id('OrderPart_BillingAddress_Address_Region')/option"))
                     .Select(selectListOption => selectListOption.Text)
                     .ToArray()
-                    .ShouldBe(new[] { "Argentina", "Luxemburg", "Magyarország" });
+                    .ShouldBe(new[] { "Argentina", "Hungary", "Luxembourg" });
             },
             browser);
 }
