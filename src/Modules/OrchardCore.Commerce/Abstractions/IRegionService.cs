@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.AddressDataType;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -13,5 +14,5 @@ public interface IRegionService
     /// Gets the available regions from the site settings.
     /// </summary>
     /// <returns>A collection of <see cref="RegionInfo"/>.</returns>
-    Task<IEnumerable<RegionInfo>> GetAvailableRegionsAsync();
+    Task<IEnumerable<Region>> GetAvailableRegionsAsync();
 }

@@ -10,7 +10,7 @@ public static class Regions
     /// <summary>
     /// Gets the list of regions.
     /// </summary>
-    public static IList<RegionInfo> All { get; } =
+    public static IList<Region> All { get; } =
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
             .Select(culture =>
@@ -20,6 +20,7 @@ public static class Regions
             })
             .Where(region => region?.TwoLetterISORegionName.Length == 2) // Filter out world and other 3-digit regions
             .Distinct()
+            .Select(region => new Region(region))
             .ToList();
 
     /// <summary>
@@ -27,7 +28,7 @@ public static class Regions
     /// </summary>
     public static IDictionary<string, string> RegionCodes { get; } =
         All.ToDictionary(
-            region => region.DisplayName,
+            region => region.EnglishName,
             region => region.TwoLetterISORegionName,
             StringComparer.OrdinalIgnoreCase);
 

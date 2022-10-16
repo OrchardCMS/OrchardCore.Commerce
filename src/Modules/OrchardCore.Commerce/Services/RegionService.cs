@@ -5,7 +5,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +16,7 @@ public class RegionService : IRegionService
     public RegionService(ISiteService siteService) =>
         _siteService = siteService;
 
-    public async Task<IEnumerable<RegionInfo>> GetAvailableRegionsAsync() =>
+    public async Task<IEnumerable<Region>> GetAvailableRegionsAsync() =>
         (await _siteService.GetSiteSettingsAsync()).As<RegionSettings>()?.AllowedRegions is { } regions &&
         regions.Any()
             ? regions.GetRegionInfosFromTwoLetterRegionIsos()
