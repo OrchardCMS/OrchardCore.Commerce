@@ -26,15 +26,34 @@ internal static class KnownCurrencyTable
     private static void InitCurrencyCodeTable()
     {
         static bool IsValid(CultureInfo cultureInfo) =>
+            cultureInfo.Name.Contains('-') &&
             !cultureInfo.IsNeutralCulture &&
             !cultureInfo.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) &&
             !cultureInfo.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal);
 
+        static int RankCultureByExpectedRelevance(CultureInfo cultureInfo)
+        {
+            var parts = cultureInfo.Name.Split('-');
+
+            // Prioritize when the language and country ISO codes match, e.g. nl-NL, hu-HU, de-DE, etc.
+            if (parts.Length == 2 && parts[0].ToUpperInvariant() == parts[1]) return 0;
+
+            // English is usually a safe choice on the Internet.
+            if (cultureInfo.TwoLetterISOLanguageName == "en") return 1;
+
+            return int.MaxValue; // Fallback, the rest are sorted alphabetically.
+        }
+
         lock (_lockObject)
         {
-            CurrencyTable = CultureInfo
-                .GetCultures(CultureTypes.AllCultures)
-                .Where(IsValid)
+            var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(IsValid).ToList();
+
+            CurrencyTable = cultures
+                .GroupBy(culture => culture.Name.Split('-').Last())
+                .Select(group => group
+                    .OrderBy(RankCultureByExpectedRelevance)
+                    .ThenBy(culture => culture.EnglishName)
+                    .First())
                 .Select(culture => new Currency(culture))
                 .Cast<ICurrency>()
                 .Distinct(new CurrencyEqualityComparer())
