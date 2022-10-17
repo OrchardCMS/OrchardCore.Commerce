@@ -19,12 +19,12 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 {
     private readonly IMoneyService _moneyService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
-    private readonly IOptions<CommerceSettings> _currencyOptions;
+    private readonly IOptions<CurrencySettings> _currencyOptions;
 
     public PriceVariantsPartDisplayDriver(
         IMoneyService moneyService,
         IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
-        IOptions<CommerceSettings> currencyOptions)
+        IOptions<CurrencySettings> currencyOptions)
     {
         _moneyService = moneyService;
         _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;

@@ -15,7 +15,7 @@ namespace OrchardCore.Commerce.Services;
 public class MoneyService : IMoneyService
 {
     private readonly IEnumerable<ICurrencyProvider> _currencyProviders;
-    private readonly CommerceSettings _options;
+    private readonly CurrencySettings _options;
     private readonly ICurrencySelector _currencySelector;
 
     public IEnumerable<ICurrency> Currencies =>
@@ -38,7 +38,7 @@ public class MoneyService : IMoneyService
 
     public MoneyService(
         IEnumerable<ICurrencyProvider> currencyProviders,
-        IOptions<CommerceSettings> options,
+        IOptions<CurrencySettings> options,
         ICurrencySelector currencySelector)
     {
         _currencyProviders = currencyProviders ?? Array.Empty<ICurrencyProvider>();

@@ -35,8 +35,8 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = CommerceConstants.Features.CommerceSettingsCurrencySelector,
-    Name = "Orchard Core Commerce - Settings Currency Selector",
+    Id = CommerceConstants.Features.CurrencySettingsSelector,
+    Name = "Orchard Core Commerce - Currency Settings Selector",
     Category = "Commerce",
     Description = "Currency selector that uses display currency configured in settings. Useful for Dev/Test scenarios.",
     Dependencies = new[]

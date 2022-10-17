@@ -61,7 +61,7 @@
         "OrchardCore.Widgets",
 
         "OrchardCore.Commerce",
-        "OrchardCore.Commerce.CommerceSettingsCurrencySelector",
+        "OrchardCore.Commerce.CurrencySettingsSelector",
         "OrchardCore.Commerce.SessionCartStorage",
 
         "OrchardCore.Commerce.ContentFields",
