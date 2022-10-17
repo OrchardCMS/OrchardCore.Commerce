@@ -11,7 +11,7 @@ public class CurrencyTests
     public static CurrencyTheoryData TestData => new()
     {
         { UsDollar, 1234.56m, "$1,234.56" },
-        { Euro, 1234.56m, "1.234,56 €" },
+        { Euro, 1234.56m, "€1,234.56" },
         { JapaneseYen, 1234.56m, "￥1,235" },
         { BritishPound, 1234.56m, "£1,234.56" },
         { AustralianDollar, 1234.56m, "$1,234.56" },
