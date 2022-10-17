@@ -8,6 +8,8 @@ namespace OrchardCore.Commerce.MoneyDataType;
 
 internal static class KnownCurrencyTable
 {
+    private const string GenericEuCultureName = "en-EU";
+
     private static readonly object _lockObject = new();
 
     internal static IDictionary<string, ICurrency> CurrencyTable { get; private set; }
@@ -47,6 +49,7 @@ internal static class KnownCurrencyTable
         lock (_lockObject)
         {
             var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(IsValid).ToList();
+            cultures.Add(new CultureInfo(GenericEuCultureName));
 
             CurrencyTable = cultures
                 .GroupBy(culture => culture.Name.Split('-').Last())
@@ -55,6 +58,7 @@ internal static class KnownCurrencyTable
                     .ThenBy(culture => culture.EnglishName)
                     .First())
                 .Select(culture => new Currency(culture))
+                .Where(currency => currency.CurrencyIsoCode != "EUR" || currency.Culture.Name == GenericEuCultureName)
                 .Cast<ICurrency>()
                 .Distinct(new CurrencyEqualityComparer())
                 .ToDictionary(currency => currency.CurrencyIsoCode, currency => currency);
