@@ -5,9 +5,9 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 
 namespace OrchardCore.Commerce.Settings;
 
-public class CommerceSettingsCurrencySelector : ICurrencySelector
+public class CurrencySettingsSelector : ICurrencySelector
 {
-    private readonly CommerceSettings _options;
+    private readonly CurrencySettings _options;
 
     public ICurrency CurrentDisplayCurrency
     {
@@ -20,5 +20,5 @@ public class CommerceSettingsCurrencySelector : ICurrencySelector
         }
     }
 
-    public CommerceSettingsCurrencySelector(IOptions<CommerceSettings> options) => _options = options.Value;
+    public CurrencySettingsSelector(IOptions<CurrencySettings> options) => _options = options.Value;
 }

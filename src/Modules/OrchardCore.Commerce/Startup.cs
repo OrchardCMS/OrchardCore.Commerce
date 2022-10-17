@@ -129,9 +129,9 @@ public class Startup : StartupBase
 
         // Settings
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ISite>, CurrencySettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
+        services.AddTransient<IConfigureOptions<CurrencySettings>, CurrencySettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
@@ -190,12 +190,12 @@ public class SessionCartStorageStartup : StartupBase
     }
 }
 
-[Feature(CommerceConstants.Features.CommerceSettingsCurrencySelector)]
+[Feature(CommerceConstants.Features.CurrencySettingsSelector)]
 [RequireFeatures(CommerceConstants.Features.Core)]
-public class CommerceSettingsCurrencySettingsStartup : StartupBase
+public class CurrencySettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
-        services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
+        services.AddScoped<ICurrencySelector, CurrencySettingsSelector>();
 }
 
 [RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
