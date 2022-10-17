@@ -31,8 +31,10 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
+        var trimmedSkus = skus.Select(sku => sku.Split('-').First());
+
         var contentItemIds = (await _session
-                .QueryIndex<ProductPartIndex>(index => index.Sku.IsIn(skus))
+                .QueryIndex<ProductPartIndex>(index => index.Sku.IsIn(trimmedSkus))
                 .ListAsync())
             .Select(idx => idx.ContentItemId)
             .Distinct();
@@ -75,5 +77,16 @@ public class ProductService : IProductService
             // fields in the original code.
             part.Get(typeOfField, fieldName);
         }
+    }
+
+    public string GetVariantKey(string sku) => sku.Partition("-").Right ?? throw new ArgumentException(
+        "The SKU doesn't contain a dash. Is it a product variant SKU?", nameof(sku));
+
+    public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
+    {
+        var productPart = await this.GetProductAsync(sku);
+        var priceVariantsPart = productPart?.ContentItem.As<PriceVariantsPart>();
+
+        return (priceVariantsPart, GetVariantKey(sku));
     }
 }
