@@ -10,9 +10,9 @@
     string publishableKey = Model.PublishableKey ?? string.Empty;
 }
 
-    <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
+<input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
 
-    <input type="hidden" id="StripePaymentPart_PaymentMethodId_Text" name="StripePaymentPart.PaymentMethodId.Text">
+<input type="hidden" id="StripePaymentPart_PaymentMethodId_Text" name="StripePaymentPart.PaymentMethodId.Text">
 
 <h3>@T["Stripe Payment"]</h3>
 
@@ -23,7 +23,14 @@
 </fieldset>
 
 <div class="pay-button-container">
-    <button type="submit" class="pay-button">@T["Pay {0}", defaultTotal]</button>
+    <button type="submit" class="pay-button btn btn-success justify-content-center">
+        <span class="pay-text"> @T["Pay {0}", defaultTotal]</span>
+        <div class="payment-processing-container" hidden>
+            <div class="spinner-border spinner-border-sm" role="status">
+            </div>
+            <span>@T["Processing payment..."]</span>
+        </div>
+    </button>
 </div>
 
 <div class="error pt-4" role="alert">
@@ -38,7 +45,7 @@
         stripeCardForm(
             Stripe(@publishableKey.JsonHtmlContent()),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
-            @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-            @T["There was an error during fetching!"].Json());
+        @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
+        @T["There was an error during fetching!"].Json());
     </script>
 }
