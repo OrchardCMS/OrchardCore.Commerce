@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Serialization;
+using OrchardCore.ContentManagement.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,22 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         Prices = prices is null
             ? new List<PrioritizedPrice>().AsReadOnly()
             : new List<PrioritizedPrice>(prices).AsReadOnly();
+    }
+
+    public string GetVariantKeyFromAttributes(ShoppingCartItem item, ISet<string> predefinedAttributeValues)
+    {
+        var predefinedAttributes = item.Attributes
+            .OfType<IPredefinedValuesProductAttributeValue>()
+            .Where(attribute => predefinedAttributeValues.Contains(attribute.AttributeName))
+            .OrderBy(value => value.AttributeName);
+
+        return string.Join(
+            "-",
+            predefinedAttributes
+                .Select(attr => attr.UntypedPredefinedValue)
+                .Where(value => value != null))
+            .HtmlClassify()
+            .ToUpperInvariant();
     }
 
     /// <summary>

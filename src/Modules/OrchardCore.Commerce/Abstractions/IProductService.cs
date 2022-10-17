@@ -1,6 +1,5 @@
 using OrchardCore.Commerce.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -14,15 +13,14 @@ public interface IProductService
     /// Returns the products that have the provided SKUs.
     /// </summary>
     Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus);
-}
 
-public static class ProductServiceExtensions
-{
-    public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku) =>
-        (await service.GetProductsAsync(new[] { sku })).FirstOrDefault();
+    /// <summary>
+    /// Returns the key the product variant is identified by.
+    /// </summary>
+    string GetVariantKey(string sku);
 
-    public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(
-        this IProductService service,
-        IEnumerable<string> skus) =>
-        (await service.GetProductsAsync(skus)).ToDictionary(product => product.Sku);
+    /// <summary>
+    /// Returns the exact variant of a product, as well as its identifying key, associated with the provided SKU.
+    /// </summary>
+    Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku);
 }
