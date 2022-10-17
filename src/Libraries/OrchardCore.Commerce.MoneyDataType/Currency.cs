@@ -24,6 +24,8 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 
     public string Symbol { get; }
 
+    public CultureInfo Culture { get; }
+
     public static ICurrency UnspecifiedCurrency { get; } = new Currency("Unspecified", "Unspecified", "---", "---");
 
     private string DebuggerDisplay => CurrencyIsoCode;
@@ -40,6 +42,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 
         var region = new RegionInfo(culture.Name);
 
+        Culture = culture;
         NativeName = region.CurrencyNativeName;
         EnglishName = region.CurrencyEnglishName;
         Symbol = region.CurrencySymbol;
@@ -81,6 +84,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
                 "Decimal Digits must be greater than or equal to zero.");
         }
 
+        Culture = null;
         NativeName = nativeName;
         EnglishName = englishName;
         Symbol = symbol;
@@ -100,9 +104,9 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
     public override string ToString() => Symbol;
 
     public string ToString(decimal amount) =>
-        CultureInfo.CurrentCulture is { } culture
-            ? amount.ToString("C" + DecimalPlaces, culture)
-            : $"({CurrencyIsoCode}) {amount.ToString("N" + DecimalPlaces, CultureInfo.InvariantCulture)}";
+        Culture is null
+            ? $"({CurrencyIsoCode}) {amount.ToString("N" + DecimalPlaces, CultureInfo.InvariantCulture)}"
+            : amount.ToString("C" + DecimalPlaces, Culture);
 
     public static bool operator ==(Currency left, Currency right) => left.Equals(right);
 
