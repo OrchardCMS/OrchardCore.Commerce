@@ -37,7 +37,8 @@ internal static class KnownCurrencyTable
         {
             var parts = cultureInfo.Name.Split('-');
 
-            // Prioritize when the language and country ISO codes match, e.g. nl-NL, hu-HU, de-DE, etc.
+            // Prioritize when the language and country ISO codes match, e.g. hu-HU, no-NO, etc. This doesn't help with
+            // cultures like sv-SE, ja-SP or fa-IR.
             if (parts.Length == 2 && parts[0].ToUpperInvariant() == parts[1]) return 0;
 
             // English is usually a safe choice on the Internet.
