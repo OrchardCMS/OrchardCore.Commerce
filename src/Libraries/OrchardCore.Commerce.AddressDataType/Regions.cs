@@ -15,8 +15,14 @@ public static class Regions
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
             .Where(culture => !culture.Equals(CultureInfo.InvariantCulture) && !culture.IsNeutralCulture)
-            .Select(culture => new RegionInfo(culture.LCID))
+            .Select(culture =>
+            {
+                // This sometimes throws "CultureNotFoundException: Culture is not supported." exception on Linux only.
+                try { return new RegionInfo(culture.LCID); }
+                catch (CultureNotFoundException) { return null; }
+            })
             .Where(region =>
+                region != null &&
                 region.TwoLetterISORegionName.Length == 2 && // Filter out world and other 3-digit regions.
                 !string.IsNullOrEmpty(region.EnglishName))
             .Distinct()
