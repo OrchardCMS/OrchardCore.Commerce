@@ -10,11 +10,9 @@ public static class Regions
     /// <summary>
     /// Gets the list of regions.
     /// </summary>
-    [Obsolete("Use service! This is a temporary attribute.")]
     public static IList<Region> All { get; } =
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
-            .Where(culture => !culture.Equals(CultureInfo.InvariantCulture) && !culture.IsNeutralCulture)
             .Select(culture =>
             {
                 // This sometimes throws "CultureNotFoundException: Culture is not supported." exception on Linux only.

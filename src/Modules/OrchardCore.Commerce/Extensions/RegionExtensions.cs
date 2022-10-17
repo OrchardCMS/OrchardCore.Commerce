@@ -7,8 +7,10 @@ namespace OrchardCore.Commerce.Extensions;
 
 public static class RegionExtensions
 {
-    public static IEnumerable<SelectListItem> CreateSelectListOptions(this IEnumerable<Region> regionInfos) =>
-        regionInfos.OrderBy(region => region.EnglishName).Select(region => new SelectListItem(
-            region.EnglishName,
-            region.TwoLetterISORegionName));
+    public static IEnumerable<SelectListItem> CreateSelectListOptions(this IEnumerable<Region> regions) =>
+        regions
+            .OrderBy(region => region.EnglishName)
+            .Select(region => new SelectListItem(
+                region.EnglishName,
+                region.TwoLetterISORegionName));
 }

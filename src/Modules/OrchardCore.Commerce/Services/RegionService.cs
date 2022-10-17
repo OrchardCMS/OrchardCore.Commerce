@@ -21,9 +21,7 @@ public class RegionService : IRegionService
     }
 
     public IEnumerable<Region> GetAllRegions() =>
-#pragma warning disable CS0618
         Regions.All.Select(region => region with { DisplayName = T[region.EnglishName] });
-#pragma warning restore CS0618
 
     public async Task<IEnumerable<Region>> GetAvailableRegionsAsync()
     {
