@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class CommerceSettingsViewModel
+public class CurrencySettingsViewModel
 {
     public string DefaultCurrency { get; set; }
     public string CurrentDisplayCurrency { get; set; }
