@@ -3,6 +3,8 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
     const errorContainer = document.querySelector('.error-message');
     const form = document.querySelector('.card-payment-form');
     const submitButton = form.querySelector('.pay-button');
+    const payText = form.querySelector('.pay-text');
+    const paymentProcessingContainer = form.querySelector('.payment-processing-container');
     let formElements = Array.from(form.elements);
 
     const card = stripeElements.create('card', {
@@ -24,6 +26,9 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         card.update({ disabled: true });
 
         submitButton.disabled = true;
+
+        paymentProcessingContainer.hidden = false;
+        payText.hidden = true;
     }
 
     function displayError(error) {
@@ -42,6 +47,9 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         card.update({ disabled: false });
 
         submitButton.disabled = false;
+
+        paymentProcessingContainer.hidden = true;
+        payText.hidden = false;
     }
 
     function fetchPay(data) {
