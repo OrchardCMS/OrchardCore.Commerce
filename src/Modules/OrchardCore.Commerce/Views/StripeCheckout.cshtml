@@ -45,7 +45,7 @@
         stripeCardForm(
             Stripe(@publishableKey.JsonHtmlContent()),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
-        @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-        @T["There was an error during fetching!"].Json());
+            @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
+            @T["There was an error during fetching!"].Json());
     </script>
 }
