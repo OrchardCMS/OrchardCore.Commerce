@@ -1,3 +1,4 @@
+using Fluid;
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -14,6 +15,7 @@ using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
+using OrchardCore.Commerce.Liquid;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -22,12 +24,14 @@ using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.Commerce.Tax.Constants;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -143,6 +147,18 @@ public class Startup : StartupBase
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
+
+        // Exposing models to liquid tempaltes
+        services.Configure<TemplateOptions>(option =>
+        {
+            option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
+            option.MemberAccessStrategy.Register<ShoppingCartCellViewModel>();
+            option.MemberAccessStrategy.Register<ShoppingCartLineViewModel>();
+            option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
+            option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
+        })
+        // Liquid filter to convert JToken value to Amount struct in liquid.
+        .AddLiquidFilter<ToAmountConverterFilter>("toAmount");
     }
 }
 
