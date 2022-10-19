@@ -150,15 +150,15 @@ public class Startup : StartupBase
 
         // Exposing models to liquid tempaltes
         services.Configure<TemplateOptions>(option =>
-        {
-            option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
-            option.MemberAccessStrategy.Register<ShoppingCartCellViewModel>();
-            option.MemberAccessStrategy.Register<ShoppingCartLineViewModel>();
-            option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
-            option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
-        })
-        // Liquid filter to convert JToken value to Amount struct in liquid.
-        .AddLiquidFilter<ToAmountConverterFilter>("toAmount");
+            {
+                option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
+                option.MemberAccessStrategy.Register<ShoppingCartCellViewModel>();
+                option.MemberAccessStrategy.Register<ShoppingCartLineViewModel>();
+                option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
+                option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
+            })
+            // Liquid filter to convert JToken value to Amount struct in liquid.
+            .AddLiquidFilter<AmountConverterFilter>("amount");
     }
 }
 
