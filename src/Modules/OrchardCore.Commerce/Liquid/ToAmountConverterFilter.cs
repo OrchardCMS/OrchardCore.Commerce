@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Liquid;
 
 public class ToAmountConverterFilter : ILiquidFilter
 {
-    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
         if (input.Type == FluidValues.Nil) return new ValueTask<FluidValue>(input);
 
