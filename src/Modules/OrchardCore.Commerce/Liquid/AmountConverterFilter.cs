@@ -12,7 +12,7 @@ public class AmountConverterFilter : ILiquidFilter
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
         if (input.Type == FluidValues.Nil ||
-            input.ToObjectValue() as JToken is not { } newInput)
+            input.ToObjectValue() is not JToken newInput)
         {
             return new ValueTask<FluidValue>(input);
         }
