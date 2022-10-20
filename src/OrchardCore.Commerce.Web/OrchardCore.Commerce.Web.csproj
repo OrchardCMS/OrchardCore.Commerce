@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.occ-15.3" />
-    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="3.5.0" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="3.5.0" />
     <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.4.0" />
     <PackageReference Include="OrchardCore.Logging.NLog" Version="1.4.0" />
