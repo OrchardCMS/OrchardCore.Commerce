@@ -3,6 +3,9 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
     const errorContainer = document.querySelector('.error-message');
     const form = document.querySelector('.card-payment-form');
     const submitButton = form.querySelector('.pay-button');
+    const payText = form.querySelector('.pay-text');
+    const paymentProcessingContainer = form.querySelector('.payment-processing-container');
+    const selectTagName = 'SELECT';
     let formElements = Array.from(form.elements);
 
     const card = stripeElements.create('card', {
@@ -16,14 +19,31 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
     const placeOfCard = document.querySelector('#card-payment-form_card');
 
-    function disableInputs() {
+    function disableInputsAndShowSpinner() {
         formElements.forEach((element) => {
+            if (element.tagName === selectTagName) {
+                element.disabled = true;
+            }
+
             element.readOnly = true;
         });
 
         card.update({ disabled: true });
 
         submitButton.disabled = true;
+
+        paymentProcessingContainer.hidden = false;
+        payText.hidden = true;
+    }
+
+    function enableInputs() {
+        formElements.forEach((element) => {
+            if (element.tagName === selectTagName) {
+                element.disabled = false;
+            }
+
+            element.readOnly = false;
+        });
     }
 
     function displayError(error) {
@@ -34,14 +54,14 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
             errorContainer.textContent = error;
         }
 
-        // Enable inputs.
-        formElements.forEach((element) => {
-            element.readOnly = false;
-        });
+        enableInputs();
 
         card.update({ disabled: false });
 
         submitButton.disabled = false;
+
+        paymentProcessingContainer.hidden = true;
+        payText.hidden = false;
     }
 
     function fetchPay(data) {
@@ -80,6 +100,7 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
             // Show success message.
             form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
             form.method = 'POST';
+            enableInputs();
             form.submit();
         }
     }
@@ -144,7 +165,7 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         submitButton.addEventListener('click', (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-            disableInputs();
+            disableInputsAndShowSpinner();
 
             stripe
                 .createPaymentMethod({
