@@ -39,16 +39,16 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         payText.hidden = true;
     }
 
-    function displayError(errors) {
-        if (!errors?.length) {
-            errorContainer.hidden = true;
+    function displayError(errors, container = errorContainer) {
+        if (!errors || errors.length === 0) {
+            container.hidden = true;
             return;
         }
 
         const err = Array.isArray(errors) ? errors.filter((error) => error) : [errors];
 
-        errorContainer.innerHTML = '<ul></ul>';
-        const ul = errorContainer.querySelector('ul');
+        container.innerHTML = '<ul></ul>';
+        const ul = container.querySelector('ul');
         for (let i = 0; i < err.length; i++) {
             const li = document.createElement('li');
             li.textContent = Object.prototype.hasOwnProperty.call(err[i], 'message') ? err[i].message : err[i];
@@ -61,8 +61,8 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
         paymentProcessingContainer.hidden = true;
         payText.hidden = false;
-        errorContainer.hidden = false;
-        errorContainer.scrollIntoView({ block: 'center' });
+        container.hidden = false;
+        container.scrollIntoView({ block: 'center' });
     }
 
     function fetchPost(path, options) {
@@ -138,7 +138,11 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
     function registerElements() {
         // Displaying card input error.
-        card.on('change', (event) => { displayError(event?.error); });
+        const stripeFieldError = document.querySelector('.stripe-field-error');
+        card.on('change', (event) => {
+            displayError(false);
+            displayError(event?.error, stripeFieldError);
+        });
 
         submitButton.addEventListener('click', async (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.

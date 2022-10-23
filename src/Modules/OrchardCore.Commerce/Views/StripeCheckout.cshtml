@@ -33,6 +33,8 @@
     </button>
 </div>
 
+<div class="stripe-field-error" hidden></div>
+
 @if (!string.IsNullOrEmpty(publishableKey))
 {
     <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
