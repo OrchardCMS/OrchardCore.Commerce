@@ -15,6 +15,23 @@
     width: 50%;
 }
 
-.error {
-    color: red;
+.message-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+    padding: 1rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+
+    ul {
+        margin: 0;
+    }
+
+    li {
+        list-style: initial;
+
+        &:first-child:last-child {
+            list-style: none;
+        }
+    }
 }

@@ -1,6 +1,6 @@
 window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText) {
     const stripeElements = stripe.elements();
-    const errorContainer = document.querySelector('.error-message');
+    const errorContainer = document.querySelector('.message-error');
     const form = document.querySelector('.card-payment-form');
     const submitButton = form.querySelector('.pay-button');
     const payText = form.querySelector('.pay-text');
@@ -46,22 +46,33 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         });
     }
 
-    function displayError(error) {
-        if (Object.prototype.hasOwnProperty.call(error, 'message')) {
-            errorContainer.textContent = error.message;
+    function displayError(errors) {
+        if (!errors || errors.length === 0) {
+            errorContainer.hidden = true;
+            return;
         }
-        else {
-            errorContainer.textContent = error;
+
+        if (!Array.isArray(errors)) {
+            displayError([errors]);
+            return;
         }
+
+        errorContainer.innerHTML = '<ul></ul>';
+        const ul = errorContainer.querySelector('ul');
+        for (let i = 0; i < errors.length; i++) {
+            const li = document.createElement('li');
+            li.textContent = Object.prototype.hasOwnProperty.call(errors[i], 'message') ? errors[i].message : errors[i];
+            ul.appendChild(li);
+        }
+        errorContainer.scrollIntoView({ block: 'center' });
 
         enableInputs();
-
         card.update({ disabled: false });
-
         submitButton.disabled = false;
 
         paymentProcessingContainer.hidden = true;
         payText.hidden = false;
+        errorContainer.hidden = false;
     }
 
     function fetchPay(data) {
@@ -123,7 +134,6 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
             .then(handleServerResponse)
             .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
             );
-
     };
 
     function stripePaymentMethodHandler(result) {
@@ -158,7 +168,7 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
                 displayError(eventError);
             }
             else {
-                errorContainer.textContent = '';
+                displayError(false);
             }
         });
 
