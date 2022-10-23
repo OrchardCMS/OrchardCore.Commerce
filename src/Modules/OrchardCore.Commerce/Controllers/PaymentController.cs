@@ -121,6 +121,7 @@ public class PaymentController : Controller
         return View(checkoutViewModel);
     }
 
+    [Route("checkout/validate")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Validate()
@@ -131,11 +132,7 @@ public class PaymentController : Controller
             await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
 
-            return Json(new
-            {
-                Success = errors.Any(),
-                Errors = errors,
-            });
+            return Json(new { Errors = errors });
         }
         catch (Exception exception)
         {
@@ -145,11 +142,7 @@ public class PaymentController : Controller
                     ? exception.ToString()
                     : "An exception has occurred during order form validation.";
 
-            return Json(new
-            {
-                Success = false,
-                Errors = new[] { errorMessage },
-            });
+            return Json(new { Errors = new[] { errorMessage } });
         }
     }
 

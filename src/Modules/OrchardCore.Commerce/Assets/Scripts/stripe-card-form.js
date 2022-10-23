@@ -19,15 +19,18 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
     const placeOfCard = document.querySelector('#card-payment-form_card');
 
-    function disableInputsAndShowSpinner() {
+    function toggleInputs(enable) {
         formElements.forEach((element) => {
             if (element.tagName === selectTagName) {
-                element.disabled = true;
+                element.disabled = !enable;
             }
 
-            element.readOnly = true;
+            element.readOnly = !enable;
         });
+    }
 
+    function disableInputsAndShowSpinner() {
+        toggleInputs(false);
         card.update({ disabled: true });
 
         submitButton.disabled = true;
@@ -36,51 +39,45 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         payText.hidden = true;
     }
 
-    function enableInputs() {
-        formElements.forEach((element) => {
-            if (element.tagName === selectTagName) {
-                element.disabled = false;
-            }
-
-            element.readOnly = false;
-        });
-    }
-
     function displayError(errors) {
-        if (!errors || errors.length === 0) {
+        if (!errors?.length) {
             errorContainer.hidden = true;
             return;
         }
 
-        if (!Array.isArray(errors)) {
-            displayError([errors]);
-            return;
-        }
+        const err = Array.isArray(errors) ? errors.filter((error) => error) : [errors];
 
         errorContainer.innerHTML = '<ul></ul>';
         const ul = errorContainer.querySelector('ul');
-        for (let i = 0; i < errors.length; i++) {
+        for (let i = 0; i < err.length; i++) {
             const li = document.createElement('li');
-            li.textContent = Object.prototype.hasOwnProperty.call(errors[i], 'message') ? errors[i].message : errors[i];
+            li.textContent = Object.prototype.hasOwnProperty.call(err[i], 'message') ? err[i].message : err[i];
             ul.appendChild(li);
         }
-        errorContainer.scrollIntoView({ block: 'center' });
 
-        enableInputs();
+        toggleInputs(true);
         card.update({ disabled: false });
         submitButton.disabled = false;
 
         paymentProcessingContainer.hidden = true;
         payText.hidden = false;
         errorContainer.hidden = false;
+        errorContainer.scrollIntoView({ block: 'center' });
     }
+
+    function fetchPost(path, options) {
+        return fetch(`${urlPrefix}/${path}`, { method: 'POST', ...options })
+            .then((response) => response.json());
+    }
+
+    let handleServerResponse;
+    let handleStripeJsResult;
 
     function fetchPay(data) {
         // eslint-disable-next-line dot-notation -- That would throw "no-underscore-dangle". This looks better anyway.
         data['__RequestVerificationToken'] = antiForgeryToken;
 
-        return fetch(`${urlPrefix}/pay`, {
-            method: 'POST',
+        return fetchPost('pay', {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -89,17 +86,18 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
                 .entries(data)
                 .map((pair) => pair.map(encodeURIComponent).join('='))
                 .join('&'),
-        });
+        })
+            .then(handleServerResponse)
+            .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError));
     }
 
-    let handleStripeJsResult;
-    function handleServerResponse(response) {
+    handleServerResponse = function (response) {
         const error = response.error;
 
         // Show error in payment form.
         if (error) {
             displayError(error);
-            return;
+            return Promise.reject(error);
         }
 
         if (response.requires_action) {
@@ -111,74 +109,48 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
             // Show success message.
             form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
             form.method = 'POST';
-            enableInputs();
             form.submit();
         }
-    }
+
+        return Promise.resolve();
+    };
 
     handleStripeJsResult = function (result) {
-        const error = result.error;
-
         // Show error in payment form.
-        if (error) {
-            displayError(error);
-            return;
-        }
+        if (result.error) return displayError(result.error);
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
 
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
-        fetchPay({ paymentIntentId: result.paymentIntent.id })
-            .then((confirmResult) => confirmResult.json())
-            .then(handleServerResponse)
-            .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
-            );
+        return fetchPay({ paymentIntentId: result.paymentIntent.id });
     };
 
     function stripePaymentMethodHandler(result) {
-        const error = result.error;
-
         // Show error in payment form.
-        if (error) {
-            displayError(error);
-            return;
-        }
+        if (result.error) return displayError(result.error);
 
         document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentMethod.id;
 
         // Otherwise send paymentMethod.id to the server.
-        fetchPay({ paymentMethodId: result.paymentMethod.id })
-            .then((fetchPayResult) => {
-                // Handle server response.
-                fetchPayResult.json()
-                    .then((json) => {
-                        handleServerResponse(json);
-                    })
-                    .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
-                    );
-            });
+        return fetchPay({ paymentMethodId: result.paymentMethod.id });
     }
 
     function registerElements() {
         // Displaying card input error.
-        card.on('change', (event) => {
-            const eventError = event.error;
-            if (eventError) {
-                displayError(eventError);
-            }
-            else {
-                displayError(false);
-            }
-        });
+        card.on('change', (event) => { displayError(event?.error); });
 
-        submitButton.addEventListener('click', (event) => {
+        submitButton.addEventListener('click', async (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
             disableInputsAndShowSpinner();
 
-            stripe
-                .createPaymentMethod({
+            let result;
+            try {
+                const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
+                if (validationJson?.errors?.length) throw validationJson.errors;
+
+                result = await stripe.createPaymentMethod({
                     type: 'card',
                     card: card,
                     billing_details: {
@@ -194,8 +166,14 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
                             state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
                         },
                     },
-                })
-                .then(stripePaymentMethodHandler);
+                });
+            }
+            catch (error) {
+                result = { error };
+                console.log(result);
+            }
+
+            await stripePaymentMethodHandler(result);
         });
     }
 
@@ -204,6 +182,6 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
         // Refreshing form elements with the card input.
         formElements = Array.from(form.elements);
-        registerElements([card]);
+        registerElements();
     }
 };
