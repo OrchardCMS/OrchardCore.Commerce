@@ -10,7 +10,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
-using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
