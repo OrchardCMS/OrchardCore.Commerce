@@ -139,6 +139,21 @@ public class PaymentController : Controller
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+        if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
+        {
+            var errors = _updateModelAccessor
+                .ModelUpdater
+                .ModelState
+                .Values
+                .SelectMany(entry => entry.Errors)
+                .SelectWhere(error => error.ErrorMessage, message => !string.IsNullOrWhiteSpace(message));
+
+            _logger.LogError(
+                "The payment has been successful, but the order is invalid. Validation errors: {ValidationErrors}",
+                string.Join(", ", errors));
+
+            return Forbid();
+        }
 
         // Saving addresses.
         var userService = _userServiceLazy.Value;
