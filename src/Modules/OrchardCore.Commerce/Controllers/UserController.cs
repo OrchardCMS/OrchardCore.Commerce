@@ -2,6 +2,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -78,13 +79,7 @@ public class UserController : Controller
         }
         else
         {
-            var errors = _updateModelAccessor
-                .ModelUpdater
-                .ModelState
-                .Values
-                .SelectMany(entry => entry.Errors)
-                .Where(error => !string.IsNullOrWhiteSpace(error.ErrorMessage));
-
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrors();
             foreach (var error in errors) await _notifier.ErrorAsync(H[error.ErrorMessage]);
         }
 

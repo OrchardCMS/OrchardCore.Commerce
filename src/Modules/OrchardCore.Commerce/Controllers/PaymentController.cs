@@ -141,13 +141,7 @@ public class PaymentController : Controller
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
         if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
         {
-            var errors = _updateModelAccessor
-                .ModelUpdater
-                .ModelState
-                .Values
-                .SelectMany(entry => entry.Errors)
-                .SelectWhere(error => error.ErrorMessage, message => !string.IsNullOrWhiteSpace(message));
-
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrors().Select(error => error.ErrorMessage);
             _logger.LogError(
                 "The payment has been successful, but the order is invalid. Validation errors: {ValidationErrors}",
                 string.Join(", ", errors));
