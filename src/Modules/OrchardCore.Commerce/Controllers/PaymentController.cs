@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
@@ -122,6 +121,38 @@ public class PaymentController : Controller
         return View(checkoutViewModel);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Validate()
+    {
+        try
+        {
+            var order = await _contentManager.NewAsync(Order);
+            await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
+
+            return Json(new
+            {
+                Success = errors.Any(),
+                Errors = errors,
+            });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "An exception has occurred during order form validation.");
+
+            var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
+                    ? exception.ToString()
+                    : "An exception has occurred during order form validation.";
+
+            return Json(new
+            {
+                Success = false,
+                Errors = new[] { errorMessage },
+            });
+        }
+    }
+
     [Route("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
     {
@@ -141,7 +172,7 @@ public class PaymentController : Controller
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
         if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
         {
-            var errors = _updateModelAccessor.ModelUpdater.GetModelErrors().Select(error => error.ErrorMessage);
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
             _logger.LogError(
                 "The payment has been successful, but the order is invalid. Validation errors: {ValidationErrors}",
                 string.Join(", ", errors));

@@ -13,4 +13,7 @@ public static class UpdateModelExtensions
             .Values
             .SelectMany(entry => entry.Errors)
             .Where(error => !string.IsNullOrWhiteSpace(error.ErrorMessage));
+
+    public static IEnumerable<string> GetModelErrorMessages(this IUpdateModel updateModel) =>
+        updateModel.GetModelErrors().Select(error => error.ErrorMessage);
 }
