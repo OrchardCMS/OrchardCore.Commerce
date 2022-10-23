@@ -1,4 +1,4 @@
-window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText) {
+window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
     const stripeElements = stripe.elements();
     const errorContainer = document.querySelector('.message-error');
     const form = document.querySelector('.card-payment-form');
@@ -151,6 +151,17 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
             let result;
             try {
+                const emptyRequiredFields = Array.from(form.querySelectorAll('input'))
+                    .filter((element) => element.required && !element.hidden)
+                    .filter((element) => !element.value?.match(/\S+/));
+
+                if (emptyRequiredFields.length) {
+                    throw emptyRequiredFields
+                        .map((element) => document.querySelector(`label[for="${element.id}"]`)?.textContent)
+                        .filter((label) => label)
+                        .map((label) => missingText.replace('%LABEL%', label));
+                }
+
                 const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
                 if (validationJson?.errors?.length) throw validationJson.errors;
 

@@ -44,6 +44,7 @@
             Stripe(@publishableKey.JsonHtmlContent()),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-            @T["There was an error during fetching!"].Json());
+            @T["There was an error during fetching!"].Json(),
+            @T["A value is required for %LABEL%."].Json());
     </script>
 }
