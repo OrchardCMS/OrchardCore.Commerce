@@ -157,9 +157,21 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
                 if (emptyRequiredFields.length) {
                     throw emptyRequiredFields
-                        .map((element) => document.querySelector(`label[for="${element.id}"]`)?.textContent)
-                        .filter((label) => label)
-                        .map((label) => missingText.replace('%LABEL%', label));
+                        .map((element) => document.querySelector(`label[for="${element.id}"]`))
+                        .filter((label) => label?.textContent?.trim())
+                        .map((label) => {
+                            let name = label.textContent.trim();
+
+                            let parent = label.parentElement;
+                            while (parent && !parent.classList.contains('address')) {
+                                parent = parent.parentElement
+                            }
+
+                            var title = parent?.querySelector('.address__title')
+                            if (title?.textContent) name = `${title.textContent.trim()} ${name}`;
+
+                            return missingText.replace('%LABEL%', name);
+                        });
                 }
 
                 const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
