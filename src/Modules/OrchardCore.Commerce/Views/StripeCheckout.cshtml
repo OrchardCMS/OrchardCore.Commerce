@@ -33,9 +33,7 @@
     </button>
 </div>
 
-<div class="error pt-4" role="alert">
-    <span class="error-message"></span>
-</div>
+<div class="stripe-field-error my-3" hidden></div>
 
 @if (!string.IsNullOrEmpty(publishableKey))
 {
@@ -46,6 +44,7 @@
             Stripe(@publishableKey.JsonHtmlContent()),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-            @T["There was an error during fetching!"].Json());
+            @T["There was an error during fetching!"].Json(),
+            @T["A value is required for %LABEL%."].Json());
     </script>
 }
