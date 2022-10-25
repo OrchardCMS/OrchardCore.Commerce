@@ -1,6 +1,6 @@
 window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
     const stripeElements = stripe.elements();
-    const errorContainer = document.querySelector('.message-error');
+    const allErrorContainers = [ document.querySelector('.message-error') ];
     const form = document.querySelector('.card-payment-form');
     const submitButton = form.querySelector('.pay-button');
     const payText = form.querySelector('.pay-text');
@@ -39,11 +39,9 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         payText.hidden = true;
     }
 
-    function displayError(errors, container = errorContainer) {
-        if (!errors || errors.length === 0) {
-            container.hidden = true;
-            return;
-        }
+    function displayError(errors, container = allErrorContainers[0]) {
+        allErrorContainers.forEach((element) => element.hidden = true);
+        if (!errors || errors.length === 0) return;
 
         const err = Array.isArray(errors) ? errors.filter((error) => error) : [errors];
 
@@ -139,8 +137,8 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
     function registerElements() {
         // Displaying card input error.
         const stripeFieldError = document.querySelector('.stripe-field-error');
+        allErrorContainers.push(stripeFieldError);
         card.on('change', (event) => {
-            displayError(false);
             displayError(event?.error, stripeFieldError);
         });
 
