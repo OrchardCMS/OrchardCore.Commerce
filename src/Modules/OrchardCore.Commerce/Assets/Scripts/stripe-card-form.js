@@ -27,16 +27,13 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
             element.readOnly = !enable;
         });
-    }
 
-    function disableInputsAndShowSpinner() {
-        toggleInputs(false);
-        card.update({ disabled: true });
+        card.update({ disabled: !enable });
 
-        submitButton.disabled = true;
+        submitButton.disabled = !enable;
 
-        paymentProcessingContainer.hidden = false;
-        payText.hidden = true;
+        paymentProcessingContainer.hidden = enable;
+        payText.hidden = !enable;
     }
 
     function displayError(errors, container = allErrorContainers[0]) {
@@ -54,11 +51,7 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         }
 
         toggleInputs(true);
-        card.update({ disabled: false });
-        submitButton.disabled = false;
 
-        paymentProcessingContainer.hidden = true;
-        payText.hidden = false;
         container.hidden = false;
         container.scrollIntoView({ block: 'center' });
     }
@@ -134,6 +127,8 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         return fetchPay({ paymentMethodId: result.paymentMethod.id });
     }
 
+    function getText(element) { return element?.textContent.trim(); }
+
     function registerElements() {
         // Displaying card input error.
         const stripeFieldError = document.querySelector('.stripe-field-error');
@@ -145,7 +140,7 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
         submitButton.addEventListener('click', async (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-            disableInputsAndShowSpinner();
+            toggleInputs(false);
 
             let result;
             try {
@@ -156,17 +151,11 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
                 if (emptyRequiredFields.length) {
                     throw emptyRequiredFields
                         .map((element) => document.querySelector(`label[for="${element.id}"]`))
-                        .filter((label) => label?.textContent?.trim())
+                        .filter(getText)
+                        .filter((label) => !label.closest('.address')?.hidden)
                         .map((label) => {
-                            let name = label.textContent.trim();
-
-                            let parent = label.parentElement;
-                            while (parent && !parent.classList.contains('address')) {
-                                parent = parent.parentElement
-                            }
-
-                            var title = parent?.querySelector('.address__title')
-                            if (title?.textContent) name = `${title.textContent.trim()} ${name}`;
+                            var title = getText(label.closest('.address')?.querySelector('.address__title'));
+                            let name = title ? `${title} ${getText(label)}` : getText(label);
 
                             return missingText.replace('%LABEL%', name);
                         });

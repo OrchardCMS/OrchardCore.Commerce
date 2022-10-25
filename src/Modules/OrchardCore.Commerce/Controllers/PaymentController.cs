@@ -33,6 +33,8 @@ namespace OrchardCore.Commerce.Controllers;
 
 public class PaymentController : Controller
 {
+    private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
+
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -136,11 +138,11 @@ public class PaymentController : Controller
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "An exception has occurred during order form validation.");
+            _logger.LogError(exception, FormValidationExceptionMessage);
 
             var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
                     ? exception.ToString()
-                    : "An exception has occurred during order form validation.";
+                    : FormValidationExceptionMessage;
 
             return Json(new { Errors = new[] { errorMessage } });
         }

@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
@@ -78,8 +79,8 @@ public class UserController : Controller
         }
         else
         {
-            var errors = _updateModelAccessor.ModelUpdater.GetModelErrors();
-            foreach (var error in errors) await _notifier.ErrorAsync(H[error.ErrorMessage]);
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
+            foreach (var error in errors.WhereNot(string.IsNullOrEmpty)) await _notifier.ErrorAsync(H[error]);
         }
 
         return RedirectToAction(nameof(Addresses));
