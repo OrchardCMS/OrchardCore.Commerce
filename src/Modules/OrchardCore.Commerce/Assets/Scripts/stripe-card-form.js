@@ -184,7 +184,6 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
             }
             catch (error) {
                 result = { error };
-                console.log(result);
             }
 
             await stripePaymentMethodHandler(result);
