@@ -18,7 +18,7 @@ public class AddressFieldEditorViewModelConverterFilter : ILiquidFilter
         if (arguments["address_field"].Or(arguments.At(0)).ToObjectValue() is not AddressField addressField ||
             string.IsNullOrEmpty(cityName)) return new ValueTask<FluidValue>(input);
 
-        var viewModel = new AddressFieldEditorViewModel()
+        var viewModel = new AddressFieldEditorViewModel
         {
             AddressField = addressField,
             CityName = cityName,
