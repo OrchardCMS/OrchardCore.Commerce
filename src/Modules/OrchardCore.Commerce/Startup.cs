@@ -151,7 +151,6 @@ public class Startup : StartupBase
         // Exposing models to liquid tempaltes
         services.Configure<TemplateOptions>(option =>
             {
-                option.MemberAccessStrategy.Register<CheckoutViewModel>();
                 option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
                 option.MemberAccessStrategy.Register<ShoppingCartCellViewModel>();
                 option.MemberAccessStrategy.Register<ShoppingCartLineViewModel>();
