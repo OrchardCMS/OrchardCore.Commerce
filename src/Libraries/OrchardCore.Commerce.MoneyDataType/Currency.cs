@@ -43,8 +43,18 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
             throw new ArgumentOutOfRangeException(nameof(culture));
         }
 
-        var region = new RegionInfo(culture.Name);
-        logger?.LogError("Currency ctor, region: {0} | {1} | {2}", region.Name, region.ISOCurrencySymbol, region.ToString());
+        RegionInfo region;
+        try
+        {
+            region = new RegionInfo(culture.Name);
+        }
+        catch (Exception e)
+        {
+            logger?.LogError("Exception in currency ctor, culture name: {0} | Culture: {2} ", culture.Name, culture.ToString());
+            logger?.LogError("Exception in currency ctor message: {0}", e.Message);
+            throw;
+        }
+
         Culture = culture;
         NativeName = region.CurrencyNativeName;
         EnglishName = region.CurrencyEnglishName;
