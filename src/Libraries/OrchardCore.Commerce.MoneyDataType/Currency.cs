@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
@@ -30,8 +31,10 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 
     private string DebuggerDisplay => CurrencyIsoCode;
 
-    public Currency(CultureInfo culture)
+    public Currency(CultureInfo culture, ILogger logger = null)
     {
+        logger?.LogError("Currency ctor, culture: {0}", culture.Name);
+
         ArgumentNullException.ThrowIfNull(culture);
 
         if (culture.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) ||
@@ -41,7 +44,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         }
 
         var region = new RegionInfo(culture.Name);
-
+        logger?.LogError("Currency ctor, region: {0} | {1} | {2}", region.Name, region.ISOCurrencySymbol, region.ToString());
         Culture = culture;
         NativeName = region.CurrencyNativeName;
         EnglishName = region.CurrencyEnglishName;
