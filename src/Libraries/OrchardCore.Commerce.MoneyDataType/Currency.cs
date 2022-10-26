@@ -34,10 +34,9 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
     public Currency(CultureInfo culture, ILogger logger = null)
     {
         logger?.LogError("Currency ctor, culture: {0}", culture.Name);
-
         ArgumentNullException.ThrowIfNull(culture);
 
-        if (culture.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) ||
+        if ((culture.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) && culture.Name != "en-EU") ||
             culture.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal))
         {
             logger?.LogError("Exception: Currency ctor, culture: {0}, {1}, {2} ", culture.Name, culture.EnglishName, culture.ToString());
