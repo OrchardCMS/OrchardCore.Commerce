@@ -12,7 +12,13 @@ public class Permissions : IPermissionProvider
     public static readonly Permission Checkout = new("Checkout", "Ability to checkout");
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync() =>
-        Task.FromResult<IEnumerable<Permission>>(new[] { ManageCurrencySettings, ManageStripeApiSettings, Checkout, ManageRegionSettings });
+        Task.FromResult<IEnumerable<Permission>>(new[]
+        {
+            ManageCurrencySettings,
+            ManageStripeApiSettings,
+            Checkout,
+            ManageRegionSettings,
+        });
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
         new[]
@@ -20,7 +26,13 @@ public class Permissions : IPermissionProvider
             new PermissionStereotype
             {
                 Name = "Administrator",
-                Permissions = new[] { ManageCurrencySettings, ManageStripeApiSettings, Checkout, ManageRegionSettings },
+                Permissions = new[]
+                {
+                    ManageCurrencySettings,
+                    ManageStripeApiSettings,
+                    Checkout,
+                    ManageRegionSettings,
+                },
             },
         };
 }

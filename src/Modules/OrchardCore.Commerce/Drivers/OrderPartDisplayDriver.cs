@@ -73,6 +73,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             return new OrderLineItemViewModel
             {
+                ProductPart = product,
                 Quantity = lineItem.Quantity,
                 ProductSku = lineItem.ProductSku,
                 ProductName = product.ContentItem.DisplayText,
