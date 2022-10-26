@@ -13,7 +13,7 @@ public class AddressFieldEditorViewModelConverterFilter : ILiquidFilter
     {
         if (input?.ToObjectValue() is not CheckoutViewModel checkoutViewModel) return new ValueTask<FluidValue>(input);
 
-        var cityName = arguments["city_name"].Or(arguments.At(0)).ToStringValue();
+        var cityName = arguments["city_name"].Or(arguments.At(1)).ToStringValue();
 
         if (arguments["address_field"].Or(arguments.At(0)).ToObjectValue() is not AddressField addressField ||
             string.IsNullOrEmpty(cityName)) return new ValueTask<FluidValue>(input);
