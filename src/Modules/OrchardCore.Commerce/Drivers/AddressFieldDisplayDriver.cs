@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
@@ -26,17 +27,20 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     private readonly IHttpContextAccessor _hca;
     private readonly IUserService _userService;
     private readonly IRegionService _regionService;
+    private readonly IStringLocalizer<AddressFieldDisplayDriver> T;
 
     public AddressFieldDisplayDriver(
         IAddressFormatterProvider addressFormatterProvider,
         IHttpContextAccessor hca,
         IUserService userService,
-        IRegionService regionService)
+        IRegionService regionService,
+        IStringLocalizer<AddressFieldDisplayDriver> stringLocalizer)
     {
         _addressFormatterProvider = addressFormatterProvider;
         _hca = hca;
         _userService = userService;
         _regionService = regionService;
+        T = stringLocalizer;
     }
 
     public override IDisplayResult Display(AddressField field, BuildFieldDisplayContext fieldDisplayContext) =>
@@ -70,7 +74,22 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     {
         var viewModel = new AddressFieldViewModel();
 
-        if (!await updater.TryUpdateModelAsync(viewModel, Prefix)) return await EditAsync(field, context);
+        bool IsRequiredFieldEmpty(string value, string key)
+        {
+            if (!string.IsNullOrWhiteSpace(value)) return false;
+
+            // This doesn't need to be too complex as it's just a fallback from the client-side validation.
+            updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
+            return true;
+        }
+
+        if (!await updater.TryUpdateModelAsync(viewModel, Prefix) ||
+            IsRequiredFieldEmpty(viewModel.Address.Name, nameof(viewModel.Address.Name)) ||
+            IsRequiredFieldEmpty(viewModel.Address.StreetAddress1, nameof(viewModel.Address.StreetAddress1)) ||
+            IsRequiredFieldEmpty(viewModel.Address.City, nameof(viewModel.Address.City)))
+        {
+            return await EditAsync(field, context);
+        }
 
         field.Address = viewModel.Address;
 

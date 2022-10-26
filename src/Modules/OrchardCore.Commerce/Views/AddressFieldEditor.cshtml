@@ -1,14 +1,10 @@
 @using Newtonsoft.Json
 @using OrchardCore.Commerce.AddressDataType
 @using OrchardCore.Commerce.Fields
-@using OrchardCore.Commerce.Settings
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Mvc.Utilities
-@using OrchardCore.Commerce.Extensions
 @model AddressFieldEditorViewModel
 
 @{
-    var namePrefix = ((string)Model.CityName)[..^(nameof(Address.City).Length)];
+    var namePrefix = Model.CityName[..^(nameof(Address.City).Length)];
     var idPrefix = namePrefix.Replace('.', '_');
 
     var namePrefixWithoutAddress = namePrefix[..^((nameof(AddressField.Address)).Length + 1)];
@@ -27,7 +23,7 @@
 
 <div class="row">
     <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.Name))">@T["Name"]</label>
+        <label for="@(idPrefix + nameof(Address.Name))">@T["Name *"]</label>
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
@@ -64,7 +60,7 @@
 </div>
 <div class="row">
     <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.StreetAddress1))">@T["First street address"]</label>
+        <label for="@(idPrefix + nameof(Address.StreetAddress1))">@T["First street address *"]</label>
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
@@ -89,7 +85,7 @@
 </div>
 <div class="row">
     <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.City))">@T["City"]</label>
+        <label for="@(idPrefix + nameof(Address.City))">@T["City *"]</label>
     </div>
     <div class="mb-3 col-md-6">
         <input type="text"
@@ -137,7 +133,7 @@
     </div>
 </div>
 
-@if (!string.IsNullOrEmpty(Model.AddressField.UserAddressToSave))
+@if (!string.IsNullOrEmpty(Model.AddressField?.UserAddressToSave))
 {
     <input type="hidden"
            id="@(idPrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
@@ -149,7 +145,6 @@
             <input type="checkbox"
                    class="form-check-input content-preview-select address__toBeSaved"
                    data-val="true"
-                   data-val-required="The Value field is required."
                    value="true"
                    id="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))"
                    name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
