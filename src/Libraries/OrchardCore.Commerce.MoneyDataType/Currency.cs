@@ -40,6 +40,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         if (culture.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) ||
             culture.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal))
         {
+            logger?.LogError("Exception: Currency ctor, culture: {0}", culture.Name);
             throw new ArgumentOutOfRangeException(nameof(culture));
         }
 
@@ -48,7 +49,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         {
             region = new RegionInfo(culture.Name);
         }
-        catch (Exception e)
+        catch (ArgumentOutOfRangeException e)
         {
             logger?.LogError("Exception in currency ctor, culture name: {0} | Culture: {2} ", culture.Name, culture.ToString());
             logger?.LogError("Exception in currency ctor message: {0}", e.Message);
