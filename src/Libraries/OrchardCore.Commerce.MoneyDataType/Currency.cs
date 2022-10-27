@@ -3,6 +3,7 @@ using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.MoneyDataType;
@@ -57,25 +58,10 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
         string isoSymbol,
         int decimalDigits = DefaultDecimalDigits)
     {
-        if (string.IsNullOrWhiteSpace(nativeName))
-        {
-            throw new ArgumentException("NativeName is required.", nameof(nativeName));
-        }
-
-        if (string.IsNullOrWhiteSpace(englishName))
-        {
-            throw new ArgumentException("EnglishName is required.", nameof(englishName));
-        }
-
-        if (string.IsNullOrWhiteSpace(symbol))
-        {
-            throw new ArgumentException("Symbol is required.", nameof(symbol));
-        }
-
-        if (string.IsNullOrWhiteSpace(isoSymbol))
-        {
-            throw new ArgumentException("ISO Symbol is required.", nameof(isoSymbol));
-        }
+        ThrowIfMissing(nativeName);
+        ThrowIfMissing(englishName);
+        ThrowIfMissing(symbol);
+        ThrowIfMissing(isoSymbol);
 
         if (decimalDigits < 0)
         {
@@ -111,4 +97,12 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
     public static bool operator ==(Currency left, Currency right) => left.Equals(right);
 
     public static bool operator !=(Currency left, Currency right) => !(left == right);
+
+    private static void ThrowIfMissing(string argument, [CallerArgumentExpression("argument")] string name = null)
+    {
+        if (string.IsNullOrWhiteSpace(argument))
+        {
+            throw new ArgumentException($"{name} is required.", name);
+        }
+    }
 }
