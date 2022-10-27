@@ -185,10 +185,17 @@ public readonly partial struct Currency
     public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null)
     {
         ArgumentNullException.ThrowIfNull(culture);
-        if (culture.TryGetRegionInfo().ISOCurrencySymbol == "EUR") return Euro;
 
-        KnownCurrencyTable.EnsureCurrencyTable();
-        var temp = new Currency(culture);
-        return providers?.GetFirstCurrency(currency => currency.CurrencyIsoCode == temp.CurrencyIsoCode);
+        var isoCode = culture.TryGetRegionInfo()?.ISOCurrencySymbol;
+
+        switch (isoCode)
+        {
+            case null: return UnspecifiedCurrency;
+            case "EUR": return Euro;
+            default:
+                KnownCurrencyTable.EnsureCurrencyTable();
+                var result = providers?.GetFirstCurrency(currency => currency.CurrencyIsoCode == isoCode);
+                return result ?? UnspecifiedCurrency;
+        }
     }
 }
