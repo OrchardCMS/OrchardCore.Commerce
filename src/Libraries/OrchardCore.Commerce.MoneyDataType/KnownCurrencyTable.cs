@@ -61,11 +61,13 @@ internal static class KnownCurrencyTable
                 .Distinct(new CurrencyEqualityComparer())
                 .ToDictionary(currency => currency.CurrencyIsoCode, currency => currency);
 
-            CurrencyTable.Add("EUR", Currency.Euro); // International currency not derived from a culture.
-            CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
-            CurrencyTable.Add("---", Currency.UnspecifiedCurrency);
+            AddCurrency(new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
+            AddCurrency(Currency.Euro); // International currency not derived from a culture.
+            AddCurrency(Currency.UnspecifiedCurrency);
         }
     }
+
+    private static void AddCurrency(ICurrency currency) => CurrencyTable.Add(currency.CurrencyIsoCode, currency);
 
     private sealed class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
     {
