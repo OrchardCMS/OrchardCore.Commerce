@@ -64,7 +64,7 @@ public class TestController : Controller
         CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
         CurrencyTable.Add("---", Currency.UnspecifiedCurrency);
 
-        return Ok();
+        return View();
     }
 
     private sealed class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
