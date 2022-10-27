@@ -10,6 +10,30 @@ public readonly partial struct Currency
 {
     private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
 
+    private static ICurrency _unspecifiedCurrency;
+    private static ICurrency _euro;
+
+    public static ICurrency UnspecifiedCurrency
+    {
+        get
+        {
+            _unspecifiedCurrency ??= new Currency("Unspecified", "Unspecified", "---", "---");
+            return _unspecifiedCurrency;
+        }
+    }
+
+    // This is a special case (rendered with specific formatting with invariant culture) due to the currency's
+    // international nature. The values provided come from the RegionInfo of "en-EU" as available on Windows or Linux.
+    // It's hard coded because this culture/region is not available on all platforms.
+    public static ICurrency Euro
+    {
+        get
+        {
+            _euro ??= new Currency("European Union", "European Union", "€", "EUR");
+            return _euro;
+        }
+    }
+
     public static ICurrency UnitedArabEmiratesDirham => _defaultProvider.GetCurrency("AED");
     public static ICurrency AfghanAfghani => _defaultProvider.GetCurrency("AFN");
     public static ICurrency AlbanianLek => _defaultProvider.GetCurrency("ALL");
@@ -44,7 +68,6 @@ public readonly partial struct Currency
     public static ICurrency EgyptianPound => _defaultProvider.GetCurrency("EGP");
     public static ICurrency EritreanNakfa => _defaultProvider.GetCurrency("ERN");
     public static ICurrency EthiopianBirr => _defaultProvider.GetCurrency("ETB");
-    public static ICurrency Euro => _defaultProvider.GetCurrency("EUR");
     public static ICurrency BritishPound => _defaultProvider.GetCurrency("GBP");
     public static ICurrency GeorgianLari => _defaultProvider.GetCurrency("GEL");
     public static ICurrency GuatemalanQuetzal => _defaultProvider.GetCurrency("GTQ");
@@ -159,10 +182,19 @@ public readonly partial struct Currency
                FromIsoCode(region.ISOCurrencySymbol, providers);
     }
 
-    public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null)
+    public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null) =>
+        FromIsoCurrencyCode(culture?.TryGetRegionInfo()?.ISOCurrencySymbol, providers);
+
+    public static ICurrency FromIsoCurrencyCode(string isoCode, IEnumerable<ICurrencyProvider> providers = null)
     {
-        KnownCurrencyTable.EnsureCurrencyTable();
-        var temp = new Currency(culture);
-        return providers?.GetFirstCurrency(currency => currency.CurrencyIsoCode == temp.CurrencyIsoCode);
+        switch (isoCode)
+        {
+            case null: return UnspecifiedCurrency;
+            case "EUR": return Euro;
+            default:
+                KnownCurrencyTable.EnsureCurrencyTable();
+                var result = providers?.GetFirstCurrency(currency => currency.CurrencyIsoCode == isoCode);
+                return result ?? UnspecifiedCurrency;
+        }
     }
 }
