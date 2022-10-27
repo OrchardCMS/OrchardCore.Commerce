@@ -182,12 +182,11 @@ public readonly partial struct Currency
                FromIsoCode(region.ISOCurrencySymbol, providers);
     }
 
-    public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null)
+    public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null) =>
+        FromIsoCurrencyCode(culture?.TryGetRegionInfo()?.ISOCurrencySymbol, providers);
+
+    public static ICurrency FromIsoCurrencyCode(string isoCode, IEnumerable<ICurrencyProvider> providers = null)
     {
-        ArgumentNullException.ThrowIfNull(culture);
-
-        var isoCode = culture.TryGetRegionInfo()?.ISOCurrencySymbol;
-
         switch (isoCode)
         {
             case null: return UnspecifiedCurrency;
