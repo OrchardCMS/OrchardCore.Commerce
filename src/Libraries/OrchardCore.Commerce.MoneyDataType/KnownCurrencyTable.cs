@@ -8,8 +8,6 @@ namespace OrchardCore.Commerce.MoneyDataType;
 
 internal static class KnownCurrencyTable
 {
-    private const string GenericEuCultureName = "en-EU";
-
     private static readonly object _lockObject = new();
 
     internal static IDictionary<string, ICurrency> CurrencyTable { get; private set; }
@@ -31,7 +29,8 @@ internal static class KnownCurrencyTable
             cultureInfo.Name.Contains('-') &&
             !cultureInfo.IsNeutralCulture &&
             !cultureInfo.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) &&
-            !cultureInfo.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal);
+            !cultureInfo.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal) &&
+            cultureInfo.TryGetRegionInfo()?.ISOCurrencySymbol != "EUR";
 
         static int RankCultureByExpectedRelevance(CultureInfo cultureInfo)
         {
@@ -50,7 +49,6 @@ internal static class KnownCurrencyTable
         lock (_lockObject)
         {
             var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(IsValid).ToList();
-            cultures.Add(new CultureInfo(GenericEuCultureName));
 
             CurrencyTable = cultures
                 .GroupBy(culture => culture.Name.Split('-').Last())
@@ -59,11 +57,11 @@ internal static class KnownCurrencyTable
                     .ThenBy(culture => culture.EnglishName)
                     .First())
                 .Select(culture => new Currency(culture))
-                .Where(currency => currency.CurrencyIsoCode != "EUR" || currency.Culture.Name == GenericEuCultureName)
                 .Cast<ICurrency>()
                 .Distinct(new CurrencyEqualityComparer())
                 .ToDictionary(currency => currency.CurrencyIsoCode, currency => currency);
 
+            CurrencyTable.Add("EUR", Currency.Euro); // International currency not derived from a culture.
             CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
             CurrencyTable.Add("---", Currency.UnspecifiedCurrency);
         }

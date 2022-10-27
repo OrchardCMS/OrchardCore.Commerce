@@ -166,6 +166,9 @@ public readonly partial struct Currency
 
     public static ICurrency FromCulture(CultureInfo culture, IEnumerable<ICurrencyProvider> providers = null)
     {
+        ArgumentNullException.ThrowIfNull(culture);
+        if (culture.TryGetRegionInfo().ISOCurrencySymbol == "EUR") return Euro;
+
         KnownCurrencyTable.EnsureCurrencyTable();
         var temp = new Currency(culture);
         return providers?.GetFirstCurrency(currency => currency.CurrencyIsoCode == temp.CurrencyIsoCode);
