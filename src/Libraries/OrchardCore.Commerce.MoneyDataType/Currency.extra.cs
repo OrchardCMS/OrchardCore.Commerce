@@ -10,6 +10,12 @@ public readonly partial struct Currency
 {
     private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
 
+    public static ICurrency UnspecifiedCurrency { get; } = new Currency("Unspecified", "Unspecified", "---", "---");
+
+    // This is a special case (rendered with specific formatting with invariant culture) due to the currency's
+    // international nature.
+    public static Currency Euro { get; } = new("European Union", "European Union", "€", "EUR");
+
     public static ICurrency UnitedArabEmiratesDirham => _defaultProvider.GetCurrency("AED");
     public static ICurrency AfghanAfghani => _defaultProvider.GetCurrency("AFN");
     public static ICurrency AlbanianLek => _defaultProvider.GetCurrency("ALL");
@@ -44,7 +50,6 @@ public readonly partial struct Currency
     public static ICurrency EgyptianPound => _defaultProvider.GetCurrency("EGP");
     public static ICurrency EritreanNakfa => _defaultProvider.GetCurrency("ERN");
     public static ICurrency EthiopianBirr => _defaultProvider.GetCurrency("ETB");
-    public static ICurrency Euro => _defaultProvider.GetCurrency("EUR");
     public static ICurrency BritishPound => _defaultProvider.GetCurrency("GBP");
     public static ICurrency GeorgianLari => _defaultProvider.GetCurrency("GEL");
     public static ICurrency GuatemalanQuetzal => _defaultProvider.GetCurrency("GTQ");

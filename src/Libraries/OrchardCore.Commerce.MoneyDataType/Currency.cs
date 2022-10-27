@@ -27,8 +27,6 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 
     public CultureInfo Culture { get; }
 
-    public static ICurrency UnspecifiedCurrency { get; } = new Currency("Unspecified", "Unspecified", "---", "---");
-
     private string DebuggerDisplay => CurrencyIsoCode;
 
     public Currency(CultureInfo culture)
@@ -89,10 +87,17 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 
     public override string ToString() => Symbol;
 
-    public string ToString(decimal amount) =>
-        Culture is null
+    public string ToString(decimal amount)
+    {
+        if (CurrencyIsoCode == "EUR")
+        {
+            return Symbol + amount.ToString("F" + DecimalPlaces, CultureInfo.InvariantCulture);
+        }
+
+        return Culture is null
             ? $"({CurrencyIsoCode}) {amount.ToString("N" + DecimalPlaces, CultureInfo.InvariantCulture)}"
             : amount.ToString("C" + DecimalPlaces, Culture);
+    }
 
     public static bool operator ==(Currency left, Currency right) => left.Equals(right);
 
