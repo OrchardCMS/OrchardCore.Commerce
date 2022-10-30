@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,6 +14,8 @@ namespace OrchardCore.Commerce.ViewModels;
     Justification = "We don't want to mess with the RouteValueDictionary, also it's just a view-model so it's safe.")]
 public class OrderLineItemViewModel
 {
+    [BindNever]
+    public ProductPart ProductPart { get; set; }
     public int Quantity { get; set; }
     public string ProductSku { get; set; }
     public string ProductName { get; set; }

@@ -33,6 +33,8 @@ namespace OrchardCore.Commerce.Controllers;
 
 public class PaymentController : Controller
 {
+    private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
+
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -125,6 +127,31 @@ public class PaymentController : Controller
         return View(checkoutViewModel);
     }
 
+    [Route("checkout/validate")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Validate()
+    {
+        try
+        {
+            var order = await _contentManager.NewAsync(Order);
+            await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
+
+            return Json(new { Errors = errors });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, FormValidationExceptionMessage);
+
+            var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
+                    ? exception.ToString()
+                    : FormValidationExceptionMessage;
+
+            return Json(new { Errors = new[] { errorMessage } });
+        }
+    }
+
     [Route("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
     {
@@ -142,6 +169,15 @@ public class PaymentController : Controller
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+        if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
+        {
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
+            _logger.LogError(
+                "The payment has been successful, but the order is invalid. Validation errors: {ValidationErrors}",
+                string.Join(", ", errors));
+
+            return Forbid();
+        }
 
         // Saving addresses.
         var userService = _userServiceLazy.Value;

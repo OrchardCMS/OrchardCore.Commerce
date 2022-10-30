@@ -1,5 +1,9 @@
 @model OrchardCore.Commerce.ViewModels.CheckoutViewModel
 
+<mvc-title text="@T["Checkout"]" />
+
+<div class="message-error" hidden></div>
+
 @await DisplayAsync(Model)
 
 @await DisplayAsync(Model.CheckoutShape)

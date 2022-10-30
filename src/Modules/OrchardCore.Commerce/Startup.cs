@@ -154,11 +154,20 @@ public class Startup : StartupBase
                 option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
                 option.MemberAccessStrategy.Register<ShoppingCartCellViewModel>();
                 option.MemberAccessStrategy.Register<ShoppingCartLineViewModel>();
+                option.MemberAccessStrategy.Register<CheckoutViewModel>();
+                option.MemberAccessStrategy.Register<OrderPartViewModel>();
+                option.MemberAccessStrategy.Register<OrderLineItemViewModel>();
+                option.MemberAccessStrategy.Register<AddressFieldEditorViewModel>();
+                option.MemberAccessStrategy.Register<OrderPart>();
+                option.MemberAccessStrategy.Register<AddressField>();
+                option.MemberAccessStrategy.Register<IPayment>();
                 option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
                 option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
             })
             // Liquid filter to convert JToken value to Amount struct in liquid.
-            .AddLiquidFilter<AmountConverterFilter>("amount");
+            .AddLiquidFilter<AmountConverterFilter>("amount")
+            // Liquid filter to create AddressFiledEditorViewModel.
+            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model");
     }
 }
 
