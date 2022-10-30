@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
@@ -115,6 +114,10 @@ public class PaymentController : Controller
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
+            CheckoutShape = await _contentItemDisplayManager.BuildDisplayAsync(
+                await _contentManager.NewAsync(Order),
+                _updateModelAccessor.ModelUpdater,
+                "Checkout"),
         };
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
