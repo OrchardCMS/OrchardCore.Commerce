@@ -1,0 +1,20 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace OrchardCore.Commerce.Services;
+
+/// <summary>
+/// A service for displaying all fields of a content item.
+/// </summary>
+public interface IFieldsOnlyDisplayManager
+{
+    /// <summary>
+    /// Returns a collection of shapes for each field in the given <paramref name="displayType"/>.
+    /// </summary>
+    Task<IEnumerable<IShape>> DisplayFieldsAsync(
+        ContentItem contentItem,
+        string displayType = CommonContentDisplayTypes.Detail);
+}

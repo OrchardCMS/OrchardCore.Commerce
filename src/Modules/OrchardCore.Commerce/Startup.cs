@@ -55,6 +55,7 @@ public class Startup : StartupBase
         services.AddTagHelpers<MvcTitleTagHelper>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
