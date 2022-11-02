@@ -167,7 +167,9 @@ public class Startup : StartupBase
             // Liquid filter to convert JToken value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
             // Liquid filter to create AddressFiledEditorViewModel.
-            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model");
+            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
+            // Liquid filter to create OrderLineItemViewModels.
+            .AddLiquidFilter<OrderLineItemViewModelsConverterFilter>("order_line_item_view_models");
     }
 }
 
