@@ -1,0 +1,21 @@
+@using OrchardCore
+@using OrchardCore.Mvc.Core.Utilities
+@using OrchardCore.Templates.Controllers
+
+@{
+    var checkoutShapeTypes = Model.CheckoutShapeTypes as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var currentUrl = Url.GetBaseUrl();
+}
+
+<fieldset class="mb-3">
+    <label>@T["Create Templates for the Checkout Screen"]</label>
+    <ul>
+        @foreach (var shapeType in checkoutShapeTypes.OrderBy(item => item))
+        {
+            var url = Orchard.Action<TemplateController>(controller => controller.Create(null, false, currentUrl));
+            url += $"{url}&name={shapeType}";
+
+            <li><a href="@url">@shapeType</a></li>
+        }
+    </ul>
+</fieldset>

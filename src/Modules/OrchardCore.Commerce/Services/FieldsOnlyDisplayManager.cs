@@ -19,12 +19,12 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         _shapeFactory = shapeFactory;
     }
 
-    public async Task<IEnumerable<IShape>> DisplayFieldsAsync(
+    public IEnumerable<string> GetFieldShapeTypes(
         ContentItem contentItem,
         string displayType = CommonContentDisplayTypes.Detail)
     {
         var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-        var fieldShapeTypes = typeDefinition
+        return typeDefinition
             .Parts
             .SelectMany(part =>
                 part.PartDefinition.Fields.Select(field => new
@@ -33,6 +33,13 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
                     FieldName = field.Name,
                 }))
             .Select(item => $"{contentItem.ContentType}_{displayType}__{item.PartName}__{item.FieldName}");
+    }
+
+    public async Task<IEnumerable<IShape>> DisplayFieldsAsync(
+        ContentItem contentItem,
+        string displayType = CommonContentDisplayTypes.Detail)
+    {
+        var fieldShapeTypes = GetFieldShapeTypes(contentItem, displayType);
 
         var shapes = new List<IShape>();
         foreach (var shapeType in fieldShapeTypes)

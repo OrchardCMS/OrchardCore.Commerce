@@ -12,6 +12,13 @@ namespace OrchardCore.Commerce.Services;
 public interface IFieldsOnlyDisplayManager
 {
     /// <summary>
+    /// Returns a collection of display type names for each field in the given <paramref name="displayType"/>.
+    /// </summary>
+    IEnumerable<string> GetFieldShapeTypes(
+        ContentItem contentItem,
+        string displayType = CommonContentDisplayTypes.Detail);
+
+    /// <summary>
     /// Returns a collection of shapes for each field in the given <paramref name="displayType"/>.
     /// </summary>
     Task<IEnumerable<IShape>> DisplayFieldsAsync(
