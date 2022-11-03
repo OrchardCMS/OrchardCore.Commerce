@@ -24,4 +24,12 @@ public interface IFieldsOnlyDisplayManager
     Task<IEnumerable<IShape>> DisplayFieldsAsync(
         ContentItem contentItem,
         string displayType = CommonContentDisplayTypes.Detail);
+
+    /// <summary>
+    /// Returns a collection of URLs that either edit an existing template or create a new one if none exists for each
+    /// field in the given <paramref name="displayType"/>.
+    /// </summary>
+    Task<IEnumerable<string>> GetFieldTemplateEditorUrlsAsync(
+        ContentItem contentItem,
+        string displayType = CommonContentDisplayTypes.Detail);
 }

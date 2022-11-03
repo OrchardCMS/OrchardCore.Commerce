@@ -4,5 +4,5 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class OrderPartTemplatesViewModel
 {
-    public IEnumerable<string> CheckoutShapeTypes { get; set; }
+    public IEnumerable<string> TemplateUrls { get; set; }
 }

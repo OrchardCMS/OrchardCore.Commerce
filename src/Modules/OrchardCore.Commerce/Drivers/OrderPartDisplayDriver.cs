@@ -1,4 +1,3 @@
-using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -12,7 +11,6 @@ using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Drivers;
@@ -48,7 +46,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 "OrderPart_TemplateLinks",
                 async viewModel =>
                 {
-                    viewModel.CheckoutShapeTypes = _fieldsOnlyDisplayManager.GetFieldShapeTypes(
+                    viewModel.TemplateUrls = await _fieldsOnlyDisplayManager.GetFieldTemplateEditorUrlsAsync(
                         await _contentManager.NewAsync(Order),
                         "Checkout");
                 })
