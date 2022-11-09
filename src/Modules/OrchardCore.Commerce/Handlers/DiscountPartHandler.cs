@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
@@ -31,31 +32,53 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
     {
         if (instance.ContentItem.As<DiscountPart>() is not { } discountPart) return Task.CompletedTask;
 
-        var discountPercentage = discountPart.Percentage?.Value ?? 0;
-        var discountAmount = discountPart.Amount;
+        var discountPercentage = discountPart.DiscountPercentage?.Value ?? 0;
+        var discountAmount = discountPart.DiscountAmount.Amount;
 
-        // IsValid allows 0 value, if the percentage is 0 it's not present.
+        // IsValid allows 0 value, but if the percentage is 0 it's not present.
         var isDiscountAmountPresent = discountAmount.IsValid && discountAmount.Value > 0;
 
         var isDiscountPercentagePresent = discountPercentage > 0;
 
         if (isDiscountPercentagePresent && isDiscountAmountPresent)
         {
-            InvalidateUnevenState();
+            InvalidateEvenState();
+        }
+
+        if ((instance.ContentItem.As<PricePart>() is { } pricePart &&
+            pricePart.Price < discountAmount) ||
+            (instance.ContentItem.As<TaxPart>() is { } taxPart &&
+            taxPart.GrossPrice.Amount < discountAmount))
+        {
+            InvalidateNegativePriceState();
         }
 
         return Task.CompletedTask;
     }
 
-    private void InvalidateUnevenState()
+    private void InvalidateEvenState()
     {
         var definition = _contentDefinitionManager.GetPartDefinition(nameof(DiscountPart));
         var percentageName = definition.Fields
-            .Single(field => field.Name == nameof(DiscountPart.Percentage)).DisplayName();
-        var amountName = definition.Fields.Single(field => field.Name == nameof(DiscountPart.Amount)).DisplayName();
+            .Single(field => field.Name == nameof(DiscountPart.DiscountPercentage)).DisplayName();
+
+        var amountName = definition.Fields
+            .Single(field => field.Name == nameof(DiscountPart.DiscountAmount)).DisplayName();
 
         _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
-            nameof(TaxPart.GrossPrice),
+            nameof(DiscountPart.DiscountPercentage),
             T["You must either provide only {0}, or {1}, or neither of them.", percentageName, amountName]);
+    }
+
+    private void InvalidateNegativePriceState()
+    {
+        var definition = _contentDefinitionManager.GetPartDefinition(nameof(DiscountPart));
+
+        var amountName = definition.Fields
+            .Single(field => field.Name == nameof(DiscountPart.DiscountAmount)).DisplayName();
+
+        _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
+            nameof(DiscountPart.DiscountAmount),
+            T["Discount amount must be smaller than the product's original price.", amountName]);
     }
 }
