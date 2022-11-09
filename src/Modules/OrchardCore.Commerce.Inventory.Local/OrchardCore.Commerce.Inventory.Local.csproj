@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,12 +17,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="License.md" Pack="true" PackagePath="" />
     <None Include="Readme.md" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.4.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <LombiqHelpfulLibrariesPath>..\..\..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
