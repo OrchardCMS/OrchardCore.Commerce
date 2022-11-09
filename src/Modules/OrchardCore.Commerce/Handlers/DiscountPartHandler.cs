@@ -16,11 +16,11 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IStringLocalizer<TaxPartAndPricePartHandler> T;
+    private readonly IStringLocalizer<DiscountPart> T;
 
     public DiscountPartHandler(
         IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<TaxPartAndPricePartHandler> stringLocalizer,
+        IStringLocalizer<DiscountPart> stringLocalizer,
         IUpdateModelAccessor updateModelAccessor)
     {
         _contentDefinitionManager = contentDefinitionManager;

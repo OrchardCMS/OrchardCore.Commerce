@@ -20,10 +20,10 @@ using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
-using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -223,7 +223,7 @@ public class CurrencySettingsStartup : StartupBase
         services.AddScoped<ICurrencySelector, CurrencySettingsSelector>();
 }
 
-[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
+[RequireFeatures(CommerceConstants.Features.Core, Tax.Constants.FeatureIds.Tax)]
 public class TaxStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -234,6 +234,15 @@ public class TaxStartup : StartupBase
 
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
     }
+}
+
+[RequireFeatures(CommerceConstants.Features.Core, Promotion.Constants.FeatureIds.Promotion)]
+public class PromotionStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services
+            .AddContentPart<DiscountPart>()
+            .AddHandler<DiscountPartHandler>();
 }
 
 [RequireFeatures(CommerceConstants.Features.Core, "OrchardCore.Users.CustomUserSettings")]

@@ -65,6 +65,7 @@
         "OrchardCore.Commerce.SessionCartStorage",
 
         "OrchardCore.Commerce.ContentFields",
+        "OrchardCore.Commerce.Promotion",
         "OrchardCore.Commerce.Tax",
 
         // Themes
