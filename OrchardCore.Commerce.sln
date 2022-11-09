@@ -44,9 +44,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\publish-nuget.yml = .github\workflows\publish-nuget.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.ContentFields", "src\Modules\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj", "{8027FB33-B110-48A2-9B71-89F1EA96EB67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.ContentFields", "src\Modules\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj", "{8027FB33-B110-48A2-9B71-89F1EA96EB67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Tax", "src\Modules\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj", "{608F7404-4879-43EE-9B20-4A019682BF20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tax", "src\Modules\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj", "{608F7404-4879-43EE-9B20-4A019682BF20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Inventory.Local", "OrchardCore.Commerce.Inventory.Local\OrchardCore.Commerce.Inventory.Local.csproj", "{C759F344-52E4-44E1-94AB-396C7843F30D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +88,10 @@ Global
 		{608F7404-4879-43EE-9B20-4A019682BF20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{608F7404-4879-43EE-9B20-4A019682BF20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{608F7404-4879-43EE-9B20-4A019682BF20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C759F344-52E4-44E1-94AB-396C7843F30D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C759F344-52E4-44E1-94AB-396C7843F30D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C759F344-52E4-44E1-94AB-396C7843F30D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C759F344-52E4-44E1-94AB-396C7843F30D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{A4CAB4D8-DD0C-4689-868E-DF45106E2DD1} = {4561F321-6E57-484B-950C-AC46798B1F40}
 		{8027FB33-B110-48A2-9B71-89F1EA96EB67} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{608F7404-4879-43EE-9B20-4A019682BF20} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
+		{C759F344-52E4-44E1-94AB-396C7843F30D} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}
