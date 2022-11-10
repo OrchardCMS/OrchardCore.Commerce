@@ -59,6 +59,7 @@ public class DiscountPartMigrations : DataMigration
                     {
                         Hint = "The amount of maximum products that the discount can be applied to. If the quantity " +
                             "is higher than this, the discount is ignored. Type 0 for infinite products.",
+                        Minimum = 0,
                     }))
                 .WithField(part => part.MinimumProducts, part => part
                     .WithDisplayName("Minimum Products")
@@ -66,6 +67,7 @@ public class DiscountPartMigrations : DataMigration
                     {
                         Hint = "The amount of minimum products that the discount can be applied to. If the quantity " +
                             "is lower than this, the discount is ignored.",
+                        Minimum = 0,
                     }))
             );
 
