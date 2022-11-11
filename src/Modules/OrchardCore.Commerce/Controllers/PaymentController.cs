@@ -37,7 +37,7 @@ public class PaymentController : Controller
 {
     private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
 
-    private readonly IWorkflowManager _workflowManager;
+    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -62,7 +62,7 @@ public class PaymentController : Controller
         IUpdateModelAccessor updateModelAccessor,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
-        IWorkflowManager workflowManager)
+        IEnumerable<IWorkflowManager> workflowManagers)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -76,7 +76,7 @@ public class PaymentController : Controller
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
-        _workflowManager = workflowManager;
+        _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
     }
 
@@ -207,9 +207,10 @@ public class PaymentController : Controller
 
         await _contentManager.UpdateAsync(order);
 
-        if (_workflowManager != null)
+        if (_workflowManagers != null)
         {
-            await _workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
+            await _workflowManagers.FirstOrDefault()
+                .TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
         }
 
         return Redirect($"~/success/{order.ContentItemId}");

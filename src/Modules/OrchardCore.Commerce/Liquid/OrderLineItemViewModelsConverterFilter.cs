@@ -2,30 +2,20 @@ using Fluid;
 using Fluid.Values;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Helpers;
 using OrchardCore.Commerce.Models;
-using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Liquid;
 
 public class OrderLineItemViewModelsConverterFilter : ILiquidFilter
 {
-    private readonly IProductService _productService;
-    private readonly IEnumerable<ITaxProvider> _taxProviders;
-    private readonly IContentManager _contentManager;
+    private readonly IOrderLineItemService _orderLineItemService;
 
-    public OrderLineItemViewModelsConverterFilter(
-        IProductService productService,
-        IEnumerable<ITaxProvider> taxProviders,
-        IContentManager contentManager)
-    {
-        _productService = productService;
-        _taxProviders = taxProviders;
-        _contentManager = contentManager;
-    }
+    public OrderLineItemViewModelsConverterFilter(IOrderLineItemService orderLineItemService) =>
+        _orderLineItemService = orderLineItemService;
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
@@ -34,15 +24,11 @@ public class OrderLineItemViewModelsConverterFilter : ILiquidFilter
             return await new ValueTask<FluidValue>(input);
         }
 
-        var lineItems = new List<OrderLineItem>();
+        var lineItems = objectLineItems
+            .Select(objectLineItem => ((JObject)objectLineItem).ToObject<OrderLineItem>()).ToList();
 
-        foreach (var objectLineItem in objectLineItems)
-        {
-            lineItems.Add(((JObject)objectLineItem).ToObject<OrderLineItem>());
-        }
-
-        var viewModels = (await OrderLineItemHelpers
-            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, _contentManager, _productService, _taxProviders))
+        var viewModels = (await _orderLineItemService
+            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems))
             .ViewModels;
 
         return await new ValueTask<FluidValue>(new ObjectValue(viewModels));

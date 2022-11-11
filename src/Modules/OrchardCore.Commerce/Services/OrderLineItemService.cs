@@ -8,21 +8,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Helpers;
+namespace OrchardCore.Commerce.Services;
 
-public static class OrderLineItemHelpers
+public class OrderLineItemService : IOrderLineItemService
 {
-    public static async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
-        IList<OrderLineItem> lineItems,
-        IContentManager contentManager,
+    private readonly IProductService _productService;
+    private readonly IContentManager _contentManager;
+    private readonly IEnumerable<ITaxProvider> _taxProviders;
+
+    public OrderLineItemService(
         IProductService productService,
+        IContentManager contentManager,
         IEnumerable<ITaxProvider> taxProviders)
     {
-        var products = await productService.GetProductDictionaryAsync(lineItems.Select(line => line.ProductSku));
+        _productService = productService;
+        _contentManager = contentManager;
+        _taxProviders = taxProviders;
+    }
+
+    public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
+    IList<OrderLineItem> lineItems)
+    {
+        var products = await _productService.GetProductDictionaryAsync(lineItems.Select(line => line.ProductSku));
         var viewModelLineItems = await Task.WhenAll(lineItems.Select(async lineItem =>
         {
             var product = products[lineItem.ProductSku];
-            var metaData = await contentManager.GetContentItemMetadataAsync(product);
+            var metaData = await _contentManager.GetContentItemMetadataAsync(product);
 
             return new OrderLineItemViewModel
             {
@@ -39,7 +50,7 @@ public static class OrderLineItemHelpers
 
         var total = viewModelLineItems.Select(item => item.LinePrice).Sum();
 
-        if (taxProviders.Any())
+        if (_taxProviders.Any())
         {
             var taxContext = new TaxProviderContext(
                 viewModelLineItems.Select(item => new TaxProviderContextLineItem(
@@ -48,7 +59,7 @@ public static class OrderLineItemHelpers
                     item.Quantity)),
                 new[] { total });
 
-            taxContext = await taxProviders.UpdateWithFirstApplicableProviderAsync(taxContext);
+            taxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxContext);
             total = taxContext.TotalsByCurrency.Single();
 
             foreach (var (item, index) in taxContext.Items.Select((item, index) => (item, index)))

@@ -1,8 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Helpers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -16,19 +14,10 @@ namespace OrchardCore.Commerce.Drivers;
 
 public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 {
-    private readonly IContentManager _contentManager;
-    private readonly IProductService _productService;
-    private readonly IEnumerable<ITaxProvider> _taxProviders;
+    private readonly IOrderLineItemService _orderLineItemService;
 
-    public OrderPartDisplayDriver(
-        IContentManager contentManager,
-        IProductService productService,
-        IEnumerable<ITaxProvider> taxProviders)
-    {
-        _contentManager = contentManager;
-        _productService = productService;
-        _taxProviders = taxProviders;
-    }
+    public OrderPartDisplayDriver(IOrderLineItemService orderLineItemService) =>
+        _orderLineItemService = orderLineItemService;
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
         Initialize<OrderPartViewModel>(GetDisplayShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part))
@@ -67,8 +56,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     {
         model.ContentItem = part.ContentItem;
         var lineItems = part.LineItems;
-        var lineItemViewModelsAndTotal = await OrderLineItemHelpers
-            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, _contentManager, _productService, _taxProviders);
+        var lineItemViewModelsAndTotal = await _orderLineItemService
+            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems);
 
         model.Total = lineItemViewModelsAndTotal.Total;
         model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);
