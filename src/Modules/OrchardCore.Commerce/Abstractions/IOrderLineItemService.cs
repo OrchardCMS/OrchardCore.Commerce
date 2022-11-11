@@ -15,5 +15,6 @@ public interface IOrderLineItemService
     /// Returns the list of <see cref="OrderLineItemViewModel"/>s and the total <see cref="Amount"/> from the provided
     /// list of <paramref name="lineItems"/>.
     /// </summary>
-    Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(IList<OrderLineItem> lineItems);
+    Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
+        IList<OrderLineItem> lineItems);
 }
