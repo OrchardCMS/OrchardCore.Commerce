@@ -17,6 +17,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
+    private readonly IPromotionService _promotionService;
 
     public ShoppingCartHelpers(
         IPriceService priceService,
@@ -24,13 +25,15 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer)
+        IHtmlLocalizer<ShoppingCartHelpers> localizer,
+        IPromotionService promotionService)
     {
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
+        _promotionService = promotionService;
         H = localizer;
     }
 
@@ -39,6 +42,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPricesAsync(cart.Items);
+        items = await _promotionService.AddPromotionsAsync(items);
 
         IList<ShoppingCartLineViewModel> lines = items
             .Select(item =>

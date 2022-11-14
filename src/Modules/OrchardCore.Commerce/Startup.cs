@@ -144,6 +144,9 @@ public class Startup : StartupBase
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
 
+        // Promotion
+        services.AddScoped<IPromotionService, PromotionService>();
+
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
@@ -239,10 +242,14 @@ public class TaxStartup : StartupBase
 [RequireFeatures(CommerceConstants.Features.Core, Promotion.Constants.FeatureIds.Promotion)]
 public class PromotionStartup : StartupBase
 {
-    public override void ConfigureServices(IServiceCollection services) =>
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services
             .AddContentPart<DiscountPart>()
             .AddHandler<DiscountPartHandler>();
+
+        services.AddScoped<IPromotionProvider, DiscountProvider>();
+    }
 }
 
 [RequireFeatures(CommerceConstants.Features.Core, "OrchardCore.Users.CustomUserSettings")]

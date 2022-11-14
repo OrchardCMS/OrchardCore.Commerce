@@ -20,9 +20,8 @@ public class DiscountProvider : IPromotionProvider
 
     public int Order => 0;
 
-    public DiscountProvider(
-        IProductService productService) =>
-            _productService = productService;
+    public DiscountProvider(IProductService productService) =>
+        _productService = productService;
 
     public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
     {
@@ -34,6 +33,8 @@ public class DiscountProvider : IPromotionProvider
                 : item)
             .ToList();
     }
+
+    public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model) => Task.FromResult(true);
 
     private static ShoppingCartItem ApplyPromotionToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
     {
@@ -47,6 +48,9 @@ public class DiscountProvider : IPromotionProvider
         {
             var discountPercentage = discountPart.DiscountPercentage?.Value;
             var discountAmount = discountPart.DiscountAmount?.Amount;
+
+            if (discountPart.BeginningUtc.Value > DateTime.UtcNow || discountPart.ExpirationUtc.Value < DateTime.UtcNow)
+                continue;
 
             if (discountPercentage is { } and not 0)
             {
