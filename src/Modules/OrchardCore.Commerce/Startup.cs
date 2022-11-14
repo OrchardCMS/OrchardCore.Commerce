@@ -120,6 +120,7 @@ public class Startup : StartupBase
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
+        services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplay>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
@@ -127,6 +128,7 @@ public class Startup : StartupBase
 
         services.AddScoped<IDataMigration, OrderMigrations>();
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
+        services.AddScoped<IOrderLineItemService, OrderLineItemService>();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();
@@ -167,7 +169,9 @@ public class Startup : StartupBase
             // Liquid filter to convert JToken value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
             // Liquid filter to create AddressFiledEditorViewModel.
-            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model");
+            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
+            // Liquid filter to create OrderLineItemViewModels.
+            .AddLiquidFilter<OrderLineItemViewModelsConverterFilter>("order_line_item_view_models");
     }
 }
 
