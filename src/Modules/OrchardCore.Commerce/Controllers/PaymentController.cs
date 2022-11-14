@@ -207,10 +207,9 @@ public class PaymentController : Controller
 
         await _contentManager.UpdateAsync(order);
 
-        if (_workflowManagers != null)
+        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
         {
-            await _workflowManagers.FirstOrDefault()
-                .TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
+            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
         }
 
         return Redirect($"~/success/{order.ContentItemId}");
