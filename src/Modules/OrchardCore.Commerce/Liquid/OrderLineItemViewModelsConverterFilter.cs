@@ -25,7 +25,8 @@ public class OrderLineItemViewModelsConverterFilter : ILiquidFilter
         }
 
         var lineItems = objectLineItems
-            .Select(objectLineItem => ((JObject)objectLineItem).ToObject<OrderLineItem>()).ToList();
+            .Select(objectLineItem => ((JObject)objectLineItem).ToObject<OrderLineItem>())
+            .ToList();
 
         var viewModels = (await _orderLineItemService
             .CreateOrderLineItemViewModelsAndTotalAsync(lineItems))
