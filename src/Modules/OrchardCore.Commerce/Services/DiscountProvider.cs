@@ -38,6 +38,9 @@ public class DiscountProvider : IPromotionProvider
 
     private static ShoppingCartItem ApplyPromotionToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
     {
+        var itemPrices = item.Prices;
+        var itemQuantity = item.Quantity;
+
         var discountParts = productPart
             .ContentItem
             .OfType<DiscountPart>();
@@ -46,15 +49,23 @@ public class DiscountProvider : IPromotionProvider
 
         foreach (var discountPart in discountParts)
         {
+            var discountMaximumProducts = discountPart.MaximumProducts.Value;
+
             var discountPercentage = discountPart.DiscountPercentage?.Value;
             var discountAmount = discountPart.DiscountAmount?.Amount;
 
-            if (discountPart.BeginningUtc.Value > DateTime.UtcNow || discountPart.ExpirationUtc.Value < DateTime.UtcNow)
+            if (discountPart.BeginningUtc.Value > DateTime.UtcNow ||
+                discountPart.ExpirationUtc.Value < DateTime.UtcNow ||
+                discountPart.MinimumProducts.Value > itemQuantity ||
+                (discountMaximumProducts > 0 && discountMaximumProducts < itemQuantity))
+            {
+                newPrices.AddRange(itemPrices);
                 continue;
+            }
 
             if (discountPercentage is { } and not 0)
             {
-                newPrices.AddRange(item.Prices.Select(prioritizedPrice =>
+                newPrices.AddRange(itemPrices.Select(prioritizedPrice =>
                     new PrioritizedPrice(
                         prioritizedPrice.Priority,
                         new Amount(
@@ -66,7 +77,7 @@ public class DiscountProvider : IPromotionProvider
                 notNullDiscountAmount.IsValid &&
                 notNullDiscountAmount.Value != 0)
             {
-                newPrices.AddRange(item.Prices.Select(prioritizedPrice =>
+                newPrices.AddRange(itemPrices.Select(prioritizedPrice =>
                     new PrioritizedPrice(
                         prioritizedPrice.Priority,
                         new Amount(
