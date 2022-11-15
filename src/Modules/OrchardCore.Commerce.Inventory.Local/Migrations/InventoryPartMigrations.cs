@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Forms;
 using OrchardCore.Commerce.Inventory.Local.Models;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
@@ -62,6 +63,7 @@ public class InventoryPartMigrations : DataMigration
                 )
                 .WithField(part => part.OutOfStockMessage, field => field
                     .WithDisplayName("Out of Stock Message")
+                    .WithEditor("Multiline")
                     .WithSettings(new HtmlFieldSettings
                     {
                         Hint = "Enables a specific message for an out of stock product. Can be used to give an ETA.",

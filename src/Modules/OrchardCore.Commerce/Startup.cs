@@ -61,6 +61,7 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, ProductMigrations>();
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductInventoryService, ProductInventoryService>();
         services.AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>()
             .AddHandler<SkuValidationHandler>();
