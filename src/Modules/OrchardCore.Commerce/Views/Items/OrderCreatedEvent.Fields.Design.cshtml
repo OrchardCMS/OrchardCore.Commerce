@@ -1,0 +1,6 @@
+@using OrchardCore.Workflows.Helpers
+@model OrchardCore.Workflows.ViewModels.ActivityViewModel<OrchardCore.Commerce.Activities.OrderCreatedEvent>
+
+<header>
+    <h4><i class="fa fa-truck"></i>@Model.Activity.GetTitleOrDefault(() => T["Order was created"])</h4>
+</header>
