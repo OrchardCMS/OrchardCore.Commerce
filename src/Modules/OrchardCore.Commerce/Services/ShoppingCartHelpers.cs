@@ -17,7 +17,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
-    private readonly IPromotionService _promotionService;
 
     public ShoppingCartHelpers(
         IPriceService priceService,
@@ -33,7 +32,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
-        _promotionService = promotionService;
         H = localizer;
     }
 
@@ -42,7 +40,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPricesAsync(cart.Items);
-        items = await _promotionService.AddPromotionsAsync(items);
 
         IList<ShoppingCartLineViewModel> lines = items
             .Select(item =>
@@ -74,7 +71,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         };
         IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
 
-        foreach (var shoppingCartEvent in _shoppingCartEvents)
+        foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
             (totals, headers, lines) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
         }
