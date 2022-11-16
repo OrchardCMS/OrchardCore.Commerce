@@ -14,6 +14,7 @@ public class PromotionShoppingCartEvents : IShoppingCartEvents
 {
     private readonly IPromotionService _promotionService;
 
+    // Promotions should be applied after taxes.
     public int Order => int.MaxValue;
 
     public PromotionShoppingCartEvents(IPromotionService promotionService) =>
