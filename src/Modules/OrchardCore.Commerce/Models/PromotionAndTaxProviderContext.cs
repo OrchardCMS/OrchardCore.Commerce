@@ -6,21 +6,21 @@ using System.Linq;
 
 namespace OrchardCore.Commerce.Models;
 
-public record TaxProviderContext(
-    IEnumerable<TaxProviderContextLineItem> Items,
+public record PromotionAndTaxProviderContext(
+    IEnumerable<PromotionAndTaxProviderContextLineItem> Items,
     IEnumerable<Amount> TotalsByCurrency)
 {
-    public TaxProviderContext(
+    public PromotionAndTaxProviderContext(
         ICollection<ShoppingCartLineViewModel> lines,
         IEnumerable<Amount> totalsByCurrency)
         : this(
-            lines.Select(line => new TaxProviderContextLineItem(line.Product, line.UnitPrice, line.Quantity)),
+            lines.Select(line => new PromotionAndTaxProviderContextLineItem(line.Product, line.UnitPrice, line.Quantity)),
             totalsByCurrency)
     {
     }
 }
 
-public record TaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity)
+public record PromotionAndTaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity)
 {
     public Amount Subtotal => UnitPrice * Quantity;
 }
