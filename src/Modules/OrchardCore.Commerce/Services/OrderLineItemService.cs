@@ -15,15 +15,18 @@ public class OrderLineItemService : IOrderLineItemService
     private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
+    private readonly IPromotionService _promotionService;
 
     public OrderLineItemService(
         IProductService productService,
         IContentManager contentManager,
-        IEnumerable<ITaxProvider> taxProviders)
+        IEnumerable<ITaxProvider> taxProviders,
+        IPromotionService promotionService)
     {
         _productService = productService;
         _contentManager = contentManager;
         _taxProviders = taxProviders;
+        _promotionService = promotionService;
     }
 
     public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
@@ -34,7 +37,6 @@ public class OrderLineItemService : IOrderLineItemService
         {
             var product = products[lineItem.ProductSku];
             var metaData = await _contentManager.GetContentItemMetadataAsync(product);
-
             return new OrderLineItemViewModel
             {
                 ProductPart = product,
@@ -50,25 +52,28 @@ public class OrderLineItemService : IOrderLineItemService
 
         var total = viewModelLineItems.Select(item => item.LinePrice).Sum();
 
+        var taxAndPromotionContext = new PromotionAndTaxProviderContext(
+            viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
+                products[item.ProductSku],
+                item.UnitPrice,
+                item.Quantity)),
+            new[] { total });
+
         if (_taxProviders.Any())
         {
-            var taxContext = new TaxProviderContext(
-                viewModelLineItems.Select(item => new TaxProviderContextLineItem(
-                    products[item.ProductSku],
-                    item.UnitPrice,
-                    item.Quantity)),
-                new[] { total });
-
-            taxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxContext);
-            total = taxContext.TotalsByCurrency.Single();
-
-            foreach (var (item, index) in taxContext.Items.Select((item, index) => (item, index)))
-            {
-                var lineItem = viewModelLineItems[index];
-                lineItem.LinePrice = item.Subtotal;
-                lineItem.UnitPrice = item.UnitPrice;
-            }
+            taxAndPromotionContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxAndPromotionContext);
         }
+
+        taxAndPromotionContext = await _promotionService.AddPromotionsAsync(taxAndPromotionContext);
+
+        foreach (var (item, index) in taxAndPromotionContext.Items.Select((item, index) => (item, index)))
+        {
+            var lineItem = viewModelLineItems[index];
+            lineItem.LinePrice = item.Subtotal;
+            lineItem.UnitPrice = item.UnitPrice;
+        }
+
+        total = taxAndPromotionContext.TotalsByCurrency.Single();
 
         return (viewModelLineItems, total);
     }
