@@ -13,11 +13,6 @@ public interface IProductInventoryService
     Task<int> QueryInventoryAsync(string sku);
 
     /// <summary>
-    /// Returns whether there's any available of the product in the inventory.
-    /// </summary>
-    Task<bool> IsAvailableAsync(string sku);
-
-    /// <summary>
     /// Updates the inventory of a product based on the provided parameters.
     /// </summary>
     /// <param name="difference">The value to add to or subtract from the inventory.</param>

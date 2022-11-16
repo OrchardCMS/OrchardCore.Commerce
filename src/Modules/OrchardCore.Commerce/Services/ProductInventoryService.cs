@@ -17,8 +17,6 @@ public class ProductInventoryService : IProductInventoryService
         return inventoryPart != null ? (int)inventoryPart.Inventory.Value : 0;
     }
 
-    public async Task<bool> IsAvailableAsync(string sku) => await QueryInventoryAsync(sku) > 0;
-
     public async Task UpdateInventoryAsync(string sku, int difference, bool reset = false)
     {
         var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
