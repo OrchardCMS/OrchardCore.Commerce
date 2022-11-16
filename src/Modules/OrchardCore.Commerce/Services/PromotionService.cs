@@ -17,18 +17,18 @@ public class PromotionService : IPromotionService
     public PromotionService(IEnumerable<IPromotionProvider> promotionProviders) =>
         _promotionProviders = promotionProviders;
 
-    public async Task<IList<ShoppingCartItem>> AddPromotionsAsync(IList<ShoppingCartItem> items)
+    public async Task<PromotionAndTaxProviderContext> AddPromotionsAsync(PromotionAndTaxProviderContext context)
     {
         var providers = await _promotionProviders
             .OrderBy(provider => provider.Order)
-            .WhereAsync(provider => provider.IsApplicableAsync(items));
+            .WhereAsync(provider => provider.IsApplicableAsync(context));
 
-        foreach (var priceProvider in providers)
+        foreach (var promotionProvider in providers)
         {
-            var result = await priceProvider.UpdateAsync(items);
-            items = result.AsList();
+            var result = await promotionProvider.UpdateAsync(context);
+            context = result;
         }
 
-        return items;
+        return context;
     }
 }

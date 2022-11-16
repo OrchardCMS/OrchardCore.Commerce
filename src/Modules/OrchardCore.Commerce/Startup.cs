@@ -116,6 +116,7 @@ public class Startup : StartupBase
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
+        services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()

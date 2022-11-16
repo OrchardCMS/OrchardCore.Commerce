@@ -1,7 +1,7 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.ContentManagement;
 using System;
@@ -23,29 +23,37 @@ public class DiscountProvider : IPromotionProvider
     public DiscountProvider(IProductService productService) =>
         _productService = productService;
 
-    public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
+    public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model)
     {
-        var skuProducts = await _productService.GetSkuProductsAsync(model);
+        var items = model.Items.AsList();
 
-        return model
-            .Select(item => skuProducts.TryGetValue(item.ProductSku, out var productPart)
-                ? ApplyPromotionToShoppingCartItem(item, productPart)
-                : item)
-            .ToList();
+        var newContextLineItems =
+            items.Select(item => item with { UnitPrice = ApplyPromotionToShoppingCartItem(item) });
+
+        var updatedTotals = model
+            .TotalsByCurrency
+            .Select(total =>
+            {
+                var currency = total.Currency.CurrencyIsoCode;
+                return newContextLineItems
+                    .Where(item => item.Subtotal.Currency.CurrencyIsoCode == currency)
+                    .Select(item => item.Subtotal)
+                    .Sum();
+            });
+
+        return Task.FromResult(new PromotionAndTaxProviderContext(newContextLineItems, updatedTotals));
     }
 
-    public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model) => Task.FromResult(true);
+    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) => Task.FromResult(true);
 
-    private static ShoppingCartItem ApplyPromotionToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
+    private static Amount ApplyPromotionToShoppingCartItem(PromotionAndTaxProviderContextLineItem item)
     {
-        var itemPrices = item.Prices;
+        var newPrice = item.UnitPrice;
         var itemQuantity = item.Quantity;
 
-        var discountParts = productPart
+        var discountParts = item.Content
             .ContentItem
             .OfType<DiscountPart>();
-
-        IList<PrioritizedPrice> newPrices = new List<PrioritizedPrice>();
 
         foreach (var discountPart in discountParts)
         {
@@ -59,33 +67,28 @@ public class DiscountProvider : IPromotionProvider
                 discountPart.MinimumProducts.Value > itemQuantity ||
                 (discountMaximumProducts > 0 && discountMaximumProducts < itemQuantity))
             {
-                newPrices.AddRange(itemPrices);
                 continue;
             }
 
             if (discountPercentage is { } and not 0)
             {
-                newPrices.AddRange(itemPrices.Select(prioritizedPrice =>
-                    new PrioritizedPrice(
-                        prioritizedPrice.Priority,
-                        new Amount(
-                            Math.Round(prioritizedPrice.Price.Value * (1 - ((decimal)discountPercentage / 100)), 2),
-                            prioritizedPrice.Price.Currency))));
+                newPrice =
+                    new Amount(
+                        Math.Round(newPrice.Value * (1 - ((decimal)discountPercentage / 100)), 2),
+                        newPrice.Currency);
             }
 
             if (discountAmount is { } notNullDiscountAmount &&
                 notNullDiscountAmount.IsValid &&
                 notNullDiscountAmount.Value != 0)
             {
-                newPrices.AddRange(itemPrices.Select(prioritizedPrice =>
-                    new PrioritizedPrice(
-                        prioritizedPrice.Priority,
-                        new Amount(
-                            Math.Round(Math.Max(0, prioritizedPrice.Price.Value - notNullDiscountAmount.Value), 2),
-                            prioritizedPrice.Price.Currency))));
+                newPrice =
+                    new Amount(
+                        Math.Round(Math.Max(0, newPrice.Value - notNullDiscountAmount.Value), 2),
+                        newPrice.Currency);
             }
         }
 
-        return item.WithPrices(newPrices);
+        return newPrice;
     }
 }
