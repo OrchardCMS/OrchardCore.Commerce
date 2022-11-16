@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
@@ -18,15 +19,18 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IContentManager _contentManager;
     private readonly IProductService _productService;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
+    private readonly IPromotionService _promotionService;
 
     public OrderPartDisplayDriver(
         IContentManager contentManager,
         IProductService productService,
-        IEnumerable<ITaxProvider> taxProviders)
+        IEnumerable<ITaxProvider> taxProviders,
+        IPromotionService promotionService)
     {
         _contentManager = contentManager;
         _productService = productService;
         _taxProviders = taxProviders;
+        _promotionService = promotionService;
     }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
@@ -86,25 +90,28 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
         var total = lineItems.Select(item => item.LinePrice).Sum();
 
+        var taxAndPromotionContext = new PromotionAndTaxProviderContext(
+            lineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
+                products[item.ProductSku],
+                item.UnitPrice,
+                item.Quantity)),
+            new[] { total });
+
         if (_taxProviders.Any())
         {
-            var taxContext = new TaxProviderContext(
-                lineItems.Select(item => new TaxProviderContextLineItem(
-                    products[item.ProductSku],
-                    item.UnitPrice,
-                    item.Quantity)),
-                new[] { total });
-
-            taxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxContext);
-            total = taxContext.TotalsByCurrency.Single();
-
-            foreach (var (item, index) in taxContext.Items.Select((item, index) => (item, index)))
-            {
-                var lineItem = lineItems[index];
-                lineItem.LinePrice = item.Subtotal;
-                lineItem.UnitPrice = item.UnitPrice;
-            }
+            taxAndPromotionContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(taxAndPromotionContext);
         }
+
+        taxAndPromotionContext = await _promotionService.AddPromotionsAsync(taxAndPromotionContext);
+
+        foreach (var (item, index) in taxAndPromotionContext.Items.Select((item, index) => (item, index)))
+        {
+            var lineItem = lineItems[index];
+            lineItem.LinePrice = item.Subtotal;
+            lineItem.UnitPrice = item.UnitPrice;
+        }
+
+        total = taxAndPromotionContext.TotalsByCurrency.Single();
 
         model.Total = total;
         model.LineItems.AddRange(lineItems);
