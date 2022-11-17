@@ -44,7 +44,18 @@ public class DiscountProvider : IPromotionProvider
         return Task.FromResult(new PromotionAndTaxProviderContext(newContextLineItems, updatedTotals));
     }
 
-    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) => Task.FromResult(true);
+    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
+    Task.FromResult(IsApplicable(model.Items.Select(item => item.Content.ContentItem.As<DiscountPart>()).ToList()));
+
+    private static bool IsApplicable(IList<DiscountPart> discountParts)
+    {
+        var countWithDiscount = discountParts
+            .Count(discountPart => IsValidAndNotZero(
+                discountPart?.DiscountAmount?.Amount) ||
+                discountPart?.DiscountPercentage.Value > 0);
+
+        return countWithDiscount != 0;
+    }
 
     private static Amount ApplyPromotionToShoppingCartItem(PromotionAndTaxProviderContextLineItem item)
     {
@@ -79,8 +90,7 @@ public class DiscountProvider : IPromotionProvider
             }
 
             if (discountAmount is { } notNullDiscountAmount &&
-                notNullDiscountAmount.IsValid &&
-                notNullDiscountAmount.Value != 0)
+                IsValidAndNotZero(notNullDiscountAmount))
             {
                 newPrice =
                     new Amount(
@@ -91,4 +101,7 @@ public class DiscountProvider : IPromotionProvider
 
         return newPrice;
     }
+
+    private static bool IsValidAndNotZero(Amount? amount) =>
+        amount is { } notNullAmount && notNullAmount.IsValid && notNullAmount.Value != 0;
 }

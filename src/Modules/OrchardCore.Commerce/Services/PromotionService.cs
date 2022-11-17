@@ -31,4 +31,7 @@ public class PromotionService : IPromotionService
 
         return context;
     }
+
+    public Task<bool> IsThereAnyApplicableProviderAsync(PromotionAndTaxProviderContext context) =>
+         _promotionProviders.AnyAsync(provider => provider.IsApplicableAsync(context));
 }

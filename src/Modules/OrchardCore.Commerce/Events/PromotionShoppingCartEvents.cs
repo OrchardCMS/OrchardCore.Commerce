@@ -12,13 +12,19 @@ namespace OrchardCore.Commerce.Events;
 
 public class PromotionShoppingCartEvents : IShoppingCartEvents
 {
+    private readonly IHtmlLocalizer<PromotionShoppingCartEvents> H;
     private readonly IPromotionService _promotionService;
 
     // Promotions should be applied after taxes.
     public int Order => int.MaxValue;
 
-    public PromotionShoppingCartEvents(IPromotionService promotionService) =>
+    public PromotionShoppingCartEvents(
+        IHtmlLocalizer<PromotionShoppingCartEvents> htmlLocalizer,
+        IPromotionService promotionService)
+    {
+        H = htmlLocalizer;
         _promotionService = promotionService;
+    }
 
     public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
@@ -27,17 +33,37 @@ public class PromotionShoppingCartEvents : IShoppingCartEvents
     {
         var context = new PromotionAndTaxProviderContext(lines, totals);
 
+        if (!await _promotionService.IsThereAnyApplicableProviderAsync(context))
+        {
+            return (totals, headers, lines);
+        }
+
+        var newHeaders = headers.ToList();
+
+        var insertIndex = newHeaders.FindIndex(header => header.Name is "Price" or "Gross Price");
+        newHeaders.Insert(insertIndex, H["Old Price"]);
+
+        foreach (var (price, index) in lines.Select((item, index) => (item.UnitPrice, index)))
+        {
+            lines[index].AdditionalData.SetOldPrice(price);
+        }
+
         // Update lines and get new totals.
         context = await _promotionService.AddPromotionsAsync(context);
 
-        if (headers.Any(header => header.Name == "Gross Price"))
+        foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
         {
-            foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
+            if (headers.Any(header => header.Name == "Gross Price"))
             {
                 lines[index].AdditionalData.SetGrossPrice(price);
             }
+            else
+            {
+                lines[index].LinePrice = price * lines[index].Quantity;
+                lines[index].UnitPrice = price;
+            }
         }
 
-        return (context.TotalsByCurrency.ToList(), headers, lines);
+        return (context.TotalsByCurrency.ToList(), newHeaders, lines);
     }
 }
