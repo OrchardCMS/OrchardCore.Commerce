@@ -5,15 +5,3 @@
 <div class="message-error" hidden></div>
 
 @await DisplayAsync(Model)
-
-@foreach (var shape in Model.CheckoutShapes)
-{
-    try
-    {
-        @await DisplayAsync(shape)
-    }
-    catch (Exception exception) when (exception.Message.RegexIsMatch(@"Shape type '[^']*' not found"))
-    {
-        // It's fine, we only want to display the shape if a template exists.
-    }
-}
