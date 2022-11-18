@@ -2,11 +2,14 @@ using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Templates.Controllers;
 using OrchardCore.Templates.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,7 +46,11 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
                 {
                     PartName = part.Name,
                     FieldName = field.Name,
+                    PartOrder = GetNumericOrder(part),
+                    FieldOrder = GetNumericOrder(field),
                 }))
+            .OrderBy(item => item.PartOrder)
+            .ThenBy(item => item.FieldOrder)
             .Select(item => $"{contentItem.ContentType}_{displayType}__{item.PartName}__{item.FieldName}");
     }
 
@@ -62,7 +69,7 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         return shapes;
     }
 
-    public async Task<IEnumerable<string>> GetFieldTemplateEditorUrlsAsync(
+    public async Task<IEnumerable<(Uri Url, bool IsNew)>> GetFieldTemplateEditorUrlsAsync(
         ContentItem contentItem,
         string displayType = CommonContentDisplayTypes.Detail)
     {
@@ -75,6 +82,26 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         var createAction = context.Action<TemplateController>(controller => controller.Create(null, false, returnUrl));
 
         return GetFieldShapeTypes(contentItem, displayType)
-            .Select(name => $"{(existingTemplates.Contains(name) ? editAction : createAction)}&name={name}");
+            .Select(name =>
+            {
+                var exists = existingTemplates.Contains(name);
+                var url = new Uri($"{(exists ? editAction : createAction)}&name={name}");
+                return (Url: url, IsNew: !exists);
+            });
     }
+
+    private int GetNumericOrder(ContentTypePartDefinition part)
+    {
+        var defaultPosition = _contentDefinitionManager
+            .GetPartDefinition(part.PartDefinition.Name)?
+            .DefaultPosition() ?? "5";
+        return int.Parse(
+            part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition,
+            CultureInfo.InvariantCulture);
+    }
+
+    private static int GetNumericOrder(ContentPartFieldDefinition field) =>
+        int.Parse(
+            field.GetSettings<ContentPartFieldSettings>().Position ?? "0",
+            CultureInfo.InvariantCulture);
 }

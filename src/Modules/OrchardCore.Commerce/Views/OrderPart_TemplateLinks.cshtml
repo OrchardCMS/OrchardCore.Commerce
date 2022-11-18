@@ -1,10 +1,15 @@
+@{
+    IEnumerable<(Uri Url, string DisplayText, bool IsNew)> links = Model.TemplateLinks;
+}
+
 <fieldset class="mb-3">
-    <label>@T["Create Templates for the Checkout Screen"]</label>
-    <ul>
-        @foreach (string url in Model.TemplateUrls)
+    <h3 class="mb-n1">@T["Checkout Templates"]</h3>
+    <span class="hint">@T["Create templates for the \"Checkout\" screen. Any existing template will be added after the addresses."]</span>
+    <ul class="list-group">
+        @foreach (var (url, displayText, isNew) in links)
         {
-            var shapeType = url.Split("name=").Last();
-            <li><a href="@url">@shapeType</a></li>
+            var icon = isNew ? "fa-square-plus" : "fa-square";
+            <li class="list-group-item"><a href="@url"><i class="fas @icon"></i> @displayText</a></li>
         }
     </ul>
 </fieldset>

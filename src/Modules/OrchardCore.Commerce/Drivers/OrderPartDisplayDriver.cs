@@ -1,7 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -11,25 +10,21 @@ using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Drivers;
 
 public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 {
     private readonly IContentManager _contentManager;
-    private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly IProductService _productService;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
 
     public OrderPartDisplayDriver(
         IContentManager contentManager,
-        IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IProductService productService,
         IEnumerable<ITaxProvider> taxProviders)
     {
         _contentManager = contentManager;
-        _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _productService = productService;
         _taxProviders = taxProviders;
     }
@@ -40,18 +35,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
-        new CombinedResult(
-            Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part)),
-            Initialize<OrderPartTemplatesViewModel>(
-                "OrderPart_TemplateLinks",
-                async viewModel =>
-                {
-                    viewModel.TemplateUrls = await _fieldsOnlyDisplayManager.GetFieldTemplateEditorUrlsAsync(
-                        await _contentManager.NewAsync(Order),
-                        "Checkout");
-                })
-                .Location("Content:999999") // This note should be at the end of the page.
-        );
+        Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
