@@ -22,8 +22,8 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
     }
 
-    public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition) =>
-        contentTypeDefinition.Name == Order
+    public override IDisplayResult Edit(ContentTypeDefinition model) =>
+        model.Name == Order
             ? Initialize<OrderPartTemplatesViewModel>(
                     "OrderPart_TemplateLinks",
                     async viewModel =>
