@@ -47,16 +47,9 @@ public class DiscountProvider : IPromotionProvider
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
     Task.FromResult(IsApplicable(model.Items.ToList()));
 
-    private static bool IsApplicable(IList<PromotionAndTaxProviderContextLineItem> lineItems)
-    {
-        var discountParts = lineItems.Select(item => item.Content.ContentItem.As<DiscountPart>());
-        var countWithDiscount = discountParts
-            .Count(discountPart => IsValidAndNotZero(
-                discountPart?.DiscountAmount?.Amount) ||
-                discountPart?.DiscountPercentage.Value > 0);
+    private static bool IsApplicable(IList<PromotionAndTaxProviderContextLineItem> lineItems) =>
 
-        return countWithDiscount != 0 && lineItems.Any(item => IsApplicablePerItem(item));
-    }
+        lineItems.Any(item => IsApplicablePerItem(item));
 
     private static bool IsApplicablePerItem(PromotionAndTaxProviderContextLineItem item)
     {
