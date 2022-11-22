@@ -30,8 +30,9 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
         var discountPercentage = part.DiscountPercentage.Value;
         var discountAmount = part.DiscountAmount.Amount;
 
-        var newPrice = contentItem?.As<TaxPart>()?.GrossPrice.Amount
-            ?? contentItem?.As<PricePart>()?.Price;
+        var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { } grossPrice && grossPrice.IsValid
+            ? grossPrice
+            : contentItem?.As<PricePart>()?.Price;
 
         if (newPrice is { } notNullPrice)
         {
