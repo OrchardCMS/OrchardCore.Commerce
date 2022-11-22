@@ -118,6 +118,11 @@ public class PaymentController : Controller
 
         var total = cart.Totals.Single();
 
+        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
+                await _contentManager.NewAsync(Order),
+                "Checkout"))
+            .ToList();
+
         var checkoutViewModel = new CheckoutViewModel
         {
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
@@ -125,10 +130,10 @@ public class PaymentController : Controller
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
-            CheckoutShapes = await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
-                await _contentManager.NewAsync(Order),
-                "Checkout"),
+            CheckoutShapes = checkoutShapes,
         };
+
+        foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
 
