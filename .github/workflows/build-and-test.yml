@@ -14,3 +14,4 @@ jobs:
     with:
       machine-types: "[\"ubuntu-latest\", \"windows-latest\"]"
       timeout-minutes: 60
+      set-up-sql-server: "true"
