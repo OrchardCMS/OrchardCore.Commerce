@@ -1,55 +1,62 @@
 @using OrchardCore.Commerce.ContentFields.ViewModels
+@using OrchardCore.Commerce.MoneyDataType
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Commerce.Promotion.Extensions
 
 @model OrchardCore.Commerce.Promotion.ViewModels.DiscountPartViewModel
 
 @{
     var discountPart = Model.DiscountPart;
 }
-
-@if (discountPart.DiscountPercentage is { } discountPercentage && discountPercentage.Value > 0)
+@if (discountPart.IsValidAndActive())
 {
-    <div class="field field-type-numericfield field-name-discount-part-discount-percentage">
-        <strong class="field-name-discount-part-discount-percentage-title">@T["Discount Percentage: "]</strong>
-        @T["{0}%", discountPercentage.Value]
-    </div>
+    @if (discountPart.DiscountPercentage is { } discountPercentage && discountPercentage.Value > 0)
+    {
+        <div class="field field-type-numericfield field-name-discount-part-discount-percentage">
+            <strong class="field-name-discount-part-discount-percentage-title">@T["Discount Percentage: "]</strong>
+            @T["{0}%", discountPercentage.Value]
+        </div>
+    }
+
+    @if (discountPart.MaximumProducts is { } maximumProducts && maximumProducts.Value > 0)
+    {
+        <div class="field field-type-numericfield field-name-discount-part-maximum-products">
+            <strong class="field-name-discount-part-maximum-products-title">@T["Discount Maximum Products: "]</strong>
+            @maximumProducts.Value
+        </div>
+    }
+
+    @if (discountPart.MinimumProducts is { } minimumProducts && minimumProducts.Value > 0)
+    {
+        <div class="field field-type-numericfield field-name-discount-part-minimum-products">
+            <strong class="field-name-discount-part-minimum-products-title">@T["Discount Minimum Products: "]</strong>
+            @minimumProducts.Value
+        </div>
+    }
+
+    @if (discountPart.BeginningUtc is { } beginningUtc && beginningUtc.Value is { })
+    {
+        <div class="field field-type-datetimefield field-name-discount-part-beginning-utc">
+            <strong class="field-name-discount-part-beginning-utc-title">@T["Discount Beginning Utc: "]</strong>
+            @beginningUtc.Value
+        </div>
+    }
+
+    @if (discountPart.ExpirationUtc is { } expirationUtc && expirationUtc.Value is { })
+    {
+        <div class="field field-type-datetimefield field-name-discount-part-expiration-utc">
+            <strong class="field-name-discount-part-expiration-utc-title">@T["Discount Expiration Utc: "]</strong>
+            @expirationUtc.Value
+        </div>
+    }
+
+    if (Model.NewPrice.Amount.Currency != Currency.UnspecifiedCurrency)
+    {
+        <div class="pb-3 field field-type-pricefield field-name-discount-part-new-price">
+            <strong class="field-name-discount-part-new-title-title">@T["New Price with Discount after Taxes: "]</strong>
+            @Model.NewPrice.Amount
+        </div>
+    }
+
+    <script asp-name="Discount" at="Foot"></script>
 }
-
-@if (discountPart.MaximumProducts is { } maximumProducts && maximumProducts.Value > 0)
-{
-    <div class="field field-type-numericfield field-name-discount-part-maximum-products">
-        <strong class="field-name-discount-part-maximum-products-title">@T["Discount Maximum Products: "]</strong>
-        @maximumProducts.Value
-    </div>
-}
-
-@if (discountPart.MinimumProducts is { } minimumProducts && minimumProducts.Value > 0)
-{
-    <div class="field field-type-numericfield field-name-discount-part-minimum-products">
-        <strong class="field-name-discount-part-minimum-products-title">@T["Discount Minimum Products: "]</strong>
-        @minimumProducts.Value
-    </div>
-}
-
-@if (discountPart.BeginningUtc is { } beginningUtc && beginningUtc.Value is { })
-{
-    <div class="field field-type-datetimefield field-name-discount-part-beginning-utc">
-        <strong class="field-name-discount-part-beginning-utc-title">@T["Discount Beginning Utc: "]</strong>
-        @beginningUtc.Value
-    </div>
-}
-
-@if (discountPart.ExpirationUtc is { } expirationUtc && expirationUtc.Value is { })
-{
-    <div class="field field-type-datetimefield field-name-discount-part-expiration-utc">
-        <strong class="field-name-discount-part-expiration-utc-title">@T["Discount Expiration Utc: "]</strong>
-        @expirationUtc.Value
-    </div>
-}
-
-<div class="pb-3 field field-type-pricefield field-name-discount-part-new-price">
-    <strong class="field-name-discount-part-new-title-title">@T["New Price with Discount after Taxes: "]</strong>
-    @Model.NewPrice.Amount
-</div>
-
-<script asp-name="Discount" at="Foot"></script>

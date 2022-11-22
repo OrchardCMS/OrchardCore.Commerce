@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
@@ -36,7 +37,7 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         var discountAmount = discountPart.DiscountAmount.Amount;
 
         // IsValid allows 0 value, but if the percentage is 0 it's not present.
-        var isDiscountAmountPresent = discountAmount.IsValid && discountAmount.Value > 0;
+        var isDiscountAmountPresent = discountAmount.IsValidAndNotZero();
 
         var isDiscountPercentagePresent = discountPercentage > 0;
 

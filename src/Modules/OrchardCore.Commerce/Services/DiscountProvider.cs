@@ -1,7 +1,9 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.ContentManagement;
 using System;
@@ -60,11 +62,7 @@ public class DiscountProvider : IPromotionProvider
     {
         var discountMaximumProducts = discountPart.MaximumProducts.Value;
 
-        var discountPresent = discountPart.DiscountPercentage?.Value is { } and not 0 ^
-            (discountPart.DiscountAmount?.Amount is { } notNullDiscountAmount &&
-            notNullDiscountAmount.IsValidAndNotZero());
-
-        return discountPresent &&
+        return discountPart.IsValidAndActive() &&
                !(discountPart.BeginningUtc.Value > DateTime.UtcNow ||
                discountPart.ExpirationUtc.Value < DateTime.UtcNow ||
                discountPart.MinimumProducts.Value > itemQuantity ||
