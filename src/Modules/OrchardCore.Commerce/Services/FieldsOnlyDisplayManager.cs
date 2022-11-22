@@ -56,18 +56,9 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
 
     public async Task<IEnumerable<IShape>> DisplayFieldsAsync(
         ContentItem contentItem,
-        string displayType = CommonContentDisplayTypes.Detail)
-    {
-        var fieldShapeTypes = GetFieldShapeTypes(contentItem, displayType);
-
-        var shapes = new List<IShape>();
-        foreach (var shapeType in fieldShapeTypes)
-        {
-            shapes.Add(await _shapeFactory.CreateAsync(shapeType));
-        }
-
-        return shapes;
-    }
+        string displayType = CommonContentDisplayTypes.Detail) =>
+        await GetFieldShapeTypes(contentItem, displayType)
+            .AwaitEachAsync(async shapeType => await _shapeFactory.CreateAsync(shapeType));
 
     public async Task<IEnumerable<(Uri Url, bool IsNew)>> GetFieldTemplateEditorUrlsAsync(
         ContentItem contentItem,
