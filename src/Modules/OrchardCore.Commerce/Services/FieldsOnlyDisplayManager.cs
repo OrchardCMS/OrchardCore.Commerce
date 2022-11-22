@@ -60,7 +60,7 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         await GetFieldShapeTypes(contentItem, displayType)
             .AwaitEachAsync(async shapeType => await _shapeFactory.CreateAsync(shapeType));
 
-    public async Task<IEnumerable<(Uri Url, bool IsNew)>> GetFieldTemplateEditorUrlsAsync(
+    public async Task<IEnumerable<(string ShapeType, Uri Url, bool IsNew)>> GetFieldTemplateEditorUrlsAsync(
         ContentItem contentItem,
         string displayType = CommonContentDisplayTypes.Detail)
     {
@@ -77,7 +77,7 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
             {
                 var exists = existingTemplates.Contains(name);
                 var url = new Uri($"{(exists ? editAction : createAction)}&name={name}");
-                return (Url: url, IsNew: !exists);
+                return (ShapeType: name, Url: url, IsNew: !exists);
             });
     }
 

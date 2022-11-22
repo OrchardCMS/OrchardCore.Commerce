@@ -30,7 +30,7 @@ public interface IFieldsOnlyDisplayManager
     /// Returns a collection of URLs that either edit an existing template or create a new one if none exists for each
     /// field in the given <paramref name="displayType"/>.
     /// </summary>
-    Task<IEnumerable<(Uri Url, bool IsNew)>> GetFieldTemplateEditorUrlsAsync(
+    Task<IEnumerable<(string ShapeType, Uri Url, bool IsNew)>> GetFieldTemplateEditorUrlsAsync(
         ContentItem contentItem,
         string displayType = CommonContentDisplayTypes.Detail);
 }
