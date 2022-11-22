@@ -16,12 +16,7 @@ namespace OrchardCore.Commerce.Services;
 /// </summary>
 public class DiscountProvider : IPromotionProvider
 {
-    private readonly IProductService _productService;
-
     public int Order => 0;
-
-    public DiscountProvider(IProductService productService) =>
-        _productService = productService;
 
     public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model)
     {

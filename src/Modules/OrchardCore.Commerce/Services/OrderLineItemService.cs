@@ -30,7 +30,7 @@ public class OrderLineItemService : IOrderLineItemService
     }
 
     public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
-    IList<OrderLineItem> lineItems)
+        IList<OrderLineItem> lineItems)
     {
         var products = await _productService.GetProductDictionaryAsync(lineItems.Select(line => line.ProductSku));
         var viewModelLineItems = await Task.WhenAll(lineItems.Select(async lineItem =>
