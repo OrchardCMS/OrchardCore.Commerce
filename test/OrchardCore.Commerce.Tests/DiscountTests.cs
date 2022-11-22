@@ -17,7 +17,7 @@ public class DiscountTests
     [Fact]
     public async Task PromotionServiceAddsDiscount()
     {
-        var promotionService = new DummyPromotionService(new List<IPromotionProvider> { new FakeDiscountProvider() });
+        var promotionService = new DummyPromotionService(new FakeDiscountProvider());
 
         var viewModelLineItems = new List<OrderLineItemViewModel>
             {
@@ -54,13 +54,15 @@ public class DiscountTests
 
     private class DummyPromotionService : IPromotionService
     {
-        private readonly IEnumerable<IPromotionProvider> _promotionProviders;
+        private readonly IPromotionProvider _promotionProvider;
 
-        public DummyPromotionService(IEnumerable<IPromotionProvider> promotionProviders) =>
-            _promotionProviders = promotionProviders;
+        // Keeping it simple, only using one provider instead of a collection.
+        public DummyPromotionService(IPromotionProvider promotionProviders) =>
+            _promotionProvider = promotionProviders;
 
+        // Keeping it simple, no ordering or "is applicable" check.
         public Task<PromotionAndTaxProviderContext> AddPromotionsAsync(PromotionAndTaxProviderContext context) =>
-            _promotionProviders.First().UpdateAsync(context);
+            _promotionProvider.UpdateAsync(context);
 
         // IPromotionService's method needs to be created, but implementation is unnecessary as the tests do not use it.
         public Task<bool> IsThereAnyApplicableProviderAsync(PromotionAndTaxProviderContext context) =>
