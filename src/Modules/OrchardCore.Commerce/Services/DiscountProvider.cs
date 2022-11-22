@@ -65,9 +65,9 @@ public class DiscountProvider : IPromotionProvider
     {
         var discountMaximumProducts = discountPart.MaximumProducts.Value;
 
-        var discountPresent = discountPart.DiscountPercentage?.Value is { } and not 0 ||
+        var discountPresent = discountPart.DiscountPercentage?.Value is { } and not 0 ^
             (discountPart.DiscountAmount?.Amount is { } notNullDiscountAmount &&
-            IsValidAndNotZero(notNullDiscountAmount));
+            notNullDiscountAmount.IsValidAndNotZero());
 
         return discountPresent &&
                !(discountPart.BeginningUtc.Value > DateTime.UtcNow ||
@@ -93,25 +93,16 @@ public class DiscountProvider : IPromotionProvider
 
             if (discountPercentage is { } and not 0)
             {
-                newPrice =
-                    new Amount(
-                        Math.Round(newPrice.Value * (1 - ((decimal)discountPercentage / 100)), 2),
-                        newPrice.Currency);
+                newPrice = newPrice.WithDiscount((decimal)discountPercentage);
             }
 
             if (discountAmount is { } notNullDiscountAmount &&
-                IsValidAndNotZero(notNullDiscountAmount))
+                notNullDiscountAmount.IsValidAndNotZero())
             {
-                newPrice =
-                    new Amount(
-                        Math.Round(Math.Max(0, newPrice.Value - notNullDiscountAmount.Value), 2),
-                        newPrice.Currency);
+                newPrice = newPrice.WithDiscount(notNullDiscountAmount);
             }
         }
 
         return newPrice;
     }
-
-    private static bool IsValidAndNotZero(Amount? amount) =>
-        amount is { } notNullAmount && notNullAmount.IsValid && notNullAmount.Value != 0;
 }

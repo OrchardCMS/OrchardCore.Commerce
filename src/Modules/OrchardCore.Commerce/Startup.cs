@@ -251,7 +251,8 @@ public class PromotionStartup : StartupBase
     {
         services
             .AddContentPart<DiscountPart>()
-            .AddHandler<DiscountPartHandler>();
+            .AddHandler<DiscountPartHandler>()
+            .UseDisplayDriver<DiscountPartDisplayDriver>();
 
         services.AddScoped<IPromotionProvider, DiscountProvider>();
     }
