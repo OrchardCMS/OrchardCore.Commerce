@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +34,9 @@ public class FakeDiscountProvider : IPromotionProvider
         return Task.FromResult(new PromotionAndTaxProviderContext(newContextLineItems, updatedTotals));
     }
 
-    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) => Task.FromResult(true);
+    // IPromotionProvider's method needs to be created, but implementation is unnecessary as the tests do not use it.
+    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
+        throw new NotSupportedException();
 
     private static Amount ApplyPromotionToShoppingCartItem(PromotionAndTaxProviderContextLineItem item) =>
         new(item.UnitPrice.Value / 2, item.UnitPrice.Currency);
