@@ -8,6 +8,7 @@
 @{
     var discountPart = Model.DiscountPart;
 }
+
 @if (discountPart.IsValidAndActive())
 {
     @if (discountPart.DiscountPercentage is { } discountPercentage && discountPercentage.Value > 0)

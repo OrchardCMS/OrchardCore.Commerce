@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
-/// A service that can apply promotions to a set of shopping cart items.
+/// A service that can apply promotions to a <see cref="PromotionAndTaxProviderContext"/>.
 /// </summary>
 public interface IPromotionService
 {
     /// <summary>
-    /// Applies promotions harvested from all promotion providers to shopping cart items, in order.
+    /// Applies promotions harvested from all promotion providers to a <see cref="PromotionAndTaxProviderContext"/>, in
+    /// order.
     /// </summary>
     /// <param name="context">The quantities and products to which promotions must be added.</param>
     Task<PromotionAndTaxProviderContext> AddPromotionsAsync(PromotionAndTaxProviderContext context);

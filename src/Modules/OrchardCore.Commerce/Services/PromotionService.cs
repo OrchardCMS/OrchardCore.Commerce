@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Services;
 
 /// <summary>
-/// A promotion service that asks all available promotion providers to apply promotions to a list of shopping cart
-/// items.
+/// A promotion service that asks all available promotion providers to apply promotions to a
+/// <see cref="PromotionAndTaxProviderContext"/>.
 /// </summary>
 public class PromotionService : IPromotionService
 {

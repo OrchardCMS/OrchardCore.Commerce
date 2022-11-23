@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Commerce.Tax.Migrations;
+namespace OrchardCore.Commerce.Promotion.Migrations;
 
 /// <summary>
 /// Adds the discount part to the list of available parts.

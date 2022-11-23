@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Commerce.Promotion.Models;
-using OrchardCore.Commerce.Tax.Migrations;
+using OrchardCore.Commerce.Promotion.Migrations;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 

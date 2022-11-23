@@ -12,9 +12,6 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
-/// <summary>
-/// A discount provider that obtains a discount from a product by looking for a `DiscountPart`.
-/// </summary>
 public class DiscountProvider : IPromotionProvider
 {
     public int Order => 0;
@@ -41,10 +38,9 @@ public class DiscountProvider : IPromotionProvider
     }
 
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
-    Task.FromResult(IsApplicable(model.Items.ToList()));
+        Task.FromResult(IsApplicable(model.Items.ToList()));
 
     private static bool IsApplicable(IList<PromotionAndTaxProviderContextLineItem> lineItems) =>
-
         lineItems.Any(item => IsApplicablePerItem(item));
 
     private static bool IsApplicablePerItem(PromotionAndTaxProviderContextLineItem item)
@@ -56,7 +52,7 @@ public class DiscountProvider : IPromotionProvider
         return discountParts.Any(discountPart => IsApplicablePerDiscountPart(discountPart, item.Quantity));
     }
 
-    // In-case we have multiple discount parts on one product.
+    // Incase we have multiple discount parts on one product.
     private static bool IsApplicablePerDiscountPart(DiscountPart discountPart, int itemQuantity)
     {
         var discountMaximumProducts = discountPart.MaximumProducts.Value;
