@@ -41,10 +41,9 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
                 notNullPrice = notNullPrice.WithDiscount((decimal)discountPercentage);
             }
 
-            if (discountAmount is { } notNullDiscountAmount &&
-                notNullDiscountAmount.IsValidAndPositive())
+            if (discountAmount.IsValidAndPositive())
             {
-                notNullPrice = notNullPrice.WithDiscount(notNullDiscountAmount);
+                notNullPrice = notNullPrice.WithDiscount(discountAmount);
             }
 
             model.NewPrice.Amount = notNullPrice;
