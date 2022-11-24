@@ -5,6 +5,6 @@ using OrchardCore.Modules.Manifest;
     Author = "The Orchard Team",
     Website = "https://github.com/OrchardCMS/OrchardCore.Commerce",
     Version = "0.0.1",
-    Description = "Promotion module for Orchard Core Commerce for discounts and promotions.",
+    Description = "Orchard Core Commerce module for discounts and promotions.",
     Category = "Commerce"
 )]
