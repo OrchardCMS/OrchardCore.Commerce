@@ -2,6 +2,6 @@
 
 ## About
 
-Promotion module for Orchard Core Commerce for discounts and promotions.
+Orchard Core Commerce module for discounts and promotions.
 
 For general details about and on using Orchard Core Commerce see the [root Readme](../../../Readme.md).
