@@ -37,7 +37,7 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         var discountAmount = discountPart.DiscountAmount.Amount;
 
         // IsValid allows 0 value, but if the percentage is 0 it's not present.
-        var isDiscountAmountPresent = discountAmount.IsValidAndNotZero();
+        var isDiscountAmountPresent = discountAmount.IsValidAndPositive();
 
         var isDiscountPercentagePresent = discountPercentage > 0;
 

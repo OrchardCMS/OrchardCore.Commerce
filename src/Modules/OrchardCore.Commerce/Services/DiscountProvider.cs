@@ -85,7 +85,7 @@ public class DiscountProvider : IPromotionProvider
             }
 
             if (discountAmount is { } notNullDiscountAmount &&
-                notNullDiscountAmount.IsValidAndNotZero())
+                notNullDiscountAmount.IsValidAndPositive())
             {
                 newPrice = newPrice.WithDiscount(notNullDiscountAmount);
             }
