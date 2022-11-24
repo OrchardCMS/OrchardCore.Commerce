@@ -77,7 +77,7 @@ public class DiscountProvider : IPromotionProvider
             if (!IsApplicablePerDiscountPart(discountPart, item.Quantity)) continue;
 
             var discountPercentage = discountPart.DiscountPercentage?.Value;
-            var discountAmount = discountPart.DiscountAmount?.Amount;
+            var discountAmount = discountPart.DiscountAmount.Amount;
 
             if (discountPercentage is { } and not 0)
             {
@@ -86,7 +86,7 @@ public class DiscountProvider : IPromotionProvider
 
             if (discountAmount.IsValidAndPositive())
             {
-                newPrice = newPrice.WithDiscount((Amount)discountAmount);
+                newPrice = newPrice.WithDiscount(discountAmount);
             }
         }
 
