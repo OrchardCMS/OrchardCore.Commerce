@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,16 +58,7 @@ public class PriceVariantProvider : IPriceProvider
                 .Select(attr => attr.PartName + "." + attr.Name)
                 .ToHashSet();
 
-            var predefinedAttributes = item.Attributes
-                .OfType<IPredefinedValuesProductAttributeValue>()
-                .Where(attribute => attributesRestrictedToPredefinedValues.Contains(attribute.AttributeName))
-                .OrderBy(value => value.AttributeName);
-
-            var variantKey = string.Join(
-                "-",
-                predefinedAttributes
-                    .Select(attr => attr.UntypedPredefinedValue)
-                    .Where(value => value != null));
+            var variantKey = item.GetVariantKeyFromAttributes(item, attributesRestrictedToPredefinedValues);
 
             if (priceVariantsPart.Variants.ContainsKey(variantKey))
             {

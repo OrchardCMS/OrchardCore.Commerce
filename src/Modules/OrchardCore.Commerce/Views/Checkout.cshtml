@@ -1,12 +1,9 @@
-@using Newtonsoft.Json
-@using OrchardCore.Commerce.Settings
-@model OrchardCore.Commerce.ViewModels.CheckoutViewModel
+@model CheckoutViewModel
 
-<mvc-title text="@T["Checkout"]" />
 @{
     var orderPart = Model.OrderPart;
 
-    var regions = Model.Regions;
+    var regions = Model.Regions.AsList();
     var provinces = Model.Provinces;
 }
 
@@ -16,15 +13,15 @@
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
-                <label asp-for="OrderPart.Email.Text">@T["E-mail"]</label>
+                <label asp-for="OrderPart.Email.Text">@T["E-mail *"]</label>
                 <input asp-for="OrderPart.Email.Text" class="form-control content-preview-text" required />
             </div>
             <div class="mb-3">
-                <label asp-for="OrderPart.Phone.Text">@T["Phone Number"]</label>
+                <label asp-for="OrderPart.Phone.Text">@T["Phone Number *"]</label>
                 <input asp-for="OrderPart.Phone.Text" class="form-control content-preview-text" required />
             </div>
-            <div class="address_billing-address">
-                <h3>@T["Billing Address"]</h3>
+            <div class="address address_billing-address">
+                <h3 class="address__title">@T["Billing Address"]</h3>
 
                 @await DisplayAsync(
                     new AddressFieldEditorViewModel
@@ -36,8 +33,8 @@
                     })
             </div>
 
-            <div class="address_shipping-address">
-                <h3>@T["Shipping Address"]</h3>
+            <div class="address address_shipping-address">
+                <h3 class="address__title">@T["Shipping Address"]</h3>
 
                 @await DisplayAsync(
                     new AddressFieldEditorViewModel
@@ -55,13 +52,24 @@
                            asp-for="OrderPart.BillingAndShippingAddressesMatch.Value"
                            class="form-check-input content-preview-select"
                            data-val="true"
-                           data-val-required="The Value field is required."
                            value="true">
                     <label asp-for="OrderPart.BillingAndShippingAddressesMatch.Value" class="form-check-label">
                         @T["Shipping Address and Billing Address are the same"]
                     </label>
                 </div>
             </div>
+
+            @foreach (var shape in Model.CheckoutShapes)
+            {
+                try
+                {
+                    @await DisplayAsync(shape)
+                }
+                catch (Exception exception) when (exception.Message.RegexIsMatch(@"Shape type '[^']*' not found"))
+                {
+                    // It's fine, we only want to display the shape if a template exists.
+                }
+            }
 
             <shape type="StripeCheckout"
                    prop-DefaultTotal="@Model.SingleCurrencyTotal"

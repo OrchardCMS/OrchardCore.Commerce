@@ -1,9 +1,11 @@
+using GraphQL;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,6 +94,12 @@ public class PriceTests
 
         public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
             Task.FromResult(skus.Select(sku => _products[sku]));
+
+        // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
+        public Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku) => throw new NotSupportedException();
+
+        // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
+        public string GetVariantKey(string sku) => throw new NotSupportedException();
     }
 
     private class DummyPriceProvider : IPriceProvider

@@ -1,8 +1,11 @@
-window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText) {
+window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
     const stripeElements = stripe.elements();
-    const errorContainer = document.querySelector('.error-message');
+    const allErrorContainers = [ document.querySelector('.message-error') ];
     const form = document.querySelector('.card-payment-form');
     const submitButton = form.querySelector('.pay-button');
+    const payText = form.querySelector('.pay-text');
+    const paymentProcessingContainer = form.querySelector('.payment-processing-container');
+    const selectTagName = 'SELECT';
     let formElements = Array.from(form.elements);
 
     const card = stripeElements.create('card', {
@@ -16,40 +19,56 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
     const placeOfCard = document.querySelector('#card-payment-form_card');
 
-    function disableInputs() {
+    function toggleInputs(enable) {
         formElements.forEach((element) => {
-            element.readOnly = true;
+            if (element.tagName === selectTagName) {
+                element.disabled = !enable;
+            }
+
+            element.readOnly = !enable;
         });
 
-        card.update({ disabled: true });
+        card.update({ disabled: !enable });
 
-        submitButton.disabled = true;
+        submitButton.disabled = !enable;
+
+        paymentProcessingContainer.hidden = enable;
+        payText.hidden = !enable;
     }
 
-    function displayError(error) {
-        if (Object.prototype.hasOwnProperty.call(error, 'message')) {
-            errorContainer.textContent = error.message;
+    function displayError(errors, container = allErrorContainers[0]) {
+        allErrorContainers.forEach((element) => element.hidden = true);
+        if (!errors || errors.length === 0) return;
+
+        const err = Array.isArray(errors) ? errors.filter((error) => error) : [errors];
+
+        container.innerHTML = '<ul></ul>';
+        const ul = container.querySelector('ul');
+        for (let i = 0; i < err.length; i++) {
+            const li = document.createElement('li');
+            li.textContent = Object.prototype.hasOwnProperty.call(err[i], 'message') ? err[i].message : err[i];
+            ul.appendChild(li);
         }
-        else {
-            errorContainer.textContent = error;
-        }
 
-        // Enable inputs.
-        formElements.forEach((element) => {
-            element.readOnly = false;
-        });
+        toggleInputs(true);
 
-        card.update({ disabled: false });
-
-        submitButton.disabled = false;
+        container.hidden = false;
+        container.scrollIntoView({ block: 'center' });
     }
+
+    function fetchPost(path, options) {
+        return fetch(`${urlPrefix}/${path}`, { method: 'POST', ...options })
+            .then((response) => response.json());
+    }
+
+    let handleServerResponse;
+    let handleStripeJsResult;
 
     function fetchPay(data) {
         // eslint-disable-next-line dot-notation -- That would throw "no-underscore-dangle". This looks better anyway.
         data['__RequestVerificationToken'] = antiForgeryToken;
 
-        return fetch(`${urlPrefix}/pay`, {
-            method: 'POST',
+        return fetchPost('pay', {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -58,17 +77,18 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
                 .entries(data)
                 .map((pair) => pair.map(encodeURIComponent).join('='))
                 .join('&'),
-        });
+        })
+            .then(handleServerResponse)
+            .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError));
     }
 
-    let handleStripeJsResult;
-    function handleServerResponse(response) {
+    handleServerResponse = function (response) {
         const error = response.error;
 
         // Show error in payment form.
         if (error) {
             displayError(error);
-            return;
+            return Promise.reject(error);
         }
 
         if (response.requires_action) {
@@ -82,72 +102,69 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
             form.method = 'POST';
             form.submit();
         }
-    }
+
+        return Promise.resolve();
+    };
 
     handleStripeJsResult = function (result) {
-        const error = result.error;
-
         // Show error in payment form.
-        if (error) {
-            displayError(error);
-            return;
-        }
+        if (result.error) return displayError(result.error);
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
 
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
-        fetchPay({ paymentIntentId: result.paymentIntent.id })
-            .then((confirmResult) => confirmResult.json())
-            .then(handleServerResponse)
-            .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
-            );
-
+        return fetchPay({ paymentIntentId: result.paymentIntent.id });
     };
 
     function stripePaymentMethodHandler(result) {
-        const error = result.error;
-
         // Show error in payment form.
-        if (error) {
-            displayError(error);
-            return;
-        }
+        if (result.error) return displayError(result.error);
 
         document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentMethod.id;
 
         // Otherwise send paymentMethod.id to the server.
-        fetchPay({ paymentMethodId: result.paymentMethod.id })
-            .then((fetchPayResult) => {
-                // Handle server response.
-                fetchPayResult.json()
-                    .then((json) => {
-                        handleServerResponse(json);
-                    })
-                    .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError)
-                    );
-            });
+        return fetchPay({ paymentMethodId: result.paymentMethod.id });
     }
+
+    function getText(element) { return element?.textContent.trim(); }
 
     function registerElements() {
         // Displaying card input error.
+        const stripeFieldError = document.querySelector('.stripe-field-error');
+        allErrorContainers.push(stripeFieldError);
         card.on('change', (event) => {
-            const eventError = event.error;
-            if (eventError) {
-                displayError(eventError);
-            }
-            else {
-                errorContainer.textContent = '';
-            }
+            displayError(event?.error, stripeFieldError);
         });
 
-        submitButton.addEventListener('click', (event) => {
+        submitButton.addEventListener('click', async (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-            disableInputs();
+            toggleInputs(false);
 
-            stripe
-                .createPaymentMethod({
+            let result;
+            try {
+                const emptyRequiredFields = Array.from(form.querySelectorAll('input'))
+                    .filter((element) => element.required && !element.hidden)
+                    .filter((element) => !element.value?.match(/\S+/));
+
+                if (emptyRequiredFields.length) {
+                    throw emptyRequiredFields
+                        .map((element) => document.querySelector(`label[for="${element.id}"]`))
+                        .filter(getText)
+                        .filter((label) => !label.closest('.address')?.hidden)
+                        .map((label) => {
+                            var title = getText(label.closest('.address')?.querySelector('.address__title'));
+                            let name = title ? `${title} ${getText(label)}` : getText(label);
+
+                            return missingText.replace('%LABEL%', name);
+                        });
+                }
+
+                const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
+                if (validationJson?.errors?.length) throw validationJson.errors;
+
+                result = await stripe.createPaymentMethod({
                     type: 'card',
                     card: card,
                     billing_details: {
@@ -163,8 +180,13 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
                             state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
                         },
                     },
-                })
-                .then(stripePaymentMethodHandler);
+                });
+            }
+            catch (error) {
+                result = { error };
+            }
+
+            await stripePaymentMethodHandler(result);
         });
     }
 
@@ -173,6 +195,6 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
         // Refreshing form elements with the card input.
         formElements = Array.from(form.elements);
-        registerElements([card]);
+        registerElements();
     }
 };

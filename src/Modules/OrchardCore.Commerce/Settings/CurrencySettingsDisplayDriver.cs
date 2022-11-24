@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Settings;
 
-public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, CommerceSettings>
+public class CurrencySettingsDisplayDriver : SectionDisplayDriver<ISite, CurrencySettings>
 {
     public const string GroupId = "commerce";
     private readonly IShellHost _orchardHost;
@@ -25,13 +25,13 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
     private readonly IMoneyService _moneyService;
     private readonly IStringLocalizer T;
 
-    public CommerceSettingsDisplayDriver(
+    public CurrencySettingsDisplayDriver(
         IShellHost orchardHost,
         ShellSettings currentShellSettings,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IMoneyService moneyService,
-        IStringLocalizer<CommerceSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<CurrencySettingsDisplayDriver> stringLocalizer)
     {
         _orchardHost = orchardHost;
         _currentShellSettings = currentShellSettings;
@@ -41,18 +41,18 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
         T = stringLocalizer;
     }
 
-    public override async Task<IDisplayResult> EditAsync(CommerceSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(CurrencySettings section, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCommerceSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCurrencySettings))
         {
             return null;
         }
 
         var shapes = new List<IDisplayResult>
         {
-            Initialize<CommerceSettingsViewModel>("CommerceSettings_Edit", model =>
+            Initialize<CurrencySettingsViewModel>("CurrencySettings_Edit", model =>
             {
                 model.DefaultCurrency = section.DefaultCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
                 model.CurrentDisplayCurrency = section.CurrentDisplayCurrency ?? _moneyService.DefaultCurrency.CurrencyIsoCode;
@@ -70,18 +70,18 @@ public class CommerceSettingsDisplayDriver : SectionDisplayDriver<ISite, Commerc
         return Combine(shapes);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(CommerceSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(CurrencySettings section, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCommerceSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCurrencySettings))
         {
             return null;
         }
 
         if (context.GroupId == GroupId)
         {
-            var model = new CommerceSettingsViewModel();
+            var model = new CurrencySettingsViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {

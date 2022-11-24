@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Models;
@@ -9,5 +10,5 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class PriceVariantsPart : ContentPart
 {
-    public IDictionary<string, Amount> Variants { get; } = new Dictionary<string, Amount>();
+    public IDictionary<string, Amount> Variants { get; } = new Dictionary<string, Amount>(StringComparer.OrdinalIgnoreCase);
 }

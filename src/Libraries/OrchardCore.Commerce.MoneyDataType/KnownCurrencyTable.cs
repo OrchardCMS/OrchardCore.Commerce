@@ -26,24 +26,48 @@ internal static class KnownCurrencyTable
     private static void InitCurrencyCodeTable()
     {
         static bool IsValid(CultureInfo cultureInfo) =>
+            cultureInfo.Name.Contains('-') &&
             !cultureInfo.IsNeutralCulture &&
             !cultureInfo.EnglishName.StartsWith("Unknown Locale", StringComparison.Ordinal) &&
-            !cultureInfo.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal);
+            !cultureInfo.EnglishName.StartsWith("Invariant Language", StringComparison.Ordinal) &&
+            cultureInfo.TryGetRegionInfo()?.ISOCurrencySymbol != "EUR";
+
+        static int RankCultureByExpectedRelevance(CultureInfo cultureInfo)
+        {
+            var parts = cultureInfo.Name.Split('-');
+
+            // Prioritize when the language and country ISO codes match, e.g. hu-HU, no-NO, etc. This doesn't help with
+            // cultures like sv-SE, ja-SP or fa-IR.
+            if (parts.Length == 2 && parts[0].ToUpperInvariant() == parts[1]) return 0;
+
+            // English is usually a safe choice on the Internet.
+            if (cultureInfo.TwoLetterISOLanguageName == "en") return 1;
+
+            return int.MaxValue; // Fallback, the rest are sorted alphabetically.
+        }
 
         lock (_lockObject)
         {
-            CurrencyTable = CultureInfo
-                .GetCultures(CultureTypes.AllCultures)
-                .Where(IsValid)
+            var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(IsValid).ToList();
+
+            CurrencyTable = cultures
+                .GroupBy(culture => culture.Name.Split('-').Last())
+                .Select(group => group
+                    .OrderBy(RankCultureByExpectedRelevance)
+                    .ThenBy(culture => culture.EnglishName)
+                    .First())
                 .Select(culture => new Currency(culture))
                 .Cast<ICurrency>()
                 .Distinct(new CurrencyEqualityComparer())
                 .ToDictionary(currency => currency.CurrencyIsoCode, currency => currency);
 
-            CurrencyTable.Add("BTC", new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
-            CurrencyTable.Add("---", Currency.UnspecifiedCurrency);
+            AddCurrency(new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
+            AddCurrency(Currency.Euro); // International currency not derived from a culture.
+            AddCurrency(Currency.UnspecifiedCurrency);
         }
     }
+
+    private static void AddCurrency(ICurrency currency) => CurrencyTable.Add(currency.CurrencyIsoCode, currency);
 
     private sealed class CurrencyEqualityComparer : IEqualityComparer<ICurrency>
     {

@@ -2,6 +2,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -9,7 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
@@ -78,14 +79,8 @@ public class UserController : Controller
         }
         else
         {
-            var errors = _updateModelAccessor
-                .ModelUpdater
-                .ModelState
-                .Values
-                .SelectMany(entry => entry.Errors)
-                .Where(error => !string.IsNullOrWhiteSpace(error.ErrorMessage));
-
-            foreach (var error in errors) await _notifier.ErrorAsync(H[error.ErrorMessage]);
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
+            foreach (var error in errors.WhereNot(string.IsNullOrEmpty)) await _notifier.ErrorAsync(H[error]);
         }
 
         return RedirectToAction(nameof(Addresses));

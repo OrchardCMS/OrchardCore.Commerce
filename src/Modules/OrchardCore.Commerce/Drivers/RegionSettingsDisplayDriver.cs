@@ -1,9 +1,7 @@
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -25,19 +23,20 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
     private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _hca;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IRegionService _regionService;
 
     public RegionSettingsDisplayDriver(
         IShellHost shellHost,
         ShellSettings shellSettings,
         IHttpContextAccessor hca,
         IAuthorizationService authorizationService,
-        IDataProtectionProvider dataProtectionProvider,
-        ILogger<RegionSettingsDisplayDriver> logger)
+        IRegionService regionService)
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
         _hca = hca;
         _authorizationService = authorizationService;
+        _regionService = regionService;
     }
 
     public override async Task<IDisplayResult> EditAsync(RegionSettings section, BuildEditorContext context)
@@ -49,8 +48,9 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
         return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
         {
             model.AllowedRegions = section.AllowedRegions;
-
-            model.Regions = Regions.All.AsEnumerable().CreateSelectListOptions();
+            model.Regions = _regionService
+                .GetAllRegions()
+                .CreateSelectListOptions();
         })
             .Location("Content")
             .OnGroup(GroupId);
@@ -72,8 +72,9 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
                 var allowedRegions = model.AllowedRegions.AsList();
-
-                var allRegionTwoLetterIsoRegionNames = Regions.All.Select(region => region.TwoLetterISORegionName);
+                var allRegionTwoLetterIsoRegionNames = _regionService
+                    .GetAllRegions()
+                    .Select(region => region.TwoLetterISORegionName);
 
                 section.AllowedRegions = allowedRegions?.Any() == true
                     ? allRegionTwoLetterIsoRegionNames

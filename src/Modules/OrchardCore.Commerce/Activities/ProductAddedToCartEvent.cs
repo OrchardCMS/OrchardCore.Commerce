@@ -22,4 +22,9 @@ public class ProductAddedToCartEvent : EventActivity
         WorkflowExecutionContext workflowContext,
         ActivityContext activityContext) =>
         Outcomes(new[] { T["Done"] });
+
+    public override ActivityExecutionResult Resume(
+        WorkflowExecutionContext workflowContext,
+        ActivityContext activityContext) =>
+        Outcomes("Done");
 }

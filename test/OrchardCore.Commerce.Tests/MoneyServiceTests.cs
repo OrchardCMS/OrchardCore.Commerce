@@ -22,7 +22,7 @@ public class MoneyServiceTests
             "USD",
             new MoneyService(
                     currencyProviders: null,
-                    new TestOptions<CommerceSettings>(new CommerceSettings()),
+                    new TestOptions<CurrencySettings>(new CurrencySettings()),
                     currencySelector: null)
                 .DefaultCurrency
                 .CurrencyIsoCode);
@@ -37,7 +37,7 @@ public class MoneyServiceTests
             "USD",
             new MoneyService(
                     currencyProviders: null,
-                    new TestOptions<CommerceSettings>(new CommerceSettings { DefaultCurrency = "WTF" }),
+                    new TestOptions<CurrencySettings>(new CurrencySettings { DefaultCurrency = "WTF" }),
                     currencySelector: null)
                 .DefaultCurrency
                 .CurrencyIsoCode);

@@ -6,6 +6,6 @@ public static class CommerceConstants
     {
         public const string Core = "OrchardCore.Commerce";
         public const string SessionCartStorage = "OrchardCore.Commerce.SessionCartStorage";
-        public const string CommerceSettingsCurrencySelector = "OrchardCore.Commerce.CommerceSettingsCurrencySelector";
+        public const string CurrencySettingsSelector = "OrchardCore.Commerce.CurrencySettingsSelector";
     }
 }

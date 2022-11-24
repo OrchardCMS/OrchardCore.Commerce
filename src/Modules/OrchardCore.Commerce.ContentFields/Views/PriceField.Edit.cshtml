@@ -44,12 +44,20 @@
                     const currencyDropdown = document.getElementById(@Html.IdFor(model => model.Currency).JsonHtmlContent());
                     $('.@contentClass').toggle(this.checked);
 
+                    const unspecifiedCurrency = @Currency.UnspecifiedCurrency.CurrencyIsoCode.JsonHtmlContent();
+                    const currentCurrency = @Model.Currency.JsonHtmlContent();
+                    const priceInput = document.getElementById(@Html.IdFor(model => model.Value).JsonHtmlContent());
+
                     if (this.checked) {
-                        currencyDropdown.value = @Model.PreferredCurrencyIsoCode.JsonHtmlContent();
+                        currencyDropdown.value = currentCurrency == unspecifiedCurrency
+                            ? @Model.PreferredCurrencyIsoCode.JsonHtmlContent()
+                            : currentCurrency;
+
+                        priceInput.value = @Model.Value;
                     }
                     else {
-                        document.getElementById(@Html.IdFor(model => model.Value).JsonHtmlContent()).value = 0;
-                        currencyDropdown.value = @Currency.UnspecifiedCurrency.CurrencyIsoCode.JsonHtmlContent();
+                        priceInput.value = 0;
+                        currencyDropdown.value = unspecifiedCurrency;
                     }
                 })
                 .prop('checked', @(Model.IsValid ? "true" : "false"))

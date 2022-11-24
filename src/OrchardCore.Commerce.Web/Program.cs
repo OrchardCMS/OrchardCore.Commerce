@@ -1,18 +1,34 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Logging;
+using System.Diagnostics.CodeAnalysis;
 
-namespace OrchardCore.Commerce.Web;
+var builder = WebApplication.CreateBuilder(args);
 
-public static class Program
+builder.Logging.ClearProviders();
+builder.Host.UseNLogHost();
+
+var configuration = builder.Configuration;
+
+builder.Services
+    .AddSingleton(configuration)
+    .AddOrchardCms(builder => builder.AddSetupFeatures("OrchardCore.AutoSetup"));
+
+var app = builder.Build();
+
+app.UseStaticFiles();
+app.UseOrchardCore();
+app.Run();
+
+[SuppressMessage(
+    "Design",
+    "CA1050: Declare types in namespaces",
+    Justification = "As described here: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0.")]
+public partial class Program
 {
-    public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
-
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(logging => logging.ClearProviders())
-            .ConfigureWebHostDefaults(webBuilder => webBuilder
-                .UseNLogWeb()
-                .UseStartup<Startup>());
+    protected Program()
+    {
+        // Nothing to do here.
+    }
 }

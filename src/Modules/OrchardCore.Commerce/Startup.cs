@@ -1,3 +1,4 @@
+using Fluid;
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -14,6 +15,7 @@ using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
+using OrchardCore.Commerce.Liquid;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -22,12 +24,14 @@ using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.Commerce.Tax.Constants;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -51,6 +55,7 @@ public class Startup : StartupBase
         services.AddTagHelpers<MvcTitleTagHelper>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
@@ -116,6 +121,7 @@ public class Startup : StartupBase
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
+        services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplay>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
@@ -123,15 +129,18 @@ public class Startup : StartupBase
 
         services.AddScoped<IDataMigration, OrderMigrations>();
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
+        services.AddScoped<IOrderLineItemService, OrderLineItemService>();
+
+        services.AddScoped<IContentTypeDefinitionDisplayDriver, OrderContentTypeDefinitionDisplayDriver>();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();
 
         // Settings
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IDisplayDriver<ISite>, CommerceSettingsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ISite>, CurrencySettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddTransient<IConfigureOptions<CommerceSettings>, CommerceSettingsConfiguration>();
+        services.AddTransient<IConfigureOptions<CurrencySettings>, CurrencySettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
@@ -143,6 +152,29 @@ public class Startup : StartupBase
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
+
+        // Exposing models to liquid tempaltes
+        services.Configure<TemplateOptions>(option =>
+            {
+                option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
+                option.MemberAccessStrategy.Register<ShoppingCartCellViewModel>();
+                option.MemberAccessStrategy.Register<ShoppingCartLineViewModel>();
+                option.MemberAccessStrategy.Register<CheckoutViewModel>();
+                option.MemberAccessStrategy.Register<OrderPartViewModel>();
+                option.MemberAccessStrategy.Register<OrderLineItemViewModel>();
+                option.MemberAccessStrategy.Register<AddressFieldEditorViewModel>();
+                option.MemberAccessStrategy.Register<OrderPart>();
+                option.MemberAccessStrategy.Register<AddressField>();
+                option.MemberAccessStrategy.Register<IPayment>();
+                option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
+                option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
+            })
+            // Liquid filter to convert JToken value to Amount struct in liquid.
+            .AddLiquidFilter<AmountConverterFilter>("amount")
+            // Liquid filter to create AddressFiledEditorViewModel.
+            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
+            // Liquid filter to create OrderLineItemViewModels.
+            .AddLiquidFilter<OrderLineItemViewModelsConverterFilter>("order_line_item_view_models");
     }
 }
 
@@ -190,12 +222,12 @@ public class SessionCartStorageStartup : StartupBase
     }
 }
 
-[Feature(CommerceConstants.Features.CommerceSettingsCurrencySelector)]
+[Feature(CommerceConstants.Features.CurrencySettingsSelector)]
 [RequireFeatures(CommerceConstants.Features.Core)]
-public class CommerceSettingsCurrencySettingsStartup : StartupBase
+public class CurrencySettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
-        services.AddScoped<ICurrencySelector, CommerceSettingsCurrencySelector>();
+        services.AddScoped<ICurrencySelector, CurrencySettingsSelector>();
 }
 
 [RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]

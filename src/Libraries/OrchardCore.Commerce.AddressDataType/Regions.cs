@@ -10,26 +10,22 @@ public static class Regions
     /// <summary>
     /// Gets the list of regions.
     /// </summary>
-    public static IList<RegionInfo> All { get; } =
+    public static IList<Region> All { get; } =
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
             .Select(culture =>
             {
+                // This sometimes throws "CultureNotFoundException: Culture is not supported." exception on Linux only.
                 try { return new RegionInfo(culture.LCID); }
-                catch { return null; }
+                catch (CultureNotFoundException) { return null; }
             })
-            .Where(region => region?.TwoLetterISORegionName.Length == 2) // Filter out world and other 3-digit regions
+            .Where(region =>
+                region != null &&
+                region.TwoLetterISORegionName.Length == 2 && // Filter out world and other 3-digit regions.
+                !string.IsNullOrEmpty(region.EnglishName))
             .Distinct()
+            .Select(region => new Region(region))
             .ToList();
-
-    /// <summary>
-    /// Gets region names mapped to two-letter ISO region codes.
-    /// </summary>
-    public static IDictionary<string, string> RegionCodes { get; } =
-        All.ToDictionary(
-            region => region.DisplayName,
-            region => region.TwoLetterISORegionName,
-            StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Gets two-letter regions codes mapped to region names.
