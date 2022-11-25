@@ -12,6 +12,7 @@ using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -41,6 +42,7 @@ public class PaymentController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly ILogger _logger;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
@@ -56,6 +58,7 @@ public class PaymentController : Controller
     public PaymentController(
         ICardPaymentService cardPaymentService,
         IContentItemDisplayManager contentItemDisplayManager,
+        IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentController> services,
         IShoppingCartHelpers shoppingCartHelpers,
         ISiteService siteService,
@@ -68,6 +71,7 @@ public class PaymentController : Controller
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
@@ -114,6 +118,11 @@ public class PaymentController : Controller
 
         var total = cart.Totals.Single();
 
+        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
+                await _contentManager.NewAsync(Order),
+                "Checkout"))
+            .ToList();
+
         var checkoutViewModel = new CheckoutViewModel
         {
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
@@ -121,7 +130,10 @@ public class PaymentController : Controller
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
+            CheckoutShapes = checkoutShapes,
         };
+
+        foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
 

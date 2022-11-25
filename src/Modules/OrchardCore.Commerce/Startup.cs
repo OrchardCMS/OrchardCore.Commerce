@@ -55,6 +55,7 @@ public class Startup : StartupBase
         services.AddTagHelpers<MvcTitleTagHelper>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
@@ -130,6 +131,8 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, OrderMigrations>();
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
         services.AddScoped<IOrderLineItemService, OrderLineItemService>();
+
+        services.AddScoped<IContentTypeDefinitionDisplayDriver, OrderContentTypeDefinitionDisplayDriver>();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();
