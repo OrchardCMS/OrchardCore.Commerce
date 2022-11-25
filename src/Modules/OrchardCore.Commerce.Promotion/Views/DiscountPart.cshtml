@@ -6,35 +6,38 @@
 
 @{
     var discountPart = Model.DiscountPart;
+    var discountPercentageValue = discountPart.DiscountPercentage.Value;
+    var maximumProducts = discountPart.MaximumProducts.Value;
+    var minimumProducts = discountPart.MinimumProducts.Value;
 }
 
 @if (discountPart.IsValidAndActive())
 {
-    @if (discountPart.DiscountPercentage is { } discountPercentage && discountPercentage.Value > 0)
+    @if (discountPercentageValue > 0)
     {
         <div class="field field-type-numericfield field-name-discount-part-discount-percentage">
             <strong class="field-name-discount-part-discount-percentage-title">@T["Discount Percentage:"]</strong>
-            @T["{0}%", discountPercentage.Value]
+            @T["{0}%", discountPercentageValue]
         </div>
     }
 
-    @if (discountPart.MaximumProducts is { } maximumProducts && maximumProducts.Value > 0)
+    @if (maximumProducts > 0)
     {
         <div class="field field-type-numericfield field-name-discount-part-maximum-products">
             <strong class="field-name-discount-part-maximum-products-title">@T["Discount Maximum Products:"]</strong>
-            @maximumProducts.Value
+            @maximumProducts
         </div>
     }
 
-    @if (discountPart.MinimumProducts is { } minimumProducts && minimumProducts.Value > 0)
+    @if (minimumProducts > 0)
     {
         <div class="field field-type-numericfield field-name-discount-part-minimum-products">
             <strong class="field-name-discount-part-minimum-products-title">@T["Discount Minimum Products:"]</strong>
-            @minimumProducts.Value
+            @minimumProducts
         </div>
     }
 
-    @if (discountPart.BeginningUtc?.Value is { } beginningUtc)
+    @if (discountPart.BeginningUtc.Value is { } beginningUtc)
     {
         <div class="field field-type-datetimefield field-name-discount-part-beginning-utc">
             <strong class="field-name-discount-part-beginning-utc-title">@T["Discount Beginning Utc:"]</strong>
@@ -42,7 +45,7 @@
         </div>
     }
 
-    @if (discountPart.ExpirationUtc?.Value is { } expirationUtc)
+    @if (discountPart.ExpirationUtc.Value is { } expirationUtc)
     {
         <div class="field field-type-datetimefield field-name-discount-part-expiration-utc">
             <strong class="field-name-discount-part-expiration-utc-title">@T["Discount Expiration Utc:"]</strong>
