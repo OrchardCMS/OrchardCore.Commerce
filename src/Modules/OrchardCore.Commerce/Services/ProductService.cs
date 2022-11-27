@@ -48,6 +48,7 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)
     {
+        // There is no GetVersionAsync that accepts a collection.
         var contentItems = await contentItemVersions.AwaitEachAsync(async contentItemVersion =>
             await _contentManager.GetVersionAsync(contentItemVersion));
 
