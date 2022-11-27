@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Abstractions;
 /// <summary>
 /// Updates prices with tax.
 /// </summary>
-public interface ITaxProvider : ISortableUpdaterProvider<TaxProviderContext>
+public interface ITaxProvider : ISortableUpdaterProvider<PromotionAndTaxProviderContext>
 {
     /// <summary>
     /// Returns <see langword="true"/> if all of the model <see cref="TaxProviderContext.Items"/> are applicable, <see langword="false"/> if none are,

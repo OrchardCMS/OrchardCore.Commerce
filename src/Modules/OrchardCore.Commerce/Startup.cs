@@ -20,10 +20,10 @@ using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
-using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -117,6 +117,7 @@ public class Startup : StartupBase
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
+        services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
@@ -148,6 +149,9 @@ public class Startup : StartupBase
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
+
+        // Promotion
+        services.AddScoped<IPromotionService, PromotionService>();
 
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
@@ -230,7 +234,7 @@ public class CurrencySettingsStartup : StartupBase
         services.AddScoped<ICurrencySelector, CurrencySettingsSelector>();
 }
 
-[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
+[RequireFeatures(CommerceConstants.Features.Core, Tax.Constants.FeatureIds.Tax)]
 public class TaxStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -240,6 +244,20 @@ public class TaxStartup : StartupBase
             .AddHandler<TaxPartAndPricePartHandler>();
 
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
+    }
+}
+
+[RequireFeatures(CommerceConstants.Features.Core, Promotion.Constants.FeatureIds.Promotion)]
+public class PromotionStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddContentPart<DiscountPart>()
+            .AddHandler<DiscountPartHandler>()
+            .UseDisplayDriver<DiscountPartDisplayDriver>();
+
+        services.AddScoped<IPromotionProvider, DiscountProvider>();
     }
 }
 

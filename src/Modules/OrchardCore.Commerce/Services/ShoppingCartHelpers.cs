@@ -24,7 +24,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer)
+        IHtmlLocalizer<ShoppingCartHelpers> localizer,
+        IPromotionService promotionService)
     {
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;
@@ -70,7 +71,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         };
         IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
 
-        foreach (var shoppingCartEvent in _shoppingCartEvents)
+        foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
             (totals, headers, lines) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
         }

@@ -97,6 +97,15 @@
               }
             },
             {
+              "PartName": "DiscountPart",
+              "Name": "DiscountPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "6"
+                }
+              }
+            },
+            {
               "PartName": "Product",
               "Name": "Product",
               "Settings": {

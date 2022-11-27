@@ -16,7 +16,7 @@ public class LocalTaxProvider : ITaxProvider
     // This is the simplest, lowest priority option and if anything else is applicable it should supersede this.
     public int Order => int.MaxValue;
 
-    public Task<TaxProviderContext> UpdateAsync(TaxProviderContext model)
+    public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model)
     {
         var items = model.Items.AsList();
 
@@ -31,12 +31,12 @@ public class LocalTaxProvider : ITaxProvider
                     .Sum();
             });
 
-        return Task.FromResult(new TaxProviderContext(
-            items.Select(item => item with { UnitPrice = item.Content.As<TaxPart>().GrossPrice.Amount }),
+        return Task.FromResult(new PromotionAndTaxProviderContext(
+            items.Select(item => item with { UnitPrice = item.UnitPrice.WithTax(item.Content) }),
             updatedTotals));
     }
 
-    public Task<bool> IsApplicableAsync(TaxProviderContext model) =>
+    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
         ITaxProvider.AllOrNoneAsync(model, items => items
             .Select(item => item.Content.ContentItem.As<TaxPart>())
             .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value > 0));

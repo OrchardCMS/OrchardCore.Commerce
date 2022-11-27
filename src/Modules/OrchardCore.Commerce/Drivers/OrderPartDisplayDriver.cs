@@ -57,7 +57,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         model.ContentItem = part.ContentItem;
         var lineItems = part.LineItems;
         var lineItemViewModelsAndTotal = await _orderLineItemService
-            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems);
+            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, part.ContentItem.PublishedUtc);
 
         model.Total = lineItemViewModelsAndTotal.Total;
         model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);
