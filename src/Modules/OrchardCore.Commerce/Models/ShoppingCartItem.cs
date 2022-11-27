@@ -113,7 +113,8 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 
     public async Task<OrderLineItem> CreateOrderLineFromShoppingCartItemAsync(
     IPriceSelectionStrategy priceSelectionStrategy,
-    IPriceService priceService)
+    IPriceService priceService,
+    string contentItemVersion)
     {
         var quantity = Quantity;
 
@@ -125,6 +126,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             ProductSku,
             price,
             quantity * price,
+            contentItemVersion,
             Attributes);
     }
 

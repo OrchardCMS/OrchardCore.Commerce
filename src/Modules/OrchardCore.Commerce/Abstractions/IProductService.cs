@@ -15,6 +15,11 @@ public interface IProductService
     Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus);
 
     /// <summary>
+    /// Returns the products that have the provided content item versions.
+    /// </summary>
+    Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions);
+
+    /// <summary>
     /// Returns the key the product variant is identified by.
     /// </summary>
     string GetVariantKey(string sku);

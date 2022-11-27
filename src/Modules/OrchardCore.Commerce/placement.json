@@ -28,6 +28,36 @@
       "place": "-"
     }
   ],
+  "DateTimeField": [
+    {
+      "contentType": [ "Product" ]
+    },
+    {
+      "differentiator": "DiscountPart-BeginningUtc",
+      "place": "-"
+    },
+    {
+      "differentiator": "DiscountPart-ExpirationUtc",
+      "place": "-"
+    }
+  ],
+  "NumericField": [
+    {
+      "contentType": [ "Product" ]
+    },
+    {
+      "differentiator": "DiscountPart-MaximumProducts",
+      "place": "-"
+    },
+    {
+      "differentiator": "DiscountPart-MinimumProducts",
+      "place": "-"
+    },
+    {
+      "differentiator": "DiscountPart-DiscountPercentage",
+      "place": "-"
+    }
+  ],
   "TextField": [
     {
       "contentType": [ "Order" ],

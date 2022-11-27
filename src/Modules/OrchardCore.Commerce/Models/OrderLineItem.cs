@@ -11,6 +11,7 @@ public class OrderLineItem
     public string ProductSku { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
+    public string ContentItemVersion { get; set; }
     public ISet<IProductAttributeValue> Attributes { get; }
 
     public OrderLineItem(
@@ -18,6 +19,7 @@ public class OrderLineItem
         string productSku,
         Amount unitPrice,
         Amount linePrice,
+        string contentItemVersion,
         IEnumerable<IProductAttributeValue> attributes = null)
     {
         ArgumentNullException.ThrowIfNull(productSku);
@@ -27,6 +29,7 @@ public class OrderLineItem
         ProductSku = productSku;
         UnitPrice = unitPrice;
         LinePrice = linePrice;
+        ContentItemVersion = contentItemVersion;
         Attributes = attributes is null
             ? new HashSet<IProductAttributeValue>()
             : new HashSet<IProductAttributeValue>(attributes);

@@ -1,0 +1,8 @@
+@using OrchardCore.Commerce.Tax.Extensions
+
+@{
+    var line = (ShoppingCartLineViewModel)Model.Line;
+    var oldPrice = line.AdditionalData.GetOldPrice();
+}
+
+<div class="shopping-cart-table-old-price"><del>@oldPrice</del></div>

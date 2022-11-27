@@ -8,7 +8,7 @@ using OrchardCore.Data.Migration;
 namespace OrchardCore.Commerce.Tax.Migrations;
 
 /// <summary>
-/// Adds the price part to the list of available parts.
+/// Adds the tax part to the list of available parts.
 /// </summary>
 public class TaxPartMigrations : DataMigration
 {
