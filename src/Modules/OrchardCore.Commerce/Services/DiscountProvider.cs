@@ -56,7 +56,7 @@ public class DiscountProvider : IPromotionProvider
             IsApplicablePerDiscountPart(discountPart, item.Quantity, purchaseDateTime));
     }
 
-    // Incase we have multiple discount parts on one product.
+    // In case we have multiple discount parts on one product.
     private static bool IsApplicablePerDiscountPart(
         DiscountPart discountPart,
         int itemQuantity,
