@@ -47,8 +47,11 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         }
 
         if ((instance.ContentItem.As<PricePart>() is { } pricePart &&
+            pricePart.Price.Currency.Equals(discountAmount.Currency) &&
             pricePart.Price < discountAmount) ||
             (instance.ContentItem.As<TaxPart>() is { } taxPart &&
+            taxPart.GrossPrice.Amount.IsValid &&
+            taxPart.GrossPrice.Amount.Currency.Equals(discountAmount.Currency) &&
             taxPart.GrossPrice.Amount < discountAmount))
         {
             InvalidateNegativePriceState();

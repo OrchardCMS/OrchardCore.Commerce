@@ -9,7 +9,7 @@ public static class AmountExtensions
 
     public static Amount WithDiscount(this Amount amount, Amount discountAmount)
     {
-        if (amount.Currency.Equals(discountAmount.Currency))
+        if (!amount.Currency.Equals(discountAmount.Currency))
         {
             throw new InvalidOperationException($"The product's and discount's currencies are not the same: " +
                 $"{amount.Currency.EnglishName}, {discountAmount.Currency.EnglishName}");
