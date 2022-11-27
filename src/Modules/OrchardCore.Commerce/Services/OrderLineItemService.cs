@@ -4,6 +4,7 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +31,8 @@ public class OrderLineItemService : IOrderLineItemService
     }
 
     public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
-        IList<OrderLineItem> lineItems)
+        IList<OrderLineItem> lineItems,
+        DateTime? publishDateTime = null)
     {
         var products = await _productService.GetProductDictionaryAsync(lineItems.Select(line => line.ProductSku));
         var viewModelLineItems = await Task.WhenAll(lineItems.Select(async lineItem =>
@@ -57,7 +59,8 @@ public class OrderLineItemService : IOrderLineItemService
                 products[item.ProductSku],
                 item.UnitPrice,
                 item.Quantity)),
-            new[] { total });
+            new[] { total },
+            publishDateTime);
 
         if (_taxProviders.Any())
         {

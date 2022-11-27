@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ public class PromotionShoppingCartEvents : IShoppingCartEvents
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines)
     {
-        var context = new PromotionAndTaxProviderContext(lines, totals);
+        var context = new PromotionAndTaxProviderContext(lines, totals, DateTime.UtcNow);
 
         if (!await _promotionService.IsThereAnyApplicableProviderAsync(context))
         {

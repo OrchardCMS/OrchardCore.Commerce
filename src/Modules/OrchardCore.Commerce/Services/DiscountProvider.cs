@@ -21,7 +21,8 @@ public class DiscountProvider : IPromotionProvider
         var items = model.Items.AsList();
 
         var newContextLineItems =
-            items.Select(item => item with { UnitPrice = ApplyPromotionToShoppingCartItem(item) });
+            items.Select(item =>
+                item with { UnitPrice = ApplyPromotionToShoppingCartItem(item, model.PurchaseDateTime) });
 
         var updatedTotals = model
             .TotalsByCurrency
@@ -38,33 +39,41 @@ public class DiscountProvider : IPromotionProvider
     }
 
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
-        Task.FromResult(IsApplicable(model.Items.ToList()));
+        Task.FromResult(IsApplicable(model.Items.ToList(), model.PurchaseDateTime));
 
-    private static bool IsApplicable(IList<PromotionAndTaxProviderContextLineItem> lineItems) =>
-        lineItems.Any(item => IsApplicablePerItem(item));
+    private static bool IsApplicable(
+        IList<PromotionAndTaxProviderContextLineItem> lineItems,
+        DateTime? purchaseDateTime) =>
+        lineItems.Any(item => IsApplicablePerItem(item, purchaseDateTime));
 
-    private static bool IsApplicablePerItem(PromotionAndTaxProviderContextLineItem item)
+    private static bool IsApplicablePerItem(PromotionAndTaxProviderContextLineItem item, DateTime? purchaseDateTime)
     {
         var discountParts = item.Content
             .ContentItem
             .OfType<DiscountPart>();
 
-        return discountParts.Any(discountPart => IsApplicablePerDiscountPart(discountPart, item.Quantity));
+        return discountParts.Any(discountPart =>
+            IsApplicablePerDiscountPart(discountPart, item.Quantity, purchaseDateTime));
     }
 
     // Incase we have multiple discount parts on one product.
-    private static bool IsApplicablePerDiscountPart(DiscountPart discountPart, int itemQuantity)
+    private static bool IsApplicablePerDiscountPart(
+        DiscountPart discountPart,
+        int itemQuantity,
+        DateTime? purchaseDateTime)
     {
         var discountMaximumProducts = discountPart.MaximumProducts.Value;
 
         return discountPart.IsValidAndActive() &&
-               !(discountPart.BeginningUtc.Value > DateTime.UtcNow ||
-               discountPart.ExpirationUtc.Value < DateTime.UtcNow ||
+               !(discountPart.BeginningUtc.Value > purchaseDateTime ||
+               discountPart.ExpirationUtc.Value < purchaseDateTime ||
                discountPart.MinimumProducts.Value > itemQuantity ||
                (discountMaximumProducts > 0 && discountMaximumProducts < itemQuantity));
     }
 
-    private static Amount ApplyPromotionToShoppingCartItem(PromotionAndTaxProviderContextLineItem item)
+    private static Amount ApplyPromotionToShoppingCartItem(
+        PromotionAndTaxProviderContextLineItem item,
+        DateTime? purchaseDateTime)
     {
         var newPrice = item.UnitPrice;
 
@@ -74,7 +83,7 @@ public class DiscountProvider : IPromotionProvider
 
         foreach (var discountPart in discountParts)
         {
-            if (!IsApplicablePerDiscountPart(discountPart, item.Quantity)) continue;
+            if (!IsApplicablePerDiscountPart(discountPart, item.Quantity, purchaseDateTime)) continue;
 
             var discountPercentage = discountPart.DiscountPercentage?.Value;
             var discountAmount = discountPart.DiscountAmount.Amount;
