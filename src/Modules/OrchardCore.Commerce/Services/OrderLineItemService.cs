@@ -34,7 +34,9 @@ public class OrderLineItemService : IOrderLineItemService
         IList<OrderLineItem> lineItems,
         DateTime? publishDateTime = null)
     {
-        var products = await _productService.GetProductDictionaryAsync(lineItems.Select(line => line.ProductSku));
+        var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
+            lineItems.Select(line => line.ContentItemVersion));
+
         var viewModelLineItems = await Task.WhenAll(lineItems.Select(async lineItem =>
         {
             var product = products[lineItem.ProductSku];
