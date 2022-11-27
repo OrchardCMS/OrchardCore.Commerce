@@ -24,6 +24,7 @@ using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
+using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -42,6 +43,7 @@ using OrchardCore.Settings.Deployment;
 using OrchardCore.Workflows.Helpers;
 using System;
 using YesSql.Indexes;
+using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
 
 namespace OrchardCore.Commerce;
 
@@ -234,7 +236,7 @@ public class CurrencySettingsStartup : StartupBase
         services.AddScoped<ICurrencySelector, CurrencySettingsSelector>();
 }
 
-[RequireFeatures(CommerceConstants.Features.Core, Tax.Constants.FeatureIds.Tax)]
+[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
 public class TaxStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -261,21 +263,7 @@ public class PromotionStartup : StartupBase
     }
 }
 
-[RequireFeatures(CommerceConstants.Features.Core, Promotion.Constants.FeatureIds.Promotion)]
-public class PromotionStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services
-            .AddContentPart<DiscountPart>()
-            .AddHandler<DiscountPartHandler>()
-            .UseDisplayDriver<DiscountPartDisplayDriver>();
-
-        services.AddScoped<IPromotionProvider, DiscountProvider>();
-    }
-}
-
-[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.CustomTaxRates)]
+[RequireFeatures(CommerceConstants.Features.Core, CustomTaxRates)]
 public class TaxRateStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>

@@ -32,7 +32,7 @@ public class TaxRateTaxProvider : ITaxProvider
         _userService = userService;
     }
 
-    public async Task<TaxProviderContext> UpdateAsync(TaxProviderContext model)
+    public async Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model)
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var taxRates = siteSettings.As<TaxRateSettings>();
@@ -53,10 +53,10 @@ public class TaxRateTaxProvider : ITaxProvider
             })
             .ToList();
 
-        return new TaxProviderContext(updatedItems);
+        return model with { Items = updatedItems };
     }
 
-    public Task<bool> IsApplicableAsync(TaxProviderContext model) =>
+    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
         ITaxProvider.AllOrNoneAsync(model, async items =>
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();

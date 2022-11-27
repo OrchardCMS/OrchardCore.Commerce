@@ -44,5 +44,4 @@ public static class UserServiceExtensions
         contentType ??= typeof(TPart).Name.RegexReplace("Part$", string.Empty);
         return service.GetUserSetting(user, contentType)?.As<TPart>();
     }
-
 }
