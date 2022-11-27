@@ -43,7 +43,7 @@ public class ProductService : IProductService
 
         // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
-        return FillContentItemsAndGetProductPart(contentItems);
+        return FillContentItemsAndGetProductParts(contentItems);
     }
 
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)
@@ -53,7 +53,7 @@ public class ProductService : IProductService
 
         // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
-        return FillContentItemsAndGetProductPart(contentItems);
+        return FillContentItemsAndGetProductParts(contentItems);
     }
 
     public string GetVariantKey(string sku) => sku.Partition("-").Right ?? throw new ArgumentException(
@@ -82,7 +82,7 @@ public class ProductService : IProductService
         }
     }
 
-    private IEnumerable<ProductPart> FillContentItemsAndGetProductPart(IEnumerable<ContentItem> contentItems)
+    private IEnumerable<ProductPart> FillContentItemsAndGetProductParts(IEnumerable<ContentItem> contentItems)
     {
         foreach (var contentItem in contentItems)
         {
