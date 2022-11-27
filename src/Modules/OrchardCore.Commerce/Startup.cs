@@ -261,6 +261,20 @@ public class PromotionStartup : StartupBase
     }
 }
 
+[RequireFeatures(CommerceConstants.Features.Core, Promotion.Constants.FeatureIds.Promotion)]
+public class PromotionStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddContentPart<DiscountPart>()
+            .AddHandler<DiscountPartHandler>()
+            .UseDisplayDriver<DiscountPartDisplayDriver>();
+
+        services.AddScoped<IPromotionProvider, DiscountProvider>();
+    }
+}
+
 [RequireFeatures(CommerceConstants.Features.Core, FeatureIds.CustomTaxRates)]
 public class TaxRateStartup : StartupBase
 {
