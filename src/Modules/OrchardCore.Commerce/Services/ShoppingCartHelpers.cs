@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,7 +74,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
-            (totals, headers, lines) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
+            (headers, lines) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
+            totals = lines.CalculateTotals().ToList();
         }
 
         model.Totals.AddRange(totals);

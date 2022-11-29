@@ -24,7 +24,7 @@ public interface IShoppingCartEvents
     /// <param name="headers">The column headers of the line items table.</param>
     /// <param name="lines">The line items.</param>
     /// <returns>The new versions of the matching parameters.</returns>
-    Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
+    Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines);

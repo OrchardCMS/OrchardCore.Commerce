@@ -27,7 +27,7 @@ public class PromotionShoppingCartEvents : IShoppingCartEvents
         _promotionService = promotionService;
     }
 
-    public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
+    public async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines)
@@ -36,7 +36,7 @@ public class PromotionShoppingCartEvents : IShoppingCartEvents
 
         if (!await _promotionService.IsThereAnyApplicableProviderAsync(context))
         {
-            return (totals, headers, lines);
+            return (headers, lines);
         }
 
         var newHeaders = headers.ToList();
@@ -65,6 +65,6 @@ public class PromotionShoppingCartEvents : IShoppingCartEvents
             }
         }
 
-        return (context.TotalsByCurrency.ToList(), newHeaders, lines);
+        return (newHeaders, lines);
     }
 }

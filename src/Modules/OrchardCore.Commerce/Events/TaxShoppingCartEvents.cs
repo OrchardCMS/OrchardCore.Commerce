@@ -25,7 +25,7 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
         _taxProviders = taxProviders;
     }
 
-    public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
+    public async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines)
@@ -34,7 +34,7 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
 
         if (await _taxProviders.GetFirstApplicableProviderAsync(context) is not { } provider)
         {
-            return (totals, headers, lines);
+            return (headers, lines);
         }
 
         // Update lines and get new totals.
@@ -53,6 +53,6 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
             .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
             .ToList();
 
-        return (context.TotalsByCurrency.ToList(), newHeaders, lines);
+        return (newHeaders, lines);
     }
 }
