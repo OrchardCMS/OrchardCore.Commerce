@@ -1,7 +1,7 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using System;
@@ -54,25 +54,30 @@ public class OrderLineItemService : IOrderLineItemService
             };
         }));
 
-        var total = viewModelLineItems.Select(item => item.LinePrice).Sum();
-
         var promotionAndTaxContext = new PromotionAndTaxProviderContext(
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
                 products[item.ProductSku],
                 item.UnitPrice,
                 item.Quantity)),
-            new[] { total },
+            viewModelLineItems.CalculateTotals().ToList(),
             publishDateTime);
+        var changed = false;
 
-        if (_taxProviders.Any())
+        if (_taxProviders.Any() &&
+            await _taxProviders.GetFirstApplicableProviderAsync(promotionAndTaxContext) is { } taxProvider)
         {
-            promotionAndTaxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(promotionAndTaxContext);
+            promotionAndTaxContext = await taxProvider.UpdateAsync(promotionAndTaxContext);
+            changed = true;
         }
 
         if (await _promotionService.IsThereAnyApplicableProviderAsync(promotionAndTaxContext))
         {
             promotionAndTaxContext = await _promotionService.AddPromotionsAsync(promotionAndTaxContext);
+            changed = true;
+        }
 
+        if (changed)
+        {
             foreach (var (item, index) in promotionAndTaxContext.Items.Select((item, index) => (item, index)))
             {
                 var lineItem = viewModelLineItems[index];
@@ -81,8 +86,6 @@ public class OrderLineItemService : IOrderLineItemService
             }
         }
 
-        total = promotionAndTaxContext.TotalsByCurrency.Single();
-
-        return (viewModelLineItems, total);
+        return (viewModelLineItems, viewModelLineItems.CalculateTotals().Single());
     }
 }
