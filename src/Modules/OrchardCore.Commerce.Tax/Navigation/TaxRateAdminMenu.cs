@@ -19,7 +19,7 @@ public class TaxRateAdminMenu : INavigationProvider
 
         builder
             .Add(T["Configuration"], configuration => configuration
-                .Add(T["Settings"], settings => settings
+                .Add(T["Commerce"], commerce => commerce
                     .Add(T["Custom Tax Rates"], entry => entry
                         .Action("Index", "Admin", new
                         {
