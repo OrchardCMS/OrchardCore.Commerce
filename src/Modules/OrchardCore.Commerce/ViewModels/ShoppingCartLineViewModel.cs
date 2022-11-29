@@ -3,12 +3,13 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class ShoppingCartLineViewModel
+public class ShoppingCartLineViewModel : ILineItem
 {
     public IDictionary<string, IProductAttributeValue> Attributes { get; }
     public int Quantity { get; set; }
