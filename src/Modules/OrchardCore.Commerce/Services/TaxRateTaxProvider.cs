@@ -46,10 +46,9 @@ public class TaxRateTaxProvider : ITaxProvider
         var updatedItems = items
             .Select(item =>
             {
-                var taxCode = item.As<TaxPart>()?.ProductTaxCode?.Text;
-
-                var taxRate = MatchTaxRate(taxRates.Rates, address, taxCode)?.TaxRate ?? 1;
-                return item with { UnitPrice = item.UnitPrice * taxRate };
+                var taxRate = MatchTaxRate(taxRates.Rates, address, item.As<TaxPart>()?.ProductTaxCode?.Text);
+                var multiplier = (taxRate / 100m) + 1;
+                return item with { UnitPrice = item.UnitPrice * multiplier };
             })
             .ToList();
 
@@ -68,32 +67,31 @@ public class TaxRateTaxProvider : ITaxProvider
                 .Address ?? new Address();
 
             return items.Count(item =>
-                item.As<TaxPart>()?.ProductTaxCode?.Text is { } taxCode &&
-                MatchTaxRate(taxRates.Rates, address, taxCode) != null);
+                MatchTaxRate(taxRates.Rates, address, item.As<TaxPart>()?.ProductTaxCode?.Text) > 0);
         });
 
-    private static bool IsMatching(string pattern, string text) =>
-        !string.IsNullOrEmpty(pattern) && (text ?? string.Empty).RegexIsMatch(pattern);
+    private static bool IsMatchingOrEmptyPattern(string pattern, string text) =>
+        string.IsNullOrEmpty(pattern) || (text ?? string.Empty).RegexIsMatch(pattern);
 
-    private static TaxRateSetting MatchTaxRate(
+    private static decimal MatchTaxRate(
         IEnumerable<TaxRateSetting> taxRates,
         Address destinationAddress,
         string taxCode)
     {
         foreach (var rate in taxRates)
         {
-            if (IsMatching(rate.DestinationStreetAddress1, destinationAddress.StreetAddress1) &&
-                IsMatching(rate.DestinationStreetAddress2, destinationAddress.StreetAddress2) &&
-                IsMatching(rate.DestinationCity, destinationAddress.City) &&
-                IsMatching(rate.DestinationProvince, destinationAddress.Province) &&
-                IsMatching(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
-                IsMatching(rate.DestinationRegion, destinationAddress.Region) &&
-                IsMatching(rate.TaxCode, taxCode))
+            if (IsMatchingOrEmptyPattern(rate.DestinationStreetAddress1, destinationAddress.StreetAddress1) &&
+                IsMatchingOrEmptyPattern(rate.DestinationStreetAddress2, destinationAddress.StreetAddress2) &&
+                IsMatchingOrEmptyPattern(rate.DestinationCity, destinationAddress.City) &&
+                IsMatchingOrEmptyPattern(rate.DestinationProvince, destinationAddress.Province) &&
+                IsMatchingOrEmptyPattern(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
+                IsMatchingOrEmptyPattern(rate.DestinationRegion, destinationAddress.Region) &&
+                IsMatchingOrEmptyPattern(rate.TaxCode, taxCode))
             {
-                return rate;
+                return rate.TaxRate;
             }
         }
 
-        return null;
+        return 0;
     }
 }
