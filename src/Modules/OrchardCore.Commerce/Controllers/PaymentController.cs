@@ -131,6 +131,7 @@ public class PaymentController : Controller
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
+            PaymentIntent = await _cardPaymentService.InitializePaymentIntentAsync(string.Empty),
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
@@ -230,13 +231,13 @@ public class PaymentController : Controller
     [Route("pay")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Pay(string paymentMethodId, string paymentIntentId)
+    public async Task<IActionResult> Pay(string paymentId)
     {
         PaymentIntent paymentIntent;
 
         try
         {
-            paymentIntent = await _cardPaymentService.CreatePaymentAsync(paymentMethodId, paymentIntentId);
+            paymentIntent = await _cardPaymentService.GetPaymentIntentAsync(paymentId);
         }
         catch (StripeException exception)
         {
@@ -258,10 +259,16 @@ public class PaymentController : Controller
             paymentIntent.NextAction.Type == "use_stripe_sdk")
         {
             // Tell the client to handle the action.
+            return Json(new { requires_action = true, payment_intent_client_secret = paymentIntent.ClientSecret, });
+        }
+
+        if (paymentIntent.Status == "requires_payment_method")
+        {
             return Json(new
             {
-                requires_action = true,
+                requires_payment_method = true,
                 payment_intent_client_secret = paymentIntent.ClientSecret,
+                error = T["An error has occurred while processing the payment. Please try again."].Value,
             });
         }
 
