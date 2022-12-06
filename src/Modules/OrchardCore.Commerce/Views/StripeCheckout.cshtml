@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Commerce.MoneyDataType
+@using OrchardCore.Mvc.Core.Utilities
 
 @{
     if (Model.DefaultTotal is not Amount defaultTotal)
@@ -8,6 +9,8 @@
     }
 
     string publishableKey = Model.PublishableKey ?? string.Empty;
+    string clientSecret = Model.ClientSecret ?? string.Empty;
+    string proposedOrderContentItemId = Model.ProposedOrderContentItemId ?? string.Empty;
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -23,6 +26,7 @@
 </fieldset>
 
 <div class="pay-button-container">
+
     <button type="submit" class="pay-button btn btn-success justify-content-center">
         <span class="pay-text"> @T["Pay {0}", defaultTotal]</span>
         <div class="payment-processing-container" hidden>
@@ -42,6 +46,9 @@
     <script at="Foot" depends-on="StripeJs,StripeCardForm">
         stripeCardForm(
             Stripe(@publishableKey.JsonHtmlContent()),
+            @clientSecret.JsonHtmlContent(),
+            @proposedOrderContentItemId.JsonHtmlContent(),
+            @Url.GetBaseUrl().JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
             @T["There was an error during fetching!"].Json(),

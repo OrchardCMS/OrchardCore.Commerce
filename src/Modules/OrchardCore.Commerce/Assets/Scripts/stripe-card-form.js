@@ -1,5 +1,4 @@
-window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
-    const stripeElements = stripe.elements();
+window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOrderContentItemId, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
     const allErrorContainers = [ document.querySelector('.message-error') ];
     const form = document.querySelector('.card-payment-form');
     const submitButton = form.querySelector('.pay-button');
@@ -8,13 +7,22 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
     const selectTagName = 'SELECT';
     let formElements = Array.from(form.elements);
 
-    const card = stripeElements.create('card', {
-        style: {
-            base: {
-                fontWeight: '500',
-                fontSize: '20px',
-            },
+    const appearance = {
+        theme: 'stripe',
+        variables: {
+            colorText: '#32325d',
+            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         },
+    };
+
+    const stripeElements = stripe.elements({
+        clientSecret: clientSecret,
+    });
+
+    const card = stripeElements.create('payment', {
+        fields: {
+            billingDetails: 'never',
+        }
     });
 
     const placeOfCard = document.querySelector('#card-payment-form_card');
@@ -96,7 +104,7 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
             stripe.handleCardAction(response.payment_intent_client_secret)
                 .then(handleStripeJsResult);
         }
-        else {
+        else if (response.success) {
             // Show success message.
             form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
             form.method = 'POST';
@@ -114,22 +122,22 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
 
         // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
-        return fetchPay({ paymentIntentId: result.paymentIntent.id });
+        return fetchPay({ paymentId: result.paymentIntent.id });
     };
 
     function stripePaymentMethodHandler(result) {
         // Show error in payment form.
         if (result.error) return displayError(result.error);
 
-        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentMethod.id;
+        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentIntent.id;
 
         // Otherwise send paymentMethod.id to the server.
-        return fetchPay({ paymentMethodId: result.paymentMethod.id });
+        return fetchPay({ paymentId: result.paymentIntent.id });
     }
 
     function getText(element) { return element?.textContent.trim(); }
 
-    function registerElements() {
+    function registerElements(stripeElements) {
         // Displaying card input error.
         const stripeFieldError = document.querySelector('.stripe-field-error');
         allErrorContainers.push(stripeFieldError);
@@ -164,37 +172,89 @@ window.stripeCardForm = function stripeCardForm(stripe, antiForgeryToken, urlPre
                 const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
                 if (validationJson?.errors?.length) throw validationJson.errors;
 
-                result = await stripe.createPaymentMethod({
-                    type: 'card',
-                    card: card,
-                    billing_details: {
-                        email: document.getElementById('OrderPart_Email_Text').value,
-                        name: document.getElementById('OrderPart_BillingAddress_Address_Name').value,
-                        phone: document.getElementById('OrderPart_Phone_Text').value,
-                        address: {
-                            city: document.getElementById('OrderPart_BillingAddress_Address_City').value,
-                            country: document.getElementById('OrderPart_BillingAddress_Address_Region').value,
-                            line1: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1').value,
-                            line2: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2').value,
-                            postal_code: document.getElementById('OrderPart_BillingAddress_Address_PostalCode').value,
-                            state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
+                stripe.confirmPayment({
+                    elements: stripeElements,
+                    confirmParams: {
+                        // return_url: `${baseUrl}/${urlPrefix}/success/${proposedOrderContentItemId}`,
+                        return_url: `${baseUrl}/checkout`,
+                        payment_method_data: {
+                            billing_details: {
+                                email: document.getElementById('OrderPart_Email_Text').value,
+                                name: document.getElementById('OrderPart_BillingAddress_Address_Name').value,
+                                phone: document.getElementById('OrderPart_Phone_Text').value,
+                                address: {
+                                    city: document.getElementById('OrderPart_BillingAddress_Address_City').value,
+                                    country: document.getElementById('OrderPart_BillingAddress_Address_Region').value,
+                                    line1: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1').value,
+                                    line2: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2').value,
+                                    postal_code: document.getElementById('OrderPart_BillingAddress_Address_PostalCode').value,
+                                    state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
+                                }
+                            }
                         },
                     },
+                    redirect: "if_required",
+                })
+                .then(async function(result) {
+                    await stripePaymentMethodHandler(result);
                 });
             }
             catch (error) {
                 result = { error };
+                displayError(result.error);
             }
-
-            await stripePaymentMethodHandler(result);
         });
     }
+
+    async function checkStatus() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentIntentId = urlParams.get(
+            "payment_intent"
+        );
+
+        const clientSecret = urlParams.get(
+            "payment_intent_client_secret"
+        );
+
+        if (!clientSecret || !paymentIntentId) {
+            return;
+        }
+
+        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+
+        document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
+        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = paymentIntent.payment_method;
+
+        // The card action has been handled.
+        // The PaymentIntent can be confirmed again on the server.
+        return fetchPay({ paymentId: paymentIntentId });
+
+        // const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+        //
+        // switch (paymentIntent.status) {
+        //     case "succeeded":
+        //         showMessage("Payment succeeded!");
+        //         break;
+        //     case "processing":
+        //         showMessage("Your payment is processing.");
+        //         break;
+        //     case "requires_payment_method":
+        //         showMessage("Your payment was not successful, please try again.");
+        //         break;
+        //     default:
+        //         showMessage("Something went wrong.");
+        //         break;
+        // }
+    }
+
 
     if (placeOfCard) {
         card.mount(placeOfCard);
 
         // Refreshing form elements with the card input.
         formElements = Array.from(form.elements);
-        registerElements();
+        registerElements(stripeElements);
     }
+
+    checkStatus();
 };
