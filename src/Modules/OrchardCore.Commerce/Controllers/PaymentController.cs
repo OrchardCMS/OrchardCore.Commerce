@@ -40,7 +40,7 @@ public class PaymentController : Controller
 
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ICardPaymentService _cardPaymentService;
+    private readonly IPaymentService _paymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly ILogger _logger;
@@ -56,7 +56,7 @@ public class PaymentController : Controller
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentController(
-        ICardPaymentService cardPaymentService,
+        IPaymentService paymentService,
         IContentItemDisplayManager contentItemDisplayManager,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentController> services,
@@ -69,7 +69,7 @@ public class PaymentController : Controller
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
-        _cardPaymentService = cardPaymentService;
+        _paymentService = paymentService;
         _contentItemDisplayManager = contentItemDisplayManager;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _logger = services.Logger.Value;
@@ -131,7 +131,7 @@ public class PaymentController : Controller
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentIntent = await _cardPaymentService.InitializePaymentIntentAsync(paymentIntent),
+            PaymentIntent = await _paymentService.InitializePaymentIntentAsync(paymentIntent),
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
@@ -237,7 +237,7 @@ public class PaymentController : Controller
 
         try
         {
-            paymentIntent = await _cardPaymentService.GetPaymentIntentAsync(paymentId);
+            paymentIntent = await _paymentService.GetPaymentIntentAsync(paymentId);
         }
         catch (StripeException exception)
         {
@@ -276,7 +276,7 @@ public class PaymentController : Controller
         {
             // The payment didn’t need any additional actions and completed!
             // Create the order content item.
-            var order = await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
+            var order = await _paymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
 
             return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
         }
