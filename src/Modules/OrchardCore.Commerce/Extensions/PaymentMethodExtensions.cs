@@ -2,7 +2,7 @@
 
 namespace OrchardCore.Commerce.Extensions;
 
-public static class PaymentMethodExtensions
+public static class PaymentExtensions
 {
     public static string GetFormattedPaymentType(this PaymentMethod paymentMethod) =>
         paymentMethod.Type switch
