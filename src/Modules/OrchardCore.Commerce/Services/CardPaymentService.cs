@@ -27,11 +27,10 @@ public class CardPaymentService : ICardPaymentService
     private readonly PaymentIntentService _paymentIntentService;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IContentManager _contentManager;
-    private readonly ISiteService _siteService;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly ILogger<CardPaymentService> _logger;
     private readonly IStringLocalizer T;
     private readonly ISession _session;
+    private readonly RequestOptions _requestOptions;
+    private readonly string _siteName;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -54,11 +53,21 @@ public class CardPaymentService : ICardPaymentService
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;
         _contentManager = contentManager;
-        _siteService = siteService;
-        _dataProtectionProvider = dataProtectionProvider;
-        _logger = logger;
         _session = session;
         T = stringLocalizer;
+
+        var siteSettings = siteService.GetSiteSettingsAsync()
+            .GetAwaiter()
+            .GetResult();
+        _siteName = siteSettings.SiteName;
+        _requestOptions =
+            new RequestOptions
+            {
+                ApiKey = siteSettings
+                    .As<StripeApiSettings>()
+                    .SecretKey
+                    .DecryptStripeApiKey(dataProtectionProvider, logger),
+            };
     }
 
     public async Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId)
@@ -70,18 +79,6 @@ public class CardPaymentService : ICardPaymentService
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         var defaultTotal = totals.SingleOrDefault();
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        var paymentIntent = new PaymentIntent();
-        var requestOptions =
-            new RequestOptions
-            {
-                ApiKey = siteSettings
-                    .As<StripeApiSettings>()
-                    .SecretKey
-                    .DecryptStripeApiKey(_dataProtectionProvider, _logger),
-            };
-
         var defaultTotalValue = defaultTotal.Value;
         long amountForPayment;
         var currencyType = defaultTotal.Currency.CurrencyIsoCode;
@@ -104,120 +101,39 @@ public class CardPaymentService : ICardPaymentService
         }
 #pragma warning restore IDE0045 // Convert to conditional expression
 
+        PaymentIntent paymentIntent;
         if (string.IsNullOrEmpty(paymentIntentId))
         {
             var paymentIntentOptions = new PaymentIntentCreateOptions
             {
                 Amount = amountForPayment,
                 Currency = defaultTotal.Currency.CurrencyIsoCode,
-                Description = T["User started checkout for {0}", siteSettings.SiteName].Value,
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                {
-                    Enabled = true,
-                },
+                Description = T["User started checkout on {0}", _siteName].Value,
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
             };
 
-            paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, requestOptions);
-        }
-        else if (!string.IsNullOrEmpty(paymentIntentId))
-        {
-            paymentIntent = await _paymentIntentService.GetAsync(paymentIntentId, requestOptions: requestOptions);
-            // paymentIntent = await _paymentIntentService.ConfirmAsync(
-            //     paymentIntentId,
-            //     new PaymentIntentConfirmOptions(),
-            //     requestOptions);
-        }
-
-        return paymentIntent;
-    }
-
-    public async Task<PaymentIntent> GetPaymentIntentAsync(string clientSecret)
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        var requestOptions =
-            new RequestOptions
-            {
-                ApiKey = siteSettings
-                    .As<StripeApiSettings>()
-                    .SecretKey
-                    .DecryptStripeApiKey(_dataProtectionProvider, _logger),
-            };
-        var paymentIntentGetOptions = new PaymentIntentGetOptions();
-        paymentIntentGetOptions.AddExpand("payment_method");
-        return await _paymentIntentService.GetAsync(clientSecret, paymentIntentGetOptions, requestOptions);
-    }
-
-    public async Task<PaymentIntent> CreatePaymentAsync(string paymentMethodId, string paymentIntentId)
-    {
-        var totals = (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId: null)).Totals;
-        CheckTotals(totals);
-
-        // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
-        // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
-        var defaultTotal = totals.SingleOrDefault();
-
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        var paymentIntent = new PaymentIntent();
-        var requestOptions =
-            new RequestOptions
-            {
-                ApiKey = siteSettings
-                    .As<StripeApiSettings>()
-                    .SecretKey
-                    .DecryptStripeApiKey(_dataProtectionProvider, _logger),
-            };
-
-        var defaultTotalValue = defaultTotal.Value;
-        long amountForPayment;
-        var currencyType = defaultTotal.Currency.CurrencyIsoCode;
-
-        // If I convert it to conditional expression, it will warn me to extract it again.
-#pragma warning disable IDE0045 // Convert to conditional expression
-        // We need to convert the value (decimal) to long.
-        // https://stripe.com/docs/currencies#zero-decimal
-        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(currencyType))
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue);
-        }
-        else if (CurrencyCollectionConstants.SpecialCases.Contains(currencyType))
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue / 100m) * 10000;
+            paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, _requestOptions);
         }
         else
         {
-            amountForPayment = (long)Math.Round(defaultTotalValue * 100);
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
-
-        if (!string.IsNullOrEmpty(paymentMethodId))
-        {
-            var paymentIntentOptions = new PaymentIntentCreateOptions
+            var updateOptions = new PaymentIntentUpdateOptions
             {
                 Amount = amountForPayment,
                 Currency = defaultTotal.Currency.CurrencyIsoCode,
-                Description = T["Payment for {0}", siteSettings.SiteName].Value,
-                ConfirmationMethod = "manual",
-                Confirm = true,
-                PaymentMethod = paymentMethodId,
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                {
-                    Enabled = true,
-                },
+                Description = T["User updated checkout on {0}", _siteName].Value,
             };
-
-            paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, requestOptions);
-        }
-        else if (!string.IsNullOrEmpty(paymentIntentId))
-        {
-            paymentIntent = await _paymentIntentService.ConfirmAsync(
-                paymentIntentId,
-                new PaymentIntentConfirmOptions(),
-                requestOptions);
+            updateOptions.AddExpand("payment_method");
+            paymentIntent = await _paymentIntentService.UpdateAsync(paymentIntentId, updateOptions);
         }
 
         return paymentIntent;
+    }
+
+    public Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
+    {
+        var paymentIntentGetOptions = new PaymentIntentGetOptions();
+        paymentIntentGetOptions.AddExpand("payment_method");
+        return _paymentIntentService.GetAsync(paymentIntentId, paymentIntentGetOptions, _requestOptions);
     }
 
     public async Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
@@ -230,7 +146,6 @@ public class CardPaymentService : ICardPaymentService
         var defaultTotal = totals.SingleOrDefault();
 
         var order = await _contentManager.NewAsync("Order");
-        //var order = await _contentManager.GetAsync(orderContentItemId);
         var orderId = Guid.NewGuid();
 
         order.DisplayText = T["Order {0}", orderId];
