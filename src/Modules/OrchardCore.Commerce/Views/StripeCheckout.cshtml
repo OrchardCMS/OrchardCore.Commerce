@@ -19,8 +19,8 @@
 <h3>@T["Stripe Payment"]</h3>
 
 <fieldset>
-    <div class="row credit-card">
-        <div id="card-payment-form_card">@T["Stripe payment is not configured for this site."]</div>
+    <div class="row payment-intent">
+        <div id="payment-form_payment">@T["Stripe payment is not configured for this site."]</div>
     </div>
 </fieldset>
 
@@ -41,9 +41,9 @@
 @if (!string.IsNullOrEmpty(publishableKey))
 {
     <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
-    <script at="Head" asp-name="@ResourceNames.StripeCardForm"></script>
-    <script at="Foot" depends-on="StripeJs,StripeCardForm">
-        stripeCardForm(
+    <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
+    <script at="Foot" depends-on="StripeJs,StripePaymentForm">
+        stripePaymentForm(
             Stripe(@publishableKey.JsonHtmlContent()),
             @clientSecret.JsonHtmlContent(),
             @Url.GetBaseUrl().JsonHtmlContent(),

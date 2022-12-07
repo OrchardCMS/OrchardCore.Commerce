@@ -8,8 +8,8 @@
 }
 
 <section id="checkout">
-    <div class="card-payment-form_container">
-        <form id="card-payment-form" class="card-payment-form">
+    <div class="payment-form_container">
+        <form id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
@@ -79,7 +79,7 @@
     </div>
 </section>
 
-<style asp-name="@ResourceNames.CreditCardForm"></style>
+<style asp-name="@ResourceNames.PaymentForm"></style>
 
 <script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
 <script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">

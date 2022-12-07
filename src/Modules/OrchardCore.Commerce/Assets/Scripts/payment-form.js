@@ -1,6 +1,6 @@
-window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOrderContentItemId, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
+window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, proposedOrderContentItemId, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
     const allErrorContainers = [ document.querySelector('.message-error') ];
-    const form = document.querySelector('.card-payment-form');
+    const form = document.querySelector('.payment-form');
     const submitButton = form.querySelector('.pay-button');
     const payText = form.querySelector('.pay-text');
     const paymentProcessingContainer = form.querySelector('.payment-processing-container');
@@ -19,13 +19,13 @@ window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOr
         clientSecret: clientSecret,
     });
 
-    const card = stripeElements.create('payment', {
+    const payment = stripeElements.create('payment', {
         fields: {
             billingDetails: 'never',
         }
     });
 
-    const placeOfCard = document.querySelector('#card-payment-form_card');
+    const placeOfPayment = document.querySelector('#payment-form_payment');
 
     function toggleInputs(enable) {
         formElements.forEach((element) => {
@@ -36,7 +36,7 @@ window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOr
             element.readOnly = !enable;
         });
 
-        card.update({ disabled: !enable });
+        payment.update({ disabled: !enable });
 
         submitButton.disabled = !enable;
 
@@ -120,7 +120,7 @@ window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOr
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
 
-        // The card action has been handled.
+        // The payment action has been handled.
         // The PaymentIntent can be confirmed again on the server.
         return fetchPay({ paymentId: result.paymentIntent.id });
     };
@@ -137,11 +137,11 @@ window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOr
 
     function getText(element) { return element?.textContent.trim(); }
 
-    function registerElements(stripeElements) {
-        // Displaying card input error.
+    function registerElements() {
+        // Displaying payment input error.
         const stripeFieldError = document.querySelector('.stripe-field-error');
         allErrorContainers.push(stripeFieldError);
-        card.on('change', (event) => {
+        payment.on('change', (event) => {
             displayError(event?.error, stripeFieldError);
         });
 
@@ -225,7 +225,6 @@ window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOr
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
         document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = paymentIntent.payment_method;
 
-        // The card action has been handled.
         // The PaymentIntent can be confirmed again on the server.
         return fetchPay({ paymentId: paymentIntentId });
 
@@ -248,12 +247,12 @@ window.stripeCardForm = function stripeCardForm(stripe, clientSecret, proposedOr
     }
 
 
-    if (placeOfCard) {
-        card.mount(placeOfCard);
+    if (placeOfPayment) {
+        payment.mount(placeOfPayment);
 
-        // Refreshing form elements with the card input.
+        // Refreshing form elements with the payment input.
         formElements = Array.from(form.elements);
-        registerElements(stripeElements);
+        registerElements();
     }
 
     checkStatus();
