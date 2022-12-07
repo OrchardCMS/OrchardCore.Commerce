@@ -29,6 +29,7 @@ public class PaymentService : IPaymentService
     private readonly IContentManager _contentManager;
     private readonly IStringLocalizer T;
     private readonly ISession _session;
+    private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly RequestOptions _requestOptions;
     private readonly string _siteName;
 
@@ -44,7 +45,8 @@ public class PaymentService : IPaymentService
         IDataProtectionProvider dataProtectionProvider,
         ILogger<PaymentService> logger,
         IStringLocalizer<PaymentService> stringLocalizer,
-        ISession session)
+        ISession session,
+        IPaymentIntentPersistence paymentIntentPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -54,6 +56,7 @@ public class PaymentService : IPaymentService
         _priceSelectionStrategy = priceSelectionStrategy;
         _contentManager = contentManager;
         _session = session;
+        _paymentIntentPersistence = paymentIntentPersistence;
         T = stringLocalizer;
 
         var siteSettings = siteService.GetSiteSettingsAsync()
@@ -113,6 +116,7 @@ public class PaymentService : IPaymentService
             };
 
             paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, _requestOptions);
+            _paymentIntentPersistence.Store(paymentIntent.Id);
         }
         else
         {
@@ -198,6 +202,9 @@ public class PaymentService : IPaymentService
 
         // Shopping cart ID is null by default currently.
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
+
+        // Set back to default.
+        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
 
         return order;
     }

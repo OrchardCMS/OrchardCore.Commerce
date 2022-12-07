@@ -52,6 +52,7 @@ public class PaymentController : Controller
     private readonly IStringLocalizer T;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
+    private readonly IPaymentIntentPersistence _paymentIntentPersistence;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -65,7 +66,8 @@ public class PaymentController : Controller
         IUpdateModelAccessor updateModelAccessor,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
-        IEnumerable<IWorkflowManager> workflowManagers)
+        IEnumerable<IWorkflowManager> workflowManagers,
+        IPaymentIntentPersistence paymentIntentPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -82,6 +84,7 @@ public class PaymentController : Controller
         _userServiceLazy = userServiceLazy;
         _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
+        _paymentIntentPersistence = paymentIntentPersistence;
     }
 
     [Route("checkout")]
@@ -98,6 +101,11 @@ public class PaymentController : Controller
             return RedirectToAction(
                 nameof(ShoppingCartController.Empty),
                 typeof(ShoppingCartController).ControllerName());
+        }
+
+        if (string.IsNullOrEmpty(paymentIntent))
+        {
+            paymentIntent = _paymentIntentPersistence.Retrieve();
         }
 
         var orderPart = new OrderPart();
