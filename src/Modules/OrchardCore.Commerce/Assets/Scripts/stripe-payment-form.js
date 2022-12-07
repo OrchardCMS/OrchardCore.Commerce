@@ -119,7 +119,6 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
         if (result.error) return displayError(result.error);
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
-        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentIntent.paymentMethod.id;
 
         // The payment action has been handled.
         // The PaymentIntent can be confirmed again on the server.
@@ -214,7 +213,6 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
-        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = paymentIntent.payment_method;
 
         // The PaymentIntent can be confirmed again on the server.
         return fetchPay({ paymentId: paymentIntentId });
