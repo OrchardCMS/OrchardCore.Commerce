@@ -126,8 +126,8 @@ public class PaymentService : IPaymentService
                 Currency = defaultTotal.Currency.CurrencyIsoCode,
                 Description = T["User updated checkout on {0}", _siteName].Value,
             };
-            updateOptions.AddExpand("payment_method");
-            paymentIntent = await _paymentIntentService.UpdateAsync(paymentIntentId, updateOptions);
+            updateOptions.AddExpandables();
+            paymentIntent = await _paymentIntentService.UpdateAsync(paymentIntentId, updateOptions, _requestOptions);
         }
 
         return paymentIntent;
@@ -136,7 +136,7 @@ public class PaymentService : IPaymentService
     public Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
     {
         var paymentIntentGetOptions = new PaymentIntentGetOptions();
-        paymentIntentGetOptions.AddExpand("payment_method");
+        paymentIntentGetOptions.AddExpandables();
         return _paymentIntentService.GetAsync(paymentIntentId, paymentIntentGetOptions, _requestOptions);
     }
 

@@ -4,6 +4,8 @@ namespace OrchardCore.Commerce.Extensions;
 
 public static class PaymentExtensions
 {
+    public static void AddExpandables(this BaseOptions baseOptions) => baseOptions.AddExpand("payment_method");
+
     public static string GetFormattedPaymentType(this PaymentMethod paymentMethod) =>
         paymentMethod.Type switch
         {
