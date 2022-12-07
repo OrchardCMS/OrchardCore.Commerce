@@ -118,6 +118,10 @@ public class PaymentService : IPaymentService
             paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, _requestOptions);
             _paymentIntentPersistence.Store(paymentIntent.Id);
         }
+        else if ((await _paymentIntentService.GetAsync(paymentIntentId, requestOptions: _requestOptions)).Status == "succeeded")
+        {
+            paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
+        }
         else
         {
             var updateOptions = new PaymentIntentUpdateOptions
