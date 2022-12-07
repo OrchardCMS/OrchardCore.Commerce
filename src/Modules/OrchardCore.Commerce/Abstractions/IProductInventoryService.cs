@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Models;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -17,5 +18,5 @@ public interface IProductInventoryService
     /// </summary>
     /// <param name="difference">The value to add to or subtract from the inventory.</param>
     /// <param name="reset">Whether inventory count should be reset to zero before adding the difference value.</param>
-    Task UpdateInventoryAsync(string sku, int difference, bool reset = false);
+    void UpdateInventory(ProductPart productPart, int difference, bool reset = false);
 }

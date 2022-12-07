@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Inventory.Local.Models;
+using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Threading.Tasks;
 
@@ -17,9 +18,9 @@ public class ProductInventoryService : IProductInventoryService
         return inventoryPart != null ? (int)inventoryPart.Inventory.Value : 0;
     }
 
-    public async Task UpdateInventoryAsync(string sku, int difference, bool reset = false)
+    public void UpdateInventory(ProductPart productPart, int difference, bool reset = false)
     {
-        var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
+        var inventoryPart = productPart.As<InventoryPart>();
         if (inventoryPart == null) return;
 
         var newValue = reset ? difference : ((int)inventoryPart.Inventory.Value) + difference;
