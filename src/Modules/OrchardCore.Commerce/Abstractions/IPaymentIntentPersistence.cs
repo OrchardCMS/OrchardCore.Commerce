@@ -1,6 +1,3 @@
-using Stripe;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
@@ -9,7 +6,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IPaymentIntentPersistence
 {
     /// <summary>
-    /// Returns a <see cref="PaymentIntent"/> identified by <paramref name="paymentIntentId"/>.
+    /// Returns the payment intent id stored in current session.
     /// </summary>
     string Retrieve();
 
