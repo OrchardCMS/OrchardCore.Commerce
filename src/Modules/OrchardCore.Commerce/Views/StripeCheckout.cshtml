@@ -10,7 +10,6 @@
 
     string publishableKey = Model.PublishableKey ?? string.Empty;
     string clientSecret = Model.ClientSecret ?? string.Empty;
-    string proposedOrderContentItemId = Model.ProposedOrderContentItemId ?? string.Empty;
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -47,7 +46,6 @@
         stripeCardForm(
             Stripe(@publishableKey.JsonHtmlContent()),
             @clientSecret.JsonHtmlContent(),
-            @proposedOrderContentItemId.JsonHtmlContent(),
             @Url.GetBaseUrl().JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
