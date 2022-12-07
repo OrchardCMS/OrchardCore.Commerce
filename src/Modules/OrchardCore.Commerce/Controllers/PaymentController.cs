@@ -159,8 +159,8 @@ public class PaymentController : Controller
             _logger.LogError(exception, FormValidationExceptionMessage);
 
             var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
-                    ? exception.ToString()
-                    : FormValidationExceptionMessage;
+                ? exception.ToString()
+                : FormValidationExceptionMessage;
 
             return Json(new { Errors = new[] { errorMessage } });
         }
@@ -231,7 +231,7 @@ public class PaymentController : Controller
     [Route("pay")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Pay(string paymentId)
+    public async Task<IActionResult> ConfirmPayment(string paymentId)
     {
         PaymentIntent paymentIntent;
 
