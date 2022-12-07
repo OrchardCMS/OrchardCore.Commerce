@@ -1,4 +1,4 @@
-window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, proposedOrderContentItemId, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
+window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
     const allErrorContainers = [ document.querySelector('.message-error') ];
     const form = document.querySelector('.payment-form');
     const submitButton = form.querySelector('.pay-button');
