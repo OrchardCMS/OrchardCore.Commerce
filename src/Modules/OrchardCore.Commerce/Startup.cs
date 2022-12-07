@@ -20,10 +20,10 @@ using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
-using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -55,6 +55,7 @@ public class Startup : StartupBase
         services.AddTagHelpers<MvcTitleTagHelper>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
@@ -117,10 +118,12 @@ public class Startup : StartupBase
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
+        services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
+        services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplay>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
@@ -128,6 +131,9 @@ public class Startup : StartupBase
 
         services.AddScoped<IDataMigration, OrderMigrations>();
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
+        services.AddScoped<IOrderLineItemService, OrderLineItemService>();
+
+        services.AddScoped<IContentTypeDefinitionDisplayDriver, OrderContentTypeDefinitionDisplayDriver>();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();
@@ -144,6 +150,9 @@ public class Startup : StartupBase
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
+
+        // Promotion
+        services.AddScoped<IPromotionService, PromotionService>();
 
         // Card Payment
         services.AddScoped<ICardPaymentService, CardPaymentService>();
@@ -168,7 +177,9 @@ public class Startup : StartupBase
             // Liquid filter to convert JToken value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
             // Liquid filter to create AddressFiledEditorViewModel.
-            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model");
+            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
+            // Liquid filter to create OrderLineItemViewModels.
+            .AddLiquidFilter<OrderLineItemViewModelsConverterFilter>("order_line_item_view_models");
     }
 }
 
@@ -224,7 +235,7 @@ public class CurrencySettingsStartup : StartupBase
         services.AddScoped<ICurrencySelector, CurrencySettingsSelector>();
 }
 
-[RequireFeatures(CommerceConstants.Features.Core, FeatureIds.Tax)]
+[RequireFeatures(CommerceConstants.Features.Core, Tax.Constants.FeatureIds.Tax)]
 public class TaxStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -234,6 +245,20 @@ public class TaxStartup : StartupBase
             .AddHandler<TaxPartAndPricePartHandler>();
 
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
+    }
+}
+
+[RequireFeatures(CommerceConstants.Features.Core, Promotion.Constants.FeatureIds.Promotion)]
+public class PromotionStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddContentPart<DiscountPart>()
+            .AddHandler<DiscountPartHandler>()
+            .UseDisplayDriver<DiscountPartDisplayDriver>();
+
+        services.AddScoped<IPromotionProvider, DiscountProvider>();
     }
 }
 

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
@@ -14,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -29,6 +31,7 @@ public class CardPaymentService : ICardPaymentService
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<CardPaymentService> _logger;
     private readonly IStringLocalizer T;
+    private readonly ISession _session;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -41,7 +44,8 @@ public class CardPaymentService : ICardPaymentService
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<CardPaymentService> logger,
-        IStringLocalizer<CardPaymentService> stringLocalizer)
+        IStringLocalizer<CardPaymentService> stringLocalizer,
+        ISession session)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -53,6 +57,7 @@ public class CardPaymentService : ICardPaymentService
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
+        _session = session;
         T = stringLocalizer;
     }
 
@@ -144,7 +149,20 @@ public class CardPaymentService : ICardPaymentService
         // void."
         foreach (var item in currentShoppingCart.Items)
         {
-            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(_priceSelectionStrategy, _priceService));
+            var trimmedSku = item.ProductSku.Split('-').First();
+
+            var contentItemId = (await _session
+                    .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)
+                    .ListAsync())
+                .Select(index => index.ContentItemId)
+                .First();
+
+            var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
+
+            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
+                _priceSelectionStrategy,
+                _priceService,
+                contentItemVersion));
         }
 
         order.Alter<OrderPart>(orderPart =>

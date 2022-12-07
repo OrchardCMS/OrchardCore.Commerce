@@ -14,6 +14,9 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
 {
     private readonly IHtmlLocalizer<TaxShoppingCartEvents> H;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
+
+    public int Order => 0;
+
     public TaxShoppingCartEvents(
         IHtmlLocalizer<TaxShoppingCartEvents> htmlLocalizer,
         IEnumerable<ITaxProvider> taxProviders)
@@ -27,7 +30,7 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines)
     {
-        var context = new TaxProviderContext(lines, totals);
+        var context = new PromotionAndTaxProviderContext(lines, totals);
 
         if (await _taxProviders.GetFirstApplicableProviderAsync(context) is not { } provider)
         {
@@ -39,6 +42,11 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
         foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
         {
             lines[index].AdditionalData.SetGrossPrice(price);
+
+            // Other promotions will use UnitPrice and LinePrice as the base of the promotion. We need to modify these
+            // to the gross price, otherwise the promotion would be applied on the net price and that would be used.
+            lines[index].LinePrice = price * lines[index].Quantity;
+            lines[index].UnitPrice = price;
         }
 
         var newHeaders = headers

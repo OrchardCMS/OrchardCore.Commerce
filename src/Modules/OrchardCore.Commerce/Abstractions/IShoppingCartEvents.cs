@@ -13,6 +13,11 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IShoppingCartEvents
 {
     /// <summary>
+    /// Gets the value used to sort providers in ascending order.
+    /// </summary>
+    int Order { get; }
+
+    /// <summary>
     /// Invoked after the shopping card data is prepared, but before the shapes are rendered.
     /// </summary>
     /// <param name="totals">The line items grouped by currency and summed up.</param>

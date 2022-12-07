@@ -7,10 +7,12 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -22,6 +24,7 @@ using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
+using OrchardCore.Workflows.Services;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -35,9 +38,11 @@ public class PaymentController : Controller
 {
     private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
 
+    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IAuthorizationService _authorizationService;
     private readonly ICardPaymentService _cardPaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly ILogger _logger;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
@@ -53,17 +58,20 @@ public class PaymentController : Controller
     public PaymentController(
         ICardPaymentService cardPaymentService,
         IContentItemDisplayManager contentItemDisplayManager,
+        IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentController> services,
         IShoppingCartHelpers shoppingCartHelpers,
         ISiteService siteService,
         IUpdateModelAccessor updateModelAccessor,
         IRegionService regionService,
-        Lazy<IUserService> userServiceLazy)
+        Lazy<IUserService> userServiceLazy,
+        IEnumerable<IWorkflowManager> workflowManagers)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
         _cardPaymentService = cardPaymentService;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
@@ -72,6 +80,7 @@ public class PaymentController : Controller
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
+        _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
     }
 
@@ -109,6 +118,11 @@ public class PaymentController : Controller
 
         var total = cart.Totals.Single();
 
+        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
+                await _contentManager.NewAsync(Order),
+                "Checkout"))
+            .ToList();
+
         var checkoutViewModel = new CheckoutViewModel
         {
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
@@ -116,7 +130,10 @@ public class PaymentController : Controller
             SingleCurrencyTotal = total,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
+            CheckoutShapes = checkoutShapes,
         };
+
+        foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
 
@@ -197,8 +214,15 @@ public class PaymentController : Controller
 
         order.Alter<OrderPart>(part => part.Status =
             new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() });
+
         order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
+
         await _contentManager.UpdateAsync(order);
+
+        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
+        {
+            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
+        }
 
         return Redirect($"~/success/{order.ContentItemId}");
     }

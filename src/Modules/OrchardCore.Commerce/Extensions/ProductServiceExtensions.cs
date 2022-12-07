@@ -14,4 +14,9 @@ public static class ProductServiceExtensions
         this IProductService service,
         IEnumerable<string> skus) =>
         (await service.GetProductsAsync(skus)).ToDictionary(product => product.Sku);
+
+    public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryByContentItemVersionsAsync(
+        this IProductService service,
+        IEnumerable<string> contentItemVersions) =>
+        (await service.GetProductsByContentItemVersionsAsync(contentItemVersions)).ToDictionary(product => product.Sku);
 }
