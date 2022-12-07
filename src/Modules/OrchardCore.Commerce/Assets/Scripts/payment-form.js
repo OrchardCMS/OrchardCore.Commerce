@@ -119,21 +119,12 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, prop
         if (result.error) return displayError(result.error);
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
+        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentIntent.paymentMethod.id;
 
         // The payment action has been handled.
         // The PaymentIntent can be confirmed again on the server.
         return fetchPay({ paymentId: result.paymentIntent.id });
     };
-
-    function stripePaymentMethodHandler(result) {
-        // Show error in payment form.
-        if (result.error) return displayError(result.error);
-
-        document.getElementById('StripePaymentPart_PaymentMethodId_Text').value = result.paymentIntent.id;
-
-        // Otherwise send paymentMethod.id to the server.
-        return fetchPay({ paymentId: result.paymentIntent.id });
-    }
 
     function getText(element) { return element?.textContent.trim(); }
 
@@ -196,7 +187,7 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, prop
                     redirect: "if_required",
                 })
                 .then(async function(result) {
-                    await stripePaymentMethodHandler(result);
+                    await handleStripeJsResult(result);
                 });
             }
             catch (error) {
