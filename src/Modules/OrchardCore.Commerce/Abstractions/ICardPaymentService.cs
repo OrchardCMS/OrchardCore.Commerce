@@ -10,15 +10,13 @@ namespace OrchardCore.Commerce.Abstractions;
 /// </summary>
 public interface ICardPaymentService
 {
-    Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId);
-
-    Task<PaymentIntent> GetPaymentIntentAsync(string clientSecret);
-
     /// <summary>
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
     /// <returns>A new instance of <see cref="PaymentIntent"/> for the current payment.</returns>
-    Task<PaymentIntent> CreatePaymentAsync(string paymentMethodId, string paymentIntentId);
+    Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId);
+
+    Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId);
 
     /// <summary>
     /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see
