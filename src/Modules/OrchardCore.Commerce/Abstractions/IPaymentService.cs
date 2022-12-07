@@ -13,9 +13,13 @@ public interface IPaymentService
     /// <summary>
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
-    /// <returns>A new instance of <see cref="PaymentIntent"/> for the current payment.</returns>
+    /// <returns>A new instance of <see cref="PaymentIntent"/>, or an existing one for the given
+    /// <paramref name="paymentIntentId"/>.</returns>
     Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId);
 
+    /// <summary>
+    /// Returns a <see cref="PaymentIntent"/> object for the given <paramref name="paymentIntentId"/>.
+    /// </summary>
     Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId);
 
     /// <summary>
