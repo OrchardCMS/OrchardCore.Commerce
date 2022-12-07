@@ -85,7 +85,7 @@ public class PaymentController : Controller
     }
 
     [Route("checkout")]
-    public async Task<IActionResult> Index(string shoppingCartId = null)
+    public async Task<IActionResult> Index(string shoppingCartId = null, string paymentIntent = null)
     {
         var isAuthenticated = User.Identity?.IsAuthenticated == true;
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -131,7 +131,7 @@ public class PaymentController : Controller
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentIntent = await _cardPaymentService.InitializePaymentIntentAsync(string.Empty),
+            PaymentIntent = await _cardPaymentService.InitializePaymentIntentAsync(paymentIntent),
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
