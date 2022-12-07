@@ -67,6 +67,7 @@
         "OrchardCore.Commerce.ContentFields",
         "OrchardCore.Commerce.Promotion",
         "OrchardCore.Commerce.Tax",
+        "OrchardCore.Commerce.Inventory.Local",
 
         // Themes
         "TheBlogTheme",
