@@ -176,7 +176,6 @@ public class PaymentService : IPaymentService
                 contentItemVersion));
         }
 
-        var method = paymentIntent.PaymentMethod.GetFormattedPaymentType();
         order.Alter<OrderPart>(orderPart =>
         {
             orderPart.Charges.Add(
