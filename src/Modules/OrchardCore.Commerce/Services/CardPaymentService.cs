@@ -257,11 +257,13 @@ public class CardPaymentService : ICardPaymentService
                 contentItemVersion));
         }
 
+        var method = paymentIntent.PaymentMethod.GetFormattedPaymentType();
         order.Alter<OrderPart>(orderPart =>
         {
             orderPart.Charges.Add(
-                new CreditCardPayment
+                new Payment
                 {
+                    Kind = paymentIntent.PaymentMethod.GetFormattedPaymentType(),
                     ChargeText = paymentIntent.Description,
                     TransactionId = paymentIntent.Id,
                     Amount = defaultTotal,
