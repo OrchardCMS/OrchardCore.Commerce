@@ -115,10 +115,13 @@ public class PaymentService : IPaymentService
                 AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
             };
 
-            paymentIntent = await _paymentIntentService.CreateAsync(paymentIntentOptions, _requestOptions.SetIdempotencyKey());
+            paymentIntent =
+                await _paymentIntentService.CreateAsync(paymentIntentOptions, _requestOptions.SetIdempotencyKey());
             _paymentIntentPersistence.Store(paymentIntent.Id);
         }
-        else if ((await _paymentIntentService.GetAsync(paymentIntentId, requestOptions: _requestOptions.SetIdempotencyKey())).Status == "succeeded")
+        else if ((await _paymentIntentService.GetAsync(
+                     paymentIntentId,
+                     requestOptions: _requestOptions.SetIdempotencyKey())).Status == "succeeded")
         {
             paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
         }
@@ -131,7 +134,10 @@ public class PaymentService : IPaymentService
                 Description = T["User updated checkout on {0}", _siteName].Value,
             };
             updateOptions.AddExpandables();
-            paymentIntent = await _paymentIntentService.UpdateAsync(paymentIntentId, updateOptions, _requestOptions.SetIdempotencyKey());
+            paymentIntent = await _paymentIntentService.UpdateAsync(
+                paymentIntentId,
+                updateOptions,
+                _requestOptions.SetIdempotencyKey());
         }
 
         return paymentIntent;
@@ -141,7 +147,11 @@ public class PaymentService : IPaymentService
     {
         var paymentIntentGetOptions = new PaymentIntentGetOptions();
         paymentIntentGetOptions.AddExpandables();
-        return _paymentIntentService.GetAsync(paymentIntentId, paymentIntentGetOptions, _requestOptions.SetIdempotencyKey());
+        return _paymentIntentService.GetAsync(
+            paymentIntentId,
+            paymentIntentGetOptions,
+            _requestOptions.SetIdempotencyKey());
+    }
     }
 
     public async Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
