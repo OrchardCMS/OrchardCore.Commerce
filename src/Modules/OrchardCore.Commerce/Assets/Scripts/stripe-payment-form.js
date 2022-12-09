@@ -1,10 +1,11 @@
-window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText) {
+window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText, enableInputs) {
     const allErrorContainers = [ document.querySelector('.message-error') ];
     const form = document.querySelector('.payment-form');
     const submitButton = form.querySelector('.pay-button');
     const payText = form.querySelector('.pay-text');
     const paymentProcessingContainer = form.querySelector('.payment-processing-container');
     const selectTagName = 'SELECT';
+    const checkboxTypeName = 'checkbox';
     let formElements = Array.from(form.elements);
 
     const appearance = {
@@ -29,7 +30,7 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
 
     function toggleInputs(enable) {
         formElements.forEach((element) => {
-            if (element.tagName === selectTagName) {
+            if (element.tagName === selectTagName || element.type === checkboxTypeName) {
                 element.disabled = !enable;
             }
 
@@ -210,29 +211,14 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
             return;
         }
 
+        toggleInputs(false);
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+        if (paymentIntent.status !== "succeeded"){
+            return;
+        }
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
-
-        // The PaymentIntent can be confirmed again on the server.
         return fetchPay({ paymentId: paymentIntentId });
-
-        // const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-        //
-        // switch (paymentIntent.status) {
-        //     case "succeeded":
-        //         showMessage("Payment succeeded!");
-        //         break;
-        //     case "processing":
-        //         showMessage("Your payment is processing.");
-        //         break;
-        //     case "requires_payment_method":
-        //         showMessage("Your payment was not successful, please try again.");
-        //         break;
-        //     default:
-        //         showMessage("Something went wrong.");
-        //         break;
-        // }
     }
 
 
@@ -244,5 +230,6 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
         registerElements();
     }
 
+    toggleInputs(enableInputs);
     checkStatus();
 };
