@@ -17,13 +17,21 @@ public class StripeMigrations : DataMigration
         _contentDefinitionManager
             .AlterPartDefinition<StripePaymentPart>(builder => builder
                 .Configure(part => part.Attachable())
-                .WithField(part => part.PaymentIntentId)
-                .WithField(part => part.PaymentMethodId));
+                .WithField(part => part.PaymentIntentId));
 
         _contentDefinitionManager
             .AlterTypeDefinition(Constants.ContentTypes.Order, builder => builder
                 .WithPart(nameof(StripePaymentPart)));
 
-        return 1;
+        return 2;
+    }
+
+    public int UpdateFrom1()
+    {
+        _contentDefinitionManager.AlterPartDefinition(
+            nameof(StripePaymentPart),
+            typeBuilder => typeBuilder.RemoveField("PaymentIntentId"));
+
+        return 2;
     }
 }
