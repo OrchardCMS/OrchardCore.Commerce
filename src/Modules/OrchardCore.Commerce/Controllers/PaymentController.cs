@@ -131,6 +131,8 @@ public class PaymentController : Controller
                 "Checkout"))
             .ToList();
 
+        var initPaymentIntent = await _paymentService.InitializePaymentIntentAsync(paymentIntent);
+
         var checkoutViewModel = new CheckoutViewModel
         {
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
@@ -139,7 +141,8 @@ public class PaymentController : Controller
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentIntent = await _paymentService.InitializePaymentIntentAsync(paymentIntent),
+            PaymentIntent = initPaymentIntent,
+            EnableInputs = initPaymentIntent.Status == "requires_payment_method",
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
@@ -268,6 +271,11 @@ public class PaymentController : Controller
         {
             // Tell the client to handle the action.
             return Json(new { requires_action = true, payment_intent_client_secret = paymentIntent.ClientSecret, });
+        }
+
+        if (paymentIntent.Status == "requires_confirmation")
+        {
+            return Json(new { requires_action = false });
         }
 
         if (paymentIntent.Status == "requires_payment_method")
