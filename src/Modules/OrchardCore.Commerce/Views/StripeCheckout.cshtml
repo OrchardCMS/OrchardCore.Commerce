@@ -10,6 +10,7 @@
 
     string publishableKey = Model.PublishableKey ?? string.Empty;
     string clientSecret = Model.ClientSecret ?? string.Empty;
+    bool enableInputs = Model.EnableInputs == true;
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -48,6 +49,7 @@
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
             @T["There was an error during fetching!"].Json(),
-            @T["A value is required for %LABEL%."].Json());
+            @T["A value is required for %LABEL%."].Json(),
+            @Json.Serialize(enableInputs));
     </script>
 }

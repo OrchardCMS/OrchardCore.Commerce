@@ -16,6 +16,8 @@ public class CheckoutViewModel : ShapeViewModel
     public string ProposedOrderContentItemId { get; init; }
     public PaymentIntent PaymentIntent { get; init; }
 
+    public bool EnableInputs { get; init; }
+
     [BindNever]
     public IEnumerable<SelectListItem> Regions { get; set; }
 

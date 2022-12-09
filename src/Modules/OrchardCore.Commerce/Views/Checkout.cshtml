@@ -74,7 +74,8 @@
             <shape type="StripeCheckout"
                    prop-DefaultTotal="@Model.SingleCurrencyTotal"
                    prop-PublishableKey="@Model.StripePublishableKey"
-                   prop-ClientSecret="@Model.PaymentIntent.ClientSecret"/>
+                   prop-ClientSecret="@Model.PaymentIntent.ClientSecret"
+                   prop-EnableInputs="@Model.EnableInputs"/>
         </form>
     </div>
 </section>
