@@ -5,6 +5,5 @@ namespace OrchardCore.Commerce.Models;
 
 public class StripePaymentPart : ContentPart
 {
-    public TextField PaymentMethodId { get; set; } = new();
     public TextField PaymentIntentId { get; set; } = new();
 }
