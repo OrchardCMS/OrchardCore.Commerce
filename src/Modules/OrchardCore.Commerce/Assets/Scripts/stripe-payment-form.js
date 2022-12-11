@@ -161,7 +161,7 @@ window.stripePaymentForm = function stripePaymentForm(
                 const validationJson = await fetchPost('checkout/validate', {body: new FormData(form)});
                 if (validationJson?.errors?.length) throw validationJson.errors;
 
-                const {error} = await stripe.confirmPayment({
+                result = await stripe.confirmPayment({
                     elements: stripeElements,
                     confirmParams: {
                         return_url: `${baseUrl}/checkout`,
@@ -184,7 +184,7 @@ window.stripePaymentForm = function stripePaymentForm(
                     redirect: "if_required",
                 });
 
-                await handleStripeJsResult(error);
+                await handleStripeJsResult(result);
             } catch (error) {
                 result = {error};
                 displayError(result.error);
