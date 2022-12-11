@@ -143,8 +143,9 @@ public class PaymentController : Controller
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentIntent = initPaymentIntent,
-            EnableInputs = initPaymentIntent.Status == "requires_payment_method",
+            PaymentIntentClientSecret = initPaymentIntent.ClientSecret,
+            EnableInputs = initPaymentIntent.Status != PaymentIntentStatuses.Succeeded &&
+                           initPaymentIntent.Status != PaymentIntentStatuses.Processing,
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
