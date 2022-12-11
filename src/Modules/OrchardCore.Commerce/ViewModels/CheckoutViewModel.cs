@@ -4,7 +4,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
-using Stripe;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
@@ -14,7 +13,6 @@ public class CheckoutViewModel : ShapeViewModel
     public Amount SingleCurrencyTotal { get; init; }
     public OrderPart OrderPart { get; init; }
     public string PaymentIntentClientSecret { get; init; }
-
     public bool EnableInputs { get; init; }
 
     [BindNever]

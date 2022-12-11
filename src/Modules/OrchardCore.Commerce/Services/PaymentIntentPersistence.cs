@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
-using Stripe;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
