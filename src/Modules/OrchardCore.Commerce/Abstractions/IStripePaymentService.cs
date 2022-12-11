@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Abstractions;
 /// <summary>
 /// When implemented handles the payment and creates an order.
 /// </summary>
-public interface IPaymentService
+public interface IStripePaymentService
 {
     /// <summary>
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
