@@ -150,9 +150,8 @@ public class PaymentController : Controller
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
             PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
-            EnableInputs =
-                initPaymentIntent?.Status is not PaymentIntentStatuses.Succeeded
-                    and not PaymentIntentStatuses.Processing,
+            EnableInputs = initPaymentIntent?.Status is not PaymentIntentStatuses.Succeeded
+                and not PaymentIntentStatuses.Processing,
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
