@@ -103,11 +103,6 @@ public class PaymentController : Controller
                 typeof(ShoppingCartController).ControllerName());
         }
 
-        if (string.IsNullOrEmpty(paymentIntent))
-        {
-            paymentIntent = _paymentIntentPersistence.Retrieve();
-        }
-
         var orderPart = new OrderPart();
 
         if (await _userManager.GetUserAsync(User) is User user &&
@@ -118,7 +113,9 @@ public class PaymentController : Controller
             orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
         }
 
-        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
+        var email = isAuthenticated
+            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
+            : string.Empty;
 
         orderPart.Email.Text = email;
         orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
@@ -130,6 +127,11 @@ public class PaymentController : Controller
                 await _contentManager.NewAsync(Order),
                 "Checkout"))
             .ToList();
+
+        if (string.IsNullOrEmpty(paymentIntent))
+        {
+            paymentIntent = _paymentIntentPersistence.Retrieve();
+        }
 
         var initPaymentIntent = await _paymentService.InitializePaymentIntentAsync(paymentIntent);
 
@@ -266,19 +268,19 @@ public class PaymentController : Controller
 
     private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
     {
-        if (paymentIntent.Status == "requires_action" &&
+        if (paymentIntent.Status == PaymentIntentStatuses.RequiresAction &&
             paymentIntent.NextAction.Type == "use_stripe_sdk")
         {
             // Tell the client to handle the action.
             return Json(new { requires_action = true, payment_intent_client_secret = paymentIntent.ClientSecret, });
         }
 
-        if (paymentIntent.Status == "requires_confirmation")
+        if (paymentIntent.Status == PaymentIntentStatuses.RequiresConfirmation)
         {
             return Json(new { requires_action = false });
         }
 
-        if (paymentIntent.Status == "requires_payment_method")
+        if (paymentIntent.Status == PaymentIntentStatuses.RequiresPaymentMethod)
         {
             return Json(new
             {
@@ -288,7 +290,7 @@ public class PaymentController : Controller
             });
         }
 
-        if (paymentIntent.Status == "succeeded")
+        if (paymentIntent.Status == PaymentIntentStatuses.Succeeded)
         {
             // The payment didn’t need any additional actions and completed!
             // Create the order content item.
@@ -298,6 +300,7 @@ public class PaymentController : Controller
         }
 
         // Invalid status.
-        return StatusCode(StatusCodes.Status500InternalServerError, new { error = T["Invalid PaymentIntent status"].Value });
+        return StatusCode(StatusCodes.Status500InternalServerError,
+            new { error = T["Invalid PaymentIntent status"].Value });
     }
 }
