@@ -181,7 +181,7 @@ public class PaymentService : IPaymentService
         // Shopping cart ID is null by default currently.
         await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
 
-        // Set back to default.
+        // Set back to default, because a new payment intent should be created on the next checkout.
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
 
         return order;
