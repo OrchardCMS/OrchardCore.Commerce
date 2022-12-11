@@ -30,3 +30,4 @@ UploadingTestFileDOCX.docx
 \.ico$
 \.nupkg$
 \.pdf$
+.all-contributorsrc
