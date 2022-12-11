@@ -19,7 +19,7 @@ using YesSql;
 
 namespace OrchardCore.Commerce.Services;
 
-public class StripeStripePaymentService : IStripePaymentService
+public class StripePaymentService : IStripePaymentService
 {
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
@@ -35,7 +35,7 @@ public class StripeStripePaymentService : IStripePaymentService
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
-    public StripeStripePaymentService(
+    public StripePaymentService(
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IPriceService priceService,
@@ -43,8 +43,8 @@ public class StripeStripePaymentService : IStripePaymentService
         IContentManager contentManager,
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
-        ILogger<StripeStripePaymentService> logger,
-        IStringLocalizer<StripeStripePaymentService> stringLocalizer,
+        ILogger<StripePaymentService> logger,
+        IStringLocalizer<StripePaymentService> stringLocalizer,
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters

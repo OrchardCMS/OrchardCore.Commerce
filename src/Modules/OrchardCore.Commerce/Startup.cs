@@ -154,7 +154,7 @@ public class Startup : StartupBase
         services.AddScoped<IPromotionService, PromotionService>();
 
         // Stripe payments
-        services.AddScoped<IStripePaymentService, StripeStripePaymentService>();
+        services.AddScoped<IStripePaymentService, StripePaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
         services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
 
