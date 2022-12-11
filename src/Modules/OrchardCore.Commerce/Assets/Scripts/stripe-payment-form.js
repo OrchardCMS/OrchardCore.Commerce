@@ -163,10 +163,9 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
                 const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
                 if (validationJson?.errors?.length) throw validationJson.errors;
 
-                stripe.confirmPayment({
+                const {error} = await stripe.confirmPayment({
                     elements: stripeElements,
                     confirmParams: {
-                        // return_url: `${baseUrl}/${urlPrefix}/success/${proposedOrderContentItemId}`,
                         return_url: `${baseUrl}/checkout`,
                         payment_method_data: {
                             billing_details: {
@@ -185,10 +184,9 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
                         },
                     },
                     redirect: "if_required",
-                })
-                .then(async function(result) {
-                    await handleStripeJsResult(result);
                 });
+
+                await handleStripeJsResult(error);
             }
             catch (error) {
                 result = { error };
@@ -211,7 +209,7 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
             return;
         }
 
-        toggleInputs(false);
+
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
         if (paymentIntent.status !== "succeeded"){
             return;
