@@ -225,7 +225,6 @@ mvdtskz
 pwd
 sme
 yyyy
-wcag
 abcdef
 atc
 attribs
@@ -252,4 +251,4 @@ Zolt
 Vhz
 vid
 WAoi
-
+Wcag
