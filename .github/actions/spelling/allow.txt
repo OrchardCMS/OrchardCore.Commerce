@@ -494,3 +494,4 @@ XAF
 XOF
 XPF
 ZRU
+skus
