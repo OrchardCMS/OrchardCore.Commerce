@@ -4,7 +4,7 @@ window.stripePaymentForm = function stripePaymentForm(
     baseUrl,
     antiForgeryToken,
     urlPrefix,
-    fetchErrorText,
+    errorText,
     missingText,
     enableInputs) {
     const allErrorContainers = [document.querySelector('.message-error')];
@@ -85,7 +85,7 @@ window.stripePaymentForm = function stripePaymentForm(
                 .join('&'),
         })
             .then(handleServerResponse)
-            .catch((fetchPayError) => displayError(fetchErrorText + ' ' + fetchPayError));
+            .catch((fetchPayError) => displayError(errorText + ' ' + fetchPayError));
     }
 
     handleServerResponse = function (response) {
@@ -200,6 +200,14 @@ window.stripePaymentForm = function stripePaymentForm(
         const clientSecret = urlParams.get(
             "payment_intent_client_secret"
         );
+        const redirectStatus = urlParams.get(
+            "redirect_status"
+        );
+
+        if (redirectStatus === "failed"){
+            displayError(errorText);
+            return;
+        }
 
         if (!clientSecret || !paymentIntentId) {
             return;
