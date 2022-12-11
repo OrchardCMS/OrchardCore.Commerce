@@ -70,11 +70,11 @@ window.stripePaymentForm = function stripePaymentForm(
             .then((response) => response.json());
     }
 
-    function fetchPay(data) {
+    function fetchConfirmPayment(data) {
         // eslint-disable-next-line dot-notation -- That would throw "no-underscore-dangle". This looks better anyway.
         data['__RequestVerificationToken'] = antiForgeryToken;
 
-        return fetchPost('pay', {
+        return fetchPost('confirmpayment', {
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -118,8 +118,8 @@ window.stripePaymentForm = function stripePaymentForm(
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
 
         // The payment action has been handled.
-        // The PaymentIntent can be confirmed again on the server.
-        return fetchPay({paymentId: result.paymentIntent.id});
+        // The PaymentIntent can be confirmed on the server.
+        return fetchConfirmPayment({paymentId: result.paymentIntent.id});
     };
 
     function getText(element) {
@@ -211,7 +211,7 @@ window.stripePaymentForm = function stripePaymentForm(
         }
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
-        return fetchPay({paymentId: paymentIntentId});
+        return fetchConfirmPayment({paymentId: paymentIntentId});
     }
 
     if (placeOfPayment) {

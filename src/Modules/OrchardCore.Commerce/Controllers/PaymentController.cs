@@ -242,7 +242,7 @@ public class PaymentController : Controller
         return Redirect($"~/success/{order.ContentItemId}");
     }
 
-    [Route("pay")]
+    [Route(nameof(ConfirmPayment))]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmPayment(string paymentId)
