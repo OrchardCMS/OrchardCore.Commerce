@@ -146,6 +146,7 @@ window.stripePaymentForm = function stripePaymentForm(
                     .filter((element) => !element.value?.match(/\S+/));
 
                 if (emptyRequiredFields.length) {
+                    toggleInputs(true);
                     throw emptyRequiredFields
                         .map((element) => document.querySelector(`label[for="${element.id}"]`))
                         .filter(getText)
@@ -159,7 +160,10 @@ window.stripePaymentForm = function stripePaymentForm(
                 }
 
                 const validationJson = await fetchPost('checkout/validate', {body: new FormData(form)});
-                if (validationJson?.errors?.length) throw validationJson.errors;
+                if (validationJson?.errors?.length) {
+                    toggleInputs(true);
+                    throw validationJson.errors;
+                }
 
                 result = await stripe.confirmPayment({
                     elements: stripeElements,
