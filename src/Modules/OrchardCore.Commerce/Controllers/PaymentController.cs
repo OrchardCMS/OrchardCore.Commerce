@@ -301,7 +301,8 @@ public class PaymentController : Controller
         }
 
         // Invalid status.
-        return StatusCode(StatusCodes.Status500InternalServerError,
+        return StatusCode(
+            StatusCodes.Status500InternalServerError,
             new { error = T["Invalid PaymentIntent status"].Value });
     }
 }
