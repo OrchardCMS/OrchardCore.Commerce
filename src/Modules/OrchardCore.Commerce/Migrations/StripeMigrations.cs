@@ -30,7 +30,7 @@ public class StripeMigrations : DataMigration
     {
         _contentDefinitionManager.AlterPartDefinition(
             nameof(StripePaymentPart),
-            typeBuilder => typeBuilder.RemoveField("PaymentIntentId"));
+            builder => builder.RemoveField("PaymentIntentId"));
 
         return 2;
     }
