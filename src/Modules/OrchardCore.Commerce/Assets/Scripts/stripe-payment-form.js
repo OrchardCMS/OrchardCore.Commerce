@@ -1,32 +1,32 @@
-window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, baseUrl, antiForgeryToken, urlPrefix, fetchErrorText, missingText, enableInputs) {
-    const allErrorContainers = [ document.querySelector('.message-error') ];
+window.stripePaymentForm = function stripePaymentForm(
+    stripe,
+    clientSecret,
+    baseUrl,
+    antiForgeryToken,
+    urlPrefix,
+    fetchErrorText,
+    missingText,
+    enableInputs) {
+    const allErrorContainers = [document.querySelector('.message-error')];
     const form = document.querySelector('.payment-form');
     const submitButton = form.querySelector('.pay-button');
     const payText = form.querySelector('.pay-text');
     const paymentProcessingContainer = form.querySelector('.payment-processing-container');
     const selectTagName = 'SELECT';
     const checkboxTypeName = 'checkbox';
-    let formElements = Array.from(form.elements);
-
-    const appearance = {
-        theme: 'stripe',
-        variables: {
-            colorText: '#32325d',
-            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        },
-    };
-
     const stripeElements = stripe.elements({
         clientSecret: clientSecret,
     });
-
     const payment = stripeElements.create('payment', {
         fields: {
             billingDetails: 'never',
         }
     });
-
     const placeOfPayment = document.querySelector('#payment-form_payment');
+
+    let formElements = Array.from(form.elements);
+    let handleServerResponse;
+    let handleStripeJsResult;
 
     function toggleInputs(enable) {
         formElements.forEach((element) => {
@@ -37,7 +37,7 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
             element.readOnly = !enable;
         });
 
-        payment.update({ disabled: !enable });
+        payment.update({disabled: !enable});
 
         submitButton.disabled = !enable;
 
@@ -62,16 +62,13 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
         toggleInputs(true);
 
         container.hidden = false;
-        container.scrollIntoView({ block: 'center' });
+        container.scrollIntoView({block: 'center'});
     }
 
     function fetchPost(path, options) {
-        return fetch(`${urlPrefix}/${path}`, { method: 'POST', ...options })
+        return fetch(`${urlPrefix}/${path}`, {method: 'POST', ...options})
             .then((response) => response.json());
     }
-
-    let handleServerResponse;
-    let handleStripeJsResult;
 
     function fetchPay(data) {
         // eslint-disable-next-line dot-notation -- That would throw "no-underscore-dangle". This looks better anyway.
@@ -104,8 +101,7 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
             // Use Stripe.js to handle required card action (like 3DS authentication).
             stripe.handleCardAction(response.payment_intent_client_secret)
                 .then(handleStripeJsResult);
-        }
-        else if (response.success) {
+        } else if (response.success) {
             // Show success message.
             form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
             form.method = 'POST';
@@ -123,10 +119,12 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
 
         // The payment action has been handled.
         // The PaymentIntent can be confirmed again on the server.
-        return fetchPay({ paymentId: result.paymentIntent.id });
+        return fetchPay({paymentId: result.paymentIntent.id});
     };
 
-    function getText(element) { return element?.textContent.trim(); }
+    function getText(element) {
+        return element?.textContent.trim();
+    }
 
     function registerElements() {
         // Displaying payment input error.
@@ -160,7 +158,7 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
                         });
                 }
 
-                const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
+                const validationJson = await fetchPost('checkout/validate', {body: new FormData(form)});
                 if (validationJson?.errors?.length) throw validationJson.errors;
 
                 const {error} = await stripe.confirmPayment({
@@ -187,9 +185,8 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
                 });
 
                 await handleStripeJsResult(error);
-            }
-            catch (error) {
-                result = { error };
+            } catch (error) {
+                result = {error};
                 displayError(result.error);
             }
         });
@@ -200,7 +197,6 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
         const paymentIntentId = urlParams.get(
             "payment_intent"
         );
-
         const clientSecret = urlParams.get(
             "payment_intent_client_secret"
         );
@@ -209,16 +205,14 @@ window.stripePaymentForm = function stripePaymentForm(stripe, clientSecret, base
             return;
         }
 
-
-        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-        if (paymentIntent.status !== "succeeded"){
+        const {paymentIntent} = await stripe.retrievePaymentIntent(clientSecret);
+        if (paymentIntent.status !== "succeeded") {
             return;
         }
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
-        return fetchPay({ paymentId: paymentIntentId });
+        return fetchPay({paymentId: paymentIntentId});
     }
-
 
     if (placeOfPayment) {
         payment.mount(placeOfPayment);
