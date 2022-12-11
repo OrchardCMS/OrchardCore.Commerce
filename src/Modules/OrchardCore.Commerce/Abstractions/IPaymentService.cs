@@ -22,10 +22,6 @@ public interface IPaymentService
     /// </summary>
     Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId);
 
-    Task<PaymentIntent> CancelPaymentIntentWhenNeededAsync(string paymentIntentId = null, string reason = "abandoned");
-
-    Task<PaymentIntent> CancelPaymentIntentWhenNeededAsync(PaymentIntent paymentIntent, string reason = "abandoned");
-
     /// <summary>
     /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see
     /// cref="ShoppingCart"/> content.

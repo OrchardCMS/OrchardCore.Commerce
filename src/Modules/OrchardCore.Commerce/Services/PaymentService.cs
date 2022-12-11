@@ -9,12 +9,10 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 using Stripe;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
@@ -34,7 +32,6 @@ public class PaymentService : IPaymentService
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly RequestOptions _requestOptions;
     private readonly string _siteName;
-    private readonly IClock _clock;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -49,8 +46,7 @@ public class PaymentService : IPaymentService
         ILogger<PaymentService> logger,
         IStringLocalizer<PaymentService> stringLocalizer,
         ISession session,
-        IPaymentIntentPersistence paymentIntentPersistence,
-        IClock clock)
+        IPaymentIntentPersistence paymentIntentPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -61,7 +57,6 @@ public class PaymentService : IPaymentService
         _contentManager = contentManager;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
-        _clock = clock;
         T = stringLocalizer;
 
         var siteSettings = siteService.GetSiteSettingsAsync()
@@ -109,53 +104,9 @@ public class PaymentService : IPaymentService
         }
 #pragma warning restore IDE0045 // Convert to conditional expression
 
-        var paymentIntent = new PaymentIntent();
-        if (!string.IsNullOrEmpty(paymentIntentId))
-        {
-            paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
-
-            if (paymentIntent?.Status == "succeeded" ||
-                paymentIntent?.Status == "processing")
-            {
-                return paymentIntent;
-            }
-
-            paymentIntent = await CancelPaymentIntentWhenNeededAsync(paymentIntent);
-        }
-
-        if (string.IsNullOrEmpty(paymentIntentId) || paymentIntent?.CanceledAt is not null)
-        {
-            var paymentIntentOptions = new PaymentIntentCreateOptions
-            {
-                Amount = amountForPayment,
-                Currency = defaultTotal.Currency.CurrencyIsoCode,
-                Description = T["User started checkout on {0}", _siteName].Value,
-                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
-            };
-
-            paymentIntent = await _paymentIntentService.CreateAsync(
-                paymentIntentOptions,
-                _requestOptions.SetIdempotencyKey());
-
-            _paymentIntentPersistence.Store(paymentIntent.Id);
-        }
-        else
-        {
-            var updateOptions = new PaymentIntentUpdateOptions
-            {
-                Amount = amountForPayment,
-                Currency = defaultTotal.Currency.CurrencyIsoCode,
-                Description = T["User updated checkout on {0}", _siteName].Value,
-                Metadata = new Dictionary<string, string> { ["updated_at"] = _clock.UtcNow.Ticks.ToTechnicalString(), },
-            };
-            updateOptions.AddExpandables();
-            paymentIntent = await _paymentIntentService.UpdateAsync(
-                paymentIntentId,
-                updateOptions,
-                _requestOptions.SetIdempotencyKey());
-        }
-
-        return paymentIntent;
+        return string.IsNullOrEmpty(paymentIntentId)
+            ? await CreatePaymentIntentAsync(amountForPayment, defaultTotal)
+            : await GetOrUpdatePaymentIntentAsync(paymentIntentId, amountForPayment, defaultTotal);
     }
 
     public Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
@@ -166,56 +117,6 @@ public class PaymentService : IPaymentService
             paymentIntentId,
             paymentIntentGetOptions,
             _requestOptions.SetIdempotencyKey());
-    }
-
-    public async Task<PaymentIntent> CancelPaymentIntentWhenNeededAsync(
-        string paymentIntentId = null,
-        string reason = "abandoned")
-    {
-        if (string.IsNullOrEmpty(paymentIntentId))
-        {
-            paymentIntentId = _paymentIntentPersistence.Retrieve();
-            if (string.IsNullOrEmpty(paymentIntentId)) return null;
-        }
-
-        var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
-        return await CancelPaymentIntentWhenNeededAsync(paymentIntent);
-    }
-
-    public async Task<PaymentIntent> CancelPaymentIntentWhenNeededAsync(
-        PaymentIntent paymentIntent,
-        string reason = "abandoned")
-    {
-        if (paymentIntent == null ||
-            paymentIntent.Status == "requires_payment_method" ||
-            paymentIntent.Status == "succeeded" ||
-            paymentIntent.Status == "processing")
-        {
-            return paymentIntent;
-        }
-
-        bool isLate;
-        if (paymentIntent.Metadata.TryGetValue("updated_at", out var updatedMetadata))
-        {
-            var updatedAt = new DateTime(long.Parse(updatedMetadata, CultureInfo.InvariantCulture));
-            isLate = IsLate(updatedAt);
-        }
-        else
-        {
-            isLate = IsLate(paymentIntent.Created);
-        }
-
-        if (!isLate) return paymentIntent;
-
-        var cancelOptions = new PaymentIntentCancelOptions { CancellationReason = reason };
-        var cancelledPaymentIntent = await _paymentIntentService.CancelAsync(
-            paymentIntent.Id,
-            cancelOptions,
-            _requestOptions.SetIdempotencyKey());
-
-        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
-
-        return cancelledPaymentIntent;
     }
 
     public async Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
@@ -286,6 +187,62 @@ public class PaymentService : IPaymentService
         return order;
     }
 
+    private async Task<PaymentIntent> CreatePaymentIntentAsync(
+        long amountForPayment,
+        Amount defaultTotal)
+    {
+        var paymentIntentOptions = new PaymentIntentCreateOptions
+        {
+            Amount = amountForPayment,
+            Currency = defaultTotal.Currency.CurrencyIsoCode,
+            Description = T["User checkout on {0}", _siteName].Value,
+            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
+        };
+
+        var paymentIntent = await _paymentIntentService.CreateAsync(
+            paymentIntentOptions,
+            _requestOptions.SetIdempotencyKey());
+
+        _paymentIntentPersistence.Store(paymentIntent.Id);
+
+        return paymentIntent;
+    }
+
+    private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
+        string paymentIntentId,
+        long amountForPayment,
+        Amount defaultTotal)
+    {
+        var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
+
+        if (paymentIntent != null &&
+            (paymentIntent.Status == PaymentIntentStatuses.Succeeded ||
+             paymentIntent.Status == PaymentIntentStatuses.Processing))
+        {
+            return paymentIntent;
+        }
+
+        return await UpdatePaymentIntentAsync(paymentIntentId, amountForPayment, defaultTotal);
+    }
+
+    private Task<PaymentIntent> UpdatePaymentIntentAsync(
+        string paymentIntentId,
+        long amountForPayment,
+        Amount defaultTotal)
+    {
+        var updateOptions = new PaymentIntentUpdateOptions
+        {
+            Amount = amountForPayment,
+            Currency = defaultTotal.Currency.CurrencyIsoCode,
+        };
+
+        updateOptions.AddExpandables();
+        return _paymentIntentService.UpdateAsync(
+            paymentIntentId,
+            updateOptions,
+            _requestOptions.SetIdempotencyKey());
+    }
+
     private static void CheckTotals(IEnumerable<Amount> totals)
     {
         if (!totals.Any())
@@ -293,6 +250,4 @@ public class PaymentService : IPaymentService
             throw new InvalidOperationException("Cannot create a payment without shopping cart total(s)!");
         }
     }
-
-    private bool IsLate(DateTime latestUpdatedTime) => latestUpdatedTime.AddMinutes(2) > _clock.UtcNow;
 }
