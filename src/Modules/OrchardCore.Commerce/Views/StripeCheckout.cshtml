@@ -48,7 +48,7 @@
             @Url.GetBaseUrl().JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-            @T["There was an error during fetching!"].Json(),
+            @T["There was an error during confirming the payment, please try again!"].Json(),
             @T["A value is required for %LABEL%."].Json(),
             @Json.Serialize(enableInputs));
     </script>
