@@ -269,6 +269,15 @@ public class PaymentController : Controller
 
     private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
     {
+        if (paymentIntent.Status == PaymentIntentStatuses.Succeeded)
+        {
+            // The payment didn’t need any additional actions and completed!
+            // Create the order content item.
+            var order = await _paymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
+
+            return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
+        }
+
         if (paymentIntent.Status == PaymentIntentStatuses.RequiresAction &&
             paymentIntent.NextAction.Type == "use_stripe_sdk")
         {
@@ -289,15 +298,6 @@ public class PaymentController : Controller
                 payment_intent_client_secret = paymentIntent.ClientSecret,
                 error = T["An error has occurred while processing the payment. Please try again."].Value,
             });
-        }
-
-        if (paymentIntent.Status == PaymentIntentStatuses.Succeeded)
-        {
-            // The payment didn’t need any additional actions and completed!
-            // Create the order content item.
-            var order = await _paymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
-
-            return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
         }
 
         // Invalid status.
