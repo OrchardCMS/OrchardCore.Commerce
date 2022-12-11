@@ -133,7 +133,13 @@ public class PaymentController : Controller
             paymentIntent = _paymentIntentPersistence.Retrieve();
         }
 
-        var initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntent);
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var initPaymentIntent = new PaymentIntent();
+        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
+            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
+        {
+            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntent);
+        }
 
         var checkoutViewModel = new CheckoutViewModel
         {
@@ -143,9 +149,9 @@ public class PaymentController : Controller
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentIntentClientSecret = initPaymentIntent.ClientSecret,
-            EnableInputs = initPaymentIntent.Status != PaymentIntentStatuses.Succeeded &&
-                           initPaymentIntent.Status != PaymentIntentStatuses.Processing,
+            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
+            EnableInputs = initPaymentIntent?.Status != PaymentIntentStatuses.Succeeded &&
+                           initPaymentIntent?.Status != PaymentIntentStatuses.Processing,
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
