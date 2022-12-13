@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj" />
   </ItemGroup>
 
