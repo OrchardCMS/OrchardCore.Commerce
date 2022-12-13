@@ -97,9 +97,9 @@ window.stripePaymentForm = function stripePaymentForm(
             return Promise.reject(error);
         }
 
-        if (response.requires_action) {
+        if (response.requiresAction) {
             // Use Stripe.js to handle required card action (like 3DS authentication).
-            stripe.handleCardAction(response.payment_intent_client_secret)
+            stripe.handleCardAction(response.paymentIntentClientSecret)
                 .then(handleStripeJsResult);
         }
         else if (response.success) {

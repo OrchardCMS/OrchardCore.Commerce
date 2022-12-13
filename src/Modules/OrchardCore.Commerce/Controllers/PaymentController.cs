@@ -277,7 +277,7 @@ public class PaymentController : Controller
     {
         if (paymentIntent.Status == PaymentIntentStatuses.Succeeded)
         {
-            // The payment didn’t need any additional actions and completed!
+            // The payment didn't need any additional actions and completed!
             // Create the order content item.
             var order = await _stripePaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
 
@@ -288,20 +288,20 @@ public class PaymentController : Controller
             paymentIntent.NextAction.Type == "use_stripe_sdk")
         {
             // Tell the client to handle the action.
-            return Json(new { requires_action = true, payment_intent_client_secret = paymentIntent.ClientSecret, });
+            return Json(new { requiresAction = true, paymentIntentClientSecret = paymentIntent.ClientSecret, });
         }
 
         if (paymentIntent.Status == PaymentIntentStatuses.RequiresConfirmation)
         {
-            return Json(new { requires_action = false });
+            return Json(new { requiresAction = false });
         }
 
         if (paymentIntent.Status == PaymentIntentStatuses.RequiresPaymentMethod)
         {
             return Json(new
             {
-                requires_payment_method = true,
-                payment_intent_client_secret = paymentIntent.ClientSecret,
+                requiresPaymentMethod = true,
+                paymentIntentClientSecret = paymentIntent.ClientSecret,
                 error = T["An error has occurred while processing the payment. Please try again."].Value,
             });
         }
