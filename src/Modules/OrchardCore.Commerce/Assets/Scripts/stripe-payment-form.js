@@ -15,12 +15,12 @@ window.stripePaymentForm = function stripePaymentForm(
     const selectTagName = 'SELECT';
     const checkboxTypeName = 'checkbox';
     const stripeElements = stripe.elements({
-        clientSecret: clientSecret,
+        clientSecret,
     });
     const payment = stripeElements.create('payment', {
         fields: {
             billingDetails: 'never',
-        }
+        },
     });
     const placeOfPayment = document.querySelector('#payment-form_payment');
 
@@ -37,7 +37,7 @@ window.stripePaymentForm = function stripePaymentForm(
             element.readOnly = !enable;
         });
 
-        payment.update({disabled: !enable});
+        payment.update({ disabled: !enable });
 
         submitButton.disabled = !enable;
 
@@ -46,7 +46,7 @@ window.stripePaymentForm = function stripePaymentForm(
     }
 
     function displayError(errors, container = allErrorContainers[0]) {
-        allErrorContainers.forEach((element) => element.hidden = true);
+        allErrorContainers.forEach((element) => { element.hidden = true; });
         if (!errors || errors.length === 0) return;
 
         const err = Array.isArray(errors) ? errors.filter((error) => error) : [errors];
@@ -62,11 +62,11 @@ window.stripePaymentForm = function stripePaymentForm(
         toggleInputs(true);
 
         container.hidden = false;
-        container.scrollIntoView({block: 'center'});
+        container.scrollIntoView({ block: 'center' });
     }
 
     function fetchPost(path, options) {
-        return fetch(`${urlPrefix}/${path}`, {method: 'POST', ...options})
+        return fetch(`${urlPrefix}/${path}`, { method: 'POST', ...options })
             .then((response) => response.json());
     }
 
@@ -101,7 +101,8 @@ window.stripePaymentForm = function stripePaymentForm(
             // Use Stripe.js to handle required card action (like 3DS authentication).
             stripe.handleCardAction(response.payment_intent_client_secret)
                 .then(handleStripeJsResult);
-        } else if (response.success) {
+        }
+        else if (response.success) {
             // Show success message.
             form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
             form.method = 'POST';
@@ -119,7 +120,7 @@ window.stripePaymentForm = function stripePaymentForm(
 
         // The payment action has been handled.
         // The PaymentIntent can be confirmed on the server.
-        return fetchConfirmPayment({paymentId: result.paymentIntent.id});
+        return fetchConfirmPayment({ paymentId: result.paymentIntent.id });
     };
 
     function getText(element) {
@@ -152,14 +153,14 @@ window.stripePaymentForm = function stripePaymentForm(
                         .filter(getText)
                         .filter((label) => !label.closest('.address')?.hidden)
                         .map((label) => {
-                            var title = getText(label.closest('.address')?.querySelector('.address__title'));
-                            let name = title ? `${title} ${getText(label)}` : getText(label);
+                            const title = getText(label.closest('.address')?.querySelector('.address__title'));
+                            const name = title ? `${title} ${getText(label)}` : getText(label);
 
                             return missingText.replace('%LABEL%', name);
                         });
                 }
 
-                const validationJson = await fetchPost('checkout/validate', {body: new FormData(form)});
+                const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
                 if (validationJson?.errors?.length) {
                     toggleInputs(true);
                     throw validationJson.errors;
@@ -181,16 +182,17 @@ window.stripePaymentForm = function stripePaymentForm(
                                     line2: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2').value,
                                     postal_code: document.getElementById('OrderPart_BillingAddress_Address_PostalCode').value,
                                     state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
-                                }
-                            }
+                                },
+                            },
                         },
                     },
-                    redirect: "if_required",
+                    redirect: 'if_required',
                 });
 
                 await handleStripeJsResult(result);
-            } catch (error) {
-                result = {error};
+            }
+            catch (error) {
+                result = { error };
                 displayError(result.error);
             }
         });
@@ -199,31 +201,31 @@ window.stripePaymentForm = function stripePaymentForm(
     async function checkStatus() {
         const urlParams = new URLSearchParams(window.location.search);
         const paymentIntentId = urlParams.get(
-            "payment_intent"
+            'payment_intent'
         );
-        const clientSecret = urlParams.get(
-            "payment_intent_client_secret"
+        const paymentIntentClientSecret = urlParams.get(
+            'payment_intent_client_secret'
         );
         const redirectStatus = urlParams.get(
-            "redirect_status"
+            'redirect_status'
         );
 
-        if (redirectStatus === "failed"){
+        if (redirectStatus === 'failed') {
             displayError(errorText);
             return;
         }
 
-        if (!clientSecret || !paymentIntentId) {
+        if (!paymentIntentClientSecret || !paymentIntentId) {
             return;
         }
 
-        const {paymentIntent} = await stripe.retrievePaymentIntent(clientSecret);
-        if (paymentIntent.status !== "succeeded") {
+        const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentClientSecret);
+        if (paymentIntent.status !== 'succeeded') {
             return;
         }
 
         document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
-        return fetchConfirmPayment({paymentId: paymentIntentId});
+        await fetchConfirmPayment({ paymentId: paymentIntentId });
     }
 
     if (placeOfPayment) {
