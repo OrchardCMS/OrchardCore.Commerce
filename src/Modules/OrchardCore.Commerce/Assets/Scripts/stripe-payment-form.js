@@ -239,6 +239,9 @@ window.stripePaymentForm = function stripePaymentForm(
         registerElements();
     }
 
-    toggleInputs(enableInputs);
+    if (!enableInputs) {
+        toggleInputs(false);
+    }
+
     checkStatus();
 };
