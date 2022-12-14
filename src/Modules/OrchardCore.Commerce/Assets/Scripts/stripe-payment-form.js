@@ -30,8 +30,11 @@ window.stripePaymentForm = function stripePaymentForm(
 
     function toggleInputs(enable) {
         formElements.forEach((element) => {
-            if (element.tagName === selectTagName || element.type === checkboxTypeName) {
+            if (element.tagName === selectTagName) {
                 element.disabled = !enable;
+            }
+            else if (element.type === checkboxTypeName) {
+                element.toggleAttribute('disabled', enable);
             }
 
             element.readOnly = !enable;
