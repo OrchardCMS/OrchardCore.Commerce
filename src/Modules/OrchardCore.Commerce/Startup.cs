@@ -158,7 +158,7 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, StripeMigrations>();
         services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
 
-        // Exposing models to liquid tempaltes
+        // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>
             {
                 option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
