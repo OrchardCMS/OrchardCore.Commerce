@@ -11,7 +11,7 @@ public static class PaymentExtensions
         return requestOptions;
     }
 
-    public static void AddExpandables(this BaseOptions baseOptions) => baseOptions.AddExpand("payment_method");
+    public static void AddExpansions(this BaseOptions baseOptions) => baseOptions.AddExpand("payment_method");
 
     public static string GetFormattedPaymentType(this PaymentMethod paymentMethod) =>
         paymentMethod.Type switch

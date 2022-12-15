@@ -112,7 +112,7 @@ public class StripePaymentService : IStripePaymentService
     public Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
     {
         var paymentIntentGetOptions = new PaymentIntentGetOptions();
-        paymentIntentGetOptions.AddExpandables();
+        paymentIntentGetOptions.AddExpansions();
         return _paymentIntentService.GetAsync(
             paymentIntentId,
             paymentIntentGetOptions,
@@ -236,7 +236,7 @@ public class StripePaymentService : IStripePaymentService
             Currency = defaultTotal.Currency.CurrencyIsoCode,
         };
 
-        updateOptions.AddExpandables();
+        updateOptions.AddExpansions();
         return _paymentIntentService.UpdateAsync(
             paymentIntentId,
             updateOptions,
