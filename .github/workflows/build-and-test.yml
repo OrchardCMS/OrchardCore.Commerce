@@ -19,28 +19,3 @@ jobs:
   spelling:
     name: Spelling
     uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
-    secrets:
-      CHECKOUT_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
-    with:
-      dictionary-source-prefixes: '{
-        "cspell": "https://raw.githubusercontent.com/check-spelling/cspell-dicts/v20220816/dictionaries/",
-        "gha": "https://raw.githubusercontent.com/Lombiq/GitHub-Actions/dev/.github/actions/spelling/"
-        }'
-      extra-dictionaries:
-          cspell:filetypes/filetypes.txt
-          cspell:django/django.txt
-          cspell:aws/aws.txt
-          cspell:html/html.txt
-          cspell:css/css.txt
-          cspell:csharp/csharp.txt
-          cspell:software-terms/src/software-terms.txt
-          cspell:typescript/typescript.txt
-          cspell:rust/rust.txt
-          cspell:npm/npm.txt
-          cspell:dotnet/dotnet.txt
-          cspell:scala/scala.txt
-          gha:allow.txt
-          gha:excludes.txt
-          gha:expect.txt
-          gha:patterns.txt
-
