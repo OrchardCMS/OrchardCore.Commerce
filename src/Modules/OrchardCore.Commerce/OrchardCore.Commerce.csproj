@@ -27,15 +27,15 @@
 
   <ItemGroup>
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.occ-15.3" />
-    <PackageReference Include="OrchardCore.ContentFields" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.Html" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.Navigation.Core" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.Title" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.Templates" Version="1.4.0" />
-    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.4.0" />
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.Html" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.Navigation.Core" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.Title" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.Templates" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.5.0" />
     <PackageReference Include="Stripe.net" Version="40.4.0" />
   </ItemGroup>
 
@@ -54,7 +54,7 @@
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="4.7.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
