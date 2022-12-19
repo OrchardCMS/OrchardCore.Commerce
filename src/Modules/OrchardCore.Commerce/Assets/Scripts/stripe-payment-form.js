@@ -172,7 +172,7 @@ window.stripePaymentForm = function stripePaymentForm(
                 result = await stripe.confirmPayment({
                     elements: stripeElements,
                     confirmParams: {
-                        return_url: `${baseUrl}/checkout`,
+                        return_url: `${baseUrl}${urlPrefix}/checkout`,
                         payment_method_data: {
                             billing_details: {
                                 email: document.getElementById('OrderPart_Email_Text').value,
