@@ -219,7 +219,8 @@ public class ShoppingCartControllerTests
                 attributeProviders: new[] { new ProductAttributeProvider() },
                 contentDefinitionManager: new FakeContentDefinitionManager(),
                 moneyService: new TestMoneyService(),
-                productService: new FakeProductService()),
+                productService: new FakeProductService(),
+                productInventoryService: new FakeProductInventoryService()),
             workflowManager: null,
             shapeFactory: null);
 }
