@@ -14,11 +14,8 @@ public class ProductInventoryService : IProductInventoryService
 {
     private readonly IEnumerable<IProductInventoryProvider> _productInventoryProviders;
 
-    public ProductInventoryService(
-        IEnumerable<IProductInventoryProvider> productInventoryProviders, IProductService productService)
-    {
+    public ProductInventoryService(IEnumerable<IProductInventoryProvider> productInventoryProviders) =>
         _productInventoryProviders = productInventoryProviders;
-    }
 
     public async Task<IList<ShoppingCartItem>> UpdateInventoriesAsync(IList<ShoppingCartItem> items)
     {

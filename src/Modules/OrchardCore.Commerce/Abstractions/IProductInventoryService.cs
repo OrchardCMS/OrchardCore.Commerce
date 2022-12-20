@@ -1,13 +1,7 @@
-using OrchardCore.Commerce.Models;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Commerce.Abstractions;
 
-// this service only iterates over the provider services. It's just a container for all its providers
-
 /// <summary>
-/// Contains, uhh
+/// A service that can update the inventories of a list of shopping cart items.
 /// </summary>
 public interface IProductInventoryService
-{
-}
+{ }
