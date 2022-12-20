@@ -11,6 +11,7 @@ using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
@@ -30,7 +31,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -53,6 +56,7 @@ public class PaymentController : Controller
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
+    private readonly ISession _session;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -67,7 +71,8 @@ public class PaymentController : Controller
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IPaymentIntentPersistence paymentIntentPersistence)
+        IPaymentIntentPersistence paymentIntentPersistence,
+        ISession session)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -85,6 +90,7 @@ public class PaymentController : Controller
         _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
+        _session = session;
     }
 
     [Route("checkout")]
@@ -172,6 +178,13 @@ public class PaymentController : Controller
             await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
 
+            if (!errors.Any())
+            {
+                var paymentIntent = _paymentIntentPersistence.Retrieve();
+                var paymentIntentInstance = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
+                await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(paymentIntentInstance);
+            }
+
             return Json(new { Errors = errors });
         }
         catch (Exception exception)
@@ -213,6 +226,13 @@ public class PaymentController : Controller
             return Forbid();
         }
 
+        await FinalModificationAsync(order);
+
+        return Redirect($"~/success/{order.ContentItemId}");
+    }
+
+    private async Task<ContentItem> FinalModificationAsync(ContentItem order)
+    {
         // Saving addresses.
         var userService = _userServiceLazy.Value;
         var orderPart = order.As<OrderPart>();
@@ -245,7 +265,7 @@ public class PaymentController : Controller
             await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
         }
 
-        return Redirect($"~/success/{order.ContentItemId}");
+        return order;
     }
 
     [Route(nameof(ConfirmPayment))]
@@ -273,13 +293,38 @@ public class PaymentController : Controller
         return await GeneratePaymentResponseAsync(paymentIntent);
     }
 
+    [AllowAnonymous]
+    [HttpGet("checkout/middleware")]
+    public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery] string payment_intent = null)
+    {
+        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(payment_intent);
+        var orderId = (await _session
+                .QueryIndex<OrderPaymentIndex>(index => index.PaymentIntentId == payment_intent)
+                .FirstOrDefaultAsync())
+            ?.OrderId;
+
+        var order = await _contentManager.GetAsync(orderId);
+        var finished = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded &&
+                       !string.IsNullOrEmpty(orderId) &&
+                       order?.As<OrderPart>()?.Status?.Text == OrderStatuses.Ordered;
+
+        if (finished)
+        {
+            await FinalModificationAsync(order);
+
+            return RedirectToAction(nameof(Success), new { orderId });
+        }
+
+        return View();
+    }
+
     private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
     {
         if (paymentIntent.Status == PaymentIntentStatuses.Succeeded)
         {
             // The payment didn't need any additional actions and completed!
             // Create the order content item.
-            var order = await _stripePaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
+            var order = await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(paymentIntent);
 
             return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
         }

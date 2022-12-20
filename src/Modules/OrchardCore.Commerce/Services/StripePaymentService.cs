@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -16,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
+using Address = OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -119,7 +122,42 @@ public class StripePaymentService : IStripePaymentService
             _requestOptions.SetIdempotencyKey());
     }
 
-    public async Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
+    public async Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, Charge charge)
+    {
+        var orderId = (await _session
+                .QueryIndex<OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntent.Id)
+                .FirstOrDefaultAsync())
+            ?.OrderId;
+        var order = await _contentManager.GetAsync(orderId);
+        PopulateAddressFieldsIfNeeded(order, charge);
+        order.Alter<OrderPart>(orderPart =>
+        {
+            // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
+            // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
+            var orderPartCharge = orderPart.Charges.SingleOrDefault();
+            var amount = orderPartCharge!.Amount;
+
+            var payment = new Payment
+            {
+                Kind = paymentIntent.PaymentMethod.GetFormattedPaymentType(),
+                ChargeText = paymentIntent.Description,
+                TransactionId = paymentIntent.Id,
+                Amount = amount,
+                CreatedUtc = paymentIntent.Created,
+            };
+
+            orderPart.Charges.Remove(orderPartCharge);
+            orderPart.Charges.Add(payment);
+
+            orderPart.Status.Text = OrderStatuses.Ordered;
+        });
+
+        await _contentManager.UpdateAsync(order);
+
+        return order;
+    }
+
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
 
@@ -128,10 +166,27 @@ public class StripePaymentService : IStripePaymentService
 
         var defaultTotal = totals.SingleOrDefault();
 
-        var order = await _contentManager.NewAsync("Order");
-        var orderId = Guid.NewGuid();
+        var orderId = (await _session
+                .QueryIndex<OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntent.Id)
+                .FirstOrDefaultAsync())
+            ?.OrderId;
 
-        order.DisplayText = T["Order {0}", orderId];
+        ContentItem order;
+        string guidId;
+        if (string.IsNullOrEmpty(orderId))
+        {
+            order = await _contentManager.NewAsync("Order");
+            guidId = Guid.NewGuid().ToString();
+
+            _session.Save(new OrderPayment { OrderId = order.ContentItemId, PaymentIntentId = paymentIntent.Id });
+        }
+        else
+        {
+            order = await _contentManager.GetAsync(orderId);
+            guidId = order.As<OrderPart>().OrderId.Text;
+        }
+
+        order.DisplayText = T["Order {0}", guidId];
 
         IList<OrderLineItem> lineItems = new List<OrderLineItem>();
 
@@ -158,20 +213,13 @@ public class StripePaymentService : IStripePaymentService
         order.Alter<OrderPart>(orderPart =>
         {
             orderPart.Charges.Add(
-                new Payment
-                {
-                    Kind = paymentIntent.PaymentMethod.GetFormattedPaymentType(),
-                    ChargeText = paymentIntent.Description,
-                    TransactionId = paymentIntent.Id,
-                    Amount = defaultTotal,
-                    CreatedUtc = paymentIntent.Created,
-                });
+                new Payment { Amount = defaultTotal, });
 
             // Shopping cart
             orderPart.LineItems.AddRange(lineItems);
 
-            orderPart.OrderId.Text = orderId.ToString();
-            orderPart.Status.Text = OrderStatuses.Ordered;
+            orderPart.OrderId.Text = guidId;
+            orderPart.Status.Text = OrderStatuses.Pending;
         });
 
         await _contentManager.CreateAsync(order);
@@ -185,6 +233,47 @@ public class StripePaymentService : IStripePaymentService
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
 
         return order;
+    }
+
+    private static void PopulateAddressFieldsIfNeeded(ContentItem order, Charge charge)
+    {
+        if (charge == null)
+        {
+            return;
+        }
+
+        order.Alter<OrderPart>(part =>
+        {
+            part.Email.Text = charge.BillingDetails.Email;
+            part.Phone.Text = charge.BillingDetails.Phone;
+        });
+
+        var orderPart = order.As<OrderPart>();
+        orderPart.Alter<AddressField>("BillingAddress", field =>
+        {
+            var chargeBilling = charge.BillingDetails;
+            field.Address.Name = chargeBilling.Name;
+            field.Address.City = chargeBilling.Address.City;
+            field.Address.Region = chargeBilling.Address.Country;
+            field.Address.StreetAddress1 = chargeBilling.Address.Line1;
+            field.Address.StreetAddress2 = chargeBilling.Address.Line2;
+            field.Address.Province = chargeBilling.Address.State;
+            field.Address.PostalCode = chargeBilling.Address.PostalCode;
+            field.UserAddressToSave = nameof(orderPart.BillingAddress);
+        });
+
+        orderPart.Alter<AddressField>("ShippingAddress", field =>
+        {
+            var chargeShipping = charge.Shipping;
+            field.Address.Name = chargeShipping.Name;
+            field.Address.City = chargeShipping.Address.City;
+            field.Address.Region = chargeShipping.Address.Country;
+            field.Address.StreetAddress1 = chargeShipping.Address.Line1;
+            field.Address.StreetAddress2 = chargeShipping.Address.Line2;
+            field.Address.Province = chargeShipping.Address.State;
+            field.Address.PostalCode = chargeShipping.Address.PostalCode;
+            field.UserAddressToSave = nameof(orderPart.ShippingAddress);
+        });
     }
 
     private async Task<PaymentIntent> CreatePaymentIntentAsync(
@@ -232,8 +321,7 @@ public class StripePaymentService : IStripePaymentService
     {
         var updateOptions = new PaymentIntentUpdateOptions
         {
-            Amount = amountForPayment,
-            Currency = defaultTotal.Currency.CurrencyIsoCode,
+            Amount = amountForPayment, Currency = defaultTotal.Currency.CurrencyIsoCode,
         };
 
         updateOptions.AddExpansions();

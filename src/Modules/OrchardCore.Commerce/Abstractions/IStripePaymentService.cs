@@ -26,5 +26,7 @@ public interface IStripePaymentService
     /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see
     /// cref="ShoppingCart"/> content.
     /// </summary>
-    Task<ContentItem> CreateOrderFromShoppingCartAsync(PaymentIntent paymentIntent);
+    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent);
+
+    Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, Charge charge);
 }

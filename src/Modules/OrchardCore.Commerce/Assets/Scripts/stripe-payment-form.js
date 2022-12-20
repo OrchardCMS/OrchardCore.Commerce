@@ -7,6 +7,25 @@ window.stripePaymentForm = function stripePaymentForm(
     errorText,
     missingText,
     enableInputs) {
+    const phone = document.getElementById('OrderPart_Phone_Text');
+    const email = document.getElementById('OrderPart_Email_Text');
+
+    const shippingAddressName = document.getElementById('OrderPart_ShippingAddress_Address_Name');
+    const shippingAddressCity = document.getElementById('OrderPart_ShippingAddress_Address_City');
+    const shippingAddressCountry = document.getElementById('OrderPart_ShippingAddress_Address_Region');
+    const shippingAddressStreetAddress1 = document.getElementById('OrderPart_ShippingAddress_Address_StreetAddress1');
+    const shippingAddressStreetAddress2 = document.getElementById('OrderPart_ShippingAddress_Address_StreetAddress2');
+    const shippingAddressPostalCode = document.getElementById('OrderPart_ShippingAddress_Address_PostalCode');
+    const shippingAddressState = document.getElementById('OrderPart_ShippingAddress_Address_Province');
+
+    const billingAddressName = document.getElementById('OrderPart_BillingAddress_Address_Name');
+    const billingAddressCity = document.getElementById('OrderPart_BillingAddress_Address_City');
+    const billingAddressCountry = document.getElementById('OrderPart_BillingAddress_Address_Region');
+    const billingAddressStreetAddress1 = document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1');
+    const billingAddressStreetAddress2 = document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2');
+    const billingAddressPostalCode = document.getElementById('OrderPart_BillingAddress_Address_PostalCode');
+    const billingAddressState = document.getElementById('OrderPart_BillingAddress_Address_Province');
+
     const allErrorContainers = [document.querySelector('.message-error')];
     const form = document.querySelector('.payment-form');
     const submitButton = form.querySelector('.pay-button');
@@ -172,20 +191,32 @@ window.stripePaymentForm = function stripePaymentForm(
                 result = await stripe.confirmPayment({
                     elements: stripeElements,
                     confirmParams: {
-                        return_url: `${baseUrl}${urlPrefix}/checkout`,
+                        return_url: `${baseUrl}${urlPrefix}/checkout/middleware`,
                         payment_method_data: {
                             billing_details: {
-                                email: document.getElementById('OrderPart_Email_Text').value,
-                                name: document.getElementById('OrderPart_BillingAddress_Address_Name').value,
-                                phone: document.getElementById('OrderPart_Phone_Text').value,
+                                email: email.value,
+                                name: billingAddressName.value,
+                                phone: phone.value,
                                 address: {
-                                    city: document.getElementById('OrderPart_BillingAddress_Address_City').value,
-                                    country: document.getElementById('OrderPart_BillingAddress_Address_Region').value,
-                                    line1: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1').value,
-                                    line2: document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2').value,
-                                    postal_code: document.getElementById('OrderPart_BillingAddress_Address_PostalCode').value,
-                                    state: document.getElementById('OrderPart_BillingAddress_Address_Province').value,
+                                    city: billingAddressCity.value,
+                                    country: billingAddressCountry.value,
+                                    line1: billingAddressStreetAddress1.value,
+                                    line2: billingAddressStreetAddress2.value,
+                                    postal_code: billingAddressPostalCode.value,
+                                    state: billingAddressState.value,
                                 },
+                            },
+                        },
+                        shipping: {
+                            name: shippingAddressName.value,
+                            phone: phone.value,
+                            address: {
+                                city: shippingAddressCity.value,
+                                country: shippingAddressCountry.value,
+                                line1: shippingAddressStreetAddress1.value,
+                                line2: shippingAddressStreetAddress2.value,
+                                postal_code: shippingAddressPostalCode.value,
+                                state: shippingAddressState.value,
                             },
                         },
                     },
@@ -243,5 +274,5 @@ window.stripePaymentForm = function stripePaymentForm(
         toggleInputs(false);
     }
 
-    checkStatus();
+    //checkStatus();
 };

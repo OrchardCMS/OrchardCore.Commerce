@@ -157,6 +157,7 @@ public class Startup : StartupBase
         services.AddScoped<IStripePaymentService, StripePaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
         services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
+        services.AddSingleton<IIndexProvider, OrderPaymentIndexProvider>();
 
         // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>
