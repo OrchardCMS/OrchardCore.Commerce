@@ -3,22 +3,25 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Inventory.Local.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
-using Stripe;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using YesSql;
 
 namespace OrchardCore.Commerce.Services;
 
+/// <summary>
+/// A product inventory provider that updates inventories of shopping cart items which have an <c>InventoryPart</c>.
+/// </summary>
 public class ProductInventoryProvider : IProductInventoryProvider
 {
     private readonly IProductService _productService;
+    private readonly ISession _session;
 
-    public ProductInventoryProvider(IProductService productService)
+    public ProductInventoryProvider(IProductService productService, ISession session)
     {
         _productService = productService;
+        _session = session;
     }
 
     public int Order => 0;
@@ -38,7 +41,6 @@ public class ProductInventoryProvider : IProductInventoryProvider
         return inventoryPart != null ? (int)inventoryPart.Inventory.Value : 0;
     }
 
-    // use UpdateInventory() to update the inventories of the products in the cart
     public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
     {
         foreach (var item in model)
@@ -46,17 +48,19 @@ public class ProductInventoryProvider : IProductInventoryProvider
             UpdateInventory(await _productService.GetProductAsync(item.ProductSku), item.Quantity);
         }
 
-        return model; // need to modify model as well?
+        return model;
     }
 
     public void UpdateInventory(ProductPart productPart, int difference, bool reset = false)
     {
         var inventoryPart = productPart.As<InventoryPart>();
-        if (inventoryPart == null) return;
+        if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
-        var newValue = reset ? difference : ((int)inventoryPart.Inventory.Value) - difference;
+        var newValue = reset ? difference : ((int)inventoryPart.Inventory.Value) + difference;
 
         inventoryPart.Inventory.Value = newValue > 0 ? newValue : 0;
         inventoryPart.Apply();
+
+        _session.Save(productPart.ContentItem);
     }
 }

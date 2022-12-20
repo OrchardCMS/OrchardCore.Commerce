@@ -6,9 +6,8 @@ namespace OrchardCore.Commerce.Abstractions;
 // this service only iterates over the provider services. It's just a container for all its providers
 
 /// <summary>
-/// Contains inventory management related methods.
+/// Contains, uhh
 /// </summary>
 public interface IProductInventoryService
 {
-    // ?
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components.Forms;
 using OrchardCore.Commerce.Inventory.Local.Models;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
@@ -8,7 +7,7 @@ using OrchardCore.Data.Migration;
 namespace OrchardCore.Commerce.Inventory.Local.Migrations;
 
 /// <summary>
-/// Adds the inventory part to the list of available parts.
+/// Adds the inventory part to the list of available content parts.
 /// </summary>
 public class InventoryPartMigrations : DataMigration
 {

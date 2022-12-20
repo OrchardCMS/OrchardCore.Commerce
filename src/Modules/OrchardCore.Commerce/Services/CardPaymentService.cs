@@ -32,6 +32,8 @@ public class CardPaymentService : ICardPaymentService
     private readonly ILogger<CardPaymentService> _logger;
     private readonly IStringLocalizer T;
     private readonly ISession _session;
+    private readonly IProductInventoryProvider _productInventoryProvider;
+    private readonly IProductService _productService;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -45,7 +47,9 @@ public class CardPaymentService : ICardPaymentService
         IDataProtectionProvider dataProtectionProvider,
         ILogger<CardPaymentService> logger,
         IStringLocalizer<CardPaymentService> stringLocalizer,
-        ISession session)
+        ISession session,
+        IProductInventoryProvider productInventoryProvider,
+        IProductService productService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -58,6 +62,8 @@ public class CardPaymentService : ICardPaymentService
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
         _session = session;
+        _productInventoryProvider = productInventoryProvider;
+        _productService = productService;
         T = stringLocalizer;
     }
 
@@ -184,6 +190,13 @@ public class CardPaymentService : ICardPaymentService
         });
 
         await _contentManager.CreateAsync(order);
+
+        // Decrease inventories of purchased items.
+        foreach (var item in currentShoppingCart.Items)
+        {
+            var product = await _productService.GetProductAsync(item.ProductSku);
+            _productInventoryProvider.UpdateInventory(product, -item.Quantity);
+        }
 
         currentShoppingCart.Items.Clear();
 
