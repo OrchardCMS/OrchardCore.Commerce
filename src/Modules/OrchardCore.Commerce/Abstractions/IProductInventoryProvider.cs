@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
 
-// contains business logic. what business logic tho
+/// <summary>
+/// Contains inventory management related methods.
+/// </summary>
 public interface IProductInventoryProvider : ISortableUpdaterProvider<IList<ShoppingCartItem>>
 {
     /// <summary>
