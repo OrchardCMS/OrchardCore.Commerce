@@ -29,7 +29,18 @@ public interface IStripePaymentService
     /// </summary>
     Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor);
 
-    Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
-    Task<OrderPayment> GetOrderPaymentByPaymentIntentId(string paymentIntentId);
-    Task<ContentItem> UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent);
+    /// <summary>
+    /// Updates the corresponding order status to Order for the given <paramref name="paymentIntent"/>.
+    /// </summary>
+    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
+
+    /// <summary>
+    /// Updates the corresponding order status to failed payment for the given <paramref name="paymentIntent"/>.
+    /// </summary>
+    Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent);
+
+    /// <summary>
+    /// Return the saved <see cref="OrderPayment"/> for the given <paramref name="paymentIntentId"/>
+    /// </summary>
+    Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId);
 }

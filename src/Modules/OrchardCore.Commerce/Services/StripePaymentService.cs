@@ -126,9 +126,9 @@ public class StripePaymentService : IStripePaymentService
             _requestOptions.SetIdempotencyKey());
     }
 
-    public async Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent)
+    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent)
     {
-        var orderId = (await GetOrderPaymentByPaymentIntentId(paymentIntent.Id))?.OrderId;
+        var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
         var order = await _contentManager.GetAsync(orderId);
         order.Alter<OrderPart>(orderPart =>
         {
@@ -153,13 +153,11 @@ public class StripePaymentService : IStripePaymentService
         });
 
         await _contentManager.UpdateAsync(order);
-
-        return order;
     }
 
-    public async Task<ContentItem> UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
+    public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
     {
-        var orderId = (await GetOrderPaymentByPaymentIntentId(paymentIntent.Id))?.OrderId;
+        var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
         var order = await _contentManager.GetAsync(orderId);
         order.Alter<OrderPart>(orderPart =>
         {
@@ -167,11 +165,9 @@ public class StripePaymentService : IStripePaymentService
         });
 
         await _contentManager.UpdateAsync(order);
-
-        return order;
     }
 
-    public Task<OrderPayment> GetOrderPaymentByPaymentIntentId(string paymentIntentId) =>
+    public Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId) =>
         _session
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
             .FirstOrDefaultAsync();
@@ -187,7 +183,7 @@ public class StripePaymentService : IStripePaymentService
 
         var defaultTotal = totals.SingleOrDefault();
 
-        var orderId = (await GetOrderPaymentByPaymentIntentId(paymentIntent.Id))?.OrderId;
+        var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 
         ContentItem order;
         string guidId;

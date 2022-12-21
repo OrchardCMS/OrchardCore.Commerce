@@ -241,7 +241,7 @@ public class PaymentController : Controller
 #pragma warning restore CA1707
     {
         var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(payment_intent);
-        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentId(payment_intent))?.OrderId;
+        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(payment_intent))?.OrderId;
 
         var order = await _contentManager.GetAsync(orderId);
         var status = order?.As<OrderPart>()?.Status?.Text;
