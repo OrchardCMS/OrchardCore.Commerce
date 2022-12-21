@@ -29,5 +29,6 @@ public interface IStripePaymentService
     /// </summary>
     Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor);
 
-    Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, Charge charge);
+    Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
+    Task<OrderPayment> GetOrderPaymentByPaymentIntentId(string paymentIntentId);
 }

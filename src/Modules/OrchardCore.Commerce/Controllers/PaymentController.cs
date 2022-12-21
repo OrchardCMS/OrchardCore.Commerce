@@ -11,7 +11,6 @@ using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
@@ -31,9 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
-using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -56,7 +53,6 @@ public class PaymentController : Controller
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
-    private readonly ISession _session;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
 
     // We need all of them.
@@ -73,7 +69,6 @@ public class PaymentController : Controller
         Lazy<IUserService> userServiceLazy,
         IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
-        ISession session,
         IShoppingCartPersistence shoppingCartPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
@@ -92,7 +87,6 @@ public class PaymentController : Controller
         _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
-        _session = session;
         _shoppingCartPersistence = shoppingCartPersistence;
     }
 
@@ -159,8 +153,6 @@ public class PaymentController : Controller
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
             PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
-            EnableInputs = initPaymentIntent?.Status is not PaymentIntentStatuses.Succeeded
-                and not PaymentIntentStatuses.Processing,
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
@@ -305,10 +297,7 @@ public class PaymentController : Controller
 #pragma warning restore CA1707
     {
         var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(payment_intent);
-        var orderId = (await _session
-                .QueryIndex<OrderPaymentIndex>(index => index.PaymentIntentId == payment_intent)
-                .FirstOrDefaultAsync())
-            ?.OrderId;
+        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentId(payment_intent))?.OrderId;
 
         var order = await _contentManager.GetAsync(orderId);
         var finished = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded &&
@@ -331,7 +320,7 @@ public class PaymentController : Controller
         {
             // The payment didn't need any additional actions and completed!
             // Update the order content item.
-            var order = await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, charge: null);
+            var order = await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
 
             return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
         }

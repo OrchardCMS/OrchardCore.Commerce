@@ -13,7 +13,6 @@ public class CheckoutViewModel : ShapeViewModel
     public Amount SingleCurrencyTotal { get; init; }
     public OrderPart OrderPart { get; init; }
     public string PaymentIntentClientSecret { get; init; }
-    public bool EnableInputs { get; init; }
 
     [BindNever]
     public IEnumerable<SelectListItem> Regions { get; set; }

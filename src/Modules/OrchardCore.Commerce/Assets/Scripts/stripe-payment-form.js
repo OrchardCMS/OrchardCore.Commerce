@@ -5,8 +5,7 @@ window.stripePaymentForm = function stripePaymentForm(
     antiForgeryToken,
     urlPrefix,
     errorText,
-    missingText,
-    enableInputs) {
+    missingText) {
     const phone = document.getElementById('OrderPart_Phone_Text');
     const email = document.getElementById('OrderPart_Email_Text');
 
@@ -31,8 +30,6 @@ window.stripePaymentForm = function stripePaymentForm(
     const submitButton = form.querySelector('.pay-button');
     const payText = form.querySelector('.pay-text');
     const paymentProcessingContainer = form.querySelector('.payment-processing-container');
-    const selectTagName = 'SELECT';
-    const checkboxTypeName = 'checkbox';
     const stripeElements = stripe.elements({
         clientSecret,
     });
@@ -44,8 +41,6 @@ window.stripePaymentForm = function stripePaymentForm(
     const placeOfPayment = document.querySelector('#payment-form_payment');
 
     let formElements = Array.from(form.elements);
-    let handleServerResponse;
-    let handleStripeJsResult;
 
     function toggleInputs(enable) {
         formElements.forEach((element) => {
@@ -85,58 +80,6 @@ window.stripePaymentForm = function stripePaymentForm(
             .then((response) => response.json());
     }
 
-    function fetchConfirmPayment(data) {
-        // eslint-disable-next-line dot-notation -- That would throw "no-underscore-dangle". This looks better anyway.
-        data['__RequestVerificationToken'] = antiForgeryToken;
-
-        return fetchPost('confirmpayment', {
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: Object
-                .entries(data)
-                .map((pair) => pair.map(encodeURIComponent).join('='))
-                .join('&'),
-        })
-            .then(handleServerResponse)
-            .catch((fetchPayError) => displayError(errorText + ' ' + fetchPayError));
-    }
-
-    handleServerResponse = function (response) {
-        const error = response.error;
-
-        // Show error in payment form.
-        if (error) {
-            displayError(error);
-            return Promise.reject(error);
-        }
-
-        if (response.requiresAction) {
-            // Use Stripe.js to handle required card action (like 3DS authentication).
-            stripe.handleCardAction(response.paymentIntentClientSecret)
-                .then(handleStripeJsResult);
-        }
-        else if (response.success) {
-            // Show success message.
-            form.action = `${urlPrefix}/success/${response.orderContentItemId}`;
-            form.method = 'POST';
-            form.submit();
-        }
-
-        return Promise.resolve();
-    };
-
-    handleStripeJsResult = function (result) {
-        // Show error in payment form.
-        if (result.error) return displayError(result.error);
-
-        document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = result.paymentIntent.id;
-
-        // The payment action has been handled.
-        // The PaymentIntent can be confirmed on the server.
-        return fetchConfirmPayment({ paymentId: result.paymentIntent.id });
-    };
 
     function getText(element) {
         return element?.textContent.trim();
@@ -213,46 +156,15 @@ window.stripePaymentForm = function stripePaymentForm(
                             },
                         },
                     },
-                    redirect: 'if_required',
                 });
 
-                await handleStripeJsResult(result);
+                displayError(result.error);
             }
             catch (error) {
                 result = { error };
                 displayError(result.error);
             }
         });
-    }
-
-    async function checkStatus() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const paymentIntentId = urlParams.get(
-            'payment_intent'
-        );
-        const paymentIntentClientSecret = urlParams.get(
-            'payment_intent_client_secret'
-        );
-        const redirectStatus = urlParams.get(
-            'redirect_status'
-        );
-
-        if (redirectStatus === 'failed') {
-            displayError(errorText);
-            return;
-        }
-
-        if (!paymentIntentClientSecret || !paymentIntentId) {
-            return;
-        }
-
-        const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentClientSecret);
-        if (paymentIntent.status !== 'succeeded') {
-            return;
-        }
-
-        document.getElementById('StripePaymentPart_PaymentIntentId_Text').value = paymentIntentId;
-        await fetchConfirmPayment({ paymentId: paymentIntentId });
     }
 
     if (placeOfPayment) {
@@ -262,10 +174,4 @@ window.stripePaymentForm = function stripePaymentForm(
         formElements = Array.from(form.elements);
         registerElements();
     }
-
-    if (!enableInputs) {
-        toggleInputs(false);
-    }
-
-    //checkStatus();
 };

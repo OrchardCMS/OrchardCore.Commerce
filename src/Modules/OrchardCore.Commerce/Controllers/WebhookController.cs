@@ -67,7 +67,7 @@ public class WebhookController : Controller
             }
 
             var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
-            await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, charge);
+            await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
 
             return Ok();
         }

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -125,14 +124,10 @@ public class StripePaymentService : IStripePaymentService
             _requestOptions.SetIdempotencyKey());
     }
 
-    public async Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, Charge charge)
+    public async Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent)
     {
-        var orderId = (await _session
-                .QueryIndex<OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntent.Id)
-                .FirstOrDefaultAsync())
-            ?.OrderId;
+        var orderId = (await GetOrderPaymentByPaymentIntentId(paymentIntent.Id))?.OrderId;
         var order = await _contentManager.GetAsync(orderId);
-        //PopulateAddressFieldsIfNeeded(order, charge);
         order.Alter<OrderPart>(orderPart =>
         {
             // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -160,7 +155,14 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor)
+    public Task<OrderPayment> GetOrderPaymentByPaymentIntentId(string paymentIntentId) =>
+        _session
+            .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
+            .FirstOrDefaultAsync();
+
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
+        PaymentIntent paymentIntent,
+        IUpdateModelAccessor updateModelAccessor)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
 
@@ -169,19 +171,14 @@ public class StripePaymentService : IStripePaymentService
 
         var defaultTotal = totals.SingleOrDefault();
 
-        var orderId = (await _session
-                .QueryIndex<OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntent.Id)
-                .FirstOrDefaultAsync())
-            ?.OrderId;
+        var orderId = (await GetOrderPaymentByPaymentIntentId(paymentIntent.Id))?.OrderId;
 
         ContentItem order;
         string guidId;
         if (string.IsNullOrEmpty(orderId))
         {
             order = await _contentManager.NewAsync("Order");
-            await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
-
-            if (updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any())
+            if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
                 return null;
             }
@@ -193,16 +190,13 @@ public class StripePaymentService : IStripePaymentService
         else
         {
             order = await _contentManager.GetAsync(orderId);
-            await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
-
-            if (updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any())
+            if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
                 return null;
             }
 
             guidId = order.As<OrderPart>().OrderId.Text;
         }
-
 
         order.DisplayText = T["Order {0}", guidId];
 
@@ -253,45 +247,11 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    private static void PopulateAddressFieldsIfNeeded(ContentItem order, Charge charge)
+    private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order, IUpdateModelAccessor updateModelAccessor)
     {
-        if (charge == null)
-        {
-            return;
-        }
+        await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
 
-        order.Alter<OrderPart>(part =>
-        {
-            part.Email.Text = charge.BillingDetails.Email;
-            part.Phone.Text = charge.BillingDetails.Phone;
-        });
-
-        var orderPart = order.As<OrderPart>();
-        orderPart.Alter<AddressField>("BillingAddress", field =>
-        {
-            var chargeBilling = charge.BillingDetails;
-            field.Address.Name = chargeBilling.Name;
-            field.Address.City = chargeBilling.Address.City;
-            field.Address.Region = chargeBilling.Address.Country;
-            field.Address.StreetAddress1 = chargeBilling.Address.Line1;
-            field.Address.StreetAddress2 = chargeBilling.Address.Line2;
-            field.Address.Province = chargeBilling.Address.State;
-            field.Address.PostalCode = chargeBilling.Address.PostalCode;
-            field.UserAddressToSave = nameof(orderPart.BillingAddress);
-        });
-
-        orderPart.Alter<AddressField>("ShippingAddress", field =>
-        {
-            var chargeShipping = charge.Shipping;
-            field.Address.Name = chargeShipping.Name;
-            field.Address.City = chargeShipping.Address.City;
-            field.Address.Region = chargeShipping.Address.Country;
-            field.Address.StreetAddress1 = chargeShipping.Address.Line1;
-            field.Address.StreetAddress2 = chargeShipping.Address.Line2;
-            field.Address.Province = chargeShipping.Address.State;
-            field.Address.PostalCode = chargeShipping.Address.PostalCode;
-            field.UserAddressToSave = nameof(orderPart.ShippingAddress);
-        });
+        return updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
     private async Task<PaymentIntent> CreatePaymentIntentAsync(
