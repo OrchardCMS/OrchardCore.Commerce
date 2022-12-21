@@ -35,6 +35,6 @@ public class StripeApiSettingsConfiguration : IConfigureOptions<StripeApiSetting
         options.PublishableKey = settings.PublishableKey;
 
         // Decrypt the secret key.
-        options.SecretKey = settings.SecretKey.DecryptStripeApiKey(_dataProtectionProvider, _logger);
+        options.SecretKey = settings.DecryptSecretKey(_dataProtectionProvider, _logger);
     }
 }

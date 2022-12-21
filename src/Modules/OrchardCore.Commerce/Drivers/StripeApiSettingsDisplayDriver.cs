@@ -55,7 +55,7 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
                 model.PublishableKey = section.PublishableKey;
 
                 // Decrypting key.
-                model.SecretKey = section.SecretKey.DecryptStripeApiKey(_dataProtectionProvider, _logger);
+                model.SecretKey = section.DecryptSecretKey(_dataProtectionProvider, _logger);
 
                 model.WebhookSigningSecret = section.WebhookSigningSecret.DecryptStripeApiKey(_dataProtectionProvider, _logger);
             })

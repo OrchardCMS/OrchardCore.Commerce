@@ -10,9 +10,9 @@ public class StripeApiSettings
     public string SecretKey { get; set; }
     public string WebhookSigningSecret { get; set; }
 
-    public string GetWebhookSigningSecret(IDataProtectionProvider dataProtectionProvider, ILogger logger) =>
+    public string DecryptWebhookSigningSecret(IDataProtectionProvider dataProtectionProvider, ILogger logger) =>
         WebhookSigningSecret.DecryptStripeApiKey(dataProtectionProvider, logger);
 
-    public string GetSecretKey(IDataProtectionProvider dataProtectionProvider, ILogger logger) =>
+    public string DecryptSecretKey(IDataProtectionProvider dataProtectionProvider, ILogger logger) =>
         SecretKey.DecryptStripeApiKey(dataProtectionProvider, logger);
 }

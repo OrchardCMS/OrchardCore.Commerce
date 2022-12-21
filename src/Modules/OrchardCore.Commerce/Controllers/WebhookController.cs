@@ -48,7 +48,7 @@ public class WebhookController : Controller
         {
             // If the webhook signing key is empty, default to the test key.
             var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-            var webhookSigningKey = stripeApiSettings.GetWebhookSigningSecret(_dataProtectionProvider, _logger);
+            var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
             webhookSigningKey = string.IsNullOrEmpty(webhookSigningKey) ? LocalEndPointSecret : webhookSigningKey;
 
             var stripeEvent = EventUtility.ConstructEvent(
