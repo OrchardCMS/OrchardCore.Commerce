@@ -40,7 +40,7 @@ public interface IStripePaymentService
     Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent);
 
     /// <summary>
-    /// Return the saved <see cref="OrderPayment"/> for the given <paramref name="paymentIntentId"/>
+    /// Return the saved <see cref="OrderPayment"/> for the given <paramref name="paymentIntentId"/>.
     /// </summary>
     Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId);
 }
