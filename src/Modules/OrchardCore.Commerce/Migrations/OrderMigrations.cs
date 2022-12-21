@@ -102,7 +102,7 @@ public class OrderMigrations : DataMigration
                 .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithLength(26))
                 .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
-        return 3;
+        return 5;
     }
 
     public int UpdateFrom1()
