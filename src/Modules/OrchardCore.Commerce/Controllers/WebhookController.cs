@@ -25,13 +25,13 @@ public class WebhookController : Controller
     private readonly IStripePaymentService _stripePaymentService;
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly ILogger _logger;
+    private readonly ILogger<WebhookController> _logger;
 
     public WebhookController(
         IStripePaymentService stripePaymentService,
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
-        ILogger logger)
+        ILogger<WebhookController> logger)
     {
         _stripePaymentService = stripePaymentService;
         _siteService = siteService;

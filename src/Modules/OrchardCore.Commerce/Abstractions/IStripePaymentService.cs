@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using Stripe;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ public interface IStripePaymentService
     /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see
     /// cref="ShoppingCart"/> content.
     /// </summary>
-    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent);
+    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor);
 
     Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, Charge charge);
 }

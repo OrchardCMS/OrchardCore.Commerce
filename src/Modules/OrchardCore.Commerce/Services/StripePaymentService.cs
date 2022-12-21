@@ -9,6 +9,8 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using Stripe;
@@ -33,6 +35,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly RequestOptions _requestOptions;
     private readonly string _siteName;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -47,7 +50,8 @@ public class StripePaymentService : IStripePaymentService
         ILogger<StripePaymentService> logger,
         IStringLocalizer<StripePaymentService> stringLocalizer,
         ISession session,
-        IPaymentIntentPersistence paymentIntentPersistence)
+        IPaymentIntentPersistence paymentIntentPersistence,
+        IContentItemDisplayManager contentItemDisplayManager)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -59,6 +63,7 @@ public class StripePaymentService : IStripePaymentService
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
         T = stringLocalizer;
+        _contentItemDisplayManager = contentItemDisplayManager;
 
         var siteSettings = siteService.GetSiteSettingsAsync()
             .GetAwaiter()
@@ -127,7 +132,7 @@ public class StripePaymentService : IStripePaymentService
                 .FirstOrDefaultAsync())
             ?.OrderId;
         var order = await _contentManager.GetAsync(orderId);
-        PopulateAddressFieldsIfNeeded(order, charge);
+        //PopulateAddressFieldsIfNeeded(order, charge);
         order.Alter<OrderPart>(orderPart =>
         {
             // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -144,7 +149,7 @@ public class StripePaymentService : IStripePaymentService
                 CreatedUtc = paymentIntent.Created,
             };
 
-            orderPart.Charges.Remove(orderPartCharge);
+            orderPart.Charges.Clear();
             orderPart.Charges.Add(payment);
 
             orderPart.Status.Text = OrderStatuses.Ordered;
@@ -155,7 +160,7 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent)
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
 
@@ -174,6 +179,13 @@ public class StripePaymentService : IStripePaymentService
         if (string.IsNullOrEmpty(orderId))
         {
             order = await _contentManager.NewAsync("Order");
+            await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
+
+            if (updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any())
+            {
+                return null;
+            }
+
             guidId = Guid.NewGuid().ToString();
 
             _session.Save(new OrderPayment { OrderId = order.ContentItemId, PaymentIntentId = paymentIntent.Id });
@@ -181,8 +193,16 @@ public class StripePaymentService : IStripePaymentService
         else
         {
             order = await _contentManager.GetAsync(orderId);
+            await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
+
+            if (updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any())
+            {
+                return null;
+            }
+
             guidId = order.As<OrderPart>().OrderId.Text;
         }
+
 
         order.DisplayText = T["Order {0}", guidId];
 
@@ -210,6 +230,7 @@ public class StripePaymentService : IStripePaymentService
 
         order.Alter<OrderPart>(orderPart =>
         {
+            orderPart.Charges.Clear();
             orderPart.Charges.Add(
                 new Payment
                 {
@@ -220,6 +241,7 @@ public class StripePaymentService : IStripePaymentService
                 });
 
             // Shopping cart
+            orderPart.LineItems.Clear();
             orderPart.LineItems.AddRange(lineItems);
 
             orderPart.OrderId.Text = guidId;
@@ -227,14 +249,6 @@ public class StripePaymentService : IStripePaymentService
         });
 
         await _contentManager.CreateAsync(order);
-
-        currentShoppingCart.Items.Clear();
-
-        // Shopping cart ID is null by default currently.
-        await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
-
-        // Set back to default, because a new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
 
         return order;
     }

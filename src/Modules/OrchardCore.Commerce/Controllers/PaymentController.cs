@@ -46,7 +46,7 @@ public class PaymentController : Controller
     private readonly IStripePaymentService _stripePaymentService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
-    private readonly ILogger _logger;
+    private readonly ILogger<PaymentController> _logger;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
@@ -57,6 +57,7 @@ public class PaymentController : Controller
     private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly ISession _session;
+    private readonly IShoppingCartPersistence _shoppingCartPersistence;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -72,7 +73,8 @@ public class PaymentController : Controller
         Lazy<IUserService> userServiceLazy,
         IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
-        ISession session)
+        ISession session,
+        IShoppingCartPersistence shoppingCartPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -91,6 +93,7 @@ public class PaymentController : Controller
         T = services.StringLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _session = session;
+        _shoppingCartPersistence = shoppingCartPersistence;
     }
 
     [Route("checkout")]
@@ -174,17 +177,11 @@ public class PaymentController : Controller
     {
         try
         {
-            var order = await _contentManager.NewAsync(Order);
-            await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+            var paymentIntent = _paymentIntentPersistence.Retrieve();
+            var paymentIntentInstance = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
+            await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(paymentIntentInstance, _updateModelAccessor);
+
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
-
-            if (!errors.Any())
-            {
-                var paymentIntent = _paymentIntentPersistence.Retrieve();
-                var paymentIntentInstance = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
-                await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(paymentIntentInstance);
-            }
-
             return Json(new { Errors = errors });
         }
         catch (Exception exception)
@@ -264,6 +261,15 @@ public class PaymentController : Controller
         {
             await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
         }
+
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        currentShoppingCart?.Items?.Clear();
+
+        // Shopping cart ID is null by default currently.
+        await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
+
+        // Set back to default, because a new payment intent should be created on the next checkout.
+        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
     }
 
     [Route(nameof(ConfirmPayment))]
