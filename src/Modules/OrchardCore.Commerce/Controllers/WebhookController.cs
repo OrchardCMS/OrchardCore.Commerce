@@ -42,7 +42,8 @@ public class WebhookController : Controller
     [HttpPost]
     public async Task<IActionResult> Index()
     {
-        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+        using var streamReader = new StreamReader(HttpContext.Request.Body);
+        var json = await streamReader.ReadToEndAsync();
         try
         {
             // If the webhook signing key is empty, default to the test key.
