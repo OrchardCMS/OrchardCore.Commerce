@@ -254,6 +254,8 @@ public class StripePaymentService : IStripePaymentService
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
         });
 
+        order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
+
         if (string.IsNullOrEmpty(orderId))
         {
             await _contentManager.CreateAsync(order);
