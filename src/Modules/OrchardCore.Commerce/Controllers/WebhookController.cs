@@ -55,19 +55,22 @@ public class WebhookController : Controller
                 Request.Headers["Stripe-Signature"],
                 webhookSigningKey);
 
-            if (stripeEvent.Type != Stripe.Events.ChargeSucceeded)
+            if (stripeEvent.Type == Stripe.Events.ChargeSucceeded)
             {
-                return Ok();
-            }
+                var charge = stripeEvent.Data.Object as Charge;
+                if (charge?.PaymentIntentId is not { } paymentIntentId)
+                {
+                    return BadRequest();
+                }
 
-            var charge = stripeEvent.Data.Object as Charge;
-            if (charge?.PaymentIntentId is not { } paymentIntentId)
+                var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
+                await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
+            }
+            else if (stripeEvent.Type == Stripe.Events.PaymentIntentPaymentFailed)
             {
-                return BadRequest();
+                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                await _stripePaymentService.UpdateOrderToPaymentFailedAsync(paymentIntent);
             }
-
-            var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
-            await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
 
             return Ok();
         }

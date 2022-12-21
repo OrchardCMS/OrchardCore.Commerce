@@ -7,10 +7,12 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using Stripe;
 using System;
@@ -147,7 +149,21 @@ public class StripePaymentService : IStripePaymentService
             orderPart.Charges.Clear();
             orderPart.Charges.Add(payment);
 
-            orderPart.Status.Text = OrderStatuses.Ordered;
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
+        });
+
+        await _contentManager.UpdateAsync(order);
+
+        return order;
+    }
+
+    public async Task<ContentItem> UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
+    {
+        var orderId = (await GetOrderPaymentByPaymentIntentId(paymentIntent.Id))?.OrderId;
+        var order = await _contentManager.GetAsync(orderId);
+        order.Alter<OrderPart>(orderPart =>
+        {
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.PaymentFailed.HtmlClassify() };
         });
 
         await _contentManager.UpdateAsync(order);
@@ -239,10 +255,17 @@ public class StripePaymentService : IStripePaymentService
             orderPart.LineItems.AddRange(lineItems);
 
             orderPart.OrderId.Text = guidId;
-            orderPart.Status.Text = OrderStatuses.Pending;
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
         });
 
-        await _contentManager.CreateAsync(order);
+        if (string.IsNullOrEmpty(orderId))
+        {
+            await _contentManager.CreateAsync(order);
+        }
+        else
+        {
+            await _contentManager.UpdateAsync(order);
+        }
 
         return order;
     }

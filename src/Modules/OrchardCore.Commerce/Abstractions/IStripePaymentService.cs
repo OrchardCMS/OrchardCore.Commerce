@@ -31,4 +31,5 @@ public interface IStripePaymentService
 
     Task<ContentItem> UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
     Task<OrderPayment> GetOrderPaymentByPaymentIntentId(string paymentIntentId);
+    Task<ContentItem> UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent);
 }

@@ -16,7 +16,6 @@ using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
@@ -41,7 +40,6 @@ public class PaymentController : Controller
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStripePaymentService _stripePaymentService;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly ILogger<PaymentController> _logger;
     private readonly IContentManager _contentManager;
@@ -59,7 +57,6 @@ public class PaymentController : Controller
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentController(
         IStripePaymentService stripePaymentService,
-        IContentItemDisplayManager contentItemDisplayManager,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentController> services,
         IShoppingCartHelpers shoppingCartHelpers,
@@ -74,7 +71,6 @@ public class PaymentController : Controller
     {
         _authorizationService = services.AuthorizationService.Value;
         _stripePaymentService = stripePaymentService;
-        _contentItemDisplayManager = contentItemDisplayManager;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
@@ -91,7 +87,7 @@ public class PaymentController : Controller
     }
 
     [Route("checkout")]
-    public async Task<IActionResult> Index(string shoppingCartId = null, string paymentIntent = null)
+    public async Task<IActionResult> Index(string shoppingCartId = null)
     {
         var isAuthenticated = User.Identity?.IsAuthenticated == true;
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -131,17 +127,13 @@ public class PaymentController : Controller
                 "Checkout"))
             .ToList();
 
-        if (string.IsNullOrEmpty(paymentIntent))
-        {
-            paymentIntent = _paymentIntentPersistence.Retrieve();
-        }
-
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
         var initPaymentIntent = new PaymentIntent();
         if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
             !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
         {
-            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntent);
+            var paymentIntentId = _paymentIntentPersistence.Retrieve();
+            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
         }
 
         var checkoutViewModel = new CheckoutViewModel
@@ -197,29 +189,6 @@ public class PaymentController : Controller
         return View(order);
     }
 
-    [Route("success/{orderId}")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SuccessPost(string orderId)
-    {
-        if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
-
-        await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
-        if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
-        {
-            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
-            _logger.LogError(
-                "The payment has been successful, but the order is invalid. Validation errors: {ValidationErrors}",
-                string.Join(", ", errors));
-
-            return Forbid();
-        }
-
-        await FinalModificationAsync(order);
-
-        return Redirect($"~/success/{order.ContentItemId}");
-    }
-
     private async Task FinalModificationAsync(ContentItem order)
     {
         // Saving addresses.
@@ -264,31 +233,6 @@ public class PaymentController : Controller
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
     }
 
-    [Route(nameof(ConfirmPayment))]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ConfirmPayment(string paymentId)
-    {
-        PaymentIntent paymentIntent;
-
-        try
-        {
-            paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentId);
-        }
-        catch (StripeException exception)
-        {
-            return Json(new { error = exception.StripeError.Message });
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError(exception, "Payment processing failed.");
-            var message = T["An error has occurred while processing the payment. Please verify and try again."];
-            return Json(new { error = message.Value });
-        }
-
-        return await GeneratePaymentResponseAsync(paymentIntent);
-    }
-
     [AllowAnonymous]
     [HttpGet("checkout/middleware")]
     // Sadly that is how it is given.
@@ -300,9 +244,10 @@ public class PaymentController : Controller
         var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentId(payment_intent))?.OrderId;
 
         var order = await _contentManager.GetAsync(orderId);
+        var status = order?.As<OrderPart>()?.Status?.Text;
         var finished = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded &&
                        !string.IsNullOrEmpty(orderId) &&
-                       order?.As<OrderPart>()?.Status?.Text == OrderStatuses.Ordered;
+                       status == OrderStatuses.Ordered.HtmlClassify();
 
         if (finished)
         {
@@ -311,45 +256,11 @@ public class PaymentController : Controller
             return RedirectToAction(nameof(Success), new { orderId });
         }
 
+        if (status == OrderStatuses.PaymentFailed.HtmlClassify())
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
         return View();
-    }
-
-    private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
-    {
-        if (paymentIntent.Status == PaymentIntentStatuses.Succeeded)
-        {
-            // The payment didn't need any additional actions and completed!
-            // Update the order content item.
-            var order = await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
-
-            return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
-        }
-
-        if (paymentIntent.Status == PaymentIntentStatuses.RequiresAction &&
-            paymentIntent.NextAction.Type == "use_stripe_sdk")
-        {
-            // Tell the client to handle the action.
-            return Json(new { requiresAction = true, paymentIntentClientSecret = paymentIntent.ClientSecret, });
-        }
-
-        if (paymentIntent.Status == PaymentIntentStatuses.RequiresConfirmation)
-        {
-            return Json(new { requiresAction = false });
-        }
-
-        if (paymentIntent.Status == PaymentIntentStatuses.RequiresPaymentMethod)
-        {
-            return Json(new
-            {
-                requiresPaymentMethod = true,
-                paymentIntentClientSecret = paymentIntent.ClientSecret,
-                error = T["An error has occurred while processing the payment. Please try again."].Value,
-            });
-        }
-
-        // Invalid status.
-        return StatusCode(
-            StatusCodes.Status500InternalServerError,
-            new { error = T["Invalid PaymentIntent status"].Value });
     }
 }
