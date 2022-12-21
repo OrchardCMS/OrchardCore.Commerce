@@ -1,4 +1,3 @@
-using GraphQL;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
