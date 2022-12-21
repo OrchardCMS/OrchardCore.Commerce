@@ -323,8 +323,8 @@ public class PaymentController : Controller
         if (paymentIntent.Status == PaymentIntentStatuses.Succeeded)
         {
             // The payment didn't need any additional actions and completed!
-            // Create the order content item.
-            var order = await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(paymentIntent);
+            // Update the order content item.
+            var order = await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, charge: null);
 
             return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
         }
