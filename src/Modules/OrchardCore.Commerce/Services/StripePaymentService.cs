@@ -211,7 +211,13 @@ public class StripePaymentService : IStripePaymentService
         order.Alter<OrderPart>(orderPart =>
         {
             orderPart.Charges.Add(
-                new Payment { Amount = defaultTotal, });
+                new Payment
+                {
+                    ChargeText = paymentIntent.Description,
+                    TransactionId = paymentIntent.Id,
+                    Amount = defaultTotal,
+                    CreatedUtc = paymentIntent.Created,
+                });
 
             // Shopping cart
             orderPart.LineItems.AddRange(lineItems);
