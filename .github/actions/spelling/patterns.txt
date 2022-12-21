@@ -19,3 +19,6 @@
 [Xx][Uu]nit
 [Xx][Pp][Aa][Tt][Hh]
 [Rr]eadme
+
+# Webhook keys.
+(whsec_)([a-z0-9-]*)
