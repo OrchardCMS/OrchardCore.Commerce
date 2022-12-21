@@ -231,7 +231,7 @@ public class PaymentController : Controller
         return Redirect($"~/success/{order.ContentItemId}");
     }
 
-    private async Task<ContentItem> FinalModificationAsync(ContentItem order)
+    private async Task FinalModificationAsync(ContentItem order)
     {
         // Saving addresses.
         var userService = _userServiceLazy.Value;
@@ -264,8 +264,6 @@ public class PaymentController : Controller
         {
             await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
         }
-
-        return order;
     }
 
     [Route(nameof(ConfirmPayment))]
@@ -295,7 +293,10 @@ public class PaymentController : Controller
 
     [AllowAnonymous]
     [HttpGet("checkout/middleware")]
+    // Sadly that is how it is given.
+#pragma warning disable CA1707
     public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery] string payment_intent = null)
+#pragma warning restore CA1707
     {
         var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(payment_intent);
         var orderId = (await _session

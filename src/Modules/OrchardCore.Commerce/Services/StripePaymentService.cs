@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Fields;
@@ -18,7 +17,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
-using Address = OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -321,7 +319,8 @@ public class StripePaymentService : IStripePaymentService
     {
         var updateOptions = new PaymentIntentUpdateOptions
         {
-            Amount = amountForPayment, Currency = defaultTotal.Currency.CurrencyIsoCode,
+            Amount = amountForPayment,
+            Currency = defaultTotal.Currency.CurrencyIsoCode,
         };
 
         updateOptions.AddExpansions();

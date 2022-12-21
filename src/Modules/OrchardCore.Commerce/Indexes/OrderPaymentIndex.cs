@@ -1,5 +1,4 @@
 using OrchardCore.Commerce.Models;
-using OrchardCore.ContentManagement;
 using YesSql.Indexes;
 
 namespace OrchardCore.Commerce.Indexes;
