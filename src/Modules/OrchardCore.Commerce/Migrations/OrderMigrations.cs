@@ -11,6 +11,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
+using Lombiq.HelpfulLibraries.OrchardCore.Data;
 using YesSql.Sql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 using static OrchardCore.Commerce.Constants.OrderStatuses;
@@ -99,7 +100,7 @@ public class OrderMigrations : DataMigration
 
         SchemaBuilder
             .CreateMapIndexTable<OrderPaymentIndex>(table => table
-                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithLength(26))
+                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
                 .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
         return 5;
@@ -206,7 +207,7 @@ public class OrderMigrations : DataMigration
     {
         SchemaBuilder
             .CreateMapIndexTable<OrderPaymentIndex>(table => table
-                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithLength(26))
+                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
                 .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
         return 5;

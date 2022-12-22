@@ -235,18 +235,15 @@ public class PaymentController : Controller
 
     [AllowAnonymous]
     [HttpGet("checkout/middleware")]
-    // Sadly that is how it is given.
-#pragma warning disable CA1707
-    public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery] string payment_intent = null)
-#pragma warning restore CA1707
+    public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
     {
-        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(payment_intent);
-        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(payment_intent))?.OrderId;
+        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
+        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId;
 
         var order = await _contentManager.GetAsync(orderId);
         var status = order?.As<OrderPart>()?.Status?.Text;
         var finished = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded &&
-                       !string.IsNullOrEmpty(orderId) &&
+                       order != null &&
                        status == OrderStatuses.Ordered.HtmlClassify();
 
         if (finished)

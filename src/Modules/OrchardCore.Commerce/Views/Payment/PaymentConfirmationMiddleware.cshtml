@@ -9,15 +9,5 @@
 </div>
 
 <script>
-    const sleep = async (milliseconds) => {
-        await new Promise(resolve => {
-            return setTimeout(resolve, milliseconds)
-        });
-    };
-    const reload = async () => {
-        await sleep(2000);
-        location.reload();
-    }
-
-    reload();
+    setTimeout(() => location.reload(), 2000);
 </script>

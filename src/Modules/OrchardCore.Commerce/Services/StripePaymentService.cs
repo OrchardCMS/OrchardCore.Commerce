@@ -189,7 +189,7 @@ public class StripePaymentService : IStripePaymentService
         string guidId;
         if (string.IsNullOrEmpty(orderId))
         {
-            order = await _contentManager.NewAsync("Order");
+            order = await _contentManager.NewAsync(Constants.ContentTypes.Order);
             if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
                 return null;

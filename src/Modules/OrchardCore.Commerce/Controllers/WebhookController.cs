@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -48,8 +49,8 @@ public class WebhookController : Controller
         {
             // If the webhook signing key is empty, default to the test key.
             var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-            var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
-            webhookSigningKey = string.IsNullOrEmpty(webhookSigningKey) ? LocalEndPointSecret : webhookSigningKey;
+            var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger)
+                .OrIfEmpty(LocalEndPointSecret);
 
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
