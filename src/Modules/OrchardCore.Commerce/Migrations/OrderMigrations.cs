@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Data;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
@@ -11,7 +12,6 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
-using Lombiq.HelpfulLibraries.OrchardCore.Data;
 using YesSql.Sql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 using static OrchardCore.Commerce.Constants.OrderStatuses;

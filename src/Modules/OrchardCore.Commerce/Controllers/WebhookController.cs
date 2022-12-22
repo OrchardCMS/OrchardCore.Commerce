@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -8,6 +7,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using Stripe;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
