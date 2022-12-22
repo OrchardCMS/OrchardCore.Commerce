@@ -1,10 +1,10 @@
-using OrchardCore.Commerce.Inventory.Local.Models;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Commerce.Inventory.Local.Migrations;
+namespace OrchardCore.Commerce.Inventory.Migrations;
 
 /// <summary>
 /// Adds the inventory part to the list of available content parts.

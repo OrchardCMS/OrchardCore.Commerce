@@ -1,7 +1,7 @@
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Commerce.Inventory.Local.Models;
+namespace OrchardCore.Commerce.Inventory.Models;
 
 public class InventoryPart : ContentPart
 {

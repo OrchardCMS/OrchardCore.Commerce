@@ -1,11 +1,11 @@
-using OrchardCore.Commerce.Inventory.Local.Models;
+using OrchardCore.Commerce.Inventory.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Inventory.Local.Services;
+namespace OrchardCore.Commerce.Inventory.Services;
 
 // Problem is this would need to be based on IProductInventoryProvider, but that'd cause circular dependency.
 public class LocalInventoryProvider
