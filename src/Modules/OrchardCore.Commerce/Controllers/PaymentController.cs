@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -14,9 +15,9 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
@@ -48,10 +49,12 @@ public class PaymentController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
+    private readonly IHtmlLocalizer<PaymentController> H;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
+    private readonly INotifier _notifier;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -66,7 +69,8 @@ public class PaymentController : Controller
         Lazy<IUserService> userServiceLazy,
         IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IShoppingCartPersistence shoppingCartPersistence)
+        IShoppingCartPersistence shoppingCartPersistence,
+        INotifier notifier)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -82,8 +86,10 @@ public class PaymentController : Controller
         _userServiceLazy = userServiceLazy;
         _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
+        H = services.HtmlLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
+        _notifier = notifier;
     }
 
     [Route("checkout")]
@@ -189,6 +195,54 @@ public class PaymentController : Controller
         return View(order);
     }
 
+    [AllowAnonymous]
+    [HttpGet("checkout/middleware")]
+    public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
+    {
+        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
+        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId;
+
+        var order = await _contentManager.GetAsync(orderId);
+        var status = order?.As<OrderPart>()?.Status?.Text;
+        var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
+        var finished = succeeded &&
+                       order != null &&
+                       status == OrderStatuses.Ordered.HtmlClassify();
+
+        if (succeeded && status == OrderStatuses.Pending.HtmlClassify())
+        {
+            await _stripePaymentService.UpdateOrderToOrderedAsync(fetchedPaymentIntent);
+            finished = true;
+        }
+
+        if (finished)
+        {
+            await FinalModificationAsync(order);
+
+            return RedirectToAction(nameof(Success), new { orderId });
+        }
+
+        var errorMessage = H["The payment failed please try again."];
+        if (status == OrderStatuses.PaymentFailed.HtmlClassify())
+        {
+            await _notifier.ErrorAsync(errorMessage);
+            return RedirectToAction(nameof(Index));
+        }
+
+        order.Alter<StripePaymentPart>(part => part.RetryCounter++);
+        await _contentManager.UpdateAsync(order);
+
+        if (order.As<StripePaymentPart>().RetryCounter <= 10)
+        {
+            return View();
+        }
+
+        // Delete payment intent from session, to create a new one.
+        _paymentIntentPersistence.Store(string.Empty);
+        await _notifier.ErrorAsync(errorMessage);
+        return RedirectToAction(nameof(Index));
+    }
+
     private async Task FinalModificationAsync(ContentItem order)
     {
         // Saving addresses.
@@ -211,9 +265,6 @@ public class PaymentController : Controller
             });
         }
 
-        order.Alter<OrderPart>(part => part.Status =
-            new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() });
-
         order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
 
         await _contentManager.UpdateAsync(order);
@@ -231,33 +282,5 @@ public class PaymentController : Controller
 
         // Set back to default, because a new payment intent should be created on the next checkout.
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
-    }
-
-    [AllowAnonymous]
-    [HttpGet("checkout/middleware")]
-    public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
-    {
-        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
-        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId;
-
-        var order = await _contentManager.GetAsync(orderId);
-        var status = order?.As<OrderPart>()?.Status?.Text;
-        var finished = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded &&
-                       order != null &&
-                       status == OrderStatuses.Ordered.HtmlClassify();
-
-        if (finished)
-        {
-            await FinalModificationAsync(order);
-
-            return RedirectToAction(nameof(Success), new { orderId });
-        }
-
-        if (status == OrderStatuses.PaymentFailed.HtmlClassify())
-        {
-            return RedirectToAction(nameof(Index));
-        }
-
-        return View();
     }
 }
