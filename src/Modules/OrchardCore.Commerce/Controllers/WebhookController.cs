@@ -18,11 +18,6 @@ namespace OrchardCore.Commerce.Controllers;
 [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
 public class WebhookController : Controller
 {
-    // This is a default test Stripe CLI webhook secret for testing your endpoint locally. It can be shown, as this is
-    // the same always for testing in Stripe.
-    private const string LocalEndPointSecret =
-        "whsec_453d1046fc31377b7a93e82b839c9e6e065d7117b6e02422e55eac99da087463";
-
     private readonly IStripePaymentService _stripePaymentService;
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -47,10 +42,8 @@ public class WebhookController : Controller
         var json = await streamReader.ReadToEndAsync();
         try
         {
-            // If the webhook signing key is empty, default to the test key.
             var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-            var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger)
-                .OrIfEmpty(LocalEndPointSecret);
+            var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
 
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
