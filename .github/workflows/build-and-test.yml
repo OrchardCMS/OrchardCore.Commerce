@@ -16,8 +16,12 @@ jobs:
       timeout-minutes: 60
       set-up-sql-server: "true"
 
+  spelling:
+    name: Spelling
+    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
+
   post-pull-request-checks-automation:
-    needs: [call-build-and-test-workflow]
+    needs: [call-build-and-test-workflow, spelling]
     if: github.event.pull_request != ''
     uses: Lombiq/GitHub-Actions/.github/workflows/post-pull-request-checks-automation.yml@dev
     secrets:
@@ -27,7 +31,3 @@ jobs:
       MERGE_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
     with:
       merge-method: "squash"
-
-  spelling:
-    name: Spelling
-    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
