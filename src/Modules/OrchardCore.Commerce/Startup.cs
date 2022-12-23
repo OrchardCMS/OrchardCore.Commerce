@@ -153,9 +153,12 @@ public class Startup : StartupBase
         // Promotion
         services.AddScoped<IPromotionService, PromotionService>();
 
-        // Card Payment
-        services.AddScoped<ICardPaymentService, CardPaymentService>();
+        // Stripe payments
+        services.AddContentPart<StripePaymentPart>();
+        services.AddScoped<IStripePaymentService, StripePaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
+        services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
+        services.AddSingleton<IIndexProvider, OrderPaymentIndexProvider>();
 
         // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>

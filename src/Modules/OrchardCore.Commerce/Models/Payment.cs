@@ -4,11 +4,9 @@ using System;
 
 namespace OrchardCore.Commerce.Models;
 
-public class CreditCardPayment : IPayment
+public class Payment : IPayment
 {
-    public static readonly string CreditCardKind = "Credit Card";
-
-    public string Kind => CreditCardKind;
+    public string Kind { get; set; }
 
     public string TransactionId { get; set; }
 

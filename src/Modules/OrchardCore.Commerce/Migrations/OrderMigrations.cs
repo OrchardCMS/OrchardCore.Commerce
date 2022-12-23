@@ -1,4 +1,6 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Data;
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentFields.Fields;
@@ -10,6 +12,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
+using YesSql.Sql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 using static OrchardCore.Commerce.Constants.OrderStatuses;
 
@@ -45,10 +48,7 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The title of the order"))
                 .WithPart(nameof(HtmlBodyPart), part => part
                     .WithDisplayName("Annotations")
-                    .WithSettings(new ContentTypePartSettings
-                    {
-                        Editor = "Wysiwyg",
-                    })
+                    .WithSettings(new ContentTypePartSettings { Editor = "Wysiwyg", })
                 )
                 .WithPart(nameof(OrderPart)));
 
@@ -74,9 +74,7 @@ public class OrderMigrations : DataMigration
                             new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
                             new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
                         },
-
                         DefaultValue = Pending.HtmlClassify(),
-
                         Editor = EditorOption.Radio,
                     }))
                 .WithField(nameof(OrderPart.Email), field => field
@@ -98,9 +96,14 @@ public class OrderMigrations : DataMigration
                 .WithField(nameof(OrderPart.BillingAndShippingAddressesMatch), field => field
                     .OfType(nameof(BooleanField))
                     .WithDisplayName("Shipping Address and Billing Address are the same"))
-                );
+            );
 
-        return 3;
+        SchemaBuilder
+            .CreateMapIndexTable<OrderPaymentIndex>(table => table
+                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
+                .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
+
+        return 5;
     }
 
     public int UpdateFrom1()
@@ -116,10 +119,7 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The title of the order"))
                 .WithPart(nameof(HtmlBodyPart), part => part
                     .WithDisplayName("Annotations")
-                    .WithSettings(new ContentTypePartSettings
-                    {
-                        Editor = "Wysiwyg",
-                    })
+                    .WithSettings(new ContentTypePartSettings { Editor = "Wysiwyg", })
                 )
                 .WithPart(nameof(OrderPart)));
 
@@ -139,15 +139,13 @@ public class OrderMigrations : DataMigration
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
                         Options = new List<ListValueOption>
-                        {
-                            new() { Name = Ordered, Value = Ordered.HtmlClassify() },
-                            new() { Name = Shipped, Value = Shipped.HtmlClassify() },
-                            new() { Name = Arrived, Value = Arrived.HtmlClassify() },
-                        }
-                        .ToArray(),
-
+                            {
+                                new() { Name = Ordered, Value = Ordered.HtmlClassify() },
+                                new() { Name = Shipped, Value = Shipped.HtmlClassify() },
+                                new() { Name = Arrived, Value = Arrived.HtmlClassify() },
+                            }
+                            .ToArray(),
                         DefaultValue = Pending.HtmlClassify(),
-
                         Editor = EditorOption.Radio,
                     }))
                 .WithField(nameof(OrderPart.BillingAddress), field => field
@@ -158,7 +156,7 @@ public class OrderMigrations : DataMigration
                     .OfType(nameof(AddressField))
                     .WithDisplayName("Shipping Address")
                     .WithDescription("The address where the order should be shipped."))
-                );
+            );
 
         return 2;
     }
@@ -185,12 +183,10 @@ public class OrderMigrations : DataMigration
                             new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
                             new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
                         },
-
                         DefaultValue = Pending.HtmlClassify(),
-
                         Editor = EditorOption.Radio,
                     }))
-                );
+            );
 
         return 3;
     }
@@ -202,8 +198,18 @@ public class OrderMigrations : DataMigration
                 .WithField(nameof(OrderPart.BillingAndShippingAddressesMatch), field => field
                     .OfType(nameof(BooleanField))
                     .WithDisplayName("Shipping Address and Billing Address are the same"))
-                );
+            );
 
         return 4;
+    }
+
+    public int UpdateFrom4()
+    {
+        SchemaBuilder
+            .CreateMapIndexTable<OrderPaymentIndex>(table => table
+                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
+                .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
+
+        return 5;
     }
 }

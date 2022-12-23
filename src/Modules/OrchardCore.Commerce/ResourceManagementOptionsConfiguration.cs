@@ -16,10 +16,10 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     static ResourceManagementOptionsConfiguration()
     {
         _manifest
-            .DefineStyle(CreditCardForm)
+            .DefineStyle(PaymentForm)
             .SetUrl(
-                "~/OrchardCore.Commerce/css/credit-card-form.min.css",
-                "~/OrchardCore.Commerce/css/credit-card-form.css")
+                "~/OrchardCore.Commerce/css/payment-form.min.css",
+                "~/OrchardCore.Commerce/css/payment-form.css")
             .SetVersion("1.0.0");
 
         _manifest
@@ -52,10 +52,10 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
             .SetVersion("1.0.0");
 
         _manifest
-            .DefineScript(StripeCardForm)
+            .DefineScript(StripePaymentForm)
             .SetUrl(
-                "~/OrchardCore.Commerce/js/stripe-card-form.min.js",
-                "~/OrchardCore.Commerce/js/stripe-card-form.js")
+                "~/OrchardCore.Commerce/js/stripe-payment-form.min.js",
+                "~/OrchardCore.Commerce/js/stripe-payment-form.js")
             .SetVersion("1.0.0");
 
         _manifest
