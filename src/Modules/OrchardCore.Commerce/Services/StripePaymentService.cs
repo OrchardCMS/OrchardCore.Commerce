@@ -256,6 +256,16 @@ public class StripePaymentService : IStripePaymentService
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
 
+
+        // decrease inventory here using OrderPart's LineItems?
+        // Decrease inventories of purchased items.
+        //foreach (var item in currentShoppingCart.Items)
+        //{
+        //    var product = await _productService.GetProductAsync(item.ProductSku);
+        //    _productInventoryProvider.UpdateInventory(product, -item.Quantity);
+        //}
+
+
         if (string.IsNullOrEmpty(orderId))
         {
             await _contentManager.CreateAsync(order);

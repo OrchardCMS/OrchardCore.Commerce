@@ -1,8 +1,10 @@
+using AngleSharp.Css;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,12 +15,12 @@ namespace OrchardCore.Commerce.Services;
 /// <summary>
 /// A product inventory provider that updates inventories of shopping cart items which have an <c>InventoryPart</c>.
 /// </summary>
-public class ProductInventoryProvider : IProductInventoryProvider
+public class LocalInventoryProvider : IProductInventoryProvider
 {
     private readonly IProductService _productService;
     private readonly ISession _session;
 
-    public ProductInventoryProvider(IProductService productService, ISession session)
+    public LocalInventoryProvider(IProductService productService, ISession session)
     {
         _productService = productService;
         _session = session;
@@ -26,19 +28,12 @@ public class ProductInventoryProvider : IProductInventoryProvider
 
     public int Order => 0;
 
-    public async Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model)
-    {
-        var skuProducts = await _productService.GetSkuProductsAsync(model);
-
-        return model.All(item =>
-            skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
-            productPart.ContentItem.Has<InventoryPart>());
-    }
+    public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model) => Task.FromResult(true);
 
     public async Task<int> QueryInventoryAsync(string sku)
     {
         var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
-        return inventoryPart != null ? (int)inventoryPart.Inventory.Value : 0;
+        return inventoryPart?.Inventory.Value is { } inventory ? (int)inventory : 0;
     }
 
     public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
@@ -51,14 +46,19 @@ public class ProductInventoryProvider : IProductInventoryProvider
         return model;
     }
 
-    public void UpdateInventory(ProductPart productPart, int difference, bool reset = false)
+    // become private
+    private void UpdateInventory(ProductPart productPart, int difference)
     {
         var inventoryPart = productPart.As<InventoryPart>();
         if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
-        var newValue = reset ? difference : ((int)inventoryPart.Inventory.Value) + difference;
+        var newValue = ((int)inventoryPart.Inventory.Value) + difference;
+        if (newValue < 0)
+        {
+            throw new InvalidOperationException("Inventory value cannot be negative.");
+        }
 
-        inventoryPart.Inventory.Value = newValue > 0 ? newValue : 0;
+        inventoryPart.Inventory.Value = newValue;
         inventoryPart.Apply();
 
         _session.Save(productPart.ContentItem);
