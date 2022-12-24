@@ -14,7 +14,7 @@ public interface IShoppingCartPersistence
     Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null);
 
     /// <summary>
-    /// Saves a shopping card by a given ID.
+    /// Saves a shopping cart by a given ID.
     /// </summary>
     Task StoreAsync(ShoppingCart items, string shoppingCartId = null);
 

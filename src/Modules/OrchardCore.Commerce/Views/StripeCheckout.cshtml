@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Commerce.MoneyDataType
+@using OrchardCore.Mvc.Core.Utilities
 
 @{
     if (Model.DefaultTotal is not Amount defaultTotal)
@@ -8,21 +9,21 @@
     }
 
     string publishableKey = Model.PublishableKey ?? string.Empty;
+    string clientSecret = Model.ClientSecret ?? string.Empty;
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
 
-<input type="hidden" id="StripePaymentPart_PaymentMethodId_Text" name="StripePaymentPart.PaymentMethodId.Text">
-
 <h3>@T["Stripe Payment"]</h3>
 
 <fieldset>
-    <div class="row credit-card">
-        <div id="card-payment-form_card">@T["Stripe payment is not configured for this site."]</div>
+    <div class="row payment-intent">
+        <div id="payment-form_payment">@T["Stripe payment is not configured for this site."]</div>
     </div>
 </fieldset>
 
 <div class="pay-button-container">
+
     <button type="submit" class="pay-button btn btn-success justify-content-center">
         <span class="pay-text"> @T["Pay {0}", defaultTotal]</span>
         <div class="payment-processing-container" hidden>
@@ -38,13 +39,15 @@
 @if (!string.IsNullOrEmpty(publishableKey))
 {
     <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
-    <script at="Head" asp-name="@ResourceNames.StripeCardForm"></script>
-    <script at="Foot" depends-on="StripeJs,StripeCardForm">
-        stripeCardForm(
+    <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
+    <script at="Foot" depends-on="StripeJs,StripePaymentForm">
+        stripePaymentForm(
             Stripe(@publishableKey.JsonHtmlContent()),
+            @clientSecret.JsonHtmlContent(),
+            @Url.GetBaseUrl().JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-            @T["There was an error during fetching!"].Json(),
+            @T["There was an error during confirming the payment, please try again!"].Json(),
             @T["A value is required for %LABEL%."].Json());
     </script>
 }
