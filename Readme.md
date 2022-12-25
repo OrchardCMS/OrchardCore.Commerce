@@ -64,11 +64,11 @@ You can obtain your own test keys from the Stripe dashboard. You can find them a
 
 ### Webhook signing key
 
-It is not needed, but recommended to use webhook also. Otherwise, if there is a problem with redirecting the user, the payment confirmation will fail. 
+It is not needed, but recommended to use webhook also. Otherwise, if there is a problem with redirecting the user, the payment confirmation will fail.
 
 There is no publicly available webhook signing key. Use your own API keys and Webhook key. Create your own at _Dashboard → Developers → Webhooks_.
 
-Read about webhook status codes [here](https://stripe.com/docs/webhooks/best-practices#pending-webhook-statuses). Our webhook endpoint returns _200_ if the request was received without an exception. It does not mean that it has been processed. It returns _400_ if there was an exception inside the webhook controller. Everything else comes from Stripe itself. 
+Read about webhook status codes [here](https://stripe.com/docs/webhooks/best-practices#pending-webhook-statuses). Our webhook endpoint returns _200_ if the request was received without an exception. It does not mean that it has been processed. It returns _400_ if there was an exception inside the webhook controller. Everything else comes from Stripe itself.
 
 #### Webhook local testing
 
