@@ -56,10 +56,28 @@ Stripe API uses a secret-publishable key pair. The following API keys are public
 
 - Publishable key: `pk_test_51H59owJmQoVhz82aWAoi9M5s8PC6sSAqFI7KfAD2NRKun5riDIOM0dvu2caM25a5f5JbYLMc5Umxw8Dl7dBIDNwM00yVbSX8uS`
 - Secret key: `sk_test_51H59owJmQoVhz82aOUNOuCVbK0u1zjyRFKkFp9EfrqzWaUWqQni3oSxljsdTIu2YZ9XvlbeGjZRU7B7ye2EjJQE000Dm2DtMWD`
+- Webhook signing key: `whsec_453d1046fc31377b7a93...`
 
-**These are just test keys. Don’t submit any personally identifiable information in requests made with this key.**
+**Publishable and secret keys are just publicly available test keys. Don’t submit any personally identifiable information in requests made with this key.**
 
-The Stripe API key pair can be set inside _Dashboard → Settings → Stripe API_.
+You can obtain your own test keys from the Stripe dashboard. You can find them at _Dashboard → Developers → API keys_.
+
+### Webhook signing key
+
+It is not needed, but recommended to use webhook also. Otherwise, if there is a problem with redirecting the user, the payment confirmation will fail. 
+
+There is no publicly available webhook signing key. Use your own API keys and Webhook key. Create your own at _Dashboard → Developers → Webhooks_.
+
+Read about webhook status codes [here](https://stripe.com/docs/webhooks/best-practices#pending-webhook-statuses). Our webhook endpoint returns _200_ if the request was received without an exception. It does not mean that it has been processed. It returns _400_ if there was an exception inside the webhook controller. Everything else comes from Stripe itself. 
+
+#### Webhook local testing
+
+1. Use/Install [Stripe CLI](https://stripe.com/docs/stripe-cli).
+2. Login to your stripe account: `stripe login`
+3. Set the endpoint for listening e.g: `stripe listen --forward-to https://localhost:5001/stripe-webhook`
+4. Copy and save the webhook key on the _/Admin/Settings/StripeApi_ page.
+5. Test the payment.
+
 
 ### Cards
 
