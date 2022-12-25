@@ -78,7 +78,6 @@ Read about webhook status codes [here](https://stripe.com/docs/webhooks/best-pra
 4. Copy and save the webhook key on the _/Admin/Settings/StripeApi_ page.
 5. Test the payment.
 
-
 ### Cards
 
 There are available test cards that can be found in [Stripe's documentation](https://stripe.com/docs/testing).
