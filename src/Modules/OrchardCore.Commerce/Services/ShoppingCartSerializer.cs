@@ -95,7 +95,6 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
     {
         var product = await _productService.GetProductAsync(line.ProductSku);
-
         if (product is null) return null;
         var type = GetTypeDefinition(product);
         var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
