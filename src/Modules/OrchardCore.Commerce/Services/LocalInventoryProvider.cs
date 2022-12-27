@@ -1,12 +1,9 @@
-using AngleSharp.Css;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 
@@ -40,13 +37,13 @@ public class LocalInventoryProvider : IProductInventoryProvider
     {
         foreach (var item in model)
         {
-            UpdateInventory(await _productService.GetProductAsync(item.ProductSku), item.Quantity);
+            UpdateInventory(await _productService.GetProductAsync(item.ProductSku), -item.Quantity);
         }
 
         return model;
     }
 
-    // become private
+    // make atomic
     private void UpdateInventory(ProductPart productPart, int difference)
     {
         var inventoryPart = productPart.As<InventoryPart>();

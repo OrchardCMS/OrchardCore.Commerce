@@ -1,7 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -19,15 +18,7 @@ public class ProductInventoryService : IProductInventoryService
 
     public async Task<IList<ShoppingCartItem>> UpdateInventoriesAsync(IList<ShoppingCartItem> items)
     {
-        var providers = await _productInventoryProviders
-            .OrderBy(provider => provider.Order)
-            .WhereAsync(provider => provider.IsApplicableAsync(items));
-
-        foreach (var productInventoryProvider in providers)
-        {
-            var result = await productInventoryProvider.UpdateAsync(items);
-            items = result.AsList();
-        }
+        await _productInventoryProviders.UpdateWithFirstApplicableProviderAsync(items);
 
         return items;
     }

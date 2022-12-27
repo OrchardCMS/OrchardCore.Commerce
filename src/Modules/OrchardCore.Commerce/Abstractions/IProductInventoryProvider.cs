@@ -13,10 +13,4 @@ public interface IProductInventoryProvider : ISortableUpdaterProvider<IList<Shop
     /// Returns the current inventory count.
     /// </summary>
     Task<int> QueryInventoryAsync(string sku);
-
-    ///// <summary>
-    ///// Updates the inventory of a product based on the provided parameters.
-    ///// </summary>
-    ///// <param name="difference">The value to add to or subtract from the inventory.</param>
-    //void UpdateInventory(ProductPart productPart, int difference);
 }
