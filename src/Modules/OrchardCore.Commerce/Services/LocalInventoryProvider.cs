@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using YesSql;
 
@@ -16,6 +17,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
 {
     private readonly IProductService _productService;
     private readonly ISession _session;
+    private readonly SemaphoreSlim _lock = new(initialCount: 1);
 
     public LocalInventoryProvider(IProductService productService, ISession session)
     {
@@ -37,27 +39,35 @@ public class LocalInventoryProvider : IProductInventoryProvider
     {
         foreach (var item in model)
         {
-            UpdateInventory(await _productService.GetProductAsync(item.ProductSku), -item.Quantity);
+            await UpdateInventoryAsync(await _productService.GetProductAsync(item.ProductSku), -item.Quantity);
         }
 
         return model;
     }
 
-    // make atomic
-    private void UpdateInventory(ProductPart productPart, int difference)
+    private async Task UpdateInventoryAsync(ProductPart productPart, int difference)
     {
-        var inventoryPart = productPart.As<InventoryPart>();
-        if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
+        await _lock.WaitAsync();
 
-        var newValue = ((int)inventoryPart.Inventory.Value) + difference;
-        if (newValue < 0)
+        try
         {
-            throw new InvalidOperationException("Inventory value cannot be negative.");
+            var inventoryPart = productPart.As<InventoryPart>();
+            if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
+
+            var newValue = ((int)inventoryPart.Inventory.Value) + difference;
+            if (newValue < 0)
+            {
+                throw new InvalidOperationException("Inventory value cannot be negative.");
+            }
+
+            inventoryPart.Inventory.Value = newValue;
+            inventoryPart.Apply();
+
+            _session.Save(productPart.ContentItem);
         }
-
-        inventoryPart.Inventory.Value = newValue;
-        inventoryPart.Apply();
-
-        _session.Save(productPart.ContentItem);
+        finally
+        {
+            _lock.Release();
+        }
     }
 }
