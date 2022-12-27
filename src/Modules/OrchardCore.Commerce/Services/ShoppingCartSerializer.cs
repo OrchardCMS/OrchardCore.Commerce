@@ -19,19 +19,17 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IMoneyService _moneyService;
     private readonly IProductService _productService;
-    private readonly IProductInventoryService _productInventoryService;
+
     public ShoppingCartSerializer(
         IEnumerable<IProductAttributeProvider> attributeProviders,
         IContentDefinitionManager contentDefinitionManager,
         IMoneyService moneyService,
-        IProductService productService,
-        IProductInventoryService productInventoryService)
+        IProductService productService)
     {
         _attributeProviders = attributeProviders;
         _contentDefinitionManager = contentDefinitionManager;
         _moneyService = moneyService;
         _productService = productService;
-        _productInventoryService = productInventoryService;
     }
 
     public Task<string> SerializeAsync(ShoppingCart cart) => Task.FromResult(JsonSerializer.Serialize(cart));
@@ -97,16 +95,6 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
     {
         var product = await _productService.GetProductAsync(line.ProductSku);
-
-        //// test cases only
-        //var inventoryCount = await _productInventoryService.QueryInventoryAsync(line.ProductSku);
-        //var isAvailable = await _productInventoryService.IsAvailableAsync(line.ProductSku);
-
-        //var productPart = await _productService.GetProductAsync(line.ProductSku);
-        //_productInventoryService.UpdateInventory(productPart, 5, reset: true);
-
-        //var inventoryCountAfterUpdate = await _productInventoryService.QueryInventoryAsync(line.ProductSku);
-        //var isAvailableAfterUpdate = await _productInventoryService.IsAvailableAsync(line.ProductSku);
 
         if (product is null) return null;
         var type = GetTypeDefinition(product);
