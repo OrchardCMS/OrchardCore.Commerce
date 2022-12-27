@@ -199,6 +199,12 @@ public class PaymentController : Controller
     [HttpGet("checkout/middleware")]
     public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
     {
+        // If it is null it means the session was not loaded yet and a redirect is needed.
+        if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
+        {
+            return View();
+        }
+
         var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
         var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId;
 
