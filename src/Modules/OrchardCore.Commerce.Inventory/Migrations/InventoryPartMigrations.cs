@@ -47,14 +47,14 @@ public class InventoryPartMigrations : DataMigration
                     })
                 )
                 .WithField(part => part.MaximumOrderQuantity, field => field
-                    .WithDisplayName("Maximum Order Quality")
+                    .WithDisplayName("Maximum Order Quantity")
                     .WithSettings(new NumericFieldSettings
                     {
                         Hint = "The maximum number of this item one can order. Ignored if set to zero or a negative value.",
                     })
                 )
                 .WithField(part => part.MinimumOrderQuantity, field => field
-                    .WithDisplayName("Minimum Order Quality")
+                    .WithDisplayName("Minimum Order Quantity")
                     .WithSettings(new NumericFieldSettings
                     {
                         Hint = "The minimum number of this item one can order. Ignored if set to zero or a negative value.",
