@@ -50,26 +50,6 @@ public static class SortableUpdaterProviderExtensions
     }
 
     /// <summary>
-    /// Selects the first provider of the type specified in <typeparamref name="TProvider"/> where
-    /// <see cref="ISortableUpdaterProvider{TModel}.IsApplicableAsync"/> evaluates to <see langword="true"/>.
-    /// </summary>
-    public static async Task<TProvider> GetFirstApplicableProviderAsync<TModel, TProvider>(
-        this IEnumerable<ISortableUpdaterProvider<TModel>> providers,
-        TModel model)
-        where TProvider : ISortableUpdaterProvider<TModel>
-    {
-        foreach (var provider in providers.OrderBy(provider => provider.Order))
-        {
-            if (provider is TProvider castedProvider && await provider.IsApplicableAsync(model))
-            {
-                return castedProvider;
-            }
-        }
-
-        return default;
-    }
-
-    /// <summary>
     /// Selects the first provider where <see cref="ISortableUpdaterProvider{TModel}.IsApplicableAsync"/> evaluates to
     /// <see langword="true"/>, then calls <see cref="ISortableUpdaterProvider{TModel}.UpdateAsync"/> and returns the
     /// result. If none of the providers are applicable, it returns the provided <paramref name="model"/>.

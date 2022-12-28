@@ -37,7 +37,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly RequestOptions _requestOptions;
     private readonly string _siteName;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
-    private readonly IEnumerable<IProductInventoryProvider> _productInventoryProviders;
+    private readonly IProductInventoryService _productInventoryService;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -54,7 +54,7 @@ public class StripePaymentService : IStripePaymentService
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
         IContentItemDisplayManager contentItemDisplayManager,
-        IEnumerable<IProductInventoryProvider> productInventoryProviders)
+        IProductInventoryService productInventoryService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -65,7 +65,7 @@ public class StripePaymentService : IStripePaymentService
         _contentManager = contentManager;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
-        _productInventoryProviders = productInventoryProviders;
+        _productInventoryService = productInventoryService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
 
@@ -258,7 +258,7 @@ public class StripePaymentService : IStripePaymentService
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
 
         // Decrease inventories of purchased items.
-        await _productInventoryProviders.UpdateWithFirstApplicableProviderAsync(currentShoppingCart.Items);
+        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
 
         if (string.IsNullOrEmpty(orderId))
         {

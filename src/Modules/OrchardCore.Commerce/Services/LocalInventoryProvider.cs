@@ -17,7 +17,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
 {
     private readonly IProductService _productService;
     private readonly ISession _session;
-    private readonly SemaphoreSlim _lock = new(initialCount: 1);
+    private static readonly SemaphoreSlim _lock = new(initialCount: 1);
 
     public LocalInventoryProvider(IProductService productService, ISession session)
     {
