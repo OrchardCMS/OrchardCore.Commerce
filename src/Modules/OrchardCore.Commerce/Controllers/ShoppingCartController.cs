@@ -119,7 +119,6 @@ public class ShoppingCartController : Controller
     {
         var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
 
-        // call verifying event here and return if something's wrong?
         var verificationResults = new List<bool>();
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {

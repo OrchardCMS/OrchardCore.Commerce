@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Events;
 
 public abstract class ShoppingCartEventsBase : IShoppingCartEvents
 {
