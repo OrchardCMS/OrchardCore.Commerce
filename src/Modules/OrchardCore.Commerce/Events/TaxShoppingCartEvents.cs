@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Events;
 
-public class TaxShoppingCartEvents : IShoppingCartEvents
+public class TaxShoppingCartEvents : ShoppingCartEventsBase
 {
     private readonly IHtmlLocalizer<TaxShoppingCartEvents> H;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
 
-    public int Order => 0;
+    public override int Order => 0;
 
     public TaxShoppingCartEvents(
         IHtmlLocalizer<TaxShoppingCartEvents> htmlLocalizer,
@@ -25,7 +25,7 @@ public class TaxShoppingCartEvents : IShoppingCartEvents
         _taxProviders = taxProviders;
     }
 
-    public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
+    public override async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines)

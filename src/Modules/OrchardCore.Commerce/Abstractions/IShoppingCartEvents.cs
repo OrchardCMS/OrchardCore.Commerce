@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ public interface IShoppingCartEvents
     int Order { get; }
 
     /// <summary>
-    /// Invoked after the shopping card data is prepared, but before the shapes are rendered.
+    /// Invoked after the shopping cart data is prepared, but before the shapes are rendered.
     /// </summary>
     /// <param name="totals">The line items grouped by currency and summed up.</param>
     /// <param name="headers">The column headers of the line items table.</param>
@@ -28,4 +29,6 @@ public interface IShoppingCartEvents
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines);
+
+    Task<bool> VerifyingItemAsync(ShoppingCartItem item);
 }

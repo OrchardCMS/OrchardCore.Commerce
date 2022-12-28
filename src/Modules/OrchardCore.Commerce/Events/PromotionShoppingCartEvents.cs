@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Events;
 
-public class PromotionShoppingCartEvents : IShoppingCartEvents
+public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 {
     private readonly IHtmlLocalizer<PromotionShoppingCartEvents> H;
     private readonly IPromotionService _promotionService;
 
     // Promotions should be applied after taxes.
-    public int Order => int.MaxValue;
+    public override int Order => int.MaxValue;
 
     public PromotionShoppingCartEvents(
         IHtmlLocalizer<PromotionShoppingCartEvents> htmlLocalizer,
@@ -27,7 +27,7 @@ public class PromotionShoppingCartEvents : IShoppingCartEvents
         _promotionService = promotionService;
     }
 
-    public async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
+    public override async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines)

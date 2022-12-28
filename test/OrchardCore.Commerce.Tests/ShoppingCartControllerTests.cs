@@ -221,5 +221,6 @@ public class ShoppingCartControllerTests
                 moneyService: new TestMoneyService(),
                 productService: new FakeProductService()),
             workflowManager: null,
-            shapeFactory: null);
+            shapeFactory: null,
+            shoppingCartEvents: null);
 }

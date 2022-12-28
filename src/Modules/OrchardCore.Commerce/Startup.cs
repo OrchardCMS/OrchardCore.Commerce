@@ -121,6 +121,7 @@ public class Startup : StartupBase
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
+        services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()

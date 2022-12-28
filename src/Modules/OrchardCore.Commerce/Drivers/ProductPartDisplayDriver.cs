@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -54,6 +56,12 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         model.ContentItem = part.ContentItem;
         model.Sku = part.Sku;
         model.ProductPart = part;
+
+        var inventoryPart = part.As<InventoryPart>();
+        if (!inventoryPart.AllowsBackOrder.Value && inventoryPart.Inventory.Value < 1)
+        {
+            model.CanBeBought = false;
+        }
 
         model.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
     }
