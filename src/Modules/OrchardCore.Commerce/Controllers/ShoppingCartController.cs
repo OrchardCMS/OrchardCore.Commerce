@@ -127,7 +127,7 @@ public class ShoppingCartController : Controller
 
         if (verificationResults.Any(result => !result))
         {
-            // add error too via _notifier?
+            await _notifier.ErrorAsync(H["Could not add item to cart due to invalid inventory operation."]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
 
