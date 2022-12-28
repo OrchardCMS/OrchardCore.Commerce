@@ -30,5 +30,8 @@ public interface IShoppingCartEvents
         IList<LocalizedHtmlString> headers,
         IList<ShoppingCartLineViewModel> lines);
 
+    /// <summary>
+    /// Invoked before an item is added to the shopping cart to check whether it can be added.
+    /// </summary>
     Task<bool> VerifyingItemAsync(ShoppingCartItem item);
 }
