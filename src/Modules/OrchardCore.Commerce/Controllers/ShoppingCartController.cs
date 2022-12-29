@@ -119,14 +119,10 @@ public class ShoppingCartController : Controller
     {
         var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
 
-        var verificationResults = new List<bool>();
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
-            verificationResults.Add(await shoppingCartEvent.VerifyingItemAsync(parsedLine));
-        }
+            if (await shoppingCartEvent.VerifyingItemAsync(parsedLine)) continue;
 
-        if (verificationResults.Any(result => !result))
-        {
             await _notifier.ErrorAsync(H["Could not add item to cart due to invalid inventory operation."]);
             return RedirectToAction(nameof(Index), new { shoppingCartId });
         }
