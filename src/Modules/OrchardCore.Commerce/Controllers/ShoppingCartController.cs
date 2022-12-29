@@ -26,6 +26,7 @@ public class ShoppingCartController : Controller
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
     private readonly IHtmlLocalizer<ShoppingCartController> H;
+    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 
     [SuppressMessage(
         "Major Code Smell",
@@ -39,7 +40,8 @@ public class ShoppingCartController : Controller
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IWorkflowManager workflowManager)
+        IWorkflowManager workflowManager,
+        IEnumerable<IShoppingCartEvents> shoppingCartEvents)
     {
         _notifier = notifier;
         _priceService = priceService;
@@ -48,6 +50,7 @@ public class ShoppingCartController : Controller
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
+        _shoppingCartEvents = shoppingCartEvents;
         H = services.HtmlLocalizer.Value;
     }
 
@@ -115,6 +118,14 @@ public class ShoppingCartController : Controller
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
         var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
+
+        foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
+        {
+            if (await shoppingCartEvent.VerifyingItemAsync(parsedLine) is not { } errorMessage) continue;
+
+            await _notifier.ErrorAsync(errorMessage);
+            return RedirectToAction(nameof(Index), new { shoppingCartId });
+        }
 
         if (await ShoppingCartItem.GetErrorAsync(line.ProductSku, parsedLine, H, _priceService) is { } error)
         {

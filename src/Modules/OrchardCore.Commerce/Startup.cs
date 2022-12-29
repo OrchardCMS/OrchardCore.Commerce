@@ -62,6 +62,9 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, ProductMigrations>();
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductInventoryService, ProductInventoryService>();
+        services.AddScoped<IProductInventoryProvider, LocalInventoryProvider>();
+
         services.AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>()
             .AddHandler<SkuValidationHandler>();
@@ -118,6 +121,7 @@ public class Startup : StartupBase
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
+        services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()

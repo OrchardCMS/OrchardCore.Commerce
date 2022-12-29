@@ -37,6 +37,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly RequestOptions _requestOptions;
     private readonly string _siteName;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IProductInventoryService _productInventoryService;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -52,7 +53,8 @@ public class StripePaymentService : IStripePaymentService
         IStringLocalizer<StripePaymentService> stringLocalizer,
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IContentItemDisplayManager contentItemDisplayManager)
+        IContentItemDisplayManager contentItemDisplayManager,
+        IProductInventoryService productInventoryService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -63,6 +65,7 @@ public class StripePaymentService : IStripePaymentService
         _contentManager = contentManager;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
+        _productInventoryService = productInventoryService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
 
@@ -160,9 +163,7 @@ public class StripePaymentService : IStripePaymentService
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
         var order = await _contentManager.GetAsync(orderId);
         order.Alter<OrderPart>(orderPart =>
-        {
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.PaymentFailed.HtmlClassify() };
-        });
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.PaymentFailed.HtmlClassify() });
 
         await _contentManager.UpdateAsync(order);
     }
@@ -255,6 +256,9 @@ public class StripePaymentService : IStripePaymentService
         });
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
+
+        // Decrease inventories of purchased items.
+        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
 
         if (string.IsNullOrEmpty(orderId))
         {

@@ -1,0 +1,11 @@
+@{
+    if (Model.Part.Inventory.Value is not decimal inventory || inventory > 0) { return; }
+
+    var html = Model.Part.OutOfStockMessage.Html is string htmlString && !string.IsNullOrWhiteSpace(htmlString)
+        ? htmlString
+        : T["Out of Stock"].Value;
+}
+
+<div class="pb-3 field field-type-htmlfield field-name-inventory-part-out-of-stock-message">
+    <strong class="field-name-inventory-part-out-of-stock-message-title">@Html.Raw(html)</strong>
+</div>

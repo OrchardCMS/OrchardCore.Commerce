@@ -106,6 +106,15 @@
               }
             },
             {
+              "PartName": "InventoryPart",
+              "Name": "InventoryPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "7"
+                }
+              }
+            },
+            {
               "PartName": "Product",
               "Name": "Product",
               "Settings": {

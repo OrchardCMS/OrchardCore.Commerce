@@ -6,13 +6,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Title>Orchard Core Commerce</Title>
+    <Title>Orchard Core Commerce - Inventory</Title>
     <Authors>Bertrand Le Roy</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
-    <Description>The commerce module for Orchard Core.</Description>
-    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce</PackageTags>
+    <Description>Inventory management for Orchard Core Commerce</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Inventory</PackageTags>
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/src/Modules/OrchardCore.Commerce.Inventory/Readme.md</PackageProjectUrl>
     <PackageLicenseFile>License.md</PackageLicenseFile>
   </PropertyGroup>
 
@@ -22,30 +22,15 @@
 
   <ItemGroup>
     <None Include="License.md" Pack="true" PackagePath="" />
-    <None Include="..\..\..\Readme.md" />
+    <None Include="Readme.md" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.occ-15.3" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.5.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.Html" Version="1.5.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.Navigation.Core" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.Title" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.Templates" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.5.0" />
-    <PackageReference Include="Stripe.net" Version="40.4.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj" />
-    <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
-    <ProjectReference Include="..\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj" />
-    <ProjectReference Include="..\OrchardCore.Commerce.Inventory\OrchardCore.Commerce.Inventory.csproj" />
-  </ItemGroup>
-
+  
   <PropertyGroup>
     <LombiqHelpfulLibrariesPath>..\..\..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
   </PropertyGroup>
