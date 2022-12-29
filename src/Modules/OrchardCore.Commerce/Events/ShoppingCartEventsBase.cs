@@ -16,5 +16,6 @@ public abstract class ShoppingCartEventsBase : IShoppingCartEvents
         IList<Amount> totals, IList<LocalizedHtmlString> headers, IList<ShoppingCartLineViewModel> lines) =>
             Task.FromResult((totals, headers, lines));
 
-    public virtual Task<bool> VerifyingItemAsync(ShoppingCartItem item) => Task.FromResult(true);
+    public virtual Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item) =>
+        Task.FromResult<LocalizedHtmlString>(null);
 }

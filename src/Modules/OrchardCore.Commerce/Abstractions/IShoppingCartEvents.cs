@@ -33,5 +33,5 @@ public interface IShoppingCartEvents
     /// <summary>
     /// Invoked before an item is added to the shopping cart to check whether it can be added based on inventory status.
     /// </summary>
-    Task<bool> VerifyingItemAsync(ShoppingCartItem item);
+    Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item);
 }
