@@ -28,10 +28,11 @@ public interface IShoppingCartEvents
     Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
         IList<Amount> totals,
         IList<LocalizedHtmlString> headers,
-        IList<ShoppingCartLineViewModel> lines);
+        IList<ShoppingCartLineViewModel> lines) =>
+        Task.FromResult((totals, headers, lines));
 
     /// <summary>
     /// Invoked before an item is added to the shopping cart to check whether it can be added based on inventory status.
     /// </summary>
-    Task<bool> VerifyingItemAsync(ShoppingCartItem item);
+    Task<bool> VerifyingItemAsync(ShoppingCartItem item) => Task.FromResult(true);
 }
