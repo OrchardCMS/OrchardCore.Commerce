@@ -16,7 +16,11 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
 
     public override async Task<bool> VerifyingItemAsync(ShoppingCartItem item)
     {
-        var inventoryPart = (await _productService.GetProductAsync(item.ProductSku)).As<InventoryPart>();
+        // If the product doesn't have InventoryPart then this event is not applicable.
+        if ((await _productService.GetProductAsync(item.ProductSku)).As<InventoryPart>() is not { } inventoryPart)
+        {
+            return true;
+        }
 
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.
         if (!inventoryPart.AllowsBackOrder.Value && item.Quantity > inventoryPart.Inventory.Value)

@@ -57,8 +57,9 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         model.Sku = part.Sku;
         model.ProductPart = part;
 
-        var inventoryPart = part.As<InventoryPart>();
-        if (!inventoryPart.AllowsBackOrder.Value && inventoryPart.Inventory.Value < 1)
+        if (part.As<InventoryPart>() is { } inventoryPart &&
+            !inventoryPart.AllowsBackOrder.Value &&
+            inventoryPart.Inventory.Value < 1)
         {
             model.CanBeBought = false;
         }
