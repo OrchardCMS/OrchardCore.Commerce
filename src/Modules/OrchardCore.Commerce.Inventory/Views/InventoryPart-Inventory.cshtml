@@ -1,0 +1,11 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@model OrchardCore.ContentFields.ViewModels.DisplayNumericFieldViewModel
+
+@if (Model.Value is { } value)
+{
+    <div class="pb-3 field field-type-numericfield field-name-inventory-part-inventory">
+        <strong class="field-name-inventory-part-inventory-title">@Model.PartFieldDefinition.DisplayName():</strong>
+        @T["{0}", value]
+    </div>
+}

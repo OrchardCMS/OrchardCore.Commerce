@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Services;
 
 /// <summary>
-/// A simple price provider that obtains a price from a product by looking for a `PricePart`.
+/// A simple price provider that obtains a price from a product by looking for a <c>PricePart</c>.
 /// </summary>
 public class PriceProvider : IPriceProvider
 {

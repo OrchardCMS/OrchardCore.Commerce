@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -14,10 +15,9 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
@@ -40,24 +40,26 @@ public class PaymentController : Controller
 
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ICardPaymentService _cardPaymentService;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IStripePaymentService _stripePaymentService;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
-    private readonly ILogger _logger;
+    private readonly ILogger<PaymentController> _logger;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
+    private readonly IHtmlLocalizer<PaymentController> H;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
+    private readonly IPaymentIntentPersistence _paymentIntentPersistence;
+    private readonly IShoppingCartPersistence _shoppingCartPersistence;
+    private readonly INotifier _notifier;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentController(
-        ICardPaymentService cardPaymentService,
-        IContentItemDisplayManager contentItemDisplayManager,
+        IStripePaymentService stripePaymentService,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentController> services,
         IShoppingCartHelpers shoppingCartHelpers,
@@ -65,12 +67,14 @@ public class PaymentController : Controller
         IUpdateModelAccessor updateModelAccessor,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
-        IEnumerable<IWorkflowManager> workflowManagers)
+        IEnumerable<IWorkflowManager> workflowManagers,
+        IPaymentIntentPersistence paymentIntentPersistence,
+        IShoppingCartPersistence shoppingCartPersistence,
+        INotifier notifier)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
-        _cardPaymentService = cardPaymentService;
-        _contentItemDisplayManager = contentItemDisplayManager;
+        _stripePaymentService = stripePaymentService;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
@@ -82,6 +86,10 @@ public class PaymentController : Controller
         _userServiceLazy = userServiceLazy;
         _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
+        H = services.HtmlLocalizer.Value;
+        _paymentIntentPersistence = paymentIntentPersistence;
+        _shoppingCartPersistence = shoppingCartPersistence;
+        _notifier = notifier;
     }
 
     [Route("checkout")]
@@ -110,7 +118,9 @@ public class PaymentController : Controller
             orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
         }
 
-        var email = isAuthenticated ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User)) : string.Empty;
+        var email = isAuthenticated
+            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
+            : string.Empty;
 
         orderPart.Email.Text = email;
         orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
@@ -123,6 +133,15 @@ public class PaymentController : Controller
                 "Checkout"))
             .ToList();
 
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var initPaymentIntent = new PaymentIntent();
+        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
+            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
+        {
+            var paymentIntentId = _paymentIntentPersistence.Retrieve();
+            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
+        }
+
         var checkoutViewModel = new CheckoutViewModel
         {
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
@@ -131,6 +150,7 @@ public class PaymentController : Controller
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
+            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
         };
 
         foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
@@ -147,10 +167,11 @@ public class PaymentController : Controller
     {
         try
         {
-            var order = await _contentManager.NewAsync(Order);
-            await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
-            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
+            var paymentIntent = _paymentIntentPersistence.Retrieve();
+            var paymentIntentInstance = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
+            await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(paymentIntentInstance, _updateModelAccessor);
 
+            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
             return Json(new { Errors = errors });
         }
         catch (Exception exception)
@@ -158,8 +179,8 @@ public class PaymentController : Controller
             _logger.LogError(exception, FormValidationExceptionMessage);
 
             var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
-                    ? exception.ToString()
-                    : FormValidationExceptionMessage;
+                ? exception.ToString()
+                : FormValidationExceptionMessage;
 
             return Json(new { Errors = new[] { errorMessage } });
         }
@@ -174,24 +195,62 @@ public class PaymentController : Controller
         return View(order);
     }
 
-    [Route("success/{orderId}")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SuccessPost(string orderId)
+    [AllowAnonymous]
+    [HttpGet("checkout/middleware")]
+    public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
     {
-        if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
-
-        await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
-        if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
+        // If it is null it means the session was not loaded yet and a redirect is needed.
+        if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
         {
-            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
-            _logger.LogError(
-                "The payment has been successful, but the order is invalid. Validation errors: {ValidationErrors}",
-                string.Join(", ", errors));
-
-            return Forbid();
+            return View();
         }
 
+        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
+        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId;
+
+        var order = await _contentManager.GetAsync(orderId);
+        var status = order?.As<OrderPart>()?.Status?.Text;
+        var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
+        var finished = succeeded &&
+                       order != null &&
+                       status == OrderStatuses.Ordered.HtmlClassify();
+
+        if (succeeded && status == OrderStatuses.Pending.HtmlClassify())
+        {
+            await _stripePaymentService.UpdateOrderToOrderedAsync(fetchedPaymentIntent);
+            finished = true;
+        }
+
+        if (finished)
+        {
+            await FinalModificationAsync(order);
+
+            return RedirectToAction(nameof(Success), new { orderId });
+        }
+
+        var errorMessage = H["The payment failed please try again."];
+        if (status == OrderStatuses.PaymentFailed.HtmlClassify())
+        {
+            await _notifier.ErrorAsync(errorMessage);
+            return RedirectToAction(nameof(Index));
+        }
+
+        order.Alter<StripePaymentPart>(part => part.RetryCounter++);
+        await _contentManager.UpdateAsync(order);
+
+        if (order.As<StripePaymentPart>().RetryCounter <= 10)
+        {
+            return View();
+        }
+
+        // Delete payment intent from session, to create a new one.
+        _paymentIntentPersistence.Store(string.Empty);
+        await _notifier.ErrorAsync(errorMessage);
+        return RedirectToAction(nameof(Index));
+    }
+
+    private async Task FinalModificationAsync(ContentItem order)
+    {
         // Saving addresses.
         var userService = _userServiceLazy.Value;
         var orderPart = order.As<OrderPart>();
@@ -212,9 +271,6 @@ public class PaymentController : Controller
             });
         }
 
-        order.Alter<OrderPart>(part => part.Status =
-            new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() });
-
         order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
 
         await _contentManager.UpdateAsync(order);
@@ -224,57 +280,13 @@ public class PaymentController : Controller
             await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
         }
 
-        return Redirect($"~/success/{order.ContentItemId}");
-    }
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        currentShoppingCart?.Items?.Clear();
 
-    [Route("pay")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Pay(string paymentMethodId, string paymentIntentId)
-    {
-        PaymentIntent paymentIntent;
+        // Shopping cart ID is null by default currently.
+        await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
 
-        try
-        {
-            paymentIntent = await _cardPaymentService.CreatePaymentAsync(paymentMethodId, paymentIntentId);
-        }
-        catch (StripeException exception)
-        {
-            return Json(new { error = exception.StripeError.Message });
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError(exception, "Payment processing failed.");
-            var message = T["An error has occurred while processing the payment. Please verify and try again."];
-            return Json(new { error = message.Value });
-        }
-
-        return await GeneratePaymentResponseAsync(paymentIntent);
-    }
-
-    private async Task<IActionResult> GeneratePaymentResponseAsync(PaymentIntent paymentIntent)
-    {
-        if (paymentIntent.Status == "requires_action" &&
-            paymentIntent.NextAction.Type == "use_stripe_sdk")
-        {
-            // Tell the client to handle the action.
-            return Json(new
-            {
-                requires_action = true,
-                payment_intent_client_secret = paymentIntent.ClientSecret,
-            });
-        }
-
-        if (paymentIntent.Status == "succeeded")
-        {
-            // The payment didn’t need any additional actions and completed!
-            // Create the order content item.
-            var order = await _cardPaymentService.CreateOrderFromShoppingCartAsync(paymentIntent);
-
-            return Json(new { Success = true, OrderContentItemId = order.ContentItemId });
-        }
-
-        // Invalid status.
-        return StatusCode(StatusCodes.Status500InternalServerError, new { error = T["Invalid PaymentIntent status"].Value });
+        // Set back to default, because a new payment intent should be created on the next checkout.
+        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
     }
 }

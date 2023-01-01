@@ -19,6 +19,7 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IMoneyService _moneyService;
     private readonly IProductService _productService;
+
     public ShoppingCartSerializer(
         IEnumerable<IProductAttributeProvider> attributeProviders,
         IContentDefinitionManager contentDefinitionManager,

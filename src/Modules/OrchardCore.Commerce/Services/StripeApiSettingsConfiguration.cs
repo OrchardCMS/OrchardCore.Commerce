@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -35,6 +34,6 @@ public class StripeApiSettingsConfiguration : IConfigureOptions<StripeApiSetting
         options.PublishableKey = settings.PublishableKey;
 
         // Decrypt the secret key.
-        options.SecretKey = settings.SecretKey.DecryptStripeApiKey(_dataProtectionProvider, _logger);
+        options.SecretKey = settings.DecryptSecretKey(_dataProtectionProvider, _logger);
     }
 }

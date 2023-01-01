@@ -6,7 +6,6 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Helpers;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

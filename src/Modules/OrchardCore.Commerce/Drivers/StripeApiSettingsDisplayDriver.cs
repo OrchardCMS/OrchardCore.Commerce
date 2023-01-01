@@ -51,12 +51,14 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
         }
 
         return Initialize<StripeApiSettingsViewModel>("StripeApiSettings_Edit", model =>
-        {
-            model.PublishableKey = section.PublishableKey;
+            {
+                model.PublishableKey = section.PublishableKey;
 
-            // Decrypting key.
-            model.SecretKey = section.SecretKey.DecryptStripeApiKey(_dataProtectionProvider, _logger);
-        })
+                // Decrypting key.
+                model.SecretKey = section.DecryptSecretKey(_dataProtectionProvider, _logger);
+
+                model.WebhookSigningSecret = section.WebhookSigningSecret.DecryptStripeApiKey(_dataProtectionProvider, _logger);
+            })
             .Location("Content")
             .OnGroup(GroupId);
     }
@@ -74,6 +76,7 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
         {
             var model = new StripeApiSettingsViewModel();
             var previousSecretKey = section.SecretKey;
+            var previousWebhookKey = section.WebhookSigningSecret;
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -89,6 +92,16 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
                     // Encrypt secret key.
                     var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
                     section.SecretKey = protector.Protect(model.SecretKey?.Trim());
+                }
+
+                if (string.IsNullOrWhiteSpace(model.WebhookSigningSecret))
+                {
+                    section.WebhookSigningSecret = previousWebhookKey;
+                }
+                else
+                {
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
+                    section.WebhookSigningSecret = protector.Protect(model.WebhookSigningSecret?.Trim());
                 }
 
                 // Release the tenant to apply settings.

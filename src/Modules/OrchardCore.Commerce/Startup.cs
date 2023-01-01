@@ -64,6 +64,9 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, ProductMigrations>();
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductInventoryService, ProductInventoryService>();
+        services.AddScoped<IProductInventoryProvider, LocalInventoryProvider>();
+
         services.AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>()
             .AddHandler<SkuValidationHandler>();
@@ -120,6 +123,7 @@ public class Startup : StartupBase
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
+        services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
@@ -155,9 +159,12 @@ public class Startup : StartupBase
         // Promotion
         services.AddScoped<IPromotionService, PromotionService>();
 
-        // Card Payment
-        services.AddScoped<ICardPaymentService, CardPaymentService>();
+        // Stripe payments
+        services.AddContentPart<StripePaymentPart>();
+        services.AddScoped<IStripePaymentService, StripePaymentService>();
         services.AddScoped<IDataMigration, StripeMigrations>();
+        services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
+        services.AddSingleton<IIndexProvider, OrderPaymentIndexProvider>();
 
         // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>

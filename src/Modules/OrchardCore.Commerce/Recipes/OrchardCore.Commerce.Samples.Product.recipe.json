@@ -84,6 +84,26 @@
               "currency": "USD"
             }
           },
+          "InventoryPart": {
+            "AllowsBackOrder": {
+              "Value": true
+            },
+            "IgnoreInventory": {
+              "Value": false
+            },
+            "Inventory": {
+              "Value": 5.0
+            },
+            "MaximumOrderQuantity": {
+              "Value": 2.0
+            },
+            "MinimumOrderQuantity": {
+              "Value": 1.0
+            },
+            "OutOfStockMessage": {
+              "Html": "A professional out of stock message."
+            }
+          },
           "Product": {}
         }
       ]
