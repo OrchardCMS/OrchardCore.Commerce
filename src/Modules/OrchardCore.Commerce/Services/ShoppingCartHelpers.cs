@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +24,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer,
-        IPromotionService promotionService)
+        IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
         _priceService = priceService;
         _priceSelectionStrategy = priceSelectionStrategy;

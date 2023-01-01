@@ -1,9 +1,9 @@
-using GraphQL;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Tax.Models;
+using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System;
@@ -46,7 +46,7 @@ public class TaxRateTaxProvider : ITaxProvider
         var updatedItems = items
             .Select(item =>
             {
-                var taxRate = MatchTaxRate(taxRates.Rates, address, item.As<TaxPart>()?.ProductTaxCode?.Text);
+                var taxRate = MatchTaxRate(taxRates.Rates, address, item.Content.As<TaxPart>()?.ProductTaxCode?.Text);
                 var multiplier = (taxRate / 100m) + 1;
                 return item with { UnitPrice = item.UnitPrice * multiplier };
             })
@@ -67,7 +67,7 @@ public class TaxRateTaxProvider : ITaxProvider
                 .Address ?? new Address();
 
             return items.Count(item =>
-                MatchTaxRate(taxRates.Rates, address, item.As<TaxPart>()?.ProductTaxCode?.Text) > 0);
+                MatchTaxRate(taxRates.Rates, address, item.Content.As<TaxPart>()?.ProductTaxCode?.Text) > 0);
         });
 
     private static bool IsMatchingOrEmptyPattern(string pattern, string text) =>
