@@ -56,9 +56,9 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             : new List<PrioritizedPrice>(prices).AsReadOnly();
     }
 
-    public string GetVariantKeyFromAttributes(ShoppingCartItem item, ISet<string> predefinedAttributeValues)
+    public string GetVariantKeyFromAttributes(ISet<string> predefinedAttributeValues)
     {
-        var predefinedAttributes = item.Attributes
+        var predefinedAttributes = Attributes
             .OfType<IPredefinedValuesProductAttributeValue>()
             .Where(attribute => predefinedAttributeValues.Contains(attribute.AttributeName))
             .OrderBy(value => value.AttributeName);
