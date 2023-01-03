@@ -36,7 +36,7 @@ public class OrderLineItemViewModelsAndTaxRatesConverterFilter : ILiquidFilter
 
         var viewModelsAndTaxRates = viewModels
             .Select(viewModel =>
-                (viewModel, taxRate: viewModel.ProductPart.ContentItem?.As<TaxPart>()?.TaxRate.Value)).ToList();
+                (viewModel, taxRate: viewModel.ProductPart.ContentItem?.As<TaxPart>()?.TaxRate?.Value)).ToList();
 
         return await new ValueTask<FluidValue>(new ObjectValue(viewModelsAndTaxRates));
     }
