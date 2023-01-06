@@ -25,6 +25,7 @@ using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.Commerce.Tax.Constants;
+using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -252,6 +253,10 @@ public class TaxStartup : StartupBase
             .AddContentPart<PricePart>()
             .AddHandler<TaxPartAndPricePartHandler>();
 
+        services
+            .AddContentPart<TaxPart>()
+            .UseDisplayDriver<TaxRateTaxPartDisplayDriver>();
+
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
     }
 }
@@ -273,8 +278,11 @@ public class PromotionStartup : StartupBase
 [RequireFeatures(CommerceConstants.Features.Core, CustomTaxRates)]
 public class TaxRateStartup : StartupBase
 {
-    public override void ConfigureServices(IServiceCollection services) =>
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddScoped<ITaxProvider, TaxRateTaxProvider>();
+        services.AddScoped<TaxRateTaxProvider>();
+    }
 }
 
 [RequireFeatures(CommerceConstants.Features.Core, "OrchardCore.Users.CustomUserSettings")]
