@@ -22,6 +22,11 @@ public record PromotionAndTaxProviderContext(
             purchaseDateTime)
     {
     }
+
+    public static PromotionAndTaxProviderContext SingleProduct(IContent product, Amount netUnitPrice, int quantity = 1) =>
+        new(
+            new[] { new PromotionAndTaxProviderContextLineItem(product, netUnitPrice, quantity) },
+            new[] { netUnitPrice });
 }
 
 public record PromotionAndTaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity)
