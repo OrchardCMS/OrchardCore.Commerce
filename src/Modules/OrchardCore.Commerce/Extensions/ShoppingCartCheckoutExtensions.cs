@@ -11,7 +11,7 @@ public static class ShoppingCartCheckoutExtensions
     public static async Task<IEnumerable<Amount>> CalculateTotalsAsync(
         this ShoppingCart shoppingCart,
         IPriceService priceService,
-        IPriceSelectionStrategy priceSelectionStrategy)
+        IPriceSelectionStrategy priceSelectionStrategy = null)
     {
         var lines = await shoppingCart.CalculateLinePricesAsync(priceService, priceSelectionStrategy);
 
@@ -23,12 +23,12 @@ public static class ShoppingCartCheckoutExtensions
     private static async Task<IEnumerable<Amount>> CalculateLinePricesAsync(
         this ShoppingCart shoppingCart,
         IPriceService priceService,
-        IPriceSelectionStrategy priceSelectionStrategy)
+        IPriceSelectionStrategy priceSelectionStrategy = null)
     {
         var items = await priceService.AddPricesAsync(shoppingCart.Items);
         return await Task.WhenAll(items.Select(item =>
         {
-            var price = priceSelectionStrategy.SelectPrice(item.Prices);
+            var price = priceSelectionStrategy?.SelectPrice(item.Prices) ?? priceService.SelectPrice(item.Prices);
 
             return Task.FromResult(item.Quantity * price);
         }));

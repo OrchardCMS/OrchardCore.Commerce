@@ -12,7 +12,6 @@ namespace OrchardCore.Commerce.Services;
 public class ShoppingCartHelpers : IShoppingCartHelpers
 {
     private readonly IPriceService _priceService;
-    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IProductService _productService;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
@@ -20,14 +19,12 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
     public ShoppingCartHelpers(
         IPriceService priceService,
-        IPriceSelectionStrategy priceSelectionStrategy,
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
         IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
         _priceService = priceService;
-        _priceSelectionStrategy = priceSelectionStrategy;
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -95,7 +92,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         if (currentShoppingCart.Count == 0) return new Dictionary<string, Amount>();
 
-        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
+        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService);
         return totals.ToDictionary(total => total.Currency.CurrencyIsoCode);
     }
 }
