@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Constants.ContentTypes;
+using Address=OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -95,65 +96,19 @@ public class PaymentController : Controller
     [Route("checkout")]
     public async Task<IActionResult> Index(string shoppingCartId = null)
     {
-        var isAuthenticated = User.Identity?.IsAuthenticated == true;
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
-            return isAuthenticated ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
+            return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart)
+        if (await CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
         {
             return RedirectToAction(
                 nameof(ShoppingCartController.Empty),
                 typeof(ShoppingCartController).ControllerName());
         }
 
-        var orderPart = new OrderPart();
-
-        if (await _userManager.GetUserAsync(User) is User user &&
-            user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
-        {
-            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
-            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
-            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
-        }
-
-        var email = isAuthenticated
-            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
-            : string.Empty;
-
-        orderPart.Email.Text = email;
-        orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
-        orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
-
-        var total = cart.Totals.Single();
-
-        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
-                await _contentManager.NewAsync(Order),
-                "Checkout"))
-            .ToList();
-
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-        var initPaymentIntent = new PaymentIntent();
-        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
-            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
-        {
-            var paymentIntentId = _paymentIntentPersistence.Retrieve();
-            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
-        }
-
-        var checkoutViewModel = new CheckoutViewModel
-        {
-            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
-            OrderPart = orderPart,
-            SingleCurrencyTotal = total,
-            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            UserEmail = email,
-            CheckoutShapes = checkoutShapes,
-            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
-        };
-
-        foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
+        foreach (dynamic shape in checkoutViewModel.CheckoutShapes) shape.ViewModel = checkoutViewModel;
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
 
@@ -288,5 +243,55 @@ public class PaymentController : Controller
 
         // Set back to default, because a new payment intent should be created on the next checkout.
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
+    }
+
+    private async Task<CheckoutViewModel> CreateCheckoutViewModelAsync(string shoppingCartId)
+    {
+        var orderPart = new OrderPart();
+
+        if (await _userManager.GetUserAsync(User) is User user &&
+            user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
+        {
+            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
+            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
+        }
+
+        var email = User.Identity?.IsAuthenticated == true
+            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
+            : string.Empty;
+
+        orderPart.Email.Text = email;
+        orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
+        orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
+
+        if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart) return null;
+        var total = cart.Totals.Single();
+
+        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
+                await _contentManager.NewAsync(Order),
+                "Checkout"))
+            .ToList();
+
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var initPaymentIntent = new PaymentIntent();
+        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
+            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
+        {
+            var paymentIntentId = _paymentIntentPersistence.Retrieve();
+            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
+        }
+
+        return new CheckoutViewModel
+        {
+            ShoppingCartId = shoppingCartId,
+            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
+            OrderPart = orderPart,
+            SingleCurrencyTotal = total,
+            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            UserEmail = email,
+            CheckoutShapes = checkoutShapes,
+            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
+        };
     }
 }
