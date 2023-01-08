@@ -13,6 +13,8 @@ using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
@@ -54,6 +56,7 @@ public class PaymentController : Controller
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly INotifier _notifier;
+    private readonly IMoneyService _moneyService;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -69,7 +72,8 @@ public class PaymentController : Controller
         IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
         IShoppingCartPersistence shoppingCartPersistence,
-        INotifier notifier)
+        INotifier notifier,
+        IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -89,6 +93,7 @@ public class PaymentController : Controller
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
         _notifier = notifier;
+        _moneyService = moneyService;
     }
 
     [Route("checkout")]
@@ -112,6 +117,35 @@ public class PaymentController : Controller
 
         return View(checkoutViewModel);
     }
+
+    [Route("checkout/price")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public Task<JsonResult> Price(string shoppingCartId, [FromBody] CheckPriceModel changes) =>
+        this.SafeJsonAsync(async () =>
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
+            {
+                throw new InvalidOperationException("Unauthorized.");
+            }
+
+            var checkoutViewModel = await CreateCheckoutViewModelAsync(
+                shoppingCartId,
+                part =>
+                {
+                    part.ShippingAddress.Address = changes.ShippingAddress ?? part.ShippingAddress.Address;
+                    part.BillingAddress.Address = changes.BillingAddress ?? part.BillingAddress.Address;
+                });
+
+            var total = checkoutViewModel?.SingleCurrencyTotal ?? new Amount(0, _moneyService.DefaultCurrency);
+
+            return new
+            {
+                total.Value,
+                Currency = total.Currency.CurrencyIsoCode,
+                Text = total.ToString(),
+            };
+        });
 
     [Route("checkout/validate")]
     [HttpPost]
