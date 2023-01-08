@@ -91,7 +91,7 @@
             <input :name="'ISite.Rates[' + index + '].TaxCode'" v-model="rate.taxCode">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].TaxRate'" v-model="rate.taxRate" type="number" min="0" max="100">
+            <input :name="'ISite.Rates[' + index + '].TaxRate'" v-model="rate.taxRate" type="number" min="0" max="100" step="0.001">
         </td>
         <td>
             <button class="btn btn-danger" @@click.prevent="rates.splice(index, 1)">
