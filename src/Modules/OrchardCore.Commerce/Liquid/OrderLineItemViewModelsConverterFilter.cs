@@ -29,7 +29,7 @@ public class OrderLineItemViewModelsConverterFilter : ILiquidFilter
             .ToList();
 
         var viewModels = (await _orderLineItemService
-            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems))
+            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, orderPart: null))
             .ViewModels;
 
         return await new ValueTask<FluidValue>(new ObjectValue(viewModels));

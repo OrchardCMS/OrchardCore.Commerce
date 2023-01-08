@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -37,7 +36,7 @@ public class OrderLineItemService : IOrderLineItemService
 
     public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
         IList<OrderLineItem> lineItems,
-        DateTime? publishDateTime = null)
+        OrderPart orderPart)
     {
         var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
             lineItems.Select(line => line.ContentItemVersion));
@@ -59,13 +58,15 @@ public class OrderLineItemService : IOrderLineItemService
             };
         }));
 
-        Address shipping = null;
-        Address billing = null;
-        if (_hca.HttpContext is { } httpContext &&
+        var shipping = orderPart?.ShippingAddress.Address;
+        var billing = orderPart?.BillingAddress.Address;
+
+        if ((shipping == null || billing == null) &&
+            _hca.HttpContext is { } httpContext &&
             await httpContext.GetUserAddressAsync() is { } userAddresses)
         {
-            shipping = userAddresses.ShippingAddress.Address;
-            billing = userAddresses.BillingAddress.Address;
+            shipping ??= userAddresses.ShippingAddress.Address;
+            billing ??= userAddresses.BillingAddress.Address;
         }
 
         var promotionAndTaxContext = new PromotionAndTaxProviderContext(
@@ -76,7 +77,7 @@ public class OrderLineItemService : IOrderLineItemService
             viewModelLineItems.CalculateTotals().ToList(),
             shipping,
             billing,
-            publishDateTime);
+            orderPart?.ContentItem?.PublishedUtc ?? DateTime.UtcNow);
         var changed = false;
 
         if (_taxProviders.Any() &&
