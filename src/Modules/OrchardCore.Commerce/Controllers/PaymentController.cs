@@ -121,20 +121,30 @@ public class PaymentController : Controller
     [Route("checkout/price")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public Task<JsonResult> Price(string shoppingCartId, [FromBody] CheckPriceModel changes) =>
-        this.SafeJsonAsync(async () =>
+    public async Task<IActionResult> Price(string shoppingCartId) =>
+        await this.SafeJsonAsync(async () =>
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
             {
                 throw new InvalidOperationException("Unauthorized.");
             }
 
+            var updater = _updateModelAccessor.ModelUpdater;
+            var shippingViewModel = new AddressFieldViewModel();
+            var billingViewModel = new AddressFieldViewModel();
+            if (!await updater.TryUpdateModelAsync(shippingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.ShippingAddress)}") ||
+                !await updater.TryUpdateModelAsync(billingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.BillingAddress)}"))
+            {
+                throw new InvalidOperationException(
+                    _updateModelAccessor.ModelUpdater.GetModelErrorMessages().JoinNotNullOrEmpty());
+            }
+
             var checkoutViewModel = await CreateCheckoutViewModelAsync(
                 shoppingCartId,
                 part =>
                 {
-                    part.ShippingAddress.Address = changes.ShippingAddress ?? part.ShippingAddress.Address;
-                    part.BillingAddress.Address = changes.BillingAddress ?? part.BillingAddress.Address;
+                    part.ShippingAddress.Address = shippingViewModel.Address ?? part.ShippingAddress.Address;
+                    part.BillingAddress.Address = billingViewModel.Address ?? part.BillingAddress.Address;
                 });
 
             var total = checkoutViewModel?.SingleCurrencyTotal ?? new Amount(0, _moneyService.DefaultCurrency);

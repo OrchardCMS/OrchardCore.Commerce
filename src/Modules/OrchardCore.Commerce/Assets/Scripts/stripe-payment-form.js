@@ -167,11 +167,41 @@ window.stripePaymentForm = function stripePaymentForm(
         });
     }
 
+    function registerPriceUpdater() {
+        let debounce = false;
+        Array.from(document.querySelectorAll('*[id^="OrderPart_ShippingAddress_"], *[id^="OrderPart_BillingAddress_"]'))
+            .forEach((element) => element.addEventListener('change', () => {
+                if (debounce) return;
+
+                const payButtonValue = document.querySelector('.pay-button-value');
+                if (!payButtonValue) return;
+
+                debounce = true;
+                submitButton.disabled = true;
+
+                setTimeout(async () => {
+                    const priceJson = await fetchPost('checkout/price', { body: new FormData(form) });
+                    debounce = false;
+                    submitButton.disabled = false;
+
+                    // This is not essential if it fails so we intentionally don't catch it. This way if there is an error it can still be seen in the
+                    // browser log during development or UI testing.
+                    if ('error' in priceJson) throw priceJson;
+
+                    payButtonValue.setAttribute('data-value', priceJson.value);
+                    payButtonValue.setAttribute('data-currency', priceJson.currency);
+                    payButtonValue.textContent = priceJson.text;
+                }, 50); // Prevent multiple requests when several fields are updated at once.
+            }));
+    }
+
     if (placeOfPayment) {
         payment.mount(placeOfPayment);
 
         // Refreshing form elements with the payment input.
         formElements = Array.from(form.elements);
         registerElements();
+
+        registerPriceUpdater();
     }
 };
