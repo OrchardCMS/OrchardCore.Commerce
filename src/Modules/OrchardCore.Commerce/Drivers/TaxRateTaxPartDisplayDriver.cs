@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tax.Models;
@@ -12,10 +13,16 @@ namespace OrchardCore.Commerce.Drivers;
 
 public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
 {
+    private readonly IHttpContextAccessor _hca;
     private readonly TaxRateTaxProvider _taxRateTaxProvider;
 
-    public TaxRateTaxPartDisplayDriver(TaxRateTaxProvider taxRateTaxProvider) =>
+    public TaxRateTaxPartDisplayDriver(
+        IHttpContextAccessor hca,
+        TaxRateTaxProvider taxRateTaxProvider)
+    {
+        _hca = hca;
         _taxRateTaxProvider = taxRateTaxProvider;
+    }
 
     public override async Task<IDisplayResult> DisplayAsync(TaxPart part, BuildPartDisplayContext context)
     {
@@ -25,7 +32,12 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
             return null;
         }
 
-        var model = PromotionAndTaxProviderContext.SingleProduct(product, netUnitPrice);
+        var userAddresses = await _hca.HttpContext.GetUserAddressAsync();
+        var model = PromotionAndTaxProviderContext.SingleProduct(
+            product,
+            netUnitPrice,
+            userAddresses.ShippingAddress.Address,
+            userAddresses.BillingAddress.Address);
         if (!await _taxRateTaxProvider.IsApplicableAsync(model)) return null;
 
         model = await _taxRateTaxProvider.UpdateAsync(model);

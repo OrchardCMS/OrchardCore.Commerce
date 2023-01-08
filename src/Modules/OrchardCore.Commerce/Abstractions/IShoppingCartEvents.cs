@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,14 +20,9 @@ public interface IShoppingCartEvents
     /// <summary>
     /// Invoked after the shopping cart data is prepared, but before the shapes are rendered.
     /// </summary>
-    /// <param name="totals">The line items grouped by currency and summed up.</param>
-    /// <param name="headers">The column headers of the line items table.</param>
-    /// <param name="lines">The line items.</param>
     /// <returns>The new versions of the matching parameters.</returns>
     Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
-        IList<Amount> totals,
-        IList<LocalizedHtmlString> headers,
-        IList<ShoppingCartLineViewModel> lines);
+        ShoppingCartDisplayingEventContext eventContext);
 
     /// <summary>
     /// Invoked before an item is added to the shopping cart to check whether it can be added based on inventory status.

@@ -23,7 +23,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
-using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Services;
 using Stripe;
 using System;
@@ -31,7 +30,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Constants.ContentTypes;
-using Address=OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -245,12 +243,13 @@ public class PaymentController : Controller
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
     }
 
-    private async Task<CheckoutViewModel> CreateCheckoutViewModelAsync(string shoppingCartId)
+    private async Task<CheckoutViewModel> CreateCheckoutViewModelAsync(
+        string shoppingCartId,
+        Action<OrderPart> updateOrderPart = null)
     {
         var orderPart = new OrderPart();
 
-        if (await _userManager.GetUserAsync(User) is User user &&
-            user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
+        if (await HttpContext.GetUserAddressAsync() is { } userAddresses)
         {
             orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
             orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
@@ -265,8 +264,13 @@ public class PaymentController : Controller
         orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
         orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
 
-        if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart) return null;
-        var total = cart.Totals.Single();
+        updateOrderPart?.Invoke(orderPart);
+
+        var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+            shoppingCartId,
+            orderPart.ShippingAddress.Address,
+            orderPart.BillingAddress.Address);
+        if (cart?.Totals.Single() is not { } total) return null;
 
         var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
                 await _contentManager.NewAsync(Order),

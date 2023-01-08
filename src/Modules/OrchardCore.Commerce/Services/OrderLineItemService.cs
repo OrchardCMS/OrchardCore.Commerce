@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -13,17 +15,20 @@ namespace OrchardCore.Commerce.Services;
 
 public class OrderLineItemService : IOrderLineItemService
 {
+    private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
     private readonly IPromotionService _promotionService;
 
     public OrderLineItemService(
+        IHttpContextAccessor hca,
         IProductService productService,
         IContentManager contentManager,
         IEnumerable<ITaxProvider> taxProviders,
         IPromotionService promotionService)
     {
+        _hca = hca;
         _productService = productService;
         _contentManager = contentManager;
         _taxProviders = taxProviders;
@@ -54,12 +59,23 @@ public class OrderLineItemService : IOrderLineItemService
             };
         }));
 
+        Address shipping = null;
+        Address billing = null;
+        if (_hca.HttpContext is { } httpContext &&
+            await httpContext.GetUserAddressAsync() is { } userAddresses)
+        {
+            shipping = userAddresses.ShippingAddress.Address;
+            billing = userAddresses.BillingAddress.Address;
+        }
+
         var promotionAndTaxContext = new PromotionAndTaxProviderContext(
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
                 products[item.ProductSku],
                 item.UnitPrice,
                 item.Quantity)),
             viewModelLineItems.CalculateTotals().ToList(),
+            shipping,
+            billing,
             publishDateTime);
         var changed = false;
 

@@ -30,9 +30,11 @@ public class LocalTaxProvider : ITaxProvider
                     .Sum();
             });
 
-        return Task.FromResult(new PromotionAndTaxProviderContext(
-            items.Select(item => item with { UnitPrice = item.UnitPrice.WithTax(item.Content) }),
-            updatedTotals));
+        return Task.FromResult(model with
+        {
+            Items = items.Select(item => item with { UnitPrice = item.UnitPrice.WithTax(item.Content) }),
+            TotalsByCurrency = updatedTotals,
+        });
     }
 
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>

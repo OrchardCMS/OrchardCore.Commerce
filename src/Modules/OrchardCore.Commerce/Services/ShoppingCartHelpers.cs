@@ -1,8 +1,13 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.Users;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +16,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class ShoppingCartHelpers : IShoppingCartHelpers
 {
+    private readonly IHttpContextAccessor _hca;
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
@@ -18,12 +24,14 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
 
     public ShoppingCartHelpers(
+        IHttpContextAccessor hca,
         IPriceService priceService,
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
         IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
+        _hca = hca;
         _priceService = priceService;
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
@@ -31,7 +39,10 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         H = localizer;
     }
 
-    public async Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(string shoppingCartId)
+    public async Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(
+        string shoppingCartId,
+        Address shipping = null,
+        Address billing = null)
     {
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
@@ -67,9 +78,18 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         };
         IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
 
+        if ((shipping == null || billing == null) &&
+            _hca.HttpContext is { } httpContext &&
+            await httpContext.GetUserAddressAsync() is { } userAddresses)
+        {
+            shipping ??= userAddresses.ShippingAddress.Address;
+            billing ??= userAddresses.BillingAddress.Address;
+        }
+
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
-            (headers, lines) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
+            (headers, lines) = await shoppingCartEvent.DisplayingAsync(new ShoppingCartDisplayingEventContext(
+                totals, headers, lines, shipping, billing));
             totals = lines.CalculateTotals().ToList();
         }
 

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
@@ -26,11 +25,15 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
     }
 
     public override async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
-        IList<Amount> totals,
-        IList<LocalizedHtmlString> headers,
-        IList<ShoppingCartLineViewModel> lines)
+        ShoppingCartDisplayingEventContext eventContext)
     {
-        var context = new PromotionAndTaxProviderContext(lines, totals);
+        var headers = eventContext.Headers;
+        var lines = eventContext.Lines;
+        var context = new PromotionAndTaxProviderContext(
+            lines,
+            eventContext.Totals,
+            eventContext.ShippingAddress,
+            eventContext.BillingAddress);
 
         if (await _taxProviders.GetFirstApplicableProviderAsync(context) is not { } provider)
         {

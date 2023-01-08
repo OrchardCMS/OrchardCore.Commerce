@@ -41,7 +41,9 @@ public class DiscountTests
                 Content: null,
                 item.UnitPrice,
                 item.Quantity)),
-            new[] { total });
+            new[] { total },
+            ShippingAddress: null,
+            BillingAddress: null);
 
         promotionAndTaxContext = await promotionService.AddPromotionsAsync(promotionAndTaxContext);
 
