@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Models;
@@ -15,38 +14,27 @@ namespace OrchardCore.Commerce.Services;
 
 public class TaxRateTaxProvider : ITaxProvider
 {
-    private readonly IHttpContextAccessor _hca;
     private readonly ISiteService _siteService;
-    private readonly IUserService _userService;
 
     // Give plenty of room for other providers of higher or lower priority.
     public int Order => int.MaxValue / 2;
 
-    public TaxRateTaxProvider(
-        IHttpContextAccessor hca,
-        ISiteService siteService,
-        IUserService userService)
-    {
-        _hca = hca;
-        _siteService = siteService;
-        _userService = userService;
-    }
+    public TaxRateTaxProvider(ISiteService siteService) => _siteService = siteService;
 
     public async Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model)
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var taxRates = siteSettings.As<TaxRateSettings>();
 
-        var address = _userService.GetUserSetting<UserAddressesPart>(await _userService.GetCurrentFullUserAsync(_hca))?
-            .ShippingAddress
-            .Address ?? new Address();
-
         var items = model.Items.AsList();
 
         var updatedItems = items
             .Select(item =>
             {
-                var taxRate = MatchTaxRate(taxRates.Rates, address, item.Content.As<TaxPart>()?.ProductTaxCode?.Text);
+                var taxRate = MatchTaxRate(
+                    taxRates.Rates,
+                    model.ShippingAddress,
+                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text);
                 var multiplier = (taxRate / 100m) + 1;
                 return item with { UnitPrice = item.UnitPrice * multiplier };
             })
@@ -62,12 +50,11 @@ public class TaxRateTaxProvider : ITaxProvider
             var taxRates = siteSettings.As<TaxRateSettings>();
             if (taxRates?.Rates.Any() != true) return 0;
 
-            var address = _userService.GetUserSetting<UserAddressesPart>(await _userService.GetCurrentFullUserAsync(_hca))?
-                .ShippingAddress
-                .Address ?? new Address();
-
             return items.Count(item =>
-                MatchTaxRate(taxRates.Rates, address, item.Content.As<TaxPart>()?.ProductTaxCode?.Text) > 0);
+                MatchTaxRate(
+                    taxRates.Rates,
+                    model.ShippingAddress,
+                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text) > 0);
         });
 
     private static bool IsMatchingOrEmptyPattern(string pattern, string text) =>
@@ -78,6 +65,8 @@ public class TaxRateTaxProvider : ITaxProvider
         Address destinationAddress,
         string taxCode)
     {
+        destinationAddress ??= new Address();
+
         foreach (var rate in taxRates)
         {
             if (IsMatchingOrEmptyPattern(rate.DestinationStreetAddress1, destinationAddress.StreetAddress1) &&
