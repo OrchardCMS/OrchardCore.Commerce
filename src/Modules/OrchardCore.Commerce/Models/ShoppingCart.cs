@@ -1,3 +1,4 @@
+using OrchardCore.Workflows.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -89,8 +90,13 @@ public class ShoppingCart
     /// Removes an item from the cart.
     /// </summary>
     /// <param name="item">The product variant to remove. Quantity will be ignored.</param>
-    public void RemoveItem(ShoppingCartItem item) =>
-        Items.RemoveAll(line => line.IsSameProductAs(item));
+    public void RemoveItem(ShoppingCartItem item)
+    {
+        if (Items.FirstOrDefault(line => line.IsSameProductAs(item)) is { } itemToRemove)
+        {
+            Items.Remove(itemToRemove);
+        }
+    }
 
     /// <summary>
     /// Sets the list of prices for the item.
