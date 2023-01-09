@@ -36,8 +36,8 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
         var model = PromotionAndTaxProviderContext.SingleProduct(
             product,
             netUnitPrice,
-            userAddresses.ShippingAddress.Address,
-            userAddresses.BillingAddress.Address);
+            userAddresses?.ShippingAddress.Address,
+            userAddresses?.BillingAddress.Address);
         if (!await _taxRateTaxProvider.IsApplicableAsync(model)) return null;
 
         model = await _taxRateTaxProvider.UpdateAsync(model);
