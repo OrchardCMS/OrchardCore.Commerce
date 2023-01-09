@@ -67,6 +67,43 @@ public class TaxBehaviourTests : UITestBase
             },
             browser);
 
+    [Theory, Chrome]
+    public Task ProductDetailsShouldShowCorrectTaxRates(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                await context.SignInDirectlyAsync();
+                await context.ExecuteRecipeDirectlyAsync("OrchardCore.Commerce.Samples.CustomTaxRates");
+
+                var selector = By.ClassName("price-part-price-field-value");
+                async Task VerifyPriceAsync(string expectedPrice)
+                {
+                    await context.GoToContentItemEditorByIdAsync(TestProduct);
+                    context.Exists(selector);
+                    context.GetAll(selector).Last().Text.Trim().ShouldBe(expectedPrice);
+                }
+
+                await VerifyPriceAsync("$5.00");
+
+                await context.GoToRelativeUrlAsync("/user/addresses");
+                await context.SetCheckboxValueAsync(By.Id("UserAddressesPart_BillingAndShippingAddressesMatch_Value"), isChecked: true);
+                await context.ClickAndFillInWithRetriesAsync(By.Id("UserAddressesPart_BillingAddress_Address_Name"), "Test Customer");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("UserAddressesPart_BillingAddress_Address_StreetAddress1"), "Test Address");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("UserAddressesPart_BillingAddress_Address_City"), "Test City");
+                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Region"), "HU");
+                await VerifyPriceAsync("$6.25");
+
+                await context.GoToRelativeUrlAsync("/user/addresses");
+                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Region"), "US");
+                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Province"), "NY");
+                await VerifyPriceAsync("$5.20");
+
+                await context.GoToRelativeUrlAsync("/user/addresses");
+                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Province"), "NJ");
+                await VerifyPriceAsync("$5.33");
+            },
+            browser);
+
     private static void FieldShouldBe(UITestContext context, string id, decimal value) =>
         decimal
             .Parse(context.Get(By.Id(id)).GetAttribute("value"), CultureInfo.InvariantCulture)

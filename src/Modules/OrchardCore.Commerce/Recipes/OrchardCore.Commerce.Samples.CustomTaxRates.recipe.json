@@ -1,0 +1,62 @@
+{
+  "name": "OrchardCore.Commerce.Samples.CustomTaxRates",
+  "displayName": "Orchard Core Commerce - Samples - Custom Tax Rates",
+  "description": "Sets uo custom site settings.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "tax", "sample" ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Commerce.Tax.CustomTaxRates"
+      ]
+    },
+    {
+      "name": "Settings",
+      "TaxRateSettings": {
+        "Rates": [
+          {
+            "DestinationCity": null,
+            "DestinationPostalCode": null,
+            "DestinationProvince": null,
+            "DestinationRegion": "HU",
+            "DestinationStreetAddress1": null,
+            "DestinationStreetAddress2": null,
+            "TaxCode": null,
+            "TaxRate": 25.0
+          },
+          {
+            "DestinationCity": null,
+            "DestinationPostalCode": null,
+            "DestinationProvince": "NJ",
+            "DestinationRegion": "US",
+            "DestinationStreetAddress1": null,
+            "DestinationStreetAddress2": null,
+            "TaxCode": null,
+            "TaxRate": 6.625
+          },
+          {
+            "DestinationCity": null,
+            "DestinationPostalCode": null,
+            "DestinationProvince": "NY",
+            "DestinationRegion": "US",
+            "DestinationStreetAddress1": null,
+            "DestinationStreetAddress2": null,
+            "TaxCode": null,
+            "TaxRate": 4.0
+          }
+        ],
+        "SourceCity": null,
+        "SourcePostalCode": null,
+        "SourceProvince": null,
+        "SourceRegion": null,
+        "SourceStreetAddress1": null,
+        "SourceStreetAddress2": null
+      }
+    }
+  ]
+}
