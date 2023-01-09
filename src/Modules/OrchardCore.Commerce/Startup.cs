@@ -188,7 +188,7 @@ public class Startup : StartupBase
             // Liquid filter to create AddressFiledEditorViewModel.
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
             // Liquid filter to create OrderLineItemViewModels.
-            .AddLiquidFilter<OrderLineItemViewModelsConverterFilter>("order_line_item_view_models");
+            .AddLiquidFilter<OrderLineItemViewModelsAndTaxRatesConverterFilter>("order_line_item_view_models_and_tax_rates");
     }
 }
 

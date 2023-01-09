@@ -57,7 +57,7 @@ public class PriceVariantProvider : IPriceProvider
                 .Select(attr => attr.PartName + "." + attr.Name)
                 .ToHashSet();
 
-            var variantKey = item.GetVariantKeyFromAttributes(item, attributesRestrictedToPredefinedValues);
+            var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
 
             if (priceVariantsPart.Variants.ContainsKey(variantKey))
             {

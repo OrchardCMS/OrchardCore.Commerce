@@ -24,7 +24,7 @@ public class ShoppingCartItemAttributeTests
             "ProductPart1.Color",
         };
 
-        var variantKey = item.GetVariantKeyFromAttributes(item, attribs);
+        var variantKey = item.GetVariantKeyFromAttributes(attribs);
         Assert.Equal("GREEN-SMALL", variantKey);
     }
 }

@@ -3,6 +3,8 @@ using Fluid.Values;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Tax.Models;
+using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Liquid;
 
-public class OrderLineItemViewModelsConverterFilter : ILiquidFilter
+public class OrderLineItemViewModelsAndTaxRatesConverterFilter : ILiquidFilter
 {
     private readonly IOrderLineItemService _orderLineItemService;
 
-    public OrderLineItemViewModelsConverterFilter(IOrderLineItemService orderLineItemService) =>
+    public OrderLineItemViewModelsAndTaxRatesConverterFilter(IOrderLineItemService orderLineItemService) =>
         _orderLineItemService = orderLineItemService;
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
@@ -32,6 +34,10 @@ public class OrderLineItemViewModelsConverterFilter : ILiquidFilter
             .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, orderPart: null))
             .ViewModels;
 
-        return await new ValueTask<FluidValue>(new ObjectValue(viewModels));
+        var viewModelsAndTaxRates = viewModels
+            .Select(viewModel =>
+                (viewModel, taxRate: viewModel.ProductPart.ContentItem?.As<TaxPart>()?.TaxRate?.Value)).ToList();
+
+        return await new ValueTask<FluidValue>(new ObjectValue(viewModelsAndTaxRates));
     }
 }
