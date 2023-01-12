@@ -19,7 +19,7 @@ public class TaxRateAdminMenu : NavigationProviderBase
         builder
             .Add(T["Configuration"], configuration => configuration
                 .Add(T["Commerce"], commerce => commerce
-                    .Add(T["Custom Tax Rates"], entry => entry
+                    .Add(T["Custom Tax Rates"], T["Custom Tax Rates"], entry => entry
                         .Action("Index", "Admin", new
                         {
                             area = "OrchardCore.Settings",
