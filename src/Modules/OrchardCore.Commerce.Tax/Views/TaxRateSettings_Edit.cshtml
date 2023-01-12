@@ -85,25 +85,25 @@
 
 <script at="Head" asp-name="vuejs"></script>
 <script at="Foot" depends-on="vuejs">
-const vueQuery = '#@tableElementId tbody';
-const rates = @Json.Serialize(Model.Rates);
+    const vueQuery = '#@tableElementId tbody';
+    const rates = @Json.Serialize(Model.Rates);
 
-var table = new Vue({
-    el: vueQuery,
-    data: { rates: rates },
-});
-
-document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
-    event.preventDefault();
-    table.rates.push({
-        "destinationStreetAddress1": null,
-        "destinationStreetAddress2": null,
-        "destinationCity": null,
-        "destinationProvince": null,
-        "destinationPostalCode": null,
-        "destinationRegion": null,
-        "taxCode": null,
-        "taxRate": 0
+    var table = new Vue({
+        el: vueQuery,
+        data: { rates: rates },
     });
-});
+
+    document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
+        event.preventDefault();
+        table.rates.push({
+            "destinationStreetAddress1": null,
+            "destinationStreetAddress2": null,
+            "destinationCity": null,
+            "destinationProvince": null,
+            "destinationPostalCode": null,
+            "destinationRegion": null,
+            "taxCode": null,
+            "taxRate": 0,
+        });
+    });
 </script>
