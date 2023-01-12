@@ -1,4 +1,3 @@
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Models;
 
 namespace OrchardCore.Commerce.Promotion.Extensions;
