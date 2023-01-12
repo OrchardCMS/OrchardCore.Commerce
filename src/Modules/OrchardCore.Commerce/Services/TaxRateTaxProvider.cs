@@ -67,20 +67,14 @@ public class TaxRateTaxProvider : ITaxProvider
     {
         destinationAddress ??= new Address();
 
-        foreach (var rate in taxRates)
-        {
-            if (IsMatchingOrEmptyPattern(rate.DestinationStreetAddress1, destinationAddress.StreetAddress1) &&
-                IsMatchingOrEmptyPattern(rate.DestinationStreetAddress2, destinationAddress.StreetAddress2) &&
-                IsMatchingOrEmptyPattern(rate.DestinationCity, destinationAddress.City) &&
-                IsMatchingOrEmptyPattern(rate.DestinationProvince, destinationAddress.Province) &&
-                IsMatchingOrEmptyPattern(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
-                IsMatchingOrEmptyPattern(rate.DestinationRegion, destinationAddress.Region) &&
-                IsMatchingOrEmptyPattern(rate.TaxCode, taxCode))
-            {
-                return rate.TaxRate;
-            }
-        }
-
-        return 0;
+        var matchingTaxRate = taxRates.FirstOrDefault(rate =>
+            IsMatchingOrEmptyPattern(rate.DestinationStreetAddress1, destinationAddress.StreetAddress1) &&
+            IsMatchingOrEmptyPattern(rate.DestinationStreetAddress2, destinationAddress.StreetAddress2) &&
+            IsMatchingOrEmptyPattern(rate.DestinationCity, destinationAddress.City) &&
+            IsMatchingOrEmptyPattern(rate.DestinationProvince, destinationAddress.Province) &&
+            IsMatchingOrEmptyPattern(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
+            IsMatchingOrEmptyPattern(rate.DestinationRegion, destinationAddress.Region) &&
+            IsMatchingOrEmptyPattern(rate.TaxCode, taxCode));
+        return matchingTaxRate != null ? matchingTaxRate.TaxRate : 0;
     }
 }
