@@ -1,22 +1,21 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Navigation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.Tax.Permissions;
 using OrchardCore.Navigation;
-using System;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tax.Navigation;
 
-public class TaxRateAdminMenu : INavigationProvider
+public class TaxRateAdminMenu : NavigationProviderBase
 {
-    private readonly IStringLocalizer<TaxRateAdminMenu> T;
+    protected override string NavigationName => "admin";
 
-    public TaxRateAdminMenu(IStringLocalizer<TaxRateAdminMenu> localizer) => T = localizer;
+    public TaxRateAdminMenu(IHttpContextAccessor hca, IStringLocalizer<TaxRateAdminMenu> stringLocalizer)
+        : base(hca, stringLocalizer)
+    { }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        if (name?.EqualsOrdinalIgnoreCase("admin") != true) return Task.CompletedTask;
-
+    protected override void Build(NavigationBuilder builder) =>
         builder
             .Add(T["Configuration"], configuration => configuration
                 .Add(T["Commerce"], commerce => commerce
@@ -28,7 +27,4 @@ public class TaxRateAdminMenu : INavigationProvider
                         })
                         .Permission(TaxRatePermissions.ManageCustomTaxRates)
                         .LocalNav())));
-
-        return Task.CompletedTask;
-    }
 }
