@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
