@@ -115,10 +115,7 @@ public class TaxBehaviourTests : UITestBase
                     "$5.20");
 
                 await UpdateAddressAndVerifyPriceAsync(
-                    async () =>
-                    {
-                        await context.SetDropdownByValueAsync(ByField("Province"), "NJ");
-                    },
+                    async () => await context.SetDropdownByValueAsync(ByField("Province"), "NJ"),
                     "$5.33");
             },
             browser);
