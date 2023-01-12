@@ -12,44 +12,6 @@
     var addButtonElementId = $"{addButtonElement}_{blockGuid}";
 }
 
-<h2>@T["Source Address"]</h2>
-
-<div class="mb-3" asp-validation-class-for="SourceStreetAddress1">
-    <label asp-for="SourceStreetAddress1">@T["First street address"]</label>
-    <input asp-for="SourceStreetAddress1" class="form-control" type="text"/>
-    <span asp-validation-for="SourceStreetAddress1"></span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="SourceStreetAddress2">
-    <label asp-for="SourceStreetAddress2">@T["Second street address"]</label>
-    <input asp-for="SourceStreetAddress2" class="form-control" type="text"/>
-    <span asp-validation-for="SourceStreetAddress2"></span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="SourceCity">
-    <label asp-for="SourceCity">@T["City"]</label>
-    <input asp-for="SourceCity" class="form-control" type="text"/>
-    <span asp-validation-for="SourceCity"></span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="SourceProvince">
-    <label asp-for="SourceProvince">@T["State or province code"]</label>
-    <input asp-for="SourceProvince" class="form-control" type="text"/>
-    <span asp-validation-for="SourceProvince"></span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="SourcePostalCode">
-    <label asp-for="SourcePostalCode">@T["Postal code"]</label>
-    <input asp-for="SourcePostalCode" class="form-control" type="text"/>
-    <span asp-validation-for="SourcePostalCode"></span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="SourceRegion">
-    <label asp-for="SourceRegion">@T["Country or region"]</label>
-    <input asp-for="SourceRegion" class="form-control" type="text"/>
-    <span asp-validation-for="SourceRegion"></span>
-</div>
-
 <h2>@T["Recipients and Tax Codes"]</h2>
 
 <table id="@tableElementId" class="table @tableElement">

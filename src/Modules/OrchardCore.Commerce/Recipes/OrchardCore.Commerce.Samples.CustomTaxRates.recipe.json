@@ -49,13 +49,7 @@
             "TaxCode": null,
             "TaxRate": 4.0
           }
-        ],
-        "SourceCity": null,
-        "SourcePostalCode": null,
-        "SourceProvince": null,
-        "SourceRegion": null,
-        "SourceStreetAddress1": null,
-        "SourceStreetAddress2": null
+        ]
       }
     }
   ]
