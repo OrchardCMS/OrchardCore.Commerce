@@ -75,6 +75,6 @@ public class TaxRateTaxProvider : ITaxProvider
             IsMatchingOrEmptyPattern(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
             IsMatchingOrEmptyPattern(rate.DestinationRegion, destinationAddress.Region) &&
             IsMatchingOrEmptyPattern(rate.TaxCode, taxCode));
-        return matchingTaxRate != null ? matchingTaxRate.TaxRate : 0;
+        return matchingTaxRate?.TaxRate ?? 0;
     }
 }
