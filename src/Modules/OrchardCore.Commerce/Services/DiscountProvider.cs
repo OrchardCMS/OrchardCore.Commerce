@@ -93,7 +93,7 @@ public class DiscountProvider : IPromotionProvider
                 newPrice = newPrice.WithDiscount((decimal)discountPercentage);
             }
 
-            if (discountAmount.IsValidAndPositive())
+            if (discountAmount.IsValidAndNonZero)
             {
                 newPrice = newPrice.WithDiscount(discountAmount);
             }

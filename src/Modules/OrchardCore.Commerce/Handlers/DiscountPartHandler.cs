@@ -36,12 +36,9 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         var discountPercentage = discountPart.DiscountPercentage?.Value ?? 0;
         var discountAmount = discountPart.DiscountAmount.Amount;
 
-        // IsValid allows 0 value, but if the percentage is 0 it's not present.
-        var isDiscountAmountPresent = discountAmount.IsValidAndPositive();
-
         var isDiscountPercentagePresent = discountPercentage > 0;
 
-        if (isDiscountPercentagePresent && isDiscountAmountPresent)
+        if (isDiscountPercentagePresent && discountAmount.IsValidAndNonZero)
         {
             InvalidateEvenState();
         }
