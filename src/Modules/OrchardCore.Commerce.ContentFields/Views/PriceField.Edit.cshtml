@@ -53,7 +53,7 @@
                             ? @Model.PreferredCurrencyIsoCode.JsonHtmlContent()
                             : currentCurrency;
 
-                        priceInput.value = @Model.Value;
+                        priceInput.value = "@Model.Value";
                     }
                     else {
                         priceInput.value = 0;
