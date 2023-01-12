@@ -58,16 +58,9 @@ public class OrderLineItemService : IOrderLineItemService
             };
         }));
 
-        var shipping = orderPart?.ShippingAddress.Address;
-        var billing = orderPart?.BillingAddress.Address;
-
-        if ((shipping == null || billing == null) &&
-            _hca.HttpContext is { } httpContext &&
-            await httpContext.GetUserAddressAsync() is { } userAddresses)
-        {
-            shipping ??= userAddresses.ShippingAddress.Address;
-            billing ??= userAddresses.BillingAddress.Address;
-        }
+        var (shipping, billing) = await _hca.GetUserAddressIfNullAsync(
+            orderPart?.ShippingAddress.Address,
+            orderPart?.BillingAddress.Address);
 
         var promotionAndTaxContext = new PromotionAndTaxProviderContext(
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(

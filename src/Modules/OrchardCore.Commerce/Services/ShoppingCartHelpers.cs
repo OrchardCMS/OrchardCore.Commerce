@@ -76,13 +76,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         };
         IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
 
-        if ((shipping == null || billing == null) &&
-            _hca.HttpContext is { } httpContext &&
-            await httpContext.GetUserAddressAsync() is { } userAddresses)
-        {
-            shipping ??= userAddresses.ShippingAddress.Address;
-            billing ??= userAddresses.BillingAddress.Address;
-        }
+        (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);
 
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
