@@ -4,6 +4,7 @@
 \.csproj$
 \.css$
 \.css\.map$
+docs/requirements\.txt
 \.DotSettings$
 \.editorconfig$
 \.eslintrc$
@@ -14,6 +15,7 @@
 \.json$
 \.min\.css$
 \.min\.js$
+\.mkdocs\.yaml$
 \.ndproj$
 \.nupkg$
 \.nuspec.template$

@@ -61,7 +61,7 @@ internal static class KnownCurrencyTable
                 .Distinct(new CurrencyEqualityComparer())
                 .ToDictionary(currency => currency.CurrencyIsoCode, currency => currency);
 
-            AddCurrency(new Currency("BitCoin", "BitCoin", "₿", "BTC", 8));
+            AddCurrency(new Currency("BitCoin", "BitCoin", "₿", "BTC", 8)); // #spell-check-ignore-line
             AddCurrency(Currency.Euro); // International currency not derived from a culture.
             AddCurrency(Currency.UnspecifiedCurrency);
         }

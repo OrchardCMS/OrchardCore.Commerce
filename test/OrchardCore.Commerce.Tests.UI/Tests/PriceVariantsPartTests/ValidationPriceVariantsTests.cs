@@ -22,7 +22,7 @@ public class ValidationPriceVariantsTests : UITestBase
             await context.SignInDirectlyAsync();
             await context.CreateNewContentItemAsync("PriceVariantsProduct");
 
-            const string skuAlreadyExists = "TESTPRODUCTVARIANT";
+            const string skuAlreadyExists = "TESTPRODUCTVARIANT"; // #spell-check-ignore-line
 
             await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), skuAlreadyExists);
 
