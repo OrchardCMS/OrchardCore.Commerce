@@ -1,11 +1,9 @@
 atc
-attribs
 barbool
 bartext
 BIDNw
 Cfa
 CVb
-CVC
 czky
 disqus
 dvu
@@ -17,7 +15,6 @@ mkdocs
 pymdown
 pymdownx
 Vhz
-vid
 WAoi
 Xvlbe
 YLMc
