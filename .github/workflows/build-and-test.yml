@@ -19,6 +19,15 @@ jobs:
   spelling:
     name: Spelling
     uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
+    with:
+      dictionary-source-prefixes: >
+        {
+          "lombiq": "https://raw.githubusercontent.com/Lombiq/GitHub-Actions/dev/.github/actions/spelling/",
+          "cspell": "https://raw.githubusercontent.com/check-spelling/cspell-dicts/v20220816/dictionaries/"
+        }
+      extra-dictionaries: |
+        lombiq:allow.txt
+        lombiq:expect.txt
 
   post-pull-request-checks-automation:
     needs: [call-build-and-test-workflow, spelling]
