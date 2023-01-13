@@ -29,5 +29,5 @@ sha[0-9]{3}-[0-9a-zA-Z+/]{64}
 # Ignore lines that contain the "#spell-check-ignore-line" marker text.
 .*#spell-check-ignore-line.*
 
-# Webhook keys.
-(whsec_)([a-z0-9-]*)
+# Stripe API key patterns.
+((pk_test)|(sk_test)|(whsec))_\w*
