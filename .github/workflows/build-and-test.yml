@@ -26,6 +26,7 @@ jobs:
           "cspell": "https://raw.githubusercontent.com/check-spelling/cspell-dicts/v20220816/dictionaries/"
         }
       extra-dictionaries: |
+        cspell:software-terms/src/software-terms.txt
         lombiq:allow.txt
         lombiq:expect.txt
 
