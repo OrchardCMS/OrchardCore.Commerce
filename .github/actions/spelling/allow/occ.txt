@@ -1,10 +1,14 @@
 addressfield
+barbool
+bartext
 blogs
 CLA
 contentpart
 datetimefield
 disqus
 emoji
+foobool
+footext
 htmlfield
 mkdocs
 numericfield
@@ -15,5 +19,6 @@ pricefield
 roadmap
 skus
 testproduct
+unpublish
 webhooks
 workflows

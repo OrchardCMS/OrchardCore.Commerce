@@ -4,7 +4,6 @@
 \.csproj$
 \.css$
 \.css\.map$
-docs/requirements\.txt
 \.DotSettings$
 \.editorconfig$
 \.eslintrc$
@@ -15,7 +14,6 @@ docs/requirements\.txt
 \.json$
 \.min\.css$
 \.min\.js$
-\.mkdocs\.yaml$
 \.ndproj$
 \.nupkg$
 \.nuspec.template$
@@ -33,7 +31,9 @@ docs/requirements\.txt
 \.woff2$
 ^\.github/
 ^LICENSE\.txt$
+docs/requirements\.txt
 ignore$
+mkdocs\.yaml$
 pnpm-lock\.yaml$
 src/Libraries/OrchardCore\.Commerce\.MoneyDataType/Currency\.extra\.cs
 src/Modules/OrchardCore\.Commerce/Constants/CurrencyCollectionConstants\.cs
