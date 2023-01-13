@@ -30,6 +30,7 @@ jobs:
         cspell:csharp/csharp.txt
         cspell:css/css.txt
         cspell:django/django.txt
+        cspell:filetypes/filetypes.txt
         cspell:html/html.txt
         cspell:software-terms/src/software-terms.txt
         cspell:typescript/typescript.txt
