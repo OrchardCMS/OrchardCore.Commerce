@@ -36,7 +36,6 @@ Botswanan
 browsersync
 Cdp
 CHF
-chromedriver
 CLA
 clearpay
 CLP
@@ -87,7 +86,6 @@ endcapture
 endzone
 englishname
 Enums
-EUR
 executesql
 extname
 facebook
@@ -168,7 +166,6 @@ IDisposable
 IDistributed
 IDocument
 IDriver
-IDX
 IDynamic
 IEmail
 IEndpoint
@@ -493,7 +490,6 @@ Unpublish
 untick
 uploader
 USERPROFILE
-Utf
 UWq
 Uzbekistani
 versionable
