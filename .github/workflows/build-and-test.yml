@@ -12,7 +12,7 @@ jobs:
     name: Build and Test
     uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
     with:
-      machine-types: "[\"ubuntu-latest\", \"windows-latest\"]"
+      machine-types: '["ubuntu-latest", "windows-latest"]'
       timeout-minutes: 60
       set-up-sql-server: "true"
 
