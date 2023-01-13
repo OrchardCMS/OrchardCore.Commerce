@@ -32,4 +32,5 @@
 ^\.github/
 ^LICENSE\.txt$
 ignore$
+src/Libraries/OrchardCore\.Commerce\.MoneyDataType/Currency\.extra\.cs
 pnpm-lock\.yaml$
