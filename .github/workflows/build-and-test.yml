@@ -27,7 +27,9 @@ jobs:
         }
       extra-dictionaries: |
         cspell:cpp/src/cpp.txt
+        cspell:csharp/csharp.txt
         cspell:css/css.txt
+        cspell:django/django.txt
         cspell:html/html.txt
         cspell:software-terms/src/software-terms.txt
         cspell:typescript/typescript.txt
