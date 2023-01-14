@@ -10,6 +10,7 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class CheckoutViewModel : ShapeViewModel
 {
+    public string ShoppingCartId { get; init; }
     public Amount SingleCurrencyTotal { get; init; }
     public OrderPart OrderPart { get; init; }
     public string PaymentIntentClientSecret { get; init; }

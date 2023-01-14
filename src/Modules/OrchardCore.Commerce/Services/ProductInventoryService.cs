@@ -18,7 +18,10 @@ public class ProductInventoryService : IProductInventoryService
 
     public async Task<IList<ShoppingCartItem>> UpdateInventoriesAsync(IList<ShoppingCartItem> items)
     {
-        await _productInventoryProviders.UpdateWithFirstApplicableProviderAsync(items);
+        if (await _productInventoryProviders.GetFirstApplicableProviderAsync(items) is { } provider)
+        {
+            await provider.UpdateAsync(items);
+        }
 
         return items;
     }

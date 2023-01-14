@@ -31,7 +31,7 @@ public class OrderLineItemViewModelsAndTaxRatesConverterFilter : ILiquidFilter
             .ToList();
 
         var viewModels = (await _orderLineItemService
-            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems))
+            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, orderPart: null))
             .ViewModels;
 
         var viewModelsAndTaxRates = viewModels

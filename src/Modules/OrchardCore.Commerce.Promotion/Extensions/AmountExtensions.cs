@@ -17,7 +17,4 @@ public static class AmountExtensions
 
         return new(Math.Round(Math.Max(0, amount.Value - discountAmount.Value), 2), amount.Currency);
     }
-
-    public static bool IsValidAndPositive(this Amount amount) =>
-        amount.IsValid && amount.Value > 0;
 }

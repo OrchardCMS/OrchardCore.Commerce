@@ -40,6 +40,8 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
         Value >= 0 &&
         Currency.CurrencyIsoCode != MoneyDataType.Currency.UnspecifiedCurrency.CurrencyIsoCode;
 
+    public bool IsValidAndNonZero => Value > 0 && IsValid;
+
     [Obsolete($"Use {nameof(Unspecified)} instead.")]
     public Amount()
         : this(0, MoneyDataType.Currency.UnspecifiedCurrency)

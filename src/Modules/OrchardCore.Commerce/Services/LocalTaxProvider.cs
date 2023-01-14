@@ -4,7 +4,6 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,26 +30,15 @@ public class LocalTaxProvider : ITaxProvider
                     .Sum();
             });
 
-        return Task.FromResult(new PromotionAndTaxProviderContext(
-            items.Select(item => item with { UnitPrice = item.UnitPrice.WithTax(item.Content) }),
-            updatedTotals));
+        return Task.FromResult(model with
+        {
+            Items = items.Select(item => item with { UnitPrice = item.UnitPrice.WithTax(item.Content) }),
+            TotalsByCurrency = updatedTotals,
+        });
     }
 
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
-        Task.FromResult(IsApplicable(model.Items.Select(item => item.Content.ContentItem.As<TaxPart>()).ToList()));
-
-    private static bool IsApplicable(IList<TaxPart> taxParts)
-    {
-        var countWithGrossPrice = taxParts
-            .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value > 0);
-
-        if (countWithGrossPrice == 0) return false;
-
-        if (countWithGrossPrice < taxParts.Count)
-        {
-            throw new InvalidOperationException("Some, but not all products have gross price. This is invalid.");
-        }
-
-        return true;
-    }
+        ITaxProvider.AllOrNoneAsync(model, items => items
+            .Select(item => item.Content.ContentItem.As<TaxPart>())
+            .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value > 0));
 }

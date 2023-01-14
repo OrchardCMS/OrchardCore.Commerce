@@ -12,7 +12,7 @@ namespace OrchardCore.Commerce.ViewModels;
     "Usage",
     "CA2227:Collection properties should be read only",
     Justification = "We don't want to mess with the RouteValueDictionary, also it's just a view-model so it's safe.")]
-public class OrderLineItemViewModel
+public class OrderLineItemViewModel : ILineItem
 {
     [BindNever]
     public ProductPart ProductPart { get; set; }

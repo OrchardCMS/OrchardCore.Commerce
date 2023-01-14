@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
@@ -11,31 +14,33 @@ namespace OrchardCore.Commerce.Services;
 
 public class ShoppingCartHelpers : IShoppingCartHelpers
 {
+    private readonly IHttpContextAccessor _hca;
     private readonly IPriceService _priceService;
-    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IProductService _productService;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
 
     public ShoppingCartHelpers(
+        IHttpContextAccessor hca,
         IPriceService priceService,
-        IPriceSelectionStrategy priceSelectionStrategy,
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer,
-        IPromotionService promotionService)
+        IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
+        _hca = hca;
         _priceService = priceService;
-        _priceSelectionStrategy = priceSelectionStrategy;
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
         H = localizer;
     }
 
-    public async Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(string shoppingCartId)
+    public async Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(
+        string shoppingCartId,
+        Address shipping = null,
+        Address billing = null)
     {
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
@@ -71,9 +76,13 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         };
         IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
 
+        (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);
+
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
-            (totals, headers, lines) = await shoppingCartEvent.DisplayingAsync(totals, headers, lines);
+            (headers, lines) = await shoppingCartEvent.DisplayingAsync(new ShoppingCartDisplayingEventContext(
+                totals, headers, lines, shipping, billing));
+            totals = lines.CalculateTotals().ToList();
         }
 
         model.Totals.AddRange(totals);
@@ -95,7 +104,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         if (currentShoppingCart.Count == 0) return new Dictionary<string, Amount>();
 
-        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService, _priceSelectionStrategy);
+        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService);
         return totals.ToDictionary(total => total.Currency.CurrencyIsoCode);
     }
 }

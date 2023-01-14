@@ -13,6 +13,8 @@ using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
@@ -23,7 +25,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
-using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Services;
 using Stripe;
 using System;
@@ -55,6 +56,7 @@ public class PaymentController : Controller
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly INotifier _notifier;
+    private readonly IMoneyService _moneyService;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -70,7 +72,8 @@ public class PaymentController : Controller
         IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
         IShoppingCartPersistence shoppingCartPersistence,
-        INotifier notifier)
+        INotifier notifier,
+        IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -90,75 +93,69 @@ public class PaymentController : Controller
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
         _notifier = notifier;
+        _moneyService = moneyService;
     }
 
     [Route("checkout")]
     public async Task<IActionResult> Index(string shoppingCartId = null)
     {
-        var isAuthenticated = User.Identity?.IsAuthenticated == true;
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
-            return isAuthenticated ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
+            return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId) is not { } cart)
+        if (await CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
         {
             return RedirectToAction(
                 nameof(ShoppingCartController.Empty),
                 typeof(ShoppingCartController).ControllerName());
         }
 
-        var orderPart = new OrderPart();
-
-        if (await _userManager.GetUserAsync(User) is User user &&
-            user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() is { } userAddresses)
-        {
-            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
-            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
-            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
-        }
-
-        var email = isAuthenticated
-            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
-            : string.Empty;
-
-        orderPart.Email.Text = email;
-        orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
-        orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
-
-        var total = cart.Totals.Single();
-
-        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
-                await _contentManager.NewAsync(Order),
-                "Checkout"))
-            .ToList();
-
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-        var initPaymentIntent = new PaymentIntent();
-        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
-            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
-        {
-            var paymentIntentId = _paymentIntentPersistence.Retrieve();
-            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
-        }
-
-        var checkoutViewModel = new CheckoutViewModel
-        {
-            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
-            OrderPart = orderPart,
-            SingleCurrencyTotal = total,
-            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            UserEmail = email,
-            CheckoutShapes = checkoutShapes,
-            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
-        };
-
-        foreach (dynamic shape in checkoutShapes) shape.ViewModel = checkoutViewModel;
+        foreach (dynamic shape in checkoutViewModel.CheckoutShapes) shape.ViewModel = checkoutViewModel;
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
 
         return View(checkoutViewModel);
     }
+
+    [Route("checkout/price")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Price(string shoppingCartId) =>
+        await this.SafeJsonAsync(async () =>
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
+            {
+                throw new InvalidOperationException("Unauthorized.");
+            }
+
+            var updater = _updateModelAccessor.ModelUpdater;
+            var shippingViewModel = new AddressFieldViewModel();
+            var billingViewModel = new AddressFieldViewModel();
+            if (!await updater.TryUpdateModelAsync(shippingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.ShippingAddress)}") ||
+                !await updater.TryUpdateModelAsync(billingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.BillingAddress)}"))
+            {
+                throw new InvalidOperationException(
+                    _updateModelAccessor.ModelUpdater.GetModelErrorMessages().JoinNotNullOrEmpty());
+            }
+
+            var checkoutViewModel = await CreateCheckoutViewModelAsync(
+                shoppingCartId,
+                part =>
+                {
+                    part.ShippingAddress.Address = shippingViewModel.Address ?? part.ShippingAddress.Address;
+                    part.BillingAddress.Address = billingViewModel.Address ?? part.BillingAddress.Address;
+                });
+
+            var total = checkoutViewModel?.SingleCurrencyTotal ?? new Amount(0, _moneyService.DefaultCurrency);
+
+            return new
+            {
+                total.Value,
+                Currency = total.Currency.CurrencyIsoCode,
+                Text = total.ToString(),
+            };
+        });
 
     [Route("checkout/validate")]
     [HttpPost]
@@ -288,5 +285,61 @@ public class PaymentController : Controller
 
         // Set back to default, because a new payment intent should be created on the next checkout.
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
+    }
+
+    private async Task<CheckoutViewModel> CreateCheckoutViewModelAsync(
+        string shoppingCartId,
+        Action<OrderPart> updateOrderPart = null)
+    {
+        var orderPart = new OrderPart();
+
+        if (await HttpContext.GetUserAddressAsync() is { } userAddresses)
+        {
+            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
+            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
+            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
+        }
+
+        var email = User.Identity?.IsAuthenticated == true
+            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
+            : string.Empty;
+
+        orderPart.Email.Text = email;
+        orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
+        orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
+
+        updateOrderPart?.Invoke(orderPart);
+
+        var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+            shoppingCartId,
+            orderPart.ShippingAddress.Address,
+            orderPart.BillingAddress.Address);
+        if (cart?.Totals.Single() is not { } total) return null;
+
+        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
+                await _contentManager.NewAsync(Order),
+                "Checkout"))
+            .ToList();
+
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var initPaymentIntent = new PaymentIntent();
+        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
+            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
+        {
+            var paymentIntentId = _paymentIntentPersistence.Retrieve();
+            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
+        }
+
+        return new CheckoutViewModel
+        {
+            ShoppingCartId = shoppingCartId,
+            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
+            OrderPart = orderPart,
+            SingleCurrencyTotal = total,
+            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            UserEmail = email,
+            CheckoutShapes = checkoutShapes,
+            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
+        };
     }
 }

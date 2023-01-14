@@ -11,12 +11,10 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class ShoppingCart
 {
-    private readonly List<ShoppingCartItem> _items;
-
     /// <summary>
     /// Gets the list of quantities of product variants in the cart.
     /// </summary>
-    public IList<ShoppingCartItem> Items => _items;
+    public IList<ShoppingCartItem> Items { get; }
 
     /// <summary>
     /// Gets the number of lines in the cart.
@@ -46,7 +44,7 @@ public class ShoppingCart
     /// </para>
     /// </remarks>
     public ShoppingCart(IEnumerable<ShoppingCartItem> items) =>
-        _items = new List<ShoppingCartItem>(items ?? Enumerable.Empty<ShoppingCartItem>());
+        Items = new List<ShoppingCartItem>(items ?? Enumerable.Empty<ShoppingCartItem>());
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
@@ -93,10 +91,9 @@ public class ShoppingCart
     /// <param name="item">The product variant to remove. Quantity will be ignored.</param>
     public void RemoveItem(ShoppingCartItem item)
     {
-        var existingIndex = IndexOf(item);
-        if (existingIndex != -1)
+        if (Items.FirstOrDefault(line => line.IsSameProductAs(item)) is { } itemToRemove)
         {
-            Items.Remove(Items[existingIndex]);
+            Items.Remove(itemToRemove);
         }
     }
 
@@ -112,8 +109,7 @@ public class ShoppingCart
                 $"Can't set prices for product \"{item.ProductSku}\" because it's not in the cart.");
         }
 
-        Items.Remove(Items[existingIndex]);
-        Items.Insert(existingIndex, item.WithPrices(prioritizedPrices));
+        Items[existingIndex] = item.WithPrices(prioritizedPrices);
     }
 
     /// <summary>
@@ -122,5 +118,16 @@ public class ShoppingCart
     /// </summary>
     /// <param name="item">The item to find.</param>
     /// <returns>The index of the item, or -1 if not found.</returns>
-    private int IndexOf(ShoppingCartItem item) => _items.FindIndex(line => line.IsSameProductAs(item));
+    private int IndexOf(ShoppingCartItem item)
+    {
+        for (int i = 0; i < Items.Count; i++)
+        {
+            if (Items[i].IsSameProductAs(item))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 }

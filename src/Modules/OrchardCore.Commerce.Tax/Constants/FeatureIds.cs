@@ -4,4 +4,5 @@ public static class FeatureIds
 {
     public const string Area = "OrchardCore.Commerce.Tax";
     public const string Tax = Area;
+    public const string CustomTaxRates = $"{Area}.{nameof(CustomTaxRates)}";
 }

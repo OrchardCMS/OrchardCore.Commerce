@@ -1,7 +1,6 @@
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,5 +17,5 @@ public interface IOrderLineItemService
     /// </summary>
     Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
         IList<OrderLineItem> lineItems,
-        DateTime? publishDateTime = null);
+        OrderPart orderPart);
 }
