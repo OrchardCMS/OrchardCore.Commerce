@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using System;
@@ -27,16 +26,21 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
         _promotionService = promotionService;
     }
 
-    public override async Task<(IList<Amount> Totals, IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
-        IList<Amount> totals,
-        IList<LocalizedHtmlString> headers,
-        IList<ShoppingCartLineViewModel> lines)
+    public override async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
+        ShoppingCartDisplayingEventContext eventContext)
     {
-        var context = new PromotionAndTaxProviderContext(lines, totals, DateTime.UtcNow);
+        var headers = eventContext.Headers;
+        var lines = eventContext.Lines;
+        var context = new PromotionAndTaxProviderContext(
+            lines,
+            eventContext.Totals,
+            eventContext.ShippingAddress,
+            eventContext.BillingAddress,
+            DateTime.UtcNow);
 
         if (!await _promotionService.IsThereAnyApplicableProviderAsync(context))
         {
-            return (totals, headers, lines);
+            return (headers, lines);
         }
 
         var newHeaders = headers.ToList();
@@ -65,6 +69,6 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
             }
         }
 
-        return (context.TotalsByCurrency.ToList(), newHeaders, lines);
+        return (newHeaders, lines);
     }
 }

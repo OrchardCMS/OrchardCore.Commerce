@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
 using OrchardCore.Users.Models;
 using System;
 using System.Security.Claims;
@@ -22,6 +23,11 @@ public interface IUserService
     /// user then also creates it.
     /// </summary>
     Task AlterUserSettingAsync(User user, string contentType, Func<JObject, JObject> updateContentItemJson);
+
+    /// <summary>
+    /// Retrieves a <see cref="ContentItem"/> that belongs to the custom user setting.
+    /// </summary>
+    ContentItem GetUserSetting(User user, string contentType);
 }
 
 public static class UserServiceExtensions
@@ -31,4 +37,11 @@ public static class UserServiceExtensions
         hca.HttpContext.User.Identity?.IsAuthenticated == true
             ? service.GetFullUserAsync(user)
             : Task.FromResult<User>(null);
+
+    public static TPart GetUserSetting<TPart>(this IUserService service, User user, string contentType = null)
+        where TPart : ContentPart
+    {
+        contentType ??= typeof(TPart).Name.RegexReplace("Part$", string.Empty);
+        return service.GetUserSetting(user, contentType)?.As<TPart>();
+    }
 }

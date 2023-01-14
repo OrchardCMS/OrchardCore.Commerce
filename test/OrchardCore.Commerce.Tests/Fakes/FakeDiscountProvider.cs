@@ -31,7 +31,11 @@ public class FakeDiscountProvider : IPromotionProvider
                     .Sum();
             });
 
-        return Task.FromResult(new PromotionAndTaxProviderContext(newContextLineItems, updatedTotals));
+        return Task.FromResult(new PromotionAndTaxProviderContext(
+            newContextLineItems,
+            updatedTotals,
+            ShippingAddress: null,
+            BillingAddress: null));
     }
 
     // IPromotionProvider's method needs to be created, but implementation is unnecessary as the tests do not use it.

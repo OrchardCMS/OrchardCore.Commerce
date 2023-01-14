@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using System;
@@ -13,17 +14,20 @@ namespace OrchardCore.Commerce.Services;
 
 public class OrderLineItemService : IOrderLineItemService
 {
+    private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
     private readonly IPromotionService _promotionService;
 
     public OrderLineItemService(
+        IHttpContextAccessor hca,
         IProductService productService,
         IContentManager contentManager,
         IEnumerable<ITaxProvider> taxProviders,
         IPromotionService promotionService)
     {
+        _hca = hca;
         _productService = productService;
         _contentManager = contentManager;
         _taxProviders = taxProviders;
@@ -32,7 +36,7 @@ public class OrderLineItemService : IOrderLineItemService
 
     public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
         IList<OrderLineItem> lineItems,
-        DateTime? publishDateTime = null)
+        OrderPart orderPart)
     {
         var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
             lineItems.Select(line => line.ContentItemVersion));
@@ -54,25 +58,36 @@ public class OrderLineItemService : IOrderLineItemService
             };
         }));
 
-        var total = viewModelLineItems.Select(item => item.LinePrice).Sum();
+        var (shipping, billing) = await _hca.GetUserAddressIfNullAsync(
+            orderPart?.ShippingAddress.Address,
+            orderPart?.BillingAddress.Address);
 
         var promotionAndTaxContext = new PromotionAndTaxProviderContext(
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
                 products[item.ProductSku],
                 item.UnitPrice,
                 item.Quantity)),
-            new[] { total },
-            publishDateTime);
+            viewModelLineItems.CalculateTotals().ToList(),
+            shipping,
+            billing,
+            orderPart?.ContentItem?.PublishedUtc ?? DateTime.UtcNow);
+        var changed = false;
 
-        if (_taxProviders.Any())
+        if (_taxProviders.Any() &&
+            await _taxProviders.GetFirstApplicableProviderAsync(promotionAndTaxContext) is { } taxProvider)
         {
-            promotionAndTaxContext = await _taxProviders.UpdateWithFirstApplicableProviderAsync(promotionAndTaxContext);
+            promotionAndTaxContext = await taxProvider.UpdateAsync(promotionAndTaxContext);
+            changed = true;
         }
 
         if (await _promotionService.IsThereAnyApplicableProviderAsync(promotionAndTaxContext))
         {
             promotionAndTaxContext = await _promotionService.AddPromotionsAsync(promotionAndTaxContext);
+            changed = true;
+        }
 
+        if (changed)
+        {
             foreach (var (item, index) in promotionAndTaxContext.Items.Select((item, index) => (item, index)))
             {
                 var lineItem = viewModelLineItems[index];
@@ -81,8 +96,6 @@ public class OrderLineItemService : IOrderLineItemService
             }
         }
 
-        total = promotionAndTaxContext.TotalsByCurrency.Single();
-
-        return (viewModelLineItems, total);
+        return (viewModelLineItems, viewModelLineItems.CalculateTotals().Single());
     }
 }

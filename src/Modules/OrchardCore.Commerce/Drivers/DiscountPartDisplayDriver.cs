@@ -41,7 +41,7 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
                 notNullPrice = notNullPrice.WithDiscount((decimal)discountPercentage);
             }
 
-            if (discountAmount.IsValidAndPositive())
+            if (discountAmount.IsValidAndNonZero)
             {
                 notNullPrice = notNullPrice.WithDiscount(discountAmount);
             }

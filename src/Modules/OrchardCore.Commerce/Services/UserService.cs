@@ -41,4 +41,10 @@ public class UserService : IUserService
         user.Properties[contentType] = updateContentItemJson(contentItem);
         _session.Save(user);
     }
+
+    public ContentItem GetUserSetting(User user, string contentType) =>
+        user?
+            .Properties
+            .GetValue(contentType)?
+            .ToObject<ContentItem>();
 }

@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -85,8 +86,12 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId)
     {
-        var totals = (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId: null)).Totals;
-        CheckTotals(totals);
+        var orderPart = (await GetOrderByPaymentIntentIdAsync(paymentIntentId))?.As<OrderPart>();
+        var totals = CheckTotals(
+            await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+                shoppingCartId: null,
+                orderPart?.ShippingAddress.Address,
+                orderPart?.BillingAddress.Address));
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
@@ -131,8 +136,7 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent)
     {
-        var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
-        var order = await _contentManager.GetAsync(orderId);
+        var order = await GetOrderByPaymentIntentIdAsync(paymentIntent.Id);
         order.Alter<OrderPart>(orderPart =>
         {
             // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -160,8 +164,7 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
     {
-        var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
-        var order = await _contentManager.GetAsync(orderId);
+        var order = await GetOrderByPaymentIntentIdAsync(paymentIntent.Id);
         order.Alter<OrderPart>(orderPart =>
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.PaymentFailed.HtmlClassify() });
 
@@ -178,11 +181,6 @@ public class StripePaymentService : IStripePaymentService
         IUpdateModelAccessor updateModelAccessor)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-
-        var totals = (await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId: null)).Totals;
-        CheckTotals(totals);
-
-        var defaultTotal = totals.SingleOrDefault();
 
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 
@@ -234,6 +232,12 @@ public class StripePaymentService : IStripePaymentService
                 _priceService,
                 contentItemVersion));
         }
+
+        var defaultTotal = CheckTotals(await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+                shoppingCartId: null,
+                order.As<OrderPart>().ShippingAddress.Address,
+                order.As<OrderPart>().BillingAddress.Address))
+            .SingleOrDefault();
 
         order.Alter<OrderPart>(orderPart =>
         {
@@ -335,11 +339,19 @@ public class StripePaymentService : IStripePaymentService
             _requestOptions.SetIdempotencyKey());
     }
 
-    private static void CheckTotals(IEnumerable<Amount> totals)
+    private static IList<Amount> CheckTotals(ShoppingCartViewModel viewModel)
     {
-        if (!totals.Any())
+        if (!viewModel.Totals.Any())
         {
             throw new InvalidOperationException("Cannot create a payment without shopping cart total(s)!");
         }
+
+        return viewModel.Totals;
+    }
+
+    private async Task<ContentItem> GetOrderByPaymentIntentIdAsync(string paymentIntentId)
+    {
+        var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntentId))?.OrderId;
+        return await _contentManager.GetAsync(orderId);
     }
 }

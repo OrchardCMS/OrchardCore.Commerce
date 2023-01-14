@@ -67,6 +67,59 @@ public class TaxBehaviourTests : UITestBase
             },
             browser);
 
+    [Theory, Chrome]
+    public Task ProductDetailsShouldShowCorrectTaxRates(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                await context.SignInDirectlyAsync();
+                await context.ExecuteRecipeDirectlyAsync("OrchardCore.Commerce.Samples.CustomTaxRates");
+
+                var selector = By.CssSelector(".price-part-price-field-value, .tax-rate-gross-price-value");
+                async Task VerifyPriceAsync(string expectedPrice)
+                {
+                    await context.GoToContentItemByIdAsync(TestProduct);
+                    context.Exists(selector);
+                    context.GetAll(selector).Last().Text.Trim().ShouldBe(expectedPrice);
+                }
+
+                async Task UpdateAddressAndVerifyPriceAsync(Func<Task> configure, string expectedPrice)
+                {
+                    await context.GoToRelativeUrlAsync("/user/addresses");
+                    await configure();
+                    await context.ClickReliablyOnSubmitAsync();
+                    await VerifyPriceAsync(expectedPrice);
+                }
+
+                By ByField(string name) => By.Id("UserAddressesPart_BillingAddress_Address_" + name);
+
+                await VerifyPriceAsync("$5.00");
+
+                await UpdateAddressAndVerifyPriceAsync(
+                    async () =>
+                    {
+                        await context.SetCheckboxValueAsync(By.Id("UserAddressesPart_BillingAndShippingAddressesMatch_Value"), isChecked: true);
+                        await context.ClickAndFillInWithRetriesAsync(ByField("Name"), "Test Customer");
+                        await context.ClickAndFillInWithRetriesAsync(ByField("StreetAddress1"), "Test Address");
+                        await context.ClickAndFillInWithRetriesAsync(ByField("City"), "Test City");
+                        await context.SetDropdownByValueAsync(ByField("Region"), "HU");
+                    },
+                    "$6.25");
+
+                await UpdateAddressAndVerifyPriceAsync(
+                    async () =>
+                    {
+                        await context.SetDropdownByValueAsync(ByField("Region"), "US");
+                        await context.SetDropdownByValueAsync(ByField("Province"), "NY");
+                    },
+                    "$5.20");
+
+                await UpdateAddressAndVerifyPriceAsync(
+                    async () => await context.SetDropdownByValueAsync(ByField("Province"), "NJ"),
+                    "$5.33");
+            },
+            browser);
+
     private static void FieldShouldBe(UITestContext context, string id, decimal value) =>
         decimal
             .Parse(context.Get(By.Id(id)).GetAttribute("value"), CultureInfo.InvariantCulture)

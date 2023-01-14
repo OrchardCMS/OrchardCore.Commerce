@@ -35,7 +35,7 @@ public class DiscountProvider : IPromotionProvider
                     .Sum();
             });
 
-        return Task.FromResult(new PromotionAndTaxProviderContext(newContextLineItems, updatedTotals));
+        return Task.FromResult(model with { Items = newContextLineItems, TotalsByCurrency = updatedTotals });
     }
 
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
@@ -93,7 +93,7 @@ public class DiscountProvider : IPromotionProvider
                 newPrice = newPrice.WithDiscount((decimal)discountPercentage);
             }
 
-            if (discountAmount.IsValidAndPositive())
+            if (discountAmount.IsValidAndNonZero)
             {
                 newPrice = newPrice.WithDiscount(discountAmount);
             }

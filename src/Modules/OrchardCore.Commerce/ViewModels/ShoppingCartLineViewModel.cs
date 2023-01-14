@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class ShoppingCartLineViewModel
+public class ShoppingCartLineViewModel : ILineItem
 {
     public IDictionary<string, IProductAttributeValue> Attributes { get; }
     public int Quantity { get; set; }

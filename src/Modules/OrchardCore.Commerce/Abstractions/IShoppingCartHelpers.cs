@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -15,7 +16,10 @@ public interface IShoppingCartHelpers
     /// Creates a model from the current shopping cart. This includes everything except the <see cref="IShape"/>
     /// collection in <see cref="ShoppingCartViewModel.TableShapes"/>.
     /// </summary>
-    Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(string shoppingCartId);
+    Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(
+        string shoppingCartId,
+        Address shipping = null,
+        Address billing = null);
 
     /// <summary>
     /// Calculate the total value in the cart. All prices must be of a single currency.
