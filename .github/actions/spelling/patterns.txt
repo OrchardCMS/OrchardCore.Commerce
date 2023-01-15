@@ -1,24 +1,33 @@
-[Ll][Oo][Mm][Bb][Ii][Qq]
-(\((.*?)\))
-(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})
-[Hh]ome[Pp]age
-[Dd]otnet
-[Ll][Ii][Nn][Qq]
-[Ll]ocalhost
-[Mm][Vv][Cc]
-[Uu]ncomment
-[Jj]ira
-[Ii][Ii][Ss]
-[Cc]mdlet
-[Aa]tata
-[Cc][Ll][Oo][Uu][Dd][Ss][Mm][Ii][Tt][Hh]
-[Ss][Dd][Kk]
-[Rr][Ee][Aa][Dd][Mm][Ee]
-[Oo][Ss][Oo][Cc][Ee]
-[Ss][Ff][Cc]
-[Xx][Uu]nit
-[Xx][Pp][Aa][Tt][Hh]
-[Rr]eadme
+# URL formats. Match until the first whitespace character. Intentionally do not validate URLs to keep patterns simple.
+https?:\/\/\S+
+www.\S+
 
-# Webhook keys.
-(whsec_)([a-z0-9-]*)
+# GUIDs with or without hyphens.
+\b[0-9a-fA-F]{8}-?(([0-9a-fA-F]{4}-?){3})[0-9a-fA-F]{12}\b
+
+# SHA checksums.
+sha[0-9]{3}-[0-9a-zA-Z+/]{64}
+
+# Orchard Core content item IDs.
+\b[0-9a-z]{26}\b
+
+# Git commit hashes.
+\b[0-9a-f]{40}\b
+
+# Hex color codes.
+(?:#[0-9a-fA-F]{3,6})\b
+
+# Hexadecimal literals in C# code.
+\b0x[0-9a-fA-F]+\b
+
+# Match the "I" from the beginning of interface names and the "T" from the beginning of generic type parameter names.
+# The pattern matches, if the first letter is "I" or "T", followed by a capital letter, followed by a word character
+# that is not a capital letter, followed by 0 or more word characters. Only the first letter is captured, so the rest is
+# still spell-checked as they are usually made up of actual words.
+\b(I|T)(?=[A-Z][a-z0-9_]\w*)
+
+# Ignore lines that contain the "#spell-check-ignore-line" marker text.
+.*#spell-check-ignore-line.*
+
+# Stripe API key patterns.
+((pk_test)|(sk_test)|(whsec))_\w*

@@ -24,12 +24,13 @@ public class PersistencePriceVariantsTests : UITestBase
                 await context.SignInDirectlyAsync();
                 await context.CreateNewContentItemAsync("TestPriceVariantsProduct");
 
-                const string sku = "UITESTSKU";
+                const string sku = "UITESTSKU"; // #spell-check-ignore-line
+                const string currency = "HUF"; // #spell-check-ignore-line
                 const string price = "9999";
 
                 await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), sku);
                 await context.ClickAndFillInWithRetriesAsync(By.Id("PriceVariantsPart_VariantsValues__"), price);
-                await context.SetDropdownByTextAsync("PriceVariantsPart_VariantsCurrencies__", "HUF");
+                await context.SetDropdownByTextAsync("PriceVariantsPart_VariantsCurrencies__", currency);
 
                 await context.ClickReliablyOnSubmitAsync();
                 context.ShouldBeSuccess();
@@ -42,7 +43,7 @@ public class PersistencePriceVariantsTests : UITestBase
                 context.Get(By.CssSelector("#PriceVariantsPart_VariantsCurrencies__ option:checked")
                         .OfAnyVisibility())
                     .Text
-                    .ShouldBe("HUF");
+                    .ShouldBe(currency);
 
                 context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999.00");
             },

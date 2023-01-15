@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IPayment
 {
     /// <summary>
-    /// Gets the kind of charge, such as "Credit Card", "Cash", "Bitcoin", atc.
+    /// Gets the kind of charge, such as "Credit Card", "Cash", "Bitcoin", etc.
     /// </summary>
     string Kind { get; }
 

@@ -12,7 +12,7 @@ public class TestMoneyService : MoneyService
             new ICurrencyProvider[]
             {
                 new CurrencyProvider(),
-                new AnkhMorporkCurrencyProvider(),
+                new AnkhMorporkCurrencyProvider(), // #spell-check-ignore-line
             },
             new TestOptions<CurrencySettings>(new CurrencySettings { DefaultCurrency = "EUR" }),
             new NullCurrencySelector())

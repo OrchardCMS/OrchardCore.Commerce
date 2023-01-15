@@ -16,7 +16,7 @@ public class CurrencyTests
         { BritishPound, 1234.56m, "£1,234.56" },
         { AustralianDollar, 1234.56m, "$1,234.56" },
         { CanadianDollar, 1234.56m, "$1,234.56" },
-        { SwissFranc, 1234.56m, "CHF 1’234.56" },
+        { SwissFranc, 1234.56m, "CHF 1’234.56" }, // #spell-check-ignore-line
         { ChineseYuan, 1234.56m, "¥1,234.56" },
         { new Currency("My FOO", "My FOO", "f", "FOO"), 1234.56m, FormattableString.Invariant($"(FOO) {1234.56m:N}") },
     };
