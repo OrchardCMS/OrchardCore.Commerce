@@ -28,7 +28,7 @@ public static class PaymentExtensions
             "card" => "Card",
             "card_present" => "Stripe Terminal",
             "customer_balance" => "Cash balance",
-            "eps" => "EPS", // #spell-check-ignore-line
+            "eps" => "EPS",
             "fpx" => "FPX",
             "giropay" => "giropay",
             "grabpay" => "GrabPay",

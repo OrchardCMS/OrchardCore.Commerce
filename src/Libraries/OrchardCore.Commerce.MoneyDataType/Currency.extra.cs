@@ -6,8 +6,6 @@ using System.Globalization;
 
 namespace OrchardCore.Commerce.MoneyDataType;
 
-// Unrecognized (but valid) entries in a spell checking report should be added to
-// ".github/actions/spelling/allow/currency.txt".
 public readonly partial struct Currency
 {
     private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
