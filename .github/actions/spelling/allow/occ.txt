@@ -1,7 +1,9 @@
 addressfield
 barbool
 bartext
+Bitcoin
 blogs
+BTC
 CLA
 contentpart
 datetimefield
