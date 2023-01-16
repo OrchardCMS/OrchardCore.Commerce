@@ -253,10 +253,6 @@ public class TaxStartup : StartupBase
             .AddContentPart<PricePart>()
             .AddHandler<TaxPartAndPricePartHandler>();
 
-        services
-            .AddContentPart<TaxPart>()
-            .UseDisplayDriver<TaxRateTaxPartDisplayDriver>();
-
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
     }
 }
@@ -280,6 +276,10 @@ public class TaxRateStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services
+            .AddContentPart<TaxPart>()
+            .UseDisplayDriver<TaxRateTaxPartDisplayDriver>();
+
         services.AddScoped<ITaxProvider, TaxRateTaxProvider>();
         services.AddScoped<TaxRateTaxProvider>();
     }
