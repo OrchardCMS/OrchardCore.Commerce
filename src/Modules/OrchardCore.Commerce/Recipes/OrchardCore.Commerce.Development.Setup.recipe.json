@@ -7,7 +7,7 @@
   "version": "1.0",
   "issetuprecipe": true,
   "categories": [ "orchardcorecommerce" ],
-  "tags": [],
+  "tags": [ "HideFromSetupScreen" ],
 
   "steps": [
     {
