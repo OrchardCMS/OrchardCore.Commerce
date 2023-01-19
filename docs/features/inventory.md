@@ -11,4 +11,4 @@ The local inventory management can help your shop in preventing back-orders or m
 
 The inventory count is reduced after the payment is completed, so back orders are still possible. This is preferable to reducing inventory when the product is added to the cart, which could be abused.
 
-Note that the _InventoryPart-AllowsBackOrder_, _InventoryPart-IgnoreInventory_, _InventoryPart-MaximumOrderQuantity_, and _InventoryPart-MinimumOrderQuantity_ shapes are empty by default, to reduce clutter on the product page. If you want to display them, go to Design > Templates in the admin dashboard and create a new template for the one you wish to override. 
+Note that the _InventoryPart-AllowsBackOrder_, _InventoryPart-IgnoreInventory_, _InventoryPart-MaximumOrderQuantity_, and _InventoryPart-MinimumOrderQuantity_ shapes are empty by default, to reduce clutter on the product page. If you want to display them, go to Design > Templates in the admin dashboard and create a new template for the one you wish to override.
