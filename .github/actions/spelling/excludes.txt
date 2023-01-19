@@ -40,3 +40,4 @@ src/Modules/OrchardCore\.Commerce/Constants/CurrencyCollectionConstants\.cs
 src/Modules/OrchardCore\.Commerce/Extensions/PaymentExtensions\.cs
 test/OrchardCore\.Commerce\.Tests/Fakes/AnkhMorporkCurrencyProvider\.cs
 test/OrchardCore\.Commerce\.Tests/ProductAttributeTests\.cs
+docs/releases
