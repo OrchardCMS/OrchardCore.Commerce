@@ -35,7 +35,11 @@ This project uses `Lombiq Node.js Extensions` to compile and lint client-side as
 
 ## Documentation
 
+- [Inventory](docs/features/inventory.md)
+- [Products and Prices](docs/features/products-and-prices.md)
+- [Promotions](docs/features/promotions.md)
 - [Stripe Payment](docs/features/stripe-payment.md)
+- [Taxation](docs/features/taxation.md)
 
 ## Demo video
 

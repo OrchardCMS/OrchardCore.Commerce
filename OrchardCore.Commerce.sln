@@ -61,6 +61,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B2DB1CD-2B4A-4823-9762-CF4E90661404}"
 	ProjectSection(SolutionItems) = preProject
 		docs\features\stripe-payment.md = docs\features\stripe-payment.md
+		docs\features\products-and-prices.md = docs\features\products-and-prices.md
+		docs\features\taxation.md = docs\features\taxation.md
+		docs\features\promotions.md = docs\features\promotions.md
+		docs\features\inventory.md = docs\features\inventory.md
+		docs\features\user-features.md = docs\features\user-features.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "releases", "releases", "{E4DD8D47-02FA-41F7-8133-CBC4419645F5}"
