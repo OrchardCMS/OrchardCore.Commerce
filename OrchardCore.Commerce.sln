@@ -52,6 +52,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Promot
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Inventory", "src\Modules\OrchardCore.Commerce.Inventory\OrchardCore.Commerce.Inventory.csproj", "{93871E12-0083-4323-BB7B-3CDA6E332D87}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{BEBA1764-178A-4722-A193-4DEF26DCE8D1}"
+	ProjectSection(SolutionItems) = preProject
+		docs\index.md = docs\index.md
+		docs\requirements.txt = docs\requirements.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B2DB1CD-2B4A-4823-9762-CF4E90661404}"
+	ProjectSection(SolutionItems) = preProject
+		docs\features\stripe-payment.md = docs\features\stripe-payment.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "releases", "releases", "{E4DD8D47-02FA-41F7-8133-CBC4419645F5}"
+	ProjectSection(SolutionItems) = preProject
+		docs\releases\0.0.1.md = docs\releases\0.0.1.md
+		docs\releases\1.0.0.md = docs\releases\1.0.0.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,6 +133,8 @@ Global
 		{608F7404-4879-43EE-9B20-4A019682BF20} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{87C422CA-C6F2-408F-987B-C8418995A331} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{93871E12-0083-4323-BB7B-3CDA6E332D87} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
+		{9B2DB1CD-2B4A-4823-9762-CF4E90661404} = {BEBA1764-178A-4722-A193-4DEF26DCE8D1}
+		{E4DD8D47-02FA-41F7-8133-CBC4419645F5} = {BEBA1764-178A-4722-A193-4DEF26DCE8D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}
