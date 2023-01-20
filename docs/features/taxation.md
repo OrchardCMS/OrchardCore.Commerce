@@ -15,7 +15,7 @@ Filling out the _Gross Price_ and _Tax Rate_ (percentage) fields, automatically 
 
 ## Locally maintained tax rates
 
-If you only ship to a restricted list of locations, it should be enough to look up the VAT or sales tax rates to those locations. This way you don't have to subscribe to [an external service](https://github.com/OrchardCMS/OrchardCore.Commerce/issues/159).
+If you only ship to a restricted list of locations, it should be enough to look up the VAT or sales tax rates to those locations. This way, you don't have to subscribe to [an external service](https://github.com/OrchardCMS/OrchardCore.Commerce/issues/159).
 
 1. Enable the _Orchard Core Commerce - Custom Tax Rates_ feature.
 2. Go to _Configuration_ → _Commerce_ → _Custom Tax Rates_ in the admin dashboard.
