@@ -18,7 +18,7 @@ Filling out the _Gross Price_ and _Tax Rate_ (percentage) fields, automatically 
 If you only ship to a restricted list of locations, it should be enough to look up the VAT or sales tax rates to those locations. This way you don't have to subscribe to [an external service](https://github.com/OrchardCMS/OrchardCore.Commerce/issues/159).
 
 1. Enable the _Orchard Core Commerce - Custom Tax Rates_ feature.
-2. Go to _Configuration_ > _Commerce_ > _Custom Tax Rates_ in the admin dashboard.
+2. Go to _Configuration_ → _Commerce_ → _Custom Tax Rates_ in the admin dashboard.
 3. You can fill out the City, State, Postal code, Country, and Tax code columns to match against a product.
    - These fields use [regular expressions](https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions) for more flexibility, though usually you can just treat them as raw text.
    - The state and country codes are the same as the POST values used during checkout, e.g. use US and NY instead of United States and New York respectively.
