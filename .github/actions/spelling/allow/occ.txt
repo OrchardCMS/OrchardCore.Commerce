@@ -11,6 +11,7 @@ disqus
 emoji
 foobool
 footext
+GST
 htmlfield
 mkdocs
 numericfield
