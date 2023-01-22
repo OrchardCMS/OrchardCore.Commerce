@@ -75,12 +75,12 @@ plugins:
 nav:
   - About: index.md
   - Key Features:
-    - Inventory: inventory.md
-    - Products and Prices: products-and-prices.md
-    - Promotions: promotions.md
-    - Stripe Payment: stripe-payment.md
-    - Taxation: taxation.md
-    - User Features: user-features.md
+    - Inventory: features/inventory.md
+    - Products and Prices: features/products-and-prices.md
+    - Promotions: features/promotions.md
+    - Stripe Payment: features/stripe-payment.md
+    - Taxation: features/taxation.md
+    - User Features: features/user-features.md
   - Resources:
     - Libraries: resources/libraries/README.md
   - Releases:
