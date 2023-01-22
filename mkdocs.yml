@@ -74,7 +74,15 @@ plugins:
 # Page tree
 nav:
   - About: index.md
+  - Key Features:
+    - Inventory: inventory.md
+    - Products and Prices: products-and-prices.md
+    - Promotions: promotions.md
+    - Stripe Payment: stripe-payment.md
+    - Taxation: taxation.md
+    - User Features: user-features.md
   - Resources:
-      - Libraries: resources/libraries/README.md
+    - Libraries: resources/libraries/README.md
   - Releases:
-      - 0.0.1: releases/0.0.1.md
+    - 0.0.1: releases/0.0.1.md
+    - 1.0.0: releases/1.0.0.md
