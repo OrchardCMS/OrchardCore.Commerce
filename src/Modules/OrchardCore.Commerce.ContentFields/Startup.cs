@@ -21,5 +21,9 @@ public class Startup : StartupBase
         services.AddContentField<PriceField>()
             .UseDisplayDriver<PriceFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, PriceFieldSettingsDriver>();
+
+        // Role Picker Field
+        services.AddContentField<RolePickerField>()
+            .UseDisplayDriver<RolePickerFieldDisplayDriver>();
     }
 }
