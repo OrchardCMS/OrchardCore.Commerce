@@ -268,6 +268,7 @@ public class PromotionStartup : StartupBase
             .UseDisplayDriver<DiscountPartDisplayDriver>();
 
         services.AddScoped<IPromotionProvider, DiscountProvider>();
+        services.AddScoped<IPromotionProvider, GlobalDiscountProvider>();
     }
 }
 
