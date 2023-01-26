@@ -55,12 +55,16 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     {
         model.ContentItem = part.ContentItem;
         var lineItems = part.LineItems;
-        var lineItemViewModelsAndTotal = await _orderLineItemService
-            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, part);
+        if (lineItems.Count > 0)
+        {
+            var lineItemViewModelsAndTotal = await _orderLineItemService
+                .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, part);
 
-        model.Total = lineItemViewModelsAndTotal.Total;
-        model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);
-        model.Charges.AddRange(part.Charges);
+            model.Total = lineItemViewModelsAndTotal.Total;
+            model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);
+            model.Charges.AddRange(part.Charges);
+        }
+
         model.OrderPart = part;
     }
 }
