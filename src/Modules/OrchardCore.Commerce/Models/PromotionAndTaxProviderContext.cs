@@ -1,10 +1,12 @@
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Models;
 
@@ -28,6 +30,27 @@ public record PromotionAndTaxProviderContext(
             billingAddress,
             purchaseDateTime)
     {
+    }
+
+    public async Task<PromotionAndTaxProviderContext> UpdateAsync(
+        Func<PromotionAndTaxProviderContextLineItem, DateTime?, Task<Amount>> updateUnitPriceAsync)
+    {
+        var items = Items.AsList();
+
+        var newContextLineItems =
+            await items.AwaitEachAsync(async item => item with { UnitPrice = await updateUnitPriceAsync(item, PurchaseDateTime) });
+
+        var updatedTotals = TotalsByCurrency
+            .Select(total =>
+            {
+                var currency = total.Currency.CurrencyIsoCode;
+                return newContextLineItems
+                    .Where(item => item.Subtotal.Currency.CurrencyIsoCode == currency)
+                    .Select(item => item.Subtotal)
+                    .Sum();
+            });
+
+        return this with { Items = newContextLineItems, TotalsByCurrency = updatedTotals };
     }
 
     public static PromotionAndTaxProviderContext SingleProduct(IContent product, Amount netUnitPrice, Address shipping, Address billing) =>
