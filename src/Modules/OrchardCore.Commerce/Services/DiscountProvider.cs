@@ -33,23 +33,7 @@ public class DiscountProvider : IPromotionProvider
             .ContentItem
             .OfType<DiscountPart>();
 
-        return discountParts.Any(discountPart =>
-            IsApplicablePerDiscountPart(discountPart, item.Quantity, purchaseDateTime));
-    }
-
-    // In case we have multiple discount parts on one product.
-    public static bool IsApplicablePerDiscountPart(
-        DiscountPart discountPart,
-        int itemQuantity,
-        DateTime? purchaseDateTime)
-    {
-        var discountMaximumProducts = discountPart.MaximumProducts.Value;
-
-        return discountPart.IsValidAndActive() &&
-               !(discountPart.BeginningUtc.Value > purchaseDateTime ||
-                 discountPart.ExpirationUtc.Value < purchaseDateTime ||
-                 discountPart.MinimumProducts.Value > itemQuantity ||
-                 (discountMaximumProducts > 0 && discountMaximumProducts < itemQuantity));
+        return discountParts.Any(discountPart => discountPart.IsApplicable(item.Quantity, purchaseDateTime));
     }
 
     public static Amount ApplyPromotionToShoppingCartItem(
@@ -61,7 +45,7 @@ public class DiscountProvider : IPromotionProvider
 
         foreach (var discountPart in discountParts)
         {
-            if (!IsApplicablePerDiscountPart(discountPart, item.Quantity, purchaseDateTime)) continue;
+            if (!discountPart.IsApplicable(item.Quantity, purchaseDateTime)) continue;
 
             var discountPercentage = discountPart.DiscountPercentage?.Value;
             var discountAmount = discountPart.DiscountAmount.Amount;
