@@ -61,15 +61,18 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 
         foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
         {
-            if (headers.Any(header => header.Name == "Gross Price"))
+            var line = lines[index];
+
+            if (line.AdditionalData.HasGrossPrice())
             {
-                lines[index].AdditionalData.SetGrossPrice(price);
+                var ratio = line.AdditionalData.GetNetPrice().Value / line.AdditionalData.GetGrossPrice().Value;
+
+                line.AdditionalData.SetGrossPrice(price);
+                line.AdditionalData.SetNetPrice(price * ratio);
             }
-            else
-            {
-                lines[index].LinePrice = price * lines[index].Quantity;
-                lines[index].UnitPrice = price;
-            }
+
+            line.LinePrice = price * lines[index].Quantity;
+            line.UnitPrice = price;
         }
 
         return (newHeaders, lines);

@@ -44,12 +44,15 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
         context = await provider.UpdateAsync(context);
         foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
         {
-            lines[index].AdditionalData.SetGrossPrice(price);
+            var line = lines[index];
+
+            line.AdditionalData.SetGrossPrice(price);
+            line.AdditionalData.SetNetPrice(lines[index].UnitPrice);
 
             // Other promotions will use UnitPrice and LinePrice as the base of the promotion. We need to modify these
             // to the gross price, otherwise the promotion would be applied on the net price and that would be used.
-            lines[index].LinePrice = price * lines[index].Quantity;
-            lines[index].UnitPrice = price;
+            line.LinePrice = price * lines[index].Quantity;
+            line.UnitPrice = price;
         }
 
         var newHeaders = headers
