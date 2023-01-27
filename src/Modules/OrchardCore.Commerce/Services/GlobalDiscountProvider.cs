@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Services;
+using OrchardCore.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ public class GlobalDiscountProvider : IPromotionProvider
     public const string StereotypeName = "GlobalDiscount";
 
     private readonly IAuthorizationService _authorizationService;
+    private readonly IClock _clock;
     private readonly IContentDefinitionService _contentDefinitionService;
     private readonly IHttpContextAccessor _hca;
     private readonly ISession _session;
@@ -31,27 +33,29 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     public GlobalDiscountProvider(
         IAuthorizationService authorizationService,
+        IClock clock,
         IContentDefinitionService contentDefinitionService,
         IHttpContextAccessor hca,
         ISession session)
     {
         _authorizationService = authorizationService;
+        _clock = clock;
         _contentDefinitionService = contentDefinitionService;
         _hca = hca;
         _session = session;
     }
 
     public async Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
-        (await QueryDiscountPartsAsync()).Any();
+        (await QueryDiscountPartsAsync(model)).Any();
 
     public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model) =>
         model.UpdateAsync(async (item, purchaseDateTime) =>
             ApplyPromotionToShoppingCartItem(
                 item,
                 purchaseDateTime,
-                await QueryDiscountPartsAsync()));
+                await QueryDiscountPartsAsync(model)));
 
-    private async Task<IEnumerable<DiscountPart>> QueryDiscountPartsAsync()
+    private async Task<IEnumerable<DiscountPart>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
         var typeNames = _contentDefinitionService.GetTypes()
             .Where(model => model.Settings["Stereotype"]?.ToString().EqualsOrdinalIgnoreCase(StereotypeName) == true)
@@ -65,6 +69,9 @@ public class GlobalDiscountProvider : IPromotionProvider
         globalDiscountItems = await globalDiscountItems.WhereAsync(item =>
             _authorizationService.AuthorizeAsync(_hca.HttpContext!.User, CommonPermissions.ViewContent, item));
 
-        return globalDiscountItems.As<DiscountPart>();
+        int totalQuantity = model.Items.Sum(item => item.Quantity);
+        return globalDiscountItems
+            .As<DiscountPart>()
+            .Where(part => part.IsApplicable(totalQuantity, model.PurchaseDateTime ?? _clock.UtcNow));
     }
 }
