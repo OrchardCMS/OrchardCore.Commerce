@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Services;
@@ -58,8 +60,12 @@ public class GlobalDiscountProvider : IPromotionProvider
     private async Task<IEnumerable<DiscountPart>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
         var typeNames = _contentDefinitionService.GetTypes()
-            .Where(model => model.Settings["Stereotype"]?.ToString().EqualsOrdinalIgnoreCase(StereotypeName) == true)
-            .Select(model => model.Name)
+            .Where(type => type
+                .Settings
+                .Get<ContentTypeSettings>(nameof(ContentTypeSettings))?
+                .Stereotype?
+                .EqualsOrdinalIgnoreCase(StereotypeName) == true)
+            .Select(type => type.Name)
             .ToList();
 
         var globalDiscountItems = await _session
