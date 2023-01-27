@@ -5,7 +5,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
-using System;
+using OrchardCore.Modules;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +14,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class OrderLineItemService : IOrderLineItemService
 {
+    private readonly IClock _clock;
     private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
@@ -21,12 +22,14 @@ public class OrderLineItemService : IOrderLineItemService
     private readonly IPromotionService _promotionService;
 
     public OrderLineItemService(
+        IClock clock,
         IHttpContextAccessor hca,
         IProductService productService,
         IContentManager contentManager,
         IEnumerable<ITaxProvider> taxProviders,
         IPromotionService promotionService)
     {
+        _clock = clock;
         _hca = hca;
         _productService = productService;
         _contentManager = contentManager;
@@ -70,7 +73,7 @@ public class OrderLineItemService : IOrderLineItemService
             viewModelLineItems.CalculateTotals().ToList(),
             shipping,
             billing,
-            orderPart?.ContentItem?.PublishedUtc ?? DateTime.UtcNow);
+            orderPart?.ContentItem?.PublishedUtc ?? _clock.UtcNow);
         var changed = false;
 
         if (_taxProviders.Any() &&
