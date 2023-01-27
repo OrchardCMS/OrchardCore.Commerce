@@ -45,15 +45,15 @@ public class GlobalDiscountProvider : IPromotionProvider
         _session = session;
     }
 
-    public async Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
-        (await QueryDiscountPartsAsync(model)).Any();
-
     public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model) =>
         model.UpdateAsync(async (item, purchaseDateTime) =>
             ApplyPromotionToShoppingCartItem(
                 item,
                 purchaseDateTime,
                 await QueryDiscountPartsAsync(model)));
+
+    public async Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
+        (await QueryDiscountPartsAsync(model)).Any();
 
     private async Task<IEnumerable<DiscountPart>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
