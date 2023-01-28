@@ -69,7 +69,7 @@ public class GlobalDiscountProvider : IPromotionProvider
             .ToList();
 
         var globalDiscountItems = await _session
-            .Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(typeNames))
+            .Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(typeNames) && index.Published)
             .ListAsync();
 
         globalDiscountItems = await globalDiscountItems.WhereAsync(item =>
