@@ -5,6 +5,8 @@
     var discountPercentageValue = discountPart.DiscountPercentage.Value;
     var maximumProducts = discountPart.MaximumProducts.Value;
     var minimumProducts = discountPart.MinimumProducts.Value;
+
+    var oldPriceQueryStrings = string.Join(",", Model.OldPriceClassNames.Select(className => "." + className));
 }
 
 
@@ -56,3 +58,7 @@
 }
 
 <script asp-name="Discount" at="Foot"></script>
+<script at="Foot" depends-on="Discount">
+    strikeOutPrices(document.querySelectorAll(@oldPriceQueryStrings.JsonHtmlContent()));
+</script>
+

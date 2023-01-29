@@ -1,7 +1,4 @@
-const prices = Array.from(document.querySelectorAll('.tax-part-gross-price-value, .price-part-price-field-value'));
-
-function strikeOutPrice(price) {
-    price.innerHTML = '<del class="text-danger">' + price.textContent + '</del>';
+function strikeOutPrices(prices) {
+    Array.from(prices)
+        .forEach((price) => price.innerHTML = `<del class="text-danger">${price.innerHTML.trim()}</del>`);
 }
-
-prices.forEach((price) => strikeOutPrice(price));

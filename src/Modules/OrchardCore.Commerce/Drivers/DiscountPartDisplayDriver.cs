@@ -48,5 +48,8 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 
             model.NewPrice.Amount = notNullPrice;
         }
+
+        model.OldPriceClassNames.Add("tax-part-gross-price-value");
+        model.OldPriceClassNames.Add("price-part-price-field-value");
     }
 }
