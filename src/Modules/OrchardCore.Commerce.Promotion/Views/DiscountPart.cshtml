@@ -7,52 +7,52 @@
     var minimumProducts = discountPart.MinimumProducts.Value;
 }
 
-@if (discountPart.IsValidAndActive() && Model.NewPrice.Amount.IsValid)
+
+@if (!discountPart.IsValidAndActive() || !Model.NewPrice.Amount.IsValid) { return; }
+
+<div class="pb-3 field field-type-pricefield field-name-discount-part-new-price">
+    <strong class="field-name-discount-part-new-title-title">@T["New Price with Discount after Taxes:"]</strong>
+    @Model.NewPrice.Amount
+</div>
+
+@if (discountPercentageValue > 0)
 {
-    <div class="pb-3 field field-type-pricefield field-name-discount-part-new-price">
-        <strong class="field-name-discount-part-new-title-title">@T["New Price with Discount after Taxes:"]</strong>
-        @Model.NewPrice.Amount
+    <div class="field field-type-numericfield field-name-discount-part-discount-percentage">
+        <strong class="field-name-discount-part-discount-percentage-title">@T["Discount Percentage:"]</strong>
+        @T["{0}%", discountPercentageValue]
     </div>
-
-    @if (discountPercentageValue > 0)
-    {
-        <div class="field field-type-numericfield field-name-discount-part-discount-percentage">
-            <strong class="field-name-discount-part-discount-percentage-title">@T["Discount Percentage:"]</strong>
-            @T["{0}%", discountPercentageValue]
-        </div>
-    }
-
-    @if (maximumProducts > 0)
-    {
-        <div class="field field-type-numericfield field-name-discount-part-maximum-products">
-            <strong class="field-name-discount-part-maximum-products-title">@T["Discount Maximum Products:"]</strong>
-            @maximumProducts
-        </div>
-    }
-
-    @if (minimumProducts > 0)
-    {
-        <div class="field field-type-numericfield field-name-discount-part-minimum-products">
-            <strong class="field-name-discount-part-minimum-products-title">@T["Discount Minimum Products:"]</strong>
-            @minimumProducts
-        </div>
-    }
-
-    @if (discountPart.BeginningUtc.Value is { } beginningUtc)
-    {
-        <div class="field field-type-datetimefield field-name-discount-part-beginning">
-            <strong class="field-name-discount-part-beginning-title">@T["Discount Beginning:"]</strong>
-            @await DisplayAsync(await New.DateTime(Utc: beginningUtc, Format: "g"))
-        </div>
-    }
-
-    @if (discountPart.ExpirationUtc.Value is { } expirationUtc)
-    {
-        <div class="field field-type-datetimefield field-name-discount-part-expiration">
-            <strong class="field-name-discount-part-expiration-title">@T["Discount Expiration:"]</strong>
-            @await DisplayAsync(await New.DateTime(Utc: expirationUtc, Format: "g"))
-        </div>
-    }
-
-    <script asp-name="Discount" at="Foot"></script>
 }
+
+@if (maximumProducts > 0)
+{
+    <div class="field field-type-numericfield field-name-discount-part-maximum-products">
+        <strong class="field-name-discount-part-maximum-products-title">@T["Discount Maximum Products:"]</strong>
+        @maximumProducts
+    </div>
+}
+
+@if (minimumProducts > 0)
+{
+    <div class="field field-type-numericfield field-name-discount-part-minimum-products">
+        <strong class="field-name-discount-part-minimum-products-title">@T["Discount Minimum Products:"]</strong>
+        @minimumProducts
+    </div>
+}
+
+@if (discountPart.BeginningUtc.Value is { } beginningUtc)
+{
+    <div class="field field-type-datetimefield field-name-discount-part-beginning">
+        <strong class="field-name-discount-part-beginning-title">@T["Discount Beginning:"]</strong>
+        @await DisplayAsync(await New.DateTime(Utc: beginningUtc, Format: "g"))
+    </div>
+}
+
+@if (discountPart.ExpirationUtc.Value is { } expirationUtc)
+{
+    <div class="field field-type-datetimefield field-name-discount-part-expiration">
+        <strong class="field-name-discount-part-expiration-title">@T["Discount Expiration:"]</strong>
+        @await DisplayAsync(await New.DateTime(Utc: expirationUtc, Format: "g"))
+    </div>
+}
+
+<script asp-name="Discount" at="Foot"></script>
