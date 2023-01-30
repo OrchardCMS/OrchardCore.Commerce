@@ -9,9 +9,6 @@
     var oldPriceQueryStrings = string.Join(",", Model.OldPriceClassNames.Select(className => "." + className));
 }
 
-
-@if (!discountPart.IsValidAndActive() || !Model.NewPrice.Amount.IsValid) { return; }
-
 <div class="pb-3 field field-type-pricefield field-name-discount-part-new-price">
     <strong class="field-name-discount-part-new-title-title">@T["New Price with Discount after Taxes:"]</strong>
     @Model.NewPrice.Amount

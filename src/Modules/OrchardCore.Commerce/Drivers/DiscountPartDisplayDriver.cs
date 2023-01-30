@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Promotion.ViewModels;
 using OrchardCore.Commerce.Tax.Models;
@@ -13,43 +14,48 @@ namespace OrchardCore.Commerce.Drivers;
 public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 {
     public override IDisplayResult Display(DiscountPart part, BuildPartDisplayContext context) =>
-        Initialize<DiscountPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
+        part.IsValidAndActive() && CalculateNewPrice(part) is { IsValid: true } newPrice
+        ? Initialize<DiscountPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part, newPrice))
             .Location("Detail", "Content:20")
-            .Location("Summary", "Meta:5");
+            .Location("Summary", "Meta:5")
+        : null;
 
     public override IDisplayResult Edit(DiscountPart part, BuildPartEditorContext context) =>
-        Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part));
+        Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part, newPrice: null));
 
-    private static void BuildViewModel(DiscountPartViewModel model, DiscountPart part)
+    private static void BuildViewModel(DiscountPartViewModel model, DiscountPart part, Amount? newPrice)
     {
-        var contentItem = part.ContentItem;
-        model.ContentItem = contentItem;
-
+        model.ContentItem = part.ContentItem;
         model.DiscountPart = part;
 
-        var discountPercentage = part.DiscountPercentage.Value;
-        var discountAmount = part.DiscountAmount.Amount;
+        if (newPrice != null) model.NewPrice.Amount = newPrice.Value;
 
+        model.OldPriceClassNames.Add("tax-part-gross-price-value");
+        model.OldPriceClassNames.Add("price-part-price-field-value");
+    }
+
+    private static Amount? CalculateNewPrice(DiscountPart part)
+    {
+        var contentItem = part.ContentItem;
         var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { } grossPrice && grossPrice.IsValid
             ? grossPrice
             : contentItem?.As<PricePart>()?.Price;
 
-        if (newPrice is { } notNullPrice)
+        var discountPercentage = part.DiscountPercentage.Value;
+        var discountAmount = part.DiscountAmount.Amount;
+
+        if (newPrice is not { } notNullPrice) return null;
+
+        if (discountPercentage is { } and not 0)
         {
-            if (discountPercentage is { } and not 0)
-            {
-                notNullPrice = notNullPrice.WithDiscount((decimal)discountPercentage);
-            }
-
-            if (discountAmount.IsValidAndNonZero)
-            {
-                notNullPrice = notNullPrice.WithDiscount(discountAmount);
-            }
-
-            model.NewPrice.Amount = notNullPrice;
+            return notNullPrice.WithDiscount((decimal)discountPercentage);
         }
 
-        model.OldPriceClassNames.Add("tax-part-gross-price-value");
-        model.OldPriceClassNames.Add("price-part-price-field-value");
+        if (discountAmount.IsValidAndNonZero)
+        {
+            return notNullPrice.WithDiscount(discountAmount);
+        }
+
+        return null;
     }
 }
