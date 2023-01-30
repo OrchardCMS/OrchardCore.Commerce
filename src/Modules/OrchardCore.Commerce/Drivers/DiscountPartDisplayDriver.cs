@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
@@ -8,17 +9,27 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Commerce.Drivers;
 
 public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 {
+    public const string DiscountPartContextItemKey = $"{nameof(DiscountPartDisplayDriver)}:{nameof(DiscountPart)}";
+
+    private readonly IHttpContextAccessor _hca;
+
+    public DiscountPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
+
     public override IDisplayResult Display(DiscountPart part, BuildPartDisplayContext context) =>
-        part.IsValidAndActive() && CalculateNewPrice(part) is { IsValid: true } newPrice
-        ? Initialize<DiscountPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part, newPrice))
-            .Location("Detail", "Content:20")
-            .Location("Summary", "Meta:5")
-        : null;
+        _hca.HttpContext?.Items.GetMaybe(DiscountPartContextItemKey) is not IEnumerable<DiscountPart> &&
+        part.IsValidAndActive() &&
+        CalculateNewPrice(part) is { IsValid: true } newPrice
+            ? Initialize<DiscountPartViewModel>(nameof(DiscountPart), viewModel => BuildViewModel(viewModel, part, newPrice))
+                .Location("Detail", "Content:20")
+                .Location("Summary", "Meta:5")
+            : null;
 
     public override IDisplayResult Edit(DiscountPart part, BuildPartEditorContext context) =>
         Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part, newPrice: null));
@@ -57,5 +68,17 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
         }
 
         return null;
+    }
+
+    public class StoredDiscountPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
+    {
+        private readonly IHttpContextAccessor _hca;
+        public StoredDiscountPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
+
+        public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
+            _hca.HttpContext?.Items.GetMaybe(DiscountPartContextItemKey) is IEnumerable<DiscountPart> storedParts
+                ? new CombinedResult(storedParts.Select(storedPart =>
+                    new DiscountPartDisplayDriver(_hca).Display(storedPart, context)))
+                : null;
     }
 }

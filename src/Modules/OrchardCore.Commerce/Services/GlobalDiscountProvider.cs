@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.ContentManagement;
@@ -49,10 +50,15 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model) =>
         model.UpdateAsync(async (item, purchaseDateTime) =>
-            ApplyPromotionToShoppingCartItem(
+        {
+            var discountParts = await QueryDiscountPartsAsync(model);
+            _hca.HttpContext!.Items[DiscountPartDisplayDriver.DiscountPartContextItemKey] = discountParts;
+
+            return ApplyPromotionToShoppingCartItem(
                 item,
                 purchaseDateTime,
-                await QueryDiscountPartsAsync(model)));
+                discountParts);
+        });
 
     public async Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
         (await QueryDiscountPartsAsync(model)).Any();
