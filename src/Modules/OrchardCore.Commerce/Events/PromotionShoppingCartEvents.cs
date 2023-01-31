@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Modules;
@@ -59,9 +60,12 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
         // Update lines and get new totals.
         context = await _promotionService.AddPromotionsAsync(context);
 
-        foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
+        foreach (var (item, index) in context.Items.Select((item, index) => (item, index)))
         {
             var line = lines[index];
+            var price = item.UnitPrice;
+
+            line.AdditionalData.SetDiscounts(item.Discounts);
 
             if (line.AdditionalData.HasGrossPrice())
             {

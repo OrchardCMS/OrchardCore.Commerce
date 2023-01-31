@@ -1,10 +1,10 @@
 @model OrchardCore.Commerce.Promotion.ViewModels.DiscountPartViewModel
 
 @{
-    var discountPart = Model.DiscountPart;
-    var discountPercentageValue = discountPart.DiscountPercentage.Value;
-    var maximumProducts = discountPart.MaximumProducts.Value;
-    var minimumProducts = discountPart.MinimumProducts.Value;
+    var discount = Model.Discount;
+    var discountPercentageValue = discount.DiscountPercentage;
+    var maximumProducts = discount.MaximumProducts;
+    var minimumProducts = discount.MinimumProducts;
 
     var oldPriceQueryStrings = string.Join(",", Model.OldPriceClassNames.Select(className => "." + className));
 }
@@ -22,7 +22,7 @@
     </div>
 }
 
-@if (maximumProducts > 0)
+@if (maximumProducts > 0 && maximumProducts >= minimumProducts )
 {
     <div class="field field-type-numericfield field-name-discount-part-maximum-products">
         <strong class="field-name-discount-part-maximum-products-title">@T["Discount Maximum Products:"]</strong>
@@ -30,7 +30,7 @@
     </div>
 }
 
-@if (minimumProducts > 0)
+@if (minimumProducts > 1)
 {
     <div class="field field-type-numericfield field-name-discount-part-minimum-products">
         <strong class="field-name-discount-part-minimum-products-title">@T["Discount Minimum Products:"]</strong>
@@ -38,7 +38,7 @@
     </div>
 }
 
-@if (discountPart.BeginningUtc.Value is { } beginningUtc)
+@if (discount.BeginningUtc is { } beginningUtc)
 {
     <div class="field field-type-datetimefield field-name-discount-part-beginning">
         <strong class="field-name-discount-part-beginning-title">@T["Discount Beginning:"]</strong>
@@ -46,7 +46,7 @@
     </div>
 }
 
-@if (discountPart.ExpirationUtc.Value is { } expirationUtc)
+@if (discount.ExpirationUtc is { } expirationUtc)
 {
     <div class="field field-type-datetimefield field-name-discount-part-expiration">
         <strong class="field-name-discount-part-expiration-title">@T["Discount Expiration:"]</strong>

@@ -1,6 +1,8 @@
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.Promotion.Extensions;
+using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using System;
@@ -24,7 +26,11 @@ public record PromotionAndTaxProviderContext(
         Address billingAddress,
         DateTime? purchaseDateTime = null)
         : this(
-            lines.Select(line => new PromotionAndTaxProviderContextLineItem(line.Product, line.UnitPrice, line.Quantity)),
+            lines.Select(line => new PromotionAndTaxProviderContextLineItem(
+                line.Product,
+                line.UnitPrice,
+                line.Quantity,
+                line.Product.GetAllDiscountInformation())),
             totalsByCurrency,
             shippingAddress,
             billingAddress,
@@ -61,7 +67,12 @@ public record PromotionAndTaxProviderContext(
             billing);
 }
 
-public record PromotionAndTaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity)
+public record PromotionAndTaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity, IEnumerable<DiscountInformation> Discounts)
 {
     public Amount Subtotal => UnitPrice * Quantity;
+
+    public PromotionAndTaxProviderContextLineItem(ShoppingCartLineViewModel viewModel)
+        : this(viewModel.Product, viewModel.UnitPrice, viewModel.Quantity, viewModel.AdditionalData.GetDiscounts())
+    {
+    }
 }
