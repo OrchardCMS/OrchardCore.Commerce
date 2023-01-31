@@ -1,7 +1,9 @@
 {
-  "devDependencies": {
-    "eslint": "^8.20.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-only-warn": "^1.0.3"
+  "private": true,
+  "scripts": {
+    "build": "npm explore nodejs-extensions -- pnpm build:styles",
+    "lint":  "npm explore nodejs-extensions -- pnpm lint",
+    "clean": "npm explore nodejs-extensions -- pnpm clean:styles",
+    "watch": "npm explore nodejs-extensions -- pnpm watch:styles"
   }
 }
