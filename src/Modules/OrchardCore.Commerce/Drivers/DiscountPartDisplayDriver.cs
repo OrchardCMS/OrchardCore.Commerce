@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
@@ -8,6 +9,7 @@ using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,37 +57,49 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 
     public class StoredDiscountPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     {
+        private readonly INotifier _notifier;
         private readonly IShoppingCartHelpers _shoppingCartHelpers;
 
-        public StoredDiscountPartDisplayDriver(IShoppingCartHelpers shoppingCartHelpers) =>
+        public StoredDiscountPartDisplayDriver(INotifier notifier, IShoppingCartHelpers shoppingCartHelpers)
+        {
+            _notifier = notifier;
             _shoppingCartHelpers = shoppingCartHelpers;
+        }
 
         public override async Task<IDisplayResult> DisplayAsync(ProductPart part, BuildPartDisplayContext context)
         {
-            var model = await _shoppingCartHelpers.EstimateProductAsync(
-                shoppingCartId: null,
-                new ShoppingCartItem(
-                    quantity: 1,
-                    part.Sku));
+            try
+            {
+                var model = await _shoppingCartHelpers.EstimateProductAsync(
+                    shoppingCartId: null,
+                    new ShoppingCartItem(
+                        quantity: 1,
+                        part.Sku));
 
-            var discounts = model
-                .AdditionalData
-                .GetDiscounts()
-                .SelectWhere(
-                    discount => new
-                    {
-                        Discount = discount,
-                        NewPrice = discount.IsValidAndActive() && CalculateNewPrice(discount, part) is { IsValid: true } newPrice
-                            ? newPrice
-                            : Amount.Unspecified,
-                    },
-                    item => item.NewPrice.IsValid)
-                .Select(item => Initialize<DiscountPartViewModel>(
-                        nameof(DiscountPart),
-                        viewModel => BuildViewModel(viewModel, item.Discount, part, item.NewPrice))
-                    .Location("Detail", "Content:20"));
+                var discounts = model
+                    .AdditionalData
+                    .GetDiscounts()
+                    .SelectWhere(
+                        discount => new
+                        {
+                            Discount = discount,
+                            NewPrice = discount.IsValidAndActive() && CalculateNewPrice(discount, part) is { IsValid: true } newPrice
+                                ? newPrice
+                                : Amount.Unspecified,
+                        },
+                        item => item.NewPrice.IsValid)
+                    .Select(item => Initialize<DiscountPartViewModel>(
+                            nameof(DiscountPart),
+                            viewModel => BuildViewModel(viewModel, item.Discount, part, item.NewPrice))
+                        .Location("Detail", "Content:20"));
 
-            return new CombinedResult(discounts);
+                return new CombinedResult(discounts);
+            }
+            catch (FrontendException exception)
+            {
+                await _notifier.ErrorAsync(exception.HtmlMessage);
+                return null;
+            }
         }
     }
 }
