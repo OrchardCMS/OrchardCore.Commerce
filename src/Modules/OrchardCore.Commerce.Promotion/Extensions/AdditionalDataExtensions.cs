@@ -19,4 +19,16 @@ public static class AdditionalDataExtensions
         IEnumerable<DiscountInformation> discounts) =>
         additionalData[Discounts] = JToken.FromObject(discounts ?? Enumerable.Empty<DiscountInformation>());
 
+    public static IDictionary<string, IEnumerable<DiscountInformation>> GetDiscountsByProduct(
+        this IDictionary<string, JToken> additionalData) =>
+        additionalData
+            .GetMaybe(Discounts)?
+            .ToObject<Dictionary<string, IEnumerable<DiscountInformation>>>()
+        ?? new Dictionary<string, IEnumerable<DiscountInformation>>();
+
+    public static void SetDiscountsByProduct(
+        this IDictionary<string, JToken> additionalData,
+        IDictionary<string, IEnumerable<DiscountInformation>> discounts) =>
+        additionalData[Discounts] = JToken.FromObject(
+            discounts ?? new Dictionary<string, IEnumerable<DiscountInformation>>());
 }
