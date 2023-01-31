@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -117,32 +118,24 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
-
-        foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
+        try
         {
-            if (await shoppingCartEvent.VerifyingItemAsync(parsedLine) is not { } errorMessage) continue;
+            var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
+                shoppingCartId,
+                await _shoppingCartSerializer.ParseCartLineAsync(line),
+                storeIfOk: true);
 
-            await _notifier.ErrorAsync(errorMessage);
-            return RedirectToAction(nameof(Index), new { shoppingCartId });
+            if (_workflowManager != null)
+            {
+                await _workflowManager.TriggerEventAsync(
+                    nameof(ProductAddedToCartEvent),
+                    new { LineItem = parsedLine },
+                    "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
+            }
         }
-
-        if (await ShoppingCartItem.GetErrorAsync(line.ProductSku, parsedLine, H, _priceService) is { } error)
+        catch (FrontendException exception)
         {
-            await _notifier.ErrorAsync(error);
-        }
-
-        if (parsedLine == null) return RedirectToAction(nameof(Index), new { shoppingCartId });
-
-        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
-        cart.AddItem(parsedLine);
-        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
-        if (_workflowManager != null)
-        {
-            await _workflowManager.TriggerEventAsync(
-                nameof(ProductAddedToCartEvent),
-                new { LineItem = parsedLine },
-                "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
+            await _notifier.ErrorAsync(exception.HtmlMessage);
         }
 
         return RedirectToAction(nameof(Index), new { shoppingCartId });

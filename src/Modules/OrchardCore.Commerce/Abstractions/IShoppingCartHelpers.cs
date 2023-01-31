@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Exceptions;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -31,4 +34,26 @@ public interface IShoppingCartHelpers
     /// Groups the line items in the cart by currency and returns the value by currency code.
     /// </summary>
     Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync();
+
+    /// <summary>
+    /// Adds a new entry to the shopping cart, optionally saves the cart using <see cref="IShoppingCartPersistence"/> if
+    /// <paramref name="storeIfOk"/> is <see langword="true"/>.
+    /// </summary>
+    /// <exception cref="FrontendException">
+    /// Thrown if the cart validation fails. Its <see cref="FrontendException.HtmlMessage"/> can be displayed safely.
+    /// </exception>
+    Task<ShoppingCartItem> AddToCartAsync(
+        string shoppingCartId,
+        ShoppingCartItem item,
+        bool storeIfOk = false);
+
+    /// <summary>
+    /// Adds the given <paramref name="item"/> to the shopping cart without saving, validates the cart and calculates
+    /// the display information for the added item.
+    /// </summary>
+    Task<ShoppingCartLineViewModel> EstimateProductAsync(
+        string shoppingCartId,
+        ShoppingCartItem item,
+        Address shipping = null,
+        Address billing = null);
 }
