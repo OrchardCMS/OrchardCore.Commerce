@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.ContentManagement;
@@ -55,7 +54,7 @@ public class GlobalDiscountProvider : IPromotionProvider
     public async Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
         (await QueryDiscountPartsAsync(model)).Any();
 
-    private async Task<IEnumerable<DiscountPart>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
+    private async Task<IEnumerable<DiscountInformation>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
         var typeNames = _contentDefinitionService.GetTypes()
             .Where(type => type
@@ -76,6 +75,7 @@ public class GlobalDiscountProvider : IPromotionProvider
         int totalQuantity = model.Items.Sum(item => item.Quantity);
         return globalDiscountItems
             .As<DiscountPart>()
-            .Where(part => part.IsApplicable(totalQuantity, model.PurchaseDateTime ?? _clock.UtcNow));
+            .Where(part => part.IsApplicable(totalQuantity, model.PurchaseDateTime ?? _clock.UtcNow))
+            .Select(part => (DiscountInformation)part);
     }
 }

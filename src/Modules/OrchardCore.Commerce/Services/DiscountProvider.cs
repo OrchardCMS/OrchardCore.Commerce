@@ -39,22 +39,22 @@ public class DiscountProvider : IPromotionProvider
     public static PromotionAndTaxProviderContextLineItem ApplyPromotionToShoppingCartItem(
         PromotionAndTaxProviderContextLineItem item,
         DateTime? purchaseDateTime,
-        IEnumerable<DiscountPart> discountParts = null)
+        IEnumerable<DiscountInformation> discountParts = null)
     {
-        discountParts ??= item.Content.ContentItem.OfType<DiscountPart>();
+        discountParts ??= item.Content.ContentItem.OfType<DiscountPart>().Select(part => (DiscountInformation)part);
         var newPrice = item.UnitPrice;
 
         var discountsUsed = new List<DiscountInformation>();
-        foreach (var discountPart in discountParts)
+        foreach (var discount in discountParts)
         {
-            if (!discountPart.IsApplicable(item.Quantity, purchaseDateTime)) continue;
+            if (!discount.IsApplicable(item.Quantity, purchaseDateTime)) continue;
 
-            var discountPercentage = discountPart.DiscountPercentage?.Value;
-            var discountAmount = discountPart.DiscountAmount.Amount;
+            var discountPercentage = discount.DiscountPercentage;
+            var discountAmount = discount.DiscountAmount;
 
-            if (discountPercentage is { } and not 0)
+            if (discountPercentage > 0)
             {
-                newPrice = newPrice.WithDiscount((decimal)discountPercentage);
+                newPrice = newPrice.WithDiscount(discountPercentage);
             }
             else if (discountAmount.IsValidAndNonZero)
             {
@@ -65,7 +65,7 @@ public class DiscountProvider : IPromotionProvider
                 continue;
             }
 
-            discountsUsed.Add((DiscountInformation)discountPart);
+            discountsUsed.Add(discount);
         }
 
         return item with { UnitPrice = newPrice, Discounts = discountsUsed };
