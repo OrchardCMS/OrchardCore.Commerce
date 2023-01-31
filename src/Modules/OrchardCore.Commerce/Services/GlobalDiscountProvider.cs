@@ -50,15 +50,7 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model) =>
         model.UpdateAsync(async (item, purchaseDateTime) =>
-        {
-            var discountParts = await QueryDiscountPartsAsync(model);
-            _hca.HttpContext!.Items[DiscountPartDisplayDriver.DiscountPartContextItemKey] = discountParts;
-
-            return ApplyPromotionToShoppingCartItem(
-                item,
-                purchaseDateTime,
-                discountParts);
-        });
+            ApplyPromotionToShoppingCartItem(item, purchaseDateTime, await QueryDiscountPartsAsync(model)));
 
     public async Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
         (await QueryDiscountPartsAsync(model)).Any();

@@ -12,7 +12,7 @@ public static class DiscountPartExtensions
         discount.DiscountAmount is { IsValidAndNonZero: true };
 
     public static bool IsValidAndActive(this DiscountPart discountPart) =>
-        new DiscountInformation(discountPart).IsValidAndActive();
+        ((DiscountInformation)discountPart).IsValidAndActive();
 
     public static IEnumerable<DiscountPart> GetAllDiscountParts(this IContent content) =>
         content
@@ -22,5 +22,5 @@ public static class DiscountPartExtensions
     public static IEnumerable<DiscountInformation> GetAllDiscountInformation(this IContent content) =>
         content
             .GetAllDiscountParts()
-            .Select(part => new DiscountInformation(part));
+            .Select(part => (DiscountInformation)part);
 }

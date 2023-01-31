@@ -39,12 +39,12 @@ public record PromotionAndTaxProviderContext(
     }
 
     public async Task<PromotionAndTaxProviderContext> UpdateAsync(
-        Func<PromotionAndTaxProviderContextLineItem, DateTime?, Task<Amount>> updateUnitPriceAsync)
+        Func<PromotionAndTaxProviderContextLineItem, DateTime?, Task<PromotionAndTaxProviderContextLineItem>> updateAsync)
     {
         var items = Items.AsList();
 
         var newContextLineItems =
-            await items.AwaitEachAsync(async item => item with { UnitPrice = await updateUnitPriceAsync(item, PurchaseDateTime) });
+            await items.AwaitEachAsync(async item => await updateAsync(item, PurchaseDateTime));
 
         var updatedTotals = TotalsByCurrency
             .Select(total =>
@@ -58,13 +58,6 @@ public record PromotionAndTaxProviderContext(
 
         return this with { Items = newContextLineItems, TotalsByCurrency = updatedTotals };
     }
-
-    public static PromotionAndTaxProviderContext SingleProduct(IContent product, Amount netUnitPrice, Address shipping, Address billing) =>
-        new(
-            new[] { new PromotionAndTaxProviderContextLineItem(product, netUnitPrice, 1) },
-            new[] { netUnitPrice },
-            shipping,
-            billing);
 }
 
 public record PromotionAndTaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity, IEnumerable<DiscountInformation> Discounts)

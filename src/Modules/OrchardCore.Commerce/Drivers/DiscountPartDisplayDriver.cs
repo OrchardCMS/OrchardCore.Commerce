@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
@@ -11,33 +11,27 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
 public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 {
-    public const string DiscountPartContextItemKey = $"{nameof(DiscountPartDisplayDriver)}:{nameof(DiscountPart)}";
-
-    private readonly IHttpContextAccessor _hca;
-
-    public DiscountPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
-
     public override IDisplayResult Display(DiscountPart part, BuildPartDisplayContext context) =>
-        _hca.HttpContext?.Items.GetMaybe(DiscountPartContextItemKey) is not IEnumerable<DiscountPart> &&
-        part.IsValidAndActive() &&
-        CalculateNewPrice(part) is { IsValid: true } newPrice
-            ? Initialize<DiscountPartViewModel>(nameof(DiscountPart), viewModel => BuildViewModel(viewModel, part, newPrice))
-                .Location("Detail", "Content:20")
+        part.IsValidAndActive() && CalculateNewPrice((DiscountInformation)part, part) is { IsValid: true } newPrice
+            ? Initialize<DiscountPartViewModel>(nameof(DiscountPart), viewModel =>
+                    BuildViewModel(viewModel, (DiscountInformation)part, part, newPrice))
                 .Location("Summary", "Meta:5")
             : null;
 
     public override IDisplayResult Edit(DiscountPart part, BuildPartEditorContext context) =>
-        Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part, newPrice: null));
+        Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel =>
+            BuildViewModel(viewModel, (DiscountInformation)part, part, newPrice: null));
 
-    private static void BuildViewModel(DiscountPartViewModel model, DiscountPart part, Amount? newPrice)
+    private static void BuildViewModel(DiscountPartViewModel model, DiscountInformation discount, IContent content, Amount? newPrice)
     {
-        model.ContentItem = part.ContentItem;
-        model.DiscountPart = part;
+        model.ContentItem = content.ContentItem;
+        model.Discount = discount;
 
         if (newPrice != null) model.NewPrice.Amount = newPrice.Value;
 
@@ -45,40 +39,53 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
         model.OldPriceClassNames.Add("price-part-price-field-value");
     }
 
-    private static Amount? CalculateNewPrice(DiscountPart part)
+    private static Amount? CalculateNewPrice(DiscountInformation discount, IContent content)
     {
-        var contentItem = part.ContentItem;
-        var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { } grossPrice && grossPrice.IsValid
+        var contentItem = content?.ContentItem;
+        var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { IsValid: true } grossPrice
             ? grossPrice
             : contentItem?.As<PricePart>()?.Price;
 
-        var discountPercentage = part.DiscountPercentage.Value;
-        var discountAmount = part.DiscountAmount.Amount;
-
         if (newPrice is not { } notNullPrice) return null;
-
-        if (discountPercentage is { } and not 0)
-        {
-            return notNullPrice.WithDiscount((decimal)discountPercentage);
-        }
-
-        if (discountAmount.IsValidAndNonZero)
-        {
-            return notNullPrice.WithDiscount(discountAmount);
-        }
+        if (discount.DiscountPercentage > 0) return notNullPrice.WithDiscount(discount.DiscountPercentage);
+        if (discount.DiscountAmount.IsValidAndNonZero) return notNullPrice.WithDiscount(discount.DiscountAmount);
 
         return null;
     }
 
     public class StoredDiscountPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     {
-        private readonly IHttpContextAccessor _hca;
-        public StoredDiscountPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
+        private readonly IShoppingCartHelpers _shoppingCartHelpers;
 
-        public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
-            _hca.HttpContext?.Items.GetMaybe(DiscountPartContextItemKey) is IEnumerable<DiscountPart> storedParts
-                ? new CombinedResult(storedParts.Select(storedPart =>
-                    new DiscountPartDisplayDriver(_hca).Display(storedPart, context)))
-                : null;
+        public StoredDiscountPartDisplayDriver(IShoppingCartHelpers shoppingCartHelpers) =>
+            _shoppingCartHelpers = shoppingCartHelpers;
+
+        public override async Task<IDisplayResult> DisplayAsync(ProductPart part, BuildPartDisplayContext context)
+        {
+            var model = await _shoppingCartHelpers.EstimateProductAsync(
+                shoppingCartId: null,
+                new ShoppingCartItem(
+                    quantity: 1,
+                    part.Sku));
+
+            var discounts = model
+                .AdditionalData
+                .GetDiscounts()
+                .SelectWhere(
+                    discount => new
+                    {
+                        Discount = discount,
+                        NewPrice = discount.IsValidAndActive() && CalculateNewPrice(discount, part) is { IsValid: true } newPrice
+                            ? newPrice
+                            : Amount.Unspecified,
+                    },
+                    item => item.NewPrice.IsValid)
+                .Select(item => Initialize<DiscountPartViewModel>(
+                        nameof(DiscountPart),
+                        viewModel => BuildViewModel(viewModel, item.Discount, part, item.NewPrice))
+                    .Location("Detail", "Content:20"));
+
+            return new CombinedResult(discounts);
+        }
     }
 }

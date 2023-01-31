@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
@@ -16,43 +15,38 @@ namespace OrchardCore.Commerce.Drivers;
 public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
 {
     private readonly IHttpContextAccessor _hca;
-    private readonly IEnumerable<ITaxProvider> _taxProviders;
+    private readonly IShoppingCartHelpers _shoppingCartHelpers;
 
-    public TaxRateTaxPartDisplayDriver(
-        IHttpContextAccessor hca,
-        IEnumerable<ITaxProvider> taxProviders)
+    public TaxRateTaxPartDisplayDriver(IHttpContextAccessor hca, IShoppingCartHelpers shoppingCartHelpers)
     {
         _hca = hca;
-        _taxProviders = taxProviders;
+        _shoppingCartHelpers = shoppingCartHelpers;
     }
 
     public override async Task<IDisplayResult> DisplayAsync(TaxPart part, BuildPartDisplayContext context)
     {
-        if (part.As<ProductPart>() is not { } product ||
-            part.As<PricePart>()?.Price is not { } netUnitPrice ||
-            _hca.HttpContext is not { } httpContext)
-        {
-            return null;
-        }
+        if (part.As<ProductPart>() is not { } product || _hca.HttpContext is not { } httpContext) return null;
 
-        var userAddresses = await httpContext.GetUserAddressAsync();
-        var model = PromotionAndTaxProviderContext.SingleProduct(
-            product,
-            netUnitPrice,
-            userAddresses?.ShippingAddress.Address,
-            userAddresses?.BillingAddress.Address);
+        var addresses = await _hca.HttpContext.GetUserAddressAsync();
+        var model = await _shoppingCartHelpers.EstimateProductAsync(
+            shoppingCartId: null,
+            new ShoppingCartItem(
+                quantity: 1,
+                product.Sku),
+            addresses?.ShippingAddress.Address,
+            addresses?.BillingAddress.Address);
 
-        if (await _taxProviders.GetFirstApplicableProviderAsync(model) is not TaxRateTaxProvider taxRateTaxProvider)
-        {
-            return null;
-        }
+        if (model.AdditionalData.HasGrossPrice()) return null;
 
         httpContext.Items[nameof(TaxRateTaxPartDisplayDriver)] = true;
 
-        model = await taxRateTaxProvider.UpdateAsync(model);
         return Initialize<TaxRateViewModel>("TaxPart_TaxRate_GrossPrice", viewModel =>
             {
-                viewModel.Context = model;
+                viewModel.Context = new PromotionAndTaxProviderContext(
+                    new[] { new PromotionAndTaxProviderContextLineItem(model) },
+                    new[] { model.LinePrice },
+                    addresses?.ShippingAddress.Address,
+                    addresses?.BillingAddress.Address);
             })
             .Location("Detail", "Content");
     }

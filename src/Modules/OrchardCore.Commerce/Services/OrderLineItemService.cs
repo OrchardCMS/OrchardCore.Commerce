@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
@@ -69,7 +70,8 @@ public class OrderLineItemService : IOrderLineItemService
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
                 products[item.ProductSku],
                 item.UnitPrice,
-                item.Quantity)),
+                item.Quantity,
+                item.ProductPart.GetAllDiscountInformation())),
             viewModelLineItems.CalculateTotals().ToList(),
             shipping,
             billing,

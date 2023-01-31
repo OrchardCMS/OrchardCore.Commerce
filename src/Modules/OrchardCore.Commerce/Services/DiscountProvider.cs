@@ -16,7 +16,7 @@ public class DiscountProvider : IPromotionProvider
 
     public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model) =>
         model.UpdateAsync((item, purchaseDateTime) => Task.FromResult(
-            ApplyPromotionToShoppingCartItem(item, purchaseDateTime, item.Content.ContentItem.OfType<DiscountPart>())));
+            ApplyPromotionToShoppingCartItem(item, purchaseDateTime)));
 
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
         Task.FromResult(IsApplicable(model.Items.ToList(), model.PurchaseDateTime));
@@ -28,20 +28,23 @@ public class DiscountProvider : IPromotionProvider
 
     private static bool IsApplicablePerItem(PromotionAndTaxProviderContextLineItem item, DateTime? purchaseDateTime)
     {
-        var discountParts = item.Content
+        var discountParts = item
+            .Content
             .ContentItem
             .OfType<DiscountPart>();
 
         return discountParts.Any(discountPart => discountPart.IsApplicable(item.Quantity, purchaseDateTime));
     }
 
-    public static Amount ApplyPromotionToShoppingCartItem(
+    public static PromotionAndTaxProviderContextLineItem ApplyPromotionToShoppingCartItem(
         PromotionAndTaxProviderContextLineItem item,
         DateTime? purchaseDateTime,
-        IEnumerable<DiscountPart> discountParts)
+        IEnumerable<DiscountPart> discountParts = null)
     {
+        discountParts ??= item.Content.ContentItem.OfType<DiscountPart>();
         var newPrice = item.UnitPrice;
 
+        var discountsUsed = new List<DiscountInformation>();
         foreach (var discountPart in discountParts)
         {
             if (!discountPart.IsApplicable(item.Quantity, purchaseDateTime)) continue;
@@ -53,13 +56,18 @@ public class DiscountProvider : IPromotionProvider
             {
                 newPrice = newPrice.WithDiscount((decimal)discountPercentage);
             }
-
-            if (discountAmount.IsValidAndNonZero)
+            else if (discountAmount.IsValidAndNonZero)
             {
                 newPrice = newPrice.WithDiscount(discountAmount);
             }
+            else
+            {
+                continue;
+            }
+
+            discountsUsed.Add((DiscountInformation)discountPart);
         }
 
-        return newPrice;
+        return item with { UnitPrice = newPrice, Discounts = discountsUsed };
     }
 }
