@@ -273,6 +273,7 @@ public class PromotionStartup : StartupBase
 
         services.AddScoped<IPromotionProvider, DiscountProvider>();
         services.AddScoped<IPromotionProvider, GlobalDiscountProvider>();
+        services.AddScoped<IPromotionProvider, StoredDiscountProvider>();
     }
 }
 

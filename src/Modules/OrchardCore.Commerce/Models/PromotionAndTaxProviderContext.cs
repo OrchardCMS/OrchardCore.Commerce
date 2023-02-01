@@ -17,7 +17,8 @@ public record PromotionAndTaxProviderContext(
     IEnumerable<Amount> TotalsByCurrency,
     Address ShippingAddress,
     Address BillingAddress,
-    DateTime? PurchaseDateTime = null)
+    DateTime? PurchaseDateTime = null,
+    bool Stored = false)
 {
     public PromotionAndTaxProviderContext(
         IEnumerable<ShoppingCartLineViewModel> lines,

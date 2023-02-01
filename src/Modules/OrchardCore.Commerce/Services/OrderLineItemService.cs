@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
+using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
@@ -66,16 +67,18 @@ public class OrderLineItemService : IOrderLineItemService
             orderPart?.ShippingAddress.Address,
             orderPart?.BillingAddress.Address);
 
+        var storedDiscounts = orderPart?.AdditionalData.GetDiscountsByProduct();
         var promotionAndTaxContext = new PromotionAndTaxProviderContext(
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
                 products[item.ProductSku],
                 item.UnitPrice,
                 item.Quantity,
-                item.ProductPart.GetAllDiscountInformation())),
+                GetDiscounts(storedDiscounts, item))),
             viewModelLineItems.CalculateTotals().ToList(),
             shipping,
             billing,
-            orderPart?.ContentItem?.PublishedUtc ?? _clock.UtcNow);
+            orderPart?.ContentItem?.PublishedUtc ?? _clock.UtcNow,
+            Stored: true);
         var changed = false;
 
         if (_taxProviders.Any() &&
@@ -102,5 +105,15 @@ public class OrderLineItemService : IOrderLineItemService
         }
 
         return (viewModelLineItems, viewModelLineItems.CalculateTotals().Single());
+    }
+
+    private static IEnumerable<DiscountInformation> GetDiscounts(
+        IDictionary<string, IEnumerable<DiscountInformation>> storedDiscounts,
+        OrderLineItemViewModel item)
+    {
+        var discounts = storedDiscounts.GetMaybe(item.ProductSku)?.AsList();
+        return discounts?.Any() != true
+            ? item.ProductPart.GetAllDiscountInformation()
+            : discounts;
     }
 }
