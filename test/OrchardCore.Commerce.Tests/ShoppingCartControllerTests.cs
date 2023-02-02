@@ -1,10 +1,4 @@
-using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
@@ -12,16 +6,10 @@ using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.Localization;
-using OrchardCore.Modules;
-using OrchardCore.Settings;
-using OrchardCore.Users;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
-using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Tests;
 
@@ -203,41 +191,26 @@ public class ShoppingCartControllerTests
         var productService = new FakeProductService();
         var shoppingCartEvents = new[] { new FakeShoppingCartEvents() };
 
-        return new(
-            shoppingCartPersistence: _cartStorage,
-            notifier: null,
-            services: new OrchardServices<ShoppingCartController>(
-                new Lazy<IAuthorizationService>(() => null),
-                new Lazy<IClock>(() => null),
-                new Lazy<IContentHandleManager>(() => null),
-                new Lazy<IContentManager>(() => null),
-                new Lazy<IHttpContextAccessor>(() => null),
-                new Lazy<ILogger<ShoppingCartController>>(() => null),
-                new Lazy<ISession>(() => null),
-                new Lazy<ISiteService>(() => null),
-                new Lazy<IStringLocalizer<ShoppingCartController>>(GetStringLocalizer<ShoppingCartController>()),
-                new Lazy<IHtmlLocalizer<ShoppingCartController>>(GetHtmlLocalizer<ShoppingCartController>),
-                new Lazy<UserManager<IUser>>(() => null)
-            ),
-            priceService: priceService,
-            shoppingCartHelpers: new ShoppingCartHelpers(
-                hca: null,
-                priceService,
-                productService,
-                shoppingCartEvents,
-                _cartStorage,
-                GetHtmlLocalizer<ShoppingCartHelpers>()
-            ),
-            shoppingCartSerializer: new ShoppingCartSerializer(
-                attributeProviders: new[] { new ProductAttributeProvider() },
-                contentDefinitionManager: new FakeContentDefinitionManager(),
-                moneyService: new TestMoneyService(),
-                productService),
-            workflowManager: null,
-            shapeFactory: null,
-            shoppingCartEvents: shoppingCartEvents);
-    }
+        var shoppingCartHelpers = new ShoppingCartHelpers(
+            hca: null,
+            priceService,
+            productService,
+            shoppingCartEvents,
+            _cartStorage,
+            new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
 
-    private static IStringLocalizer<T> GetStringLocalizer<T>() => new StringLocalizer<T>(new NullStringLocalizerFactory());
-    private static IHtmlLocalizer<T> GetHtmlLocalizer<T>() => new HtmlLocalizer<T>(new NullHtmlLocalizerFactory());
+        var shoppingCartSerializer = new ShoppingCartSerializer(
+            attributeProviders: new[] { new ProductAttributeProvider() },
+            contentDefinitionManager: new FakeContentDefinitionManager(),
+            moneyService: new TestMoneyService(),
+            productService);
+
+        return new(
+            notifier: null,
+            shapeFactory: null,
+            shoppingCartHelpers,
+            _cartStorage,
+            shoppingCartSerializer,
+            workflowManager: null);
+    }
 }
