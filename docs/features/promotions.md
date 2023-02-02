@@ -19,6 +19,7 @@ You can define discounts that apply to every product.
 4. Create content items using this type and define the discount parameters described above.
 
 You can limit the discount to a certain group of users by role:
+
 1. Edit the content type and make it _Securable_.
 2. Go to the _Roles_ menu and select the role you want to permit.
 3. Find the content type permissions and allow the "List content item(s) owned by all users" option. We use this content type permission, because the view permission is effective granted for everyone (even Anonymous) by default so that's not useful. Also because it doesn't imply edit privileges so it's harmless for this purpose.

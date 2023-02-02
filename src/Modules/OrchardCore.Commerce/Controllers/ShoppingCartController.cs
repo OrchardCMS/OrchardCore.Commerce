@@ -1,6 +1,4 @@
-using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Exceptions;
@@ -20,14 +18,11 @@ namespace OrchardCore.Commerce.Controllers;
 public class ShoppingCartController : Controller
 {
     private readonly INotifier _notifier;
-    private readonly IPriceService _priceService;
     private readonly IShapeFactory _shapeFactory;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
-    private readonly IHtmlLocalizer<ShoppingCartController> H;
-    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 
     [SuppressMessage(
         "Major Code Smell",
@@ -35,24 +30,18 @@ public class ShoppingCartController : Controller
         Justification = "The shopping cart needs all of them.")]
     public ShoppingCartController(
         INotifier notifier,
-        IOrchardServices<ShoppingCartController> services,
-        IPriceService priceService,
         IShapeFactory shapeFactory,
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IWorkflowManager workflowManager,
-        IEnumerable<IShoppingCartEvents> shoppingCartEvents)
+        IWorkflowManager workflowManager)
     {
         _notifier = notifier;
-        _priceService = priceService;
         _shapeFactory = shapeFactory;
         _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
-        _shoppingCartEvents = shoppingCartEvents;
-        H = services.HtmlLocalizer.Value;
     }
 
     [HttpGet]

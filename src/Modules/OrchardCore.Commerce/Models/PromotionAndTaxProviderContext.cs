@@ -40,12 +40,12 @@ public record PromotionAndTaxProviderContext(
     }
 
     public async Task<PromotionAndTaxProviderContext> UpdateAsync(
-        Func<PromotionAndTaxProviderContextLineItem, DateTime?, Task<PromotionAndTaxProviderContextLineItem>> updateAsync)
+        Func<PromotionAndTaxProviderContextLineItem, DateTime?, Task<PromotionAndTaxProviderContextLineItem>> updater)
     {
         var items = Items.AsList();
 
         var newContextLineItems =
-            await items.AwaitEachAsync(async item => await updateAsync(item, PurchaseDateTime));
+            await items.AwaitEachAsync(async item => await updater(item, PurchaseDateTime));
 
         var updatedTotals = TotalsByCurrency
             .Select(total =>

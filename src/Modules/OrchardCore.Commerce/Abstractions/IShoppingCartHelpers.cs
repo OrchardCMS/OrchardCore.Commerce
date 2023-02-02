@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
