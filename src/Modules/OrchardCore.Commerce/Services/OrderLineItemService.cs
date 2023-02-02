@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,6 +44,8 @@ public class OrderLineItemService : IOrderLineItemService
         IList<OrderLineItem> lineItems,
         OrderPart orderPart)
     {
+        if (!lineItems.Any()) return (Array.Empty<OrderLineItemViewModel>(), Amount.Unspecified);
+
         var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
             lineItems.Select(line => line.ContentItemVersion));
 

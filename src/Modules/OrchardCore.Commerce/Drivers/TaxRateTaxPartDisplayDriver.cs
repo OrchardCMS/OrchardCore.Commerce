@@ -45,7 +45,7 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
                 addresses?.ShippingAddress.Address,
                 addresses?.BillingAddress.Address);
 
-            if (model.AdditionalData.HasGrossPrice()) return null;
+            if (!model.AdditionalData.HasGrossPrice()) return null;
 
             httpContext.Items[nameof(TaxRateTaxPartDisplayDriver)] = true;
 
