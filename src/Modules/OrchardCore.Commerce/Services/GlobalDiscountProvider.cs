@@ -70,7 +70,7 @@ public class GlobalDiscountProvider : IPromotionProvider
             .ListAsync();
 
         globalDiscountItems = await globalDiscountItems.WhereAsync(item =>
-            _authorizationService.AuthorizeAsync(_hca.HttpContext!.User, CommonPermissions.ViewContent, item));
+            _authorizationService.AuthorizeAsync(_hca.HttpContext!.User, CommonPermissions.PreviewContent, item));
 
         int totalQuantity = model.Items.Sum(item => item.Quantity);
         return globalDiscountItems
