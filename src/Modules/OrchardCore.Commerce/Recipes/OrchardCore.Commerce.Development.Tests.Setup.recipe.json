@@ -60,7 +60,8 @@
           "Name": "Authenticated",
           "Description": "Authenticated role",
           "Permissions": [
-            "ViewContent"
+            "ViewContent",
+            "Preview_GlobalDiscount"
           ]
         },
         {
