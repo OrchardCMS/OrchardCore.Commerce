@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Commerce.ContentFields.Models;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.ContentManagement;
-using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Promotion.ViewModels;
 
