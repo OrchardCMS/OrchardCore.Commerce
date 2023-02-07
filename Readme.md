@@ -14,7 +14,7 @@ Like Orchard, Nwazet Commerce was built with extensibility in mind, and as such 
 
 Orchard Core represents a major evolution of the Orchard design principles, and is sufficiently different that running Nwazet Commerce on it will necessitate significant work. As such, we've decided that starting from a blank slate was the best way to go, so we'll port Nwazet Commerce piece by piece, being careful to accurately apply Orchard Core's new design principles. We also decided to adopt a new name, that gets rid of the now obsolete origins, and establishes our ambition for the module to become the go-to commerce module for Orchard Core.
 
-This work is in its initial design phases. There's a lot of work to do, and yes, we do welcome participation in any shape or form. The first stage of this was the [minimum viable feature set](https://github.com/OrchardCMS/OrchardCore.Commerce/milestone/1) which has now been released to NuGet [here](https://www.nuget.org/packages/OrchardCore.Commerce/1.0.0).
+This work is in its initial design phases. There's a lot of work to do, and yes, we do welcome participation in any shape or form. The first stage of this was the [minimum viable feature set](https://github.com/OrchardCMS/OrchardCore.Commerce/milestone/1) which has now been released to NuGet [here](https://www.nuget.org/packages/OrchardCore.Commerce/1.0.0). [Here](https://youtu.be/Sw2jvE82UwE) you can watch a demo video about the MVP.
 
 See the [discussions page](https://github.com/OrchardCMS/OrchardCore.Commerce/discussions) for the latest news and announcements.
 
