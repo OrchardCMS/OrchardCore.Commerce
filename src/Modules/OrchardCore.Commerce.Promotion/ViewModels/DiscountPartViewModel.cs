@@ -16,7 +16,4 @@ public class DiscountPartViewModel
 
     [BindNever]
     public ContentItem ContentItem { get; set; }
-
-    [BindNever]
-    public IList<string> OldPriceClassNames { get; } = new List<string>();
 }

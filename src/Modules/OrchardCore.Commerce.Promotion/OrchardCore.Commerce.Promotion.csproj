@@ -34,4 +34,8 @@
     <ProjectReference Include="..\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Views\DiscountPart_UpdateScript.cshtml" />
+  </ItemGroup>
+
 </Project>

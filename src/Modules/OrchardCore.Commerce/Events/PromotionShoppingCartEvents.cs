@@ -54,7 +54,15 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 
         foreach (var (price, index) in lines.Select((item, index) => (item.UnitPrice, index)))
         {
-            lines[index].AdditionalData.SetOldPrice(price);
+            var data = lines[index].AdditionalData;
+            if (data.HasGrossPrice())
+            {
+                data.SetOldPrices(data.GetNetPrice(), data.GetGrossPrice());
+            }
+            else
+            {
+                data.SetOldPrices(price);
+            }
         }
 
         // Update lines and get new totals.

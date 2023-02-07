@@ -5,13 +5,13 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Promotion.ViewModels;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,9 +36,6 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
         model.Discount = discount;
 
         if (newPrice != null) model.NewPrice.Amount = newPrice.Value;
-
-        model.OldPriceClassNames.Add("tax-part-gross-price-value");
-        model.OldPriceClassNames.Add("price-part-price-field-value");
     }
 
     private static Amount? CalculateNewPrice(DiscountInformation discount, IContent content)
@@ -75,25 +72,31 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
                     new ShoppingCartItem(
                         quantity: 1,
                         part.Sku));
+                var data = model.AdditionalData;
 
-                var discounts = model
-                    .AdditionalData
-                    .GetDiscounts()
-                    .SelectWhere(
-                        discount => new
-                        {
-                            Discount = discount,
-                            NewPrice = discount.IsValidAndActive() && CalculateNewPrice(discount, part) is { IsValid: true } newPrice
-                                ? newPrice
-                                : Amount.Unspecified,
-                        },
-                        item => item.NewPrice.IsValid)
-                    .Select(item => Initialize<DiscountPartViewModel>(
+                var discounts = data.GetDiscounts().ToList();
+                var shapes = discounts
+                    .Select(discount => Initialize<DiscountPartViewModel>(
                             nameof(DiscountPart),
-                            viewModel => BuildViewModel(viewModel, item.Discount, part, item.NewPrice))
-                        .Location("Detail", "Content:20"));
+                            viewModel => BuildViewModel(viewModel, discount, part, newPrice: null))
+                        .Location("Detail", "Content:20"))
+                    .ToList();
 
-                return new CombinedResult(discounts);
+                shapes.Add(Initialize<DiscountPartUpdateScriptViewModel>(
+                        nameof(DiscountPart) + "_UpdateScript",
+                        viewModel =>
+                        {
+                            var (oldNetPrice, oldGrossPrice) = data.GetOldPrices();
+                            viewModel.Add(".price-part-price-field-value", oldNetPrice, data.GetNetPrice());
+
+                            if (oldGrossPrice is { } gross)
+                            {
+                                viewModel.Add(".tax-rate-gross-price-value", gross, data.GetGrossPrice());
+                            }
+                        })
+                    .Location("Detail", "Content:20"));
+
+                return new CombinedResult(shapes);
             }
             catch (FrontendException exception)
             {

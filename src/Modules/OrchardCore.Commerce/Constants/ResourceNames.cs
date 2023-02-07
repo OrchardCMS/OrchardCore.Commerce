@@ -10,5 +10,4 @@ public static class ResourceNames
     public const string CommerceRegions = nameof(CommerceRegions);
     public const string StripePaymentForm = nameof(StripePaymentForm);
     public const string ToggleSecondAddress = nameof(ToggleSecondAddress);
-    public const string Discount = nameof(Discount);
 }

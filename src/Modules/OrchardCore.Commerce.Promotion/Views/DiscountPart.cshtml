@@ -5,14 +5,15 @@
     var discountPercentageValue = discount.DiscountPercentage;
     var maximumProducts = discount.MaximumProducts;
     var minimumProducts = discount.MinimumProducts;
-
-    var oldPriceQueryStrings = string.Join(",", Model.OldPriceClassNames.Select(className => "." + className));
 }
 
-<div class="pb-3 field field-type-pricefield field-name-discount-part-new-price">
-    <strong class="field-name-discount-part-new-title-title">@T["New Price with Discount after Taxes:"]</strong>
-    @Model.NewPrice.Amount
-</div>
+@if(Model.NewPrice.Amount is { IsValid: true } newPrice)
+{
+    <div class="pb-3 field field-type-pricefield field-name-discount-part-new-price">
+        <strong class="field-name-discount-part-new-title-title">@T["New Price with Discount after Taxes:"]</strong>
+        @newPrice
+    </div>
+}
 
 @if (discountPercentageValue > 0)
 {
@@ -53,9 +54,4 @@
         @await DisplayAsync(await New.DateTime(Utc: expirationUtc, Format: "g"))
     </div>
 }
-
-<script asp-name="Discount" at="Foot"></script>
-<script at="Foot" depends-on="Discount">
-    strikeOutPrices(document.querySelectorAll(@oldPriceQueryStrings.JsonHtmlContent()));
-</script>
 
