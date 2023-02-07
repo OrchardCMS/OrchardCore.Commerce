@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0-alpha.occ-15.3" />
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.5.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.5.0" />
     <PackageReference Include="OrchardCore.ContentTypes" Version="1.5.0" />
