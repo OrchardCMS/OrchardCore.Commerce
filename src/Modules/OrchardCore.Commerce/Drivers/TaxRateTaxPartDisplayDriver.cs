@@ -50,13 +50,11 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
             httpContext.Items[nameof(TaxRateTaxPartDisplayDriver)] = true;
 
             return Initialize<TaxRateViewModel>("TaxPart_TaxRate_GrossPrice", viewModel =>
-                {
-                    viewModel.Context = new PromotionAndTaxProviderContext(
-                        new[] { new PromotionAndTaxProviderContextLineItem(model) },
-                        new[] { model.LinePrice },
-                        addresses?.ShippingAddress.Address,
-                        addresses?.BillingAddress.Address);
-                })
+                viewModel.Context = new PromotionAndTaxProviderContext(
+                    new[] { new PromotionAndTaxProviderContextLineItem(model) },
+                    new[] { model.LinePrice },
+                    addresses?.ShippingAddress.Address,
+                    addresses?.BillingAddress.Address))
                 .Location("Detail", "Content");
         }
         catch (FrontendException exception)

@@ -75,7 +75,7 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
                 line.AdditionalData.SetNetPrice(price * ratio);
             }
 
-            line.LinePrice = price * lines[index].Quantity;
+            line.LinePrice = price * line.Quantity;
             line.UnitPrice = price;
         }
 

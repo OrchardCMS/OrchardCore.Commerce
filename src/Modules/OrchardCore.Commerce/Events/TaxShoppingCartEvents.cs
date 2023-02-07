@@ -47,11 +47,11 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
             var line = lines[index];
 
             line.AdditionalData.SetGrossPrice(price);
-            line.AdditionalData.SetNetPrice(lines[index].UnitPrice);
+            line.AdditionalData.SetNetPrice(line.UnitPrice);
 
             // Other promotions will use UnitPrice and LinePrice as the base of the promotion. We need to modify these
             // to the gross price, otherwise the promotion would be applied on the net price and that would be used.
-            line.LinePrice = price * lines[index].Quantity;
+            line.LinePrice = price * line.Quantity;
             line.UnitPrice = price;
         }
 
