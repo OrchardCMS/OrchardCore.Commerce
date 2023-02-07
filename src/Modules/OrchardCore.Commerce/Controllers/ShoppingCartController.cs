@@ -24,10 +24,6 @@ public class ShoppingCartController : Controller
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
 
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "The shopping cart needs all of them.")]
     public ShoppingCartController(
         INotifier notifier,
         IShapeFactory shapeFactory,
