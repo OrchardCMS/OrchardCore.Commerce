@@ -75,6 +75,8 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
                 var data = model.AdditionalData;
 
                 var discounts = data.GetDiscounts().ToList();
+                if (!discounts.Any()) return null;
+
                 var shapes = discounts
                     .Select(discount => Initialize<DiscountPartViewModel>(
                             nameof(DiscountPart),
@@ -87,11 +89,14 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
                         viewModel =>
                         {
                             var (oldNetPrice, oldGrossPrice) = data.GetOldPrices();
-                            viewModel.Add(".price-part-price-field-value", oldNetPrice, data.GetNetPrice());
-
-                            if (oldGrossPrice is { } gross)
+                            if (data.HasGrossPrice() && oldGrossPrice is { } oldGrossPriceValue)
                             {
-                                viewModel.Add(".tax-rate-gross-price-value", gross, data.GetGrossPrice());
+                                viewModel.Add(".price-part-price-field-value", oldNetPrice, data.GetNetPrice());
+                                viewModel.Add(".tax-rate-gross-price-value", oldGrossPriceValue, data.GetGrossPrice());
+                            }
+                            else
+                            {
+                                viewModel.Add(".price-part-price-field-value", oldNetPrice, model.UnitPrice);
                             }
                         })
                     .Location("Detail", "Content:20"));

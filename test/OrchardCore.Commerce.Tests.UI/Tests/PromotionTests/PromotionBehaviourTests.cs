@@ -25,7 +25,7 @@ public class PromotionBehaviourTests : UITestBase
                 {
                     await context.GoToContentItemByIdAsync(TestProduct);
                     context.Exists(By.ClassName("price-part-price-field-value"));
-                    context.CheckExistence(By.ClassName("field-name-discount-part-new-price"), hasNewPrice);
+                    context.CheckExistence(By.CssSelector(".price-part-price-field-value del"), hasNewPrice);
                 }
 
                 await context.ExecuteRecipeDirectlyAsync("OrchardCore.Commerce.Samples.GlobalDiscount");
