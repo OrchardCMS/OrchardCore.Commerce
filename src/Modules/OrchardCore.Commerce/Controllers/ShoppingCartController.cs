@@ -1,8 +1,7 @@
-using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -10,7 +9,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Workflows.Services;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,39 +17,26 @@ namespace OrchardCore.Commerce.Controllers;
 public class ShoppingCartController : Controller
 {
     private readonly INotifier _notifier;
-    private readonly IPriceService _priceService;
     private readonly IShapeFactory _shapeFactory;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
-    private readonly IHtmlLocalizer<ShoppingCartController> H;
-    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 
-    [SuppressMessage(
-        "Major Code Smell",
-        "S107:Methods should not have too many parameters",
-        Justification = "The shopping cart needs all of them.")]
     public ShoppingCartController(
         INotifier notifier,
-        IOrchardServices<ShoppingCartController> services,
-        IPriceService priceService,
         IShapeFactory shapeFactory,
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IWorkflowManager workflowManager,
-        IEnumerable<IShoppingCartEvents> shoppingCartEvents)
+        IWorkflowManager workflowManager)
     {
         _notifier = notifier;
-        _priceService = priceService;
         _shapeFactory = shapeFactory;
         _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
-        _shoppingCartEvents = shoppingCartEvents;
-        H = services.HtmlLocalizer.Value;
     }
 
     [HttpGet]
@@ -117,32 +102,24 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> AddItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
-
-        foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
+        try
         {
-            if (await shoppingCartEvent.VerifyingItemAsync(parsedLine) is not { } errorMessage) continue;
+            var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
+                shoppingCartId,
+                await _shoppingCartSerializer.ParseCartLineAsync(line),
+                storeIfOk: true);
 
-            await _notifier.ErrorAsync(errorMessage);
-            return RedirectToAction(nameof(Index), new { shoppingCartId });
+            if (_workflowManager != null)
+            {
+                await _workflowManager.TriggerEventAsync(
+                    nameof(ProductAddedToCartEvent),
+                    new { LineItem = parsedLine },
+                    "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
+            }
         }
-
-        if (await ShoppingCartItem.GetErrorAsync(line.ProductSku, parsedLine, H, _priceService) is { } error)
+        catch (FrontendException exception)
         {
-            await _notifier.ErrorAsync(error);
-        }
-
-        if (parsedLine == null) return RedirectToAction(nameof(Index), new { shoppingCartId });
-
-        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
-        cart.AddItem(parsedLine);
-        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
-        if (_workflowManager != null)
-        {
-            await _workflowManager.TriggerEventAsync(
-                nameof(ProductAddedToCartEvent),
-                new { LineItem = parsedLine },
-                "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
+            await _notifier.ErrorAsync(exception.HtmlMessage);
         }
 
         return RedirectToAction(nameof(Index), new { shoppingCartId });

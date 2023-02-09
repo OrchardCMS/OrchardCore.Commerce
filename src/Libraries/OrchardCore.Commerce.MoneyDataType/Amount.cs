@@ -53,15 +53,16 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     {
     }
 
-    public Amount(decimal value, CultureInfo culture)
+    public Amount(decimal value, CultureInfo? culture)
         : this(value, MoneyDataType.Currency.FromCulture(culture))
     {
     }
 
-    public Amount(decimal value, ICurrency currency)
+    public Amount(decimal value, ICurrency? currency)
     {
-        _currency = currency;
-        Value = value;
+        _currency = currency ?? MoneyDataType.Currency.UnspecifiedCurrency;
+        // The value is rounded to avoid storing more precision than what the currency supports.
+        Value = Math.Round(value, _currency.DecimalPlaces);
     }
 
     public bool Equals(Amount other) =>

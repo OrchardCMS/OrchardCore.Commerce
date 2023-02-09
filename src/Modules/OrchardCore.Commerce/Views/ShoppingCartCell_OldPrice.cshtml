@@ -2,7 +2,11 @@
 
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
-    var oldPrice = line.AdditionalData.GetOldPrice();
+    var (oldNetPrice, oldGrossPrice) = line.AdditionalData.GetOldPrices();
+
+    // We prefer the gross price, if taxation is applicable. This is somewhat opinionated, see
+    // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/265 for turning this into an option.
+    var oldPrice = oldGrossPrice ?? oldNetPrice;
 }
 
 <div class="shopping-cart-table-old-price"><del>@oldPrice</del></div>

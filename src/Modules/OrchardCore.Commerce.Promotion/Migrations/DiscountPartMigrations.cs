@@ -42,13 +42,13 @@ public class DiscountPartMigrations : DataMigration
                             "percentage and discount amount only one can be used.",
                     }))
                 .WithField(part => part.BeginningUtc, part => part
-                    .WithDisplayName("Beginning Utc")
+                    .WithDisplayName("Beginning")
                     .WithSettings(new DateTimeFieldSettings
                     {
                         Hint = "The beginning date and time of the discount.",
                     }))
                 .WithField(part => part.ExpirationUtc, part => part
-                    .WithDisplayName("Expiration Utc")
+                    .WithDisplayName("Expiration")
                     .WithSettings(new DateTimeFieldSettings
                     {
                         Hint = "The expiration date and time of the discount.",

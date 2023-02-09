@@ -24,10 +24,14 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
 
     public string GetUniqueCartId(string shoppingCartId) => Session.Id + shoppingCartId;
 
-    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
+    public async Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
     {
         var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty));
-        return _shoppingCartSerializer.DeserializeAsync(cartString);
+
+        var cart = await _shoppingCartSerializer.DeserializeAsync(cartString);
+        cart.Id = shoppingCartId;
+
+        return cart;
     }
 
     public async Task StoreAsync(ShoppingCart items, string shoppingCartId = null)

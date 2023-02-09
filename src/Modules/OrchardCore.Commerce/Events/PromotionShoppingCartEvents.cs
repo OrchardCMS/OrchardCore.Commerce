@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
-using System;
+using OrchardCore.Modules;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace OrchardCore.Commerce.Events;
 
 public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 {
+    private readonly IClock _clock;
     private readonly IHtmlLocalizer<PromotionShoppingCartEvents> H;
     private readonly IPromotionService _promotionService;
 
@@ -19,9 +21,11 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
     public override int Order => int.MaxValue;
 
     public PromotionShoppingCartEvents(
+        IClock clock,
         IHtmlLocalizer<PromotionShoppingCartEvents> htmlLocalizer,
         IPromotionService promotionService)
     {
+        _clock = clock;
         H = htmlLocalizer;
         _promotionService = promotionService;
     }
@@ -36,7 +40,7 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
             eventContext.Totals,
             eventContext.ShippingAddress,
             eventContext.BillingAddress,
-            DateTime.UtcNow);
+            _clock.UtcNow);
 
         if (!await _promotionService.IsThereAnyApplicableProviderAsync(context))
         {
@@ -50,23 +54,37 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 
         foreach (var (price, index) in lines.Select((item, index) => (item.UnitPrice, index)))
         {
-            lines[index].AdditionalData.SetOldPrice(price);
+            var data = lines[index].AdditionalData;
+            if (data.HasGrossPrice())
+            {
+                data.SetOldPrices(data.GetNetPrice(), data.GetGrossPrice());
+            }
+            else
+            {
+                data.SetOldPrices(price);
+            }
         }
 
         // Update lines and get new totals.
         context = await _promotionService.AddPromotionsAsync(context);
 
-        foreach (var (price, index) in context.Items.Select((item, index) => (item.UnitPrice, index)))
+        foreach (var (item, index) in context.Items.Select((item, index) => (item, index)))
         {
-            if (headers.Any(header => header.Name == "Gross Price"))
+            var line = lines[index];
+            var price = item.UnitPrice;
+
+            line.AdditionalData.SetDiscounts(item.Discounts);
+
+            if (line.AdditionalData.HasGrossPrice())
             {
-                lines[index].AdditionalData.SetGrossPrice(price);
+                var ratio = line.AdditionalData.GetNetPrice().Value / line.AdditionalData.GetGrossPrice().Value;
+
+                line.AdditionalData.SetGrossPrice(price);
+                line.AdditionalData.SetNetPrice(price * ratio);
             }
-            else
-            {
-                lines[index].LinePrice = price * lines[index].Quantity;
-                lines[index].UnitPrice = price;
-            }
+
+            line.LinePrice = price * line.Quantity;
+            line.UnitPrice = price;
         }
 
         return (newHeaders, lines);

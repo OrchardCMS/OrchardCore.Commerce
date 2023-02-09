@@ -50,19 +50,17 @@ public class PriceVariantProvider : IPriceProvider
     {
         var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
 
-        if (priceVariantsPart is { Variants: { } })
+        if (priceVariantsPart is { Variants: { } variants } && variants.Any())
         {
             var attributesRestrictedToPredefinedValues = _predefinedValuesService
                 .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
                 .Select(attr => attr.PartName + "." + attr.Name)
                 .ToHashSet();
 
-            var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
+            var key = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
 
-            if (priceVariantsPart.Variants.ContainsKey(variantKey))
-            {
-                return item.WithPrice(new PrioritizedPrice(1, priceVariantsPart.Variants[variantKey]));
-            }
+            if (string.IsNullOrEmpty(key)) return item.WithPrice(new PrioritizedPrice(1, variants.First().Value));
+            if (variants.TryGetValue(key, out var variant)) return item.WithPrice(new PrioritizedPrice(1, variant));
         }
 
         return null;
