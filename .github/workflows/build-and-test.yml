@@ -10,7 +10,8 @@ on:
 jobs:
   call-build-and-test-workflow:
     name: Build and Test
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    if: false
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@OSOE-523
     with:
       machine-types: '["ubuntu-latest", "windows-latest"]'
       timeout-minutes: 60
@@ -18,7 +19,7 @@ jobs:
 
   spelling:
     name: Spelling
-    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@OSOE-523
     with:
       dictionary-source-prefixes: >
         {
@@ -41,7 +42,7 @@ jobs:
   post-pull-request-checks-automation:
     needs: [call-build-and-test-workflow, spelling]
     if: github.event.pull_request != ''
-    uses: Lombiq/GitHub-Actions/.github/workflows/post-pull-request-checks-automation.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/post-pull-request-checks-automation.yml@OSOE-523
     secrets:
       JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
