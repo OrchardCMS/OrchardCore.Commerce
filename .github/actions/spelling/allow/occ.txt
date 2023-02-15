@@ -24,4 +24,3 @@ skus
 testproduct
 unpublish
 webhooks
-workflows
