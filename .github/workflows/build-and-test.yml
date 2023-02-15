@@ -21,7 +21,9 @@ jobs:
     name: Spelling
     uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@issue/OSOE-523
     with:
-      additional-dictionaries: |        
+      additional-dictionaries: |
+        cspell:html/html.txt    
+        lombiq-lgha:Liquid.txt
         lombiq-lgha:Lombiq.common.txt
         lombiq-lgha:Lombiq.people.txt
 
