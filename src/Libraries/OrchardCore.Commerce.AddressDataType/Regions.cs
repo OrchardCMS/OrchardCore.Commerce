@@ -16,7 +16,7 @@ public static class Regions
             .Select(culture =>
             {
                 // This sometimes throws "CultureNotFoundException: Culture is not supported." exception on Linux only.
-                try { return new RegionInfo(culture.LCID); }
+                try { return new RegionInfo(culture.LCID); } // #spell-check-ignore-line
                 catch (CultureNotFoundException) { return null; }
             })
             .Where(region =>

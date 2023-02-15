@@ -1,4 +1,5 @@
 \.all-contributorsrc$
+Contributors.md$
 docs/releases
 docs/requirements\.txt$
 mkdocs\.yml$

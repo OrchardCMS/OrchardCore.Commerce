@@ -18,13 +18,13 @@ public class ShoppingCartItemAttributeTests
     public void GenerateVariantKeyFromShoppingCartItemAttributes()
     {
         var item = new ShoppingCartItem(5, "foo", _attrSet1Parsed);
-        var attribs = new HashSet<string>
+        var attributes = new HashSet<string>
         {
             "ProductPart1.Size",
             "ProductPart1.Color",
         };
 
-        var variantKey = item.GetVariantKeyFromAttributes(attribs);
+        var variantKey = item.GetVariantKeyFromAttributes(attributes);
         Assert.Equal("GREEN-SMALL", variantKey);
     }
 }
