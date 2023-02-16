@@ -60,11 +60,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{BEBA1764-1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B2DB1CD-2B4A-4823-9762-CF4E90661404}"
 	ProjectSection(SolutionItems) = preProject
-		docs\features\stripe-payment.md = docs\features\stripe-payment.md
-		docs\features\products-and-prices.md = docs\features\products-and-prices.md
-		docs\features\taxation.md = docs\features\taxation.md
-		docs\features\promotions.md = docs\features\promotions.md
 		docs\features\inventory.md = docs\features\inventory.md
+		docs\features\products-and-prices.md = docs\features\products-and-prices.md
+		docs\features\promotions.md = docs\features\promotions.md
+		docs\features\stripe-payment.md = docs\features\stripe-payment.md
+		docs\features\taxation.md = docs\features\taxation.md
 		docs\features\user-features.md = docs\features\user-features.md
 	EndProjectSection
 EndProject
@@ -72,6 +72,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "releases", "releases", "{E4
 	ProjectSection(SolutionItems) = preProject
 		docs\releases\0.0.1.md = docs\releases\0.0.1.md
 		docs\releases\1.0.0.md = docs\releases\1.0.0.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{83C01924-6F58-4777-A9EC-07943F7A2E31}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "spelling", "spelling", "{E32B62B8-D737-4713-87C5-8220C9746643}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\spelling\advice.md = .github\actions\spelling\advice.md
+		.github\actions\spelling\excludes.txt = .github\actions\spelling\excludes.txt
+		.github\actions\spelling\patterns.txt = .github\actions\spelling\patterns.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "allow", "allow", "{7FB7940D-EEF4-4355-BCBF-C160080F257A}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\spelling\allow\occ.txt = .github\actions\spelling\allow\occ.txt
+		.github\actions\spelling\allow\people.txt = .github\actions\spelling\allow\people.txt
 	EndProjectSection
 EndProject
 Global
@@ -140,6 +155,9 @@ Global
 		{93871E12-0083-4323-BB7B-3CDA6E332D87} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{9B2DB1CD-2B4A-4823-9762-CF4E90661404} = {BEBA1764-178A-4722-A193-4DEF26DCE8D1}
 		{E4DD8D47-02FA-41F7-8133-CBC4419645F5} = {BEBA1764-178A-4722-A193-4DEF26DCE8D1}
+		{83C01924-6F58-4777-A9EC-07943F7A2E31} = {4561F321-6E57-484B-950C-AC46798B1F40}
+		{E32B62B8-D737-4713-87C5-8220C9746643} = {83C01924-6F58-4777-A9EC-07943F7A2E31}
+		{7FB7940D-EEF4-4355-BCBF-C160080F257A} = {E32B62B8-D737-4713-87C5-8220C9746643}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}
