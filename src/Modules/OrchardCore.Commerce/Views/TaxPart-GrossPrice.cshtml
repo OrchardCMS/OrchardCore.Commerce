@@ -1,0 +1,11 @@
+@using OrchardCore.Commerce.Drivers
+@model OrchardCore.Commerce.ContentFields.ViewModels.PriceFieldDisplayViewModel
+
+@{
+    if (!Model.Field.Amount.IsValid || Context.Items[nameof(TaxRateTaxPartDisplayDriver)] is true) { return; }
+}
+
+<div class="pb-3 field field-type-pricefield field-name-tax-part-gross-price-field">
+    <strong class="price-part-price-field-title">@T["Gross Price:"]</strong>
+    <span class="price-part-price-field-value">@Model.Field.Amount</span>
+</div>

@@ -1,52 +1,113 @@
+using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Promotion.ViewModels;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
 public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 {
     public override IDisplayResult Display(DiscountPart part, BuildPartDisplayContext context) =>
-        Initialize<DiscountPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
-            .Location("Detail", "Content:20")
-            .Location("Summary", "Meta:5");
+        part.IsValidAndActive() && CalculateNewPrice((DiscountInformation)part, part) is { IsValid: true } newPrice
+            ? Initialize<DiscountPartViewModel>(nameof(DiscountPart), viewModel =>
+                    BuildViewModel(viewModel, (DiscountInformation)part, part, newPrice))
+                .Location("Summary", "Meta:5")
+            : null;
 
     public override IDisplayResult Edit(DiscountPart part, BuildPartEditorContext context) =>
-        Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part));
+        Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel =>
+            BuildViewModel(viewModel, (DiscountInformation)part, part, newPrice: null));
 
-    private static void BuildViewModel(DiscountPartViewModel model, DiscountPart part)
+    private static void BuildViewModel(DiscountPartViewModel model, DiscountInformation discount, IContent content, Amount? newPrice)
     {
-        var contentItem = part.ContentItem;
-        model.ContentItem = contentItem;
+        model.ContentItem = content.ContentItem;
+        model.Discount = discount;
 
-        model.DiscountPart = part;
+        if (newPrice != null) model.NewPrice.Amount = newPrice.Value;
+    }
 
-        var discountPercentage = part.DiscountPercentage.Value;
-        var discountAmount = part.DiscountAmount.Amount;
-
-        var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { } grossPrice && grossPrice.IsValid
+    private static Amount? CalculateNewPrice(DiscountInformation discount, IContent content)
+    {
+        var contentItem = content?.ContentItem;
+        var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { IsValid: true } grossPrice
             ? grossPrice
             : contentItem?.As<PricePart>()?.Price;
 
-        if (newPrice is { } notNullPrice)
+        if (newPrice is not { } notNullPrice) return null;
+        if (discount.DiscountPercentage > 0) return notNullPrice.WithDiscount(discount.DiscountPercentage);
+        if (discount.DiscountAmount.IsValidAndNonZero) return notNullPrice.WithDiscount(discount.DiscountAmount);
+
+        return null;
+    }
+
+    public class StoredDiscountPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
+    {
+        private readonly INotifier _notifier;
+        private readonly IShoppingCartHelpers _shoppingCartHelpers;
+
+        public StoredDiscountPartDisplayDriver(INotifier notifier, IShoppingCartHelpers shoppingCartHelpers)
         {
-            if (discountPercentage is { } and not 0)
-            {
-                notNullPrice = notNullPrice.WithDiscount((decimal)discountPercentage);
-            }
+            _notifier = notifier;
+            _shoppingCartHelpers = shoppingCartHelpers;
+        }
 
-            if (discountAmount.IsValidAndNonZero)
+        public override async Task<IDisplayResult> DisplayAsync(ProductPart part, BuildPartDisplayContext context)
+        {
+            try
             {
-                notNullPrice = notNullPrice.WithDiscount(discountAmount);
-            }
+                var model = await _shoppingCartHelpers.EstimateProductAsync(
+                    shoppingCartId: null,
+                    new ShoppingCartItem(
+                        quantity: 1,
+                        part.Sku));
+                var data = model.AdditionalData;
 
-            model.NewPrice.Amount = notNullPrice;
+                var discounts = data.GetDiscounts().ToList();
+                if (!discounts.Any()) return null;
+
+                var shapes = discounts
+                    .Select(discount => Initialize<DiscountPartViewModel>(
+                            nameof(DiscountPart),
+                            viewModel => BuildViewModel(viewModel, discount, part, newPrice: null))
+                        .Location("Detail", "Content:20"))
+                    .ToList();
+
+                shapes.Add(Initialize<DiscountPartUpdateScriptViewModel>(
+                        nameof(DiscountPart) + "_UpdateScript",
+                        viewModel =>
+                        {
+                            var (oldNetPrice, oldGrossPrice) = data.GetOldPrices();
+                            if (data.HasGrossPrice() && oldGrossPrice is { } oldGrossPriceValue)
+                            {
+                                viewModel.Add(".price-part-price-field-value", oldNetPrice, data.GetNetPrice());
+                                viewModel.Add(".tax-rate-gross-price-value", oldGrossPriceValue, data.GetGrossPrice());
+                            }
+                            else
+                            {
+                                viewModel.Add(".price-part-price-field-value", oldNetPrice, model.UnitPrice);
+                            }
+                        })
+                    .Location("Detail", "Content:20"));
+
+                return new CombinedResult(shapes);
+            }
+            catch (FrontendException exception)
+            {
+                await _notifier.ErrorAsync(exception.HtmlMessage);
+                return null;
+            }
         }
     }
 }

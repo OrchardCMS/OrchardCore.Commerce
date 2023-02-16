@@ -3,8 +3,11 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Promotion.Extensions;
+using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +17,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class OrderLineItemService : IOrderLineItemService
 {
+    private readonly IClock _clock;
     private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
@@ -21,12 +25,14 @@ public class OrderLineItemService : IOrderLineItemService
     private readonly IPromotionService _promotionService;
 
     public OrderLineItemService(
+        IClock clock,
         IHttpContextAccessor hca,
         IProductService productService,
         IContentManager contentManager,
         IEnumerable<ITaxProvider> taxProviders,
         IPromotionService promotionService)
     {
+        _clock = clock;
         _hca = hca;
         _productService = productService;
         _contentManager = contentManager;
@@ -38,6 +44,8 @@ public class OrderLineItemService : IOrderLineItemService
         IList<OrderLineItem> lineItems,
         OrderPart orderPart)
     {
+        if (!lineItems.Any()) return (Array.Empty<OrderLineItemViewModel>(), Amount.Unspecified);
+
         var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
             lineItems.Select(line => line.ContentItemVersion));
 
@@ -62,15 +70,18 @@ public class OrderLineItemService : IOrderLineItemService
             orderPart?.ShippingAddress.Address,
             orderPart?.BillingAddress.Address);
 
+        var storedDiscounts = orderPart?.AdditionalData.GetDiscountsByProduct();
         var promotionAndTaxContext = new PromotionAndTaxProviderContext(
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
                 products[item.ProductSku],
                 item.UnitPrice,
-                item.Quantity)),
+                item.Quantity,
+                GetDiscounts(storedDiscounts, item))),
             viewModelLineItems.CalculateTotals().ToList(),
             shipping,
             billing,
-            orderPart?.ContentItem?.PublishedUtc ?? DateTime.UtcNow);
+            orderPart?.ContentItem?.PublishedUtc ?? _clock.UtcNow,
+            Stored: true);
         var changed = false;
 
         if (_taxProviders.Any() &&
@@ -97,5 +108,15 @@ public class OrderLineItemService : IOrderLineItemService
         }
 
         return (viewModelLineItems, viewModelLineItems.CalculateTotals().Single());
+    }
+
+    private static IEnumerable<DiscountInformation> GetDiscounts(
+        IDictionary<string, IEnumerable<DiscountInformation>> storedDiscounts,
+        OrderLineItemViewModel item)
+    {
+        var discounts = storedDiscounts.GetMaybe(item.ProductSku)?.AsList();
+        return discounts?.Any() != true
+            ? item.ProductPart.GetAllDiscountInformation()
+            : discounts;
     }
 }

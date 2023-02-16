@@ -1,0 +1,96 @@
+{
+  "name": "OrchardCore.Commerce.Samples.GlobalDiscount",
+  "displayName": "Orchard Core Commerce - Samples - Global Discount",
+  "description": "Sets up custom site settings.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "promotion", "sample" ],
+  "steps": [
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "GlobalDiscount",
+          "DisplayName": "Global Discount",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Stereotype": "GlobalDiscount",
+              "Securable": true
+            },
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "GlobalDiscount",
+              "Name": "GlobalDiscount",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "DiscountPart",
+              "Name": "DiscountPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "globaldiscount000000000000",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "GlobalDiscount",
+          "DisplayText": null,
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2023-02-02T02:31:06.6484047Z",
+          "PublishedUtc": "2023-02-02T02:31:06.6953155Z",
+          "CreatedUtc": "2023-01-27T16:49:05.151489Z",
+          "Owner": "4jwbckk4sst3ezgbftm8zh1j5v",
+          "Author": "admin",
+          "GlobalDiscount": {},
+          "DiscountPart": {
+            "DiscountPercentage": {
+              "Value": 50.0
+            },
+            "DiscountAmount": {
+              "Amount": {
+                "value": 0.0,
+                "currency": "---"
+              }
+            },
+            "BeginningUtc": {
+              "Value": null
+            },
+            "ExpirationUtc": {
+              "Value": null
+            },
+            "MaximumProducts": {
+              "Value": null
+            },
+            "MinimumProducts": {
+              "Value": null
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

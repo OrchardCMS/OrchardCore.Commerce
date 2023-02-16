@@ -11,6 +11,8 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class ShoppingCart
 {
+    public string Id { get; set; }
+
     /// <summary>
     /// Gets the list of quantities of product variants in the cart.
     /// </summary>
@@ -71,18 +73,18 @@ public class ShoppingCart
     /// quantity gets updated. Otherwise, it's added to the end of the list.
     /// </summary>
     /// <param name="item">The cart item to add.</param>
-    public void AddItem(ShoppingCartItem item)
+    public ShoppingCartItem AddItem(ShoppingCartItem item)
     {
         var existingIndex = IndexOf(item);
         if (existingIndex != -1)
         {
             var existingItem = Items[existingIndex];
-            Items[existingIndex] = existingItem.WithQuantity(existingItem.Quantity + item.Quantity);
+            item = item.WithQuantity(existingItem.Quantity + item.Quantity);
+            Items.Remove(existingItem);
         }
-        else
-        {
-            Items.Add(item);
-        }
+
+        Items.Add(item);
+        return item;
     }
 
     /// <summary>

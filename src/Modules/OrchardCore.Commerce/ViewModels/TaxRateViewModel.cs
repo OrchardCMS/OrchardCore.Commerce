@@ -8,5 +8,5 @@ public class TaxRateViewModel
 {
     public PromotionAndTaxProviderContext Context { get; set; }
 
-    public Amount? GrossPrice => Context?.Items.SingleOrDefault()?.Subtotal is { IsValid: true } price ? price : null;
+    public Amount? GrossPrice => Context?.Items.SingleOrDefault()?.UnitPrice is { IsValid: true } price ? price : null;
 }

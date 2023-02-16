@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -43,6 +44,14 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         Address billing = null)
     {
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+        return await CreateShoppingCartViewModelAsync(cart, shipping, billing);
+    }
+
+    private async Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(
+        ShoppingCart cart,
+        Address shipping = null,
+        Address billing = null)
+    {
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPricesAsync(cart.Items);
 
@@ -65,7 +74,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (!lines.Any()) return null;
 
-        var model = new ShoppingCartViewModel { Id = shoppingCartId };
+        var model = new ShoppingCartViewModel { Id = cart.Id };
 
         IList<LocalizedHtmlString> headers = new[]
         {
@@ -106,5 +115,52 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService);
         return totals.ToDictionary(total => total.Currency.CurrencyIsoCode);
+    }
+
+    public async Task<ShoppingCartItem> AddToCartAsync(
+        string shoppingCartId,
+        ShoppingCartItem item,
+        bool storeIfOk = false)
+    {
+        var (cart, parsedLine) = await AddItemAndGetCartAsync(shoppingCartId, item);
+        if (storeIfOk) await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
+        return parsedLine;
+    }
+
+    private async Task<(ShoppingCart Cart, ShoppingCartItem Item)> AddItemAndGetCartAsync(
+        string shoppingCartId,
+        ShoppingCartItem item)
+    {
+        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+        var parsedLine = cart.AddItem(item);
+
+        foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
+        {
+            if (await shoppingCartEvent.VerifyingItemAsync(parsedLine) is { } errorMessage)
+            {
+                throw new FrontendException(errorMessage);
+            }
+        }
+
+        if (await ShoppingCartItem.GetErrorAsync(parsedLine.ProductSku, parsedLine, H, _priceService) is { } error)
+        {
+            throw new FrontendException(error);
+        }
+
+        return (cart, item);
+    }
+
+    public async Task<ShoppingCartLineViewModel> EstimateProductAsync(
+        string shoppingCartId,
+        ShoppingCartItem item,
+        Address shipping = null,
+        Address billing = null)
+    {
+        var sku = item.ProductSku;
+        var (cart, _) = await AddItemAndGetCartAsync(shoppingCartId, item);
+
+        return (await CreateShoppingCartViewModelAsync(cart, shipping, billing))
+            .Lines
+            .Single(line => line.ProductSku == sku);
     }
 }

@@ -1,7 +1,7 @@
 {
   "name": "OrchardCore.Commerce.Samples.CustomTaxRates",
   "displayName": "Orchard Core Commerce - Samples - Custom Tax Rates",
-  "description": "Sets uo custom site settings.",
+  "description": "Sets up custom site settings.",
   "author": "The Orchard Team",
   "website": "https://orchardproject.net",
   "version": "2.0",

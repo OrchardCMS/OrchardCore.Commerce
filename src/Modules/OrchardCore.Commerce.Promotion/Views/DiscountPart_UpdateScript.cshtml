@@ -1,0 +1,19 @@
+@model OrchardCore.Commerce.Promotion.ViewModels.DiscountPartUpdateScriptViewModel
+
+@{
+    var uniqueItem = $"anchor_{Guid.NewGuid():N}";
+}
+
+<div id="@uniqueItem" hidden></div>
+
+<script at="Foot">
+    const baseElement = document.getElementById(@uniqueItem.JsonHtmlContent()).parentElement;
+
+    @foreach (var item in Model.Items)
+    {
+        var html = $"<del class=\"text-danger\">{item.OldValue}</del> <span>{item.NewValue}</span>";
+        <text>
+            baseElement.querySelector(@item.QuerySelector.JsonHtmlContent()).innerHTML = @html.JsonHtmlContent();
+        </text>
+    }
+</script>

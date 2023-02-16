@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentFields.Fields;
@@ -40,4 +41,6 @@ public class OrderPart : ContentPart
     public AddressField BillingAddress { get; set; } = new();
     public AddressField ShippingAddress { get; set; } = new();
     public BooleanField BillingAndShippingAddressesMatch { get; set; } = new();
+
+    public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
 }

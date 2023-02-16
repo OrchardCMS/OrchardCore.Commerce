@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
 using System;
@@ -40,7 +41,8 @@ public class DiscountTests
             viewModelLineItems.Select(item => new PromotionAndTaxProviderContextLineItem(
                 Content: null,
                 item.UnitPrice,
-                item.Quantity)),
+                item.Quantity,
+                Enumerable.Empty<DiscountInformation>())),
             new[] { total },
             ShippingAddress: null,
             BillingAddress: null);

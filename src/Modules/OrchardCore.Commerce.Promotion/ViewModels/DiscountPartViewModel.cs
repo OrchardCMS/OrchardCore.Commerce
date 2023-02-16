@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Promotion.ViewModels;
 public class DiscountPartViewModel
 {
     [BindNever]
-    public DiscountPart DiscountPart { get; set; }
+    public DiscountInformation Discount { get; set; }
 
     [BindNever]
     public PriceField NewPrice { get; set; } = new();

@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -233,11 +234,12 @@ public class StripePaymentService : IStripePaymentService
                 contentItemVersion));
         }
 
-        var defaultTotal = CheckTotals(await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-                shoppingCartId: null,
-                order.As<OrderPart>().ShippingAddress.Address,
-                order.As<OrderPart>().BillingAddress.Address))
-            .SingleOrDefault();
+        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+            shoppingCartId: null,
+            order.As<OrderPart>().ShippingAddress.Address,
+            order.As<OrderPart>().BillingAddress.Address);
+
+        var defaultTotal = CheckTotals(cartViewModel).SingleOrDefault();
 
         order.Alter<OrderPart>(orderPart =>
         {
@@ -257,6 +259,14 @@ public class StripePaymentService : IStripePaymentService
 
             orderPart.OrderId.Text = guidId;
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+
+            // Store the current applicable discount info so they will be available in the future.
+            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                .Lines
+                .Where(line => line.AdditionalData.GetDiscounts().Any())
+                .ToDictionary(
+                    line => line.ProductSku,
+                    line => line.AdditionalData.GetDiscounts()));
         });
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });

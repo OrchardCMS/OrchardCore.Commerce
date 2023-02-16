@@ -267,7 +267,13 @@ public class PromotionStartup : StartupBase
             .AddHandler<DiscountPartHandler>()
             .UseDisplayDriver<DiscountPartDisplayDriver>();
 
+        services
+            .AddContentPart<ProductPart>()
+            .ForDisplayMode<DiscountPartDisplayDriver.StoredDiscountPartDisplayDriver>();
+
         services.AddScoped<IPromotionProvider, DiscountProvider>();
+        services.AddScoped<IPromotionProvider, GlobalDiscountProvider>();
+        services.AddScoped<IPromotionProvider, StoredDiscountProvider>();
     }
 }
 

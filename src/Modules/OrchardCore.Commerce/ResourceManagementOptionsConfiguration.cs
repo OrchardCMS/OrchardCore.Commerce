@@ -45,13 +45,6 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
             .SetVersion("1.0.0");
 
         _manifest
-            .DefineScript(Discount)
-            .SetUrl(
-                "~/OrchardCore.Commerce/js/discount.min.js",
-                "~/OrchardCore.Commerce/js/discount.js")
-            .SetVersion("1.0.0");
-
-        _manifest
             .DefineScript(StripePaymentForm)
             .SetUrl(
                 "~/OrchardCore.Commerce/js/stripe-payment-form.min.js",
