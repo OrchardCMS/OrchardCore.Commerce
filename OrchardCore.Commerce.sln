@@ -78,7 +78,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{83C0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "spelling", "spelling", "{E32B62B8-D737-4713-87C5-8220C9746643}"
 	ProjectSection(SolutionItems) = preProject
-		.github\actions\spelling\advice.md = .github\actions\spelling\advice.md
 		.github\actions\spelling\excludes.txt = .github\actions\spelling\excludes.txt
 		.github\actions\spelling\patterns.txt = .github\actions\spelling\patterns.txt
 	EndProjectSection
