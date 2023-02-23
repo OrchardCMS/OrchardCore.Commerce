@@ -20,23 +20,11 @@ jobs:
     name: Spelling
     uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
     with:
-      dictionary-source-prefixes: >
-        {
-          "lombiq": "https://raw.githubusercontent.com/Lombiq/GitHub-Actions/dev/.github/actions/spelling/",
-          "cspell": "https://raw.githubusercontent.com/check-spelling/cspell-dicts/v20220816/dictionaries/"
-        }
-      extra-dictionaries: |
-        cspell:cpp/src/cpp.txt
+      additional-dictionaries: |
         cspell:csharp/csharp.txt
-        cspell:css/css.txt
-        cspell:django/django.txt
-        cspell:filetypes/filetypes.txt
         cspell:html/html.txt
-        cspell:software-terms/src/software-terms.txt
-        cspell:typescript/typescript.txt
-        lombiq:allow.txt
-        lombiq:expect.txt
-      spell-check-this: Lombiq/GitHub-Actions@dev
+        lombiq-lgha:dictionaries/Liquid.txt
+        lombiq-lgha:dictionaries/Lombiq.people.txt
 
   post-pull-request-checks-automation:
     needs: [call-build-and-test-workflow, spelling]

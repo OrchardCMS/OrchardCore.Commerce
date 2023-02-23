@@ -1,14 +1,17 @@
 addressfield
 barbool
 bartext
+baz
 Bitcoin
 blogs
 BTC
 CLA
 contentpart
+CVC
 datetimefield
 disqus
 emoji
+EUR
 foobool
 footext
 GST
@@ -24,4 +27,3 @@ skus
 testproduct
 unpublish
 webhooks
-workflows
