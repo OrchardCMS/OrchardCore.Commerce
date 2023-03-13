@@ -1,7 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
-
-  <Import Condition="'$(NuGetBuild)' != 'true'" Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.props" />
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -28,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0" />
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.2.0" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.5.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.5.0" />
     <PackageReference Include="OrchardCore.ContentTypes" Version="1.5.0" />
@@ -60,6 +57,4 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </EmbeddedResource>
   </ItemGroup>
-
-  <Import Condition="'$(NuGetBuild)' != 'true'" Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.targets" />
 </Project>

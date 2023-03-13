@@ -26,10 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="5.1.1-alpha.0.nest-407" />
     <PackageReference Include="OrchardCore.ContentFields" Version="1.5.0" />
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.5.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.5.0" />
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="5.1.1" />
   </ItemGroup>
 
 </Project>
