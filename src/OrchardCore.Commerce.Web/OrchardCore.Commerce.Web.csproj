@@ -3,12 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
-
-    <NodeJsExtensionsMarkdownAnalysisMode>solution</NodeJsExtensionsMarkdownAnalysisMode>
-    <ExecDotnetPostcleanCommand>false</ExecDotnetPostcleanCommand>
-    <ExecDotnetPrebuildCommand>false</ExecDotnetPrebuildCommand>
-    <NodeJsExtensionsGlobalESLintConfigurationDirectory>false</NodeJsExtensionsGlobalESLintConfigurationDirectory>
-    <NodeJsExtensionsCreateStylelintConfigurationFile>false</NodeJsExtensionsCreateStylelintConfigurationFile>
   </PropertyGroup>
 
   <!-- Currently we don't have any ps1/psm1/psd1 files in the repo, so this is commented out. Add the ProjectReference
@@ -18,7 +12,6 @@
   </ItemGroup> -->
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.0.0" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="5.0.0" />
     <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.5.0" />
     <PackageReference Include="OrchardCore.Logging.NLog" Version="1.5.0" />
