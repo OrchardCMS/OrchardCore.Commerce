@@ -1,6 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
-  <Import Condition="'$(NuGetBuild)' != 'true'" Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.props" />
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -41,16 +39,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Condition="'$(NuGetBuild)' == 'true'" Include="Lombiq.NodeJs.Extensions" Version="1.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Inventory\OrchardCore.Commerce.Inventory.csproj" />
-    <ProjectReference Condition="'$(NuGetBuild)' != 'true'" Include="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <LombiqNodeJsExtensionsPath>..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions</LombiqNodeJsExtensionsPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
+    <ProjectReference Include="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.csproj" />
+  </ItemGroup>
+  <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
+    <Import Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.props" />
+    <Import Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.targets" />
+  </ImportGroup>
+  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.2.0" />
   </ItemGroup>
 
-  <Import Condition="'$(NuGetBuild)' != 'true'" Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.targets" />
 </Project>
