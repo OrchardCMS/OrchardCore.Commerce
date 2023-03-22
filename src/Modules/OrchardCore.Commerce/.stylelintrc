@@ -1,6 +1,0 @@
-{
-  "extends": "./node_modules/nodejs-extensions/Stylelint/lombiq-base.stylelintrc.json",
-
-  "rules": {
-  }
-}

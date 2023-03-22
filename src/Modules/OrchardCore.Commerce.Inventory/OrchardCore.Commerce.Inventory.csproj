@@ -30,7 +30,7 @@
     <PackageReference Include="OrchardCore.ContentManagement" Version="1.5.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.5.0" />
   </ItemGroup>
-  
+
   <PropertyGroup>
     <LombiqHelpfulLibrariesPath>..\..\..\..\..\Libraries\Lombiq.HelpfulLibraries\Lombiq.HelpfulLibraries.OrchardCore\Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
   </PropertyGroup>
@@ -39,7 +39,7 @@
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="5.1.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="5.1.1" />
   </ItemGroup>
 
 </Project>
