@@ -12,7 +12,7 @@
     <Description>New data type representing international addresses.</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Address;Postal</PackageTags>
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/src/Libraries/OrchardCore.Commerce.AddressDataType/Readme.md</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Libraries/OrchardCore.Commerce.AddressDataType/Readme.md</PackageProjectUrl>
     <PackageLicenseFile>License.md</PackageLicenseFile>
   </PropertyGroup>
 
