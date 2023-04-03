@@ -114,7 +114,7 @@ public class OrderLineItemService : IOrderLineItemService
         IDictionary<string, IEnumerable<DiscountInformation>> storedDiscounts,
         OrderLineItemViewModel item)
     {
-        var discounts = storedDiscounts.GetMaybe(item.ProductSku)?.AsList();
+        var discounts = storedDiscounts?.GetMaybe(item.ProductSku)?.AsList();
         return discounts?.Any() != true
             ? item.ProductPart.GetAllDiscountInformation()
             : discounts;
