@@ -57,6 +57,7 @@ public class PaymentController : Controller
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
+    private readonly ICheckoutService _checkoutService;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -73,7 +74,8 @@ public class PaymentController : Controller
         IPaymentIntentPersistence paymentIntentPersistence,
         IShoppingCartPersistence shoppingCartPersistence,
         INotifier notifier,
-        IMoneyService moneyService)
+        IMoneyService moneyService,
+        ICheckoutService checkoutService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -94,6 +96,7 @@ public class PaymentController : Controller
         _shoppingCartPersistence = shoppingCartPersistence;
         _notifier = notifier;
         _moneyService = moneyService;
+        _checkoutService = checkoutService;
     }
 
     [Route("checkout")]
@@ -104,7 +107,7 @@ public class PaymentController : Controller
             return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
+        if (await _checkoutService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
         {
             return RedirectToAction(
                 nameof(ShoppingCartController.Empty),
@@ -139,7 +142,7 @@ public class PaymentController : Controller
                     _updateModelAccessor.ModelUpdater.GetModelErrorMessages().JoinNotNullOrEmpty());
             }
 
-            var checkoutViewModel = await CreateCheckoutViewModelAsync(
+            var checkoutViewModel = await _checkoutService.CreateCheckoutViewModelAsync(
                 shoppingCartId,
                 part =>
                 {
@@ -220,7 +223,7 @@ public class PaymentController : Controller
 
         if (finished)
         {
-            await FinalModificationAsync(order);
+            await _checkoutService.FinalModificationOfOrderAsync(order);
 
             return RedirectToAction(nameof(Success), new { orderId });
         }
@@ -244,102 +247,5 @@ public class PaymentController : Controller
         _paymentIntentPersistence.Store(string.Empty);
         await _notifier.ErrorAsync(errorMessage);
         return RedirectToAction(nameof(Index));
-    }
-
-    private async Task FinalModificationAsync(ContentItem order)
-    {
-        // Saving addresses.
-        var userService = _userServiceLazy.Value;
-        var orderPart = order.As<OrderPart>();
-
-        if (await userService.GetFullUserAsync(User) is { } user)
-        {
-            var isSame = orderPart.BillingAndShippingAddressesMatch.Value;
-
-            await userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
-            {
-                var part = contentItem.ContainsKey(nameof(UserAddressesPart))
-                    ? contentItem[nameof(UserAddressesPart)].ToObject<UserAddressesPart>()!
-                    : new UserAddressesPart();
-
-                part.BillingAndShippingAddressesMatch.Value = isSame;
-                contentItem[nameof(UserAddressesPart)] = JToken.FromObject(part);
-                return contentItem;
-            });
-        }
-
-        order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
-
-        await _contentManager.UpdateAsync(order);
-
-        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
-        {
-            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
-        }
-
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        currentShoppingCart?.Items?.Clear();
-
-        // Shopping cart ID is null by default currently.
-        await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
-
-        // Set back to default, because a new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
-    }
-
-    private async Task<CheckoutViewModel> CreateCheckoutViewModelAsync(
-        string shoppingCartId,
-        Action<OrderPart> updateOrderPart = null)
-    {
-        var orderPart = new OrderPart();
-
-        if (await HttpContext.GetUserAddressAsync() is { } userAddresses)
-        {
-            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
-            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
-            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
-        }
-
-        var email = User.Identity?.IsAuthenticated == true
-            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(User))
-            : string.Empty;
-
-        orderPart.Email.Text = email;
-        orderPart.ShippingAddress.UserAddressToSave = nameof(orderPart.ShippingAddress);
-        orderPart.BillingAddress.UserAddressToSave = nameof(orderPart.BillingAddress);
-
-        updateOrderPart?.Invoke(orderPart);
-
-        var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-            shoppingCartId,
-            orderPart.ShippingAddress.Address,
-            orderPart.BillingAddress.Address);
-        if (cart?.Totals.Single() is not { } total) return null;
-
-        var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
-                await _contentManager.NewAsync(Order),
-                "Checkout"))
-            .ToList();
-
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-        var initPaymentIntent = new PaymentIntent();
-        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
-            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
-        {
-            var paymentIntentId = _paymentIntentPersistence.Retrieve();
-            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
-        }
-
-        return new CheckoutViewModel
-        {
-            ShoppingCartId = shoppingCartId,
-            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
-            OrderPart = orderPart,
-            SingleCurrencyTotal = total,
-            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            UserEmail = email,
-            CheckoutShapes = checkoutShapes,
-            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
-        };
     }
 }
