@@ -10,24 +10,26 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 
 [DevelopmentAndLocalhostOnly]
 public class OrderController : Controller
 {
-    private readonly ICheckoutService _checkoutService;
-    private readonly IShoppingCartPersistence _shoppingCartPersistence;
+    private readonly Lazy<ICheckoutService> _checkoutService;
+    private readonly Lazy<IShoppingCartPersistence> _shoppingCartPersistence;
     private readonly IClock _clock;
-    private readonly IContentManager _contentManager;
+    private readonly Lazy<IContentManager> _contentManager;
 
     public OrderController(
-        ICheckoutService checkoutService,
-        IShoppingCartPersistence shoppingCartPersistence,
+        Lazy<ICheckoutService> checkoutService,
+        Lazy<IShoppingCartPersistence> shoppingCartPersistence,
         IClock clock,
-        IContentManager contentManager)
+        Lazy<IContentManager> contentManager)
     {
         _checkoutService = checkoutService;
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -40,22 +42,18 @@ public class OrderController : Controller
     {
         var testTime = _clock.UtcNow;
 
-        var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        var checkoutViewModel = await _checkoutService.CreateCheckoutViewModelAsync(shoppingCart.Id);
-        var order = checkoutViewModel.OrderPart.ContentItem;
+        var shoppingCart = await _shoppingCartPersistence.Value.RetrieveAsync();
+        var checkoutViewModel = await _checkoutService.Value.CreateCheckoutViewModelAsync(shoppingCart.Id);
+        var order = await _contentManager.Value.NewAsync(Order);
+        order.Apply(checkoutViewModel.OrderPart);
         order.Alter<OrderPart>(orderPart =>
         {
-            // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
-            // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
-            var orderPartCharge = orderPart.Charges.SingleOrDefault();
-            var amount = orderPartCharge!.Amount;
-
             var payment = new Payment
             {
                 Kind = "Card",
                 ChargeText = "Test charge text",
                 TransactionId = "Test transaction ID",
-                Amount = amount,
+                Amount = checkoutViewModel.SingleCurrencyTotal,
                 CreatedUtc = testTime,
             };
 
@@ -65,9 +63,9 @@ public class OrderController : Controller
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
 
-        await _contentManager.UpdateAsync(order);
+        await _contentManager.Value.CreateAsync(order);
 
-        await _checkoutService.FinalModificationOfOrderAsync(order);
+        await _checkoutService.Value.FinalModificationOfOrderAsync(order);
 
         return RedirectToAction(
             nameof(PaymentController.Success),
@@ -75,7 +73,7 @@ public class OrderController : Controller
             new
             {
                 area = "OrchardCore.Commerce",
-                order.ContentItemId,
+                orderId = order.ContentItemId,
             });
     }
 }
