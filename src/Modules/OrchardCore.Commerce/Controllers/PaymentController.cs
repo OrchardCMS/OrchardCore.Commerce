@@ -39,22 +39,14 @@ public class PaymentController : Controller
 {
     private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
 
-    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStripePaymentService _stripePaymentService;
-    private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly ILogger<PaymentController> _logger;
     private readonly IContentManager _contentManager;
-    private readonly IShoppingCartHelpers _shoppingCartHelpers;
-    private readonly ISiteService _siteService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
     private readonly IHtmlLocalizer<PaymentController> H;
-    private readonly IRegionService _regionService;
-    private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
-    private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
     private readonly ICheckoutService _checkoutService;
@@ -63,16 +55,9 @@ public class PaymentController : Controller
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentController(
         IStripePaymentService stripePaymentService,
-        IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentController> services,
-        IShoppingCartHelpers shoppingCartHelpers,
-        ISiteService siteService,
         IUpdateModelAccessor updateModelAccessor,
-        IRegionService regionService,
-        Lazy<IUserService> userServiceLazy,
-        IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IShoppingCartPersistence shoppingCartPersistence,
         INotifier notifier,
         IMoneyService moneyService,
         ICheckoutService checkoutService)
@@ -80,20 +65,12 @@ public class PaymentController : Controller
     {
         _authorizationService = services.AuthorizationService.Value;
         _stripePaymentService = stripePaymentService;
-        _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
-        _shoppingCartHelpers = shoppingCartHelpers;
-        _siteService = siteService;
         _updateModelAccessor = updateModelAccessor;
-        _userManager = services.UserManager.Value;
-        _regionService = regionService;
-        _userServiceLazy = userServiceLazy;
-        _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
-        _shoppingCartPersistence = shoppingCartPersistence;
         _notifier = notifier;
         _moneyService = moneyService;
         _checkoutService = checkoutService;

@@ -1,21 +1,14 @@
 ﻿using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
-using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
@@ -32,24 +25,17 @@ namespace OrchardCore.Commerce.Services;
 public class CheckoutService : ICheckoutService
 {
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
-    private readonly IAuthorizationService _authorizationService;
     private readonly IStripePaymentService _stripePaymentService;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
-    private readonly ILogger<CheckoutService> _logger;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly UserManager<IUser> _userManager;
     private readonly IStringLocalizer T;
-    private readonly IHtmlLocalizer<CheckoutService> H;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
-    private readonly INotifier _notifier;
-    private readonly IMoneyService _moneyService;
-    private readonly ICheckoutService _checkoutService;
     private readonly IHttpContextAccessor _hca;
 
     // We need all of them.
@@ -60,36 +46,25 @@ public class CheckoutService : ICheckoutService
         IOrchardServices<CheckoutService> services,
         IShoppingCartHelpers shoppingCartHelpers,
         ISiteService siteService,
-        IUpdateModelAccessor updateModelAccessor,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
         IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IShoppingCartPersistence shoppingCartPersistence,
-        INotifier notifier,
-        IMoneyService moneyService,
-        ICheckoutService checkoutService)
+        IShoppingCartPersistence shoppingCartPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
-        _authorizationService = services.AuthorizationService.Value;
         _stripePaymentService = stripePaymentService;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
-        _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
         _siteService = siteService;
-        _updateModelAccessor = updateModelAccessor;
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
         _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
-        H = services.HtmlLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
-        _notifier = notifier;
-        _moneyService = moneyService;
-        _checkoutService = checkoutService;
         _hca = services.HttpContextAccessor.Value;
     }
 
