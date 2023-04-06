@@ -88,6 +88,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "allow", "allow", "{7FB7940D
 		.github\actions\spelling\allow\people.txt = .github\actions\spelling\allow\people.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Tests.UI.Shortcuts", "test\OrchardCore.Commerce.Tests.UI.Shortcuts\OrchardCore.Commerce.Tests.UI.Shortcuts.csproj", "{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -134,6 +136,10 @@ Global
 		{93871E12-0083-4323-BB7B-3CDA6E332D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93871E12-0083-4323-BB7B-3CDA6E332D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93871E12-0083-4323-BB7B-3CDA6E332D87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,6 +163,7 @@ Global
 		{83C01924-6F58-4777-A9EC-07943F7A2E31} = {4561F321-6E57-484B-950C-AC46798B1F40}
 		{E32B62B8-D737-4713-87C5-8220C9746643} = {83C01924-6F58-4777-A9EC-07943F7A2E31}
 		{7FB7940D-EEF4-4355-BCBF-C160080F257A} = {E32B62B8-D737-4713-87C5-8220C9746643}
+		{3DB5D0DD-1509-40B8-AD1A-47D5672BF484} = {772AFE42-DF1F-49B1-9F64-7C901E588C00}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}
