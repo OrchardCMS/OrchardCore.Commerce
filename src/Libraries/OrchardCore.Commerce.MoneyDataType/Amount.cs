@@ -61,8 +61,7 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     public Amount(decimal value, ICurrency? currency)
     {
         _currency = currency ?? MoneyDataType.Currency.UnspecifiedCurrency;
-        // The value is rounded to avoid storing more precision than what the currency supports.
-        Value = Math.Round(value, _currency.DecimalPlaces);
+        Value = value;
     }
 
     public bool Equals(Amount other) =>

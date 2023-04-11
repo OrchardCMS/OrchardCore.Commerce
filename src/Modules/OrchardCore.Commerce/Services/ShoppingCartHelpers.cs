@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,6 +93,14 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             (headers, lines) = await shoppingCartEvent.DisplayingAsync(new ShoppingCartDisplayingEventContext(
                 totals, headers, lines, shipping, billing));
             totals = lines.CalculateTotals().ToList();
+        }
+
+        for (var i = 0; i < totals.Count; i++)
+        {
+            var total = totals[i];
+
+            // The value is rounded to avoid storing more precision than what the currency supports.
+            totals[i] = new Amount(Math.Round(total.Value, total.Currency.DecimalPlaces), total.Currency);
         }
 
         model.Totals.AddRange(totals);
