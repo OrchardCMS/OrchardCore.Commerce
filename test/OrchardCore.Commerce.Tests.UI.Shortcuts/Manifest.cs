@@ -10,16 +10,12 @@ using static OrchardCore.Commerce.Tests.UI.Shortcuts.ShortcutsFeatureIds;
 
 [assembly: Feature(
     Id = Default,
-    Name = "Lombiq UI Testing Toolbox - Shortcuts",
+    Name = "Orchard Core Commerce UI Test - Shortcuts",
     Category = "Development",
     Description = "WARNING: Only enable this feature in the UI testing environment. Provides shortcuts for Orchard " +
         "Core Commerce operations that UI tests might want to do or check.",
     Dependencies = new[]
     {
         "OrchardCore.ContentManagement",
-        "OrchardCore.ContentTypes",
-        "OrchardCore.DisplayManagement",
-        "OrchardCore.Users",
-        "OrchardCore.Tenants",
     }
 )]
