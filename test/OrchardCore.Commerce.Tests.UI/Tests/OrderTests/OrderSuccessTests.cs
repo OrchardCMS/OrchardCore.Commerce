@@ -33,6 +33,7 @@ public class OrderSuccessTests : UITestBase
                 var orderCreateTime = DateTime.UtcNow.Ticks;
                 await context.GoToAsync<OrderController>(controller =>
                     controller.CreateOrderWithSuccessfulPayment(orderCreateTime));
+                context.Exists(By.XPath("//h4[contains(.,'Thank you for your purchase!')]"));
             },
             browser);
 }
