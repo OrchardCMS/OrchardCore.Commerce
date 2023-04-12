@@ -2,6 +2,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
+using OpenQA.Selenium;
 using OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,6 +22,8 @@ public class OrderSuccessTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
+                await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
+
                 await context.SignInDirectlyAsync();
                 await context.GoToContentItemByIdAsync(TestProduct);
 
