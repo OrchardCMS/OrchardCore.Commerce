@@ -30,7 +30,6 @@ public class OrderSuccessTests : UITestBase
                 var orderCreateTime = DateTime.UtcNow.Ticks;
                 await context.GoToAsync<OrderController>(controller =>
                     controller.CreateOrderWithSuccessfulPayment(orderCreateTime));
-
             },
             browser);
 }
