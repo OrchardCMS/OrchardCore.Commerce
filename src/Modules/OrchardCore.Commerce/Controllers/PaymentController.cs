@@ -49,7 +49,7 @@ public class PaymentController : Controller
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
-    private readonly ICheckoutService _checkoutService;
+    private readonly IPaymentService _paymentService;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -60,7 +60,7 @@ public class PaymentController : Controller
         IPaymentIntentPersistence paymentIntentPersistence,
         INotifier notifier,
         IMoneyService moneyService,
-        ICheckoutService checkoutService)
+        IPaymentService paymentService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -73,7 +73,7 @@ public class PaymentController : Controller
         _paymentIntentPersistence = paymentIntentPersistence;
         _notifier = notifier;
         _moneyService = moneyService;
-        _checkoutService = checkoutService;
+        _paymentService = paymentService;
     }
 
     [Route("checkout")]
@@ -84,7 +84,7 @@ public class PaymentController : Controller
             return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await _checkoutService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
+        if (await _paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
         {
             return RedirectToAction(
                 nameof(ShoppingCartController.Empty),
@@ -119,7 +119,7 @@ public class PaymentController : Controller
                     _updateModelAccessor.ModelUpdater.GetModelErrorMessages().JoinNotNullOrEmpty());
             }
 
-            var checkoutViewModel = await _checkoutService.CreateCheckoutViewModelAsync(
+            var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(
                 shoppingCartId,
                 part =>
                 {
@@ -200,7 +200,7 @@ public class PaymentController : Controller
 
         if (finished)
         {
-            await _checkoutService.FinalModificationOfOrderAsync(order);
+            await _paymentService.FinalModificationOfOrderAsync(order);
 
             return RedirectToAction(nameof(Success), new { orderId });
         }

@@ -21,13 +21,13 @@ namespace OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 [DevelopmentAndLocalhostOnly]
 public class OrderController : Controller
 {
-    private readonly Lazy<ICheckoutService> _checkoutService;
+    private readonly Lazy<IPaymentService> _checkoutService;
     private readonly Lazy<IShoppingCartPersistence> _shoppingCartPersistence;
     private readonly Lazy<IContentManager> _contentManager;
     private readonly Lazy<IStripePaymentService> _stripePaymentService;
 
     public OrderController(
-        Lazy<ICheckoutService> checkoutService,
+        Lazy<IPaymentService> checkoutService,
         Lazy<IShoppingCartPersistence> shoppingCartPersistence,
         Lazy<IContentManager> contentManager,
         Lazy<IStripePaymentService> stripePaymentService)

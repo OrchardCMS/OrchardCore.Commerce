@@ -22,7 +22,7 @@ using static OrchardCore.Commerce.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Services;
 
-public class CheckoutService : ICheckoutService
+public class PaymentService : IPaymentService
 {
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IStripePaymentService _stripePaymentService;
@@ -40,10 +40,10 @@ public class CheckoutService : ICheckoutService
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
-    public CheckoutService(
+    public PaymentService(
         IStripePaymentService stripePaymentService,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
-        IOrchardServices<CheckoutService> services,
+        IOrchardServices<PaymentService> services,
         IShoppingCartHelpers shoppingCartHelpers,
         ISiteService siteService,
         IRegionService regionService,

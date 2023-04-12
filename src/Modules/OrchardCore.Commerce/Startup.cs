@@ -142,7 +142,7 @@ public class Startup : StartupBase
         services.AddScoped<IContentTypeDefinitionDisplayDriver, OrderContentTypeDefinitionDisplayDriver>();
 
         // Checkout
-        services.AddScoped<ICheckoutService, CheckoutService>();
+        services.AddScoped<IPaymentService, PaymentService>();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();

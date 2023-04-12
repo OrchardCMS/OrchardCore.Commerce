@@ -6,11 +6,20 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
 
-public interface ICheckoutService
+/// <summary>
+/// Services related to payment and PaymentController.
+/// </summary>
+public interface IPaymentService
 {
+    /// <summary>
+    /// Creates and returns <see cref="CheckoutViewModel"/>.
+    /// </summary>
     Task<CheckoutViewModel> CreateCheckoutViewModelAsync(
         string shoppingCartId,
         Action<OrderPart> updateOrderPart = null);
 
+    /// <summary>
+    /// When the order is payed this logic should be run to finalize <see cref="order"/>.
+    /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order);
 }
