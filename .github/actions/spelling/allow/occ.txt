@@ -16,6 +16,7 @@ foobool
 footext
 GST
 htmlfield
+LCID
 mkdocs
 numericfield
 Nunavut

@@ -1,4 +1,4 @@
-﻿using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,4 +33,7 @@ public static class EnumerableExtensions
 
         return currency == null ? Amount.Unspecified : new Amount(sum, currency);
     }
+
+    public static IEnumerable<Amount> Round(this IEnumerable<Amount> amounts) =>
+        amounts.Select(amount => amount.GetRounded());
 }
