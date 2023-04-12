@@ -19,7 +19,7 @@ public interface IPaymentService
         Action<OrderPart> updateOrderPart = null);
 
     /// <summary>
-    /// When the order is payed this logic should be run to finalize <paramref name="order"/>
+    /// When the order is payed this logic should be run to finalize <paramref name="order"/>.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order);
 }
