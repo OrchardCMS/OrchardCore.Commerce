@@ -96,12 +96,10 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         }
 
         // The values are rounded to avoid storing more precision than what the currency supports.
-        for (var i = 0; i < lines.Count; i++)
+        foreach (var line in lines)
         {
-            var line = lines[i];
-
-            lines[i].LinePrice = line.LinePrice.GetRounded();
-            lines[i].UnitPrice = line.UnitPrice.GetRounded();
+            line.LinePrice = line.LinePrice.GetRounded();
+            line.UnitPrice = line.UnitPrice.GetRounded();
         }
 
         model.Totals.AddRange(totals.Round());
