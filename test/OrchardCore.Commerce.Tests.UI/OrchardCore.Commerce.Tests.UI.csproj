@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\OrchardCore.Commerce.Web\OrchardCore.Commerce.Web.csproj" />
+      <ProjectReference Include="..\OrchardCore.Commerce.Tests.UI.Shortcuts\OrchardCore.Commerce.Tests.UI.Shortcuts.csproj" />
     </ItemGroup>
 
 </Project>
