@@ -80,6 +80,9 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
         return Value.CompareTo(other.Value);
     }
 
+    public Amount GetRounded() =>
+        new(Math.Round(Value, Currency.DecimalPlaces), Currency);
+
     private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")
     {
         if (Currency.Equals(other.Currency)) return;
