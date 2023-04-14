@@ -13,8 +13,7 @@
 
   <!-- Copying the Lombiq logo as an icon to all NuGet-published projects. -->
   <Target Name="Download NuGet icon"
-          AfterTargets="AfterResolveReferences"
-          BeforeTargets="Pack"
+          BeforeTargets="Restore"
           Condition="'$(PackageIcon)' == 'OrchardCoreIcon.png' AND !Exists('$(ProjectDir)OrchardCoreIcon.png')">
     <DownloadFile
       SourceUrl="https://api.nuget.org/v3-flatcontainer/orchardcore/1.5.0/icon"
