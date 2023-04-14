@@ -6,6 +6,7 @@ using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,7 +95,14 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             totals = lines.CalculateTotals().ToList();
         }
 
-        model.Totals.AddRange(totals);
+        // The values are rounded to avoid storing more precision than what the currency supports.
+        foreach (var line in lines)
+        {
+            line.LinePrice = line.LinePrice.GetRounded();
+            line.UnitPrice = line.UnitPrice.GetRounded();
+        }
+
+        model.Totals.AddRange(totals.Round());
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
 

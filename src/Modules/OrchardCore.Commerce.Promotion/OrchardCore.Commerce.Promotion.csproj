@@ -12,7 +12,7 @@
     <Description>Taxation module for Orchard Core Commerce for discounts and promotions.</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Discounts;Promotions</PackageTags>
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/src/Modules/OrchardCore.Commerce.Promotion/Readme.md</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.Promotion/Readme.md</PackageProjectUrl>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageIcon>OrchardCoreIcon.png</PackageIcon>
   </PropertyGroup>

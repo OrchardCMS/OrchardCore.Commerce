@@ -15,9 +15,11 @@ public static class Regions
             .GetCultures(CultureTypes.SpecificCultures)
             .Select(culture =>
             {
-                // This sometimes throws "CultureNotFoundException: Culture is not supported." exception on Linux only.
-                try { return new RegionInfo(culture.LCID); } // #spell-check-ignore-line
-                catch (CultureNotFoundException) { return null; }
+                // #spell-check-disable
+                // This sometimes throws "CultureNotFoundException: Culture is not supported." exception on Linux, or
+                // "ArgumentException: Customized cultures cannot be passed by LCID, only by name." on Windows.
+                try { return new RegionInfo(culture.LCID); }
+                catch { return null; }
             })
             .Where(region =>
                 region != null &&

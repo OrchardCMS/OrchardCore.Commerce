@@ -12,7 +12,7 @@
     <Description>New data type representing monetary values.</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Currency;Money</PackageTags>
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/src/Libraries/OrchardCore.Commerce.MoneyDataType/Readme.md</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Libraries/OrchardCore.Commerce.MoneyDataType/Readme.md</PackageProjectUrl>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageIcon>OrchardCoreIcon.png</PackageIcon>
   </PropertyGroup>

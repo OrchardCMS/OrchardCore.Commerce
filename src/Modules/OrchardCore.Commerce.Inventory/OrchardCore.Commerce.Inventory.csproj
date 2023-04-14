@@ -12,7 +12,7 @@
     <Description>Inventory management for Orchard Core Commerce</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Inventory</PackageTags>
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/src/Modules/OrchardCore.Commerce.Inventory/Readme.md</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.Inventory/Readme.md</PackageProjectUrl>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageIcon>OrchardCoreIcon.png</PackageIcon>
   </PropertyGroup>
