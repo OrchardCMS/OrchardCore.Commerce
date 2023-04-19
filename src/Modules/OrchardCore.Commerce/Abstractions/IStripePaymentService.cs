@@ -48,5 +48,5 @@ public interface IStripePaymentService
     /// <summary>
     /// Returns a <see cref="OrderLineItem"/> list from the given <paramref name="shoppingCart"/> items.
     /// </summary>
-    Task<IList<OrderLineItem>> CreateOrderLineItemListAsync(ShoppingCart shoppingCart);
+    Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart);
 }

@@ -212,7 +212,7 @@ public class StripePaymentService : IStripePaymentService
 
         order.DisplayText = T["Order {0}", guidId];
 
-        var lineItems = await CreateOrderLineItemListAsync(currentShoppingCart);
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
@@ -266,9 +266,9 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public async Task<IList<OrderLineItem>> CreateOrderLineItemListAsync(ShoppingCart shoppingCart)
+    public async Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
     {
-        IList<OrderLineItem> lineItems = new List<OrderLineItem>();
+        var lineItems = new List<OrderLineItem>();
 
         // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
         // void."
