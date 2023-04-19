@@ -41,8 +41,6 @@ public class PaymentController : Controller
     private readonly IMoneyService _moneyService;
     private readonly IPaymentService _paymentService;
 
-    // We need all of them.
-#pragma warning disable S107 // Methods should not have too many parameters
     public PaymentController(
         IStripePaymentService stripePaymentService,
         IOrchardServices<PaymentController> services,
@@ -51,7 +49,6 @@ public class PaymentController : Controller
         INotifier notifier,
         IMoneyService moneyService,
         IPaymentService paymentService)
-#pragma warning restore S107 // Methods should not have too many parameters
     {
         _authorizationService = services.AuthorizationService.Value;
         _stripePaymentService = stripePaymentService;
