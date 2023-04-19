@@ -63,39 +63,26 @@ public class OrderController : Controller
             orderPart.Charges.Clear();
             orderPart.Charges.Add(payment);
 
-            orderPart.LineItems.AddRange(orderLineItemList);
+            orderPart.LineItems.AddRange(orderLineItems);
+            var addressField = new AddressField
+            {
+                Address = new Address
+                {
+                    City = "TestCity",
+                    Company = "TestCompany",
+                    Department = "TestDepartment",
+                    Name = "TestName",
+                    Province = "TestProvince",
+                    Region = "TestRegion",
+                    PostalCode = "TestPostalCode",
+                    StreetAddress1 = "TestStreetAddress1",
+                    StreetAddress2 = "TestStreetAddress2",
+                },
+            };
 
-            orderPart.BillingAddress = new AddressField
-            {
-                Address = new Address
-                {
-                    City = "TestCity",
-                    Company = "TestCompany",
-                    Department = "TestDepartment",
-                    Name = "TestName",
-                    Province = "TestProvince",
-                    Region = "TestRegion",
-                    PostalCode = "TestPostalCode",
-                    StreetAddress1 = "TestStreetAddress1",
-                    StreetAddress2 = "TestStreetAddress2",
-                },
-            };
+            orderPart.BillingAddress = addressField;
             orderPart.BillingAndShippingAddressesMatch.Value = true;
-            orderPart.ShippingAddress = new AddressField
-            {
-                Address = new Address
-                {
-                    City = "TestCity",
-                    Company = "TestCompany",
-                    Department = "TestDepartment",
-                    Name = "TestName",
-                    Province = "TestProvince",
-                    Region = "TestRegion",
-                    PostalCode = "TestPostalCode",
-                    StreetAddress1 = "TestStreetAddress1",
-                    StreetAddress2 = "TestStreetAddress2",
-                },
-            };
+            orderPart.ShippingAddress = addressField;
 
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
