@@ -21,18 +21,18 @@ namespace OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 [DevelopmentAndLocalhostOnly]
 public class OrderController : Controller
 {
-    private readonly Lazy<IPaymentService> _checkoutService;
-    private readonly Lazy<IShoppingCartPersistence> _shoppingCartPersistence;
-    private readonly Lazy<IContentManager> _contentManager;
-    private readonly Lazy<IStripePaymentService> _stripePaymentService;
+    private readonly IPaymentService _paymentService;
+    private readonly IShoppingCartPersistence _shoppingCartPersistence;
+    private readonly IContentManager _contentManager;
+    private readonly IStripePaymentService _stripePaymentService;
 
     public OrderController(
-        Lazy<IPaymentService> checkoutService,
-        Lazy<IShoppingCartPersistence> shoppingCartPersistence,
-        Lazy<IContentManager> contentManager,
-        Lazy<IStripePaymentService> stripePaymentService)
+        IPaymentService paymentService,
+        IShoppingCartPersistence shoppingCartPersistence,
+        IContentManager contentManager,
+        IStripePaymentService stripePaymentService)
     {
-        _checkoutService = checkoutService;
+        _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
         _stripePaymentService = stripePaymentService;
@@ -43,10 +43,10 @@ public class OrderController : Controller
     {
         var testTime = new DateTime(dateTimeTicks);
 
-        var shoppingCart = await _shoppingCartPersistence.Value.RetrieveAsync();
-        var checkoutViewModel = await _checkoutService.Value.CreateCheckoutViewModelAsync(shoppingCart.Id);
-        var order = await _contentManager.Value.NewAsync(Order);
-        var orderLineItemList = await _stripePaymentService.Value.CreateOrderLineItemListAsync(shoppingCart);
+        var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(shoppingCart.Id);
+        var order = await _contentManager.NewAsync(Order);
+        var orderLineItems = await _stripePaymentService.CreateOrderLineItemsAsync(shoppingCart);
         order.Apply(checkoutViewModel.OrderPart);
 
         order.Alter<OrderPart>(orderPart =>
@@ -87,9 +87,9 @@ public class OrderController : Controller
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
 
-        await _contentManager.Value.CreateAsync(order);
+        await _contentManager.CreateAsync(order);
 
-        await _checkoutService.Value.FinalModificationOfOrderAsync(order);
+        await _paymentService.FinalModificationOfOrderAsync(order);
 
         return RedirectToAction(
             nameof(PaymentController.Success),
