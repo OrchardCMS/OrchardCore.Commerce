@@ -212,27 +212,7 @@ public class StripePaymentService : IStripePaymentService
 
         order.DisplayText = T["Order {0}", guidId];
 
-        IList<OrderLineItem> lineItems = new List<OrderLineItem>();
-
-        // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
-        // void."
-        foreach (var item in currentShoppingCart.Items)
-        {
-            var trimmedSku = item.ProductSku.Split('-').First();
-
-            var contentItemId = (await _session
-                    .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)
-                    .ListAsync())
-                .Select(index => index.ContentItemId)
-                .First();
-
-            var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
-
-            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
-                _priceSelectionStrategy,
-                _priceService,
-                contentItemVersion));
-        }
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
@@ -284,6 +264,33 @@ public class StripePaymentService : IStripePaymentService
         }
 
         return order;
+    }
+
+    public async Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
+    {
+        var lineItems = new List<OrderLineItem>();
+
+        // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
+        // void."
+        foreach (var item in shoppingCart.Items)
+        {
+            var trimmedSku = item.ProductSku.Split('-').First();
+
+            var contentItemId = (await _session
+                    .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)
+                    .ListAsync())
+                .Select(index => index.ContentItemId)
+                .First();
+
+            var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
+
+            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
+                _priceSelectionStrategy,
+                _priceService,
+                contentItemVersion));
+        }
+
+        return lineItems;
     }
 
     private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order, IUpdateModelAccessor updateModelAccessor)
