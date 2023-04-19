@@ -80,8 +80,8 @@ public class PaymentService : IPaymentService
             orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
         }
 
-        var email = _hca.HttpContext != null && _hca.HttpContext.User.Identity?.IsAuthenticated == true
-            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(_hca.HttpContext.User))
+        var email = _hca.HttpContext?.User is { Identity.IsAuthenticated: true } user
+            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(user))
             : string.Empty;
 
         orderPart.Email.Text = email;
