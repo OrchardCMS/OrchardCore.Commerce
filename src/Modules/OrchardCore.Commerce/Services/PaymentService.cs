@@ -45,7 +45,6 @@ public class PaymentService : IPaymentService
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentService> services,
         IShoppingCartHelpers shoppingCartHelpers,
-        ISiteService siteService,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
         IEnumerable<IWorkflowManager> workflowManagers,
@@ -57,7 +56,7 @@ public class PaymentService : IPaymentService
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
-        _siteService = siteService;
+        _siteService = services.SiteService.Value;
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
