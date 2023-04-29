@@ -41,6 +41,7 @@ using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
+using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using System;
 using YesSql.Indexes;
@@ -297,10 +298,14 @@ public class TaxRateStartup : StartupBase
 [RequireFeatures(CommerceConstants.Features.Core, "OrchardCore.Users.CustomUserSettings")]
 public class UserSettingsStartup : StartupBase
 {
-    public override void ConfigureServices(IServiceCollection services) =>
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services
             .AddContentPart<UserAddressesPart>()
             .WithMigration<UserAddressesMigrations>();
+
+        services.AddScoped<IDisplayDriver<User>, UserAddressesUserDisplayDriver>();
+    }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
