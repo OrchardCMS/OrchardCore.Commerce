@@ -1,3 +1,4 @@
+using Atata;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
@@ -111,6 +112,49 @@ public class UserPersistenceTests : UITestBase
                         ShippingPostalCode,
                         ShippingCountryCode,
                     });
+            },
+            browser);
+
+    [Theory, Chrome]
+    public Task AdminUserEditorShouldSaveWithoutFullyFilledUserAddresses(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                async Task SubmitAndGoToUserAddressesAsync()
+                {
+                    await context.ClickReliablyOnSubmitAsync();
+                    context.ShouldBeSuccess();
+
+                    await context.ClickReliablyOnAsync(By.XPath(
+                        "//li[contains(@class, 'list-group-item')][.//h5[contains(., 'TestUser')]]" +
+                        "//a[contains(@class, 'btn-primary') and contains(., 'Edit')]"));
+                    await context.GoToEditorTabAsync("User Addresses");
+                }
+
+                await context.SignInDirectlyAsync();
+                await context.GoToRelativeUrlAsync("/Admin/Users/Create");
+
+                await context.ClickAndFillInWithRetriesAsync(By.Id("User_UserName"), "TestUser");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("User_Email"), "test@example.com");
+                await context.ClickReliablyOnAsync(By.ClassName("password-generator-button"));
+
+                await SubmitAndGoToUserAddressesAsync();
+
+                const string testCustomerName = "Test Customer Name";
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("UserAddressesPart_BillingAddress_Address_Name"),
+                    testCustomerName);
+                await context.SetCheckboxValueAsync(
+                    By.Id("UserAddressesPart_BillingAndShippingAddressesMatch_Value"),
+                    isChecked: true);
+
+                await SubmitAndGoToUserAddressesAsync();
+
+                context
+                    .Get(By.Id("UserAddressesPart_ShippingAddress_Address_Name").OfAnyVisibility())
+                    .GetAttribute("value")?
+                    .Trim()
+                    .ShouldBe(testCustomerName);
             },
             browser);
 }
