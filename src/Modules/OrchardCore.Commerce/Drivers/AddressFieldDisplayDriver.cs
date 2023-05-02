@@ -74,9 +74,13 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     {
         var viewModel = new AddressFieldViewModel();
 
+        // We have to detect if we are in the user editor in the admin dashboard, because then it's okay to save even if
+        // the normally required fields are left empty.
+        var isInUserEditor = _hca.HttpContext?.Request.RouteValues["area"]?.ToString() == "OrchardCore.Users";
+
         bool IsRequiredFieldEmpty(string value, string key)
         {
-            if (!string.IsNullOrWhiteSpace(value)) return false;
+            if (isInUserEditor || !string.IsNullOrWhiteSpace(value)) return false;
 
             // This doesn't need to be too complex as it's just a fallback from the client-side validation.
             updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);

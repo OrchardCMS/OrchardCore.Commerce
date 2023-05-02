@@ -36,3 +36,20 @@ window.initializeToggleSecondAddress = function (
     Array.from(firstAddressRow.querySelectorAll('input, select'))
         .forEach((input) => input.addEventListener('change', onCheckboxChange));
 };
+
+(function autoInitializeToggleSecondAddress() {
+    if (document.getElementById('UserAddressesPart_BillingAndShippingAddressesMatch_Value')) {
+        initializeToggleSecondAddress(
+            document.getElementById('UserAddressesPart_BillingAndShippingAddressesMatch_Value'),
+            document.querySelector('.address_billing-address'),
+            document.querySelector('.address_shipping-address'));
+    }
+
+    if (document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value')) {
+        initializeToggleSecondAddress(
+            document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value'),
+            document.querySelector('.address_billing-address'),
+            document.querySelector('.address_shipping-address'));
+    }
+})();
+
