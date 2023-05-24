@@ -8,6 +8,7 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageCurrencySettings = new("ManageCurrencySettings", "Manage Currency Settings");
     public static readonly Permission ManageStripeApiSettings = new("ManageStripeApiSettings", "Manage Stripe API Settings");
+    public static readonly Permission ManagePriceDisplaySettings = new("ManagePriceDisplaySettings", "Manage Price Display Settings");
     public static readonly Permission ManageRegionSettings = new("ManageRegionSettings", "Manage Region Settings");
     public static readonly Permission Checkout = new("Checkout", "Ability to checkout");
 
@@ -18,6 +19,7 @@ public class Permissions : IPermissionProvider
             ManageStripeApiSettings,
             Checkout,
             ManageRegionSettings,
+            ManagePriceDisplaySettings,
         });
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
@@ -32,6 +34,7 @@ public class Permissions : IPermissionProvider
                     ManageStripeApiSettings,
                     Checkout,
                     ManageRegionSettings,
+                    ManagePriceDisplaySettings,
                 },
             },
         };
