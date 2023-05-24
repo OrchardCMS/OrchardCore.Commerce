@@ -1,0 +1,12 @@
+@model PriceDisplaySettingsViewModel
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<div class="mb-3">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="UseNetPriceDisplay" type="checkbox" class="custom-control-input">
+        <label class="custom-control-label" asp-for="UseNetPriceDisplay">@T["Use Net Price Display"]</label>
+    </div>
+    <div class="row col-md">
+        <span class="hint">@T["Turn on to display prices in net value."]</span>
+    </div>
+</div>

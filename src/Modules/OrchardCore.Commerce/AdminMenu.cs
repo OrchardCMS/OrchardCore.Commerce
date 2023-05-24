@@ -20,12 +20,20 @@ public class AdminMenu : NavigationProviderBase
             .Add(T["Configuration"], configuration => configuration
                 .Add(T["Commerce"], commerce => commerce
                     .Add(T["Currency"], T["Currency"], entry => entry
-                        .Action("Index", "Admin", new
+                        .Action("Index", "Admin", new // add AdminMenuConstants for these?
                         {
                             area = "OrchardCore.Settings",
                             groupId = CurrencySettingsDisplayDriver.GroupId,
                         })
                         .Permission(Permissions.ManageCurrencySettings)
+                        .LocalNav())
+                    .Add(T["Price Display"], T["Price Display"], entry => entry
+                        .Action("Index", "Admin", new
+                        {
+                            area = "OrchardCore.Settings",
+                            groupId = PriceDisplaySettingsDisplayDriver.GroupId,
+                        })
+                        .Permission(Permissions.ManagePriceDisplaySettings)
                         .LocalNav())
                     .Add(T["Stripe API"], T["Stripe API"], stripeApi => stripeApi
                         .Action("Index", "Admin", new

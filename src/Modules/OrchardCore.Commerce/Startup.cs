@@ -154,6 +154,7 @@ public class Startup : StartupBase
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CurrencySettings>, CurrencySettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ISite>, PriceDisplaySettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegionSettings>, RegionSettingsConfiguration>();
