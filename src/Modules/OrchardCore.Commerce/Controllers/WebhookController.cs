@@ -47,7 +47,8 @@ public class WebhookController : Controller
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
                 Request.Headers["Stripe-Signature"],
-                webhookSigningKey);
+                webhookSigningKey,
+                throwOnApiVersionMismatch: false);
 
             if (stripeEvent.Type == Stripe.Events.ChargeSucceeded)
             {
