@@ -48,6 +48,7 @@ public class WebhookController : Controller
                 json,
                 Request.Headers["Stripe-Signature"],
                 webhookSigningKey,
+                // Let the logic handle version mismatch.
                 throwOnApiVersionMismatch: false);
 
             if (stripeEvent.Type == Stripe.Events.ChargeSucceeded)
