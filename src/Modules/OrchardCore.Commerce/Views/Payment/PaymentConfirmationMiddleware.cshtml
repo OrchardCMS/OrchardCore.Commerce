@@ -9,5 +9,10 @@
 </div>
 
 <script>
-    setTimeout(() => location.reload(), 2000);
+    @* 
+        This must be window.location = window.location otherwise it might be detected as a cross-origin redirect by the 
+        browser which leads to cookies not loading. See https://bugzilla.mozilla.org/show_bug.cgi?id=1459321 for more 
+        info.
+    *@
+    setTimeout(() => window.location = window.location, 2000);
 </script>
