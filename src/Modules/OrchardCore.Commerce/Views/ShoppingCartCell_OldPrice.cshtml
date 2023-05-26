@@ -1,12 +1,15 @@
+@using OrchardCore.Commerce.Models;
 @using OrchardCore.Commerce.Tax.Extensions
+
+@inject OrchardCore.Settings.ISiteService SiteService
 
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
     var (oldNetPrice, oldGrossPrice) = line.AdditionalData.GetOldPrices();
+    var priceDisplaySettings = (await SiteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
 
-    // We prefer the gross price, if taxation is applicable. This is somewhat opinionated, see
-    // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/265 for turning this into an option.
-    var oldPrice = oldGrossPrice ?? oldNetPrice;
+    // Determine which price format to use based on corresponding site setting.
+    var oldPrice = priceDisplaySettings.UseNetPriceDisplay ? oldNetPrice : oldGrossPrice;
 }
 
 <div class="shopping-cart-table-old-price"><del>@oldPrice</del></div>
