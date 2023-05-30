@@ -42,7 +42,10 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
         }
 
         return Initialize<PriceDisplaySettingsViewModel>("PriceDisplaySettings_Edit", model =>
-            model.UseNetPriceDisplay = section.UseNetPriceDisplay)
+        {
+            model.UseNetPriceDisplay = section.UseNetPriceDisplay;
+            model.UseGrossPriceDisplay = section.UseGrossPriceDisplay;
+        })
             .Location("Content")
             .OnGroup(GroupId);
     }
@@ -63,6 +66,7 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
                 section.UseNetPriceDisplay = model.UseNetPriceDisplay;
+                section.UseGrossPriceDisplay = model.UseGrossPriceDisplay;
 
                 // Release the tenant to apply settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
