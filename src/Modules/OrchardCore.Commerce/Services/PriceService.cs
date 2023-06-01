@@ -25,17 +25,33 @@ public class PriceService : IPriceService
 
     public async Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        var providers = await _priceProviders
-            .OrderBy(provider => provider.Order)
-            .WhereAsync(provider => provider.IsApplicableAsync(items));
+        var priceProviders = _priceProviders.OrderBy(provider => provider.Order).ToList();
 
-        foreach (var priceProvider in providers)
+        // First let's check if a single provider can handle all solutions. In case some provider require the whole list
+        // as context to work.
+        foreach (var provider in priceProviders)
         {
-            var result = await priceProvider.UpdateAsync(items);
-            items = result.AsList();
+            if (await provider.IsApplicableAsync(items))
+            {
+                return await provider.UpdateAsync(items);
+            }
         }
 
-        return items;
+        // If only a mixture of providers can work, then we handle each applicable item together.
+        var original = items.ToList();
+        var handled = new List<ShoppingCartItem>();
+
+        foreach (var provider in priceProviders)
+        {
+            var applicable = await items.WhereAsync(item => provider.IsApplicableAsync(new[] { item }));
+
+            original.RemoveAll(item => applicable.Contains(item));
+            handled.AddRange(await provider.UpdateAsync(applicable));
+        }
+
+        if (original.Any()) handled.AddRange(original);
+
+        return handled;
     }
 
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices) =>
