@@ -9,9 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Lombiq.Tests.UI" Version="5.0.0" />
-      <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="5.0.0" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
+      <PackageReference Include="Lombiq.Tests.UI" Version="6.0.1" />
+      <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="6.0.1" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.1" />
       <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
