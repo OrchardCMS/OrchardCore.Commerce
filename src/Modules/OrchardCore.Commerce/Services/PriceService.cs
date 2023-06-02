@@ -37,21 +37,26 @@ public class PriceService : IPriceService
             }
         }
 
-        // If only a mixture of providers can work, then we handle each applicable item together.
-        var original = items.ToList();
-        var handled = new List<ShoppingCartItem>();
+        // If only a mixture of providers can work, then we handle each applicable item together. By storing the
+        // original indexes here, we ensure that the results will be in the same order as the input items.
+        var unhandled = items.Select((item, index) => (Item: item, Index: index)).ToList();
+        var handled = new List<(ShoppingCartItem Item, int Index)>();
 
         foreach (var provider in priceProviders)
         {
-            var applicable = await items.WhereAsync(item => provider.IsApplicableAsync(new[] { item }));
+            var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync(new[] { pair.Item }));
+            unhandled.RemoveAll(pair => applicable.Contains(pair));
 
-            original.RemoveAll(item => applicable.Contains(item));
-            handled.AddRange(await provider.UpdateAsync(applicable));
+            var providerResult = await provider.UpdateAsync(applicable.Select(pair => pair.Item).ToList());
+            handled.AddRange(providerResult.Select((item, index) => (item, applicable[index].Index)));
         }
 
-        if (original.Any()) handled.AddRange(original);
+        if (unhandled.Any()) handled.AddRange(unhandled);
 
-        return handled;
+        return handled
+            .OrderBy(pair => pair.Index)
+            .Select(pair => pair.Item)
+            .ToList();
     }
 
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices) =>
