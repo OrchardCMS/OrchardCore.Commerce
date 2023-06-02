@@ -27,30 +27,33 @@ public class PriceService : IPriceService
     {
         var priceProviders = _priceProviders.OrderBy(provider => provider.Order).ToList();
 
-        // First let's check if a single provider can handle all solutions. In case some provider require the whole list
-        // as context to work.
-        foreach (var provider in priceProviders)
-        {
-            if (await provider.IsApplicableAsync(items))
-            {
-                return await provider.UpdateAsync(items);
-            }
-        }
+        // First let's check for providers that are applicable for all items in the list.
+        var fullyApplicableProviders = await priceProviders.WhereAsync(provider => provider.IsApplicableAsync(items));
+        foreach (var provider in fullyApplicableProviders) items = await provider.UpdateAsync(items);
+
+        // If all applicable providers were used, then there is nothing left to do.
+        var remainingProviders = priceProviders.WhereNot(fullyApplicableProviders.Contains).ToList();
+        if (!remainingProviders.Any()) return items;
 
         // If only a mixture of providers can work, then we handle each applicable item together. By storing the
         // original indexes here, we ensure that the results will be in the same order as the input items.
         var unhandled = items.Select((item, index) => (Item: item, Index: index)).ToList();
         var handled = new List<(ShoppingCartItem Item, int Index)>();
 
-        foreach (var provider in priceProviders)
+        // Take out subsets where items are individually applicable to the remaining providers.
+        foreach (var provider in remainingProviders)
         {
             var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync(new[] { pair.Item }));
+            if (!applicable.Any()) continue;
+
             unhandled.RemoveAll(pair => applicable.Contains(pair));
 
             var providerResult = await provider.UpdateAsync(applicable.Select(pair => pair.Item).ToList());
             handled.AddRange(providerResult.Select((item, index) => (item, applicable[index].Index)));
         }
 
+        // If any items were handled then rebuild the list, otherwise cut it short here.
+        if (!handled.Any()) return items;
         if (unhandled.Any()) handled.AddRange(unhandled);
 
         return handled
