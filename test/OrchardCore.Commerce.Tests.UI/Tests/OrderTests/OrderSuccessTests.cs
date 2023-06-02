@@ -26,7 +26,7 @@ public class OrderSuccessTests : UITestBase
                 await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
                 await context.SignInDirectlyAsync();
 
-                await AddProductToCart(context, TestProduct);
+                await AddProductToCartAsync(context, TestProduct);
 
                 // Create order with successful payment.
                 var orderCreateTime = DateTime.UtcNow.Ticks;
@@ -41,12 +41,11 @@ public class OrderSuccessTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
-
                 await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
                 await context.SignInDirectlyAsync();
 
-                await AddProductToCart(context, TestProduct);
-                await AddProductToCart(context, TestPriceVariantProduct);
+                await AddProductToCartAsync(context, TestProduct);
+                await AddProductToCartAsync(context, TestPriceVariantProduct);
 
                 await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(1), "2");
                 await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(2), "3");
@@ -57,7 +56,7 @@ public class OrderSuccessTests : UITestBase
             },
             browser);
 
-    private static async Task AddProductToCart(UITestContext context, string contentItemId)
+    private static async Task AddProductToCartAsync(UITestContext context, string contentItemId)
     {
         await context.GoToContentItemByIdAsync(contentItemId);
         await context.ClickReliablyOnSubmitAsync();
