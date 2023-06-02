@@ -1,9 +1,14 @@
+@using OrchardCore.Commerce.Models;
 @using OrchardCore.Commerce.MoneyDataType;
 @using OrchardCore.Commerce.Tax.Extensions;
+
+@inject OrchardCore.Settings.ISiteService SiteService
+
 @{
     var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
     var lines = viewModel.Lines;
 
+    var priceDisplaySettings = (await SiteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
     var currency = (lines[0].AdditionalData.GetGrossPrice()).Currency;
     var netTotal = new Amount(0, currency);
     var grossTotal = new Amount(0, currency);
@@ -46,27 +51,19 @@
     <tr>
         <td class="font-weight-bold">@T["Total"]</td>
         <td colspan="@(viewModel.Headers.Count - 2)" class="shopping-cart-table-totals">
-@*            @foreach (var total in viewModel.Totals)
-            {
-                <div>@total</div>
-                <div></div>
-
-            }
-*@
-@*            foreach (var line in lines)
-            {
-                dynamic netPrice = line.AdditionalData["NetPrice"];
-                decimal netValue = netPrice["value"];
-                var netCurrency = new Currency(netPrice["currency"]);
-
-                var netPriceAmount = new Amount(netValue, netCurrency);
-
-                var netPriceRounded = netPrice.GetRounded();
-
-            }*@
-
             <p>
-                NET: @netTotal ｜ GROSS: @grossTotal
+                @if (priceDisplaySettings.UseNetPriceDisplay)
+                {
+                    @T["Net Price: {0}", netTotal];
+                }
+                @if (priceDisplaySettings.UseNetPriceDisplay && priceDisplaySettings.UseGrossPriceDisplay)
+                {
+                    <text>｜</text>
+                }
+                @if (priceDisplaySettings.UseGrossPriceDisplay)
+                {
+                    @T["Gross Price: {0}", grossTotal];
+                }
             </p>
         </td>
         <td>
