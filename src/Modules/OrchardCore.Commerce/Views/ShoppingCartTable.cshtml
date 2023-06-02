@@ -1,5 +1,21 @@
+@using OrchardCore.Commerce.MoneyDataType;
+@using OrchardCore.Commerce.Tax.Extensions;
 @{
     var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
+    var lines = viewModel.Lines;
+
+    var currency = (lines[0].AdditionalData.GetGrossPrice()).Currency;
+    var netTotal = new Amount(0, currency);
+    var grossTotal = new Amount(0, currency);
+
+    foreach (var line in lines)
+    {
+        var netPrice = line.AdditionalData.GetNetPrice();
+        var grossPrice = line.AdditionalData.GetGrossPrice();
+
+        netTotal += netPrice;
+        grossTotal += grossPrice;
+    }
 }
 
 <table class="table shopping-cart-table">
@@ -30,10 +46,28 @@
     <tr>
         <td class="font-weight-bold">@T["Total"]</td>
         <td colspan="@(viewModel.Headers.Count - 2)" class="shopping-cart-table-totals">
-            @foreach (var total in viewModel.Totals)
+@*            @foreach (var total in viewModel.Totals)
             {
                 <div>@total</div>
+                <div></div>
+
             }
+*@
+@*            foreach (var line in lines)
+            {
+                dynamic netPrice = line.AdditionalData["NetPrice"];
+                decimal netValue = netPrice["value"];
+                var netCurrency = new Currency(netPrice["currency"]);
+
+                var netPriceAmount = new Amount(netValue, netCurrency);
+
+                var netPriceRounded = netPrice.GetRounded();
+
+            }*@
+
+            <p>
+                NET: @netTotal ｜ GROSS: @grossTotal
+            </p>
         </td>
         <td>
             <form asp-action="Update" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" id="shopping-cart-update">
