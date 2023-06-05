@@ -3,6 +3,8 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,15 +15,18 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
 {
     private readonly IHtmlLocalizer<TaxShoppingCartEvents> H;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
+    private readonly ISiteService _siteService;
 
     public override int Order => 0;
 
     public TaxShoppingCartEvents(
         IHtmlLocalizer<TaxShoppingCartEvents> htmlLocalizer,
-        IEnumerable<ITaxProvider> taxProviders)
+        IEnumerable<ITaxProvider> taxProviders,
+        ISiteService siteService)
     {
         H = htmlLocalizer;
         _taxProviders = taxProviders;
+        _siteService = siteService;
     }
 
     public override async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
@@ -55,9 +60,16 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
             line.UnitPrice = price;
         }
 
+        var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
+
         var newHeaders = headers
             .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
             .ToList();
+
+        if (priceDisplaySettings.UseNetPriceDisplay)
+        {
+            newHeaders.Insert(2, H["Net Price"]);
+        }
 
         return (newHeaders, lines);
     }

@@ -1,0 +1,8 @@
+@using OrchardCore.Commerce.Tax.Extensions
+
+@{
+    var line = (ShoppingCartLineViewModel)Model.Line;
+    var price = line.AdditionalData.GetNetPrice();
+}
+
+<div class="shopping-cart-table-unit-price">@price</div>
