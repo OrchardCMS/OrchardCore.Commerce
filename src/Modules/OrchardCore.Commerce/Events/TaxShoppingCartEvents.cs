@@ -66,9 +66,11 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
             .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
             .ToList();
 
+        var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
         if (priceDisplaySettings.UseNetPriceDisplay)
         {
-            newHeaders.Insert(2, H["Net Price"]);
+            var grossIndex = newHeaders.FindIndex(header => header.Name == "Gross Price");
+            newHeaders.Insert(grossIndex, H["Net Price"]);
         }
 
         return (newHeaders, lines);

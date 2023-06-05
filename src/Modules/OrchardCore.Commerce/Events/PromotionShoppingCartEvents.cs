@@ -49,7 +49,11 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 
         var newHeaders = headers.ToList();
 
-        var insertIndex = newHeaders.FindIndex(header => header.Name is "Price" or "Gross Price");
+        var netPriceExists = newHeaders.Exists(header => header.Name == "Net Price");
+        var insertIndex = netPriceExists
+            ? newHeaders.FindIndex(header => header.Name == "Net Price")
+            : newHeaders.FindIndex(header => header.Name is "Price" or "Gross Price");
+
         newHeaders.Insert(insertIndex, H["Old Price"]);
 
         foreach (var (price, index) in lines.Select((item, index) => (item.UnitPrice, index)))
