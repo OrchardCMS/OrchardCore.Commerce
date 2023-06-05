@@ -18,8 +18,8 @@
         var netPrice = line.AdditionalData.GetNetPrice();
         var grossPrice = line.AdditionalData.GetGrossPrice();
 
-        netTotal += netPrice;
-        grossTotal += grossPrice;
+        netTotal += netPrice * line.Quantity;
+        grossTotal += grossPrice * line.Quantity;
     }
 }
 
