@@ -16,7 +16,7 @@
     foreach (var line in lines)
     {
         // AdditionalData only exists if Gross Price is specified.
-        var additionalDataExists = line.AdditionalData.Count != 0;
+        var additionalDataExists = line.AdditionalData.Count > 0;
         if (additionalDataExists)
         {
             var grossPrice = line.AdditionalData.GetGrossPrice();
@@ -56,6 +56,12 @@
     <tr>
         <td class="font-weight-bold">@T["Total"]</td>
         <td colspan="@(viewModel.Headers.Count - 2)" class="shopping-cart-table-totals">
+            @*original*@
+@*            @foreach (var total in viewModel.Totals)
+            {
+                <div>@total</div>
+            }
+*@
 
             @* If there's no Gross Price, display original totals. *@
             @if (grossTotal.Value == 0)

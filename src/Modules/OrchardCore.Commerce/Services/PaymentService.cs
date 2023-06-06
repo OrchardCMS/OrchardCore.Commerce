@@ -120,7 +120,7 @@ public class PaymentService : IPaymentService
         foreach (var line in lines)
         {
             // AdditionalData only exists if Gross Price is specified.
-            var additionalDataExists = line.AdditionalData.Count != 0;
+            var additionalDataExists = line.AdditionalData.Count > 0;
             if (additionalDataExists)
             {
                 var grossPrice = line.AdditionalData.GetGrossPrice();
@@ -131,7 +131,6 @@ public class PaymentService : IPaymentService
             netTotal += netPrice * line.Quantity;
         }
 
-        // SingleCurrencyTotal still have any use?
         return new CheckoutViewModel
         {
             ShoppingCartId = shoppingCartId,
