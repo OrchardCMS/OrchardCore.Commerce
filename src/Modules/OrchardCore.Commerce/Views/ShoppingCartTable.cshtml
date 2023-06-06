@@ -7,19 +7,24 @@
 @{
     var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
     var lines = viewModel.Lines;
-
     var priceDisplaySettings = (await SiteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
-    var currency = (lines[0].AdditionalData.GetGrossPrice()).Currency; // LF better way to get currency
+
+    var currency = viewModel.Totals.First().Currency;
     var netTotal = new Amount(0, currency);
     var grossTotal = new Amount(0, currency);
 
     foreach (var line in lines)
     {
-        var netPrice = line.AdditionalData.GetNetPrice();
-        var grossPrice = line.AdditionalData.GetGrossPrice();
+        // AdditionalData only exists if Gross Price is specified.
+        var additionalDataExists = line.AdditionalData.Count != 0;
+        if (additionalDataExists)
+        {
+            var grossPrice = line.AdditionalData.GetGrossPrice();
+            grossTotal += grossPrice * line.Quantity;            
+        }
 
+        var netPrice = additionalDataExists ? line.AdditionalData.GetNetPrice() : line.UnitPrice;
         netTotal += netPrice * line.Quantity;
-        grossTotal += grossPrice * line.Quantity;
     }
 }
 
