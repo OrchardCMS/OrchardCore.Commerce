@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -7,6 +7,8 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
@@ -110,12 +112,34 @@ public class PaymentService : IPaymentService
             initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
         }
 
+        var currency = total.Currency;
+        var netTotal = new Amount(0, currency);
+        var grossTotal = new Amount(0, currency);
+
+        var lines = cart.Lines;
+        foreach (var line in lines)
+        {
+            // AdditionalData only exists if Gross Price is specified.
+            var additionalDataExists = line.AdditionalData.Count != 0;
+            if (additionalDataExists)
+            {
+                var grossPrice = line.AdditionalData.GetGrossPrice();
+                grossTotal += grossPrice * line.Quantity;
+            }
+
+            var netPrice = additionalDataExists ? line.AdditionalData.GetNetPrice() : line.UnitPrice;
+            netTotal += netPrice * line.Quantity;
+        }
+
+        // SingleCurrencyTotal still have any use?
         return new CheckoutViewModel
         {
             ShoppingCartId = shoppingCartId,
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
             OrderPart = orderPart,
             SingleCurrencyTotal = total,
+            NetTotal = netTotal,
+            GrossTotal = grossTotal,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,

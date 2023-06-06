@@ -12,6 +12,8 @@ public class CheckoutViewModel : ShapeViewModel
 {
     public string ShoppingCartId { get; init; }
     public Amount SingleCurrencyTotal { get; init; }
+    public Amount NetTotal { get; init; }
+    public Amount GrossTotal { get; init; }
     public OrderPart OrderPart { get; init; }
     public string PaymentIntentClientSecret { get; init; }
 

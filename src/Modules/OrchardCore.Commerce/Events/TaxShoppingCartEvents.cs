@@ -60,12 +60,11 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
             line.UnitPrice = price;
         }
 
-        var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
-
         var newHeaders = headers
             .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
             .ToList();
 
+        // When taxes are specified, Gross Price is always applicable, while Net Price is optional.
         var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
         if (priceDisplaySettings.UseNetPriceDisplay)
         {
