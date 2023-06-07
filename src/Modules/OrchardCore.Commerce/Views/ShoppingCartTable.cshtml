@@ -56,13 +56,6 @@
     <tr>
         <td class="font-weight-bold">@T["Total"]</td>
         <td colspan="@(viewModel.Headers.Count - 2)" class="shopping-cart-table-totals">
-            @*original*@
-@*            @foreach (var total in viewModel.Totals)
-            {
-                <div>@total</div>
-            }
-*@
-
             @* If there's no Gross Price, display original totals. *@
             @if (grossTotal.Value == 0)
             {

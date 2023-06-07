@@ -23,7 +23,7 @@ public class AdminMenu : NavigationProviderBase
                     .Add(T["Currency"], T["Currency"], entry => entry
                         .Action(ActionNames.Index, ControllerNames.Admin, new
                         {
-                            area = nameof(OrchardCore.Settings),
+                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
                             groupId = CurrencySettingsDisplayDriver.GroupId,
                         })
                         .Permission(Permissions.ManageCurrencySettings)
@@ -31,7 +31,7 @@ public class AdminMenu : NavigationProviderBase
                     .Add(T["Price Display"], T["Price Display"], entry => entry
                         .Action(ActionNames.Index, ControllerNames.Admin, new
                         {
-                            area = nameof(OrchardCore.Settings),
+                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
                             groupId = PriceDisplaySettingsDisplayDriver.GroupId,
                         })
                         .Permission(Permissions.ManagePriceDisplaySettings)
@@ -39,7 +39,7 @@ public class AdminMenu : NavigationProviderBase
                     .Add(T["Stripe API"], T["Stripe API"], stripeApi => stripeApi
                         .Action(ActionNames.Index, ControllerNames.Admin, new
                         {
-                            area = nameof(OrchardCore.Settings),
+                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
                             groupId = StripeApiSettingsDisplayDriver.GroupId,
                         })
                         .Permission(Permissions.ManageStripeApiSettings)
@@ -47,7 +47,7 @@ public class AdminMenu : NavigationProviderBase
                     .Add(T["Region"], T["Region"], region => region
                         .Action(ActionNames.Index, ControllerNames.Admin, new
                         {
-                            area = nameof(OrchardCore.Settings),
+                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
                             groupId = RegionSettingsDisplayDriver.GroupId,
                         })
                         .Permission(Permissions.ManageRegionSettings)
