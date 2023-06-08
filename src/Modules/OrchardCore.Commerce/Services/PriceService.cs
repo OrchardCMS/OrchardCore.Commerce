@@ -32,7 +32,7 @@ public class PriceService : IPriceService
         foreach (var provider in fullyApplicableProviders) items = await provider.UpdateAsync(items);
 
         // If all applicable providers were used, then there is nothing left to do.
-        var remainingProviders = priceProviders.WhereNot(fullyApplicableProviders.Contains).ToList();
+        var remainingProviders = priceProviders.Except(fullyApplicableProviders).ToList();
         if (!remainingProviders.Any()) return items;
 
         // If only a mixture of providers can work, then we handle each applicable item together. By storing the
