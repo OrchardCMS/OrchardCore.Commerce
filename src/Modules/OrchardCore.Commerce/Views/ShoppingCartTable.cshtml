@@ -15,15 +15,18 @@
 
     foreach (var line in lines)
     {
-        // AdditionalData only exists if Gross Price is specified.
-        var additionalDataExists = line.AdditionalData.Count > 0;
-        if (additionalDataExists)
+        // AdditionalData only exists if Gross Price or a Promotion is specified.
+        var additionalData = line.AdditionalData;
+        var additionalDataExists = additionalData.Count > 0;
+        if (additionalDataExists && additionalData.GetGrossPrice().Value > 0)
         {
-            var grossPrice = line.AdditionalData.GetGrossPrice();
+            var grossPrice = additionalData.GetGrossPrice();
             grossTotal += grossPrice * line.Quantity;            
         }
 
-        var netPrice = additionalDataExists ? line.AdditionalData.GetNetPrice() : line.UnitPrice;
+        var netPrice = additionalDataExists && additionalData.GetNetPrice().Value > 0
+            ? additionalData.GetNetPrice()
+            : line.UnitPrice;
         netTotal += netPrice * line.Quantity;
     }
 }
