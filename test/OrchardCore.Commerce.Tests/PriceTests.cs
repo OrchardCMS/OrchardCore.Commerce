@@ -1,10 +1,10 @@
-using GraphQL;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentManagement;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +62,34 @@ public class PriceTests
     }
 
     [Fact]
+    public async Task PriceServiceAddsPricesForMixedProviders()
+    {
+        static Func<IList<ShoppingCartItem>, bool> IsApplicableFor(string skuStartsWith) =>
+            items => items.All(item => item.ProductSku.StartsWithOrdinal(skuStartsWith));
+
+        var priceService = new PriceService(
+            new List<IPriceProvider>
+            {
+                new DummyPriceProvider(0, 4, isApplicable: false),
+                new DummyPriceProvider(1, 1, IsApplicableFor("A")),
+                new DummyPriceProvider(2, 3, IsApplicableFor("B")),
+            },
+            priceSelectionStrategy: null);
+
+        var cart = new ShoppingCart(
+            new ShoppingCartItem(1, "A1"),
+            new ShoppingCartItem(1, "B1"),
+            new ShoppingCartItem(1, "A2"));
+
+        cart
+            .With(await priceService.AddPricesAsync(cart.Items))
+            .Items
+            .Select(item => item.Prices.Single().Price.Value)
+            .ToArray()
+            .ShouldBe(new decimal[] { 1, 3, 1 });
+    }
+
+    [Fact]
     public void SimplePriceStrategySelectsLowestPriceForHighestStrategy()
     {
         var strategy = new SimplePriceStrategy();
@@ -108,17 +136,21 @@ public class PriceTests
 
     private class DummyPriceProvider : IPriceProvider
     {
-        private readonly bool _isApplicable;
+        private readonly Func<IList<ShoppingCartItem>, bool> _isApplicable;
         public int Order { get; }
 
         public decimal Price { get; }
 
-        public DummyPriceProvider(int priority, decimal price, bool isApplicable)
+        public DummyPriceProvider(int priority, decimal price, Func<IList<ShoppingCartItem>, bool> isApplicable)
         {
             _isApplicable = isApplicable;
             Order = priority;
             Price = price;
         }
+
+        public DummyPriceProvider(int priority, decimal price, bool isApplicable)
+            : this(priority, price, _ => isApplicable)
+        { }
 
         public Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model) =>
             Task.FromResult<IList<ShoppingCartItem>>(model
@@ -126,7 +158,7 @@ public class PriceTests
                 .ToList());
 
         public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> items) =>
-             Task.FromResult(_isApplicable);
+             Task.FromResult(_isApplicable(items));
 
         private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item) =>
              item.WithPrice(

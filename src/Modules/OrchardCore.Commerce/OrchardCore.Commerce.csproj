@@ -37,7 +37,7 @@
     <PackageReference Include="OrchardCore.Title" Version="1.5.0" />
     <PackageReference Include="OrchardCore.Templates" Version="1.5.0" />
     <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.5.0" />
-    <PackageReference Include="Stripe.net" Version="40.4.0" />
+    <PackageReference Include="Stripe.net" Version="41.18.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,7 +58,7 @@
     <Import Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.targets" />
   </ImportGroup>
   <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.2.0" />
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.2.3" />
   </ItemGroup>
 
 </Project>

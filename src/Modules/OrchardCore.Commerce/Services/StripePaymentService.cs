@@ -185,9 +185,17 @@ public class StripePaymentService : IStripePaymentService
 
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 
-        ContentItem order;
         string guidId;
-        if (string.IsNullOrEmpty(orderId))
+        if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
+        {
+            if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+            {
+                return null;
+            }
+
+            guidId = order.As<OrderPart>().OrderId.Text;
+        }
+        else
         {
             order = await _contentManager.NewAsync(Constants.ContentTypes.Order);
             if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
@@ -197,17 +205,11 @@ public class StripePaymentService : IStripePaymentService
 
             guidId = Guid.NewGuid().ToString();
 
-            _session.Save(new OrderPayment { OrderId = order.ContentItemId, PaymentIntentId = paymentIntent.Id });
-        }
-        else
-        {
-            order = await _contentManager.GetAsync(orderId);
-            if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+            _session.Save(new OrderPayment
             {
-                return null;
-            }
-
-            guidId = order.As<OrderPart>().OrderId.Text;
+                OrderId = order.ContentItemId,
+                PaymentIntentId = paymentIntent.Id,
+            });
         }
 
         order.DisplayText = T["Order {0}", guidId];

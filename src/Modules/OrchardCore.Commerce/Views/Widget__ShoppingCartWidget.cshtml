@@ -1,7 +1,7 @@
 <style asp-src="~/OrchardCore.Commerce/css/shopping-cart-widget.min.css"></style>
 
 <div class="shopping-cart-widget">
-    <a asp-action="Index" asp-controller="ShoppingCart" class="shopping-cart-link nav-link d-flex">
+    <a asp-action="Index" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce" class="shopping-cart-link nav-link d-flex">
         <i class="fa-2x fa-solid fa-cart-shopping text-white"></i>
         @await DisplayAsync(Model.Content)
     </a>

@@ -13,5 +13,5 @@ public class ShoppingCartCellViewModel
     public IList<(IProductAttributeValue Value, string Type, int Index)> ProductAttributes { get; } =
         new List<(IProductAttributeValue Value, string Type, int Index)>();
 
-    public string Name => $"cart.lines[{ColumnIndex.ToTechnicalString()}]";
+    public string Name => $"cart.lines[{LineIndex.ToTechnicalString()}]";
 }
