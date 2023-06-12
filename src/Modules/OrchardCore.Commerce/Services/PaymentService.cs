@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -7,6 +7,8 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
@@ -110,12 +112,33 @@ public class PaymentService : IPaymentService
             initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
         }
 
+        var currency = total.Currency;
+        var netTotal = new Amount(0, currency);
+        var grossTotal = new Amount(0, currency);
+
+        var lines = cart.Lines;
+        foreach (var line in lines)
+        {
+            var additionalData = line.AdditionalData;
+            var grossAmount = additionalData.GetGrossPrice();
+            if (grossAmount.Value > 0)
+            {
+                grossTotal += grossAmount * line.Quantity;
+            }
+
+            var netAmount = additionalData.GetNetPrice();
+            var netPrice = netAmount.Value > 0 ? netAmount : line.UnitPrice;
+            netTotal += netPrice * line.Quantity;
+        }
+
         return new CheckoutViewModel
         {
             ShoppingCartId = shoppingCartId,
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
             OrderPart = orderPart,
             SingleCurrencyTotal = total,
+            NetTotal = netTotal,
+            GrossTotal = grossTotal,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
