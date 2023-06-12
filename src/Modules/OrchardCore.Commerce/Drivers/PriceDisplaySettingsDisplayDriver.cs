@@ -46,7 +46,7 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
             model.UseNetPriceDisplay = section.UseNetPriceDisplay;
             model.UseGrossPriceDisplay = section.UseGrossPriceDisplay;
         })
-            .Location("Content")
+            .PlaceInContent()
             .OnGroup(GroupId);
     }
 
@@ -59,18 +59,14 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
             return null;
         }
 
-        if (context.GroupId == GroupId)
+        var model = new PriceDisplaySettingsViewModel();
+        if (context.GroupId == GroupId && await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            var model = new PriceDisplaySettingsViewModel();
+            section.UseNetPriceDisplay = model.UseNetPriceDisplay;
+            section.UseGrossPriceDisplay = model.UseGrossPriceDisplay;
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                section.UseNetPriceDisplay = model.UseNetPriceDisplay;
-                section.UseGrossPriceDisplay = model.UseGrossPriceDisplay;
-
-                // Release the tenant to apply settings.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+            // Release the tenant to apply settings.
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
         return await EditAsync(section, context);
