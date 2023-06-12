@@ -25,17 +25,41 @@ public class PriceService : IPriceService
 
     public async Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items)
     {
-        var providers = await _priceProviders
-            .OrderBy(provider => provider.Order)
-            .WhereAsync(provider => provider.IsApplicableAsync(items));
+        var priceProviders = _priceProviders.OrderBy(provider => provider.Order).ToList();
 
-        foreach (var priceProvider in providers)
+        // First let's check for providers that are applicable for all items in the list.
+        var fullyApplicableProviders = await priceProviders.WhereAsync(provider => provider.IsApplicableAsync(items));
+        foreach (var provider in fullyApplicableProviders) items = await provider.UpdateAsync(items);
+
+        // If all applicable providers were used, then there is nothing left to do.
+        var remainingProviders = priceProviders.Except(fullyApplicableProviders).ToList();
+        if (!remainingProviders.Any()) return items;
+
+        // If only a mixture of providers can work, then we handle each applicable item together. By storing the
+        // original indexes here, we ensure that the results will be in the same order as the input items.
+        var unhandled = items.Select((item, index) => (Item: item, Index: index)).ToList();
+        var handled = new List<(ShoppingCartItem Item, int Index)>();
+
+        // Take out subsets where items are individually applicable to the remaining providers.
+        foreach (var provider in remainingProviders)
         {
-            var result = await priceProvider.UpdateAsync(items);
-            items = result.AsList();
+            var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync(new[] { pair.Item }));
+            if (!applicable.Any()) continue;
+
+            unhandled.RemoveAll(pair => applicable.Contains(pair));
+
+            var providerResult = await provider.UpdateAsync(applicable.Select(pair => pair.Item).ToList());
+            handled.AddRange(providerResult.Select((item, index) => (item, applicable[index].Index)));
         }
 
-        return items;
+        // If any items were handled then rebuild the list, otherwise cut it short here.
+        if (!handled.Any()) return items;
+        if (unhandled.Any()) handled.AddRange(unhandled);
+
+        return handled
+            .OrderBy(pair => pair.Index)
+            .Select(pair => pair.Item)
+            .ToList();
     }
 
     public Amount SelectPrice(IEnumerable<PrioritizedPrice> prices) =>
