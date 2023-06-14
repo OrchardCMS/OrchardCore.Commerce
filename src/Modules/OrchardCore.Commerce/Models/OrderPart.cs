@@ -37,10 +37,13 @@ public class OrderPart : ContentPart
 
     public TextField Email { get; set; } = new();
     public TextField Phone { get; set; } = new();
+    public TextField VatNumber { get; set; } = new();
 
     public AddressField BillingAddress { get; set; } = new();
     public AddressField ShippingAddress { get; set; } = new();
     public BooleanField BillingAndShippingAddressesMatch { get; set; } = new();
+    public BooleanField IsCorporation { get; set; } = new();
 
     public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
+    //public bool IsCorporation { get; set; }
 }
