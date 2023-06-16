@@ -31,7 +31,7 @@ public class TaxRateSetting
 
 public enum MatchTaxRate
 {
-    Match,
-    NoMatch,
+    Checked,
+    Unchecked,
     Ignore,
 }
