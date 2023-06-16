@@ -6,6 +6,8 @@ public class TaxRateSettings
 {
     public IList<TaxRateSetting> Rates { get; } = new List<TaxRateSetting>();
 
+    public MatchTaxRate MatchTaxRate { get; set; }
+
     public void CopyFrom(TaxRateSettings other)
     {
         Rates.Clear();
@@ -25,4 +27,11 @@ public class TaxRateSetting
     public string TaxCode { get; set; }
 
     public decimal TaxRate { get; set; }
+}
+
+public enum MatchTaxRate
+{
+    Match,
+    NoMatch,
+    Ignore,
 }
