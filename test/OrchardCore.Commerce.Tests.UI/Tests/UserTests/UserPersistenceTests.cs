@@ -142,16 +142,16 @@ public class UserPersistenceTests : UITestBase
 
                 const string testCustomerName = "Test Customer Name";
                 await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_BillingAddress_Address_Name"),
+                    By.Id("User_UserAddressesPart_BillingAddress_Address_Name"),
                     testCustomerName);
                 await context.SetCheckboxValueAsync(
-                    By.Id("UserAddressesPart_BillingAndShippingAddressesMatch_Value"),
+                    By.Id("User_UserAddressesPart_BillingAndShippingAddressesMatch_Value"),
                     isChecked: true);
 
                 await SubmitAndGoToUserAddressesAsync();
 
                 context
-                    .Get(By.Id("UserAddressesPart_ShippingAddress_Address_Name").OfAnyVisibility())
+                    .Get(By.Id("User_UserAddressesPart_ShippingAddress_Address_Name").OfAnyVisibility())
                     .GetAttribute("value")?
                     .Trim()
                     .ShouldBe(testCustomerName);
