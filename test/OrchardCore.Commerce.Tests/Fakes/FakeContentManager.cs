@@ -29,6 +29,9 @@ public class FakeContentManager : IContentManager
     public Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false) =>
         throw new NotSupportedException();
 
+    public Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options) =>
+        throw new NotSupportedException();
+
     public Task<ContentItem> GetVersionAsync(string contentItemVersionId) => throw new NotSupportedException();
 
     public Task ImportAsync(IEnumerable<ContentItem> contentItems) => throw new NotSupportedException();
