@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.6.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,7 +44,7 @@
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="5.2.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
