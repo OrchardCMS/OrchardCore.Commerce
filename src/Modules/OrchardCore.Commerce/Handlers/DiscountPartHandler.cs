@@ -28,9 +28,9 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         T = stringLocalizer;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context, DiscountPart instance)
+    public override Task UpdatedAsync(UpdateContentContext context, DiscountPart part)
     {
-        if (instance.ContentItem.As<DiscountPart>() is not { } discountPart) return Task.CompletedTask;
+        if (part.ContentItem.As<DiscountPart>() is not { } discountPart) return Task.CompletedTask;
 
         var discountPercentage = discountPart.DiscountPercentage?.Value ?? 0;
         var discountAmount = discountPart.DiscountAmount.Amount;
@@ -42,10 +42,10 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
             InvalidateEvenState();
         }
 
-        if ((instance.ContentItem.As<PricePart>()?.Price is { } pricePartPrice &&
+        if ((part.ContentItem.As<PricePart>()?.Price is { } pricePartPrice &&
             pricePartPrice.Currency.Equals(discountAmount.Currency) &&
             pricePartPrice < discountAmount) ||
-            (instance.ContentItem.As<TaxPart>()?.GrossPrice.Amount is { } taxPartGrossPriceAmount &&
+            (part.ContentItem.As<TaxPart>()?.GrossPrice.Amount is { } taxPartGrossPriceAmount &&
             taxPartGrossPriceAmount.IsValid &&
             taxPartGrossPriceAmount.Currency.Equals(discountAmount.Currency) &&
             taxPartGrossPriceAmount < discountAmount))

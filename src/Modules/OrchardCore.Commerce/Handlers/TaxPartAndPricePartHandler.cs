@@ -32,9 +32,9 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         T = stringLocalizer;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context, PricePart instance)
+    public override Task UpdatedAsync(UpdateContentContext context, PricePart part)
     {
-        if (instance.ContentItem.As<TaxPart>() is not { } taxPart) return Task.CompletedTask;
+        if (part.ContentItem.As<TaxPart>() is not { } taxPart) return Task.CompletedTask;
 
         var taxRate = taxPart.TaxRate?.Value ?? 0;
 
@@ -43,7 +43,7 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
 
         if (isGrossPricePresent && isTaxRatePresent)
         {
-            UpdatePricePart(instance.ContentItem, taxPart.GrossPrice.Amount, taxRate);
+            UpdatePricePart(part.ContentItem, taxPart.GrossPrice.Amount, taxRate);
         }
         else if (isGrossPricePresent ^ isTaxRatePresent)
         {

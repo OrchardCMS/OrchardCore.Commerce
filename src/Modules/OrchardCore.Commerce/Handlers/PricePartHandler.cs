@@ -19,20 +19,20 @@ public class PricePartHandler : ContentPartHandler<PricePart>
         _session = session;
     }
 
-    public override Task LoadingAsync(LoadContentContext context, PricePart instance)
+    public override Task LoadingAsync(LoadContentContext context, PricePart part)
     {
-        var amount = _moneyService.EnsureCurrency(instance.Price);
-        instance.Price = amount;
+        var amount = _moneyService.EnsureCurrency(part.Price);
+        part.Price = amount;
 
         // Migrate objects to use PriceField instead of PricePart.Amount.
-        if (instance.Content.Price is { } price && instance.Content.PriceField?.Amount.ToString() != price.ToString())
+        if (part.Content.Price is { } price && part.Content.PriceField?.Amount.ToString() != price.ToString())
         {
-            instance.Content.PriceField = JObject.FromObject(new PriceField { Amount = amount });
-            ((JObject)instance.Content).Remove(nameof(PricePart.Price));
+            part.Content.PriceField = JObject.FromObject(new PriceField { Amount = amount });
+            ((JObject)part.Content).Remove(nameof(PricePart.Price));
 
-            _session.Save(instance.ContentItem);
+            _session.Save(part.ContentItem);
         }
 
-        return base.LoadingAsync(context, instance);
+        return base.LoadingAsync(context, part);
     }
 }
