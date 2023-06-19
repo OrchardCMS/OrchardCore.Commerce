@@ -38,16 +38,16 @@ window.initializeToggleSecondAddress = function (
 };
 
 (function autoInitializeToggleSecondAddress() {
-    if (document.getElementById('User_UserAddressesPart_BillingAndShippingAddressesMatch_Value')) {
+    if (document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]')) {
         initializeToggleSecondAddress(
-            document.getElementById('User_UserAddressesPart_BillingAndShippingAddressesMatch_Value'),
+            document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]'),
             document.querySelector('.address_billing-address'),
             document.querySelector('.address_shipping-address'));
     }
 
-    if (document.getElementById('User_OrderPart_BillingAndShippingAddressesMatch_Value')) {
+    if (document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]')) {
         initializeToggleSecondAddress(
-            document.getElementById('User_OrderPart_BillingAndShippingAddressesMatch_Value'),
+            document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]'),
             document.querySelector('.address_billing-address'),
             document.querySelector('.address_shipping-address'));
     }
