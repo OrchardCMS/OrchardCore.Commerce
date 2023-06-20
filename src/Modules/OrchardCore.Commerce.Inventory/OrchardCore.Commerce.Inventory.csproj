@@ -28,9 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.ContentFields" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.5.0" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.5.0" />
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.6.0" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.6.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.6.0" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -41,7 +41,7 @@
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="5.2.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
