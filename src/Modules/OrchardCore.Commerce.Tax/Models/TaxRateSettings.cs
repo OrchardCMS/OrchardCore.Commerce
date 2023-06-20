@@ -6,7 +6,7 @@ public class TaxRateSettings
 {
     public IList<TaxRateSetting> Rates { get; } = new List<TaxRateSetting>();
 
-    public MatchTaxRate MatchTaxRate { get; set; }
+    public MatchTaxRates MatchTaxRates { get; set; }
 
     public void CopyFrom(TaxRateSettings other)
     {
@@ -29,9 +29,9 @@ public class TaxRateSetting
     public decimal TaxRate { get; set; }
 }
 
-public enum MatchTaxRate
+public enum MatchTaxRates
 {
     Checked,
     Unchecked,
-    Ignore,
+    Ignored,
 }

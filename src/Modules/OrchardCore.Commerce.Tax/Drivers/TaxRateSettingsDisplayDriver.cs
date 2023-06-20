@@ -37,7 +37,7 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
         await _authorizationService.AuthorizeAsync(user, TaxRatePermissions.ManageCustomTaxRates)
             ? Initialize<TaxRateSettings>($"{nameof(TaxRateSettings)}_Edit", model =>
                 {
-                    model.MatchTaxRate = section.MatchTaxRate;
+                    model.MatchTaxRates = section.MatchTaxRates;
                     model.CopyFrom(section);
                     if (!model.Rates.Any()) model.Rates.Add(new TaxRateSetting());
                 })
@@ -55,7 +55,7 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
         if (context.GroupId == nameof(TaxRateSettings) &&
             await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            section.MatchTaxRate = model.MatchTaxRate;
+            section.MatchTaxRates = model.MatchTaxRates;
 
             foreach (var rate in model.Rates)
             {

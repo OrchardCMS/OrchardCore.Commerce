@@ -45,5 +45,4 @@ public class OrderPart : ContentPart
     public BooleanField IsCorporation { get; set; } = new();
 
     public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
-    //public bool IsCorporation { get; set; }
 }
