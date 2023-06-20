@@ -50,11 +50,24 @@ public class TaxRateTaxProvider : ITaxProvider
             var taxRates = siteSettings.As<TaxRateSettings>();
             if (taxRates?.Rates.Any() != true) return 0;
 
-            return items.Count(item =>
-                MatchTaxRate(
+            var shouldMatchTaxRates = true;
+            if (model.IsCorporation)
+            {
+                shouldMatchTaxRates = taxRates.MatchTaxRates switch
+                {
+                    MatchTaxRates.Checked => true,
+                    MatchTaxRates.Unchecked => false,
+                    MatchTaxRates.Ignored => false,
+                    _ => true,
+                };
+            }
+
+            return shouldMatchTaxRates
+                ? items.Count(item => MatchTaxRate(
                     taxRates.Rates,
                     model.ShippingAddress,
-                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text) > 0);
+                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text) > 0)
+                : 1;
         });
 
     private static bool IsMatchingOrEmptyPattern(string pattern, string text) =>
