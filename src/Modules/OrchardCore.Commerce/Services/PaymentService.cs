@@ -26,7 +26,6 @@ namespace OrchardCore.Commerce.Services;
 
 public class PaymentService : IPaymentService
 {
-    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IStripePaymentService _stripePaymentService;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly IContentManager _contentManager;
@@ -49,7 +48,6 @@ public class PaymentService : IPaymentService
         IShoppingCartHelpers shoppingCartHelpers,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
-        IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentIntentPersistence paymentIntentPersistence,
         IShoppingCartPersistence shoppingCartPersistence)
 #pragma warning restore S107 // Methods should not have too many parameters
@@ -62,7 +60,6 @@ public class PaymentService : IPaymentService
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
-        _workflowManagers = workflowManagers;
         T = services.StringLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -171,11 +168,6 @@ public class PaymentService : IPaymentService
         order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
 
         await _contentManager.UpdateAsync(order);
-
-        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
-        {
-            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
-        }
 
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         currentShoppingCart?.Items?.Clear();

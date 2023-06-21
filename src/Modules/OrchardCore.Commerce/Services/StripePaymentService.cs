@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
@@ -16,6 +17,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
+using OrchardCore.Workflows.Services;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -40,6 +42,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly string _siteName;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IProductInventoryService _productInventoryService;
+    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -56,7 +59,8 @@ public class StripePaymentService : IStripePaymentService
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
         IContentItemDisplayManager contentItemDisplayManager,
-        IProductInventoryService productInventoryService)
+        IProductInventoryService productInventoryService,
+        IEnumerable<IWorkflowManager> workflowManagers)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -70,6 +74,7 @@ public class StripePaymentService : IStripePaymentService
         _productInventoryService = productInventoryService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _workflowManagers = workflowManagers;
 
         var siteSettings = siteService.GetSiteSettingsAsync()
             .GetAwaiter()
@@ -159,6 +164,11 @@ public class StripePaymentService : IStripePaymentService
 
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
+
+        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
+        {
+            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
+        }
 
         await _contentManager.UpdateAsync(order);
     }
