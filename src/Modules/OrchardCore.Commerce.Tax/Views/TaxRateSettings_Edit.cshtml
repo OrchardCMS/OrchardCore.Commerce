@@ -66,6 +66,13 @@
             <input :name="'ISite.Rates[' + index + '].TaxRate'" v-model="rate.taxRate" type="number" min="0" max="100" step="0.001">
         </td>
         <td>
+            <select :name="'ISite.Rates[' + index + '].IsCorporation'" v-model="rate.isCorporation">
+                <option value="Checked">@T["Checked"]</option>
+                <option value="Unchecked">@T["Unchecked"]</option>
+                <option value="Ignored">@T["Ignored"]</option>
+            </select>
+        </td>
+        <td>
             <div class="d-flex flex-row">
                 <button class="btn btn-danger" @@click.prevent="rates.splice(index, 1)">
                     <i class="fa fa-trash" aria-hidden="true"></i>
@@ -132,6 +139,7 @@
             "destinationRegion": null,
             "taxCode": null,
             "vatNumber": null,
+            "isCorporation": null,
             "taxRate": 0,
         });
     });

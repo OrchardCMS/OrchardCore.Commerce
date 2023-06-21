@@ -27,9 +27,9 @@ public class TaxRateSetting
 
     public string TaxCode { get; set; }
 
-    public decimal TaxRate { get; set; }
+    public MatchTaxRates IsCorporation { get; set; }
 
-    //public MatchTaxRates IsCorporation { get; set; }
+    public decimal TaxRate { get; set; }
 }
 
 public enum MatchTaxRates
