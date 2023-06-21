@@ -6,7 +6,7 @@ public class TaxRateSettings
 {
     public IList<TaxRateSetting> Rates { get; } = new List<TaxRateSetting>();
 
-    public MatchTaxRates MatchTaxRates { get; set; }
+    //public MatchTaxRates MatchTaxRates { get; set; }
 
     public void CopyFrom(TaxRateSettings other)
     {
@@ -23,10 +23,13 @@ public class TaxRateSetting
     public string DestinationProvince { get; set; }
     public string DestinationPostalCode { get; set; }
     public string DestinationRegion { get; set; }
+    public string VatNumber { get; set; }
 
     public string TaxCode { get; set; }
 
     public decimal TaxRate { get; set; }
+
+    //public MatchTaxRates IsCorporation { get; set; }
 }
 
 public enum MatchTaxRates

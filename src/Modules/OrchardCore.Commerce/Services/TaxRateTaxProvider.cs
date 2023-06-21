@@ -34,7 +34,8 @@ public class TaxRateTaxProvider : ITaxProvider
                 var taxRate = MatchTaxRate(
                     taxRates.Rates,
                     model.ShippingAddress,
-                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text);
+                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text,
+                    model.VatNumber);
                 var multiplier = (taxRate / 100m) + 1;
                 return item with { UnitPrice = item.UnitPrice * multiplier };
             })
@@ -50,24 +51,24 @@ public class TaxRateTaxProvider : ITaxProvider
             var taxRates = siteSettings.As<TaxRateSettings>();
             if (taxRates?.Rates.Any() != true) return 0;
 
-            var shouldMatchTaxRates = true;
-            if (model.IsCorporation)
-            {
-                shouldMatchTaxRates = taxRates.MatchTaxRates switch
-                {
-                    MatchTaxRates.Checked => true,
-                    MatchTaxRates.Unchecked => false,
-                    MatchTaxRates.Ignored => false,
-                    _ => true,
-                };
-            }
+            //var shouldMatchTaxRates = true;
+            //if (model.IsCorporation)
+            //{
+            //    shouldMatchTaxRates = taxRates.MatchTaxRates switch
+            //    {
+            //        MatchTaxRates.Checked => true,
+            //        MatchTaxRates.Unchecked => false,
+            //        MatchTaxRates.Ignored => false,
+            //        _ => true,
+            //    };
+            //}
 
-            return shouldMatchTaxRates
-                ? items.Count(item => MatchTaxRate(
+            return items.Count(item =>
+                MatchTaxRate(
                     taxRates.Rates,
                     model.ShippingAddress,
-                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text) > 0)
-                : 1;
+                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text,
+                    model.VatNumber) > 0);
         });
 
     private static bool IsMatchingOrEmptyPattern(string pattern, string text) =>
@@ -76,7 +77,8 @@ public class TaxRateTaxProvider : ITaxProvider
     private static decimal MatchTaxRate(
         IEnumerable<TaxRateSetting> taxRates,
         Address destinationAddress,
-        string taxCode)
+        string taxCode,
+        string vatNumber)
     {
         destinationAddress ??= new Address();
 
@@ -87,6 +89,7 @@ public class TaxRateTaxProvider : ITaxProvider
             IsMatchingOrEmptyPattern(rate.DestinationProvince, destinationAddress.Province) &&
             IsMatchingOrEmptyPattern(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
             IsMatchingOrEmptyPattern(rate.DestinationRegion, destinationAddress.Region) &&
+            IsMatchingOrEmptyPattern(rate.VatNumber, vatNumber) &&
             IsMatchingOrEmptyPattern(rate.TaxCode, taxCode));
         return matchingTaxRate?.TaxRate ?? 0;
     }
