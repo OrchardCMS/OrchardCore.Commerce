@@ -68,9 +68,9 @@
         </td>
         <td>
             <select :name="'ISite.Rates[' + index + '].IsCorporation'" v-model="rate.isCorporation">
-                <option value="Checked">@T["Checked"]</option>
-                <option value="Unchecked">@T["Unchecked"]</option>
-                <option value="Ignored">@T["Ignored"]</option>
+                <option :value="IsCorporation.Checked">@T["Checked"]</option>
+                <option :value="IsCorporation.Unchecked">@T["Unchecked"]</option>
+                <option :value="IsCorporation.Ignored">@T["Ignored"]</option>
             </select>
         </td>
         <td>
@@ -116,7 +116,14 @@
 
     var table = new Vue({
         el: vueQuery,
-        data: { rates: rates },
+        data: {
+            rates: rates,
+            IsCorporation: {
+                Checked: 0,
+                Unchecked: 1,
+                Ignored: 2,
+            }
+        },
     });
 
     document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
