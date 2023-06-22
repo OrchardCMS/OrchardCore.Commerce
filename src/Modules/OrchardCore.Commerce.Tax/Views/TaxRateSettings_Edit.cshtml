@@ -103,16 +103,6 @@
 
 <button id="@addButtonElementId" class="@addButtonElement btn btn-secondary mb-3">@T["Add Row"]</button>
 
-@*<h4>@T["Tax Rates"]</h4>
-
-<div class="mb-3">
-    <label class="custom-control-label" asp-for="@Model.MatchTaxRates">@T["Match Tax Rates"]</label>
-    <select class="form-control" asp-for="@Model.MatchTaxRates" asp-items="Html.GetEnumSelectList<MatchTaxRates>()"></select>
-    <span class="hint">
-        @T["Select whether Tax Rates should be matched against, not matched against, or ignored in cases where buyer is corporation."]
-    </span>
-</div>
-*@
 <style at="Head">
     .taxRateSettings__table tr > :nth-child(1), .taxRateSettings__table tr > :nth-child(2) {
         display: var(--tax-address-display);
