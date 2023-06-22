@@ -6,8 +6,6 @@ public class TaxRateSettings
 {
     public IList<TaxRateSetting> Rates { get; } = new List<TaxRateSetting>();
 
-    //public MatchTaxRates MatchTaxRates { get; set; }
-
     public void CopyFrom(TaxRateSettings other)
     {
         Rates.Clear();
