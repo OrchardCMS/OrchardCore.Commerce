@@ -10,7 +10,7 @@
 <a href="@await Orchard.GetItemDisplayUrlAsync(line.Product.ContentItem)">@line.ProductName</a>
 @if (line.Attributes?.Any() == true)
 {
-    <ul class="cart-product-attributes list-inline">1
+    <ul class="cart-product-attributes list-inline">
         @foreach (var (attribute, type, _) in attributes)
         {
             <shape tag="li"
