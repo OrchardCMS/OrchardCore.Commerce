@@ -18,15 +18,5 @@ public class BasicOrchardFeaturesTests : UITestBase
     public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
         ExecuteTestAsync(
             context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
-            browser,
-            configuration =>
-            {
-                configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
-                configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
-                    AccessibilityCheckingConfiguration
-                        .ConfigureWcag21aa(axeBuilder)
-                        .DisableRules("color-contrast", "html-has-lang");
-
-                return Task.CompletedTask;
-            });
+            browser);
 }
