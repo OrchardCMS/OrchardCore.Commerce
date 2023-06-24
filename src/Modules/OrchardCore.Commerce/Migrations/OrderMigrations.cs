@@ -63,7 +63,7 @@ public class OrderMigrations : DataMigration
                 .WithField(nameof(OrderPart.VatNumber), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("VAT Number")
-                    .WithDescription("The VAT number of the order, in case buyer is corporation."))
+                    .WithDescription("The VAT number of the buyer, in case it's a corporation."))
                 .WithField(nameof(OrderPart.Status), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName(nameof(OrderPart.Status))
@@ -102,7 +102,7 @@ public class OrderMigrations : DataMigration
                     .WithDisplayName("Shipping Address and Billing Address are the same"))
                 .WithField(nameof(OrderPart.IsCorporation), field => field
                     .OfType(nameof(BooleanField))
-                    .WithDisplayName("Buyer is corporation"))
+                    .WithDisplayName("Buyer is a corporation"))
             );
 
         SchemaBuilder
@@ -226,11 +226,11 @@ public class OrderMigrations : DataMigration
             .AlterPartDefinition(nameof(OrderPart), part => part
                 .WithField(nameof(OrderPart.IsCorporation), field => field
                     .OfType(nameof(BooleanField))
-                    .WithDisplayName("Buyer is corporation"))
+                    .WithDisplayName("Buyer is a corporation"))
                 .WithField(nameof(OrderPart.VatNumber), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("VAT Number")
-                    .WithDescription("The VAT number of the order, in case buyer is corporation."))
+                    .WithDescription("The VAT number of the buyer, in case it's a corporation."))
             );
 
         return 6;

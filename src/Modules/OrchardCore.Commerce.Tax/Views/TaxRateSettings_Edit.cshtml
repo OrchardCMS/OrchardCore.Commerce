@@ -68,10 +68,10 @@
         </td>
         <td>
             <select :name="'ISite.Rates[' + index + '].IsCorporation'" v-model="rate.isCorporation">
-                <option :value="IsCorporation.Checked">@T["Checked"]</option>
-                <option :value="IsCorporation.Unchecked">@T["Unchecked"]</option>
-                <option :value="IsCorporation.Ignored">@T["Ignored"]</option>
-            </select>
+                <option value="@((int)MatchTaxRates.Ignored)">@T["Ignored"]</option>
+                <option value="@((int)MatchTaxRates.Checked)">@T["Checked"]</option>
+                <option value="@((int)MatchTaxRates.Unchecked)">@T["Unchecked"]</option>
+           </select>
         </td>
         <td>
             <div class="d-flex flex-row">
@@ -116,14 +116,7 @@
 
     var table = new Vue({
         el: vueQuery,
-        data: {
-            rates: rates,
-            IsCorporation: {
-                Checked: 0,
-                Unchecked: 1,
-                Ignored: 2,
-            }
-        },
+        data: { rates: rates },
     });
 
     document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
