@@ -18,7 +18,9 @@ public record PromotionAndTaxProviderContext(
     Address ShippingAddress,
     Address BillingAddress,
     DateTime? PurchaseDateTime = null,
-    bool Stored = false)
+    string VatNumber = null,
+    bool Stored = false,
+    bool IsCorporation = false)
 {
     public PromotionAndTaxProviderContext(
         IEnumerable<ShoppingCartLineViewModel> lines,

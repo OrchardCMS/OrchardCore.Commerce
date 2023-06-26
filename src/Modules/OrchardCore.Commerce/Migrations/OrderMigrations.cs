@@ -60,6 +60,10 @@ public class OrderMigrations : DataMigration
                     .OfType(nameof(TextField))
                     .WithDisplayName("Order Id")
                     .WithDescription("The id of the order."))
+                .WithField(nameof(OrderPart.VatNumber), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("VAT Number")
+                    .WithDescription("The VAT number of the buyer, in case it's a corporation."))
                 .WithField(nameof(OrderPart.Status), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName(nameof(OrderPart.Status))
@@ -96,6 +100,9 @@ public class OrderMigrations : DataMigration
                 .WithField(nameof(OrderPart.BillingAndShippingAddressesMatch), field => field
                     .OfType(nameof(BooleanField))
                     .WithDisplayName("Shipping Address and Billing Address are the same"))
+                .WithField(nameof(OrderPart.IsCorporation), field => field
+                    .OfType(nameof(BooleanField))
+                    .WithDisplayName("Buyer is a corporation"))
             );
 
         SchemaBuilder
@@ -103,7 +110,7 @@ public class OrderMigrations : DataMigration
                 .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
                 .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
-        return 5;
+        return 6;
     }
 
     public int UpdateFrom1()
@@ -211,5 +218,21 @@ public class OrderMigrations : DataMigration
                 .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
         return 5;
+    }
+
+    public int UpdateFrom5()
+    {
+        _contentDefinitionManager
+            .AlterPartDefinition(nameof(OrderPart), part => part
+                .WithField(nameof(OrderPart.IsCorporation), field => field
+                    .OfType(nameof(BooleanField))
+                    .WithDisplayName("Buyer is a corporation"))
+                .WithField(nameof(OrderPart.VatNumber), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName("VAT Number")
+                    .WithDescription("The VAT number of the buyer, in case it's a corporation."))
+            );
+
+        return 6;
     }
 }

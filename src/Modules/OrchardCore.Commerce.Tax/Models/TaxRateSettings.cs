@@ -21,8 +21,18 @@ public class TaxRateSetting
     public string DestinationProvince { get; set; }
     public string DestinationPostalCode { get; set; }
     public string DestinationRegion { get; set; }
+    public string VatNumber { get; set; }
 
     public string TaxCode { get; set; }
 
+    public MatchTaxRates IsCorporation { get; set; }
+
     public decimal TaxRate { get; set; }
+}
+
+public enum MatchTaxRates
+{
+    Ignored,
+    Checked,
+    Unchecked,
 }

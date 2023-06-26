@@ -192,7 +192,7 @@ public class PaymentController : Controller
             return RedirectToAction(nameof(Success), new { orderId });
         }
 
-        var errorMessage = H["The payment failed please try again."];
+        var errorMessage = H["The payment failed, please try again."];
         if (status == OrderStatuses.PaymentFailed.HtmlClassify())
         {
             await _notifier.ErrorAsync(errorMessage);

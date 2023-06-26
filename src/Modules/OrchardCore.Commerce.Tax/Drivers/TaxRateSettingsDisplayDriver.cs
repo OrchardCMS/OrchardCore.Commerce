@@ -62,6 +62,7 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
                 Validate(context, rate.DestinationProvince);
                 Validate(context, rate.DestinationPostalCode);
                 Validate(context, rate.DestinationRegion);
+                Validate(context, rate.VatNumber);
 
                 Validate(context, rate.TaxCode);
             }
@@ -78,6 +79,7 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
                         string.IsNullOrEmpty(rate.DestinationProvince) &&
                         string.IsNullOrEmpty(rate.DestinationPostalCode) &&
                         string.IsNullOrEmpty(rate.DestinationRegion) &&
+                        string.IsNullOrEmpty(rate.VatNumber) &&
                         string.IsNullOrEmpty(rate.TaxCode))
                     .ToList()
                     .ForEach(rate => section.Rates.Remove(rate));
