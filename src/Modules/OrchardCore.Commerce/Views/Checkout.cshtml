@@ -22,6 +22,22 @@
                 <label asp-for="OrderPart.Phone.Text">@T["Phone Number *"]</label>
                 <input asp-for="OrderPart.Phone.Text" class="form-control content-preview-text" required />
             </div>
+            <div class="mb-3">
+                <label asp-for="OrderPart.VatNumber.Text">@T["VAT Number"]</label>
+                <input asp-for="OrderPart.VatNumber.Text" class="form-control content-preview-text" />
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox"
+                           asp-for="OrderPart.IsCorporation.Value"
+                           class="form-check-input content-preview-select">
+                    <label asp-for="OrderPart.IsCorporation.Value" class="form-check-label">
+                        @T["Buyer is a corporation"]
+                    </label>
+                </div>
+            </div>
+
             <div class="address address_billing-address">
                 <h3 class="address__title">@T["Billing Address"]</h3>
 

@@ -27,6 +27,8 @@
             "DestinationStreetAddress1": null,
             "DestinationStreetAddress2": null,
             "TaxCode": null,
+            "VatNumber": null,
+            "IsCorporation": 2,
             "TaxRate": 25.0
           },
           {
@@ -37,6 +39,8 @@
             "DestinationStreetAddress1": null,
             "DestinationStreetAddress2": null,
             "TaxCode": null,
+            "VatNumber": null,
+            "IsCorporation": 2,
             "TaxRate": 6.625
           },
           {
@@ -47,6 +51,8 @@
             "DestinationStreetAddress1": null,
             "DestinationStreetAddress2": null,
             "TaxCode": null,
+            "VatNumber": null,
+            "IsCorporation": 2,
             "TaxRate": 4.0
           }
         ]

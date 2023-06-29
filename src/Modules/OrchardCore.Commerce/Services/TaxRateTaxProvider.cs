@@ -34,7 +34,9 @@ public class TaxRateTaxProvider : ITaxProvider
                 var taxRate = MatchTaxRate(
                     taxRates.Rates,
                     model.ShippingAddress,
-                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text);
+                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text,
+                    model.VatNumber,
+                    model.IsCorporation);
                 var multiplier = (taxRate / 100m) + 1;
                 return item with { UnitPrice = item.UnitPrice * multiplier };
             })
@@ -54,7 +56,9 @@ public class TaxRateTaxProvider : ITaxProvider
                 MatchTaxRate(
                     taxRates.Rates,
                     model.ShippingAddress,
-                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text) > 0);
+                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text,
+                    model.VatNumber,
+                    model.IsCorporation) > 0);
         });
 
     private static bool IsMatchingOrEmptyPattern(string pattern, string text) =>
@@ -63,18 +67,33 @@ public class TaxRateTaxProvider : ITaxProvider
     private static decimal MatchTaxRate(
         IEnumerable<TaxRateSetting> taxRates,
         Address destinationAddress,
-        string taxCode)
+        string taxCode,
+        string vatNumber,
+        bool buyerIsCorporation)
     {
         destinationAddress ??= new Address();
 
         var matchingTaxRate = taxRates.FirstOrDefault(rate =>
-            IsMatchingOrEmptyPattern(rate.DestinationStreetAddress1, destinationAddress.StreetAddress1) &&
-            IsMatchingOrEmptyPattern(rate.DestinationStreetAddress2, destinationAddress.StreetAddress2) &&
-            IsMatchingOrEmptyPattern(rate.DestinationCity, destinationAddress.City) &&
-            IsMatchingOrEmptyPattern(rate.DestinationProvince, destinationAddress.Province) &&
-            IsMatchingOrEmptyPattern(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
-            IsMatchingOrEmptyPattern(rate.DestinationRegion, destinationAddress.Region) &&
-            IsMatchingOrEmptyPattern(rate.TaxCode, taxCode));
+        {
+            var shouldMatchTaxRate = rate.IsCorporation switch
+            {
+                MatchTaxRates.Checked => buyerIsCorporation,
+                MatchTaxRates.Unchecked => !buyerIsCorporation,
+                MatchTaxRates.Ignored => true,
+                _ => true,
+            };
+
+            return shouldMatchTaxRate &&
+                IsMatchingOrEmptyPattern(rate.DestinationStreetAddress1, destinationAddress.StreetAddress1) &&
+                IsMatchingOrEmptyPattern(rate.DestinationStreetAddress2, destinationAddress.StreetAddress2) &&
+                IsMatchingOrEmptyPattern(rate.DestinationCity, destinationAddress.City) &&
+                IsMatchingOrEmptyPattern(rate.DestinationProvince, destinationAddress.Province) &&
+                IsMatchingOrEmptyPattern(rate.DestinationPostalCode, destinationAddress.PostalCode) &&
+                IsMatchingOrEmptyPattern(rate.DestinationRegion, destinationAddress.Region) &&
+                IsMatchingOrEmptyPattern(rate.VatNumber, vatNumber) &&
+                IsMatchingOrEmptyPattern(rate.TaxCode, taxCode);
+        });
+
         return matchingTaxRate?.TaxRate ?? 0;
     }
 }
