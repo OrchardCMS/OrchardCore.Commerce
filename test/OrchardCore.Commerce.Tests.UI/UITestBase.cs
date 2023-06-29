@@ -35,8 +35,6 @@ public class UITestBase : OrchardCoreUITestBase<Program>
                         .ConfigureWcag21aa(axeBuilder)
                         .DisableRules("color-contrast");
 
-                configuration.UseSqlServer = true;
-
                 if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
             });
 }
