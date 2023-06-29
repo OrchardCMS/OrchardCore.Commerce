@@ -30,11 +30,6 @@ public class UITestBase : OrchardCoreUITestBase<Program>
             async configuration =>
             {
                 configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
-                configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
-                    AccessibilityCheckingConfiguration
-                        .ConfigureWcag21aa(axeBuilder)
-                        .DisableRules("color-contrast", "html-has-lang");
-
                 configuration.UseSqlServer = true;
 
                 if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
