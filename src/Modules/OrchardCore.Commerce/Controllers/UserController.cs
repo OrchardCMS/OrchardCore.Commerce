@@ -132,7 +132,7 @@ public class UserController : Controller
         var contentItem = user.As<ContentItem>(contentType);
 
         return string.IsNullOrEmpty(contentItem?.ContentType)
-            ? await _contentManager.NewAsync(UserAddresses)
+            ? await _contentManager.NewAsync(contentType)
             : contentItem;
     }
 }
