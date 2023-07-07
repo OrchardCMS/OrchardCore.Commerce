@@ -16,4 +16,10 @@ public static class UserManagerExtensions
     /// </summary>
     public static async Task<UserAddressesPart> GetUserAddressAsync(this UserManager<IUser> userManager, ClaimsPrincipal principal) =>
         await userManager.GetUserAsync(principal) is User user ? user.As<ContentItem>(UserAddresses)?.As<UserAddressesPart>() : null;
+
+    /// <summary>
+    /// Returns the custom user setting of <see cref="UserDetailsPart"/> for the given <paramref name="principal"/>.
+    /// </summary>
+    public static async Task<UserDetailsPart> GetUserDetailsAsync(this UserManager<IUser> userManager, ClaimsPrincipal principal) =>
+        await userManager.GetUserAsync(principal) is User user ? user.As<ContentItem>(UserDetails)?.As<UserDetailsPart>() : null;
 }
