@@ -190,7 +190,7 @@ public class Startup : StartupBase
             })
             // Liquid filter to convert JToken value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
-            // Liquid filter to create AddressFiledEditorViewModel.
+            // Liquid filter to create AddressFieldEditorViewModel.
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
             // Liquid filter to create OrderLineItemViewModels.
             .AddLiquidFilter<OrderLineItemViewModelsAndTaxRatesConverterFilter>("order_line_item_view_models_and_tax_rates");
@@ -304,6 +304,10 @@ public class UserSettingsStartup : StartupBase
         services
             .AddContentPart<UserAddressesPart>()
             .WithMigration<UserAddressesMigrations>();
+
+        services
+            .AddContentPart<UserDetailsPart>()
+            .WithMigration<UserDetailsMigrations>();
 
         services.AddScoped<IDisplayDriver<User>, UserAddressesUserDisplayDriver>();
     }
