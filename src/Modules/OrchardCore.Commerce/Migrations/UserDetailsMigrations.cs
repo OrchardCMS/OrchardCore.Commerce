@@ -19,8 +19,7 @@ public class UserDetailsMigrations : DataMigration
             .AlterPartDefinition<UserDetailsPart>(builder => builder
                 .WithField(part => part.PhoneNumber, field => field.WithDisplayName("Phone Number"))
                 .WithField(part => part.VatNumber, field => field.WithDisplayName("VAT Number"))
-                .WithField(part => part.IsCorporation, field => field
-                    .WithDisplayName("User is a corporation")));
+                .WithField(part => part.IsCorporation, field => field.WithDisplayName("User is a corporation")));
 
         _contentDefinitionManager
             .AlterTypeDefinition(UserDetails, builder => builder
