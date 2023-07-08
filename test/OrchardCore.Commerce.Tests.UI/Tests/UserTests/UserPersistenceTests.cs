@@ -86,7 +86,7 @@ public class UserPersistenceTests : UITestBase
                 context.ShouldBeSuccess("Your addresses have been updated.");
 
                 const string getInputsScript = @"return JSON.stringify(
-                    Array.from(document.querySelectorAll('form[action=\'/user/addresses\'] input, form[action=\'/user/addresses\'] select'))
+                    Array.from(document.querySelectorAll(`form[action='/user/addresses'] input, form[action='/user/addresses'] select`))
                         .map((element) => element.value))";
                 var inputs = JsonConvert.DeserializeObject<string[]>(
                         context.ExecuteScript(getInputsScript).ToString()!);
@@ -138,7 +138,7 @@ public class UserPersistenceTests : UITestBase
                 context.ShouldBeSuccess("Your details have been updated.");
 
                 const string getInputsScript = @"return JSON.stringify(
-                    Array.from(document.querySelectorAll('form[action=\'/user/details\'] input, form[action=\'/user/details\'] select'))
+                    Array.from(document.querySelectorAll(`form[action='/user/details'] input, form[action='/user/details'] select`))
                         .map((element) => element.value))";
                 var inputs = JsonConvert.DeserializeObject<string[]>(
                         context.ExecuteScript(getInputsScript).ToString()!);

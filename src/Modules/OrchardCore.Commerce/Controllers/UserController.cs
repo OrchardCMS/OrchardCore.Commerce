@@ -80,7 +80,7 @@ public class UserController : Controller
         else
         {
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
-            foreach (var error in errors.WhereNot(string.IsNullOrEmpty)) await _notifier.ErrorAsync(H[error]);
+            foreach (var error in errors.WhereNot(string.IsNullOrEmpty)) await _notifier.ErrorAsync(H["{0}", error]);
         }
 
         return RedirectToAction(nameof(Addresses));
@@ -121,7 +121,7 @@ public class UserController : Controller
         else
         {
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages();
-            foreach (var error in errors.WhereNot(string.IsNullOrEmpty)) await _notifier.ErrorAsync(H[error]);
+            foreach (var error in errors.WhereNot(string.IsNullOrEmpty)) await _notifier.ErrorAsync(H["{0}", error]);
         }
 
         return RedirectToAction(nameof(Details));
