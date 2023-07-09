@@ -12,6 +12,9 @@ public static class HttpContextExtensions
     public static Task<UserAddressesPart> GetUserAddressAsync(this HttpContext context) =>
         context.RequestServices.GetRequiredService<UserManager<IUser>>().GetUserAddressAsync(context.User);
 
+    public static Task<UserDetailsPart> GetUserDetailsAsync(this HttpContext context) =>
+        context.RequestServices.GetRequiredService<UserManager<IUser>>().GetUserDetailsAsync(context.User);
+
     public static async Task<(Address Shipping, Address Billing)> GetUserAddressIfNullAsync(
         this HttpContext httpContext,
         Address shipping,

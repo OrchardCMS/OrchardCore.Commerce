@@ -28,6 +28,9 @@ public class UserPersistenceTests : UITestBase
     private const string BillingCountryCode = "US";
     private const string BillingStateCode = "GA";
 
+    private const string PhoneNumber = "(024) 2147878 ";
+    private const string VatNumber = "BE09999999XX";
+
     public UserPersistenceTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
@@ -83,7 +86,7 @@ public class UserPersistenceTests : UITestBase
                 context.ShouldBeSuccess("Your addresses have been updated.");
 
                 const string getInputsScript = @"return JSON.stringify(
-                    Array.from(document.querySelectorAll('form[action=\'/user/addresses\'] input, form[action=\'/user/addresses\'] select'))
+                    Array.from(document.querySelectorAll(`form[action='/user/addresses'] input, form[action='/user/addresses'] select`))
                         .map((element) => element.value))";
                 var inputs = JsonConvert.DeserializeObject<string[]>(
                         context.ExecuteScript(getInputsScript).ToString()!);
@@ -116,21 +119,47 @@ public class UserPersistenceTests : UITestBase
             browser);
 
     [Theory, Chrome]
+    public Task UserDetailsEditorShouldPersist(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                await context.SignInDirectlyAsync();
+                await context.GoToRelativeUrlAsync("/user/details");
+
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("UserDetailsPart_PhoneNumber_Text"),
+                    PhoneNumber);
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("UserDetailsPart_VatNumber_Text"),
+                    VatNumber);
+                await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'User is a corporation')]"));
+
+                await context.ClickReliablyOnSubmitAsync();
+                context.ShouldBeSuccess("Your details have been updated.");
+
+                const string getInputsScript = @"return JSON.stringify(
+                    Array.from(document.querySelectorAll(`form[action='/user/details'] input, form[action='/user/details'] select`))
+                        .map((element) => element.value))";
+                var inputs = JsonConvert.DeserializeObject<string[]>(
+                        context.ExecuteScript(getInputsScript).ToString()!);
+                inputs.ShouldNotBeNull();
+                inputs
+                    .Take(3)
+                    .ToArray()
+                    .ShouldBe(new[]
+                    {
+                        PhoneNumber,
+                        VatNumber,
+                        "true",
+                    });
+            },
+            browser);
+
+    [Theory, Chrome]
     public Task AdminUserEditorShouldSaveWithoutFullyFilledUserAddresses(Browser browser) =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
-                async Task SubmitAndGoToUserAddressesAsync()
-                {
-                    await context.ClickReliablyOnSubmitAsync();
-                    context.ShouldBeSuccess();
-
-                    await context.ClickReliablyOnAsync(By.XPath(
-                        "//li[contains(@class, 'list-group-item')][.//h5[contains(., 'TestUser')]]" +
-                        "//a[contains(@class, 'btn-primary') and contains(., 'Edit')]"));
-                    await context.GoToEditorTabAsync("User Addresses");
-                }
-
                 await context.SignInDirectlyAsync();
                 await context.GoToRelativeUrlAsync("/Admin/Users/Create");
 
@@ -138,7 +167,7 @@ public class UserPersistenceTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(By.Id("User_Email"), "test@example.com");
                 await context.ClickReliablyOnAsync(By.ClassName("password-generator-button"));
 
-                await SubmitAndGoToUserAddressesAsync();
+                await SubmitAndGoToUserTabAsync(context, "User Addresses");
 
                 const string testCustomerName = "Test Customer Name";
                 await context.ClickAndFillInWithRetriesAsync(
@@ -148,7 +177,7 @@ public class UserPersistenceTests : UITestBase
                     By.Id("User_UserAddressesPart_BillingAndShippingAddressesMatch_Value"),
                     isChecked: true);
 
-                await SubmitAndGoToUserAddressesAsync();
+                await SubmitAndGoToUserTabAsync(context, "User Addresses");
 
                 context
                     .Get(By.Id("User_UserAddressesPart_ShippingAddress_Address_Name").OfAnyVisibility())
@@ -157,4 +186,51 @@ public class UserPersistenceTests : UITestBase
                     .ShouldBe(testCustomerName);
             },
             browser);
+
+    [Theory, Chrome]
+    public Task PartiallyFilledUserDetailsShouldPersistInAdminUserEditor(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                await context.SignInDirectlyAsync();
+                await context.GoToRelativeUrlAsync("/Admin/Users/Create");
+
+                await context.ClickAndFillInWithRetriesAsync(By.Id("User_UserName"), "TestUser");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("User_Email"), "test@example.com");
+                await context.ClickReliablyOnAsync(By.ClassName("password-generator-button"));
+
+                await SubmitAndGoToUserTabAsync(context, "User Details");
+
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("User_UserDetailsPart_PhoneNumber_Text"),
+                    PhoneNumber);
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("User_UserDetailsPart_VatNumber_Text"),
+                    VatNumber);
+
+                await SubmitAndGoToUserTabAsync(context, "User Details");
+
+                context
+                    .Get(By.Id("User_UserDetailsPart_PhoneNumber_Text").OfAnyVisibility())
+                    .GetAttribute("value")?
+                    .ShouldBe(PhoneNumber);
+
+                context
+                    .Get(By.Id("User_UserDetailsPart_VatNumber_Text").OfAnyVisibility())
+                    .GetAttribute("value")?
+                    .Trim()
+                    .ShouldBe(VatNumber);
+            },
+            browser);
+
+    private static async Task SubmitAndGoToUserTabAsync(UITestContext context, string tabName)
+    {
+        await context.ClickReliablyOnSubmitAsync();
+        context.ShouldBeSuccess();
+
+        await context.ClickReliablyOnAsync(By.XPath(
+            "//li[contains(@class, 'list-group-item')][.//h5[contains(., 'TestUser')]]" +
+            "//a[contains(@class, 'btn-primary') and contains(., 'Edit')]"));
+        await context.GoToEditorTabAsync(tabName);
+    }
 }

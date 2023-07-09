@@ -76,6 +76,13 @@ public class PaymentService : IPaymentService
             orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
         }
 
+        if (await _hca.HttpContext.GetUserDetailsAsync() is { } userDetails)
+        {
+            orderPart.Phone.Text = userDetails.PhoneNumber.Text;
+            orderPart.VatNumber.Text = userDetails.VatNumber.Text;
+            orderPart.IsCorporation.Value = userDetails.IsCorporation.Value;
+        }
+
         var email = _hca.HttpContext?.User is { Identity.IsAuthenticated: true } user
             ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(user))
             : string.Empty;
