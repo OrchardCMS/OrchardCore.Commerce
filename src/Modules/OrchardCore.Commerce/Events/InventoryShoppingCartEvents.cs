@@ -25,6 +25,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
     public override async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item)
     {
         // If the product doesn't have InventoryPart then this event is not applicable.
+            // also add Price Variants Product?
         if (await _productService.GetProductAsync(item.ProductSku) is not { } product ||
             product.As<InventoryPart>() is not { } inventoryPart)
         {
@@ -32,6 +33,9 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         }
 
         var title = product.ContentItem.DisplayText;
+
+        // check the inventory of the item in question
+            // using ProductSku property?
 
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.
         if (!inventoryPart.AllowsBackOrder.Value && item.Quantity > inventoryPart.Inventory.Value)

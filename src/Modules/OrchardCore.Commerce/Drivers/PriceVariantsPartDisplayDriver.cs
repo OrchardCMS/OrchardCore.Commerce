@@ -76,6 +76,9 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 
     private void BuildViewModel(PriceVariantsPartViewModel model, PriceVariantsPart part)
     {
+        // need to check inventories here and set CanBeBought to false if all inventories are empty
+            // or also handle individually per inventory?
+
         model.ContentItem = part.ContentItem;
         model.PriceVariantsPart = part;
 

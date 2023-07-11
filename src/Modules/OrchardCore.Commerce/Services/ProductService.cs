@@ -46,6 +46,15 @@ public class ProductService : IProductService
         return FillContentItemsAndGetProductParts(contentItems);
     }
 
+    // The dictionary key should be the product full SKU, so the base SKU and ShoppingCartItem.GetVariantKeyFromAttributes(attributes)
+    // separated by a dash, if it's not null or empty.
+    public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart)
+    {
+        // is productPart.Sku the same as item.ProductSku?
+        var fullSku = productPart.Sku + "-" + item.GetVariantKeyFromAttributes((ISet<string>)item.Attributes); // won't work
+        return fullSku;
+    }
+
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)
     {
         // There is no GetVersionAsync that accepts a collection.

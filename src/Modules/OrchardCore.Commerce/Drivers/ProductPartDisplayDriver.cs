@@ -57,6 +57,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         model.Sku = part.Sku;
         model.ProductPart = part;
 
+        // needs to check inventory dictionary. Only the first item though, as products only have 1 inventory
         if (part.As<InventoryPart>() is { } inventoryPart &&
             !inventoryPart.AllowsBackOrder.Value &&
             inventoryPart.Inventory.Value < 1)
