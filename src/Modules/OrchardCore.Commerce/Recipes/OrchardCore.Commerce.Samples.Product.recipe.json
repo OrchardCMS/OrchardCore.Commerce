@@ -46,6 +46,34 @@
               }
             }
           },
+          "InventoryPart": {
+            "AllowsBackOrder": {
+              "Value": true
+            },
+            "IgnoreInventory": {
+              "Value": false
+            },
+
+            "Inventory": {
+              "Value": 5.0
+            },
+
+            "Inventoree": {
+              "TESTPRODUCTVARIANT-SMALL": 5,
+              "TESTPRODUCTVARIANT-MEDIUM": 10,
+              "TESTPRODUCTVARIANT-LARGE": 15
+            },
+
+            "MaximumOrderQuantity": {
+              "Value": 2.0
+            },
+            "MinimumOrderQuantity": {
+              "Value": 1.0
+            },
+            "OutOfStockMessage": {
+              "Html": "A professional out of stock message."
+            }
+          },
           "ProductPart": {
             "Sku": "TESTPRODUCTVARIANT"
           }
@@ -91,9 +119,15 @@
             "IgnoreInventory": {
               "Value": false
             },
+
             "Inventory": {
               "Value": 5.0
             },
+
+            "Inventoree": {
+              "Default": 5
+            },
+
             "MaximumOrderQuantity": {
               "Value": 2.0
             },
