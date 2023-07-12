@@ -26,14 +26,20 @@ else if (settings.MultipleValues)
         {
             var optionId = $"{id}-{optionIndex}";
             optionIndex++;
-            <li>
-                <input id="optionId"
-                       type="checkbox"
-                       name="line.Attributes[@index].Value"
-                       checked="@(predefinedValue == settings.DefaultValue)"
-                       class="form-check-input" />
-                <label for="@optionId" class="form-check-label">@predefinedValue</label>
-            </li>
+
+            var fullSku = Model.Sku + "-" + predefinedValue.ToUpperInvariant();
+            var variantIsAvailable = (bool)Model.CanBeBought[fullSku];
+            if (variantIsAvailable)
+            {
+                <li>
+                    <input id="optionId"
+                           type="checkbox"
+                           name="line.Attributes[@index].Value"
+                           checked="@(predefinedValue == settings.DefaultValue)"
+                           class="form-check-input" />
+                    <label for="@optionId" class="form-check-label">@predefinedValue</label>
+                </li>                
+            }
         }
     </ul>
 }
@@ -44,7 +50,12 @@ else if (settings.RestrictToPredefinedValues)
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
-                <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
+                var fullSku = Model.Sku + "-" + predefinedValue.ToUpperInvariant();
+                var variantIsAvailable = (bool)Model.CanBeBought[fullSku];
+                if (variantIsAvailable)
+                {
+                    <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
+                }
             }
         </select>
     }
@@ -55,15 +66,21 @@ else if (settings.RestrictToPredefinedValues)
             {
                 var optionId = $"{id}-{optionIndex}";
                 optionIndex++;
-                <li>
-                    <input id="@optionId"
-                           type="radio"
-                           name="line.Attributes[@index].Value"
-                           value="@predefinedValue"
-                           checked="@(predefinedValue == settings.DefaultValue)"
-                           class="form-check-input" />
-                    <label for="@optionId" class="form-check-label">@predefinedValue</label>
-                </li>
+
+                var fullSku = Model.Sku + "-" + predefinedValue.ToUpperInvariant();
+                var variantIsAvailable = (bool)Model.CanBeBought[fullSku];
+                if (variantIsAvailable)
+                {
+                    <li>
+                        <input id="@optionId"
+                               type="radio"
+                               name="line.Attributes[@index].Value"
+                               value="@predefinedValue"
+                               checked="@(predefinedValue == settings.DefaultValue)"
+                               class="form-check-input" />
+                        <label for="@optionId" class="form-check-label">@predefinedValue</label>
+                    </li>   
+                }
             }
         </ul>
     }
