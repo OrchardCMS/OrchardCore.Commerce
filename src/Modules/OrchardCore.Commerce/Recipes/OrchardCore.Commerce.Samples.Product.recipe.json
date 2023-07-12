@@ -125,7 +125,7 @@
             },
 
             "Inventoree": {
-              "Default": 5
+              "DEFAULT": 5
             },
 
             "MaximumOrderQuantity": {

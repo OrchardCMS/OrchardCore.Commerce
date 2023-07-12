@@ -35,17 +35,21 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
     public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model) => Task.FromResult(true);
 
-    // maybe make new method QueryAllInventoriesAsync() to query all inventories
+    public async Task<IDictionary<string, int>> QueryAllInventoriesAsync(string sku)
+    {
+        var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
+        return inventoryPart?.Inventoree;
+    }
 
-    // needs to return dictionary? Or should it only query one specific inventory instead of all?
-        // if this remains, it should be QueryProductInventory
-    public async Task<int> QueryInventoryAsync(string sku)
+    public async Task<int> QueryInventoryAsync(string sku, string fullSku = null)
     {
         var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
 
-        var inventoree = inventoryPart?.Inventoree.FirstOrDefault();
+        // If fullSku is specified, look for Price Variant Product's inventory.
+        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku.ToUpperInvariant();
+        var relevantInventory = inventoryPart?.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
-        return inventoryPart?.Inventory.Value is { } inventory ? (int)inventory : 0;
+        return relevantInventory is { } inventory ? inventory.Value : 0;
     }
 
     public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
@@ -73,41 +77,28 @@ public class LocalInventoryProvider : IProductInventoryProvider
         return model;
     }
 
-    private async Task UpdateInventoryAsync(ProductPart productPart, int difference, string fullSku = null) // also needs dictionary key?
+    private async Task UpdateInventoryAsync(ProductPart productPart, int difference, string fullSku = null)
     {
         await _lock.WaitAsync();
 
         try
         {
-            var inventoryPart = productPart.As<InventoryPart>(); // this contains inventory of both regular products and pricevariant products
+            var inventoryPart = productPart.As<InventoryPart>();
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
-            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "Default" : fullSku;
+            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku.ToUpperInvariant();
+            var relevantInventory = inventoryPart?.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
-            var relevantInventory = inventoryPart.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
-            var newValue = relevantInventory.Value + difference; // rename
+            var newValue = relevantInventory.Value.Value + difference;
             if (newValue < 0)
             {
                 throw new InvalidOperationException("Inventory value cannot be negative.");
             }
 
-            var newEntry = new KeyValuePair<string, int>(relevantInventory.Key, newValue);
+            var newEntry = new KeyValuePair<string, int>(relevantInventory.Value.Key, newValue);
 
             inventoryPart.Inventoree.Remove(inventoryIdentifier);
             inventoryPart.Inventoree.Add(newEntry);
-
-
-            // old
-            var oldnewValue = ((int)inventoryPart.Inventory.Value) + difference;
-            if (oldnewValue < 0)
-            {
-                throw new InvalidOperationException("Inventory value cannot be negative.");
-            }
-
-            inventoryPart.Inventory.Value = oldnewValue;
-            // /old
-
-
             inventoryPart.Apply();
 
             _session.Save(productPart.ContentItem);
