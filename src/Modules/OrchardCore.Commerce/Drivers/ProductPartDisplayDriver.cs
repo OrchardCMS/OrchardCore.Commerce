@@ -57,12 +57,14 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         model.Sku = part.Sku;
         model.ProductPart = part;
 
-        // needs to check inventory dictionary. Only the first item though, as products only have 1 inventory
-        if (part.As<InventoryPart>() is { } inventoryPart &&
-            !inventoryPart.AllowsBackOrder.Value &&
-            inventoryPart.Inventory.Value < 1)
+        if (part.As<InventoryPart>() is { } inventoryPart)
         {
-            model.CanBeBought = false;
+            foreach (var inventory in inventoryPart.Inventoree)
+            {
+                // If an inventory's value is below 1 and back ordering is not allowed, corresponding
+                // CanBeBought entry needs to be set to false, should be set to true otherwise.
+                model.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+            }
         }
 
         model.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);

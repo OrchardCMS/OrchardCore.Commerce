@@ -19,5 +19,6 @@ public class ProductPartViewModel
     public IEnumerable<ProductAttributeDescription> Attributes { get; set; }
 
     [BindNever]
-    public bool CanBeBought { get; set; } = true;
+    //public bool CanBeBought { get; set; } = true;
+    public IDictionary<string, bool> CanBeBought { get; private set; } = new Dictionary<string, bool>();
 }
