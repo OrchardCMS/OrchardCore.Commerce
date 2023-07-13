@@ -18,15 +18,18 @@ public class ProductService : IProductService
     private readonly ISession _session;
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
 
     public ProductService(
         ISession session,
         IContentManager contentManager,
-        IContentDefinitionManager contentDefinitionManager)
+        IContentDefinitionManager contentDefinitionManager,
+        IPredefinedValuesProductAttributeService predefinedValuesService)
     {
         _session = session;
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
+        _predefinedValuesService = predefinedValuesService;
     }
 
     public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
@@ -46,13 +49,19 @@ public class ProductService : IProductService
         return FillContentItemsAndGetProductParts(contentItems);
     }
 
-    // The dictionary key should be the product full SKU, so the base SKU and ShoppingCartItem.GetVariantKeyFromAttributes(attributes)
-    // separated by a dash, if it's not null or empty.
     public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart)
     {
-        // is productPart.Sku the same as item.ProductSku?
-        var fullSku = productPart.Sku + "-" + item.GetVariantKeyFromAttributes((ISet<string>)item.Attributes); // won't work
-        return fullSku;
+        var attributesRestrictedToPredefinedValues = _predefinedValuesService
+            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
+            .Select(attr => attr.PartName + "." + attr.Name)
+            .ToHashSet();
+
+        var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
+        var fullSku = item.Attributes.Any()
+            ? item.ProductSku + "-" + variantKey
+            : string.Empty;
+
+        return fullSku.ToUpperInvariant();
     }
 
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)

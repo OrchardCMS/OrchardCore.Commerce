@@ -18,17 +18,14 @@ public class LocalInventoryProvider : IProductInventoryProvider
 {
     private readonly IProductService _productService;
     private readonly ISession _session;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
     private static readonly SemaphoreSlim _lock = new(initialCount: 1);
 
     public LocalInventoryProvider(
         IProductService productService,
-        ISession session,
-        IPredefinedValuesProductAttributeService predefinedValuesService)
+        ISession session)
     {
         _productService = productService;
         _session = session;
-        _predefinedValuesService = predefinedValuesService;
     }
 
     public int Order => 0;
@@ -57,15 +54,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
         foreach (var item in model)
         {
             var productPart = await _productService.GetProductAsync(item.ProductSku);
-            var attributesRestrictedToPredefinedValues = _predefinedValuesService
-                .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
-                .Select(attr => attr.PartName + "." + attr.Name)
-                .ToHashSet();
-
-            var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
-            var fullSku = item.Attributes.Any()
-                ? item.ProductSku + "-" + variantKey
-                : string.Empty;
+            var fullSku = _productService.GetOrderFullSku(item, productPart);
 
             await UpdateInventoryAsync(
                 await _productService.GetProductAsync(item.ProductSku),
@@ -85,7 +74,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
             var inventoryPart = productPart.As<InventoryPart>();
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
-            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku.ToUpperInvariant();
+            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku;
             var relevantInventory = inventoryPart?.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
             var newValue = relevantInventory.Value.Value + difference;

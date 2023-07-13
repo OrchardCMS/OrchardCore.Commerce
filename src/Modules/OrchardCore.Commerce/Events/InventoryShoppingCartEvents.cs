@@ -12,16 +12,13 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
 {
     private readonly IProductService _productService;
     private readonly IHtmlLocalizer<InventoryShoppingCartEvents> H;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
 
     public InventoryShoppingCartEvents(
         IProductService productService,
-        IHtmlLocalizer<InventoryShoppingCartEvents> localizer,
-        IPredefinedValuesProductAttributeService predefinedValuesService)
+        IHtmlLocalizer<InventoryShoppingCartEvents> localizer)
     {
         _productService = productService;
         H = localizer;
-        _predefinedValuesService = predefinedValuesService;
     }
 
     public override int Order => 0;
@@ -42,18 +39,9 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         }
 
         var title = productPart.ContentItem.DisplayText;
+        var fullSku = _productService.GetOrderFullSku(item, productPart);
 
-        var attributesRestrictedToPredefinedValues = _predefinedValuesService
-            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
-            .Select(attr => attr.PartName + "." + attr.Name)
-            .ToHashSet();
-
-        var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
-        var fullSku = item.Attributes.Any()
-            ? item.ProductSku + "-" + variantKey
-            : string.Empty;
-
-        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku.ToUpperInvariant();
+        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku;
         var relevantInventory = inventoryPart.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.

@@ -26,6 +26,9 @@ public interface IProductService
 
     // The dictionary key should be the product full SKU, so the base SKU and ShoppingCartItem.GetVariantKeyFromAttributes(attributes)
     // separated by a dash, if it's not null or empty.
+    /// <summary>
+    /// Returns the full SKU of a Price Variant Product's variant.
+    /// </summary>
     string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart);
 
     /// <summary>
