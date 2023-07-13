@@ -35,7 +35,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
     public async Task<IDictionary<string, int>> QueryAllInventoriesAsync(string sku)
     {
         var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
-        return inventoryPart?.Inventoree;
+        return inventoryPart?.Inventory;
     }
 
     public async Task<int> QueryInventoryAsync(string sku, string fullSku = null)
@@ -43,8 +43,8 @@ public class LocalInventoryProvider : IProductInventoryProvider
         var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
 
         // If fullSku is specified, look for Price Variant Product's inventory.
-        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku.ToUpperInvariant();
-        var relevantInventory = inventoryPart?.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku;
+        var relevantInventory = inventoryPart?.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
         return relevantInventory is { } inventory ? inventory.Value : 0;
     }
@@ -75,7 +75,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku;
-            var relevantInventory = inventoryPart?.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+            var relevantInventory = inventoryPart?.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
             var newValue = relevantInventory.Value.Value + difference;
             if (newValue < 0)
@@ -85,8 +85,8 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
             var newEntry = new KeyValuePair<string, int>(relevantInventory.Value.Key, newValue);
 
-            inventoryPart.Inventoree.Remove(inventoryIdentifier);
-            inventoryPart.Inventoree.Add(newEntry);
+            inventoryPart.Inventory.Remove(inventoryIdentifier);
+            inventoryPart.Inventory.Add(newEntry);
             inventoryPart.Apply();
 
             _session.Save(productPart.ContentItem);

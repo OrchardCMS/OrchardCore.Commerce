@@ -59,7 +59,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.As<InventoryPart>() is { } inventoryPart)
         {
-            foreach (var inventory in inventoryPart.Inventoree)
+            foreach (var inventory in inventoryPart.Inventory)
             {
                 // If an inventory's value is below 1 and back ordering is not allowed, corresponding
                 // CanBeBought entry needs to be set to false, should be set to true otherwise.

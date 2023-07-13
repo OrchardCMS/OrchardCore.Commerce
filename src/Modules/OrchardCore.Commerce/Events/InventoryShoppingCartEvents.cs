@@ -42,7 +42,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         var fullSku = _productService.GetOrderFullSku(item, productPart);
 
         var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku;
-        var relevantInventory = inventoryPart.Inventoree.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+        var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.
         if (!inventoryPart.AllowsBackOrder.Value && item.Quantity > relevantInventory.Value)

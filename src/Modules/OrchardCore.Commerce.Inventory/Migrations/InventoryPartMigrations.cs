@@ -39,21 +39,14 @@ public class InventoryPartMigrations : DataMigration
                         Hint = "Makes it so Inventory is ignored (same as if no InventoryPart was present). Useful for digital products for example.",
                     })
                 )
-                .WithField(part => part.Inventory, field => field
-                    .WithDisplayName("Inventory")
-                    .WithSettings(new NumericFieldSettings
-                    {
-                        Hint = "The number of items in stock.",
-                    })
-                )
-                .WithField(part => part.MaximumOrderQuantity, field => field
+                .WithField(part => part.MaximumOrderQuantity, field => field // to modify?
                     .WithDisplayName("Maximum Order Quantity")
                     .WithSettings(new NumericFieldSettings
                     {
                         Hint = "The maximum number of this item one can order. Ignored if set to zero or a negative value.",
                     })
                 )
-                .WithField(part => part.MinimumOrderQuantity, field => field
+                .WithField(part => part.MinimumOrderQuantity, field => field // to modify?
                     .WithDisplayName("Minimum Order Quantity")
                     .WithSettings(new NumericFieldSettings
                     {
