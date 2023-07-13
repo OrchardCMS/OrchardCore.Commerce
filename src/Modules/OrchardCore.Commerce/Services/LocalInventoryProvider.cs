@@ -63,7 +63,6 @@ public class LocalInventoryProvider : IProductInventoryProvider
                 .ToHashSet();
 
             var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
-
             var fullSku = item.Attributes.Any()
                 ? item.ProductSku + "-" + variantKey
                 : string.Empty;
