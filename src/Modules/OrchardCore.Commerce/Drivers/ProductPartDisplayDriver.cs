@@ -51,22 +51,22 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         return await EditAsync(part, context);
     }
 
-    private void BuildViewModel(ProductPartViewModel model, ProductPart part)
+    private void BuildViewModel(ProductPartViewModel viewModel, ProductPart part)
     {
-        model.ContentItem = part.ContentItem;
-        model.Sku = part.Sku;
-        model.ProductPart = part;
+        viewModel.ContentItem = part.ContentItem;
+        viewModel.Sku = part.Sku;
+        viewModel.ProductPart = part;
 
         if (part.As<InventoryPart>() is { } inventoryPart)
         {
             foreach (var inventory in inventoryPart.Inventory)
             {
                 // If an inventory's value is below 1 and back ordering is not allowed, corresponding
-                // CanBeBought entry needs to be set to false, should be set to true otherwise.
-                model.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+                // CanBeBought entry needs to be set to false; should be set to true otherwise.
+                viewModel.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
             }
         }
 
-        model.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
+        viewModel.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
     }
 }
