@@ -4,10 +4,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Inventory.Drivers;
@@ -44,7 +41,6 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
 
     private static void BuildViewModel(InventoryPartViewModel model, InventoryPart part)
     {
-        model.Inventory.Clear();
         model.Inventory.AddRange(part.Inventory);
     }
 }
