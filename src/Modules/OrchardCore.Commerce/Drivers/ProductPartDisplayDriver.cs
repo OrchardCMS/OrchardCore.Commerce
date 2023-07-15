@@ -55,13 +55,12 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         // If SKU was updated, inventory keys also need to be updated.
         if (part.Sku != skuBefore && part.As<InventoryPart>() is { } inventoryPart)
         {
-            // No need if we are dealing with a Product. To be edited later to include regular Products too.
-            if (inventoryPart.Inventory.Count < 1) return await EditAsync(part, context);
-
             var newInventory = new Dictionary<string, int>();
             foreach (var inventoryEntry in inventoryPart.Inventory)
             {
-                var updatedKey = part.Sku + "-" + inventoryEntry.Key.Split('-').Last();
+                var updatedKey = inventoryPart.Inventory.Count > 1
+                    ? part.Sku + "-" + inventoryEntry.Key.Split('-').Last()
+                    : part.Sku;
                 newInventory.Add(updatedKey, inventoryEntry.Value);
             }
 

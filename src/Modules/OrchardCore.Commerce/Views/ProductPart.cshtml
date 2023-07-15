@@ -6,8 +6,8 @@
         .Attributes
         .Select((attribute, index) => (Attribute: attribute, Index: index));
 
-    // Only Price Variant Products have attributes, and we only need to handle regular Products here.
-    var canBeBought = Model.Attributes.Count() == 0 ? Model.CanBeBought["DEFAULT"] : true;
+    // We only need to handle regular Products here, and only Price Variant Products have attributes.
+    var canBeBought = Model.Attributes.Count() == 0 ? Model.CanBeBought[Model.Sku] : true;
 }
 
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">

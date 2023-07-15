@@ -43,7 +43,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
         var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
 
         // If fullSku is specified, look for Price Variant Product's inventory.
-        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku;
+        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? sku : fullSku;
         var relevantInventory = inventoryPart?.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
         return relevantInventory is { } inventory ? inventory.Value : 0;
@@ -74,7 +74,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
             var inventoryPart = productPart.As<InventoryPart>();
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
-            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? "DEFAULT" : fullSku;
+            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
             var relevantInventory = inventoryPart?.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
             var newValue = relevantInventory.Value.Value + difference;

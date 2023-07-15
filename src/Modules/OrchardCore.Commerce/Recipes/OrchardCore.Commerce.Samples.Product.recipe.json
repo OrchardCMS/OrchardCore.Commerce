@@ -47,16 +47,16 @@
             }
           },
           "InventoryPart": {
+            "Inventory": {
+              "TESTPRODUCTVARIANT-SMALL": 5,
+              "TESTPRODUCTVARIANT-MEDIUM": 10,
+              "TESTPRODUCTVARIANT-LARGE": 15
+            },
             "AllowsBackOrder": {
               "Value": true
             },
             "IgnoreInventory": {
               "Value": false
-            },
-            "Inventory": {
-              "TESTPRODUCTVARIANT-SMALL": 5,
-              "TESTPRODUCTVARIANT-MEDIUM": 10,
-              "TESTPRODUCTVARIANT-LARGE": 15
             },
             "MaximumOrderQuantity": {
               "Value": 2.0
@@ -107,14 +107,14 @@
             }
           },
           "InventoryPart": {
+            "Inventory": {
+              "TESTPRODUCT": 5
+            },
             "AllowsBackOrder": {
               "Value": true
             },
             "IgnoreInventory": {
               "Value": false
-            },
-            "Inventory": {
-              "DEFAULT": 5
             },
             "MaximumOrderQuantity": {
               "Value": 2.0
