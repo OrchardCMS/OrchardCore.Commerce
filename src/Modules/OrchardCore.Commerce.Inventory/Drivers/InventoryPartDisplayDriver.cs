@@ -17,10 +17,7 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
             .Location("Summary", "Meta");
 
     public override IDisplayResult Edit(InventoryPart part, BuildPartEditorContext context) =>
-        Initialize<InventoryPartViewModel>(GetEditorShapeType(context), viewModel =>
-        {
-            BuildViewModel(viewModel, part);
-        });
+        Initialize<InventoryPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(
         InventoryPart part,
@@ -37,8 +34,6 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         return await EditAsync(part, context);
     }
 
-    private static void BuildViewModel(InventoryPartViewModel model, InventoryPart part)
-    {
+    private static void BuildViewModel(InventoryPartViewModel model, InventoryPart part) =>
         model.Inventory.AddRange(part.Inventory);
-    }
 }

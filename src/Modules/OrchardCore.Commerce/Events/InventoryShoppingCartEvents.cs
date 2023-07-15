@@ -51,14 +51,14 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         }
 
         // Item verification should fail if max order quantity is set and quantity exceeds its value.
-        var checkMaxQuantity = inventoryPart.MaximumOrderQuantity.Value != 0; // tbd quantities?
+        var checkMaxQuantity = inventoryPart.MaximumOrderQuantity.Value != 0;
         if (checkMaxQuantity && item.Quantity > inventoryPart.MaximumOrderQuantity.Value)
         {
             return H["The checkout quantity for {0} is more than the maximum allowed.", title];
         }
 
         // Item verification should fail if min order quantity is set and quantity is below its value.
-        var checkMinQuantity = inventoryPart.MinimumOrderQuantity.Value != 0; // tbd quantities?
+        var checkMinQuantity = inventoryPart.MinimumOrderQuantity.Value != 0;
         if (checkMinQuantity && item.Quantity < inventoryPart.MinimumOrderQuantity.Value)
         {
             return H["The checkout quantity for {0} is less than the minimum allowed.", title];

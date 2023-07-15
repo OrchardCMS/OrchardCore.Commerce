@@ -11,7 +11,7 @@ public class InventoryPart : ContentPart
 
     public IDictionary<string, int> Inventory { get; } = new Dictionary<string, int>();
 
-    public NumericField MaximumOrderQuantity { get; set; } = new(); // u too
-    public NumericField MinimumOrderQuantity { get; set; } = new(); // same
+    public NumericField MaximumOrderQuantity { get; set; } = new();
+    public NumericField MinimumOrderQuantity { get; set; } = new();
     public HtmlField OutOfStockMessage { get; set; } = new();
 }
