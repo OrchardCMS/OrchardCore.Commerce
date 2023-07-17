@@ -11,7 +11,6 @@ using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -19,15 +18,12 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 {
     private readonly IProductAttributeService _productAttributeService;
     private readonly IStringLocalizer T;
-    private readonly ISession _session;
 
     public ProductPartDisplayDriver(
         IProductAttributeService productAttributeService,
-        IStringLocalizer<ProductPartDisplayDriver> stringLocalizer,
-        ISession session)
+        IStringLocalizer<ProductPartDisplayDriver> stringLocalizer)
     {
         _productAttributeService = productAttributeService;
-        _session = session;
         T = stringLocalizer;
     }
 
@@ -56,7 +52,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         part.Sku = part.Sku.ToUpperInvariant();
 
-        if (part.As<InventoryPart>() is { } inventoryPart)
+        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
             part.CanBeBought.Clear();
             foreach (var inventory in inventoryPart.Inventory)
@@ -66,49 +62,31 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
                 part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
             }
 
-            // If SKU was updated, inventory keys also need to be updated.
+            // If SKU was updated, CanBeBought keys also need to be updated.
             if (part.Sku != skuBefore)
             {
-                //UpdateInventoryKeys(part, inventoryPart);
+                UpdateAvailabilityKeys(part, inventoryPart);
             }
-
-
-            //inventoryPart.ProductSku = part.Sku;
-            //inventoryPart.Apply();
-            //part.Apply();
-            //_session.Save(part.ContentItem);
         }
 
         return await EditAsync(part, context);
     }
 
-    //private static void UpdateInventoryKeys(ProductPart part, InventoryPart inventoryPart)
-    //{
-    //    var newInventory = new Dictionary<string, int>();
-    //    foreach (var inventoryEntry in inventoryPart.Inventory)
-    //    {
-    //        var updatedKey = inventoryPart.Inventory.Count > 1
-    //            ? part.Sku + "-" + inventoryEntry.Key.Split('-').Last()
-    //            : part.Sku;
-    //        newInventory.Add(updatedKey, inventoryEntry.Value);
-    //    }
+    private static void UpdateAvailabilityKeys(ProductPart part, InventoryPart inventoryPart)
+    {
+        var newAvailabilities = new Dictionary<string, bool>();
+        foreach (var entry in part.CanBeBought)
+        {
+            var updatedKey = inventoryPart.Inventory.Count > 1
+                ? part.Sku + "-" + entry.Key.Split('-').Last()
+                : part.Sku;
 
-    //    inventoryPart.Inventory.Clear();
-    //    inventoryPart.Inventory.AddRange(newInventory);
+            newAvailabilities.Add(updatedKey, entry.Value);
+        }
 
-    //    var newAvailabilities = new Dictionary<string, bool>();
-    //    foreach (var entry in part.CanBeBought)
-    //    {
-    //        var updatedKey = inventoryPart.Inventory.Count > 1
-    //            ? part.Sku + "-" + entry.Key.Split('-').Last()
-    //            : part.Sku;
-
-    //        newAvailabilities.Add(updatedKey, entry.Value);
-    //    }
-
-    //    part.CanBeBought.Clear();
-    //    part.CanBeBought.AddRange(newAvailabilities);
-    //}
+        part.CanBeBought.Clear();
+        part.CanBeBought.AddRange(newAvailabilities);
+    }
 
     private void BuildViewModel(ProductPartViewModel viewModel, ProductPart part)
     {
@@ -116,7 +94,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         viewModel.Sku = part.Sku;
         viewModel.ProductPart = part;
 
-        if (part.As<InventoryPart>() is { } inventoryPart)
+        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
             foreach (var inventory in inventoryPart.Inventory)
             {

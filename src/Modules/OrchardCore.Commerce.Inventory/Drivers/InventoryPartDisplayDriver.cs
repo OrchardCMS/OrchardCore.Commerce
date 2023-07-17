@@ -15,10 +15,7 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
 {
     private readonly IHttpContextAccessor _hca;
 
-    public InventoryPartDisplayDriver(IHttpContextAccessor hca)
-    {
-        _hca = hca;
-    }
+    public InventoryPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
 
     public override IDisplayResult Display(InventoryPart part, BuildPartDisplayContext context) =>
         Initialize<InventoryPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
@@ -33,27 +30,20 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         IUpdateModel updater,
         UpdatePartEditorContext context)
     {
-        // if hca allows retrieving productSku, do the dictionary updating here
         var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString();
         var skuBefore = part.Inventory.FirstOrDefault().Key.Split("-").First();
 
         var viewModel = new InventoryPartViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        //if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-        //{
-        //    part.Inventory.Clear();
-        //    part.Inventory.AddRange(viewModel.Inventory);
-        //}
-
-        // update shit if sku changed
+        // If SKU was changed, inventory keys need to be updated.
         if (currentSku != skuBefore)
         {
-            // do the updating of dictionaries -- only inventories? update CanBeBought in ProductPartDisplayDriver?
+            // TODO Leaves the original dictionary on the InventoryPart and I have no fuckin clue why. Pain.
             var newInventory = new Dictionary<string, int>();
-            foreach (var inventoryEntry in part.Inventory)
+            foreach (var inventoryEntry in viewModel.Inventory)
             {
-                var updatedKey = part.Inventory.Count > 1
+                var updatedKey = viewModel.Inventory.Count > 1
                     ? currentSku + "-" + inventoryEntry.Key.Split('-').Last()
                     : currentSku;
                 newInventory.Add(updatedKey, inventoryEntry.Value);
@@ -64,14 +54,9 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         }
         else
         {
-
-
             part.Inventory.Clear();
             part.Inventory.AddRange(viewModel.Inventory);
         }
-
-        //part.Inventory.Clear();
-        //part.Inventory.Add(new KeyValuePair<string, int>("SKU", 5));
 
         return await EditAsync(part, context);
     }

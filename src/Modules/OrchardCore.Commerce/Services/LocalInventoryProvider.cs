@@ -69,7 +69,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
         try
         {
-            var inventoryPart = productPart.As<InventoryPart>();
+            var inventoryPart = productPart.ContentItem.As<InventoryPart>();
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
