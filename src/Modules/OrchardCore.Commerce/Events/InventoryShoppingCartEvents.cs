@@ -21,7 +21,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         H = localizer;
     }
 
-    public override int Order => 0;
+    public override int Order => 1000;
 
     public override async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item)
     {
@@ -42,6 +42,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         var fullSku = _productService.GetOrderFullSku(item, productPart);
 
         var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
+        // ??? inventorypart is not the updated one here?
         var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.

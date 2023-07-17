@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -18,12 +19,15 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 {
     private readonly IProductAttributeService _productAttributeService;
     private readonly IStringLocalizer T;
+    private readonly ISession _session;
 
     public ProductPartDisplayDriver(
         IProductAttributeService productAttributeService,
-        IStringLocalizer<ProductPartDisplayDriver> stringLocalizer)
+        IStringLocalizer<ProductPartDisplayDriver> stringLocalizer,
+        ISession session)
     {
         _productAttributeService = productAttributeService;
+        _session = session;
         T = stringLocalizer;
     }
 
@@ -54,19 +58,22 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.As<InventoryPart>() is { } inventoryPart)
         {
-            part.CanBeBought.Clear();
-            foreach (var inventory in inventoryPart.Inventory)
-            {
-                // If an inventory's value is below 1 and back ordering is not allowed, corresponding
-                // CanBeBought entry needs to be set to false; should be set to true otherwise.
-                part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
-            }
+            //part.CanBeBought.Clear();
+            //foreach (var inventory in inventoryPart.Inventory)
+            //{
+            //    // If an inventory's value is below 1 and back ordering is not allowed, corresponding
+            //    // CanBeBought entry needs to be set to false; should be set to true otherwise.
+            //    part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+            //}
 
             // If SKU was updated, inventory keys also need to be updated.
             if (part.Sku != skuBefore)
             {
                 UpdateInventoryKeys(part, inventoryPart);
             }
+
+            inventoryPart.Apply();
+            _session.Save(inventoryPart.ContentItem);
         }
 
         return await EditAsync(part, context);
@@ -86,18 +93,18 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         inventoryPart.Inventory.Clear();
         inventoryPart.Inventory.AddRange(newInventory);
 
-        var newAvailabilities = new Dictionary<string, bool>();
-        foreach (var entry in part.CanBeBought)
-        {
-            var updatedKey = inventoryPart.Inventory.Count > 1
-                ? part.Sku + "-" + entry.Key.Split('-').Last()
-                : part.Sku;
+        //var newAvailabilities = new Dictionary<string, bool>();
+        //foreach (var entry in part.CanBeBought)
+        //{
+        //    var updatedKey = inventoryPart.Inventory.Count > 1
+        //        ? part.Sku + "-" + entry.Key.Split('-').Last()
+        //        : part.Sku;
 
-            newAvailabilities.Add(updatedKey, entry.Value);
-        }
+        //    newAvailabilities.Add(updatedKey, entry.Value);
+        //}
 
-        part.CanBeBought.Clear();
-        part.CanBeBought.AddRange(newAvailabilities);
+        //part.CanBeBought.Clear();
+        //part.CanBeBought.AddRange(newAvailabilities);
     }
 
     private void BuildViewModel(ProductPartViewModel viewModel, ProductPart part)
@@ -105,7 +112,17 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         viewModel.ContentItem = part.ContentItem;
         viewModel.Sku = part.Sku;
         viewModel.ProductPart = part;
-        viewModel.CanBeBought.AddRange(part.CanBeBought);
+
+        if (part.As<InventoryPart>() is { } inventoryPart)
+        {
+            foreach (var inventory in inventoryPart.Inventory)
+            {
+                // If an inventory's value is below 1 and back ordering is not allowed, corresponding
+                // CanBeBought entry needs to be set to false; should be set to true otherwise.
+                viewModel.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+            }
+        }
+
         viewModel.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
     }
 }
