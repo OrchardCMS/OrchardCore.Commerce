@@ -7,7 +7,7 @@ public class InventoryPartViewModel
     public bool AllowsBackOrder { get; set; }
     public bool IgnoreInventory { get; set; }
 
-    public IDictionary<string, int> Inventory { get; private set; } = new Dictionary<string, int>();
+    public IDictionary<string, int> Inventory { get; } = new Dictionary<string, int>();
 
     public int MaximumOrderQuantity { get; set; }
     public int MinimumOrderQuantity { get; set; }

@@ -13,5 +13,5 @@ public class ProductPart : ContentPart
     /// Gets or sets the product's SKU, which can also be used as an alias for the item.
     /// </summary>
     public string Sku { get; set; }
-    public IDictionary<string, bool> CanBeBought { get; private set; } = new Dictionary<string, bool>();
+    public IDictionary<string, bool> CanBeBought { get; } = new Dictionary<string, bool>();
 }

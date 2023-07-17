@@ -21,7 +21,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         H = localizer;
     }
 
-    public override int Order => 1000;
+    public override int Order => 0;
 
     public override async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item)
     {

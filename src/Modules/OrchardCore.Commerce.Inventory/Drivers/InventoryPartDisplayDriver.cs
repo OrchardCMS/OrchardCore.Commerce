@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Inventory.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -5,12 +6,20 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Inventory.Drivers;
 
 public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
 {
+    private readonly IHttpContextAccessor _hca;
+
+    public InventoryPartDisplayDriver(IHttpContextAccessor hca)
+    {
+        _hca = hca;
+    }
+
     public override IDisplayResult Display(InventoryPart part, BuildPartDisplayContext context) =>
         Initialize<InventoryPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
             .Location("Detail", "Content:26")
@@ -24,12 +33,45 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         IUpdateModel updater,
         UpdatePartEditorContext context)
     {
+        // if hca allows retrieving productSku, do the dictionary updating here
+        var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString();
+        var skuBefore = part.Inventory.FirstOrDefault().Key.Split("-").First();
+
         var viewModel = new InventoryPartViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        //if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        //{
+        //    part.Inventory.Clear();
+        //    part.Inventory.AddRange(viewModel.Inventory);
+        //}
+
+        // update shit if sku changed
+        if (currentSku != skuBefore)
         {
+            // do the updating of dictionaries -- only inventories? update CanBeBought in ProductPartDisplayDriver?
+            var newInventory = new Dictionary<string, int>();
+            foreach (var inventoryEntry in part.Inventory)
+            {
+                var updatedKey = part.Inventory.Count > 1
+                    ? currentSku + "-" + inventoryEntry.Key.Split('-').Last()
+                    : currentSku;
+                newInventory.Add(updatedKey, inventoryEntry.Value);
+            }
+
+            part.Inventory.Clear();
+            part.Inventory.AddRange(newInventory);
+        }
+        else
+        {
+
+
             part.Inventory.Clear();
             part.Inventory.AddRange(viewModel.Inventory);
         }
+
+        //part.Inventory.Clear();
+        //part.Inventory.Add(new KeyValuePair<string, int>("SKU", 5));
 
         return await EditAsync(part, context);
     }

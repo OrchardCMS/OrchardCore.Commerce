@@ -58,54 +58,57 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.As<InventoryPart>() is { } inventoryPart)
         {
-            //part.CanBeBought.Clear();
-            //foreach (var inventory in inventoryPart.Inventory)
-            //{
-            //    // If an inventory's value is below 1 and back ordering is not allowed, corresponding
-            //    // CanBeBought entry needs to be set to false; should be set to true otherwise.
-            //    part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
-            //}
+            part.CanBeBought.Clear();
+            foreach (var inventory in inventoryPart.Inventory)
+            {
+                // If an inventory's value is below 1 and back ordering is not allowed, corresponding
+                // CanBeBought entry needs to be set to false; should be set to true otherwise.
+                part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+            }
 
             // If SKU was updated, inventory keys also need to be updated.
             if (part.Sku != skuBefore)
             {
-                UpdateInventoryKeys(part, inventoryPart);
+                //UpdateInventoryKeys(part, inventoryPart);
             }
 
-            inventoryPart.Apply();
-            _session.Save(inventoryPart.ContentItem);
+
+            //inventoryPart.ProductSku = part.Sku;
+            //inventoryPart.Apply();
+            //part.Apply();
+            //_session.Save(part.ContentItem);
         }
 
         return await EditAsync(part, context);
     }
 
-    private static void UpdateInventoryKeys(ProductPart part, InventoryPart inventoryPart)
-    {
-        var newInventory = new Dictionary<string, int>();
-        foreach (var inventoryEntry in inventoryPart.Inventory)
-        {
-            var updatedKey = inventoryPart.Inventory.Count > 1
-                ? part.Sku + "-" + inventoryEntry.Key.Split('-').Last()
-                : part.Sku;
-            newInventory.Add(updatedKey, inventoryEntry.Value);
-        }
+    //private static void UpdateInventoryKeys(ProductPart part, InventoryPart inventoryPart)
+    //{
+    //    var newInventory = new Dictionary<string, int>();
+    //    foreach (var inventoryEntry in inventoryPart.Inventory)
+    //    {
+    //        var updatedKey = inventoryPart.Inventory.Count > 1
+    //            ? part.Sku + "-" + inventoryEntry.Key.Split('-').Last()
+    //            : part.Sku;
+    //        newInventory.Add(updatedKey, inventoryEntry.Value);
+    //    }
 
-        inventoryPart.Inventory.Clear();
-        inventoryPart.Inventory.AddRange(newInventory);
+    //    inventoryPart.Inventory.Clear();
+    //    inventoryPart.Inventory.AddRange(newInventory);
 
-        //var newAvailabilities = new Dictionary<string, bool>();
-        //foreach (var entry in part.CanBeBought)
-        //{
-        //    var updatedKey = inventoryPart.Inventory.Count > 1
-        //        ? part.Sku + "-" + entry.Key.Split('-').Last()
-        //        : part.Sku;
+    //    var newAvailabilities = new Dictionary<string, bool>();
+    //    foreach (var entry in part.CanBeBought)
+    //    {
+    //        var updatedKey = inventoryPart.Inventory.Count > 1
+    //            ? part.Sku + "-" + entry.Key.Split('-').Last()
+    //            : part.Sku;
 
-        //    newAvailabilities.Add(updatedKey, entry.Value);
-        //}
+    //        newAvailabilities.Add(updatedKey, entry.Value);
+    //    }
 
-        //part.CanBeBought.Clear();
-        //part.CanBeBought.AddRange(newAvailabilities);
-    }
+    //    part.CanBeBought.Clear();
+    //    part.CanBeBought.AddRange(newAvailabilities);
+    //}
 
     private void BuildViewModel(ProductPartViewModel viewModel, ProductPart part)
     {
