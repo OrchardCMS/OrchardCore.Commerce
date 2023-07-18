@@ -6,6 +6,11 @@
     var settings = attr?.Settings as TextProductAttributeFieldSettings;
     var id = $"{Model.IdPrefix}-attribute-{index}";
     var optionIndex = 0;
+
+    var sku = (string)Model.Sku;
+    var canBeBoughtDictionary = ((Dictionary<string, bool>)Model.CanBeBought);
+    var availableVariants = canBeBoughtDictionary.Where(keyValuePair => keyValuePair.Value == true);
+    var defaultValueIsAvailable = availableVariants.Any(keyValuePair => keyValuePair.Key == sku + "-" + settings.DefaultValue.ToUpperInvariant());
 }
 
 <label for="@id">@attr?.Name</label>
@@ -27,15 +32,20 @@ else if (settings.MultipleValues)
             var optionId = $"{id}-{optionIndex}";
             optionIndex++;
 
-            var fullSku = Model.Sku + "-" + predefinedValue.ToUpperInvariant();
-            var variantIsAvailable = (bool)Model.CanBeBought[fullSku];
+            var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
+            var variantIsAvailable = canBeBoughtDictionary[fullSku];
             if (variantIsAvailable)
             {
+                // If the default value is not available, set the first available option as checked.
+                var isChecked = defaultValueIsAvailable
+                    ? predefinedValue == settings.DefaultValue
+                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.First().Key;
+
                 <li>
                     <input id="optionId"
                            type="checkbox"
                            name="line.Attributes[@index].Value"
-                           checked="@(predefinedValue == settings.DefaultValue)"
+                           checked="@isChecked"
                            class="form-check-input" />
                     <label for="@optionId" class="form-check-label">@predefinedValue</label>
                 </li>                
@@ -50,11 +60,16 @@ else if (settings.RestrictToPredefinedValues)
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
             @foreach (string predefinedValue in settings.PredefinedValues)
             {
-                var fullSku = Model.Sku + "-" + predefinedValue.ToUpperInvariant();
-                var variantIsAvailable = (bool)Model.CanBeBought[fullSku];
+                var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
+                var variantIsAvailable = canBeBoughtDictionary[fullSku];
                 if (variantIsAvailable)
                 {
-                    <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
+                    // If the default value is not available, set the first available option as selected.
+                    var isSelected = defaultValueIsAvailable
+                        ? predefinedValue == settings.DefaultValue
+                        : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.First().Key;
+
+                    <option selected="@isSelected">@predefinedValue</option>
                 }
             }
         </select>
@@ -67,16 +82,21 @@ else if (settings.RestrictToPredefinedValues)
                 var optionId = $"{id}-{optionIndex}";
                 optionIndex++;
 
-                var fullSku = Model.Sku + "-" + predefinedValue.ToUpperInvariant();
-                var variantIsAvailable = (bool)Model.CanBeBought[fullSku];
+                var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
+                var variantIsAvailable = canBeBoughtDictionary[fullSku];
                 if (variantIsAvailable)
                 {
+                    // If the default value is not available, set the first available option as checked.
+                    var isChecked = defaultValueIsAvailable
+                        ? predefinedValue == settings.DefaultValue
+                        : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.First().Key;
+
                     <li>
                         <input id="@optionId"
                                type="radio"
                                name="line.Attributes[@index].Value"
                                value="@predefinedValue"
-                               checked="@(predefinedValue == settings.DefaultValue)"
+                               checked="@isChecked"
                                class="form-check-input" />
                         <label for="@optionId" class="form-check-label">@predefinedValue</label>
                     </li>   
