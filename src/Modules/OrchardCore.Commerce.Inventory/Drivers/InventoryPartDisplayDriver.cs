@@ -54,11 +54,6 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
             part.Inventory.Clear();
             part.Inventory.AddRange(newInventory);
         }
-        else
-        {
-            part.Inventory.Clear();
-            part.Inventory.AddRange(viewModel.Inventory);
-        }
 
         return await EditAsync(part, context);
     }
