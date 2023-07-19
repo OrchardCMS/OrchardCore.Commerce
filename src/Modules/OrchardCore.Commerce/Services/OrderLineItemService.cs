@@ -81,9 +81,9 @@ public class OrderLineItemService : IOrderLineItemService
             shipping,
             billing,
             orderPart?.ContentItem?.PublishedUtc ?? _clock.UtcNow,
-            VatNumber: orderPart.VatNumber.Text,
+            VatNumber: orderPart?.VatNumber.Text,
             Stored: true,
-            IsCorporation: orderPart.IsCorporation.Value);
+            IsCorporation: orderPart?.IsCorporation.Value ?? false);
         var changed = false;
 
         if (_taxProviders.Any() &&

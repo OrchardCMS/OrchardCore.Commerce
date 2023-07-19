@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -29,7 +29,7 @@
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="6.0.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="6.0.1-alpha.0.gov-15" />
   </ItemGroup>
 
 </Project>
