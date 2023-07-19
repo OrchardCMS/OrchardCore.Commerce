@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Controllers;
@@ -11,8 +12,10 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Workflows.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 
@@ -25,17 +28,20 @@ public class OrderController : Controller
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
     private readonly IStripePaymentService _stripePaymentService;
+    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
 
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
-        IStripePaymentService stripePaymentService)
+        IStripePaymentService stripePaymentService,
+        IEnumerable<IWorkflowManager> workflowManagers)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
         _stripePaymentService = stripePaymentService;
+        _workflowManagers = workflowManagers;
     }
 
     [AllowAnonymous]
@@ -90,6 +96,12 @@ public class OrderController : Controller
         await _contentManager.CreateAsync(order);
 
         await _paymentService.FinalModificationOfOrderAsync(order);
+
+        // Since the event trigger is tied to "UpdateOrderToOrderedAsync()" we also need to call it here.
+        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
+        {
+            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
+        }
 
         return RedirectToAction(
             nameof(PaymentController.Success),
