@@ -30,20 +30,22 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         IUpdateModel updater,
         UpdatePartEditorContext context)
     {
-        var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString();
+        var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
         var skuBefore = part.Inventory.FirstOrDefault().Key.Split("-").First();
 
         var viewModel = new InventoryPartViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
 
+        part.Inventory.Clear();
+        part.Inventory.AddRange(viewModel.Inventory);
         // If SKU was changed, inventory keys need to be updated.
-        if (currentSku != skuBefore)
+        if (!string.IsNullOrEmpty(currentSku) && currentSku != skuBefore)
         {
             // TODO Leaves the original dictionary on the InventoryPart and I have no fuckin clue why. Pain.
             var newInventory = new Dictionary<string, int>();
-            foreach (var inventoryEntry in viewModel.Inventory)
+            foreach (var inventoryEntry in part.Inventory)
             {
-                var updatedKey = viewModel.Inventory.Count > 1
+                var updatedKey = part.Inventory.Count > 1
                     ? currentSku + "-" + inventoryEntry.Key.Split('-').Last()
                     : currentSku;
                 newInventory.Add(updatedKey, inventoryEntry.Value);
