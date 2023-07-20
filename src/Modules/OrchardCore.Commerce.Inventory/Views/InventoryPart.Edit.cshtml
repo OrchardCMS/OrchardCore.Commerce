@@ -2,17 +2,20 @@
 
 <h3>@T["Inventories"]</h3>
 <div class="row">
-    @foreach (var inventoryKey in Model.Inventory.Keys)
+    @foreach (var inventoryKey in Model.InventoryValues.Keys)
     {
-        var inventoryTitle = Model.Inventory.Count > 1 ? inventoryKey.Split('-').Last() : string.Empty;
+        var inventory = Model.Inventory;
+        var inventoryValues = Model.InventoryValues;
+
+        var inventoryTitle = Model.InventoryValues.Count > 1 ? inventoryKey.Split('-').Last() : string.Empty;
 
         <div class="col-md-3">
-            <div class="mb-3" asp-validation-class-for="Inventory[inventoryKey]">
-                <label asp-for="Inventory[inventoryKey]">@inventoryTitle @T["Inventory"] </label>
+            <div class="mb-3" asp-validation-class-for="InventoryValues[inventoryKey]">
+                <label asp-for="InventoryValues[inventoryKey]">@inventoryTitle @T["Inventory"] </label>
                 <div class="input-group">
-                    <input asp-for="Inventory[inventoryKey]" class="form-control text-muted" />
+                    <input asp-for="InventoryValues[inventoryKey]" class="form-control text-muted" />
                 </div>
-                <span asp-validation-for="Inventory[inventoryKey]"></span>
+                <span asp-validation-for="InventoryValues[inventoryKey]"></span>
             </div>
         </div>
     }
