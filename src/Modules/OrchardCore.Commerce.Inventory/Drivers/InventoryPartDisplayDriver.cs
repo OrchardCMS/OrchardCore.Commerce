@@ -83,10 +83,5 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
 
             model.Inventory.AddRange(filteredInventory);
         }
-        else
-        {
-            // When creating a new item, initialize a default inventory.
-            model.Inventory.Add("DEFAULT", 0);
-        }
     }
 }

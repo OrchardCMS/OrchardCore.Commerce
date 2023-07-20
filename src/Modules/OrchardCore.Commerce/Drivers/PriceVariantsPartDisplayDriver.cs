@@ -1,10 +1,12 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Utilities;
@@ -60,13 +62,13 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             part.Variants.RemoveAll();
             viewModel.Variants.RemoveAll();
 
-            foreach (var x in viewModel.VariantsValues)
+            foreach (var variantValue in viewModel.VariantsValues)
             {
-                if (x.Value.HasValue &&
-                    viewModel.VariantsCurrencies?.ContainsKey(x.Key) == true &&
-                    viewModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
+                if (variantValue.Value.HasValue &&
+                    viewModel.VariantsCurrencies?.ContainsKey(variantValue.Key) == true &&
+                    viewModel.VariantsCurrencies[variantValue.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
                 {
-                    part.Variants[x.Key] = _moneyService.Create(x.Value.Value, viewModel.VariantsCurrencies[x.Key]);
+                    part.Variants[variantValue.Key] = _moneyService.Create(variantValue.Value.Value, viewModel.VariantsCurrencies[variantValue.Key]);
                 }
             }
         }
@@ -99,5 +101,15 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
                 : _currencyOptions.Value.CurrentDisplayCurrency);
 
         model.InitializeVariants(variants, values, currencies);
+
+        // When creating a new PriceVariantsProduct item, initialize default inventories.
+        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart && !inventoryPart.Inventory.Any())
+        {
+            foreach (var variantKey in allVariantsKeys)
+            {
+                inventoryPart.Inventory.Add(variantKey, 0);
+                inventoryPart.InventoryKeys.Add(variantKey);
+            }
+        }
     }
 }
