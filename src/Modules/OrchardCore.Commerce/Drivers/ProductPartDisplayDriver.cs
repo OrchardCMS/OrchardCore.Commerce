@@ -55,29 +55,34 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
             part.CanBeBought.Clear();
-            foreach (var inventory in inventoryPart.Inventory)
+
+            var correctInventory = inventoryPart.Inventory
+                .Where(inventory => inventoryPart.InventoryKeys.Contains(inventory.Key))
+                .ToDictionary(key => key.Key, value => value.Value);
+
+            // If an inventory's value is below 1 and back ordering is not allowed, corresponding
+            // CanBeBought entry needs to be set to false; should be set to true otherwise.
+            foreach (var inventory in correctInventory)
             {
-                // If an inventory's value is below 1 and back ordering is not allowed, corresponding
-                // CanBeBought entry needs to be set to false; should be set to true otherwise.
                 part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
             }
 
             // If SKU was updated, CanBeBought keys also need to be updated.
             if (part.Sku != skuBefore)
             {
-                UpdateAvailabilityKeys(part, inventoryPart);
+                UpdateAvailabilityKeys(part, correctInventory.Count);
             }
         }
 
         return await EditAsync(part, context);
     }
 
-    private static void UpdateAvailabilityKeys(ProductPart part, InventoryPart inventoryPart)
+    private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount)
     {
         var newAvailabilities = new Dictionary<string, bool>();
         foreach (var entry in part.CanBeBought)
         {
-            var updatedKey = inventoryPart.Inventory.Count > 1
+            var updatedKey = inventoryCount > 1
                 ? part.Sku + "-" + entry.Key.Split('-').Last()
                 : part.Sku;
 
@@ -96,7 +101,11 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
-            foreach (var inventory in inventoryPart.Inventory)
+            var correctInventory = inventoryPart.Inventory
+                .Where(inventory => inventoryPart.InventoryKeys.Contains(inventory.Key))
+                .ToDictionary(key => key.Key, value => value.Value);
+
+            foreach (var inventory in correctInventory)
             {
                 // If an inventory's value is below 1 and back ordering is not allowed, corresponding
                 // CanBeBought entry needs to be set to false; should be set to true otherwise.

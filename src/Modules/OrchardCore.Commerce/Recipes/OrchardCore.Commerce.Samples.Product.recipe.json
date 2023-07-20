@@ -52,6 +52,11 @@
               "TESTPRODUCTVARIANT-MEDIUM": 10,
               "TESTPRODUCTVARIANT-LARGE": 15
             },
+            "InventoryKeys": [
+              "TESTPRODUCTVARIANT-SMALL",
+              "TESTPRODUCTVARIANT-MEDIUM",
+              "TESTPRODUCTVARIANT-LARGE"
+            ],
             "AllowsBackOrder": {
               "Value": true
             },
@@ -111,6 +116,9 @@
             "Inventory": {
               "TESTPRODUCT": 5
             },
+            "InventoryKeys": [
+              "TESTPRODUCT"
+            ],
             "AllowsBackOrder": {
               "Value": true
             },
