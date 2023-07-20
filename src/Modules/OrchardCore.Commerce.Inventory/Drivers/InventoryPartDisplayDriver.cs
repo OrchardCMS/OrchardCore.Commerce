@@ -44,6 +44,8 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         // If SKU was changed, inventory keys need to be updated.
         if (!string.IsNullOrEmpty(currentSku) && currentSku != skuBefore)
         {
+            part.InventoryKeys.Clear();
+
             var newInventory = new Dictionary<string, int>();
             var oldInventory = part.Inventory.ToDictionary(key => key.Key, value => value.Value);
             foreach (var inventoryEntry in oldInventory)
@@ -54,6 +56,8 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
 
                 part.Inventory.Remove(inventoryEntry.Key);
                 newInventory.Add(updatedKey, inventoryEntry.Value);
+
+                part.InventoryKeys.Add(updatedKey);
             }
 
             part.Inventory.Clear();
@@ -74,7 +78,7 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         {
             // Workaround for InventoryPart storing the outdated inventory entries along with the updated ones.
             var filteredInventory = inventory
-                .Where(kvp => kvp.Key.Contains(part.ProductSku))
+                .Where(keyValuePair => part.InventoryKeys.Contains(keyValuePair.Key))
                 .ToDictionary(key => key.Key, value => value.Value);
 
             model.Inventory.AddRange(filteredInventory);
