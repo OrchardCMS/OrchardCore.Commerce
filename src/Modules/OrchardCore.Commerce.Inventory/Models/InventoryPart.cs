@@ -15,5 +15,6 @@ public class InventoryPart : ContentPart
     public NumericField MaximumOrderQuantity { get; set; } = new();
     public NumericField MinimumOrderQuantity { get; set; } = new();
     public HtmlField OutOfStockMessage { get; set; } = new();
+
     public string ProductSku { get; set; }
 }
