@@ -31,7 +31,9 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         UpdatePartEditorContext context)
     {
         var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
-        var skuBefore = part.Inventory.FirstOrDefault().Key.Split("-").First();
+        var skuBefore = part.Inventory.FirstOrDefault().Key != null
+            ? part.Inventory.FirstOrDefault().Key.Split("-").First()
+            : "DEFAULT";
 
         var viewModel = new InventoryPartViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
@@ -63,13 +65,24 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         return await EditAsync(part, context);
     }
 
+    // Despite the Clear() calls inside UpdateAsync(), the Inventory property retains its old values along with the
+    // new ones, hence the filtering below.
     private static void BuildViewModel(InventoryPartViewModel model, InventoryPart part)
     {
-        // Workaround for InventoryPart storing the outdated inventory entries along with the updated ones.
-        var filteredInventory = part.Inventory
-            .Where(kvp => kvp.Key.Contains(part.ProductSku))
-            .ToDictionary(key => key.Key, value => value.Value);
+        var inventory = part.Inventory ?? new Dictionary<string, int>();
+        if (inventory.Any())
+        {
+            // Workaround for InventoryPart storing the outdated inventory entries along with the updated ones.
+            var filteredInventory = inventory
+                .Where(kvp => kvp.Key.Contains(part.ProductSku))
+                .ToDictionary(key => key.Key, value => value.Value);
 
-        model.Inventory.AddRange(filteredInventory);
+            model.Inventory.AddRange(filteredInventory);
+        }
+        else
+        {
+            // When creating a new item, initialize a default inventory.
+            model.Inventory.Add("DEFAULT", 0);
+        }
     }
 }
