@@ -30,13 +30,13 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         IUpdateModel updater,
         UpdatePartEditorContext context)
     {
-        var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
-        var skuBefore = part.Inventory.FirstOrDefault().Key != null
-            ? part.Inventory.FirstOrDefault().Key.Split("-").First()
-            : "DEFAULT";
-
         var viewModel = new InventoryPartViewModel();
         await updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
+        var skuBefore = viewModel.Inventory.FirstOrDefault().Key != null
+            ? viewModel.Inventory.FirstOrDefault().Key.Split("-").First()
+            : "DEFAULT";
 
         part.Inventory.Clear();
         part.Inventory.AddRange(viewModel.Inventory);
