@@ -1,10 +1,10 @@
 @{
     if (Model.Part.Inventory is not IDictionary<string, int> inventory) { return; }
 
-    // If any inventories contain items, the product is not out of stock.
+    // If any inventories contain items or back ordering is allowed, the product is not out of stock.
     foreach (var inventoryEntry in inventory)
     {
-        if (inventoryEntry.Value > 0) { return; }
+        if (inventoryEntry.Value > 0 || Model.Part.AllowsBackOrder.Value) { return; }
     }
 
     var html = Model.Part.OutOfStockMessage.Html is string htmlString && !string.IsNullOrWhiteSpace(htmlString)
