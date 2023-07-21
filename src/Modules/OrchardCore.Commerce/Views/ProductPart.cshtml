@@ -6,7 +6,7 @@
         .Attributes
         .Select((attribute, index) => (Attribute: attribute, Index: index));
 
-    // As long as any items can be bought, "Add to cart" button should remain clickable.
+    // As long as any items can be bought, "Add to cart" button should remain possible to click.
     var canBeBought = Model.CanBeBought.Any(keyValuePair => keyValuePair.Value == true);
 }
 
