@@ -62,13 +62,13 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             part.Variants.RemoveAll();
             viewModel.Variants.RemoveAll();
 
-            foreach (var variantValue in viewModel.VariantsValues)
+            foreach (var x in viewModel.VariantsValues)
             {
-                if (variantValue.Value.HasValue &&
-                    viewModel.VariantsCurrencies?.ContainsKey(variantValue.Key) == true &&
-                    viewModel.VariantsCurrencies[variantValue.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
+                if (x.Value.HasValue &&
+                    viewModel.VariantsCurrencies?.ContainsKey(x.Key) == true &&
+                    viewModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
                 {
-                    part.Variants[variantValue.Key] = _moneyService.Create(variantValue.Value.Value, viewModel.VariantsCurrencies[variantValue.Key]);
+                    part.Variants[x.Key] = _moneyService.Create(x.Value.Value, viewModel.VariantsCurrencies[x.Key]);
                 }
             }
         }
