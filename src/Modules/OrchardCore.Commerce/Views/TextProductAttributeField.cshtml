@@ -10,7 +10,8 @@
     var sku = (string)Model.Sku;
     var canBeBoughtDictionary = ((Dictionary<string, bool>)Model.CanBeBought);
     var availableVariants = canBeBoughtDictionary.Where(keyValuePair => keyValuePair.Value == true);
-    var defaultValueIsAvailable = availableVariants.Any(keyValuePair => keyValuePair.Key == sku + "-" + settings.DefaultValue.ToUpperInvariant());
+    var defaultValueIsAvailable = availableVariants.Any(
+        keyValuePair => keyValuePair.Key == sku + "-" + settings.DefaultValue.ToUpperInvariant());
 }
 
 <label for="@id">@attr?.Name</label>
@@ -39,7 +40,7 @@ else if (settings.MultipleValues)
                 // If the default value is not available, set the first available option as checked.
                 var isChecked = defaultValueIsAvailable
                     ? predefinedValue == settings.DefaultValue
-                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.First().Key;
+                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
 
                 <li>
                     <input id="optionId"
@@ -67,7 +68,7 @@ else if (settings.RestrictToPredefinedValues)
                     // If the default value is not available, set the first available option as selected.
                     var isSelected = defaultValueIsAvailable
                         ? predefinedValue == settings.DefaultValue
-                        : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.First().Key;
+                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
 
                     <option selected="@isSelected">@predefinedValue</option>
                 }
@@ -89,7 +90,7 @@ else if (settings.RestrictToPredefinedValues)
                     // If the default value is not available, set the first available option as checked.
                     var isChecked = defaultValueIsAvailable
                         ? predefinedValue == settings.DefaultValue
-                        : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.First().Key;
+                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
 
                     <li>
                         <input id="@optionId"
