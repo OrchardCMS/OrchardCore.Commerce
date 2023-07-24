@@ -9,7 +9,7 @@
     var lines = viewModel.Lines;
     var priceDisplaySettings = (await SiteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
 
-    var currency = viewModel.Totals.First().Currency;
+    var currency = viewModel.Totals.Any() ? viewModel.Totals.First().Currency : lines.FirstOrDefault().LinePrice.Currency;
     var netTotal = new Amount(0, currency);
     var grossTotal = new Amount(0, currency);
 
