@@ -25,6 +25,11 @@ public interface IProductService
     string GetVariantKey(string sku);
 
     /// <summary>
+    /// Returns the full SKU of a Price Variant Product's variant.
+    /// </summary>
+    string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart);
+
+    /// <summary>
     /// Returns the exact variant of a product, as well as its identifying key, associated with the provided SKU.
     /// </summary>
     Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku);

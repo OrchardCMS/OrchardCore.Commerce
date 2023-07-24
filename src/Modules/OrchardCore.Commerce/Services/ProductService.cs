@@ -18,15 +18,18 @@ public class ProductService : IProductService
     private readonly ISession _session;
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
 
     public ProductService(
         ISession session,
         IContentManager contentManager,
-        IContentDefinitionManager contentDefinitionManager)
+        IContentDefinitionManager contentDefinitionManager,
+        IPredefinedValuesProductAttributeService predefinedValuesService)
     {
         _session = session;
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
+        _predefinedValuesService = predefinedValuesService;
     }
 
     public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
@@ -44,6 +47,21 @@ public class ProductService : IProductService
         // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
         return FillContentItemsAndGetProductParts(contentItems);
+    }
+
+    public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart)
+    {
+        var attributesRestrictedToPredefinedValues = _predefinedValuesService
+            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
+            .Select(attr => attr.PartName + "." + attr.Name)
+            .ToHashSet();
+
+        var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
+        var fullSku = item.Attributes.Any()
+            ? item.ProductSku + "-" + variantKey
+            : string.Empty;
+
+        return fullSku.ToUpperInvariant();
     }
 
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)

@@ -157,6 +157,11 @@
               "PartName": "ProductPart",
               "Name": "ProductPart",
               "Settings": {}
+            },
+            {
+              "PartName": "InventoryPart",
+              "Name": "InventoryPart",
+              "Settings": {}
             }
           ]
         }
