@@ -31,40 +31,41 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         UpdatePartEditorContext context)
     {
         var viewModel = new InventoryPartViewModel();
-        await updater.TryUpdateModelAsync(viewModel, Prefix);
-
-        var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
-        var skuBefore = viewModel.Inventory.FirstOrDefault().Key != null
-            ? viewModel.Inventory.FirstOrDefault().Key.Split("-").First()
-            : "DEFAULT";
-
-        part.Inventory.Clear();
-        part.Inventory.AddRange(viewModel.Inventory);
-
-        // If SKU was changed, inventory keys need to be updated.
-        if (!string.IsNullOrEmpty(currentSku) && currentSku != skuBefore)
+        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            part.InventoryKeys.Clear();
-
-            var newInventory = new Dictionary<string, int>();
-            var oldInventory = part.Inventory.ToDictionary(key => key.Key, value => value.Value);
-            foreach (var inventoryEntry in oldInventory)
-            {
-                var updatedKey = oldInventory.Count > 1
-                    ? currentSku + "-" + inventoryEntry.Key.Split('-').Last()
-                    : currentSku;
-
-                part.Inventory.Remove(inventoryEntry.Key);
-                newInventory.Add(updatedKey, inventoryEntry.Value);
-
-                part.InventoryKeys.Add(updatedKey);
-            }
+            var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
+            var skuBefore = viewModel.Inventory.FirstOrDefault().Key != null
+                ? viewModel.Inventory.FirstOrDefault().Key.Split("-").First()
+                : "DEFAULT";
 
             part.Inventory.Clear();
-            part.Inventory.AddRange(newInventory);
-        }
+            part.Inventory.AddRange(viewModel.Inventory);
 
-        part.ProductSku = currentSku;
+            // If SKU was changed, inventory keys need to be updated.
+            if (!string.IsNullOrEmpty(currentSku) && currentSku != skuBefore)
+            {
+                part.InventoryKeys.Clear();
+
+                var newInventory = new Dictionary<string, int>();
+                var oldInventory = part.Inventory.ToDictionary(key => key.Key, value => value.Value);
+                foreach (var inventoryEntry in oldInventory)
+                {
+                    var updatedKey = oldInventory.Count > 1
+                        ? currentSku + "-" + inventoryEntry.Key.Split('-').Last()
+                        : currentSku;
+
+                    part.Inventory.Remove(inventoryEntry.Key);
+                    newInventory.Add(updatedKey, inventoryEntry.Value);
+
+                    part.InventoryKeys.Add(updatedKey);
+                }
+
+                part.Inventory.Clear();
+                part.Inventory.AddRange(newInventory);
+            }
+
+            part.ProductSku = currentSku;
+        }
 
         return await EditAsync(part, context);
     }

@@ -7,9 +7,9 @@
     var id = $"{Model.IdPrefix}-attribute-{index}";
     var optionIndex = 0;
 
-    var sku = (string)Model.Sku;
-    var canBeBoughtDictionary = ((Dictionary<string, bool>)Model.CanBeBought);
-    var availableVariants = canBeBoughtDictionary.Where(keyValuePair => keyValuePair.Value == true);
+    var sku = Model.Sku as string;
+    var canBeBoughtDictionary = Model.CanBeBought as Dictionary<string, bool>;
+    var availableVariants = canBeBoughtDictionary?.Where(keyValuePair => keyValuePair.Value == true);
     var defaultValueIsAvailable = availableVariants.Any(
         keyValuePair => keyValuePair.Key == sku + "-" + settings.DefaultValue.ToUpperInvariant());
 }
