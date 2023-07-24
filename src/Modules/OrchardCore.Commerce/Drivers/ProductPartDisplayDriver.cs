@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Inventory;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -56,13 +57,11 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         {
             part.CanBeBought.Clear();
 
-            var correctInventory = inventoryPart.Inventory
-                .Where(inventory => inventoryPart.InventoryKeys.Contains(inventory.Key))
-                .ToDictionary(key => key.Key, value => value.Value);
+            var filteredInventory = inventoryPart.Inventory.FilterOutdatedEntries(inventoryPart.InventoryKeys);
 
             // If an inventory's value is below 1 and back ordering is not allowed, corresponding
             // CanBeBought entry needs to be set to false; should be set to true otherwise.
-            foreach (var inventory in correctInventory)
+            foreach (var inventory in filteredInventory)
             {
                 part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
             }
@@ -70,7 +69,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             // If SKU was updated, CanBeBought keys also need to be updated.
             if (part.Sku != skuBefore)
             {
-                UpdateAvailabilityKeys(part, correctInventory.Count);
+                UpdateAvailabilityKeys(part, filteredInventory.Count);
             }
         }
 
@@ -101,11 +100,8 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
-            var correctInventory = inventoryPart.Inventory
-                .Where(inventory => inventoryPart.InventoryKeys.Contains(inventory.Key))
-                .ToDictionary(key => key.Key, value => value.Value);
-
-            foreach (var inventory in correctInventory)
+            var filteredInventory = inventoryPart.Inventory.FilterOutdatedEntries(inventoryPart.InventoryKeys);
+            foreach (var inventory in filteredInventory)
             {
                 // If an inventory's value is below 1 and back ordering is not allowed, corresponding
                 // CanBeBought entry needs to be set to false; should be set to true otherwise.

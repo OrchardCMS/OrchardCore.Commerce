@@ -78,9 +78,7 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         if (inventory.Any())
         {
             // Workaround for InventoryPart storing the outdated inventory entries along with the updated ones.
-            var filteredInventory = inventory
-                .Where(keyValuePair => part.InventoryKeys.Contains(keyValuePair.Key))
-                .ToDictionary(key => key.Key, value => value.Value);
+            var filteredInventory = part.Inventory.FilterOutdatedEntries(part.InventoryKeys);
 
             model.Inventory.AddRange(filteredInventory);
         }
