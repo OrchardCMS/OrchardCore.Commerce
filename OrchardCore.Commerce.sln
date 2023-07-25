@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		mkdocs.yml = mkdocs.yml
 		Nuget.config = Nuget.config
 		Readme.md = Readme.md
+		Reset-Local.ps1 = Reset-Local.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2D057AA-E3F7-404D-A713-C3C59F9DE562}"
@@ -88,7 +89,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "allow", "allow", "{7FB7940D
 		.github\actions\spelling\allow\people.txt = .github\actions\spelling\allow\people.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Tests.UI.Shortcuts", "test\OrchardCore.Commerce.Tests.UI.Shortcuts\OrchardCore.Commerce.Tests.UI.Shortcuts.csproj", "{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests.UI.Shortcuts", "test\OrchardCore.Commerce.Tests.UI.Shortcuts\OrchardCore.Commerce.Tests.UI.Shortcuts.csproj", "{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
