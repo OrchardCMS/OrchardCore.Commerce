@@ -1,4 +1,6 @@
+@using OrchardCore.Commerce.Controllers;
 @using OrchardCore.Commerce.Tax.Extensions
+@using OrchardCore.Mvc.Core.Utilities;
 
 @model CheckoutViewModel
 
@@ -89,12 +91,39 @@
                 }
             }
 
-            <shape type="StripeCheckout"
-                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                   prop-NetTotal="@Model.NetTotal"
-                   prop-GrossTotal="@Model.GrossTotal"
-                   prop-PublishableKey="@Model.StripePublishableKey"
-                   prop-ClientSecret="@Model.PaymentIntentClientSecret"/>
+            @*if totals are 0, don't show stripe form at all?*@
+            @if (Model.SingleCurrencyTotal.Value > 0)
+            {
+                <shape type="StripeCheckout"
+                       prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                       prop-NetTotal="@Model.NetTotal"
+                       prop-GrossTotal="@Model.GrossTotal"
+                       prop-PublishableKey="@Model.StripePublishableKey"
+                       prop-ClientSecret="@Model.PaymentIntentClientSecret"/>                
+            }
+            else
+            {
+                // call the other thing
+                <div class="pay-button-container">
+@*                    <a class="pay-button btn btn-success justify-content-center"
+                       href="@Url.Action(
+                        nameof(PaymentController.CheckoutWithoutPayment),
+                        typeof(PaymentController).ControllerName(),
+                        new { area = "OrchardCore.Commerce", orderId = @orderPart.OrderId.Text })">
+                        <span class="pay-text">
+                            @T["Checkout Without Payment"]
+                        </span>
+                    </a>
+*@
+
+                    <a class="pay-button btn btn-success justify-content-center" href="@Href($"~/checkout/CheckoutWithoutPayment/{112121}")">
+                    @*<a class="pay-button btn btn-success justify-content-center" href="@Href($"/CheckoutWithoutPayment/{orderPart.OrderId.Text}")">*@
+                        <span class="pay-text">
+                            @T["Checkout Without Payment"]
+                        </span>
+                    </a>
+                </div>
+            }
         </form>
     </div>
 </section>

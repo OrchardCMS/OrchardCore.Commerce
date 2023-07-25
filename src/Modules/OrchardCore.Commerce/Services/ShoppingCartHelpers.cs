@@ -102,7 +102,15 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             line.UnitPrice = line.UnitPrice.GetRounded();
         }
 
-        model.Totals.AddRange(totals.Round());
+        if (totals.Any())
+        {
+            model.Totals.AddRange(totals.Round());
+        }
+        else
+        {
+            model.Totals.Add(new Amount(0, lines.First().LinePrice.Currency));
+        }
+
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
 

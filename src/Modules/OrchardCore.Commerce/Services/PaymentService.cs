@@ -107,7 +107,8 @@ public class PaymentService : IPaymentService
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
         var initPaymentIntent = new PaymentIntent();
         if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
-            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
+            !string.IsNullOrEmpty(stripeApiSettings.SecretKey) &&
+            total.Value > 0)
         {
             var paymentIntentId = _paymentIntentPersistence.Retrieve();
             initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
