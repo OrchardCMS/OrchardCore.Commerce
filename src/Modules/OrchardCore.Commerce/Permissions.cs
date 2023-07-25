@@ -6,11 +6,12 @@ namespace OrchardCore.Commerce;
 
 public class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageCurrencySettings = new("ManageCurrencySettings", "Manage Currency Settings");
-    public static readonly Permission ManageStripeApiSettings = new("ManageStripeApiSettings", "Manage Stripe API Settings");
-    public static readonly Permission ManagePriceDisplaySettings = new("ManagePriceDisplaySettings", "Manage Price Display Settings");
-    public static readonly Permission ManageRegionSettings = new("ManageRegionSettings", "Manage Region Settings");
-    public static readonly Permission Checkout = new("Checkout", "Ability to checkout");
+    public static readonly Permission ManageCurrencySettings = new(nameof(ManageCurrencySettings), "Manage Currency Settings");
+    public static readonly Permission ManageStripeApiSettings = new(nameof(ManageStripeApiSettings), "Manage Stripe API Settings");
+    public static readonly Permission ManagePriceDisplaySettings = new(nameof(ManagePriceDisplaySettings), "Manage Price Display Settings");
+    public static readonly Permission ManageRegionSettings = new(nameof(ManageRegionSettings), "Manage Region Settings");
+    public static readonly Permission ManageOrders = new(nameof(ManageOrders), "Manage Orders");
+    public static readonly Permission Checkout = new(nameof(Checkout), "Ability to checkout");
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync() =>
         Task.FromResult<IEnumerable<Permission>>(new[]
@@ -19,6 +20,7 @@ public class Permissions : IPermissionProvider
             ManageStripeApiSettings,
             Checkout,
             ManageRegionSettings,
+            ManageOrders,
             ManagePriceDisplaySettings,
         });
 
@@ -34,6 +36,7 @@ public class Permissions : IPermissionProvider
                     ManageStripeApiSettings,
                     Checkout,
                     ManageRegionSettings,
+                    ManageOrders,
                     ManagePriceDisplaySettings,
                 },
             },

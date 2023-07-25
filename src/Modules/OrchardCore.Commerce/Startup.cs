@@ -1,5 +1,6 @@
 using Fluid;
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -131,6 +132,8 @@ public class Startup : StartupBase
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>();
         services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplay>();
+
+        services.AddScoped<IAuthorizationHandler, OrderPermissionsAuthorizationHandler>();
 
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
