@@ -132,6 +132,9 @@ public class PriceTests
 
         // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
         public string GetVariantKey(string sku) => throw new NotSupportedException();
+
+        // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
+        public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart) => throw new NotSupportedException();
     }
 
     private class DummyPriceProvider : IPriceProvider

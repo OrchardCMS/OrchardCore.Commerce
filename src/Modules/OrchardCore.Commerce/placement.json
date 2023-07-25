@@ -46,11 +46,6 @@
       "contentType": [ "Product" ]
     },
     {
-      "differentiator": "InventoryPart-Inventory",
-      "displayType": "SummaryAdmin",
-      "place": "-"
-    },
-    {
       "differentiator": "DiscountPart-MaximumProducts",
       "place": "-"
     },

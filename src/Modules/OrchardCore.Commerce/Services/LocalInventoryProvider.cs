@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YesSql;
@@ -29,38 +30,61 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
     public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model) => Task.FromResult(true);
 
-    public async Task<int> QueryInventoryAsync(string sku)
+    public async Task<IDictionary<string, int>> QueryAllInventoriesAsync(string sku)
     {
         var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
-        return inventoryPart?.Inventory.Value is { } inventory ? (int)inventory : 0;
+        return inventoryPart?.Inventory;
+    }
+
+    public async Task<int> QueryInventoryAsync(string sku, string fullSku = null)
+    {
+        var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
+
+        // If fullSku is specified, look for Price Variant Product's inventory.
+        var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? sku : fullSku;
+        var relevantInventory = inventoryPart?.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+
+        return relevantInventory is { } inventory ? inventory.Value : 0;
     }
 
     public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
     {
         foreach (var item in model)
         {
-            await UpdateInventoryAsync(await _productService.GetProductAsync(item.ProductSku), -item.Quantity);
+            var productPart = await _productService.GetProductAsync(item.ProductSku);
+            var fullSku = _productService.GetOrderFullSku(item, productPart);
+
+            await UpdateInventoryAsync(
+                await _productService.GetProductAsync(item.ProductSku),
+                -item.Quantity,
+                fullSku);
         }
 
         return model;
     }
 
-    private async Task UpdateInventoryAsync(ProductPart productPart, int difference)
+    private async Task UpdateInventoryAsync(ProductPart productPart, int difference, string fullSku = null)
     {
         await _lock.WaitAsync();
 
         try
         {
-            var inventoryPart = productPart.As<InventoryPart>();
+            var inventoryPart = productPart.ContentItem.As<InventoryPart>();
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
-            var newValue = ((int)inventoryPart.Inventory.Value) + difference;
+            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
+            var relevantInventory = inventoryPart?.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+
+            var newValue = relevantInventory.Value.Value + difference;
             if (newValue < 0)
             {
                 throw new InvalidOperationException("Inventory value cannot be negative.");
             }
 
-            inventoryPart.Inventory.Value = newValue;
+            var newEntry = new KeyValuePair<string, int>(relevantInventory.Value.Key, newValue);
+
+            inventoryPart.Inventory.Remove(inventoryIdentifier);
+            inventoryPart.Inventory.Add(newEntry);
             inventoryPart.Apply();
 
             _session.Save(productPart.ContentItem);

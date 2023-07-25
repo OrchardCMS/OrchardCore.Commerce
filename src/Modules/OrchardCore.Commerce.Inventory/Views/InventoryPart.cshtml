@@ -1,0 +1,16 @@
+@model InventoryPartViewModel
+
+@if (Model.Inventory is { } inventory)
+{
+    <div class="pb-3 field field-type-numericfield field-name-inventory-part-inventory">
+        @foreach (var inventoryEntry in inventory)
+        {
+            var inventoryTitle = inventory.Count > 1 ? inventoryEntry.Key.Split('-').Last() : string.Empty;
+
+            <span class="d-block w-100">
+                <strong class="field-name-inventory-part-inventory-title">@inventoryTitle @T["Inventory"]:</strong>
+                @T["{0}", inventoryEntry.Value]   
+            </span>
+        }
+    </div>
+}
