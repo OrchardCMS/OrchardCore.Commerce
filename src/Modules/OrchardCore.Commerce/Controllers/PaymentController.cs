@@ -155,6 +155,13 @@ public class PaymentController : Controller
     {
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
+        // Regular users should only see their own Orders, while users with the ManageOrders permission should be
+        // able to see all Orders.
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOrders) && order.Author != User.Identity.Name)
+        {
+            return NotFound();
+        }
+
         order.DisplayText = T["Success"].Value; // This is only for display, intentionally not saved.
         return View(order);
     }

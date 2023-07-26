@@ -28,10 +28,10 @@ This project uses `Lombiq Node.js Extensions` to compile and lint client-side as
 
 1. Clone this repository.
 2. Build and run the `OrchardCore.Commerce.Web` project.
-3. Run the `OrchardCore Commerce - Development` recipe on the setup screen.
-4. Go to _Features_, search for "Commerce" and turn on everything.
-5. Go to _Settings_ → _Stripe API_. Set the keys (test keys can be found below). If the keys are not set, payment won't work.
-6. Go to Content Items, and create a `Product`.
+3. Thanks to [Auto Setup](https://docs.orchardcore.net/en/latest/docs/reference/modules/AutoSetup/), the site will be set up with the `OrchardCore Commerce - Development` recipe.
+4. Go to the dashboard, using the credentials `admin` and `Password1!`.
+5. Go to _Configuration_ → _Commerce_ → _Stripe API_. Set the keys to the test keys found [here](docs/features/stripe-payment.md). If the keys are not set, payment won't work.
+6. Go to _Content_ → _Content Items_, and create your first `Product`.
 
 ## Documentation
 

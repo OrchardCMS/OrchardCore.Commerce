@@ -1,0 +1,11 @@
+name: Validate Pull Request
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  validate-pull-request:
+    name: Validate Pull Request
+    uses: Lombiq/GitHub-Actions/.github/workflows/validate-pull-request.yml@dev

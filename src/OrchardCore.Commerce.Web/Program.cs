@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Logging;
@@ -13,7 +14,13 @@ var configuration = builder.Configuration;
 
 builder.Services
     .AddSingleton(configuration)
-    .AddOrchardCms(builder => builder.AddSetupFeatures("OrchardCore.AutoSetup"));
+    .AddOrchardCms(builder =>
+    {
+        if (!configuration.IsUITesting())
+        {
+            builder.AddSetupFeatures("OrchardCore.AutoSetup");
+        }
+    });
 
 var app = builder.Build();
 
