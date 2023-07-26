@@ -294,10 +294,10 @@ public class StripePaymentService : IStripePaymentService
             return null;
         }
 
-        var guidId = Guid.NewGuid().ToString();
-        order.DisplayText = T["Order {0}", guidId];
+        var guid = Guid.NewGuid().ToString();
+        order.DisplayText = T["Order {0}", guid];
 
-        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart); // this work?
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
@@ -310,7 +310,7 @@ public class StripePaymentService : IStripePaymentService
             orderPart.LineItems.Clear();
             orderPart.LineItems.AddRange(lineItems);
 
-            orderPart.OrderId.Text = guidId;
+            orderPart.OrderId.Text = guid;
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
 
             // Store the current applicable discount info so they will be available in the future.

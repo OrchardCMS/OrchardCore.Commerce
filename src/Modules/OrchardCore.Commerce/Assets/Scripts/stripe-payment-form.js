@@ -80,7 +80,6 @@ window.stripePaymentForm = function stripePaymentForm(
             .then((response) => response.json());
     }
 
-
     function getText(element) {
         return element?.textContent.trim();
     }

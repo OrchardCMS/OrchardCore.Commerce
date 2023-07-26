@@ -167,8 +167,6 @@ public class PaymentController : Controller
     }
 
     [AllowAnonymous]
-    ////[HttpGet("CheckoutWithoutPayment/{orderId}")]
-    //[Route("checkout/CheckoutWithoutPayment/{orderId}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CheckoutWithoutPayment()
