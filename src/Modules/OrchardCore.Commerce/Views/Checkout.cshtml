@@ -13,7 +13,6 @@
 
 <section id="checkout">
     <div class="payment-form_container">
-        @*add action and route conditionally*@
         <form asp-action="@nameof(PaymentController.CheckoutWithoutPayment)" asp-route-shoppingCartId="@Model.ShoppingCartId" id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
@@ -105,20 +104,7 @@
             else
             {
                 <div class="pay-button-container">
-@*                    <a class="pay-button btn btn-success justify-content-center"
-                       href="@Url.Action(
-                        nameof(PaymentController.CheckoutWithoutPayment),
-                        typeof(PaymentController).ControllerName(),
-                        new { area = "OrchardCore.Commerce", orderId = @orderPart.OrderId.Text })">
-                        <span class="pay-text">
-                            @T["Checkout Without Payment"]
-                        </span>
-                    </a>
-*@
-
                     <button class="pay-button btn btn-success justify-content-center" type="submit">
-                    @*<a class="pay-button btn btn-success justify-content-center" href="@Href($"~/checkout/CheckoutWithoutPayment/{orderPart.ContentItem.ContentItemId}")">*@
-                    @*<a class="pay-button btn btn-success justify-content-center" href="@Href($"/CheckoutWithoutPayment/{orderPart.OrderId.Text}")">*@
                         <span class="pay-text">
                             @T["Checkout Without Payment"]
                         </span>
