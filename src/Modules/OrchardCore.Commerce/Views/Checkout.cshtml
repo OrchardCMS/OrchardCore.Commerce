@@ -13,7 +13,8 @@
 
 <section id="checkout">
     <div class="payment-form_container">
-        <form id="payment-form" class="payment-form">
+        @*add action and route conditionally*@
+        <form asp-action="@nameof(PaymentController.CheckoutWithoutPayment)" asp-route-shoppingCartId="@Model.ShoppingCartId" id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
@@ -91,7 +92,7 @@
                 }
             }
 
-            @*if totals are 0, don't show stripe form at all?*@
+            @*If totals are zero, there's no need for payment.*@
             @if (Model.SingleCurrencyTotal.Value > 0)
             {
                 <shape type="StripeCheckout"
@@ -103,7 +104,6 @@
             }
             else
             {
-                // call the other thing
                 <div class="pay-button-container">
 @*                    <a class="pay-button btn btn-success justify-content-center"
                        href="@Url.Action(
@@ -116,12 +116,13 @@
                     </a>
 *@
 
-                    <a class="pay-button btn btn-success justify-content-center" href="@Href($"~/checkout/CheckoutWithoutPayment/{112121}")">
+                    <button class="pay-button btn btn-success justify-content-center" type="submit">
+                    @*<a class="pay-button btn btn-success justify-content-center" href="@Href($"~/checkout/CheckoutWithoutPayment/{orderPart.ContentItem.ContentItemId}")">*@
                     @*<a class="pay-button btn btn-success justify-content-center" href="@Href($"/CheckoutWithoutPayment/{orderPart.OrderId.Text}")">*@
                         <span class="pay-text">
                             @T["Checkout Without Payment"]
                         </span>
-                    </a>
+                    </button>
                 </div>
             }
         </form>

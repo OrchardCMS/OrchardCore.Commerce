@@ -31,9 +31,15 @@ public interface IStripePaymentService
     Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor);
 
     /// <summary>
-    /// Updates the corresponding order status to Order for the given <paramref name="paymentIntent"/>.
+    /// Creates an order content item in the database based on the current <see cref="ShoppingCart"/> content.
     /// </summary>
-    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
+    Task<ContentItem> CreateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor);
+
+    /// <summary>
+    /// Updates the corresponding order status to Ordered for the given <paramref name="paymentIntent"/> or the
+    /// already existing <paramref name="orderItem"/>.
+    /// </summary>
+    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null);
 
     /// <summary>
     /// Updates the corresponding order status to failed payment for the given <paramref name="paymentIntent"/>.

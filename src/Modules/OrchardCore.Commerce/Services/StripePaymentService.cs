@@ -140,27 +140,33 @@ public class StripePaymentService : IStripePaymentService
             _requestOptions.SetIdempotencyKey());
     }
 
-    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent)
+    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null)
     {
-        var order = await GetOrderByPaymentIntentIdAsync(paymentIntent.Id);
+        var order = paymentIntent != null
+            ? await GetOrderByPaymentIntentIdAsync(paymentIntent.Id)
+            : orderItem;
+
         order.Alter<OrderPart>(orderPart =>
         {
-            // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
-            // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
-            var orderPartCharge = orderPart.Charges.SingleOrDefault();
-            var amount = orderPartCharge!.Amount;
-
-            var payment = new Payment
+            if (paymentIntent != null)
             {
-                Kind = paymentIntent.PaymentMethod.GetFormattedPaymentType(),
-                ChargeText = paymentIntent.Description,
-                TransactionId = paymentIntent.Id,
-                Amount = amount,
-                CreatedUtc = paymentIntent.Created,
-            };
+                // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
+                // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
+                var orderPartCharge = orderPart.Charges.SingleOrDefault();
+                var amount = orderPartCharge!.Amount;
 
-            orderPart.Charges.Clear();
-            orderPart.Charges.Add(payment);
+                var payment = new Payment
+                {
+                    Kind = paymentIntent.PaymentMethod.GetFormattedPaymentType(),
+                    ChargeText = paymentIntent.Description,
+                    TransactionId = paymentIntent.Id,
+                    Amount = amount,
+                    CreatedUtc = paymentIntent.Created,
+                };
+
+                orderPart.Charges.Clear();
+                orderPart.Charges.Add(payment);
+            }
 
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
@@ -274,6 +280,52 @@ public class StripePaymentService : IStripePaymentService
         {
             await _contentManager.UpdateAsync(order);
         }
+
+        return order;
+    }
+
+    public async Task<ContentItem> CreateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor)
+    {
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+
+        var order = await _contentManager.NewAsync(Constants.ContentTypes.Order);
+        if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+        {
+            return null;
+        }
+
+        var guidId = Guid.NewGuid().ToString();
+        order.DisplayText = T["Order {0}", guidId];
+
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart); // this work?
+
+        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+            shoppingCartId: null,
+            order.As<OrderPart>().ShippingAddress.Address,
+            order.As<OrderPart>().BillingAddress.Address);
+
+        order.Alter<OrderPart>(orderPart =>
+        {
+            // Shopping cart
+            orderPart.LineItems.Clear();
+            orderPart.LineItems.AddRange(lineItems);
+
+            orderPart.OrderId.Text = guidId;
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+
+            // Store the current applicable discount info so they will be available in the future.
+            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                .Lines
+                .Where(line => line.AdditionalData.GetDiscounts().Any())
+                .ToDictionary(
+                    line => line.ProductSku,
+                    line => line.AdditionalData.GetDiscounts()));
+        });
+
+        // Decrease inventories of purchased items.
+        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
+
+        await _contentManager.CreateAsync(order);
 
         return order;
     }

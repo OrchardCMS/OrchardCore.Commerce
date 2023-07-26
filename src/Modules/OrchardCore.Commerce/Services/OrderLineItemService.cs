@@ -109,7 +109,11 @@ public class OrderLineItemService : IOrderLineItemService
             }
         }
 
-        return (viewModelLineItems, viewModelLineItems.CalculateTotals().Single());
+        var total = viewModelLineItems.CalculateTotals().Any()
+            ? viewModelLineItems.CalculateTotals().Single()
+            : new Amount(0, lineItems.First().LinePrice.Currency);
+
+        return (viewModelLineItems, total);
     }
 
     private static IEnumerable<DiscountInformation> GetDiscounts(

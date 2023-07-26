@@ -167,24 +167,19 @@ public class PaymentController : Controller
     }
 
     [AllowAnonymous]
-    //[HttpGet("CheckoutWithoutPayment/{orderId}")]
-    [Route("checkout/CheckoutWithoutPayment/{orderId}")]
-    //[HttpPost]
-    //[ValidateAntiForgeryToken]
-    public async Task<IActionResult> CheckoutWithoutPayment(string orderId) // maybe not orderid but the shopping cart ID?
+    ////[HttpGet("CheckoutWithoutPayment/{orderId}")]
+    //[Route("checkout/CheckoutWithoutPayment/{orderId}")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CheckoutWithoutPayment()
     {
-        // get or create order?
-        // manually or update CreateOrUpdateOrderFromShoppingCartAsync()?
-        var order = await _contentManager.GetAsync(orderId);
+        var order = await _stripePaymentService.CreateOrderFromShoppingCartAsync(_updateModelAccessor);
 
+        await _stripePaymentService.UpdateOrderToOrderedAsync(orderItem: order);
         await _paymentService.FinalModificationOfOrderAsync(order);
 
-        // also update order to Ordered status somewhere
-
-        return RedirectToAction(nameof(Success), new { orderId });
+        return RedirectToAction(nameof(Success), new { orderId = order.ContentItem.ContentItemId });
     }
-
-
 
     [AllowAnonymous]
     [HttpGet("checkout/middleware")]
