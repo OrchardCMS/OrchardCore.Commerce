@@ -37,7 +37,7 @@ public interface IStripePaymentService
 
     /// <summary>
     /// Updates the corresponding order status to Ordered for the given <paramref name="paymentIntent"/> or the
-    /// already existing <paramref name="orderItem"/>.
+    /// provided <paramref name="orderItem"/>.
     /// </summary>
     Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null);
 
