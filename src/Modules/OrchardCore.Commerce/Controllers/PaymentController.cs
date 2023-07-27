@@ -171,7 +171,7 @@ public class PaymentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CheckoutWithoutPayment()
     {
-        var order = await _stripePaymentService.CreateOrderFromShoppingCartAsync(_updateModelAccessor);
+        var order = await _stripePaymentService.CreateNoPaymentOrderFromShoppingCartAsync(_updateModelAccessor);
 
         await _stripePaymentService.UpdateOrderToOrderedAsync(orderItem: order);
         await _paymentService.FinalModificationOfOrderAsync(order);

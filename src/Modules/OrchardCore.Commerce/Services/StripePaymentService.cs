@@ -284,7 +284,7 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public async Task<ContentItem> CreateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor)
+    public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
 
