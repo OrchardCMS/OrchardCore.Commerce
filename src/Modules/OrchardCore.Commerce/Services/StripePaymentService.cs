@@ -176,6 +176,11 @@ public class StripePaymentService : IStripePaymentService
             await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
         }
 
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+
+        // Decrease inventories of purchased items.
+        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
+
         await _contentManager.UpdateAsync(order);
     }
 
@@ -269,9 +274,6 @@ public class StripePaymentService : IStripePaymentService
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
 
-        // Decrease inventories of purchased items.
-        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
-
         if (string.IsNullOrEmpty(orderId))
         {
             await _contentManager.CreateAsync(order);
@@ -321,9 +323,6 @@ public class StripePaymentService : IStripePaymentService
                     line => line.ProductSku,
                     line => line.AdditionalData.GetDiscounts()));
         });
-
-        // Decrease inventories of purchased items.
-        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
 
         await _contentManager.CreateAsync(order);
 
