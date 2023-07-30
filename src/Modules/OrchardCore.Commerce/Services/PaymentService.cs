@@ -237,8 +237,7 @@ public class PaymentService : IPaymentService
         order.Alter<OrderPart>(orderPart =>
         {
             // Shopping cart
-            orderPart.LineItems.Clear();
-            orderPart.LineItems.AddRange(lineItems);
+            orderPart.LineItems.SetItems(lineItems);
 
             orderPart.OrderId.Text = guid;
             orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();

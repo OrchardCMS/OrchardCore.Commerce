@@ -254,8 +254,7 @@ public class StripePaymentService : IStripePaymentService
                 });
 
             // Shopping cart
-            orderPart.LineItems.Clear();
-            orderPart.LineItems.AddRange(lineItems);
+            orderPart.LineItems.SetItems(lineItems);
 
             orderPart.OrderId.Text = guidId;
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
