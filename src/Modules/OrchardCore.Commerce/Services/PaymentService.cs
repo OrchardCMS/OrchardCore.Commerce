@@ -1,20 +1,25 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
 using Stripe;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Constants.ContentTypes;
@@ -29,12 +34,13 @@ public class PaymentService : IPaymentService
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
     private readonly UserManager<IUser> _userManager;
-    private readonly IStringLocalizer T;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IHttpContextAccessor _hca;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -46,7 +52,9 @@ public class PaymentService : IPaymentService
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IShoppingCartPersistence shoppingCartPersistence)
+        IShoppingCartPersistence shoppingCartPersistence,
+        IUpdateModelAccessor updateModelAccessor,
+        IContentItemDisplayManager contentItemDisplayManager)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _stripePaymentService = stripePaymentService;
@@ -57,7 +65,8 @@ public class PaymentService : IPaymentService
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
-        T = services.StringLocalizer.Value;
+        _updateModelAccessor = updateModelAccessor;
+        _contentItemDisplayManager = contentItemDisplayManager;
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
         _hca = services.HttpContextAccessor.Value;
@@ -107,7 +116,8 @@ public class PaymentService : IPaymentService
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
         var initPaymentIntent = new PaymentIntent();
         if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
-            !string.IsNullOrEmpty(stripeApiSettings.SecretKey))
+            !string.IsNullOrEmpty(stripeApiSettings.SecretKey) &&
+            total.Value > 0)
         {
             var paymentIntentId = _paymentIntentPersistence.Retrieve();
             initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
@@ -159,8 +169,8 @@ public class PaymentService : IPaymentService
 
             await userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
             {
-                var part = contentItem.ContainsKey(nameof(UserAddressesPart))
-                    ? contentItem[nameof(UserAddressesPart)].ToObject<UserAddressesPart>()!
+                var part = contentItem.TryGetValue(nameof(UserAddressesPart), out var partJson)
+                    ? partJson.ToObject<UserAddressesPart>()!
                     : new UserAddressesPart();
 
                 part.BillingAndShippingAddressesMatch.Value = isSame;
@@ -168,10 +178,6 @@ public class PaymentService : IPaymentService
                 return contentItem;
             });
         }
-
-        order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
-
-        await _contentManager.UpdateAsync(order);
 
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         currentShoppingCart?.Items?.Clear();
@@ -181,5 +187,54 @@ public class PaymentService : IPaymentService
 
         // Set back to default, because a new payment intent should be created on the next checkout.
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
+    }
+
+    public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync()
+    {
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+
+        var order = await _contentManager.NewAsync(Order);
+        if (await UpdateOrderWithDriversAsync(order))
+        {
+            return null;
+        }
+
+        var lineItems = await _stripePaymentService.CreateOrderLineItemsAsync(currentShoppingCart);
+
+        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+            shoppingCartId: null,
+            order.As<OrderPart>().ShippingAddress.Address,
+            order.As<OrderPart>().BillingAddress.Address);
+
+        if (!cartViewModel.Totals.Any() || cartViewModel.Totals.Any(total => total.Value > 0))
+        {
+            return null;
+        }
+
+        order.Alter<OrderPart>(orderPart =>
+        {
+            // Shopping cart
+            orderPart.LineItems.SetItems(lineItems);
+
+            orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
+
+            // Store the current applicable discount info, so they will be available in the future.
+            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                .Lines
+                .Where(line => line.AdditionalData.GetDiscounts().Any())
+                .ToDictionary(
+                    line => line.ProductSku,
+                    line => line.AdditionalData.GetDiscounts()));
+        });
+
+        await _contentManager.CreateAsync(order);
+
+        return order;
+    }
+
+    private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order)
+    {
+        await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+        return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 }

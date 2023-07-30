@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -31,9 +32,10 @@ public interface IStripePaymentService
     Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor);
 
     /// <summary>
-    /// Updates the corresponding order status to Order for the given <paramref name="paymentIntent"/>.
+    /// Updates the corresponding order status to <see cref="OrderStatuses.Ordered"/> for the given
+    /// <paramref name="paymentIntent"/> or the provided <paramref name="orderItem"/>.
     /// </summary>
-    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
+    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null);
 
     /// <summary>
     /// Updates the corresponding order status to failed payment for the given <paramref name="paymentIntent"/>.

@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
+using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
@@ -27,21 +27,21 @@ public class OrderController : Controller
     private readonly IPaymentService _paymentService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
-    private readonly IStripePaymentService _stripePaymentService;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
+    private readonly IStripePaymentService _stripePaymentService;
 
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
-        IStripePaymentService stripePaymentService,
-        IEnumerable<IWorkflowManager> workflowManagers)
+        IEnumerable<IWorkflowManager> workflowManagers,
+        IStripePaymentService stripePaymentService)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
-        _stripePaymentService = stripePaymentService;
         _workflowManagers = workflowManagers;
+        _stripePaymentService = stripePaymentService;
     }
 
     [AllowAnonymous]

@@ -167,6 +167,22 @@ public class PaymentController : Controller
     }
 
     [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CheckoutWithoutPayment()
+    {
+        if (await _paymentService.CreateNoPaymentOrderFromShoppingCartAsync() is not { } order)
+        {
+            return NotFound();
+        }
+
+        await _stripePaymentService.UpdateOrderToOrderedAsync(orderItem: order);
+        await _paymentService.FinalModificationOfOrderAsync(order);
+
+        return RedirectToAction(nameof(Success), new { orderId = order.ContentItem.ContentItemId });
+    }
+
+    [AllowAnonymous]
     [HttpGet("checkout/middleware")]
     public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
     {

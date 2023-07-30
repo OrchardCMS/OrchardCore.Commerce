@@ -1,4 +1,5 @@
 namespace OrchardCore.Commerce.Constants;
+
 public static class OrderStatuses
 {
     public const string Pending = nameof(Pending);

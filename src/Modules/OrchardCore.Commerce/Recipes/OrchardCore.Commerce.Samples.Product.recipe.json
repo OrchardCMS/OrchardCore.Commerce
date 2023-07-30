@@ -137,6 +137,66 @@
             "ProductSku": "TESTPRODUCT"
           },
           "Product": {}
+        },
+        {
+          "ContentItemId": "testfreeproduct000",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Product",
+          "DisplayText": "TestFreeProduct",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
+          "PublishedUtc": "2022-08-10T19:34:57.2716912Z",
+          "CreatedUtc": "2022-08-10T19:34:57.2678948Z",
+          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
+          "Author": "admin",
+          "TitlePart": {
+            "Title": "TestFreeProduct"
+          },
+          "AutoroutePart": {
+            "Path": "testfreeproduct",
+            "SetHomepage": false,
+            "Disabled": false,
+            "RouteContainedItems": false,
+            "Absolute": false
+          },
+          "HtmlBodyPart": {
+            "Html": ""
+          },
+          "ProductPart": {
+            "Sku": "TESTFREEPRODUCT"
+          },
+          "PricePart": {
+            "Price": {
+              "value": 0.0,
+              "currency": "USD"
+            }
+          },
+          "InventoryPart": {
+            "Inventory": {
+              "TESTFREEPRODUCT": 5
+            },
+            "InventoryKeys": [
+              "TESTFREEPRODUCT"
+            ],
+            "AllowsBackOrder": {
+              "Value": true
+            },
+            "IgnoreInventory": {
+              "Value": false
+            },
+            "MaximumOrderQuantity": {
+              "Value": 2.0
+            },
+            "MinimumOrderQuantity": {
+              "Value": 1.0
+            },
+            "OutOfStockMessage": {
+              "Html": "A professional out of stock message."
+            },
+            "ProductSku": "TESTFREEPRODUCT"
+          },
+          "Product": {}
         }
       ]
     }

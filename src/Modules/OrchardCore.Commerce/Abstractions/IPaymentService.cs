@@ -1,4 +1,4 @@
-﻿using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
@@ -23,4 +23,9 @@ public interface IPaymentService
     /// When the order is payed this logic should be run to set <paramref name="order"/> properties that represents its state.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order);
+
+    /// <summary>
+    /// Creates an order content item without payment in the database based on the current <see cref="ShoppingCart"/> content.
+    /// </summary>
+    Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync();
 }

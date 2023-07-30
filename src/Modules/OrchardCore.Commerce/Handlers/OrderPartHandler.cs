@@ -1,0 +1,36 @@
+using Microsoft.Extensions.Localization;
+using OrchardCore.Commerce.Models;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
+using System;
+using System.Threading.Tasks;
+using YesSql;
+
+namespace OrchardCore.Commerce.Handlers;
+
+public class OrderPartHandler : ContentPartHandler<OrderPart>
+{
+    private readonly IStringLocalizer T;
+    private readonly ISession _session;
+
+    public OrderPartHandler(IStringLocalizer<OrderPartHandler> stringLocalizer, ISession session)
+    {
+        _session = session;
+        T = stringLocalizer;
+    }
+
+    public override Task UpdatedAsync(UpdateContentContext context, OrderPart part)
+    {
+        if (part.ContentItem.As<OrderPart>() is not { } orderPart) return Task.CompletedTask;
+
+        var guid = orderPart.OrderId.Text ?? Guid.NewGuid().ToString();
+        orderPart.OrderId.Text = guid;
+
+        orderPart.ContentItem.DisplayText = T["Order {0}", guid];
+
+        orderPart.Apply();
+        _session.Save(orderPart.ContentItem);
+
+        return Task.CompletedTask;
+    }
+}

@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Helpers;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -45,8 +46,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
              .Where(lineItem => lineItem.Quantity != 0)
              .ToList();
 
-        part.LineItems.Clear();
-        part.LineItems.AddRange(lineItems);
+        part.LineItems.SetItems(lineItems);
 
         return await EditAsync(part, context);
     }

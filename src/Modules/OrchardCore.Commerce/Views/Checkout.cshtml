@@ -1,4 +1,6 @@
+@using OrchardCore.Commerce.Controllers;
 @using OrchardCore.Commerce.Tax.Extensions
+@using OrchardCore.Mvc.Core.Utilities;
 
 @model CheckoutViewModel
 
@@ -11,7 +13,7 @@
 
 <section id="checkout">
     <div class="payment-form_container">
-        <form id="payment-form" class="payment-form">
+        <form asp-action="@nameof(PaymentController.CheckoutWithoutPayment)" asp-route-shoppingCartId="@Model.ShoppingCartId" id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
@@ -89,12 +91,26 @@
                 }
             }
 
-            <shape type="StripeCheckout"
-                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                   prop-NetTotal="@Model.NetTotal"
-                   prop-GrossTotal="@Model.GrossTotal"
-                   prop-PublishableKey="@Model.StripePublishableKey"
-                   prop-ClientSecret="@Model.PaymentIntentClientSecret"/>
+            @* If totals are zero, there's no need for payment. *@
+            @if (Model.SingleCurrencyTotal.Value > 0)
+            {
+                <shape type="StripeCheckout"
+                       prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                       prop-NetTotal="@Model.NetTotal"
+                       prop-GrossTotal="@Model.GrossTotal"
+                       prop-PublishableKey="@Model.StripePublishableKey"
+                       prop-ClientSecret="@Model.PaymentIntentClientSecret"/>                
+            }
+            else
+            {
+                <div class="pay-button-container">
+                    <button class="pay-button btn btn-success justify-content-center" type="submit">
+                        <span class="pay-text">
+                            @T["Checkout Without Payment"]
+                        </span>
+                    </button>
+                </div>
+            }
         </form>
     </div>
 </section>

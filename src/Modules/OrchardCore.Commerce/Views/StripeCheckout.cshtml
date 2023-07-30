@@ -39,7 +39,7 @@
 {
     <div>
         <strong>@T["Gross Price: {0}", Model.GrossTotal]</strong>
-    </div>    
+    </div>
 }
 
 <div class="pay-button-container">
@@ -68,7 +68,7 @@
             @Url.GetBaseUrl().JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-            @T["There was an error during confirming the payment, please try again!"].Json(),
+            @T["There was an error during confirming the payment, please try again."].Json(),
             @T["A value is required for %LABEL%."].Json());
     </script>
 }
