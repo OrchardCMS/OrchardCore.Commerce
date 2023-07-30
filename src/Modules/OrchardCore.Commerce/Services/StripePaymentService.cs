@@ -203,18 +203,14 @@ public class StripePaymentService : IStripePaymentService
         IUpdateModelAccessor updateModelAccessor)
     {
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 
-        string guidId;
         if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
         {
             if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
                 return null;
             }
-
-            guidId = order.As<OrderPart>().OrderId.Text;
         }
         else
         {
@@ -224,16 +220,12 @@ public class StripePaymentService : IStripePaymentService
                 return null;
             }
 
-            guidId = Guid.NewGuid().ToString();
-
             _session.Save(new OrderPayment
             {
                 OrderId = order.ContentItemId,
                 PaymentIntentId = paymentIntent.Id,
             });
         }
-
-        order.DisplayText = T["Order {0}", guidId];
 
         var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
 
@@ -259,7 +251,6 @@ public class StripePaymentService : IStripePaymentService
             // Shopping cart
             orderPart.LineItems.SetItems(lineItems);
 
-            orderPart.OrderId.Text = guidId;
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
 
             // Store the current applicable discount info so they will be available in the future.

@@ -183,10 +183,6 @@ public class PaymentService : IPaymentService
             });
         }
 
-        order.DisplayText = T["Order {0}", orderPart.OrderId.Text];
-
-        await _contentManager.UpdateAsync(order);
-
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         currentShoppingCart?.Items?.Clear();
 
@@ -207,9 +203,6 @@ public class PaymentService : IPaymentService
             return null;
         }
 
-        var guid = Guid.NewGuid().ToString();
-        order.DisplayText = T["Order {0}", guid];
-
         var lineItems = await _stripePaymentService.CreateOrderLineItemsAsync(currentShoppingCart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
@@ -227,7 +220,6 @@ public class PaymentService : IPaymentService
             // Shopping cart
             orderPart.LineItems.SetItems(lineItems);
 
-            orderPart.OrderId.Text = guid;
             orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
 
             // Store the current applicable discount info, so they will be available in the future.
