@@ -23,7 +23,7 @@ public class OrderPartHandler : ContentPartHandler<OrderPart>
     {
         if (part.ContentItem.As<OrderPart>() is not { } orderPart) return Task.CompletedTask;
 
-        var guid = string.IsNullOrEmpty(orderPart.OrderId.Text) ? Guid.NewGuid().ToString() : orderPart.OrderId.Text;
+        var guid = orderPart.OrderId.Text ?? Guid.NewGuid().ToString();
         orderPart.OrderId.Text = guid;
 
         orderPart.ContentItem.DisplayText = T["Order {0}", guid];
