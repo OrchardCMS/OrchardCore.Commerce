@@ -29,9 +29,4 @@ public interface IPaymentService
     /// Creates an order content item without payment in the database based on the current <see cref="ShoppingCart"/> content.
     /// </summary>
     Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync();
-
-    /// <summary>
-    /// Returns a <see cref="OrderLineItem"/> list from the given <paramref name="shoppingCart"/> items.
-    /// </summary>
-    Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart);
 }

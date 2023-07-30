@@ -41,7 +41,8 @@ public class StripePaymentService : IStripePaymentService
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IProductInventoryService _productInventoryService;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
-    private readonly IPaymentService _paymentService;
+    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
+    private readonly IPriceService _priceService;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -58,7 +59,8 @@ public class StripePaymentService : IStripePaymentService
         IContentItemDisplayManager contentItemDisplayManager,
         IProductInventoryService productInventoryService,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IPaymentService paymentService)
+        IPriceSelectionStrategy priceSelectionStrategy,
+        IPriceService priceService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -68,7 +70,8 @@ public class StripePaymentService : IStripePaymentService
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
         _productInventoryService = productInventoryService;
-        _paymentService = paymentService;
+        _priceSelectionStrategy = priceSelectionStrategy;
+        _priceService = priceService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
         _workflowManagers = workflowManagers;
@@ -232,7 +235,7 @@ public class StripePaymentService : IStripePaymentService
 
         order.DisplayText = T["Order {0}", guidId];
 
-        var lineItems = await _paymentService.CreateOrderLineItemsAsync(currentShoppingCart);
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
@@ -308,6 +311,33 @@ public class StripePaymentService : IStripePaymentService
         _paymentIntentPersistence.Store(paymentIntent.Id);
 
         return paymentIntent;
+    }
+
+    public async Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
+    {
+        var lineItems = new List<OrderLineItem>();
+
+        // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
+        // void."
+        foreach (var item in shoppingCart.Items)
+        {
+            var trimmedSku = item.ProductSku.Split('-').First();
+
+            var contentItemId = (await _session
+                    .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)
+                    .ListAsync())
+                .Select(index => index.ContentItemId)
+                .First();
+
+            var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
+
+            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
+                _priceSelectionStrategy,
+                _priceService,
+                contentItemVersion));
+        }
+
+        return lineItems;
     }
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(

@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -25,9 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
-using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -47,9 +44,6 @@ public class PaymentService : IPaymentService
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
-    private readonly ISession _session;
-    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
-    private readonly IPriceService _priceService;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -63,10 +57,7 @@ public class PaymentService : IPaymentService
         IPaymentIntentPersistence paymentIntentPersistence,
         IShoppingCartPersistence shoppingCartPersistence,
         IUpdateModelAccessor updateModelAccessor,
-        IContentItemDisplayManager contentItemDisplayManager,
-        ISession session,
-        IPriceSelectionStrategy priceSelectionStrategy,
-        IPriceService priceService)
+        IContentItemDisplayManager contentItemDisplayManager)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _stripePaymentService = stripePaymentService;
@@ -79,9 +70,6 @@ public class PaymentService : IPaymentService
         _userServiceLazy = userServiceLazy;
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
-        _session = session;
-        _priceSelectionStrategy = priceSelectionStrategy;
-        _priceService = priceService;
         T = services.StringLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -222,7 +210,7 @@ public class PaymentService : IPaymentService
         var guid = Guid.NewGuid().ToString();
         order.DisplayText = T["Order {0}", guid];
 
-        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
+        var lineItems = await _stripePaymentService.CreateOrderLineItemsAsync(currentShoppingCart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
@@ -260,32 +248,5 @@ public class PaymentService : IPaymentService
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
         return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
-    }
-
-    public async Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
-    {
-        var lineItems = new List<OrderLineItem>();
-
-        // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
-        // void."
-        foreach (var item in shoppingCart.Items)
-        {
-            var trimmedSku = item.ProductSku.Split('-').First();
-
-            var contentItemId = (await _session
-                    .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)
-                    .ListAsync())
-                .Select(index => index.ContentItemId)
-                .First();
-
-            var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
-
-            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
-                _priceSelectionStrategy,
-                _priceService,
-                contentItemVersion));
-        }
-
-        return lineItems;
     }
 }

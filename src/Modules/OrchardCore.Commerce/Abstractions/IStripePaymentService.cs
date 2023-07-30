@@ -46,4 +46,9 @@ public interface IStripePaymentService
     /// Return the saved <see cref="OrderPayment"/> for the given <paramref name="paymentIntentId"/>.
     /// </summary>
     Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId);
+
+    /// <summary>
+    /// Returns a <see cref="OrderLineItem"/> list from the given <paramref name="shoppingCart"/> items.
+    /// </summary>
+    Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart);
 }
