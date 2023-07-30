@@ -91,7 +91,7 @@
                 }
             }
 
-            @*If totals are zero, there's no need for payment.*@
+            @* If totals are zero, there's no need for payment. *@
             @if (Model.SingleCurrencyTotal.Value > 0)
             {
                 <shape type="StripeCheckout"

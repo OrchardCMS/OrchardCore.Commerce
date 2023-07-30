@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -31,13 +32,8 @@ public interface IStripePaymentService
     Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor);
 
     /// <summary>
-    /// Creates an order content item without payment in the database based on the current <see cref="ShoppingCart"/> content.
-    /// </summary>
-    Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor);
-
-    /// <summary>
-    /// Updates the corresponding order status to Ordered for the given <paramref name="paymentIntent"/> or the
-    /// provided <paramref name="orderItem"/>.
+    /// Updates the corresponding order status to <see cref="OrderStatuses.Ordered"/> for the given
+    /// <paramref name="paymentIntent"/> or the provided <paramref name="orderItem"/>.
     /// </summary>
     Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null);
 
@@ -50,9 +46,4 @@ public interface IStripePaymentService
     /// Return the saved <see cref="OrderPayment"/> for the given <paramref name="paymentIntentId"/>.
     /// </summary>
     Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId);
-
-    /// <summary>
-    /// Returns a <see cref="OrderLineItem"/> list from the given <paramref name="shoppingCart"/> items.
-    /// </summary>
-    Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart);
 }

@@ -4,20 +4,29 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
 using Stripe;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql;
 using static OrchardCore.Commerce.Constants.ContentTypes;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -35,6 +44,11 @@ public class PaymentService : IPaymentService
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IHttpContextAccessor _hca;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly ISession _session;
+    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
+    private readonly IPriceService _priceService;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -46,7 +60,12 @@ public class PaymentService : IPaymentService
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IShoppingCartPersistence shoppingCartPersistence)
+        IShoppingCartPersistence shoppingCartPersistence,
+        IUpdateModelAccessor updateModelAccessor,
+        IContentItemDisplayManager contentItemDisplayManager,
+        ISession session,
+        IPriceSelectionStrategy priceSelectionStrategy,
+        IPriceService priceService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _stripePaymentService = stripePaymentService;
@@ -57,6 +76,11 @@ public class PaymentService : IPaymentService
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
+        _updateModelAccessor = updateModelAccessor;
+        _contentItemDisplayManager = contentItemDisplayManager;
+        _session = session;
+        _priceSelectionStrategy = priceSelectionStrategy;
+        _priceService = priceService;
         T = services.StringLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -182,5 +206,81 @@ public class PaymentService : IPaymentService
 
         // Set back to default, because a new payment intent should be created on the next checkout.
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
+    }
+
+    public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync()
+    {
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+
+        var order = await _contentManager.NewAsync(Order);
+        if (await UpdateOrderWithDriversAsync(order))
+        {
+            return null;
+        }
+
+        var guid = Guid.NewGuid().ToString();
+        order.DisplayText = T["Order {0}", guid];
+
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
+
+        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+            shoppingCartId: null,
+            order.As<OrderPart>().ShippingAddress.Address,
+            order.As<OrderPart>().BillingAddress.Address);
+
+        order.Alter<OrderPart>(orderPart =>
+        {
+            // Shopping cart
+            orderPart.LineItems.Clear();
+            orderPart.LineItems.AddRange(lineItems);
+
+            orderPart.OrderId.Text = guid;
+            orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
+
+            // Store the current applicable discount info, so they will be available in the future.
+            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                .Lines
+                .Where(line => line.AdditionalData.GetDiscounts().Any())
+                .ToDictionary(
+                    line => line.ProductSku,
+                    line => line.AdditionalData.GetDiscounts()));
+        });
+
+        await _contentManager.CreateAsync(order);
+
+        return order;
+    }
+
+    private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order)
+    {
+        await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
+        return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
+    }
+
+    public async Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
+    {
+        var lineItems = new List<OrderLineItem>();
+
+        // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
+        // void."
+        foreach (var item in shoppingCart.Items)
+        {
+            var trimmedSku = item.ProductSku.Split('-').First();
+
+            var contentItemId = (await _session
+                    .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)
+                    .ListAsync())
+                .Select(index => index.ContentItemId)
+                .First();
+
+            var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
+
+            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
+                _priceSelectionStrategy,
+                _priceService,
+                contentItemVersion));
+        }
+
+        return lineItems;
     }
 }

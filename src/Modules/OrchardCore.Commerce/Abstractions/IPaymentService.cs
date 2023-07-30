@@ -1,8 +1,9 @@
-﻿using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -23,4 +24,14 @@ public interface IPaymentService
     /// When the order is payed this logic should be run to set <paramref name="order"/> properties that represents its state.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order);
+
+    /// <summary>
+    /// Creates an order content item without payment in the database based on the current <see cref="ShoppingCart"/> content.
+    /// </summary>
+    Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync();
+
+    /// <summary>
+    /// Returns a <see cref="OrderLineItem"/> list from the given <paramref name="shoppingCart"/> items.
+    /// </summary>
+    Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart);
 }

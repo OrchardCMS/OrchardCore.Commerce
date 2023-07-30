@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
+using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
@@ -27,20 +27,17 @@ public class OrderController : Controller
     private readonly IPaymentService _paymentService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
-    private readonly IStripePaymentService _stripePaymentService;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
 
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
-        IStripePaymentService stripePaymentService,
         IEnumerable<IWorkflowManager> workflowManagers)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
-        _stripePaymentService = stripePaymentService;
         _workflowManagers = workflowManagers;
     }
 
@@ -52,7 +49,7 @@ public class OrderController : Controller
         var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(shoppingCart.Id);
         var order = await _contentManager.NewAsync(Order);
-        var orderLineItems = await _stripePaymentService.CreateOrderLineItemsAsync(shoppingCart);
+        var orderLineItems = await _paymentService.CreateOrderLineItemsAsync(shoppingCart);
         order.Apply(checkoutViewModel.OrderPart);
 
         order.Alter<OrderPart>(orderPart =>
