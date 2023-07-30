@@ -183,7 +183,7 @@ public class PaymentService : IPaymentService
             });
         }
 
-        order.DisplayText = T["Order {0}", order.As<OrderPart>().OrderId.Text];
+        order.DisplayText = T["Order {0}", orderPart.OrderId.Text];
 
         await _contentManager.UpdateAsync(order);
 
