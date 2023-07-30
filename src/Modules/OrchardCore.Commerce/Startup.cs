@@ -130,7 +130,8 @@ public class Startup : StartupBase
 
         // Orders
         services.AddContentPart<OrderPart>()
-            .UseDisplayDriver<OrderPartDisplayDriver>();
+            .UseDisplayDriver<OrderPartDisplayDriver>()
+            .AddHandler<OrderPartHandler>();
         services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplay>();
 
         services.AddScoped<IAuthorizationHandler, OrderPermissionsAuthorizationHandler>();
