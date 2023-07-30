@@ -21,13 +21,15 @@ public class OrderPartHandler : ContentPartHandler<OrderPart>
 
     public override Task UpdatedAsync(UpdateContentContext context, OrderPart part)
     {
-        var guid = string.IsNullOrEmpty(part.OrderId.Text) ? Guid.NewGuid().ToString() : part.OrderId.Text;
-        part.OrderId.Text = guid;
+        if (part.ContentItem.As<OrderPart>() is not { } orderPart) return Task.CompletedTask;
 
-        part.ContentItem.DisplayText = T["Order {0}", guid];
+        var guid = string.IsNullOrEmpty(orderPart.OrderId.Text) ? Guid.NewGuid().ToString() : orderPart.OrderId.Text;
+        orderPart.OrderId.Text = guid;
 
-        part.Apply();
-        _session.Save(part.ContentItem);
+        orderPart.ContentItem.DisplayText = T["Order {0}", guid];
+
+        orderPart.Apply();
+        _session.Save(orderPart.ContentItem);
 
         return Task.CompletedTask;
     }

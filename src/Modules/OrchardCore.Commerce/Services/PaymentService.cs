@@ -1,7 +1,6 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
@@ -36,7 +35,6 @@ public class PaymentService : IPaymentService
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly ISiteService _siteService;
     private readonly UserManager<IUser> _userManager;
-    private readonly IStringLocalizer T;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
@@ -70,7 +68,6 @@ public class PaymentService : IPaymentService
         _userServiceLazy = userServiceLazy;
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
-        T = services.StringLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
         _hca = services.HttpContextAccessor.Value;
