@@ -9,6 +9,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
@@ -227,6 +228,11 @@ public class PaymentService : IPaymentService
             shoppingCartId: null,
             order.As<OrderPart>().ShippingAddress.Address,
             order.As<OrderPart>().BillingAddress.Address);
+
+        if (!cartViewModel.Totals.Any() || cartViewModel.Totals.Sum().Value != 0)
+        {
+            return null;
+        }
 
         order.Alter<OrderPart>(orderPart =>
         {
