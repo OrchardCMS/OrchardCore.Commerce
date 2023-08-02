@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.6.0" />
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.6.0" />
-    <PackageReference Include="OrchardCore.ContentManagement.Abstractions" Version="1.6.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.7.0-preview-17520" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.7.0-preview-17520" />
+    <PackageReference Include="OrchardCore.ContentManagement.Abstractions" Version="1.7.0-preview-17520" />
   </ItemGroup>
 
   <ItemGroup>

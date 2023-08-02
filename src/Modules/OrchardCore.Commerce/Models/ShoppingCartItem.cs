@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Serialization;
-using OrchardCore.ContentManagement.Utilities;
+using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
