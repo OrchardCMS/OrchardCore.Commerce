@@ -24,7 +24,7 @@ public class DiscountProvider : IPromotionProvider
     private static bool IsApplicable(
         IList<PromotionAndTaxProviderContextLineItem> lineItems,
         DateTime? purchaseDateTime) =>
-        lineItems.All(item => IsApplicablePerItem(item, purchaseDateTime));
+        lineItems.Any(item => IsApplicablePerItem(item, purchaseDateTime));
 
     private static bool IsApplicablePerItem(PromotionAndTaxProviderContextLineItem item, DateTime? purchaseDateTime)
     {
