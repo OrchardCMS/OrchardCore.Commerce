@@ -1,6 +1,4 @@
 @using OrchardCore.Commerce.Controllers;
-@using OrchardCore.Commerce.Tax.Extensions
-@using OrchardCore.Mvc.Core.Utilities;
 
 @model CheckoutViewModel
 
@@ -99,7 +97,7 @@
                        prop-NetTotal="@Model.NetTotal"
                        prop-GrossTotal="@Model.GrossTotal"
                        prop-PublishableKey="@Model.StripePublishableKey"
-                       prop-ClientSecret="@Model.PaymentIntentClientSecret"/>                
+                       prop-ClientSecret="@Model.PaymentIntentClientSecret"/>
             }
             else
             {
