@@ -37,7 +37,7 @@
     <PackageReference Include="OrchardCore.Title" Version="1.6.0" />
     <PackageReference Include="OrchardCore.Templates" Version="1.6.0" />
     <PackageReference Include="OrchardCore.Workflows.Abstractions" Version="1.6.0" />
-    <PackageReference Include="Stripe.net" Version="41.18.0" />
+    <PackageReference Include="Stripe.net" Version="41.27.0" />
   </ItemGroup>
 
   <ItemGroup>
