@@ -2,7 +2,6 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 

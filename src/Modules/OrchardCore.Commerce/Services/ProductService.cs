@@ -34,7 +34,7 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
-        var trimmedSkus = skus.Select(sku => sku.Split('-').First());
+        var trimmedSkus = skus.Select(sku => sku.Split('-')[0]);
 
         var contentItemIds = (await _session
                 .QueryIndex<ProductPartIndex>(index => index.Sku.IsIn(trimmedSkus))
@@ -67,8 +67,7 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)
     {
         // There is no GetVersionAsync that accepts a collection.
-        var contentItems = await contentItemVersions.AwaitEachAsync(async contentItemVersion =>
-            await _contentManager.GetVersionAsync(contentItemVersion));
+        var contentItems = await contentItemVersions.AwaitEachAsync(_contentManager.GetVersionAsync);
 
         // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.

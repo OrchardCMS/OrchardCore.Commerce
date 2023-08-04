@@ -1,9 +1,14 @@
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OrchardCore.Commerce.Fields;
 
+[SuppressMessage(
+    "Minor Code Smell",
+    "S2094:Classes should not be empty",
+    Justification = "Intermediate ancestor class to group together attribute fields.")]
 public abstract class ProductAttributeField : ContentField
 {
 }

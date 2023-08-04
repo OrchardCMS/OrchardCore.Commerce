@@ -22,7 +22,7 @@ public class OrderCreatedEvent : EventActivity
     public override IEnumerable<Outcome> GetPossibleOutcomes(
         WorkflowExecutionContext workflowContext,
         ActivityContext activityContext) =>
-        Outcomes(new[] { T["Done"] });
+        new[] { new Outcome(T["Done"]) };
 
     public override ActivityExecutionResult Resume(
         WorkflowExecutionContext workflowContext,

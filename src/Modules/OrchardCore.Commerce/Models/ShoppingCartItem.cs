@@ -64,10 +64,10 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             .OrderBy(value => value.AttributeName);
 
         return string.Join(
-            "-",
-            predefinedAttributes
-                .Select(attr => attr.UntypedPredefinedValue)
-                .Where(value => value != null))
+                '-',
+                predefinedAttributes
+                    .Select(attr => attr.UntypedPredefinedValue)
+                    .Where(value => value != null))
             .HtmlClassify()
             .ToUpperInvariant();
     }
