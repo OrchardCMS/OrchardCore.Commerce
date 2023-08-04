@@ -312,7 +312,7 @@ public class StripePaymentService : IStripePaymentService
         // void."
         foreach (var item in shoppingCart.Items)
         {
-            var trimmedSku = item.ProductSku.Split('-').First();
+            var trimmedSku = item.ProductSku.Split('-')[0];
 
             var contentItemId = (await _session
                     .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)

@@ -111,7 +111,7 @@ public class OrderLineItemService : IOrderLineItemService
 
         var total = viewModelLineItems.CalculateTotals().Any()
             ? viewModelLineItems.CalculateTotals().Single()
-            : new Amount(0, lineItems.First().LinePrice.Currency);
+            : new Amount(0, lineItems[0].LinePrice.Currency);
 
         return (viewModelLineItems, total);
     }

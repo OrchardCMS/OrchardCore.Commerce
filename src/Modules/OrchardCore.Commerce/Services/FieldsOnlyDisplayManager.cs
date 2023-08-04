@@ -69,8 +69,8 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         if (_hca.HttpContext is not { } context) throw new InvalidOperationException("Missing HTTP context!");
         var returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
 
-        var editAction = context.Action<TemplateController>(controller => controller.Edit(null, false, returnUrl));
-        var createAction = context.Action<TemplateController>(controller => controller.Create(null, false, returnUrl));
+        var editAction = context.ActionTask<TemplateController>(controller => controller.Edit(null, false, returnUrl));
+        var createAction = context.ActionTask<TemplateController>(controller => controller.Create(null, false, returnUrl));
 
         return GetFieldShapeTypes(contentItem, displayType)
             .Select(name =>

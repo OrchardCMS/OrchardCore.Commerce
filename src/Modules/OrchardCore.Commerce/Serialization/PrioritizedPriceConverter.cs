@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Serialization;
 
-internal class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
+internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
 {
     private const string PriorityName = "priority";
     private const string AmountName = "amount";

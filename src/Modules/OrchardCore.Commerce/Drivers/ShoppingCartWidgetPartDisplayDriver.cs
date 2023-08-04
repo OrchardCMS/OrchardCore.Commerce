@@ -16,7 +16,7 @@ public class ShoppingCartWidgetPartDisplayDriver : ContentPartDisplayDriver<Shop
         _shoppingCartPersistence = shoppingCartPersistence;
 
     public override IDisplayResult Display(ShoppingCartWidgetPart part, BuildPartDisplayContext context) =>
-        Initialize<ShoppingCartWidgetPartViewModel>(GetDisplayShapeType(context), viewModel => PopulateViewModelAsync(viewModel))
+        Initialize<ShoppingCartWidgetPartViewModel>(GetDisplayShapeType(context), PopulateViewModelAsync)
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 

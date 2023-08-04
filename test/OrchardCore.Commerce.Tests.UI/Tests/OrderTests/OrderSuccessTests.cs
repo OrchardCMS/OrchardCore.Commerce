@@ -5,6 +5,7 @@ using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 using Shouldly;
+using System.Globalization;
 using Xunit;
 using Xunit.Abstractions;
 using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
@@ -63,6 +64,7 @@ public class OrderSuccessTests : UITestBase
     }
 
     private static By QuantityFieldBy(int number) =>
-        By.XPath(FormattableString.Invariant(
+        By.XPath(string.Create(
+            CultureInfo.InvariantCulture,
             $"(//table[contains(@class, 'shopping-cart-table')]//input[contains(@name, '.Quantity')])[{number}]"));
 }

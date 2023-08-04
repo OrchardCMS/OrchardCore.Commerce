@@ -33,7 +33,7 @@ public static class PredefinedValuesProductAttributeServiceExtensions
         this IPredefinedValuesProductAttributeService service,
         ContentItem product) =>
         CartesianProduct(service.GetProductAttributesPredefinedValues(product))
-            .Select(predefinedValues => string.Join("-", predefinedValues));
+            .Select(predefinedValues => string.Join('-', predefinedValues));
 
     private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
     {

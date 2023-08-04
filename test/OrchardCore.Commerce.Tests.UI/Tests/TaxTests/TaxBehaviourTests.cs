@@ -80,7 +80,7 @@ public class TaxBehaviourTests : UITestBase
                 {
                     await context.GoToContentItemByIdAsync(TestProduct);
                     context.Exists(selector);
-                    context.GetAll(selector).Last().Text.Trim().ShouldBe(expectedPrice);
+                    context.GetAll(selector)[^1].Text.Trim().ShouldBe(expectedPrice);
                 }
 
                 async Task UpdateAddressAndVerifyPriceAsync(Func<Task> configure, string expectedPrice)

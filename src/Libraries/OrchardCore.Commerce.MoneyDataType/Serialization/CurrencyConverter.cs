@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
-internal class CurrencyConverter : System.Text.Json.Serialization.JsonConverter<ICurrency>
+internal sealed class CurrencyConverter : System.Text.Json.Serialization.JsonConverter<ICurrency>
 {
     public override ICurrency Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
         Currency.FromIsoCode(reader.GetString());

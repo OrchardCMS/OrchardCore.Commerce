@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -183,11 +184,11 @@ public class ProductAttributeTests
         var productAttributeFields = productAttributeService.GetProductAttributeFields(product).ToArray();
 
         Assert.Equal(2, productAttributeFields.Length);
-        var foobool = productAttributeFields.FirstOrDefault(field => field.Name == "foobool");
+        var foobool = productAttributeFields.Find(field => field.Name == "foobool");
         Assert.Equal("ProductPart1", foobool?.PartName);
         Assert.Equal(boolProductAttribute, foobool?.Field);
         Assert.IsType<BooleanProductAttributeFieldSettings>(foobool?.Settings);
-        var footext = productAttributeFields.FirstOrDefault(field => field.Name == "footext");
+        var footext = productAttributeFields.Find(field => field.Name == "footext");
         Assert.Equal("ProductPart2", footext?.PartName);
         Assert.Equal(textProductAttribute, footext?.Field);
         Assert.IsType<TextProductAttributeFieldSettings>(footext?.Settings);
