@@ -35,7 +35,7 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         {
             var currentSku = _hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
             var skuBefore = viewModel.Inventory.FirstOrDefault().Key != null
-                ? viewModel.Inventory.FirstOrDefault().Key.Split("-")[0]
+                ? viewModel.Inventory.FirstOrDefault().Key.Split('-')[0]
                 : "DEFAULT";
 
             part.Inventory.Clear();
