@@ -25,8 +25,8 @@ public class CurrencyTests
     [MemberData(nameof(TestData))]
     public void CurrenciesProperlyFormatAmounts(ICurrency currency, decimal amount, string expectedFormat)
     {
-        var result = currency.ToString(amount).Replace(" ", string.Empty).Replace("￥", "¥");
-        Assert.Equal(expectedFormat.Replace(" ", string.Empty).Replace("￥", "¥"), result);
+        var result = currency.ToString(amount).Replace(" ", string.Empty).Replace('￥', '¥');
+        Assert.Equal(expectedFormat.Replace(" ", string.Empty).Replace('￥', '¥'), result);
     }
 
     public class CurrencyTheoryData : TheoryData<ICurrency, decimal, string>

@@ -113,7 +113,7 @@ public class PriceTests
         return product.As<ProductPart>();
     }
 
-    private class DummyProductService : IProductService
+    private sealed class DummyProductService : IProductService
     {
         private readonly Dictionary<string, ProductPart> _products;
 
@@ -137,7 +137,7 @@ public class PriceTests
         public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart) => throw new NotSupportedException();
     }
 
-    private class DummyPriceProvider : IPriceProvider
+    private sealed class DummyPriceProvider : IPriceProvider
     {
         private readonly Func<IList<ShoppingCartItem>, bool> _isApplicable;
         public int Order { get; }
