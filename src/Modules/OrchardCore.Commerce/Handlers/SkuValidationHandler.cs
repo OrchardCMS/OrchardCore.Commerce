@@ -1,8 +1,13 @@
-﻿using OrchardCore.Commerce.Indexes;
+﻿using Microsoft.Extensions.Localization;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 
@@ -12,13 +17,19 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
 {
     private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IEnumerable<IDuplicateSkuResolver> _duplicateSkuResolvers;
+    private readonly IStringLocalizer<SkuValidationHandler> T;
 
     public SkuValidationHandler(
         ISession session,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IEnumerable<IDuplicateSkuResolver> duplicateSkuResolvers,
+        IStringLocalizer<SkuValidationHandler> stringLocalizer)
     {
         _session = session;
         _updateModelAccessor = updateModelAccessor;
+        _duplicateSkuResolvers = duplicateSkuResolvers;
+        T = stringLocalizer;
     }
 
     public override async Task UpdatedAsync(UpdateContentContext context, ProductPart part)
@@ -29,17 +40,26 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
             return;
         }
 
-        var isProductSkuAlreadyExisting = await _session
-            .Query<ContentItem, ProductPartIndex>(index =>
-                index.Sku == part.Sku &&
-                index.ContentItemId != part.ContentItem.ContentItemId)
-            .CountAsync() > 0;
+        var alreadyExisting = (await _session
+                .Query<ContentItem, ProductPartIndex>(index =>
+                    index.Sku == part.Sku &&
+                    index.ContentItemId != part.ContentItem.ContentItemId)
+                .ListAsync())
+            .AsList();
 
-        if (isProductSkuAlreadyExisting)
+        var resolvers = _duplicateSkuResolvers.AsList();
+        for (var i = 0; i < resolvers.Count && alreadyExisting?.Any() == true; i++)
+        {
+            alreadyExisting =
+                await resolvers[i].UpdateDuplicatesListAsync(part.ContentItem, alreadyExisting) ??
+                Array.Empty<ContentItem>();
+        }
+
+        if (alreadyExisting?.Any() == true)
         {
             _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(part.Sku),
-                "SKU must be unique. A product with the given SKU already exists.");
+                T["SKU must be unique. A product with the given SKU already exists."]);
         }
     }
 }
