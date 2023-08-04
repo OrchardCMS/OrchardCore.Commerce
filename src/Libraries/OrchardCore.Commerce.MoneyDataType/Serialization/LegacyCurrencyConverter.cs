@@ -4,7 +4,7 @@ using System;
 
 namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
-internal class LegacyCurrencyConverter : JsonConverter<ICurrency>
+internal sealed class LegacyCurrencyConverter : JsonConverter<ICurrency>
 {
     public override ICurrency ReadJson(
         JsonReader reader,

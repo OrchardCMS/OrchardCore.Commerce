@@ -51,7 +51,7 @@ internal static class KnownCurrencyTable
             var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(IsValid).ToList();
 
             CurrencyTable = cultures
-                .GroupBy(culture => culture.Name.Split('-').Last())
+                .GroupBy(culture => culture.Name.Split('-')[^1])
                 .Select(group => group
                     .OrderBy(RankCultureByExpectedRelevance)
                     .ThenBy(culture => culture.EnglishName)

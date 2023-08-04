@@ -33,9 +33,9 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         var viewModel = new InventoryPartViewModel();
         if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            var currentSku = _hca.HttpContext.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
+            var currentSku = _hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
             var skuBefore = viewModel.Inventory.FirstOrDefault().Key != null
-                ? viewModel.Inventory.FirstOrDefault().Key.Split("-").First()
+                ? viewModel.Inventory.FirstOrDefault().Key.Split("-")[0]
                 : "DEFAULT";
 
             part.Inventory.Clear();
@@ -51,7 +51,7 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
                 foreach (var inventoryEntry in oldInventory)
                 {
                     var updatedKey = oldInventory.Count > 1
-                        ? currentSku + "-" + inventoryEntry.Key.Split('-').Last()
+                        ? currentSku + "-" + inventoryEntry.Key.Split('-')[^1]
                         : currentSku;
 
                     part.Inventory.Remove(inventoryEntry.Key);
