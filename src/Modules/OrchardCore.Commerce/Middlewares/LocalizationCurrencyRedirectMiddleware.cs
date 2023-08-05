@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
-using ISession=YesSql.ISession;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Middlewares;
 
