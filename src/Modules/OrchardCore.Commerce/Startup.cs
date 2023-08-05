@@ -330,6 +330,11 @@ public class UserSettingsStartup : StartupBase
 [RequireFeatures("OrchardCore.ContentLocalization")]
 public class ContentLocalizationStartup : StartupBase
 {
-    public override void ConfigureServices(IServiceCollection services) =>
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddScoped<IDuplicateSkuResolver, LocalizationDuplicateSkuResolver>();
+
+        services.RemoveImplementations<IProductService>();
+        services.AddScoped<IProductService, ContentLocalizationProductService>();
+    }
 }

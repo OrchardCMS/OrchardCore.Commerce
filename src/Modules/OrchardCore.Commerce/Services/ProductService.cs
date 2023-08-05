@@ -32,7 +32,7 @@ public class ProductService : IProductService
         _predefinedValuesService = predefinedValuesService;
     }
 
-    public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
+    public virtual async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
         var trimmedSkus = skus.Select(sku => sku.Split('-')[0]);
 
