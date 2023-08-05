@@ -21,7 +21,8 @@
       "LocalizationSettings": {
         "DefaultCulture": "en-US",
         "SupportedCultures": [
-          "en-US"
+          "en-US",
+          "hu-HU"
         ]
       }
     },
