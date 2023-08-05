@@ -56,10 +56,16 @@ public class PromotionBehaviourTests : UITestBase
                 // Discount should appear in cart when discounted product is the only item in the cart.
                 context.Get(By.CssSelector(".shopping-cart-table-unit-price")).Text.ShouldBe(DiscountedPrice);
 
+                // Old price should be shown in cart.
+                context.Get(By.CssSelector(".shopping-cart-table-old-price > del")).Text.ShouldBe(FullPrice);
+
                 // Discount should appear in cart when discounted product is not the only item in the cart.
                 await context.GoToRelativeUrlAsync("/testproduct");
                 await context.ClickReliablyOnSubmitAsync();
                 context.Get(By.CssSelector(".shopping-cart-table-unit-price")).Text.ShouldBe(DiscountedPrice);
+
+                // Old price should be shown for discounted product in cart when the cart contains a full-price item too.
+                context.Get(By.CssSelector(".shopping-cart-table-old-price > del")).Text.ShouldBe(FullPrice);
 
                 // Total should reflect discount as well.
                 context.Get(By.CssSelector(".shopping-cart-table-totals > div")).Text.ShouldBe("$8.00");
