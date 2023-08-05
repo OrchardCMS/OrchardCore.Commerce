@@ -57,7 +57,47 @@
     else
     {
         <p>@T["This order is empty."]</p>
+
+        <table id="orderPart__products" class="table orderPart__products">
+            <thead>
+                <tr>
+                    <th>@T["Quantity"]</th>
+                    <th>@T["Product SKU"]</th>
+                    <th>@T["Product Name"]</th>
+                    <th>@T["Unit Price"]</th>
+                    <th>@T["Actions"]</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr v-for="(lineItem, index) in lineItems">
+                    <td>
+                        <input :name="'OrderPart.LineItems[' + index + '].Quantity'" v-model="lineItem.quantity">
+                    </td>
+                    <td>
+                        <input :name="'OrderPart.LineItems[' + index + '].ProductSku'" v-model="lineItem.productSku">
+                    </td>
+                    <td>
+                        <input :name="'OrderPart.LineItems[' + index + '].ProductName'" v-model="lineItem.productName">
+                    </td>
+                    <td>
+                        <input :name="'OrderPart.LineItems[' + index + '].UnitPrice'" v-model="lineItem.unitPrice">
+                    </td>
+                    <td>
+                        <div class="d-flex flex-row">
+                            <button class="btn btn-danger" @@click.prevent="lineItems.splice(index, 1)">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button id="addButton" class="btn btn-secondary mb-3">@T["Add Row"]</button>
+
     }
+
 </section>
 <div class="form-group">
     <div class="panel-heading">
@@ -122,3 +162,23 @@
 </div>
 
 <script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
+<script at="Head" asp-name="vuejs"></script>
+<script at="Foot" depends-on="vuejs">
+    const vueQuery = '#orderPart__products tbody';
+    const lineItems = @Json.Serialize(Model.LineItems);
+
+    var products = new Vue({
+        el: vueQuery,
+        data: { lineItems: lineItems },
+    });
+
+    document.getElementById('addButton').addEventListener('click', function (event) {
+        event.preventDefault();
+        products.lineItems.push({
+            "quantity": null,
+            "productSku": null,
+            "productName": null,
+            "unitPrice": null,
+        });
+    });
+</script>
