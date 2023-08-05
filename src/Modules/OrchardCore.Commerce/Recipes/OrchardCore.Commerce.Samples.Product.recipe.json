@@ -22,7 +22,7 @@
           "ModifiedUtc": "2022-08-10T20:27:55.221899Z",
           "PublishedUtc": "2022-08-10T20:27:55.2244171Z",
           "CreatedUtc": "2022-08-10T20:27:55.221899Z",
-          "Owner": null,
+          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
           "Author": "admin",
           "PriceVariantsProduct": {
             "Size": {}
@@ -88,7 +88,7 @@
           "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
           "PublishedUtc": "2022-08-10T19:34:57.2716912Z",
           "CreatedUtc": "2022-08-10T19:34:57.2678948Z",
-          "Owner": null,
+          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
           "Author": "admin",
           "TitlePart": {
             "Title": "TestProduct"
@@ -199,37 +199,87 @@
           "Product": {}
         },
         {
-          "ContentItemId": "testproductlocalized000000",
+          "ContentItemId": "testdiscountedproduct000",
           "ContentItemVersionId": "[js:uuid()]",
-          "ContentType": "LocalizedProduct",
-          "DisplayText": "Test Localized Product",
+          "ContentType": "Product",
+          "DisplayText": "TestDiscountedProduct",
           "Latest": true,
           "Published": true,
-          "ModifiedUtc": "2023-08-05T09:21:26.7987524Z",
-          "PublishedUtc": "2023-08-05T09:21:41.1554167Z",
-          "CreatedUtc": "2023-08-05T09:21:05.6074294Z",
-          "Owner": null,
+          "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
+          "PublishedUtc": "2022-08-10T19:34:57.2716912Z",
+          "CreatedUtc": "2022-08-10T19:34:57.2678948Z",
+          "Owner": "48a8p8cbg3ksqvyd14d75x9a59",
           "Author": "admin",
-          "LocalizedProduct": {},
           "TitlePart": {
-            "Title": "Test Localized Product"
+            "Title": "TestDiscountedProduct"
+          },
+          "AutoroutePart": {
+            "Path": "testdiscountedproduct",
+            "SetHomepage": false,
+            "Disabled": false,
+            "RouteContainedItems": false,
+            "Absolute": false
+          },
+          "HtmlBodyPart": {
+            "Html": ""
           },
           "ProductPart": {
-            "Sku": "LOCALIZED",
-            "CanBeBought": {}
+            "Sku": "TESTDISCOUNTEDPRODUCT"
           },
           "PricePart": {
-            "PriceField": {
-              "Amount": {
-                "value": 10.0,
-                "currency": "USD"
-              }
+            "Price": {
+              "value": 5.0,
+              "currency": "USD"
             }
           },
-          "LocalizationPart": {
-            "LocalizationSet": "testproductlocalizationset",
-            "Culture": "en-US"
-          }
+          "InventoryPart": {
+            "Inventory": {
+              "TESTDISCOUNTEDPRODUCT": 5
+            },
+            "InventoryKeys": [
+              "TESTDISCOUNTEDPRODUCT"
+            ],
+            "AllowsBackOrder": {
+              "Value": true
+            },
+            "IgnoreInventory": {
+              "Value": false
+            },
+            "MaximumOrderQuantity": {
+              "Value": 2.0
+            },
+            "MinimumOrderQuantity": {
+              "Value": 1.0
+            },
+            "OutOfStockMessage": {
+              "Html": "A professional out of stock message."
+            },
+            "ProductSku": "TESTDISCOUNTEDPRODUCT"
+          },
+          "DiscountPart": {
+            "DiscountPercentage": {
+              "Value": null
+            },
+            "DiscountAmount": {
+              "Amount": {
+                "value": 2.0,
+                "currency": "USD"
+              }
+            },
+            "BeginningUtc": {
+              "Value": null
+            },
+            "ExpirationUtc": {
+              "Value": null
+            },
+            "MaximumProducts": {
+              "Value": null
+            },
+            "MinimumProducts": {
+              "Value": null
+            }
+          },
+          "Product": {}
         }
       ]
     }
