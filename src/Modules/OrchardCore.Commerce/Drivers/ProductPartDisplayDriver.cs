@@ -115,6 +115,10 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
                 inventoryPart.InventoryKeys.Add("DEFAULT");
             }
         }
+        else
+        {
+            viewModel.CanBeBought[part.ContentItem.ContentItemId] = true;
+        }
 
         viewModel.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
     }

@@ -7,7 +7,7 @@
         .Select((attribute, index) => (Attribute: attribute, Index: index));
 
     // As long as any items can be bought, "Add to cart" button should remain possible to click.
-    var canBeBought = Model.CanBeBought.Any(keyValuePair => keyValuePair.Value == true);
+    var canBeBought = Model.CanBeBought.Any(keyValuePair => keyValuePair.Value);
 }
 
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
@@ -24,7 +24,7 @@
                     prop-idPrefix="@id"
                     prop-sku="@Model.Sku"
                     prop-canBeBought="@Model.CanBeBought"/>
-        </li>                
+        </li>
     }
     </ul>
     <button type="submit" class="btn btn-primary" disabled="@(!canBeBought)">@T["Add to cart"]</button>
