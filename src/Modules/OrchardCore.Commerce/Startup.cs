@@ -17,6 +17,7 @@ using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Liquid;
+using OrchardCore.Commerce.Middlewares;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -337,4 +338,7 @@ public class ContentLocalizationStartup : StartupBase
         services.RemoveImplementations<IProductService>();
         services.AddScoped<IProductService, ContentLocalizationProductService>();
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
+        app.UseMiddleware<LocalizationCurrencyRedirectMiddleware>();
 }
