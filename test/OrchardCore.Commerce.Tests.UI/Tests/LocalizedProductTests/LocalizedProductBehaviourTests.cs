@@ -42,6 +42,10 @@ public class LocalizedProductBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.CssSelector("input.form-check-input[value='hu-HU']"));
                 await context.ClickReliablyOnAsync(By.ClassName("save"));
 
+                await context.GoToAdminRelativeUrlAsync("/Settings/commerce");
+                await context.SetDropdownByValueAsync(By.Id("ISite_CurrentDisplayCurrency"), "HUF");
+                await context.ClickReliablyOnAsync(By.ClassName("save"));
+
                 await GoToLocalizedProductAsync(context);
                 await context.ClickReliablyOnAsync(By.LinkText("View"));
                 context.SwitchToLastWindow();
