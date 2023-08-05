@@ -2,6 +2,7 @@
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
+using OrchardCore.Commerce.MoneyDataType;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,6 +14,8 @@ public class LocalizedProductBehaviourTests : UITestBase
     private const string LocalizedTitle = "Honosított Termék"; // #spell-check-ignore-line
     private const string LocalizationsButtonPath =
         "//li[contains(@class, 'list-group-item') and .//a[contains(., 'Test Localized Product')]]//div[@title = 'Localizations']//button";
+
+    private static readonly string _localizedCurrency = Currency.HungarianForint.CurrencyIsoCode;
 
     public LocalizedProductBehaviourTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
@@ -34,7 +37,7 @@ public class LocalizedProductBehaviourTests : UITestBase
 
                 await context.ClickAndFillInWithRetriesAsync(By.Id("TitlePart_Title"), LocalizedTitle);
                 await context.ClickAndFillInWithRetriesAsync(By.Id("PricePart_PriceField_Value"), "3500");
-                await context.SetDropdownByTextAsync("PricePart_PriceField_Currency", "HUF");
+                await context.SetDropdownByTextAsync("PricePart_PriceField_Currency", _localizedCurrency);
                 await context.ClickReliablyOnSubmitAsync();
                 context.ShouldBeSuccess();
 
@@ -43,7 +46,7 @@ public class LocalizedProductBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.ClassName("save"));
 
                 await context.GoToAdminRelativeUrlAsync("/Settings/commerce");
-                await context.SetDropdownByValueAsync(By.Id("ISite_CurrentDisplayCurrency"), "HUF");
+                await context.SetDropdownByValueAsync(By.Id("ISite_CurrentDisplayCurrency"), _localizedCurrency);
                 await context.ClickReliablyOnAsync(By.ClassName("save"));
 
                 await GoToLocalizedProductAsync(context);
@@ -61,5 +64,5 @@ public class LocalizedProductBehaviourTests : UITestBase
             browser);
 
     private static Task GoToLocalizedProductAsync(UITestContext context) =>
-        context.GoToAdminRelativeUrlAsync("/Contents/ContentItems?q=Test%20Localized%20Product type%3ALocalizedProduct");
+        context.GoToAdminRelativeUrlAsync("/Contents/ContentItems?q=Test%20Localized%20Product type%3ALocalizedProduct"); // #spell-check-ignore-line
 }

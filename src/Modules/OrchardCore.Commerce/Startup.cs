@@ -241,7 +241,7 @@ public class SessionCartStorageStartup : StartupBase
         routes.MapAreaControllerRoute(
             name: "ShoppingCart",
             areaName: "OrchardCore.Commerce",
-            pattern: "shoppingcart/{action}", // #spell-check-ignore-line
+            pattern: "shoppingcart/{action}",
             defaults: new { controller = "ShoppingCart", action = "Index" });
     }
 }
