@@ -202,7 +202,7 @@
           "ContentItemId": "testproductlocalized000000",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "LocalizedProduct",
-          "DisplayText": "Localized Product",
+          "DisplayText": "Test Localized Product",
           "Latest": true,
           "Published": true,
           "ModifiedUtc": "2023-08-05T09:21:26.7987524Z",
@@ -212,7 +212,7 @@
           "Author": "admin",
           "LocalizedProduct": {},
           "TitlePart": {
-            "Title": "Localized Product"
+            "Title": "Test Localized Product"
           },
           "ProductPart": {
             "Sku": "LOCALIZED",
