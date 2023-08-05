@@ -326,3 +326,10 @@ public class UserSettingsStartup : StartupBase
             defaults: new { controller = typeof(UserController).ControllerName(), action = "Index" });
     }
 }
+
+[RequireFeatures("OrchardCore.ContentLocalization")]
+public class ContentLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services.AddScoped<IDuplicateSkuResolver, LocalizationDuplicateSkuResolver>();
+}
