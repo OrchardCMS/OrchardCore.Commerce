@@ -26,5 +26,6 @@ pricefield
 roadmap
 skus
 testproduct
+testdiscountedproduct
 unpublish
 webhooks
