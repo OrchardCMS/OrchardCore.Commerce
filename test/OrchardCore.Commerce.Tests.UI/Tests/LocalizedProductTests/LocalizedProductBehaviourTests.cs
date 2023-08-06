@@ -12,8 +12,8 @@ namespace OrchardCore.Commerce.Tests.UI.Tests.LocalizedProductTests;
 public class LocalizedProductBehaviourTests : UITestBase
 {
     private const string LocalizedTitle = "Honosított Termék"; // #spell-check-ignore-line
-    private const string LocalizationsButtonPath =
-        "//li[contains(@class, 'list-group-item') and .//a[contains(., 'Test Localized Product')]]//div[@title = 'Localizations']//button";
+    private static readonly By LocalizationsButtonPath =
+        By.XPath("//li[contains(@class, 'list-group-item') and .//a[contains(., 'Test Localized Product')]]//div[@title = 'Localizations']//button");
 
     private static readonly string _localizedCurrency = Currency.HungarianForint.CurrencyIsoCode;
 

@@ -25,7 +25,7 @@ public class ContentLocalizationProductService : ProductService
         IContentDefinitionManager contentDefinitionManager,
         IPredefinedValuesProductAttributeService predefinedValuesService)
         : base(session, contentManager, contentDefinitionManager, predefinedValuesService) =>
-        _siteService = siteService;
+            _siteService = siteService;
 
     public override async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
@@ -62,7 +62,7 @@ public class ContentLocalizationProductService : ProductService
 
     /// <summary>
     /// Returns a list of available cultures in order of ascending priority. This means the highest priority culture is
-    /// the last so this list can be used with <see cref="List{T}.IndexOf(T)"/> to sort by descending order and anything
+    /// the last, so this list can be used with <see cref="List{T}.IndexOf(T)"/> to sort by descending order and anything
     /// not on this list will be correctly sorted to the back due to the -1 index.
     /// </summary>
     private static IList<string> GetPrioritySupportedCultures(LocalizationSettings settings)
