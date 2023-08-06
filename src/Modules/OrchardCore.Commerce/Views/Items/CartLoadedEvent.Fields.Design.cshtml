@@ -1,0 +1,5 @@
+@model OrchardCore.Workflows.ViewModels.ActivityViewModel<OrchardCore.Commerce.Activities.CartLoadedEvent>
+
+<header>
+    <h4><i class="fa fa-shopping-cart"></i>@Model.Activity.GetTitleOrDefault(() => T["Cart loaded"])</h4>
+</header>

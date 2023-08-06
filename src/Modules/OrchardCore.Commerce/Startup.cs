@@ -128,6 +128,7 @@ public class Startup : StartupBase
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
+        services.AddActivity<CartLoadedEvent, CartLoadedEventDisplay>();
 
         // Orders
         services.AddContentPart<OrderPart>()
