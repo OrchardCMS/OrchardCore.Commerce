@@ -25,7 +25,7 @@ public class ContentLocalizationProductService : ProductService
         IContentDefinitionManager contentDefinitionManager,
         IPredefinedValuesProductAttributeService predefinedValuesService)
         : base(session, contentManager, contentDefinitionManager, predefinedValuesService) =>
-        _siteService = siteService;
+            _siteService = siteService;
 
     public override async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
