@@ -16,7 +16,7 @@
           "ContentItemId": "testpricevariantproduct000",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "PriceVariantsProduct",
-          "DisplayText": "TestPriceVariantProduct",
+          "DisplayText": "Test Price Variant Product",
           "Latest": true,
           "Published": true,
           "ModifiedUtc": "2022-08-10T20:27:55.221899Z",
@@ -28,7 +28,7 @@
             "Size": {}
           },
           "TitlePart": {
-            "Title": "TestPriceVariantProduct"
+            "Title": "Test Price Variant Product"
           },
           "PriceVariantsPart": {
             "Variants": {
@@ -82,7 +82,7 @@
           "ContentItemId": "testproduct000",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "Product",
-          "DisplayText": "TestProduct",
+          "DisplayText": "Test Product",
           "Latest": true,
           "Published": true,
           "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
@@ -91,7 +91,7 @@
           "Owner": null,
           "Author": "admin",
           "TitlePart": {
-            "Title": "TestProduct"
+            "Title": "Test Product"
           },
           "AutoroutePart": {
             "Path": "testproduct",
@@ -142,7 +142,7 @@
           "ContentItemId": "testfreeproduct000",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "Product",
-          "DisplayText": "TestFreeProduct",
+          "DisplayText": "Test Free Product",
           "Latest": true,
           "Published": true,
           "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
@@ -151,7 +151,7 @@
           "Owner": null,
           "Author": "admin",
           "TitlePart": {
-            "Title": "TestFreeProduct"
+            "Title": "Test Free Product"
           },
           "AutoroutePart": {
             "Path": "testfreeproduct",
@@ -202,7 +202,7 @@
           "ContentItemId": "testdiscountedproduct000",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "Product",
-          "DisplayText": "TestDiscountedProduct",
+          "DisplayText": "Test Discounted Product",
           "Latest": true,
           "Published": true,
           "ModifiedUtc": "2022-08-10T19:34:57.2678948Z",
@@ -211,7 +211,7 @@
           "Owner": null,
           "Author": "admin",
           "TitlePart": {
-            "Title": "TestDiscountedProduct"
+            "Title": "Test Discounted Product"
           },
           "AutoroutePart": {
             "Path": "testdiscountedproduct",
