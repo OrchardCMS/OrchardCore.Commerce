@@ -109,13 +109,9 @@ public class ShoppingCartController : Controller
                 await _shoppingCartSerializer.ParseCartLineAsync(line),
                 storeIfOk: true);
 
-            if (_workflowManager != null)
-            {
-                await _workflowManager.TriggerEventAsync(
-                    nameof(ProductAddedToCartEvent),
-                    new { LineItem = parsedLine },
-                    "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
-            }
+            await _workflowManager.TriggerEventAsync<ProductAddedToCartEvent>(
+                new { LineItem = parsedLine },
+                "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
         }
         catch (FrontendException exception)
         {
