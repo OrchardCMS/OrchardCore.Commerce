@@ -1,29 +1,14 @@
-﻿using Microsoft.Extensions.Localization;
-using OrchardCore.Workflows.Abstractions.Models;
-using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Models;
-using System.Collections.Generic;
+﻿using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Commerce.Activities;
 
-public abstract class CommerceEventActivity : EventActivity
+public abstract class CommerceEventActivity : SimpleEventActivity
 {
-    protected readonly IStringLocalizer T;
-
-    public override string Name => GetType().Name;
-    public abstract override LocalizedString DisplayText { get; }
     public override LocalizedString Category => T["Commerce"];
 
-    protected CommerceEventActivity(IStringLocalizer stringLocalizer) =>
-        T = stringLocalizer;
-
-    public override IEnumerable<Outcome> GetPossibleOutcomes(
-        WorkflowExecutionContext workflowContext,
-        ActivityContext activityContext) =>
-        new[] { new Outcome(T["Done"]) };
-
-    public override ActivityExecutionResult Resume(
-        WorkflowExecutionContext workflowContext,
-        ActivityContext activityContext) =>
-        Outcomes("Done");
+    protected CommerceEventActivity(IStringLocalizer stringLocalizer)
+        : base(stringLocalizer)
+    {
+    }
 }
