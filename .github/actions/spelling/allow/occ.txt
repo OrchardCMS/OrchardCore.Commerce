@@ -24,6 +24,7 @@ Nwazet
 osoe
 pricefield
 roadmap
+shoppingcart
 skus
 testproduct
 testdiscountedproduct

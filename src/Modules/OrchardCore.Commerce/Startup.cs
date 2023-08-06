@@ -17,6 +17,7 @@ using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Liquid;
+using OrchardCore.Commerce.Middlewares;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -240,7 +241,7 @@ public class SessionCartStorageStartup : StartupBase
         routes.MapAreaControllerRoute(
             name: "ShoppingCart",
             areaName: "OrchardCore.Commerce",
-            pattern: "shoppingcart/{action}", // #spell-check-ignore-line
+            pattern: "shoppingcart/{action}",
             defaults: new { controller = "ShoppingCart", action = "Index" });
     }
 }
@@ -325,4 +326,19 @@ public class UserSettingsStartup : StartupBase
             pattern: "user/{action}",
             defaults: new { controller = typeof(UserController).ControllerName(), action = "Index" });
     }
+}
+
+[RequireFeatures("OrchardCore.ContentLocalization")]
+public class ContentLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IDuplicateSkuResolver, LocalizationDuplicateSkuResolver>();
+
+        services.RemoveImplementations<IProductService>();
+        services.AddScoped<IProductService, ContentLocalizationProductService>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
+        app.UseMiddleware<LocalizationCurrencyRedirectMiddleware>();
 }

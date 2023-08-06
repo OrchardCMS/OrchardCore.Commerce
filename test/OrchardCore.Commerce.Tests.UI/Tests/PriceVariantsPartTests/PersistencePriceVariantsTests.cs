@@ -3,6 +3,7 @@ using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
+using OrchardCore.Commerce.MoneyDataType;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,8 +26,8 @@ public class PersistencePriceVariantsTests : UITestBase
                 await context.CreateNewContentItemAsync("TestPriceVariantsProduct");
 
                 const string sku = "UITESTSKU"; // #spell-check-ignore-line
-                const string currency = "HUF"; // #spell-check-ignore-line
                 const string price = "9999";
+                var currency = Currency.HungarianForint.CurrencyIsoCode;
 
                 await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), sku);
                 await context.ClickAndFillInWithRetriesAsync(By.Id("PriceVariantsPart_VariantsValues__"), price);

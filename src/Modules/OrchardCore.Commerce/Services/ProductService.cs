@@ -32,7 +32,7 @@ public class ProductService : IProductService
         _predefinedValuesService = predefinedValuesService;
     }
 
-    public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
+    public virtual async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
         var trimmedSkus = skus.Select(sku => sku.Split('-')[0]);
 
@@ -74,8 +74,9 @@ public class ProductService : IProductService
         return FillContentItemsAndGetProductParts(contentItems);
     }
 
-    public string GetVariantKey(string sku) => sku.Partition("-").Right ?? throw new ArgumentException(
-        "The SKU doesn't contain a dash. Is it a product variant SKU?", nameof(sku));
+    public string GetVariantKey(string sku) =>
+        sku.Partition("-").Right ??
+        throw new ArgumentException("The SKU doesn't contain a dash. Is it a product variant SKU?", nameof(sku));
 
     public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
     {
@@ -100,8 +101,10 @@ public class ProductService : IProductService
         }
     }
 
-    private IEnumerable<ProductPart> FillContentItemsAndGetProductParts(IEnumerable<ContentItem> contentItems)
+    private List<ProductPart> FillContentItemsAndGetProductParts(IEnumerable<ContentItem> contentItems)
     {
+        var results = new List<ProductPart>();
+
         foreach (var contentItem in contentItems)
         {
             var contentItemsPartDefinitions = _contentDefinitionManager
@@ -118,8 +121,10 @@ public class ProductService : IProductService
                     FillField(part, field);
                 }
             }
+
+            results.Add(contentItem.As<ProductPart>());
         }
 
-        return contentItems.Select(item => item.As<ProductPart>());
+        return results;
     }
 }

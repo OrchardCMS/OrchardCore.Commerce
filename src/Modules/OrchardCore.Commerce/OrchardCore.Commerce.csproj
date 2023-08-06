@@ -32,6 +32,7 @@
     <PackageReference Include="OrchardCore.ContentTypes" Version="1.6.0" />
     <PackageReference Include="OrchardCore.ContentTypes.Abstractions" Version="1.6.0" />
     <PackageReference Include="OrchardCore.Html" Version="1.6.0" />
+    <PackageReference Include="OrchardCore.Localization" Version="1.6.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.6.0" />
     <PackageReference Include="OrchardCore.Navigation.Core" Version="1.6.0" />
     <PackageReference Include="OrchardCore.Title" Version="1.6.0" />
