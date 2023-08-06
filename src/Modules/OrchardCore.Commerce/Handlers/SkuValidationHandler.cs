@@ -36,7 +36,7 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
     {
         if (string.IsNullOrWhiteSpace(part.Sku))
         {
-            _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(part.Sku), "SKU must not be empty.");
+            _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(part.Sku), T["SKU must not be empty."]);
             return;
         }
 
