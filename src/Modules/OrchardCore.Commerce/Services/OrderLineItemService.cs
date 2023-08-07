@@ -53,12 +53,15 @@ public class OrderLineItemService : IOrderLineItemService
         {
             var product = products[lineItem.ProductSku];
             var metaData = await _contentManager.GetContentItemMetadataAsync(product);
+
             return new OrderLineItemViewModel
             {
                 ProductPart = product,
                 Quantity = lineItem.Quantity,
                 ProductSku = lineItem.ProductSku,
                 ProductName = product.ContentItem.DisplayText,
+                UnitPriceValue = lineItem.UnitPrice.Value,
+                UnitPriceCurrencyIsoCode = lineItem.UnitPrice.Currency.CurrencyIsoCode,
                 UnitPrice = lineItem.UnitPrice,
                 LinePrice = lineItem.LinePrice,
                 ProductRouteValues = metaData.DisplayRouteValues,

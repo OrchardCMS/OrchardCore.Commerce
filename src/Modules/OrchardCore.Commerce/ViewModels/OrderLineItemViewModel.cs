@@ -22,6 +22,8 @@ public class OrderLineItemViewModel : ILineItem
 
     public RouteValueDictionary ProductRouteValues { get; set; }
     public string ProductImageUrl { get; set; }
+    public decimal UnitPriceValue { get; set; }
+    public string UnitPriceCurrencyIsoCode { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
     public ISet<IProductAttributeValue> Attributes { get; set; }

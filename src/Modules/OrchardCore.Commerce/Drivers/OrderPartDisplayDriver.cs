@@ -1,5 +1,7 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -15,9 +17,18 @@ namespace OrchardCore.Commerce.Drivers;
 public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 {
     private readonly IOrderLineItemService _orderLineItemService;
+    private readonly ICurrencyProvider _currencyProvider;
+    private readonly IProductService _productService;
 
-    public OrderPartDisplayDriver(IOrderLineItemService orderLineItemService) =>
+    public OrderPartDisplayDriver(
+        IOrderLineItemService orderLineItemService,
+        ICurrencyProvider currencyProvider,
+        IProductService productService)
+    {
         _orderLineItemService = orderLineItemService;
+        _currencyProvider = currencyProvider;
+        _productService = productService;
+    }
 
     public override IDisplayResult Display(OrderPart part, BuildPartDisplayContext context) =>
         Initialize<OrderPartViewModel>(GetDisplayShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part))
@@ -30,23 +41,51 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
         var viewModel = new OrderPartViewModel();
-
         await updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        var lineItems = part.LineItems
-             .Where(lineItem => lineItem != null)
-             .Select((lineItem, index) =>
-             {
-                 var quantity = viewModel.LineItems[index].Quantity;
-                 lineItem.Quantity = quantity;
-                 lineItem.LinePrice = quantity * lineItem.UnitPrice;
+        var viewModelLineItems = viewModel.LineItems
+            .Where(lineItem => lineItem != null)
+            .Select((lineItem, _) =>
+            {
+                var lineItemCurrency = _currencyProvider.GetCurrency(lineItem.UnitPriceCurrencyIsoCode);
 
-                 return lineItem;
-             })
-             .Where(lineItem => lineItem.Quantity != 0)
-             .ToList();
+                lineItem.UnitPrice = new Amount(lineItem.UnitPriceValue, lineItemCurrency);
+                lineItem.LinePrice = lineItem.UnitPrice * lineItem.Quantity;
 
-        part.LineItems.SetItems(lineItems);
+                return lineItem;
+            })
+            .Where(lineItem => lineItem.Quantity != 0)
+            .ToList();
+
+        // convert above line items to OrderLineItems and add them to part
+        var orderLineItems = new List<OrderLineItem>();
+        foreach (var lineItem in viewModelLineItems)
+        {
+            var productPart = await _productService.GetProductAsync(lineItem.ProductSku);
+
+            orderLineItems.Add(new OrderLineItem(
+                lineItem.Quantity,
+                lineItem.ProductSku,
+                lineItem.UnitPrice,
+                lineItem.LinePrice,
+                productPart.ContentItem.ContentItemVersionId
+            ));
+        }
+
+        //var lineItems = part.LineItems // use viewModel's LineItems instead of part's LineItems to get the new list
+        //     .Where(lineItem => lineItem != null)
+        //     .Select((lineItem, index) =>
+        //     {
+        //         var quantity = viewModel.LineItems[index].Quantity;
+        //         lineItem.Quantity = quantity;
+        //         lineItem.LinePrice = quantity * lineItem.UnitPrice;
+
+        //         return lineItem;
+        //     })
+        //     .Where(lineItem => lineItem.Quantity != 0)
+        //     .ToList();
+
+        part.LineItems.SetItems(orderLineItems);
 
         return await EditAsync(part, context);
     }
