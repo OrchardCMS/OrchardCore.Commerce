@@ -80,7 +80,7 @@ public class TaxBehaviourTests : UITestBase
                 {
                     await context.GoToContentItemByIdAsync(TestProduct);
                     context.Exists(selector);
-                    context.GetAll(selector).Last().Text.Trim().ShouldBe(expectedPrice);
+                    context.GetAll(selector)[^1].Text.Trim().ShouldBe(expectedPrice);
                 }
 
                 async Task UpdateAddressAndVerifyPriceAsync(Func<Task> configure, string expectedPrice)
@@ -122,6 +122,6 @@ public class TaxBehaviourTests : UITestBase
 
     private static void FieldShouldBe(UITestContext context, string id, decimal value) =>
         decimal
-            .Parse(context.Get(By.Id(id)).GetAttribute("value"), CultureInfo.InvariantCulture)
+            .Parse(context.Get(By.Id(id)).GetAttribute("value").Replace(',', '.'), CultureInfo.InvariantCulture)
             .ShouldBe(value);
 }

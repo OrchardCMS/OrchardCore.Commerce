@@ -82,7 +82,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         foreach (var entry in part.CanBeBought)
         {
             var updatedKey = inventoryCount > 1
-                ? part.Sku + "-" + entry.Key.Split('-').Last()
+                ? $"{part.Sku}-{entry.Key.Split('-')[^1]}"
                 : part.Sku;
 
             newAvailabilities.Add(updatedKey, entry.Value);
@@ -114,6 +114,10 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
                 inventoryPart.Inventory.Add("DEFAULT", 0);
                 inventoryPart.InventoryKeys.Add("DEFAULT");
             }
+        }
+        else
+        {
+            viewModel.CanBeBought[part.ContentItem.ContentItemId] = true;
         }
 
         viewModel.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Serialization;
 
-internal class ProductAttributeValueConverter : JsonConverter<IProductAttributeValue>
+internal sealed class ProductAttributeValueConverter : JsonConverter<IProductAttributeValue>
 {
     private const string Type = "type";
     private const string Value = "value";

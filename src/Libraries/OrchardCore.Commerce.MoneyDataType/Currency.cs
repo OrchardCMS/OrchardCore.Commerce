@@ -103,7 +103,7 @@ public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 
     public static bool operator !=(Currency left, Currency right) => !(left == right);
 
-    private static void ThrowIfMissing(string argument, [CallerArgumentExpression("argument")] string name = null)
+    private static void ThrowIfMissing(string argument, [CallerArgumentExpression(nameof(argument))] string name = null)
     {
         if (string.IsNullOrWhiteSpace(argument))
         {

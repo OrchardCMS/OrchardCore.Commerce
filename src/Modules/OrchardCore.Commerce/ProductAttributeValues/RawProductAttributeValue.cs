@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.ProductAttributeValues;
 /// Used only to deserialize attributes, before they're post-processed into concrete attribute values.
 /// </summary>
 [JsonConverter(typeof(RawProductAttributeValueConverter))]
-internal class RawProductAttributeValue : BaseProductAttributeValue<object>
+internal sealed class RawProductAttributeValue : BaseProductAttributeValue<object>
 {
     public RawProductAttributeValue(object value)
         : base(attributeName: null, value)

@@ -6,7 +6,7 @@ using static OrchardCore.Commerce.MoneyDataType.Serialization.AmountConverter;
 
 namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
-internal class LegacyAmountConverter : JsonConverter<Amount>
+internal sealed class LegacyAmountConverter : JsonConverter<Amount>
 {
     public override Amount ReadJson(
         JsonReader reader,

@@ -46,7 +46,7 @@ public class PriceService : IPriceService
             var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync(new[] { pair.Item }));
             if (!applicable.Any()) continue;
 
-            unhandled.RemoveAll(pair => applicable.Contains(pair));
+            unhandled.RemoveAll(applicable.Contains);
 
             var providerResult = await provider.UpdateAsync(applicable.Select(pair => pair.Item).ToList());
             handled.AddRange(providerResult.Select((item, index) => (item, applicable[index].Index)));

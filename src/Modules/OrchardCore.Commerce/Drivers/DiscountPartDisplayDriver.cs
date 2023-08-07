@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
@@ -65,6 +66,8 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 
         public override async Task<IDisplayResult> DisplayAsync(ProductPart part, BuildPartDisplayContext context)
         {
+            if (context.DisplayType == CommonContentDisplayTypes.SummaryAdmin) return null;
+
             try
             {
                 var model = await _shoppingCartHelpers.EstimateProductAsync(

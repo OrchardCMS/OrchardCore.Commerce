@@ -52,8 +52,7 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
                             {
                                 var displayText = link.Url
                                     .Query
-                                    .Split("name=")
-                                    .Last()
+                                    .Split("name=")[^1]
                                     .Replace("Order_Checkout__", string.Empty)
                                     .Replace("__", " - ");
 

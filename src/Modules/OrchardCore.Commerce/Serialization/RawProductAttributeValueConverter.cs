@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Serialization;
 
-internal class RawProductAttributeValueConverter : JsonConverter<RawProductAttributeValue>
+internal sealed class RawProductAttributeValueConverter : JsonConverter<RawProductAttributeValue>
 {
     public override RawProductAttributeValue Read(
         ref Utf8JsonReader reader,

@@ -13,7 +13,7 @@ using Xunit;
 
 namespace OrchardCore.Commerce.Tests;
 
-public class DiscountTests
+public sealed class DiscountTests
 {
     [Fact]
     public async Task PromotionServiceAddsDiscount()
@@ -56,7 +56,7 @@ public class DiscountTests
         Assert.Equal(10, firstAndOnlyItem.Quantity);
     }
 
-    private class DummyPromotionService : IPromotionService
+    private sealed class DummyPromotionService : IPromotionService
     {
         private readonly IPromotionProvider _promotionProvider;
 

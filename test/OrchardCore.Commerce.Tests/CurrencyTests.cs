@@ -1,6 +1,6 @@
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
-using System;
+using System.Globalization;
 using Xunit;
 using static OrchardCore.Commerce.MoneyDataType.Currency;
 
@@ -18,15 +18,15 @@ public class CurrencyTests
         { CanadianDollar, 1234.56m, "$1,234.56" },
         { SwissFranc, 1234.56m, "CHF 1’234.56" }, // #spell-check-ignore-line
         { ChineseYuan, 1234.56m, "¥1,234.56" },
-        { new Currency("My FOO", "My FOO", "f", "FOO"), 1234.56m, FormattableString.Invariant($"(FOO) {1234.56m:N}") },
+        { new Currency("My FOO", "My FOO", "f", "FOO"), 1234.56m, string.Create(CultureInfo.InvariantCulture, $"(FOO) {1234.56m:N}") },
     };
 
     [Theory]
     [MemberData(nameof(TestData))]
     public void CurrenciesProperlyFormatAmounts(ICurrency currency, decimal amount, string expectedFormat)
     {
-        var result = currency.ToString(amount).Replace(" ", string.Empty).Replace("￥", "¥");
-        Assert.Equal(expectedFormat.Replace(" ", string.Empty).Replace("￥", "¥"), result);
+        var result = currency.ToString(amount).Replace(" ", string.Empty).Replace('￥', '¥');
+        Assert.Equal(expectedFormat.Replace(" ", string.Empty).Replace('￥', '¥'), result);
     }
 
     public class CurrencyTheoryData : TheoryData<ICurrency, decimal, string>

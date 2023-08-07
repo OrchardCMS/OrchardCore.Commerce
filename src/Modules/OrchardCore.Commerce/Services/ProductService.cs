@@ -32,9 +32,9 @@ public class ProductService : IProductService
         _predefinedValuesService = predefinedValuesService;
     }
 
-    public async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
+    public virtual async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
     {
-        var trimmedSkus = skus.Select(sku => sku.Split('-').First());
+        var trimmedSkus = skus.Select(sku => sku.Split('-')[0]);
 
         var contentItemIds = (await _session
                 .QueryIndex<ProductPartIndex>(index => index.Sku.IsIn(trimmedSkus))
@@ -67,16 +67,16 @@ public class ProductService : IProductService
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)
     {
         // There is no GetVersionAsync that accepts a collection.
-        var contentItems = await contentItemVersions.AwaitEachAsync(async contentItemVersion =>
-            await _contentManager.GetVersionAsync(contentItemVersion));
+        var contentItems = await contentItemVersions.AwaitEachAsync(_contentManager.GetVersionAsync);
 
         // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
         return FillContentItemsAndGetProductParts(contentItems);
     }
 
-    public string GetVariantKey(string sku) => sku.Partition("-").Right ?? throw new ArgumentException(
-        "The SKU doesn't contain a dash. Is it a product variant SKU?", nameof(sku));
+    public string GetVariantKey(string sku) =>
+        sku.Partition("-").Right ??
+        throw new ArgumentException("The SKU doesn't contain a dash. Is it a product variant SKU?", nameof(sku));
 
     public async Task<(PriceVariantsPart Part, string VariantKey)> GetExactVariantAsync(string sku)
     {
@@ -101,8 +101,10 @@ public class ProductService : IProductService
         }
     }
 
-    private IEnumerable<ProductPart> FillContentItemsAndGetProductParts(IEnumerable<ContentItem> contentItems)
+    private List<ProductPart> FillContentItemsAndGetProductParts(IEnumerable<ContentItem> contentItems)
     {
+        var results = new List<ProductPart>();
+
         foreach (var contentItem in contentItems)
         {
             var contentItemsPartDefinitions = _contentDefinitionManager
@@ -119,8 +121,10 @@ public class ProductService : IProductService
                     FillField(part, field);
                 }
             }
+
+            results.Add(contentItem.As<ProductPart>());
         }
 
-        return contentItems.Select(item => item.As<ProductPart>());
+        return results;
     }
 }

@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Serialization;
 
-internal class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
+internal sealed class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
 {
     private const string QuantityName = "quantity";
     private const string SkuName = "sku";

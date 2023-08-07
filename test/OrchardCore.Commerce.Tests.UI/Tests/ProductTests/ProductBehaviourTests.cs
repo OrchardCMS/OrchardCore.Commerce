@@ -34,7 +34,7 @@ public class ProductBehaviourTests : UITestBase
 
                 context.Get(By.ClassName("shopping-cart-widget")).Click();
 
-                context.Driver.Exists(By.XPath($"//a[contains(text(), 'TestProduct')]").Visible());
+                context.Driver.Exists(By.XPath($"//a[contains(., 'Test Product')]").Visible());
             },
             browser);
 
@@ -48,7 +48,7 @@ public class ProductBehaviourTests : UITestBase
 
             await context.ClickReliablyOnSubmitAsync();
 
-            context.Driver.Exists(By.XPath($"//li[contains(text(), 'PriceVariantsProduct: Small')]").Visible());
+            context.Driver.Exists(By.XPath($"//li[contains(., 'PriceVariantsProduct: Small')]").Visible());
         },
         browser);
 

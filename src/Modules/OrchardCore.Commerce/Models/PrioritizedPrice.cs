@@ -1,7 +1,7 @@
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Serialization;
-using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Models;
@@ -23,7 +23,7 @@ public class PrioritizedPrice
     /// </summary>
     public Amount Price { get; }
 
-    private string DebuggerDisplay => FormattableString.Invariant($"{Price} ^{Priority}");
+    private string DebuggerDisplay => string.Create(CultureInfo.InvariantCulture, $"{Price} ^{Priority}");
 
     public PrioritizedPrice(int priority, Amount price)
     {
