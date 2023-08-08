@@ -7,6 +7,8 @@ using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Localization;
+using OrchardCore.Workflows.Services;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -211,6 +213,6 @@ public class ShoppingCartControllerTests
             shoppingCartHelpers,
             _cartStorage,
             shoppingCartSerializer,
-            workflowManager: null);
+            workflowManagers: Array.Empty<IWorkflowManager>());
     }
 }
