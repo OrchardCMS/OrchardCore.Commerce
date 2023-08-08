@@ -4,11 +4,7 @@
 
 @{
     var m = Model;
-
-    // create dictionary of product URLs, where key is productSku, and value is the processed URL
-    //var dicty = Model.LineItems.ToDictionary(lineItem => lineItem.ProductSku, lineItem => Url.RouteUrl(lineItem.ProductRouteValues));
-    //var productUrlsJson = JsonSerializer.Serialize(dicty);
-    //var t = "";
+    var t = "";
 }
 
 <section id="shopping-cart">
@@ -29,7 +25,7 @@
         <tbody>
             <tr v-for="(lineItem, index) in lineItems">
                 <td>
-                    <a :href="lineItem.productRouteUrl">{{ lineItem.productName }}</a>
+                    <a :href="lineItem.productUrl">{{ lineItem.productName }}</a>
                 </td>
                 <td>
                     <input :name="'OrderPart.LineItems[' + index + '].Quantity'" v-model="lineItem.quantity">
@@ -61,13 +57,13 @@
     </div>
     <button id="addButton" class="btn btn-secondary mb-3">@T["Add Product"]</button>
 
-
-    @for (var line = 0; line < Model.LineItems.Count; line++)
+@*    @for (var line = 0; line < Model.LineItems.Count; line++)
     {
         var currentItem = Model.LineItems[line];
-        <a href="@currentItem.ProductRouteUrl">@currentItem.ProductName</a>
+        <a href="@Url.RouteUrl(currentItem.ProductRouteValues)">@currentItem.ProductName</a>
 
     }
+*@
 @*    @if (Model.LineItems?.Any() == true)
     {
         <div class="container">
@@ -191,9 +187,9 @@
     const vueQuery = '#orderPart__products tbody';
     let lineItems = @Json.Serialize(Model.LineItems);
 
-    //lineItems.forEach(item => {
-    //    item.productUrl = productUrls[item.productSku];
-    //})
+    lineItems.forEach(item => {
+        item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
+    })
 
     var products = new Vue({
         el: vueQuery,
@@ -204,7 +200,7 @@
         event.preventDefault();
         products.lineItems.push({
             "productName": null,
-            "productRouteUrl": null,
+            "productUrl": null,
             "quantity": null,
             "productSku": null,
             "unitPriceValue": null,
