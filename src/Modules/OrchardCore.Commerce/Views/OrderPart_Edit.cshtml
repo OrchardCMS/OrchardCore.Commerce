@@ -22,11 +22,11 @@
     <div class="container">
         <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
             <div class="col-xs-12 col-sm-2">@T["Product Name"]</div>
-            <div class="col-xs-12 col-sm-4">@T["Quantity"]</div>
-            <div class="col-xs-12 col-sm-4">@T["Product SKU"]</div>
-            <div class="col-xs-12 col-sm-1">@T["Unit Price Value"]</div> @*should be base price instead*@
-            <div class="col-xs-12 col-sm-1">@T["Unit Price Currency"]</div>
-            <div class="col-xs-12 col-sm-1">@T["Actions"]</div> @*attributes TBA*@
+            <div class="col-xs-12 col-sm-2">@T["Quantity"]</div>
+            <div class="col-xs-12 col-sm-2">@T["Product SKU"]</div>
+            <div class="col-xs-12 col-sm-2">@T["Unit Price Value"]</div> @*should be base price instead*@
+            <div class="col-xs-12 col-sm-2">@T["Unit Price Currency"]</div>
+            <div class="col-xs-12 col-sm-2">@T["Actions"]</div> @*attributes TBA*@
         </div>
         <div id="orderPart__products" class="table orderPart__products">
             <div v-for="(lineItem, index) in lineItems">
@@ -37,13 +37,13 @@
                     <div class="col-xs-12 col-sm-2 d-flex">
                         <input :name="'OrderPart.LineItems[' + index + '].Quantity'" v-model="lineItem.quantity">
                     </div>
-                    <div class="col-xs-12 col-sm-4"> @*same class as div above?*@
+                    <div class="col-xs-12 col-sm-2 d-flex">
                         <input :name="'OrderPart.LineItems[' + index + '].ProductSku'" v-model="lineItem.productSku">
                     </div>
-                    <div class="col-xs-12 col-sm-1">
+                    <div class="col-xs-12 col-sm-2 d-flex">
                         <input :name="'OrderPart.LineItems[' + index + '].UnitPriceValue'" v-model="lineItem.unitPriceValue">
                     </div>
-                    <div class="col-xs-12 col-sm-1">
+                    <div class="col-xs-12 col-sm-2 d-flex">
                         <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode">
                             @foreach (var currencyCode in availableCurrencyCodes)
                             {
@@ -51,7 +51,7 @@
                             }
                         </select>
                     </div>
-                    <div class="d-flex flex-row">
+                    <div class="col-xs-12 col-sm-2">
                         <button class="btn btn-danger" @@click.prevent="lineItems.splice(index, 1)">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>
