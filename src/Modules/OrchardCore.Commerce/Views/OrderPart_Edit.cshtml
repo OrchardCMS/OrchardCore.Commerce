@@ -1,15 +1,23 @@
 @using System.Text.Json;
+@using OrchardCore.Commerce.MoneyDataType.Abstractions;
+@using OrchardCore.Commerce.Settings;
 
 @model OrderPartViewModel
 
+@inject IMoneyService MoneyService
+
 @{
     var m = Model;
+
+    var availableCurrencyCodes = MoneyService.Currencies.Select(currency => currency.CurrencyIsoCode);
+    var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
+
     var t = "";
 }
 
 <section id="shopping-cart">
     <div class="panel-heading">
-        <label>@T["Ordered Items"]</label>
+        <h3>@T["Ordered Items"]</h3>
     </div>
     <table id="orderPart__products" class="table orderPart__products">
         <thead>
@@ -17,8 +25,8 @@
                 <th>@T["Product Name"]</th>
                 <th>@T["Quantity"]</th>
                 <th>@T["Product SKU"]</th>
-                <th>@T["Unit Price Value"]</th>
-                <th>@T["Unit Price Currency ISO Code"]</th>
+                <th>@T["Unit Price Value"]</th> @*should be base price instead*@
+                <th>@T["Unit Price Currency"]</th>
                 <th>@T["Actions"]</th>
             </tr>
         </thead>
@@ -37,7 +45,12 @@
                     <input :name="'OrderPart.LineItems[' + index + '].UnitPriceValue'" v-model="lineItem.unitPriceValue">
                 </td>
                 <td>
-                    <input :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode">
+                    <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode">
+                        @foreach (var currency in availableCurrencyCodes)
+                        {
+                            <option value="@currency">@currency</option>
+                        }
+                    </select>
                 </td>
                 <td>
                     <div class="d-flex flex-row">
@@ -55,7 +68,7 @@
             <div>@Model.Total</div>
         </div>
     </div>
-    <button id="addButton" class="btn btn-secondary mb-3">@T["Add Product"]</button>
+    <button id="addButton" class="btn btn-secondary mb-3">@T["Add Item"]</button>
 
 @*    @for (var line = 0; line < Model.LineItems.Count; line++)
     {
@@ -204,7 +217,7 @@
             "quantity": null,
             "productSku": null,
             "unitPriceValue": null,
-            "unitPriceCurrencyIsoCode": null,
+            "unitPriceCurrencyIsoCode": '@defaultCurrencyCode',
         });
     });
 </script>

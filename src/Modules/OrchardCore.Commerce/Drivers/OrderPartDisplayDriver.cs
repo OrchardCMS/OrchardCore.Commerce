@@ -61,11 +61,16 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         var orderLineItems = new List<OrderLineItem>();
         foreach (var lineItem in viewModelLineItems)
         {
-            var productPart = await _productService.GetProductAsync(lineItem.ProductSku);
+            //var productPart = await _productService.GetProductAsync(lineItem.ProductSku);
+            // If the provided SKU does not belong to an existing product content item, it should not be added.
+            if (await _productService.GetProductAsync(lineItem.ProductSku.ToUpperInvariant()) is not { } productPart)
+            {
+                continue;
+            }
 
             orderLineItems.Add(new OrderLineItem(
                 lineItem.Quantity,
-                lineItem.ProductSku,
+                lineItem.ProductSku.ToUpperInvariant(),
                 lineItem.UnitPrice,
                 lineItem.LinePrice,
                 productPart.ContentItem.ContentItemVersionId
