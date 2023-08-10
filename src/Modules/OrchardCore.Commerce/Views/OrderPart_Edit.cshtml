@@ -28,7 +28,7 @@
             <div class="col-xs-12 col-sm-2">@T["Unit Price Currency"]</div>
             <div class="col-xs-12 col-sm-2">@T["Actions"]</div> @*attributes TBA*@
         </div>
-        <div id="orderPart__products" class="table orderPart__products">
+        <div id="orderPart__products" class="orderPart__products">
             <div v-for="(lineItem, index) in lineItems">
                 <div class="row border-bottom mt-3 pb-2">
                     <div class="col-xs-12 col-sm-2 d-flex">
@@ -44,7 +44,7 @@
                         <input :name="'OrderPart.LineItems[' + index + '].UnitPriceValue'" v-model="lineItem.unitPriceValue">
                     </div>
                     <div class="col-xs-12 col-sm-2 d-flex">
-                        <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode">
+                        <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode" class="currency-selector">
                             @foreach (var currencyCode in availableCurrencyCodes)
                             {
                                 <option value="@currencyCode">@currencyCode</option>
@@ -218,5 +218,7 @@
             "unitPriceValue": null,
             "unitPriceCurrencyIsoCode": '@defaultCurrencyCode',
         });
+
+        // could set the new currency selector to the value of an existing selector
     });
 </script>

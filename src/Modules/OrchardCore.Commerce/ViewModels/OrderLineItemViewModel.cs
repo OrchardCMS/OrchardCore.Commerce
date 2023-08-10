@@ -18,6 +18,7 @@ public class OrderLineItemViewModel : ILineItem
     public ProductPart ProductPart { get; set; }
     public int Quantity { get; set; }
     public string ProductSku { get; set; }
+    public string ProductFullSku { get; set; }
     public string ProductName { get; set; }
 
     public RouteValueDictionary ProductRouteValues { get; set; }
