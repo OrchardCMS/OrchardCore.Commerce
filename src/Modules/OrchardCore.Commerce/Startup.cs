@@ -121,7 +121,7 @@ public class Startup : StartupBase
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
         services.AddScoped<IShoppingCartSerializer, ShoppingCartSerializer>();
-        services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
+        services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplayDriver>();
         services.AddContentPart<ShoppingCartWidgetPart>()
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
@@ -129,15 +129,15 @@ public class Startup : StartupBase
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, WorkflowShoppingCartEvents>();
-        services.AddActivity<CartDisplayingEvent, CartLoadedEventDisplay>();
-        services.AddActivity<CartVerifyingItemEvent, CartLoadedEventDisplay>();
-        services.AddActivity<CartLoadedEvent, CartLoadedEventDisplay>();
+        services.AddActivity<CartDisplayingEvent, CartDisplayingEventDisplayDriver>();
+        services.AddActivity<CartVerifyingItemEvent, CartVerifyingItemEventDisplayDriver>();
+        services.AddActivity<CartLoadedEvent, CartLoadedEventDisplayDriver>();
 
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>()
             .AddHandler<OrderPartHandler>();
-        services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplay>();
+        services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplayDriver>();
 
         services.AddScoped<IAuthorizationHandler, OrderPermissionsAuthorizationHandler>();
 
