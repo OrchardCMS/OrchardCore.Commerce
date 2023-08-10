@@ -43,6 +43,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
+    private readonly IProductService _productService;
 
     // We need to use that many this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -60,7 +61,8 @@ public class StripePaymentService : IStripePaymentService
         IProductInventoryService productInventoryService,
         IEnumerable<IWorkflowManager> workflowManagers,
         IPriceSelectionStrategy priceSelectionStrategy,
-        IPriceService priceService)
+        IPriceService priceService,
+        IProductService productService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -72,6 +74,7 @@ public class StripePaymentService : IStripePaymentService
         _productInventoryService = productInventoryService;
         _priceSelectionStrategy = priceSelectionStrategy;
         _priceService = priceService;
+        _productService = productService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
         _workflowManagers = workflowManagers;
@@ -312,6 +315,7 @@ public class StripePaymentService : IStripePaymentService
         // void."
         foreach (var item in shoppingCart.Items)
         {
+            // handle full SKU here somehow
             var trimmedSku = item.ProductSku.Split('-')[0];
 
             var contentItemId = (await _session
@@ -325,6 +329,7 @@ public class StripePaymentService : IStripePaymentService
             lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
                 _priceSelectionStrategy,
                 _priceService,
+                _productService,
                 contentItemVersion));
         }
 

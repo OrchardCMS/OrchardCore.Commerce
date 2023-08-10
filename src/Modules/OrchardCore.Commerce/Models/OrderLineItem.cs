@@ -9,6 +9,7 @@ public class OrderLineItem
 {
     public int Quantity { get; set; }
     public string ProductSku { get; set; }
+    public string FullSku { get; set; }
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
     public string ContentItemVersion { get; set; }
@@ -17,6 +18,7 @@ public class OrderLineItem
     public OrderLineItem(
         int quantity,
         string productSku,
+        string fullSku,
         Amount unitPrice,
         Amount linePrice,
         string contentItemVersion,
@@ -27,6 +29,7 @@ public class OrderLineItem
 
         Quantity = quantity;
         ProductSku = productSku;
+        FullSku = fullSku;
         UnitPrice = unitPrice;
         LinePrice = linePrice;
         ContentItemVersion = contentItemVersion;
