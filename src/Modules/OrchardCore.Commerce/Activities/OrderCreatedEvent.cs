@@ -2,7 +2,7 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Commerce.Activities;
 
-public class OrderCreatedEvent : CommerceEventActivity
+public class OrderCreatedEvent : CommerceEventActivityBase
 {
     public OrderCreatedEvent(IStringLocalizer<OrderCreatedEvent> localizer)
         : base(localizer)

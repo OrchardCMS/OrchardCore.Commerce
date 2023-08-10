@@ -2,7 +2,7 @@
 
 namespace OrchardCore.Commerce.Activities;
 
-public class CartLoadedEvent : CommerceEventActivity
+public class CartLoadedEvent : CommerceEventActivityBase
 {
     public override LocalizedString DisplayText => T["Cart loaded"];
 

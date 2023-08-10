@@ -17,4 +17,6 @@ public abstract class ShoppingCartEventsBase : IShoppingCartEvents
 
     public virtual Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item) =>
         Task.FromResult<LocalizedHtmlString>(null);
+
+    public Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart) => Task.FromResult(shoppingCart);
 }

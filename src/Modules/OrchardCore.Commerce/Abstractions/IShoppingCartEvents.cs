@@ -28,4 +28,9 @@ public interface IShoppingCartEvents
     /// Invoked before an item is added to the shopping cart to check whether it can be added based on inventory status.
     /// </summary>
     Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item);
+
+    /// <summary>
+    /// Invoked after the shopping cart content is loaded from the <see cref="IShoppingCartPersistence"/>.
+    /// </summary>
+    Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart);
 }
