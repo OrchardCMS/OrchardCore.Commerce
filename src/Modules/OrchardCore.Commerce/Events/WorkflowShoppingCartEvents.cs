@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Models;
@@ -36,22 +37,23 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
     {
         var results = await TriggerEventAsync<CartDisplayingEvent>(eventContext);
 
-        return (eventContext.Headers, eventContext.Lines);
+        if (!results.Any()) return (eventContext.Headers, eventContext.Lines);
+
+        var headers = GetOutput<IList<LocalizedHtmlString>>(results, nameof(eventContext.Headers)) ?? eventContext.Headers;
+        var lines = GetOutput<IList<ShoppingCartLineViewModel>>(results, nameof(eventContext.Lines)) ?? eventContext.Lines;
+
+        return (headers, lines);
     }
 
-    public async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item)
-    {
-        var results = await TriggerEventAsync<CartVerifyingItemEvent>(item);
+    public async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item) =>
+        GetOutput<LocalizedHtmlString>(
+            await TriggerEventAsync<CartVerifyingItemEvent>(item),
+            "Error");
 
-        return null;
-    }
-
-    public async Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart)
-    {
-        var results = await TriggerEventAsync<CartLoadedEvent>(shoppingCart);
-
-        return shoppingCart;
-    }
+    public async Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart) =>
+        GetOutput<ShoppingCart>(
+            await TriggerEventAsync<CartLoadedEvent>(shoppingCart),
+            nameof(ShoppingCart)) ?? shoppingCart;
 
     private async Task<IList<WorkflowExecutionContext>> TriggerEventAsync<T>(object input)
     {
@@ -69,4 +71,12 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 
         return contexts;
     }
+
+    private static T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName) =>
+        contexts.SelectWhere(context => context.Output.GetMaybe(outputName)).FirstOrDefault() switch
+        {
+            string outputString => JsonConvert.DeserializeObject<T>(outputString),
+            { } output => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(output)),
+            _ => default,
+        };
 }
