@@ -51,15 +51,23 @@ public class OrderLineItemService : IOrderLineItemService
 
         var viewModelLineItems = await Task.WhenAll(lineItems.Select(async lineItem =>
         {
-            var product = products[lineItem.ProductSku];
-            var metaData = await _contentManager.GetContentItemMetadataAsync(product);
+            var productPart = products[lineItem.ProductSku];
+            var metaData = await _contentManager.GetContentItemMetadataAsync(productPart);
+
+            var fullSku = lineItem.FullSku;
+            if (string.IsNullOrEmpty(lineItem.FullSku))
+            {
+                var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
+                fullSku = _productService.GetOrderFullSku(item, productPart);
+            }
 
             return new OrderLineItemViewModel
             {
-                ProductPart = product,
+                ProductPart = productPart,
                 Quantity = lineItem.Quantity,
                 ProductSku = lineItem.ProductSku,
-                ProductName = product.ContentItem.DisplayText,
+                ProductFullSku = fullSku,
+                ProductName = productPart.ContentItem.DisplayText,
                 UnitPriceValue = lineItem.UnitPrice.Value,
                 UnitPriceCurrencyIsoCode = lineItem.UnitPrice.Currency.CurrencyIsoCode,
                 UnitPrice = lineItem.UnitPrice,

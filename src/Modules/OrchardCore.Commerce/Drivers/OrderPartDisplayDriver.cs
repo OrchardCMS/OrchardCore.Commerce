@@ -20,7 +20,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IOrderLineItemService _orderLineItemService;
     private readonly ICurrencyProvider _currencyProvider;
     private readonly IProductService _productService;
-    private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IStringLocalizer T;
     private readonly IMoneyService _moneyService;
 
@@ -28,14 +27,12 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         IOrderLineItemService orderLineItemService,
         ICurrencyProvider currencyProvider,
         IProductService productService,
-        IShoppingCartPersistence shoppingCartPersistence,
         IStringLocalizer<OrderPartDisplayDriver> stringLocalizer,
         IMoneyService moneyService)
     {
         _orderLineItemService = orderLineItemService;
         _currencyProvider = currencyProvider;
         _productService = productService;
-        _shoppingCartPersistence = shoppingCartPersistence;
         _moneyService = moneyService;
         T = stringLocalizer;
     }
@@ -71,7 +68,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             // If selected currencies don't match, add model error and set prices to 0.
             var currenciesMatch = distinctCurrencies.Count() == 1;
-            if (!currenciesMatch)
+            if (!currenciesMatch && viewModelLineItems.Any())
             {
                 updater.ModelState.AddModelError(
                     nameof(viewModel.LineItems),
@@ -89,15 +86,13 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     continue;
                 }
 
-                // get current shopping cart? does it still contain items here?
-                    // probably not. Constructing a new item could work though?
-                //var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-
-                //var currentItem = shoppingCart.Items.FirstOrDefault(item => item.ProductSku == lineItemProductSku);
-                // if attributes exist, there must be a full Sku, add it here
-                // 
-                //var fullSku = lineItem.Attributes.Any() ? _productService.GetOrderFullSku(currentItem, productPart) : string.Empty;
+                // If Attributes exist, there must be a full SKU.
                 var fullSku = string.Empty;
+                if (lineItem.Attributes != null && lineItem.Attributes.Any())
+                {
+                    var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
+                    fullSku = _productService.GetOrderFullSku(item, productPart);
+                }
 
                 orderLineItems.Add(new OrderLineItem(
                     lineItem.Quantity,
@@ -112,19 +107,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     productPart.ContentItem.ContentItemVersionId
                 ));
             }
-
-            //var lineItems = part.LineItems // use viewModel's LineItems instead of part's LineItems to get the new list
-            //     .Where(lineItem => lineItem != null)
-            //     .Select((lineItem, index) =>
-            //     {
-            //         var quantity = viewModel.LineItems[index].Quantity;
-            //         lineItem.Quantity = quantity;
-            //         lineItem.LinePrice = quantity * lineItem.UnitPrice;
-
-            //         return lineItem;
-            //     })
-            //     .Where(lineItem => lineItem.Quantity != 0)
-            //     .ToList();
 
             part.LineItems.SetItems(orderLineItems);
         }
