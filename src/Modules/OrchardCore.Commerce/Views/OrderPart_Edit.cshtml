@@ -1,10 +1,18 @@
 @using System.Text.Json;
+@*@using Newtonsoft.Json;*@
+@using OrchardCore.Commerce.Abstractions;
+@using OrchardCore.Commerce.Indexes;
+@using OrchardCore.Commerce.Models;
 @using OrchardCore.Commerce.MoneyDataType.Abstractions;
 @using OrchardCore.Commerce.Settings;
+@using OrchardCore.ContentManagement;
+@using YesSql;
 
 @model OrderPartViewModel
 
 @inject IMoneyService MoneyService
+@inject ISession Session
+@inject IPredefinedValuesProductAttributeService AttributesService
 
 @{
     var m = Model;
@@ -12,7 +20,41 @@
     var availableCurrencyCodes = MoneyService.Currencies.Select(currency => currency.CurrencyIsoCode);
     var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
 
-    var t = "";
+    // maybe do these, or at least part of these, in the driver? also add a <string, string> dictionary property for attribute values in OrderLineItemViewModel
+
+    // list all predefined text attributes and add disclaimer that warns to only fill out the ones that are relevant to the product?
+    // and if the specified product (via its SKU) does not have the selected attributes, add model error
+
+    // get predefined attributes and create dropdowns based on them?
+    // the label next to the input field should be the FieldName property's value
+
+    // get all products, filter for those that have price variant part, then filter for those that have predefined attributes?
+    var allProducts = await Session.Query<ContentItem, ProductPartIndex>().ListAsync();
+    var allPriceVariantProducts = allProducts.Where(product => product.As<PriceVariantsPart>() != null);
+
+    var availableAttributes = new Dictionary<string, List<string>>();
+    foreach (var priceVariant in allPriceVariantProducts)
+    {
+        // doesn't work in an Order with no PriceVariantProduct already present??
+        var attributes = AttributesService.GetProductAttributesRestrictedToPredefinedValues(priceVariant);
+        foreach (var attr in attributes)
+        {
+            var predefinedStrings = new List<string>();
+
+            var predefinedValues = (attr.Settings as TextProductAttributeFieldSettings).PredefinedValues;
+            predefinedStrings.AddRange(predefinedValues.Select(value => value.ToString()));
+
+            availableAttributes.TryAdd(attr.Name, predefinedStrings);
+
+            // Also need to add potential new values to an already existing key.
+            var existingValues = availableAttributes[attr.Name];
+            var valuesToAdd = predefinedStrings.Where(predefinedValue => !existingValues.Contains(predefinedValue));
+            availableAttributes[attr.Name].AddRange(valuesToAdd);
+        }
+    }
+
+    var serializedDictionary = JsonSerializer.Serialize(availableAttributes);
+    var rr = "2;";
 }
 
 <section id="shopping-cart">
@@ -24,9 +66,10 @@
             <div class="col-xs-12 col-sm-2">@T["Product Name"]</div>
             <div class="col-xs-12 col-sm-2">@T["Quantity"]</div>
             <div class="col-xs-12 col-sm-2">@T["Product SKU"]</div>
-            <div class="col-xs-12 col-sm-2">@T["Unit Price Value"]</div> @*should be base price instead*@
-            <div class="col-xs-12 col-sm-2">@T["Unit Price Currency"]</div>
-            <div class="col-xs-12 col-sm-2">@T["Actions"]</div> @*attributes TBA*@
+            <div class="col-xs-12 col-sm-2">@T["Unit Price Value"]</div>
+            <div class="col-xs-12 col-sm-1">@T["Unit Price Currency"]</div>
+            <div class="col-xs-12 col-sm-2">@T["Attributes"]</div>
+            <div class="col-xs-12 col-sm-1">@T["Actions"]</div>
         </div>
         <div id="orderPart__products" class="orderPart__products">
             <div v-for="(lineItem, index) in lineItems">
@@ -43,15 +86,26 @@
                     <div class="col-xs-12 col-sm-2 d-flex">
                         <input :name="'OrderPart.LineItems[' + index + '].UnitPriceValue'" v-model="lineItem.unitPriceValue">
                     </div>
-                    <div class="col-xs-12 col-sm-2 d-flex">
-                        <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode" class="currency-selector">
+                    <div class="col-xs-12 col-sm-1 d-flex">
+                        <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode">
                             @foreach (var currencyCode in availableCurrencyCodes)
                             {
                                 <option value="@currencyCode">@currencyCode</option>
                             }
                         </select>
                     </div>
-                    <div class="col-xs-12 col-sm-2">
+                    <div class="col-xs-12 col-sm-2 d-flex">
+                        <div v-for="(values, key) in lineItem.availableAttributes">
+                            <label>{{ key }}</label>
+                            <select>
+                                <option value=""></option>
+                                <option v-for="value in values" value="value">{{ value }}</option>
+                            </select>
+                            @*{{ values }}*@
+                        </div>
+                        @*<input :name="'OrderPart.LineItems[' + index + '].UnitPriceValue'" v-model="lineItem.unitPriceValue">*@
+                    </div>
+                    <div class="col-xs-12 col-sm-1">
                         <button class="btn btn-danger" @@click.prevent="lineItems.splice(index, 1)">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>
@@ -199,8 +253,25 @@
     const vueQuery = '#orderPart__products';
     let lineItems = @Json.Serialize(Model.LineItems);
 
+    let availableAttributes = JSON.parse('@Html.Raw(serializedDictionary)');
+
+    console.log(JSON.stringify(availableAttributes, null, 4));
+
+    const dictionary = {};
+
+    // isnt this the same as the parsed JSON lmao
+    //for (const key in availableAttributes) {
+    //    if (availableAttributes.hasOwnProperty(key)) {
+    //        dictionary[key] = availableAttributes[key];
+    //    }
+    //}
+
+    //console.log(JSON.stringify(dictionary, null, 4));
+
+    // add dictionary in here?
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
+        item.availableAttributes = availableAttributes;
     })
 
     var products = new Vue({
@@ -217,8 +288,9 @@
             "productSku": null,
             "unitPriceValue": null,
             "unitPriceCurrencyIsoCode": '@defaultCurrencyCode',
+            "availableAttributes": null,
         });
 
-        // could set the new currency selector to the value of an existing selector
+        // could set the new currency selector to the value of an existing selector -> add disclaimer instead
     });
 </script>
