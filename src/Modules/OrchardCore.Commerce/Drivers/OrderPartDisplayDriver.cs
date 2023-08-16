@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -22,18 +23,21 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IProductService _productService;
     private readonly IStringLocalizer T;
     private readonly IMoneyService _moneyService;
+    private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
 
     public OrderPartDisplayDriver(
         IOrderLineItemService orderLineItemService,
         ICurrencyProvider currencyProvider,
         IProductService productService,
         IStringLocalizer<OrderPartDisplayDriver> stringLocalizer,
-        IMoneyService moneyService)
+        IMoneyService moneyService,
+        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService)
     {
         _orderLineItemService = orderLineItemService;
         _currencyProvider = currencyProvider;
         _productService = productService;
         _moneyService = moneyService;
+        _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
         T = stringLocalizer;
     }
 
@@ -86,6 +90,36 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     continue;
                 }
 
+                // If attributes have been selected for a Product that is not a Price Variant product, or for one that
+                // does not have said attributes, add model error.
+                var selectedAttributes = lineItem.SelectedAttributes.Where(kvp => kvp.Value != null);
+                if (selectedAttributes.Any())
+                {
+                    var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
+                    if (priceVariantsPart == null)
+                    {
+                        updater.ModelState.AddModelError(
+                            nameof(viewModel.LineItems),
+                            T["Attributes do not exist for non-Price Variant Product {0}.", lineItemProductSku]);
+                    }
+                    else
+                    {
+                        // do these both work when we are in a new Order's editor?
+                        // this gets the predefined values only, not the corresponding key (i.e. Size or Color)
+                        var attributes1 = _predefinedValuesProductAttributeService
+                            .GetProductAttributesPredefinedValues(priceVariantsPart.ContentItem);
+
+                        var attributes2 = _predefinedValuesProductAttributeService
+                            .GetProductAttributesRestrictedToPredefinedValues(priceVariantsPart.ContentItem);
+
+                        // if predefined attributes do not contain the selected attributes, add model error
+
+                        var kkkk = "";
+                    }
+
+                    // if SelectedAttributes contain anything, construct attributes and add them to lineItem.Attributes
+                }
+
                 // If Attributes exist, there must be a full SKU.
                 var fullSku = string.Empty;
                 if (lineItem.Attributes != null && lineItem.Attributes.Any())
@@ -120,6 +154,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         var lineItems = part.LineItems;
         var lineItemViewModelsAndTotal = await _orderLineItemService
             .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, part);
+
+        // set SelectedAttributes dictionary values
 
         model.Total = lineItemViewModelsAndTotal.Total;
         model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);
