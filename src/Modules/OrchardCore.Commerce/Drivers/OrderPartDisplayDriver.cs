@@ -1,4 +1,3 @@
-using AngleSharp.Dom;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
@@ -126,8 +125,9 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                             .GetProductAttributesRestrictedToPredefinedValues(priceVariantsPart.ContentItem);
 
                         // Predefined attributes must contain the selected attributes.
-                        var existingSelectedAttributes = predefinedAttributes.Where(
-                            predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)));
+                        var existingSelectedAttributes = predefinedAttributes
+                            .Where(predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
+                            .ToList();
                         if (!existingSelectedAttributes.Any())
                         {
                             updater.ModelState.AddModelError(
@@ -165,7 +165,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
                 // If Attributes exist, there must be a full SKU.
                 var fullSku = string.Empty;
-                if (attributesList != null && attributesList.Any()) // lineItem.Attributes before -- any difference?
+                if (attributesList != null && attributesList.Any())
                 {
                     var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, attributesList);
                     fullSku = _productService.GetOrderFullSku(item, productPart);
