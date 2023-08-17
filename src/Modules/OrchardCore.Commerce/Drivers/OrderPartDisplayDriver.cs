@@ -101,7 +101,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 }
 
                 var attributesList = new List<IProductAttributeValue>();
-                var selectedAttributes = lineItem.SelectedAttributes.Where(kvp => kvp.Value != null);
+                var selectedAttributes = lineItem.SelectedAttributes
+                    .Where(kvp => kvp.Value != null)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value);
+
                 if (selectedAttributes.Any())
                 {
                     // Disallow selecting attributes for non-Price Variant Products.
@@ -131,14 +134,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                                 nameof(viewModel.LineItems),
                                 T["The selected attributes do not exist for Price Variant Product {0}.", lineItemProductSku]);
 
-                            continue; // continue-e?
+                            continue;
                         }
 
-                        // filter out invalid attributes from selectedAttributes dictionary then use it for the foreach below
-                        //var validSelectedAttributes = selectedAttributes.Where(kvp => kvp.Value);
-
-
-                        // if SelectedAttributes contain anything, construct attributes and add them to lineItem.Attributes
+                        // Construct actual attributes from strings.
                         var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
                         foreach (var attribute in existingSelectedAttributes)
                         {
@@ -183,7 +182,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                         ? lineItem.LinePrice
                         : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
                     productPart.ContentItem.ContentItemVersionId,
-                    attributesList
+                    attributesList,
+                    selectedAttributes
                 ));
             }
 
@@ -199,9 +199,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         var lineItems = part.LineItems;
         var lineItemViewModelsAndTotal = await _orderLineItemService
             .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, part);
-
-        // set SelectedAttributes dictionary values -- in CreateOrderLineItemViewModelsAndTotalAsync()?
-        // or save them to OrderPart and just add them here?
 
         model.Total = lineItemViewModelsAndTotal.Total;
         model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);

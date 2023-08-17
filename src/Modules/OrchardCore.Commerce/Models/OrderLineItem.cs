@@ -14,6 +14,7 @@ public class OrderLineItem
     public Amount LinePrice { get; set; }
     public string ContentItemVersion { get; set; }
     public ISet<IProductAttributeValue> Attributes { get; }
+    public IDictionary<string, string> SelectedAttributes { get; set; } = new Dictionary<string, string>();
 
     public OrderLineItem(
         int quantity,
@@ -22,7 +23,8 @@ public class OrderLineItem
         Amount unitPrice,
         Amount linePrice,
         string contentItemVersion,
-        IEnumerable<IProductAttributeValue> attributes = null)
+        IEnumerable<IProductAttributeValue> attributes = null,
+        IDictionary<string, string> selectedAttributes = null)
     {
         ArgumentNullException.ThrowIfNull(productSku);
         if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
@@ -36,5 +38,6 @@ public class OrderLineItem
         Attributes = attributes is null
             ? new HashSet<IProductAttributeValue>()
             : new HashSet<IProductAttributeValue>(attributes);
+        SelectedAttributes = selectedAttributes;
     }
 }

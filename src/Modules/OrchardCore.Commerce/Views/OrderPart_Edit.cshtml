@@ -97,7 +97,7 @@
                     <div class="col-xs-12 col-sm-2 d-flex">
                         <div v-for="(values, key) in lineItem.availableAttributes">
                             <label>{{ key }}</label>
-                            <select :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[' + key + ']'" v-model="lineItem.selectedAttributes">
+                            <select :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[' + key + ']'" v-model="lineItem.selectedAttributes[key]">
                                 <option value=""></option>
                                 <option v-for="value in values" :value="value">{{ value }}</option>
                             </select>
