@@ -1,12 +1,16 @@
+using AngleSharp.Dom;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Helpers;
@@ -18,26 +22,32 @@ namespace OrchardCore.Commerce.Drivers;
 
 public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 {
+    private readonly IEnumerable<IProductAttributeProvider> _attributeProviders;
     private readonly IOrderLineItemService _orderLineItemService;
     private readonly ICurrencyProvider _currencyProvider;
     private readonly IProductService _productService;
     private readonly IStringLocalizer T;
     private readonly IMoneyService _moneyService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public OrderPartDisplayDriver(
+        IEnumerable<IProductAttributeProvider> attributeProviders,
         IOrderLineItemService orderLineItemService,
         ICurrencyProvider currencyProvider,
         IProductService productService,
         IStringLocalizer<OrderPartDisplayDriver> stringLocalizer,
         IMoneyService moneyService,
-        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService)
+        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
+        IContentDefinitionManager contentDefinitionManager)
     {
+        _attributeProviders = attributeProviders;
         _orderLineItemService = orderLineItemService;
         _currencyProvider = currencyProvider;
         _productService = productService;
         _moneyService = moneyService;
         _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
+        _contentDefinitionManager = contentDefinitionManager;
         T = stringLocalizer;
     }
 
@@ -90,11 +100,11 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     continue;
                 }
 
-                // If attributes have been selected for a Product that is not a Price Variant product, or for one that
-                // does not have said attributes, add model error.
+                var attributesList = new List<IProductAttributeValue>();
                 var selectedAttributes = lineItem.SelectedAttributes.Where(kvp => kvp.Value != null);
                 if (selectedAttributes.Any())
                 {
+                    // Disallow selecting attributes for non-Price Variant Products.
                     var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
                     if (priceVariantsPart == null)
                     {
@@ -106,18 +116,52 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     {
                         // do these both work when we are in a new Order's editor?
                         // this gets the predefined values only, not the corresponding key (i.e. Size or Color)
-                        var attributes1 = _predefinedValuesProductAttributeService
-                            .GetProductAttributesPredefinedValues(priceVariantsPart.ContentItem);
+                        //var attributes1 = _predefinedValuesProductAttributeService
+                        //    .GetProductAttributesPredefinedValues(priceVariantsPart.ContentItem);
 
-                        var attributes2 = _predefinedValuesProductAttributeService
+                        var predefinedAttributes = _predefinedValuesProductAttributeService
                             .GetProductAttributesRestrictedToPredefinedValues(priceVariantsPart.ContentItem);
 
-                        // if predefined attributes do not contain the selected attributes, add model error
+                        // Predefined attributes must contain the selected attributes.
+                        var existingSelectedAttributes = predefinedAttributes.Where(
+                            predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)));
+                        if (!existingSelectedAttributes.Any())
+                        {
+                            updater.ModelState.AddModelError(
+                                nameof(viewModel.LineItems),
+                                T["The selected attributes do not exist for Price Variant Product {0}.", lineItemProductSku]);
+
+                            continue; // continue-e?
+                        }
+
+                        // filter out invalid attributes from selectedAttributes dictionary then use it for the foreach below
+                        //var validSelectedAttributes = selectedAttributes.Where(kvp => kvp.Value);
+
+
+                        // if SelectedAttributes contain anything, construct attributes and add them to lineItem.Attributes
+                        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+                        foreach (var attribute in existingSelectedAttributes)
+                        {
+                            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+                                type, "PriceVariantsProduct" + "." + attribute.Name);
+
+                            var predefinedStrings = new List<string>();
+                            predefinedStrings.AddRange(
+                                (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
+
+                            var valueThen = predefinedStrings.First(
+                                item => item == selectedAttributes.First(kvp => kvp.Key == attribute.Name).Value);
+
+                            var matchingAttribute = _attributeProviders
+                                .Select(provider => provider.Parse(
+                                    attributePartDefinition, attributeFieldDefinition, valueThen))
+                                .FirstOrDefault(attributeValue => attributeValue != null);
+
+                            attributesList.Add(matchingAttribute);
+                        }
 
                         var kkkk = "";
                     }
-
-                    // if SelectedAttributes contain anything, construct attributes and add them to lineItem.Attributes
                 }
 
                 // If Attributes exist, there must be a full SKU.
@@ -138,7 +182,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     currenciesMatch
                         ? lineItem.LinePrice
                         : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
-                    productPart.ContentItem.ContentItemVersionId
+                    productPart.ContentItem.ContentItemVersionId,
+                    attributesList
                 ));
             }
 
@@ -155,11 +200,30 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         var lineItemViewModelsAndTotal = await _orderLineItemService
             .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, part);
 
-        // set SelectedAttributes dictionary values
+        // set SelectedAttributes dictionary values -- in CreateOrderLineItemViewModelsAndTotalAsync()?
+        // or save them to OrderPart and just add them here?
 
         model.Total = lineItemViewModelsAndTotal.Total;
         model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);
         model.Charges.AddRange(part.Charges);
         model.OrderPart = part;
+    }
+
+    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
+        GetFieldDefinition(ContentTypeDefinition type, string attributeName)
+    {
+        var partAndField = attributeName.Split('.');
+        var partName = partAndField[0];
+        var fieldName = partAndField[1];
+
+        return type
+            .Parts
+            .Where(partDefinition => partDefinition.Name == partName)
+            .SelectMany(partDefinition => partDefinition
+                .PartDefinition
+                .Fields
+                .Select(fieldDefinition => (PartDefinition: partDefinition, FieldDefinition: fieldDefinition))
+                .Where(pair => pair.FieldDefinition.Name == fieldName))
+            .FirstOrDefault();
     }
 }
