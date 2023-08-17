@@ -165,9 +165,9 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
                 // If Attributes exist, there must be a full SKU.
                 var fullSku = string.Empty;
-                if (lineItem.Attributes != null && lineItem.Attributes.Any())
+                if (attributesList != null && attributesList.Any()) // lineItem.Attributes before -- any difference?
                 {
-                    var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
+                    var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, attributesList);
                     fullSku = _productService.GetOrderFullSku(item, productPart);
                 }
 

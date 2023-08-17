@@ -123,6 +123,8 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         var price = priceSelectionStrategy.SelectPrice(item.Prices);
         var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
 
+        var selectedAttributes = Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
+
         return new OrderLineItem(
             quantity,
             ProductSku,
@@ -130,7 +132,8 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             price,
             quantity * price,
             contentItemVersion,
-            Attributes);
+            Attributes,
+            selectedAttributes);
     }
 
     public static async Task<LocalizedHtmlString> GetErrorAsync(
