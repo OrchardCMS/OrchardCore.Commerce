@@ -315,7 +315,6 @@ public class StripePaymentService : IStripePaymentService
         // void."
         foreach (var item in shoppingCart.Items)
         {
-            // handle full SKU here somehow
             var trimmedSku = item.ProductSku.Split('-')[0];
 
             var contentItemId = (await _session
