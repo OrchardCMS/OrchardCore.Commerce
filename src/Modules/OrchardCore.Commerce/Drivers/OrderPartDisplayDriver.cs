@@ -117,7 +117,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             var attributesList = new List<IProductAttributeValue>();
             var selectedAttributes = lineItem.SelectedAttributes
-                .Where(kvp => kvp.Value != null)
+                .Where(keyValuePair => keyValuePair.Value != null)
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
 
             if (selectedAttributes.Any())
@@ -202,7 +202,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
 
                 var valueThen = predefinedStrings.First(
-                    item => item == selectedAttributes.First(kvp => kvp.Key == attribute.Name).Value);
+                    item => item == selectedAttributes.First(keyValuePair => keyValuePair.Key == attribute.Name).Value);
 
                 var matchingAttribute = _attributeProviders
                     .Select(provider => provider.Parse(
