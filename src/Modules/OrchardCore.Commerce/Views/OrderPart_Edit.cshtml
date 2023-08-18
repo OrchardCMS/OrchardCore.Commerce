@@ -14,8 +14,6 @@
 @inject IPredefinedValuesProductAttributeService AttributesService
 
 @{
-    var m = Model;
-
     var availableCurrencyCodes = MoneyService.Currencies.Select(currency => currency.CurrencyIsoCode);
     var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
 
@@ -54,7 +52,9 @@
     <fieldset class="mb-3">
         <label>@T["Products editor"]</label>
         <ul>
-            <li class="hint">@T["Currencies: Selected currencies need to be the same for all Products."]</li>
+            <li class="hint">
+                @T["Currencies: Selected currencies need to be the same for all Products."]
+            </li>
             <li class="hint">
                 @T["Attributes: Attributes are only to be selected for Price Variant Products. Only select a value for those attributes that are relevant to the product in question."]
             </li>
@@ -186,10 +186,7 @@
 <script at="Foot" depends-on="vuejs">
     const vueQuery = '#orderPart__products';
     let lineItems = @Json.Serialize(Model.LineItems);
-
     let availableAttributes = JSON.parse('@Html.Raw(serializedDictionary)');
-
-    //console.log(JSON.stringify(availableAttributes, null, 4));
 
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
