@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Localization;
+﻿using Lombiq.HelpfulLibraries.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
@@ -21,6 +22,8 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
     private readonly IWorkflowManager _workflowManager;
     private readonly IWorkflowTypeStore _workflowTypeStore;
 
+    private readonly JsonSerializerSettings _settings;
+
     // After all the default events, but it should be still possible to add different ordered event handlers after it.
     public int Order => int.MaxValue / 2;
 
@@ -30,6 +33,10 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
     {
         _workflowManager = workflowManager;
         _workflowTypeStore = workflowTypeStore;
+
+        var defaultConverters = JsonConvert.DefaultSettings?.Invoke()?.Converters ?? new List<JsonConverter>();
+        defaultConverters.Add(new LocalizedHtmlStringConverter());
+        _settings = new JsonSerializerSettings { Converters = defaultConverters };
     }
 
     public async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
@@ -52,7 +59,7 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 
     public async Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart) =>
         GetOutput<ShoppingCart>(
-            await TriggerEventAsync<CartLoadedEvent>(shoppingCart),
+            await TriggerEventAsync<CartLoadedEvent>(new { ShoppingCart = shoppingCart }),
             nameof(ShoppingCart)) ?? shoppingCart;
 
     private async Task<IList<WorkflowExecutionContext>> TriggerEventAsync<T>(object input)
@@ -72,11 +79,11 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
         return contexts;
     }
 
-    private static T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName) =>
+    private T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName) =>
         contexts.SelectWhere(context => context.Output.GetMaybe(outputName)).FirstOrDefault() switch
         {
-            string outputString => JsonConvert.DeserializeObject<T>(outputString),
-            { } output => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(output)),
+            string outputString => JsonConvert.DeserializeObject<T>(outputString, _settings),
+            { } output => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(output, _settings), _settings),
             _ => default,
         };
 }

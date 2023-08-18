@@ -31,7 +31,7 @@ public class ShoppingCart
     public int ItemCount => Items.Sum(item => item.Quantity);
 
     public ShoppingCart()
-        : this(items: null)
+        : this(Enumerable.Empty<ShoppingCartItem>())
     {
     }
 
