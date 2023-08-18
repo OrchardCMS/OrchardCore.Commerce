@@ -91,7 +91,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     T["Selected currencies need to match."]);
             }
 
-            var orderLineItems = await GetOrderLineItemsAsync(updater, viewModel, viewModelLineItems, currenciesMatch);
+            var orderLineItems = await GetOrderLineItemsAsync(updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);
             part.LineItems.SetItems(orderLineItems);
         }
 
@@ -100,7 +100,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
     private async Task<List<OrderLineItem>> GetOrderLineItemsAsync(
         IUpdateModel updater,
-        OrderPartViewModel viewModel,
+        string modelErrorKey,
         List<OrderLineItemViewModel> viewModelLineItems,
         bool currenciesMatch)
     {
@@ -126,7 +126,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     updater,
                     selectedAttributes,
                     productPart,
-                    viewModel.LineItems,
+                    modelErrorKey,
                     attributesList,
                     lineItemProductSku);
             }
@@ -162,7 +162,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         IUpdateModel updater,
         IDictionary<string, string> selectedAttributes,
         ProductPart productPart,
-        IList<OrderLineItemViewModel> lineItems,
+        string modelErrorKey,
         IList<IProductAttributeValue> attributesList,
         string lineItemProductSku)
     {
@@ -171,7 +171,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         if (priceVariantsPart == null)
         {
             updater.ModelState.AddModelError(
-                nameof(lineItems),
+                modelErrorKey,
                 T["Attributes do not exist for non-Price Variant Product {0}.", lineItemProductSku]);
         }
         else
@@ -186,7 +186,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             if (!existingSelectedAttributes.Any())
             {
                 updater.ModelState.AddModelError(
-                    nameof(lineItems),
+                    modelErrorKey,
                     T["The selected attributes do not exist for Price Variant Product {0}.", lineItemProductSku]);
             }
 
