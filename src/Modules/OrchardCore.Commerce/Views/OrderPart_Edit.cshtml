@@ -24,7 +24,6 @@
     var availableAttributes = new Dictionary<string, List<string>>();
     foreach (var priceVariant in allPriceVariantProducts)
     {
-        // doesn't work in an Order with no PriceVariantProduct already present??
         var attributes = AttributesService.GetProductAttributesRestrictedToPredefinedValues(priceVariant);
         foreach (var attr in attributes)
         {
@@ -50,7 +49,7 @@
         <h3>@T["Ordered Items"]</h3>
     </div>
     <fieldset class="mb-3">
-        <label>@T["Products editor"]</label>
+        <label>@T["Product properties"]</label>
         <ul>
             <li class="hint">
                 @T["Currencies: Selected currencies need to be the same for all Products."]
