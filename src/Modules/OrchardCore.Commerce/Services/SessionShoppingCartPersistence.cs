@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -10,15 +12,18 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
     private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart:";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
 
     private ISession Session => _httpContextAccessor.HttpContext?.Session;
 
     public SessionShoppingCartPersistence(
         IHttpContextAccessor httpContextAccessor,
+        IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartSerializer shoppingCartSerializer)
     {
         _httpContextAccessor = httpContextAccessor;
+        _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
@@ -30,6 +35,11 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
 
         var cart = await _shoppingCartSerializer.DeserializeAsync(cartString);
         cart.Id = shoppingCartId;
+
+        foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
+        {
+            cart = await shoppingCartEvent.LoadedAsync(cart) ?? cart;
+        }
 
         return cart;
     }
