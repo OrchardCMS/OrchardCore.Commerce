@@ -45,7 +45,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
 
-    // We need to use that many this cannot be avoided.
+    // We need to use that many, this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
     public StripePaymentService(
         IShoppingCartHelpers shoppingCartHelpers,

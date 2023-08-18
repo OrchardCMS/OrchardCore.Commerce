@@ -30,6 +30,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
+    // These are needed.
+#pragma warning disable S107 // Methods should not have too many parameters
     public OrderPartDisplayDriver(
         IEnumerable<IProductAttributeProvider> attributeProviders,
         IOrderLineItemService orderLineItemService,
@@ -39,6 +41,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         IMoneyService moneyService,
         IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
         IContentDefinitionManager contentDefinitionManager)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _attributeProviders = attributeProviders;
         _orderLineItemService = orderLineItemService;
@@ -88,109 +91,127 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     T["Selected currencies need to match."]);
             }
 
-            var orderLineItems = new List<OrderLineItem>();
-            foreach (var lineItem in viewModelLineItems)
-            {
-                var lineItemProductSku = lineItem.ProductSku.ToUpperInvariant();
-
-                // If the provided SKU does not belong to an existing product content item, it should not be added.
-                if (await _productService.GetProductAsync(lineItemProductSku) is not { } productPart)
-                {
-                    continue;
-                }
-
-                var attributesList = new List<IProductAttributeValue>();
-                var selectedAttributes = lineItem.SelectedAttributes
-                    .Where(kvp => kvp.Value != null)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-                if (selectedAttributes.Any())
-                {
-                    // Disallow selecting attributes for non-Price Variant Products.
-                    var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
-                    if (priceVariantsPart == null)
-                    {
-                        updater.ModelState.AddModelError(
-                            nameof(viewModel.LineItems),
-                            T["Attributes do not exist for non-Price Variant Product {0}.", lineItemProductSku]);
-                    }
-                    else
-                    {
-                        // do these both work when we are in a new Order's editor?
-                        // this gets the predefined values only, not the corresponding key (i.e. Size or Color)
-                        //var attributes1 = _predefinedValuesProductAttributeService
-                        //    .GetProductAttributesPredefinedValues(priceVariantsPart.ContentItem);
-
-                        var predefinedAttributes = _predefinedValuesProductAttributeService
-                            .GetProductAttributesRestrictedToPredefinedValues(priceVariantsPart.ContentItem);
-
-                        // Predefined attributes must contain the selected attributes.
-                        var existingSelectedAttributes = predefinedAttributes
-                            .Where(predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
-                            .ToList();
-                        if (!existingSelectedAttributes.Any())
-                        {
-                            updater.ModelState.AddModelError(
-                                nameof(viewModel.LineItems),
-                                T["The selected attributes do not exist for Price Variant Product {0}.", lineItemProductSku]);
-
-                            continue;
-                        }
-
-                        // Construct actual attributes from strings.
-                        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-                        foreach (var attribute in existingSelectedAttributes)
-                        {
-                            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-                                type, "PriceVariantsProduct" + "." + attribute.Name);
-
-                            var predefinedStrings = new List<string>();
-                            predefinedStrings.AddRange(
-                                (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
-
-                            var valueThen = predefinedStrings.First(
-                                item => item == selectedAttributes.First(kvp => kvp.Key == attribute.Name).Value);
-
-                            var matchingAttribute = _attributeProviders
-                                .Select(provider => provider.Parse(
-                                    attributePartDefinition, attributeFieldDefinition, valueThen))
-                                .FirstOrDefault(attributeValue => attributeValue != null);
-
-                            attributesList.Add(matchingAttribute);
-                        }
-
-                        var kkkk = "";
-                    }
-                }
-
-                // If Attributes exist, there must be a full SKU.
-                var fullSku = string.Empty;
-                if (attributesList != null && attributesList.Any())
-                {
-                    var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, attributesList);
-                    fullSku = _productService.GetOrderFullSku(item, productPart);
-                }
-
-                orderLineItems.Add(new OrderLineItem(
-                    lineItem.Quantity,
-                    lineItemProductSku,
-                    fullSku,
-                    currenciesMatch
-                        ? lineItem.UnitPrice
-                        : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
-                    currenciesMatch
-                        ? lineItem.LinePrice
-                        : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
-                    productPart.ContentItem.ContentItemVersionId,
-                    attributesList,
-                    selectedAttributes
-                ));
-            }
-
+            var orderLineItems = await GetOrderLineItemsAsync(updater, viewModel, viewModelLineItems, currenciesMatch);
             part.LineItems.SetItems(orderLineItems);
         }
 
         return await EditAsync(part, context);
+    }
+
+    private async Task<List<OrderLineItem>> GetOrderLineItemsAsync(
+        IUpdateModel updater,
+        OrderPartViewModel viewModel,
+        List<OrderLineItemViewModel> viewModelLineItems,
+        bool currenciesMatch)
+    {
+        var orderLineItems = new List<OrderLineItem>();
+        foreach (var lineItem in viewModelLineItems)
+        {
+            var lineItemProductSku = lineItem.ProductSku.ToUpperInvariant();
+
+            // If the provided SKU does not belong to an existing product content item, it should not be added.
+            if (await _productService.GetProductAsync(lineItemProductSku) is not { } productPart)
+            {
+                continue;
+            }
+
+            var attributesList = new List<IProductAttributeValue>();
+            var selectedAttributes = lineItem.SelectedAttributes
+                .Where(kvp => kvp.Value != null)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            if (selectedAttributes.Any())
+            {
+                HandleSelectedAttributes(
+                    updater,
+                    selectedAttributes,
+                    productPart,
+                    viewModel.LineItems,
+                    attributesList,
+                    lineItemProductSku);
+            }
+
+            // If Attributes exist, there must be a full SKU.
+            var fullSku = string.Empty;
+            if (attributesList.Any())
+            {
+                var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, attributesList);
+                fullSku = _productService.GetOrderFullSku(item, productPart);
+            }
+
+            orderLineItems.Add(new OrderLineItem(
+                lineItem.Quantity,
+                lineItemProductSku,
+                fullSku,
+                currenciesMatch
+                    ? lineItem.UnitPrice
+                    : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
+                currenciesMatch
+                    ? lineItem.LinePrice
+                    : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
+                productPart.ContentItem.ContentItemVersionId,
+                attributesList,
+                selectedAttributes
+            ));
+        }
+
+        return orderLineItems;
+    }
+
+    private void HandleSelectedAttributes(
+        IUpdateModel updater,
+        IDictionary<string, string> selectedAttributes,
+        ProductPart productPart,
+        IList<OrderLineItemViewModel> lineItems,
+        IList<IProductAttributeValue> attributesList,
+        string lineItemProductSku)
+    {
+        // Disallow selecting attributes for non-Price Variant Products.
+        var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
+        if (priceVariantsPart == null)
+        {
+            updater.ModelState.AddModelError(
+                nameof(lineItems),
+                T["Attributes do not exist for non-Price Variant Product {0}.", lineItemProductSku]);
+        }
+        else
+        {
+            var predefinedAttributes = _predefinedValuesProductAttributeService
+                .GetProductAttributesRestrictedToPredefinedValues(priceVariantsPart.ContentItem);
+
+            // Predefined attributes must contain the selected attributes.
+            var existingSelectedAttributes = predefinedAttributes
+                .Where(predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
+                .ToList();
+            if (!existingSelectedAttributes.Any())
+            {
+                updater.ModelState.AddModelError(
+                    nameof(lineItems),
+                    T["The selected attributes do not exist for Price Variant Product {0}.", lineItemProductSku]);
+            }
+
+            // Construct actual attributes from strings.
+            var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+            foreach (var attribute in existingSelectedAttributes)
+            {
+                var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+                    type, "PriceVariantsProduct" + "." + attribute.Name);
+
+                var predefinedStrings = new List<string>();
+                predefinedStrings.AddRange(
+                    (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
+
+                var valueThen = predefinedStrings.First(
+                    item => item == selectedAttributes.First(kvp => kvp.Key == attribute.Name).Value);
+
+                var matchingAttribute = _attributeProviders
+                    .Select(provider => provider.Parse(
+                        attributePartDefinition, attributeFieldDefinition, valueThen))
+                    .FirstOrDefault(attributeValue => attributeValue != null);
+
+                attributesList.Add(matchingAttribute);
+            }
+        }
     }
 
     private async ValueTask PopulateViewModelAsync(OrderPartViewModel model, OrderPart part)
