@@ -14,7 +14,7 @@
 @inject IPredefinedValuesProductAttributeService AttributesService
 
 @{
-    var availableCurrencyCodes = MoneyService.Currencies.Select(currency => currency.CurrencyIsoCode);
+    var serializedAvailableCurrencyCodes = JsonSerializer.Serialize(MoneyService.Currencies.ToDictionary(currency => currency.CurrencyIsoCode, currency => currency.Symbol));
     var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
 
     // Get all predefined attributes in the system by filtering for Products that have PriceVariantsPart attached.
@@ -41,7 +41,7 @@
         }
     }
 
-    var serializedDictionary = JsonSerializer.Serialize(availableAttributes);
+    var serializedAttributesDictionary = JsonSerializer.Serialize(availableAttributes);
 }
 
 <section id="shopping-cart">
@@ -89,11 +89,8 @@
                     </div>
                     <div class="col-xs-12 col-sm-1 d-flex">
                         <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode">
-                            @foreach (var currencyCode in availableCurrencyCodes)
-                            {
-                                <option value="@currencyCode">@currencyCode</option>
-                            }
-                        </select>
+                            <option v-for="(value, key) in availableCurrencyCodes" :value="key">{{ key }}</option>
+                       </select>
                     </div>
                     <div class="col-xs-12 col-sm-2 d-flex">
                         <div v-for="(values, key) in lineItem.availableAttributes">
@@ -111,11 +108,11 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row mt-3 mb-3 pb-2">
-            <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
-            <div class="col-xs-12 col-sm-1">
-                <div>@Model.Total</div>
+            <div class="row mt-3 mb-3 pb-2">
+                <div class="col-xs-12 col-sm-10 font-weight-bold">@T["Total"]</div>
+                <div class="col-xs-12 col-sm-1">
+                    <strong>{{ displayedCurrency }} {{ calculatedTotal }}</strong>
+                </div>
             </div>
         </div>
         <button id="addButton" class="btn btn-secondary mb-3">@T["Add Item"]</button>
@@ -188,16 +185,29 @@
 <script at="Foot" depends-on="vuejs">
     const vueQuery = '#orderPart__products';
     let lineItems = @Json.Serialize(Model.LineItems);
-    let availableAttributes = JSON.parse('@Html.Raw(serializedDictionary)');
+    let availableAttributes = JSON.parse('@Html.Raw(serializedAttributesDictionary)');
 
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
         item.availableAttributes = availableAttributes;
     })
 
-    var products = new Vue({
+    let products = new Vue({
         el: vueQuery,
-        data: { lineItems: lineItems },
+        data: {
+            availableCurrencyCodes: JSON.parse('@Html.Raw(serializedAvailableCurrencyCodes)'),
+            lineItems: lineItems,
+        },
+        computed: {
+            calculatedTotal() {
+                return this.lineItems
+                    .map(item => item.quantity * item.unitPriceValue)
+                    .reduce((total, value) => total + value, 0);
+            },
+            displayedCurrency() {
+                return this.lineItems.map(item => this.availableCurrencyCodes[item.unitPriceCurrencyIsoCode])[0];
+            }
+        },
     });
 
     document.getElementById('addButton').addEventListener('click', function (event) {
