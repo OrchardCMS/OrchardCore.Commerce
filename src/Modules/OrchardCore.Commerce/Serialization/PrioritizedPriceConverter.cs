@@ -8,8 +8,8 @@ namespace OrchardCore.Commerce.Serialization;
 
 internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
 {
-    private const string PriorityName = "priority";
-    private const string AmountName = "amount";
+    public const string PriorityName = "priority";
+    public const string AmountName = "amount";
 
     public override PrioritizedPrice Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

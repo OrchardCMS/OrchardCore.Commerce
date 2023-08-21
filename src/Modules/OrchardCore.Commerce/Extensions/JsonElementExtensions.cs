@@ -1,8 +1,6 @@
-using System.Text.Json;
+namespace System.Text.Json;
 
-namespace OrchardCore.Commerce.Serialization;
-
-public static class JsonElementSerializer
+public static class JsonElementExtensions
 {
     /// <summary>
     /// Transforms a JSON element into the required type.

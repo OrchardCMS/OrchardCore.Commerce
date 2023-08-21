@@ -79,11 +79,20 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
         return contexts;
     }
 
-    private T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName) =>
-        contexts.SelectWhere(context => context.Output.GetMaybe(outputName)).FirstOrDefault() switch
+    private T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName)
+    {
+        var output = contexts
+            .Where(context => context.Status is not (WorkflowStatus.Faulted or WorkflowStatus.Halted or WorkflowStatus.Aborted))
+            .SelectWhere(context => context.Output.GetMaybe(outputName))
+            .FirstOrDefault();
+
+        return output switch
         {
             string outputString => JsonConvert.DeserializeObject<T>(outputString, _settings),
-            { } output => JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(output, _settings), _settings),
+            { } outputObject => JsonConvert.DeserializeObject<T>(
+                JsonConvert.SerializeObject(outputObject, _settings),
+                _settings),
             _ => default,
         };
+    }
 }

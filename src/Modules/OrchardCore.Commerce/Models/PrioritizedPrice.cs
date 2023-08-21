@@ -1,15 +1,16 @@
+using Newtonsoft.Json;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Serialization;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Models;
 
 /// <summary>
 /// A price and its priority.
 /// </summary>
-[JsonConverter(typeof(PrioritizedPriceConverter))]
+[JsonConverter(typeof(LegacyPrioritizedPriceConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(PrioritizedPriceConverter))]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class PrioritizedPrice
 {

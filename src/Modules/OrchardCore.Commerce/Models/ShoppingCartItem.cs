@@ -14,6 +14,7 @@ namespace OrchardCore.Commerce.Models;
 /// <summary>
 /// A shopping cart item.
 /// </summary>
+[Newtonsoft.Json.JsonConverter(typeof(LegacyShoppingCartItemConverter))]
 [JsonConverter(typeof(ShoppingCartItemConverter))]
 public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 {

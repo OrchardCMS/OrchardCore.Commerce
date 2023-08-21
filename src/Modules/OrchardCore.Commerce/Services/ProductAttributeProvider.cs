@@ -11,25 +11,39 @@ namespace OrchardCore.Commerce.Services;
 
 public class ProductAttributeProvider : IProductAttributeProvider
 {
-    public IProductAttributeValue CreateFromJsonElement(
+    private static readonly string[] _supportedTypeNames =
+    {
+        nameof(BooleanProductAttributeField),
+        nameof(NumericProductAttributeField),
+        nameof(TextProductAttributeField),
+    };
+
+    public IProductAttributeValue CreateFromValue(
         ContentTypePartDefinition partDefinition,
         ContentPartFieldDefinition attributeFieldDefinition,
-        JsonElement value)
+        object value)
     {
         var attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
+        if (value == null || !_supportedTypeNames.Contains(attributeFieldTypeName)) return null;
+
         var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
+
+        var element = value is JsonElement jsonElement
+            ? jsonElement
+            : JsonDocument.Parse(value.ToString()!).RootElement;
+
         return attributeFieldTypeName switch
         {
-            nameof(BooleanProductAttributeField) => new BooleanProductAttributeValue(name, value.GetBoolean()),
-            nameof(NumericProductAttributeField) => value.TryGetDecimal(out var decimalValue)
+            nameof(BooleanProductAttributeField) => new BooleanProductAttributeValue(name, element.GetBoolean()),
+            nameof(NumericProductAttributeField) => element.TryGetDecimal(out var decimalValue)
                 ? new NumericProductAttributeValue(name, decimalValue)
                 : new NumericProductAttributeValue(name, value: null),
-            nameof(TextProductAttributeField) => value.ValueKind switch
+            nameof(TextProductAttributeField) => element.ValueKind switch
             {
-                JsonValueKind.String => new TextProductAttributeValue(name, value.GetString()),
+                JsonValueKind.String => new TextProductAttributeValue(name, element.GetString()),
                 JsonValueKind.Array => new TextProductAttributeValue(
                     name,
-                    value.EnumerateArray().Select(el => el.GetString())),
+                    element.EnumerateArray().Select(el => el.GetString())),
                 _ => new TextProductAttributeValue(name, values: (IEnumerable<string>)null), // The cast prevents S3220.
             },
             _ => null,

@@ -2,7 +2,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ProductAttributeValues;
-using OrchardCore.Commerce.Serialization;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;

@@ -6,6 +6,7 @@ namespace OrchardCore.Commerce.ProductAttributeValues;
 /// <summary>
 /// Used only to deserialize attributes, before they're post-processed into concrete attribute values.
 /// </summary>
+[Newtonsoft.Json.JsonConverter(typeof(LegacyRawProductAttributeValueConverter))]
 [JsonConverter(typeof(RawProductAttributeValueConverter))]
 internal sealed class RawProductAttributeValue : BaseProductAttributeValue<object>
 {
