@@ -109,9 +109,13 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         {
             var lineItemProductSku = lineItem.ProductSku.ToUpperInvariant();
 
-            // If the provided SKU does not belong to an existing product content item, it should not be added.
+            // If the provided SKU does not belong to an existing Product content item, it should not be added.
             if (await _productService.GetProductAsync(lineItemProductSku) is not { } productPart)
             {
+                updater.ModelState.AddModelError(
+                    modelErrorKey,
+                    T["SKU {0} does not belong to an existing Product.", lineItemProductSku]);
+
                 continue;
             }
 

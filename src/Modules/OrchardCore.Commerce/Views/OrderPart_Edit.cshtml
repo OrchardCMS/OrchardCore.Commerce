@@ -52,6 +52,9 @@
         <label>@T["Product properties"]</label>
         <ul>
             <li class="hint">
+                @T["Product Name and Attributes cells are only populated after submitting the changes."]
+            </li>
+            <li class="hint">
                 @T["Currencies: Selected currencies need to be the same for all Products."]
             </li>
             <li class="hint">
@@ -73,7 +76,7 @@
             <div v-for="(lineItem, index) in lineItems">
                 <div class="row border-bottom mt-3 pb-2">
                     <div class="col-xs-12 col-sm-2 d-flex">
-                        <a :href="lineItem.productUrl">{{ lineItem.productName }}</a>
+                        <a :href="lineItem.productUrl" target="_blank">{{ lineItem.productName }}</a>
                     </div>
                     <div class="col-xs-12 col-sm-2 d-flex">
                         <input :name="'OrderPart.LineItems[' + index + '].Quantity'" v-model="lineItem.quantity">
