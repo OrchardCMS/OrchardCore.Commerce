@@ -109,32 +109,21 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         var types = ExtractTypeDefinitions(products.Values);
         var newCartItems = new List<ShoppingCartItem>(cart.Count);
 
-        foreach (var line in cart.Items)
+        foreach (var line in cart.Items.Where(line => line.Attributes != null))
         {
-            if (line.Attributes is null) continue;
+            var product = products[line.ProductSku];
+            var type = types[product.ContentItem.ContentType];
 
-            var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
-
-            foreach (var attr in line.Attributes.OfType<RawProductAttributeValue>())
-            {
-                var product = products[line.ProductSku];
-                var type = types[product.ContentItem.ContentType];
-                var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(type, attr.AttributeName);
-                if (attributePartDefinition != null && attributeFieldDefinition != null)
-                {
-                    var newAttr = _attributeProviders
-                        .Select(provider => provider.CreateFromJsonElement(
-                        attributePartDefinition,
-                        attributeFieldDefinition,
-                        attr.Value is JsonElement element ? element : default))
-                        .FirstOrDefault(attributeValue => attributeValue != null);
-                    attributes.Add(newAttr);
-                }
-                else
-                {
-                    attributes.Add(attr);
-                }
-            }
+            var attributes = line
+                .Attributes
+                .OfType<RawProductAttributeValue>()
+                .SelectWhere(attribute =>
+                    GetFieldDefinition(type, attribute.AttributeName) is ({ } partDefinition, { } fieldDefinition)
+                        ? _attributeProviders
+                            .SelectWhere(provider => provider.CreateFromValue(partDefinition, fieldDefinition, attribute.Value))
+                            .FirstOrDefault()
+                        : attribute)
+                .ToHashSet();
 
             newCartItems.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
         }
