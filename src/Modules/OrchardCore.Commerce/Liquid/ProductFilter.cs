@@ -37,8 +37,7 @@ public class ProductFilter : ILiquidFilter
 
         return string.IsNullOrWhiteSpace(sku)
             ? NilValue.Instance
-            : new ObjectValue(await _productService.GetProductAsync(sku));
-
+            : new ObjectValue((await _productService.GetProductAsync(sku))?.ContentItem);
     }
 
     private string GetSkuFromJsonObject(JObject jObject)

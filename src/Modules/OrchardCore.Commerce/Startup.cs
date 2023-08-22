@@ -200,7 +200,7 @@ public class Startup : StartupBase
             // Liquid filter to convert JToken value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
             // Liquid filter to convert string, JToken or various models with "ProductSku" properties int an SKU and
-            // then retrieve the corresponding ProductPart.
+            // then retrieve the corresponding content item.
             .AddLiquidFilter<ProductFilter>("product")
             // Liquid filter to create AddressFieldEditorViewModel.
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
