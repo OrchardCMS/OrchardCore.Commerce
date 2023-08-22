@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IProductService _productService;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
+    private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
 
     public ShoppingCartHelpers(
@@ -29,6 +31,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
+        IShoppingCartSerializer shoppingCartSerializer,
         IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
         _hca = hca;
@@ -36,6 +39,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
+        _shoppingCartSerializer = shoppingCartSerializer;
         H = localizer;
     }
 
@@ -61,7 +65,12 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             {
                 var product = products[item.ProductSku];
                 var price = _priceService.SelectPrice(item.Prices);
-                return new ShoppingCartLineViewModel(attributes: item.Attributes.ToDictionary(attr => attr.AttributeName))
+
+                var attributes = item.Attributes.Any(attribute => attribute is RawProductAttributeValue)
+                    ? _shoppingCartSerializer.PostProcessAttributes(item.Attributes, product)
+                    : item.Attributes;
+
+                return new ShoppingCartLineViewModel(attributes: attributes.ToDictionary(attr => attr.AttributeName))
                 {
                     Quantity = item.Quantity,
                     Product = product,
