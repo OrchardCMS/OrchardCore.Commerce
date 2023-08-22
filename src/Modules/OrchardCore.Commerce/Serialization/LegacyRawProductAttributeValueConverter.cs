@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.ProductAttributeValues;
 using System;
 
@@ -15,5 +16,5 @@ internal sealed class LegacyRawProductAttributeValueConverter : JsonConverter<Ra
         RawProductAttributeValue existingValue,
         bool hasExistingValue,
         JsonSerializer serializer) =>
-        new(serializer.Deserialize<object>(reader));
+        new(JToken.ReadFrom(reader));
 }
