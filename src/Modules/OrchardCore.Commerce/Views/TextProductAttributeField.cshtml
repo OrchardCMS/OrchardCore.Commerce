@@ -1,5 +1,6 @@
 @using OrchardCore.Commerce.Models
 @using OrchardCore.Commerce.Settings
+
 @{
     int index = Model.Index;
     var attr = Model.AttributeDescription as ProductAttributeDescription;
@@ -7,11 +8,25 @@
     var id = $"{Model.IdPrefix}-attribute-{index}";
     var optionIndex = 0;
 
-    var sku = Model.Sku as string;
-    var canBeBoughtDictionary = Model.CanBeBought as Dictionary<string, bool>;
-    var availableVariants = canBeBoughtDictionary?.Where(keyValuePair => keyValuePair.Value == true);
-    var defaultValueIsAvailable = availableVariants.Any(
-        keyValuePair => keyValuePair.Key == sku + "-" + settings.DefaultValue.ToUpperInvariant());
+    if (Model.Sku is not string sku)
+    {
+        throw new KeyNotFoundException("Model SKU is not set for text field.");
+    }
+
+    var canBeBoughtDictionary = Model.CanBeBought as Dictionary<string, bool> ?? new Dictionary<string, bool>();
+    var availableVariants = canBeBoughtDictionary.Where(keyValuePair => keyValuePair.Value).ToList();
+
+    bool CanBeBought(string predefinedValue)
+    {
+        var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
+        return canBeBoughtDictionary.TryGetValue(fullSku, out var fullSkuCanBeBought) && fullSkuCanBeBought ||
+               canBeBoughtDictionary.TryGetValue(sku, out var rootSkuCanBeBought) && rootSkuCanBeBought;
+    }
+
+    var defaultValueUpper = settings?.DefaultValue?.ToUpperInvariant();
+    var defaultValueIsAvailable =
+        !string.IsNullOrEmpty(defaultValueUpper) &&
+        availableVariants.Any(keyValuePair => keyValuePair.Key == sku + "-" + defaultValueUpper);
 }
 
 <label for="@id">@attr?.Name</label>
@@ -33,9 +48,7 @@ else if (settings.MultipleValues)
             var optionId = $"{id}-{optionIndex}";
             optionIndex++;
 
-            var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
-            var variantIsAvailable = canBeBoughtDictionary[fullSku];
-            if (variantIsAvailable)
+            if (CanBeBought(predefinedValue))
             {
                 // If the default value is not available, set the first available option as checked.
                 var isChecked = defaultValueIsAvailable
@@ -49,7 +62,7 @@ else if (settings.MultipleValues)
                            checked="@isChecked"
                            class="form-check-input" />
                     <label for="@optionId" class="form-check-label">@predefinedValue</label>
-                </li>                
+                </li>
             }
         }
     </ul>
@@ -59,19 +72,14 @@ else if (settings.RestrictToPredefinedValues)
     if (settings.PredefinedValues.Count() > 5) // Doing radio buttons for less than 5 options
     {
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
-            @foreach (string predefinedValue in settings.PredefinedValues)
+            @foreach (string predefinedValue in settings.PredefinedValues.Cast<string>().Where(CanBeBought))
             {
-                var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
-                var variantIsAvailable = canBeBoughtDictionary[fullSku];
-                if (variantIsAvailable)
-                {
-                    // If the default value is not available, set the first available option as selected.
-                    var isSelected = defaultValueIsAvailable
-                        ? predefinedValue == settings.DefaultValue
-                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
+                // If the default value is not available, set the first available option as selected.
+                var isSelected = defaultValueIsAvailable
+                    ? predefinedValue == settings.DefaultValue
+                : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
 
-                    <option selected="@isSelected">@predefinedValue</option>
-                }
+                <option selected="@isSelected">@predefinedValue</option>
             }
         </select>
     }
@@ -83,9 +91,7 @@ else if (settings.RestrictToPredefinedValues)
                 var optionId = $"{id}-{optionIndex}";
                 optionIndex++;
 
-                var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
-                var variantIsAvailable = canBeBoughtDictionary[fullSku];
-                if (variantIsAvailable)
+                if (CanBeBought(predefinedValue))
                 {
                     // If the default value is not available, set the first available option as checked.
                     var isChecked = defaultValueIsAvailable
@@ -100,7 +106,7 @@ else if (settings.RestrictToPredefinedValues)
                                checked="@isChecked"
                                class="form-check-input" />
                         <label for="@optionId" class="form-check-label">@predefinedValue</label>
-                    </li>   
+                    </li>
                 }
             }
         </ul>
@@ -122,11 +128,12 @@ else
     </select>
     <script at="Foot" depends-on="jQuery">
         jQuery(function ($) {
-            $(".product-attribute-combo-select").on('change', function (e) {
-                var $select = $(e.target);
+            $(".product-attribute-combo-select").change(function (event) {
+                const $select = $(event.target);
+
                 $select
                     .closest('form')
-                    .find('input[name="' + $select.data('related') + '"]')
+                    .find(`input[name="${$select.data('related')}"]`)
                     .val($select.val());
             });
         });
