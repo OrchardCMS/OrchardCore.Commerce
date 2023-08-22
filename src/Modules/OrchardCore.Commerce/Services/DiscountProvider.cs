@@ -30,10 +30,10 @@ public class DiscountProvider : IPromotionProvider
     {
         var discountParts = item
             .Content
-            .ContentItem
+            .ContentItem?
             .OfType<DiscountPart>();
 
-        return discountParts.Any(discountPart => discountPart.IsApplicable(item.Quantity, purchaseDateTime));
+        return discountParts?.Any(discountPart => discountPart.IsApplicable(item.Quantity, purchaseDateTime)) == true;
     }
 
     public static PromotionAndTaxProviderContextLineItem ApplyPromotionToShoppingCartItem(

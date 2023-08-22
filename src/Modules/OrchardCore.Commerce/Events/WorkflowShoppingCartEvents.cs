@@ -83,6 +83,7 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
     }
 
     private T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName)
+        where T : class
     {
         var output = contexts
             .Where(context => context.Status is not (WorkflowStatus.Faulted or WorkflowStatus.Halted or WorkflowStatus.Aborted))
@@ -91,6 +92,8 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 
         return output switch
         {
+            string outputLocalizedHtmlString when typeof(T) == typeof(LocalizedHtmlString) =>
+                new LocalizedHtmlString(outputLocalizedHtmlString, outputLocalizedHtmlString) as T,
             string outputString => JsonConvert.DeserializeObject<T>(outputString, _settings),
             { } outputObject => JsonConvert.DeserializeObject<T>(
                 JsonConvert.SerializeObject(outputObject, _settings),
