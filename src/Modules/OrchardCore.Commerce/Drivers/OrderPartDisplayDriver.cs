@@ -5,7 +5,6 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -126,16 +125,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             if (selectedAttributes.Any())
             {
-                HandleSelectedAttributes(
-                    updater,
-                    selectedAttributes,
-                    productPart,
-                    modelErrorKey,
-                    attributesList,
-                    lineItemProductSku);
+                HandleSelectedAttributes(selectedAttributes, productPart, attributesList);
             }
 
-            // If Attributes exist, there must be a full SKU.
+            // If attributes exist, there must be a full SKU.
             var fullSku = string.Empty;
             if (attributesList.Any())
             {
@@ -163,58 +156,38 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     }
 
     private void HandleSelectedAttributes(
-        IUpdateModel updater,
         IDictionary<string, string> selectedAttributes,
         ProductPart productPart,
-        string modelErrorKey,
-        IList<IProductAttributeValue> attributesList,
-        string lineItemProductSku)
+        IList<IProductAttributeValue> attributesList)
     {
-        // Disallow selecting attributes for non-Price Variant Products.
-        var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
-        if (priceVariantsPart == null)
+        var predefinedAttributes = _predefinedValuesProductAttributeService
+            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem);
+
+        // Predefined attributes must contain the selected attributes.
+        var selectedAttributesList = predefinedAttributes
+            .Where(predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
+            .ToList();
+
+        // Construct actual attributes from strings.
+        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        foreach (var attribute in selectedAttributesList)
         {
-            updater.ModelState.AddModelError(
-                modelErrorKey,
-                T["Attributes do not exist for non-Price Variant Product {0}.", lineItemProductSku]);
-        }
-        else
-        {
-            var predefinedAttributes = _predefinedValuesProductAttributeService
-                .GetProductAttributesRestrictedToPredefinedValues(priceVariantsPart.ContentItem);
+            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+                type, "PriceVariantsProduct" + "." + attribute.Name);
 
-            // Predefined attributes must contain the selected attributes.
-            var existingSelectedAttributes = predefinedAttributes
-                .Where(predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
-                .ToList();
-            if (!existingSelectedAttributes.Any())
-            {
-                updater.ModelState.AddModelError(
-                    modelErrorKey,
-                    T["The selected attributes do not exist for Price Variant Product {0}.", lineItemProductSku]);
-            }
+            var predefinedStrings = new List<string>();
+            predefinedStrings.AddRange(
+                (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
 
-            // Construct actual attributes from strings.
-            var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-            foreach (var attribute in existingSelectedAttributes)
-            {
-                var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-                    type, "PriceVariantsProduct" + "." + attribute.Name);
+            var valueThen = predefinedStrings.First(
+                item => item == selectedAttributes.First(keyValuePair => keyValuePair.Key == attribute.Name).Value);
 
-                var predefinedStrings = new List<string>();
-                predefinedStrings.AddRange(
-                    (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
+            var matchingAttribute = _attributeProviders
+                .Select(provider => provider.Parse(
+                    attributePartDefinition, attributeFieldDefinition, valueThen))
+                .FirstOrDefault(attributeValue => attributeValue != null);
 
-                var valueThen = predefinedStrings.First(
-                    item => item == selectedAttributes.First(keyValuePair => keyValuePair.Key == attribute.Name).Value);
-
-                var matchingAttribute = _attributeProviders
-                    .Select(provider => provider.Parse(
-                        attributePartDefinition, attributeFieldDefinition, valueThen))
-                    .FirstOrDefault(attributeValue => attributeValue != null);
-
-                attributesList.Add(matchingAttribute);
-            }
+            attributesList.Add(matchingAttribute);
         }
     }
 

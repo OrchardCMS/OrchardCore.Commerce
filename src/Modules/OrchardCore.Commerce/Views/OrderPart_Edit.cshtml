@@ -17,14 +17,11 @@
     var serializedAvailableCurrencyCodes = JsonSerializer.Serialize(MoneyService.Currencies.ToDictionary(currency => currency.CurrencyIsoCode, currency => currency.Symbol));
     var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
 
-    // Get all predefined attributes in the system by filtering for Products that have PriceVariantsPart attached.
+    var availableAttributes = new Dictionary<string, Dictionary<string, List<string>>>();
     var allProducts = await Session.Query<ContentItem, ProductPartIndex>().ListAsync();
-    var allPriceVariantProducts = allProducts.Where(product => product.As<PriceVariantsPart>() != null);
-
-    var availableAttributes = new Dictionary<string, List<string>>();
-    foreach (var priceVariant in allPriceVariantProducts)
+    foreach (var product in allProducts)
     {
-        var attributes = AttributesService.GetProductAttributesRestrictedToPredefinedValues(priceVariant);
+        var attributes = AttributesService.GetProductAttributesRestrictedToPredefinedValues(product);
         foreach (var attr in attributes)
         {
             var predefinedStrings = new List<string>();
@@ -32,12 +29,9 @@
             var predefinedValues = (attr.Settings as TextProductAttributeFieldSettings).PredefinedValues;
             predefinedStrings.AddRange(predefinedValues.Select(value => value.ToString()));
 
-            availableAttributes.TryAdd(attr.Name, predefinedStrings);
-
-            // Also need to add potential new values to an already existing key.
-            var existingValues = availableAttributes[attr.Name];
-            var valuesToAdd = predefinedStrings.Where(predefinedValue => !existingValues.Contains(predefinedValue));
-            availableAttributes[attr.Name].AddRange(valuesToAdd);
+            var attributesValuesByAttributeNames = new Dictionary<string, List<string>>();
+            attributesValuesByAttributeNames.Add(attr.Name, predefinedStrings);
+            availableAttributes.Add(product.As<ProductPart>().Sku, attributesValuesByAttributeNames);
         }
     }
 
@@ -56,9 +50,6 @@
             </li>
             <li class="hint">
                 @T["Currencies: Selected currencies need to be the same for all Products."]
-            </li>
-            <li class="hint">
-                @T["Attributes: Attributes are only to be selected for Price Variant Products. Only select a value for those attributes that are relevant to the product in question."]
             </li>
         </ul>
     </fieldset>
@@ -93,7 +84,7 @@
                        </select>
                     </div>
                     <div class="col-xs-12 col-sm-2 d-flex">
-                        <div v-for="(values, key) in lineItem.availableAttributes">
+                        <div v-for="(values, key) in lineItem.availableAttributes[lineItem.productSku]">
                             <label>{{ key }}</label>
                             <select :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[' + key + ']'" v-model="lineItem.selectedAttributes[key]">
                                 <option value=""></option>
