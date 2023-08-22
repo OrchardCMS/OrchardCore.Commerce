@@ -173,7 +173,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         foreach (var attribute in selectedAttributesList)
         {
             var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-                type, "PriceVariantsProduct" + "." + attribute.Name);
+                type, type.Name + "." + attribute.Name);
 
             var predefinedStrings = new List<string>();
             predefinedStrings.AddRange(

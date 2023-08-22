@@ -31,7 +31,13 @@
 
             var attributesValuesByAttributeNames = new Dictionary<string, List<string>>();
             attributesValuesByAttributeNames.Add(attr.Name, predefinedStrings);
-            availableAttributes.Add(product.As<ProductPart>().Sku, attributesValuesByAttributeNames);
+
+            // A Product may already be present in the dictionary, but if it has several different attributes, those still need to be added to its key.
+            var productSku = product.As<ProductPart>().Sku;
+            if (!availableAttributes.TryAdd(productSku, attributesValuesByAttributeNames))
+            {
+                availableAttributes[productSku].Add(attr.Name, predefinedStrings);
+            }
         }
     }
 
