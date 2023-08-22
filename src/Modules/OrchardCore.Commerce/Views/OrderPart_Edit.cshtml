@@ -205,7 +205,7 @@
                     .reduce((total, value) => total + value, 0);
             },
             displayedCurrency() {
-                return this.lineItems.map(item => this.availableCurrencyCodes[item.unitPriceCurrencyIsoCode])[0];
+                return this.availableCurrencyCodes[this.lineItems[0]?.unitPriceCurrencyIsoCode];
             }
         },
     });
