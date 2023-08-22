@@ -90,12 +90,14 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         new HashSet<IProductAttributeValue>(
         line.Attributes is null
             ? Enumerable.Empty<IProductAttributeValue>()
-            : line.Attributes
-                .Select(attr =>
+            : line
+                .Attributes
+                .Where(attrubte => attrubte.Key.Contains('.'))
+                .Select(attrubte =>
                 {
-                    var (attributePartDefinition, attributeFieldDefinition) = type.GetFieldDefinition(attr.Key);
+                    var (attributePartDefinition, attributeFieldDefinition) = type.GetFieldDefinition(attrubte.Key);
                     return _attributeProviders
-                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attr.Value))
+                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attrubte.Value))
                         .FirstOrDefault(attributeValue => attributeValue != null);
                 }));
 
