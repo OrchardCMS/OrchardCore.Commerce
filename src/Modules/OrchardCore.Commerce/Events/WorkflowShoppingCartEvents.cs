@@ -1,6 +1,5 @@
 ﻿using Lombiq.HelpfulLibraries.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
@@ -59,17 +58,21 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 
     public async Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart) =>
         GetOutput<ShoppingCart>(
-            await TriggerEventAsync<CartLoadedEvent>(new { ShoppingCart = shoppingCart }),
+            await TriggerEventAsync<CartLoadedEvent>(shoppingCart),
             nameof(ShoppingCart)) ?? shoppingCart;
 
     private async Task<IList<WorkflowExecutionContext>> TriggerEventAsync<T>(object input)
     {
         var name = typeof(T).Name;
-        var values = new RouteValueDictionary(input);
-        var contexts = new List<WorkflowExecutionContext>();
+        var values = new Dictionary<string, object>
+        {
+            ["Context"] = input,
+            ["JSON"] = JsonConvert.SerializeObject(input),
+        };
 
         // Start new workflows whose types have a corresponding starting activity.
         var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
+        var contexts = new List<WorkflowExecutionContext>();
         foreach (var workflowType in workflowTypesToStart)
         {
             var startActivity = workflowType.Activities.First(x => x.IsStart && x.Name == name);
