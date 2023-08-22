@@ -193,19 +193,20 @@ public class ShoppingCartControllerTests
         var productService = new FakeProductService();
         var shoppingCartEvents = new[] { new FakeShoppingCartEvents() };
 
+        var shoppingCartSerializer = new ShoppingCartSerializer(
+            attributeProviders: new[] { new ProductAttributeProvider() },
+            contentDefinitionManager: new FakeContentDefinitionManager(),
+            moneyService: new TestMoneyService(),
+            productService);
+
         var shoppingCartHelpers = new ShoppingCartHelpers(
             hca: null,
             priceService,
             productService,
             shoppingCartEvents,
             _cartStorage,
+            shoppingCartSerializer,
             new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
-
-        var shoppingCartSerializer = new ShoppingCartSerializer(
-            attributeProviders: new[] { new ProductAttributeProvider() },
-            contentDefinitionManager: new FakeContentDefinitionManager(),
-            moneyService: new TestMoneyService(),
-            productService);
 
         return new(
             notifier: null,
