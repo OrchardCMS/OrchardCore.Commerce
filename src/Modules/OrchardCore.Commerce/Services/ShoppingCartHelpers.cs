@@ -179,6 +179,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         return (await CreateShoppingCartViewModelAsync(cart, shipping, billing))
             .Lines
-            .Single(line => line.ProductSku == sku);
+            .FirstOrDefault(line => line.ProductSku == sku);
     }
 }

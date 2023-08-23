@@ -113,22 +113,28 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
 
     public async Task<OrderLineItem> CreateOrderLineFromShoppingCartItemAsync(
-    IPriceSelectionStrategy priceSelectionStrategy,
-    IPriceService priceService,
-    string contentItemVersion)
+        IPriceSelectionStrategy priceSelectionStrategy,
+        IPriceService priceService,
+        IProductService productService,
+        string contentItemVersion)
     {
         var quantity = Quantity;
 
         var item = await priceService.AddPriceAsync(this);
         var price = priceSelectionStrategy.SelectPrice(item.Prices);
+        var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
+
+        var selectedAttributes = Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
 
         return new OrderLineItem(
             quantity,
             ProductSku,
+            fullSku,
             price,
             quantity * price,
             contentItemVersion,
-            Attributes);
+            Attributes,
+            selectedAttributes);
     }
 
     public static async Task<LocalizedHtmlString> GetErrorAsync(
