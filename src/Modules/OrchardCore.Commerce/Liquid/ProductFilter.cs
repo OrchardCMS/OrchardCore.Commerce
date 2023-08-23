@@ -40,7 +40,7 @@ public class ProductFilter : ILiquidFilter
             : new ObjectValue((await _productService.GetProductAsync(sku))?.ContentItem);
     }
 
-    private string GetSkuFromJsonObject(JObject jObject)
+    private static string GetSkuFromJsonObject(JObject jObject)
     {
         var dictionary = jObject.ToObject<Dictionary<string, JToken>>().ToDictionaryIgnoreCase();
         if (dictionary.TryGetValue("ProductSku", out var productSku)) return productSku.Value<string>();
