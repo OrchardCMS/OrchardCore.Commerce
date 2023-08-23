@@ -5,7 +5,7 @@
 These events get triggered by `WorkflowShoppingCartEvents` which implements the `IShoppingCartEvents` interface. For each you can access the input as a .NET object using the `Context` workflow input and the serialized version as the `JSON` workflow input.
 All of these workflows expect to return one or more outputs which is passed back to the invoking code.
 
-> ⚠ If you want to return an altered version of the input as the output, please always just the JSON which is already serialized in the expected format used by OrchardCore.Commerce's converters. For example you can use the JS experssion `JSON.parse(input('JSON'))`.
+> ⚠ If you want to return an altered version of the input as the output, please always just the JSON which is already serialized in the expected format used by OrchardCore.Commerce's converters. For example you can use the JS expression `JSON.parse(input('JSON'))`.
 
 > ℹ When your output contains `LocalizedHtmlString`, it can be represented in JS either as `string` or `{ Name: string, Value: string }`. In case of just `string` the same text becomes `LocalizedHtmlString.Name` and `LocalizedHtmlString.Value` too.
 

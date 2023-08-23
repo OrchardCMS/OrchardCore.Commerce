@@ -92,12 +92,12 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
             ? Enumerable.Empty<IProductAttributeValue>()
             : line
                 .Attributes
-                .Where(attrubte => attrubte.Key.Contains('.'))
-                .Select(attrubte =>
+                .Where(attribute => attribute.Key.Contains('.'))
+                .Select(attribute =>
                 {
-                    var (attributePartDefinition, attributeFieldDefinition) = type.GetFieldDefinition(attrubte.Key);
+                    var (attributePartDefinition, attributeFieldDefinition) = type.GetFieldDefinition(attribute.Key);
                     return _attributeProviders
-                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attrubte.Value))
+                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attribute.Value))
                         .FirstOrDefault(attributeValue => attributeValue != null);
                 }));
 
