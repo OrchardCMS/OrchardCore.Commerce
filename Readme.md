@@ -41,6 +41,7 @@ This project uses `Lombiq Node.js Extensions` to compile and lint client-side as
 - [Stripe Payment](docs/features/stripe-payment.md)
 - [Taxation](docs/features/taxation.md)
 - [User Features](docs/features/user-features.md)
+- [Workflows](docs/features/workflows.md)
 
 ## Demo video
 
