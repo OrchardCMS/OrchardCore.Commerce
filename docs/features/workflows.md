@@ -11,18 +11,24 @@ All of these workflows expect to return one or more outputs which is passed back
 
 ### "Cart displaying" Event
 
+Executes after the shopping cart data is prepared, but before the shapes are rendered.
+
 - Input: `ShoppingCartDisplayingEventContext` object containing the current shopping cart's headers and lines.
-- Outputs: either inputs are optional.
+- Outputs: either outputs are optional.
   - Headers: `LocalizedHtmlString` array. The shopping cart header labels in order. If you have to support multiple locales, make sure to use the object format mentioned above, because `LocalizedHtmlString.Name` is used to generate the template name for the corresponding shopping cart column's cells.
   - Lines: `ShoppingCartLineViewModel` array. This is only for display, in most cases you shouldn't have to return this output.
 
 ### "Verifying cart item" Event
+
+Executes before an item is added to the shopping cart to check whether it can be added based on inventory status.
 
 - Input: `ShoppingCartItem` object.
 - Outputs:
   - Error: `LocalizedHtmlString` or `null`. The error message to be displayed if the input item can't be added to the cart. You can simply not output anything if the validation passes.
 
 ### "Cart loaded" Event
+
+Executes after the shopping cart content is loaded from the store and before it's displayed or used for calculation.
 
 - Input: `ShoppingCart` object.
 - Outputs:

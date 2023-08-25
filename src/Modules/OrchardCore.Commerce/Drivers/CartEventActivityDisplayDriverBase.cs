@@ -19,7 +19,7 @@ public abstract class CartEventActivityDisplayDriverBase<T> : SimpleEventActivit
 public class CartDisplayingEventDisplayDriver : CartEventActivityDisplayDriverBase<CartDisplayingEvent>
 {
     public override LocalizedHtmlString Description =>
-        H["Invoked after the shopping cart data is prepared, but before the shapes are rendered."];
+        H["Executes after the shopping cart data is prepared, but before the shapes are rendered."];
 
     public CartDisplayingEventDisplayDriver(IHtmlLocalizer<CartDisplayingEventDisplayDriver> htmlLocalizer)
         : base(htmlLocalizer)
@@ -30,7 +30,7 @@ public class CartDisplayingEventDisplayDriver : CartEventActivityDisplayDriverBa
 public class CartVerifyingItemEventDisplayDriver : CartEventActivityDisplayDriverBase<CartVerifyingItemEvent>
 {
     public override LocalizedHtmlString Description =>
-        H["Invoked before an item is added to the shopping cart to check whether it can be added based on inventory status."];
+        H["Executes before an item is added to the shopping cart to check whether it can be added based on inventory status."];
 
     public CartVerifyingItemEventDisplayDriver(IHtmlLocalizer<CartVerifyingItemEventDisplayDriver> htmlLocalizer)
         : base(htmlLocalizer)
@@ -41,7 +41,7 @@ public class CartVerifyingItemEventDisplayDriver : CartEventActivityDisplayDrive
 public class CartLoadedEventDisplayDriver : CartEventActivityDisplayDriverBase<CartLoadedEvent>
 {
     public override LocalizedHtmlString Description =>
-        H["Invoked after the shopping cart content is loaded from the store and before it's displayed or used for calculation."];
+        H["Executes after the shopping cart content is loaded from the store and before it's displayed or used for calculation."];
 
     public CartLoadedEventDisplayDriver(IHtmlLocalizer<CartLoadedEventDisplayDriver> htmlLocalizer)
         : base(htmlLocalizer)
