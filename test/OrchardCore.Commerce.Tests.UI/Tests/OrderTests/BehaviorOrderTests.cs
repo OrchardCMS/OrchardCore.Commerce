@@ -87,7 +87,7 @@ public class BehaviorOrderTests : UITestBase
 
                 // Non-existent SKU should result in validation errors being shown and no Product being added.
                 context.Exists(By.XPath("//div[contains(@class, 'validation-summary-errors')]" +
-                    "[contains(., 'SKU \"NONEXISTENTPRODUCT\" is empty or does not belong to an existing Product.')]"));
+                    "[contains(., 'SKU \"NONEXISTENTPRODUCT\" is empty or does not belong to an existing Product.')]")); // #spell-check-ignore-line
                 context.Missing(By.Id("OrderPart.LineItems[0].Quantity"));
 
                 await context.ClickReliablyOnAsync(By.Id("addButton"));
