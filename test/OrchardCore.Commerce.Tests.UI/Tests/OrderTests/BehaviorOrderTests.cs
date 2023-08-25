@@ -27,7 +27,7 @@ public class BehaviorOrderTests : UITestBase
                 await AddNewProductAsync(context);
 
                 // Total value should be 0 by default.
-                context.Exists(By.XPath("//strong[contains(., '$ 0')]"));
+                AssertTotal(context, "$", "0");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].Quantity"), "5");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].UnitPriceValue"), "10");
 
@@ -37,15 +37,15 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[1].UnitPriceValue"), "10");
 
                 // Total value should reflect values of Quantity and Unit Price Value fields.
-                context.Exists(By.XPath("//strong[contains(., '$ 100')]"));
+                AssertTotal(context, "$", "100");
 
                 // Displayed currency symbol should change based on topmost currency selector's value.
                 await context.SetDropdownByTextAsync(By.Name("OrderPart.LineItems[0].UnitPriceCurrencyIsoCode"), "EUR");
-                context.Exists(By.XPath("//strong[contains(., '€ 100')]"));
+                AssertTotal(context, "€", "100");
 
                 // Other currency selectors should not affect displayed currency symbol.
                 await context.SetDropdownByTextAsync(By.Name("OrderPart.LineItems[1].UnitPriceCurrencyIsoCode"), "USD");
-                context.Exists(By.XPath("//strong[contains(., '€ 100')]"));
+                AssertTotal(context, "€", "100");
 
                 // Product should be deletable from list before submitting it for the first time.
                 await context.ClickReliablyOnAsync(By.XPath("//button[contains(@class, 'btn btn-danger')][1]"));
@@ -93,7 +93,15 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].Quantity"), "5");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].ProductSku"), "testproductvariant");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].UnitPriceValue"), "10");
+                await context.SetDropdownByTextAsync(By.Name("OrderPart.LineItems[0].UnitPriceCurrencyIsoCode"), "EUR");
                 await context.ClickPublishAsync();
+
+                // Selected currency should be saved.
+                AssertTotal(context, "€", "50");
+                context
+                    .Get(By.Name("OrderPart.LineItems[0].UnitPriceCurrencyIsoCode"))
+                    .GetValue()
+                    .ShouldBe("EUR");
 
                 // For a Product with existing attributes, attributes should be populated and should be selectable.
                 await context.SetDropdownByTextAsync(By.Name("OrderPart.LineItems[0].SelectedAttributes[Size]"), "Medium");
@@ -143,4 +151,7 @@ public class BehaviorOrderTests : UITestBase
 
     private static void VerifyValidationErrors(UITestContext context, string errorMessage) =>
         context.Exists(By.XPath($"//div[contains(@class, 'validation-summary-errors')][contains(., '{errorMessage}')]"));
+
+    private static void AssertTotal(UITestContext context, string currencySymbol, string totalValue) =>
+        context.Exists(By.XPath($"//strong[contains(., '{currencySymbol} {totalValue}')]"));
 }
