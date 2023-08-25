@@ -75,7 +75,7 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
         var contexts = new List<WorkflowExecutionContext>();
         foreach (var workflowType in workflowTypesToStart)
         {
-            var startActivity = workflowType.Activities.First(x => x.IsStart && x.Name == name);
+            var startActivity = workflowType.Activities.First(activity => activity.IsStart && activity.Name == name);
             contexts.Add(await _workflowManager.StartWorkflowAsync(workflowType, startActivity, values));
         }
 
