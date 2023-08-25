@@ -14,7 +14,7 @@ All of these workflows expect to return one or more outputs which is passed back
 - Input: `ShoppingCartDisplayingEventContext` object containing the current shopping cart's headers and lines.
 - Outputs: either inputs are optional.
   - Headers: `LocalizedHtmlString` array. The shopping cart header labels in order. If you have to support multiple locales, make sure to use the object format mentioned above, because `LocalizedHtmlString.Name` is used to generate the template name for the corresponding shopping cart column's cells.
-  - Lines: `ShoppingCartLineViewModel` array. This is only for display, in most cases you shouldn't have to return this output.
+  - Lines: `ShoppingCartLineViewModel` array. This is only for display, in most cases, you shouldn't have to return this output.
 
 ### "Verifying cart item" Event
 
