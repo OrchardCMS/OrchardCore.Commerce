@@ -80,7 +80,8 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickReliablyOnAsync(By.Id("addButton"));
 
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].Quantity"), "5");
-                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].ProductSku"), "nonexistentproduct");
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Name("OrderPart.LineItems[0].ProductSku"), "nonexistentproduct"); // #spell-check-ignore-line
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].UnitPriceValue"), "10");
                 await context.ClickPublishAsync();
 
