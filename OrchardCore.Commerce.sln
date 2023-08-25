@@ -68,6 +68,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B
 		docs\features\stripe-payment.md = docs\features\stripe-payment.md
 		docs\features\taxation.md = docs\features\taxation.md
 		docs\features\user-features.md = docs\features\user-features.md
+		docs\features\workflows.md = docs\features\workflows.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "releases", "releases", "{E4DD8D47-02FA-41F7-8133-CBC4419645F5}"
