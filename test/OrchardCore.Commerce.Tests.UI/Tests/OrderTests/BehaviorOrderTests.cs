@@ -21,18 +21,17 @@ public class BehaviorOrderTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
-                await context.SignInDirectlyAsync();
-                await context.GoToDashboardAsync();
+                await context.SignInDirectlyAndGoToDashboardAsync();
                 await context.CreateNewContentItemAsync("Order");
 
-                await context.ClickReliablyOnAsync(By.Id("addButton"));
+                await AddNewProductAsync(context);
 
                 // Total value should be 0 by default.
                 context.Exists(By.XPath("//strong[contains(., '$ 0')]"));
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].Quantity"), "5");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].UnitPriceValue"), "10");
 
-                await context.ClickReliablyOnAsync(By.Id("addButton"));
+                await AddNewProductAsync(context);
 
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[1].Quantity"), "5");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[1].UnitPriceValue"), "10");
@@ -67,17 +66,16 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickPublishAsync();
 
                 // Empty SKU field should result in validation errors being shown and no Product being added.
-                context.Exists(By.XPath("//div[contains(@class, 'validation-summary-errors')]" +
-                    "[contains(., 'SKU \"\" is empty or does not belong to an existing Product.')]"));
+                VerifyValidationErrors(context, "SKU \"\" is empty or does not belong to an existing Product.");
                 context.Missing(By.Id("OrderPart.LineItems[0].Quantity"));
 
-                await context.ClickReliablyOnAsync(By.Id("addButton"));
+                await AddNewProductAsync(context);
                 await context.ClickPublishAsync();
 
                 // Submitting a completely empty Product should result in no Product being added.
                 context.Missing(By.Id("OrderPart.LineItems[0].Quantity"));
 
-                await context.ClickReliablyOnAsync(By.Id("addButton"));
+                await AddNewProductAsync(context);
 
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].Quantity"), "5");
                 await context.ClickAndFillInWithRetriesAsync(
@@ -86,11 +84,11 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickPublishAsync();
 
                 // Non-existent SKU should result in validation errors being shown and no Product being added.
-                context.Exists(By.XPath("//div[contains(@class, 'validation-summary-errors')]" +
-                    "[contains(., 'SKU \"NONEXISTENTPRODUCT\" is empty or does not belong to an existing Product.')]")); // #spell-check-ignore-line
-                context.Missing(By.Id("OrderPart.LineItems[0].Quantity"));
+                VerifyValidationErrors(
+                    context, "SKU \"NONEXISTENTPRODUCT\" is empty or does not belong to an existing Product."); // #spell-check-ignore-line
 
-                await context.ClickReliablyOnAsync(By.Id("addButton"));
+                context.Missing(By.Id("OrderPart.LineItems[0].Quantity"));
+                await AddNewProductAsync(context);
 
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].Quantity"), "5");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[0].ProductSku"), "testproductvariant");
@@ -106,7 +104,7 @@ public class BehaviorOrderTests : UITestBase
                     .GetValue()
                     .ShouldBe("Medium");
 
-                await context.ClickReliablyOnAsync(By.Id("addButton"));
+                await AddNewProductAsync(context);
 
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[1].Quantity"), "5");
                 await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.LineItems[1].ProductSku"), "testproduct");
@@ -120,8 +118,7 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickPublishAsync();
 
                 // Selecting non-matching currencies should result in validation errors.
-                context.Exists(By.XPath("//div[contains(@class, 'validation-summary-errors')]" +
-                    "[contains(., 'Selected currencies need to match.')]"));
+                VerifyValidationErrors(context, "Selected currencies need to match.");
 
                 // Links in Product Name cells should lead to content item editors.
                 context
@@ -141,4 +138,9 @@ public class BehaviorOrderTests : UITestBase
                 context.Missing(By.Id("OrderPart.LineItems[1].Quantity"));
             },
             browser);
+
+    private static Task AddNewProductAsync(UITestContext context) => context.ClickReliablyOnAsync(By.Id("addButton"));
+
+    private static void VerifyValidationErrors(UITestContext context, string errorMessage) =>
+        context.Exists(By.XPath($"//div[contains(@class, 'validation-summary-errors')][contains(., '{errorMessage}')]"));
 }
