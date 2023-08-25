@@ -5,7 +5,7 @@
 These events get triggered by `WorkflowShoppingCartEvents` which implements the `IShoppingCartEvents` interface. For each you can access the input as a .NET object using the `Context` workflow input and the serialized version as the `JSON` workflow input.
 All of these workflows expect to return one or more outputs which is passed back to the invoking code.
 
-> ⚠ If you want to return an altered version of the input as the output, please always just the JSON which is already serialized in the expected format used by OrchardCore.Commerce's converters. For example you can use the JS expression `JSON.parse(input('JSON'))`.
+> ⚠ If you want to return an altered version of the input as the output, please always use the JSON which is already serialized in the expected format used by OrchardCore.Commerce's converters. For example, you can use the JS expression `JSON.parse(input('JSON'))`.
 
 > ℹ When your output contains `LocalizedHtmlString`, it can be represented in JS either as `string` or `{ Name: string, Value: string }`. In case of just `string` the same text becomes `LocalizedHtmlString.Name` and `LocalizedHtmlString.Value` too.
 
@@ -16,7 +16,7 @@ Executes after the shopping cart data is prepared, but before the shapes are ren
 - Input: `ShoppingCartDisplayingEventContext` object containing the current shopping cart's headers and lines.
 - Outputs: either outputs are optional.
   - Headers: `LocalizedHtmlString` array. The shopping cart header labels in order. If you have to support multiple locales, make sure to use the object format mentioned above, because `LocalizedHtmlString.Name` is used to generate the template name for the corresponding shopping cart column's cells.
-  - Lines: `ShoppingCartLineViewModel` array. This is only for display, in most cases you shouldn't have to return this output.
+  - Lines: `ShoppingCartLineViewModel` array. This is only for display, in most cases, you shouldn't have to return this output.
 
 ### "Verifying cart item" Event
 
