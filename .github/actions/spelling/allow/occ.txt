@@ -27,6 +27,7 @@ roadmap
 shoppingcart
 skus
 testproduct
+testproductvariant
 testdiscountedproduct
 unpublish
 webhooks

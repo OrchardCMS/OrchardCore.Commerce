@@ -88,7 +88,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             {
                 updater.ModelState.AddModelError(
                     nameof(viewModel.LineItems),
-                    T["Selected currencies need to match."]);
+                    T["Selected currencies must match."]);
             }
 
             var orderLineItems = await GetOrderLineItemsAsync(updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);
@@ -107,14 +107,16 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         var orderLineItems = new List<OrderLineItem>();
         foreach (var lineItem in viewModelLineItems)
         {
-            var lineItemProductSku = lineItem.ProductSku.ToUpperInvariant();
+            var lineItemProductSku = lineItem.ProductSku?.ToUpperInvariant();
 
             // If the provided SKU does not belong to an existing Product content item, it should not be added.
-            if (await _productService.GetProductAsync(lineItemProductSku) is not { } productPart)
+            if (string.IsNullOrEmpty(lineItemProductSku) || await _productService.GetProductAsync(lineItemProductSku) is not { } productPart)
             {
                 updater.ModelState.AddModelError(
                     modelErrorKey,
-                    T["SKU {0} does not belong to an existing Product.", lineItemProductSku]);
+                    string.IsNullOrEmpty(lineItemProductSku)
+                        ? T["Product's SKU cannot be left empty."]
+                        : T["SKU \"{0}\" does not belong to an existing Product.", lineItemProductSku]);
 
                 continue;
             }
