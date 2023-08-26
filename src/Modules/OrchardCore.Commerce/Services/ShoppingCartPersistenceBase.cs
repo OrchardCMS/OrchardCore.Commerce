@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
             cart = await shoppingCartEvent.LoadedAsync(cart) ?? cart;
         }
 
-        _scopeCache[key] = JObject.FromObject(cart);
+        _scopeCache[key] = JObject.FromObject(cart, new JsonSerializer());
         return cart;
     }
 

@@ -16,7 +16,7 @@ internal sealed class LegacyPrioritizedPriceConverter : JsonConverter<Prioritize
         writer.WriteValue(value.Priority);
 
         writer.WritePropertyName(PrioritizedPriceConverter.AmountName);
-        writer.WriteValue(value.Price);
+        serializer.Serialize(writer, value.Price);
 
         writer.WriteEndObject();
     }
