@@ -112,7 +112,7 @@ public class ShoppingCartController : Controller
 
             await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
                 new { LineItem = parsedLine },
-                "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
+                $"ShoppingCart-{HttpContext.Session.Id}-{shoppingCartId}");
         }
         catch (FrontendException exception)
         {
