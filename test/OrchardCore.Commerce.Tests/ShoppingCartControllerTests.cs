@@ -217,6 +217,8 @@ public class ShoppingCartControllerTests
         automocker.Use<IShoppingCartHelpers>(automocker.CreateInstance<ShoppingCartHelpers>());
 
         automocker.Use<IEnumerable<IWorkflowManager>>(Array.Empty<IWorkflowManager>());
-        return automocker.CreateInstance<ShoppingCartController>();
+        var controller = automocker.CreateInstance<ShoppingCartController>();
+        controller.ControllerContext = mockContext;
+        return controller;
     }
 }
