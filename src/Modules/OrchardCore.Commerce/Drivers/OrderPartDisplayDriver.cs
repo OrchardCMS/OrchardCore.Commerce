@@ -87,7 +87,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             {
                 updater.ModelState.AddModelError(
                     nameof(viewModel.LineItems),
-                    T["Selected currencies need to match."]);
+                    T["Selected currencies must match."]);
             }
 
             var orderLineItems = await GetOrderLineItemsAsync(updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);
@@ -113,7 +113,9 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             {
                 updater.ModelState.AddModelError(
                     modelErrorKey,
-                    T["SKU \"{0}\" is empty or does not belong to an existing Product.", lineItemProductSku]);
+                    string.IsNullOrEmpty(lineItemProductSku)
+                        ? T["Product's SKU cannot be left empty."]
+                        : T["SKU \"{0}\" does not belong to an existing Product.", lineItemProductSku]);
 
                 continue;
             }
