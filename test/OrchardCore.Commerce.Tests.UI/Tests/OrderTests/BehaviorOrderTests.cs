@@ -55,17 +55,17 @@ public class BehaviorOrderTests : UITestBase
                 context.Missing(ByQuantity(1));
 
                 // Fill out required but otherwise irrelevant fields.
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_Email_Text"), "test@email.com");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_Phone_Text"), "0123456789");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_BillingAddress_Address_Name"), "Test Name");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_BillingAddress_Address_Department"), "Test Department");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_BillingAddress_Address_Company"), "Test Company");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_BillingAddress_Address_StreetAddress1"), "Test First Street");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_BillingAddress_Address_StreetAddress2"), "Test Second Street");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_BillingAddress_Address_City"), "Test City");
-                await context.ClickAndFillInWithRetriesAsync(By.Id("OrderPart_BillingAddress_Address_PostalCode"), "01234");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.Email.Text"), "test@email.com");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.Phone.Text"), "0123456789");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.Name"), "Test Name");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.Department"), "Test Department");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.Company"), "Test Company");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.StreetAddress1"), "Test First Street");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.StreetAddress2"), "Test Second Street");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.City"), "Test City");
+                await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.PostalCode"), "01234");
                 await context.SetDropdownByTextAsync("OrderPart_BillingAddress_Address_Region", "United States");
-                await context.ClickReliablyOnAsync(By.Id("OrderPart_BillingAndShippingAddressesMatch_Value"));
+                await context.ClickReliablyOnAsync(By.Name("OrderPart.BillingAndShippingAddressesMatch.Value"));
                 await context.ClickPublishAsync();
 
                 // Empty SKU field should result in validation errors being shown and no Product being added.
