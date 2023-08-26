@@ -21,7 +21,7 @@ internal sealed class LegacyShoppingCartItemConverter : JsonConverter<ShoppingCa
         writer.WritePropertyName(ShoppingCartItemConverter.SkuName);
         writer.WriteValue(value.ProductSku);
 
-        if (value.Prices != null && value.Prices.Any())
+        if (value.Prices?.Any() == true)
         {
             writer.WritePropertyName(ShoppingCartItemConverter.PricesName);
             serializer.Serialize(writer, value.Prices);
