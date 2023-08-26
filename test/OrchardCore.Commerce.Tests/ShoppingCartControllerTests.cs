@@ -1,11 +1,16 @@
+using Lombiq.Tests.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 using System;
@@ -189,31 +194,29 @@ public class ShoppingCartControllerTests
 
     private ShoppingCartController GetController()
     {
-        var priceService = new FakePriceService();
-        var productService = new FakeProductService();
-        var shoppingCartEvents = new[] { new FakeShoppingCartEvents() };
+        var automocker = new AutoMocker();
+        var mockSession = automocker.GetMock<ISession>();
+        mockSession.Setup(session => session.Id).Returns("MockSession");
 
-        var shoppingCartSerializer = new ShoppingCartSerializer(
-            attributeProviders: new[] { new ProductAttributeProvider() },
-            contentDefinitionManager: new FakeContentDefinitionManager(),
-            moneyService: new TestMoneyService(),
-            productService);
+        var mockContext = MockHelper.CreateMockControllerContextWithUser(automocker);
+        mockContext.HttpContext.Session = mockSession.Object;
 
-        var shoppingCartHelpers = new ShoppingCartHelpers(
-            hca: null,
-            priceService,
-            productService,
-            shoppingCartEvents,
-            _cartStorage,
-            shoppingCartSerializer,
-            new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
+        var mockContextAccessor = automocker.GetMock<IHttpContextAccessor>();
+        mockContextAccessor.Setup(hca => hca.HttpContext).Returns(mockContext.HttpContext);
 
-        return new(
-            notifier: null,
-            shapeFactory: null,
-            shoppingCartHelpers,
-            _cartStorage,
-            shoppingCartSerializer,
-            workflowManagers: Array.Empty<IWorkflowManager>());
+        automocker.Use<IPriceService>(new FakePriceService());
+        automocker.Use<IProductService>(new FakeProductService());
+        automocker.Use<IEnumerable<IShoppingCartEvents>>(new[] { new FakeShoppingCartEvents() });
+        automocker.Use<IEnumerable<IProductAttributeProvider>>(new[] { new ProductAttributeProvider() });
+        automocker.Use<IContentDefinitionManager>(new FakeContentDefinitionManager());
+        automocker.Use<IMoneyService>(new TestMoneyService());
+        automocker.Use<IShoppingCartSerializer>(automocker.CreateInstance<ShoppingCartSerializer>());
+
+        automocker.Use(_cartStorage);
+        automocker.Use<IHtmlLocalizer<ShoppingCartHelpers>>(new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
+        automocker.Use<IShoppingCartHelpers>(automocker.CreateInstance<ShoppingCartHelpers>());
+
+        automocker.Use<IEnumerable<IWorkflowManager>>(Array.Empty<IWorkflowManager>());
+        return automocker.CreateInstance<ShoppingCartController>();
     }
 }
