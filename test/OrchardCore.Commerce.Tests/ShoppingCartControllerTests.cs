@@ -194,30 +194,30 @@ public class ShoppingCartControllerTests
 
     private ShoppingCartController GetController()
     {
-        var automocker = new AutoMocker();
-        var mockSession = automocker.GetMock<ISession>();
+        var mocker = new AutoMocker();
+        var mockSession = mocker.GetMock<ISession>();
         mockSession.Setup(session => session.Id).Returns("MockSession");
 
-        var mockContext = MockHelper.CreateMockControllerContextWithUser(automocker);
+        var mockContext = MockHelper.CreateMockControllerContextWithUser(mocker);
         mockContext.HttpContext.Session = mockSession.Object;
 
-        var mockContextAccessor = automocker.GetMock<IHttpContextAccessor>();
+        var mockContextAccessor = mocker.GetMock<IHttpContextAccessor>();
         mockContextAccessor.Setup(hca => hca.HttpContext).Returns(mockContext.HttpContext);
 
-        automocker.Use<IPriceService>(new FakePriceService());
-        automocker.Use<IProductService>(new FakeProductService());
-        automocker.Use<IEnumerable<IShoppingCartEvents>>(new[] { new FakeShoppingCartEvents() });
-        automocker.Use<IEnumerable<IProductAttributeProvider>>(new[] { new ProductAttributeProvider() });
-        automocker.Use<IContentDefinitionManager>(new FakeContentDefinitionManager());
-        automocker.Use<IMoneyService>(new TestMoneyService());
-        automocker.Use<IShoppingCartSerializer>(automocker.CreateInstance<ShoppingCartSerializer>());
+        mocker.Use<IPriceService>(new FakePriceService());
+        mocker.Use<IProductService>(new FakeProductService());
+        mocker.Use<IEnumerable<IShoppingCartEvents>>(new[] { new FakeShoppingCartEvents() });
+        mocker.Use<IEnumerable<IProductAttributeProvider>>(new[] { new ProductAttributeProvider() });
+        mocker.Use<IContentDefinitionManager>(new FakeContentDefinitionManager());
+        mocker.Use<IMoneyService>(new TestMoneyService());
+        mocker.Use<IShoppingCartSerializer>(mocker.CreateInstance<ShoppingCartSerializer>());
 
-        automocker.Use(_cartStorage);
-        automocker.Use<IHtmlLocalizer<ShoppingCartHelpers>>(new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
-        automocker.Use<IShoppingCartHelpers>(automocker.CreateInstance<ShoppingCartHelpers>());
+        mocker.Use(_cartStorage);
+        mocker.Use<IHtmlLocalizer<ShoppingCartHelpers>>(new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
+        mocker.Use<IShoppingCartHelpers>(mocker.CreateInstance<ShoppingCartHelpers>());
 
-        automocker.Use<IEnumerable<IWorkflowManager>>(Array.Empty<IWorkflowManager>());
-        var controller = automocker.CreateInstance<ShoppingCartController>();
+        mocker.Use<IEnumerable<IWorkflowManager>>(Array.Empty<IWorkflowManager>());
+        var controller = mocker.CreateInstance<ShoppingCartController>();
         controller.ControllerContext = mockContext;
         return controller;
     }
