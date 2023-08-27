@@ -27,7 +27,7 @@ internal sealed class LegacyShoppingCartItemConverter : JsonConverter<ShoppingCa
             serializer.Serialize(writer, value.Prices);
         }
 
-        if (value.Prices?.Any() == true)
+        if (value.Attributes?.Any() == true)
         {
             writer.WritePropertyName(ShoppingCartItemConverter.AttributesName);
             serializer.Serialize(writer, value.Attributes.ToDictionary(
