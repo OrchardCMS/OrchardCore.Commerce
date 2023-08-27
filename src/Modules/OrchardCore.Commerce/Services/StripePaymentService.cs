@@ -340,9 +340,7 @@ public class StripePaymentService : IStripePaymentService
     {
         var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
 
-        if (paymentIntent != null &&
-            (paymentIntent.Status == PaymentIntentStatuses.Succeeded ||
-             paymentIntent.Status == PaymentIntentStatuses.Processing))
+        if (paymentIntent?.Status is PaymentIntentStatuses.Succeeded or PaymentIntentStatuses.Processing)
         {
             return paymentIntent;
         }

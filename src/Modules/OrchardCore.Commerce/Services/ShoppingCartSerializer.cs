@@ -62,7 +62,7 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
             var item = itemElement.ToObject<ShoppingCartItem>();
             cart.AddItem(item);
 
-            if (item.Prices != null && item.Prices.Any())
+            if (item?.Prices.Any() == true)
             {
                 cart.SetPrices(
                 item,

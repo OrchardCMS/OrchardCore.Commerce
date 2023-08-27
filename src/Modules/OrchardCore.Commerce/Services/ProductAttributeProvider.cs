@@ -62,7 +62,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
             case nameof(BooleanProductAttributeField):
                 return new BooleanProductAttributeValue(
                     name,
-                    value != null && value.Contains("true", StringComparer.InvariantCultureIgnoreCase));
+                    value?.Contains("true", StringComparer.InvariantCultureIgnoreCase) == true);
             case nameof(NumericProductAttributeField):
                 if (decimal.TryParse(value.FirstOrDefault(), out var decimalValue))
                 {
