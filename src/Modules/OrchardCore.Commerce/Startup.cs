@@ -121,19 +121,18 @@ public class Startup : StartupBase
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
         services.AddScoped<IShoppingCartSerializer, ShoppingCartSerializer>();
-        services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplay>();
         services.AddContentPart<ShoppingCartWidgetPart>()
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
+        services.AddScoped<IShoppingCartEvents, WorkflowShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>()
             .AddHandler<OrderPartHandler>();
-        services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplay>();
 
         services.AddScoped<IAuthorizationHandler, OrderPermissionsAuthorizationHandler>();
 
@@ -195,10 +194,26 @@ public class Startup : StartupBase
             })
             // Liquid filter to convert JToken value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
+            // Liquid filter to convert string, JToken or various models with "ProductSku" properties int an SKU and
+            // then retrieve the corresponding content item.
+            .AddLiquidFilter<ProductFilter>("product")
             // Liquid filter to create AddressFieldEditorViewModel.
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
             // Liquid filter to create OrderLineItemViewModels.
             .AddLiquidFilter<OrderLineItemViewModelsAndTaxRatesConverterFilter>("order_line_item_view_models_and_tax_rates");
+    }
+}
+
+[RequireFeatures("OrchardCore.Workflows")]
+public class WorkflowStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplayDriver>();
+        services.AddActivity<CartDisplayingEvent, CartDisplayingEventDisplayDriver>();
+        services.AddActivity<CartVerifyingItemEvent, CartVerifyingItemEventDisplayDriver>();
+        services.AddActivity<CartLoadedEvent, CartLoadedEventDisplayDriver>();
+        services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplayDriver>();
     }
 }
 

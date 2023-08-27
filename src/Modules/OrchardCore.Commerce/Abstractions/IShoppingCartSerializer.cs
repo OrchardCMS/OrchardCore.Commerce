@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;
@@ -35,4 +36,10 @@ public interface IShoppingCartSerializer
     /// Returns a deserialized object from JSON string <paramref name="serializedCart"/>.
     /// </summary>
     Task<ShoppingCart> DeserializeAsync(string serializedCart);
+
+    /// <summary>
+    /// Process the products attributes for a cart line item, substitute temporary storage attributes such as <see
+    /// cref="RawProductAttributeValue"/>.
+    /// </summary>
+    ISet<IProductAttributeValue> PostProcessAttributes(IEnumerable<IProductAttributeValue> attributes, ProductPart productPart);
 }

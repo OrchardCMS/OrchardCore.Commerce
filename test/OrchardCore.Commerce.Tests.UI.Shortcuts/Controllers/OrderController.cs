@@ -1,4 +1,5 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
+using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
@@ -15,7 +16,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Workflows.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 
@@ -98,10 +98,7 @@ public class OrderController : Controller
         await _paymentService.FinalModificationOfOrderAsync(order);
 
         // Since the event trigger is tied to "UpdateOrderToOrderedAsync()" we also need to call it here.
-        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
-        {
-            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
-        }
+        await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
 
         return RedirectToAction(
             nameof(PaymentController.Success),

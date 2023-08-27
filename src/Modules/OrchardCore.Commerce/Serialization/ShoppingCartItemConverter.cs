@@ -11,10 +11,10 @@ namespace OrchardCore.Commerce.Serialization;
 
 internal sealed class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
 {
-    private const string QuantityName = "quantity";
-    private const string SkuName = "sku";
-    private const string PricesName = "prices";
-    private const string AttributesName = "attributes";
+    public const string QuantityName = "quantity";
+    public const string SkuName = "sku";
+    public const string PricesName = "prices";
+    public const string AttributesName = "attributes";
 
     public override ShoppingCartItem Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

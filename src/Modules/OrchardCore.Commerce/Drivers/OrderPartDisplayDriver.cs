@@ -67,6 +67,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         {
             var viewModelLineItems = viewModel.LineItems
                 .Where(lineItem => lineItem != null)
+                .Take(viewModel.LineItems.Count) // Ensures safe indexing in the Select below.
                 .Select((lineItem, _) =>
                 {
                     var lineItemCurrency = _currencyProvider.GetCurrency(lineItem.UnitPriceCurrencyIsoCode);

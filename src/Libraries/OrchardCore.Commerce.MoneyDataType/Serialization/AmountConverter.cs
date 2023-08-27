@@ -61,17 +61,9 @@ internal sealed class AmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (!IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
-        {
-            currency = new Currency(
-                nativeName,
-                englishName,
-                symbol,
-                iso,
-                decimalDigits.GetValueOrDefault(DefaultDecimalDigits));
-        }
+        if (reader.TokenType == JsonTokenType.String) return LegacyAmountConverter.ReadString(reader.GetString());
 
-        if (currency is null) throw new InvalidOperationException("Invalid amount format. Must include a currency.");
+        currency = HandleUnknownCurrency(currency, nativeName, englishName, symbol, iso, decimalDigits);
 
         return new Amount(value, currency);
     }
@@ -104,5 +96,28 @@ internal sealed class AmountConverter : JsonConverter<Amount>
         }
 
         writer.WriteEndObject();
+    }
+
+    private static ICurrency HandleUnknownCurrency(
+        ICurrency currency,
+        string nativeName,
+        string englishName,
+        string symbol,
+        string iso,
+        int? decimalDigits)
+    {
+        if (!IsKnownCurrency(currency?.CurrencyIsoCode ?? string.Empty))
+        {
+            return new Currency(
+                nativeName,
+                englishName,
+                symbol,
+                iso,
+                decimalDigits.GetValueOrDefault(DefaultDecimalDigits));
+        }
+
+        if (currency != null) return currency;
+
+        throw new InvalidOperationException($"Invalid amount format. Must include a {nameof(currency)}.");
     }
 }

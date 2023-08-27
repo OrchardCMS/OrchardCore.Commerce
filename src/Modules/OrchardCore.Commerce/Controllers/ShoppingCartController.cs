@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
@@ -21,7 +22,7 @@ public class ShoppingCartController : Controller
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
-    private readonly IWorkflowManager _workflowManager;
+    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
 
     public ShoppingCartController(
         INotifier notifier,
@@ -29,14 +30,14 @@ public class ShoppingCartController : Controller
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IWorkflowManager workflowManager)
+        IEnumerable<IWorkflowManager> workflowManagers)
     {
         _notifier = notifier;
         _shapeFactory = shapeFactory;
         _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
-        _workflowManager = workflowManager;
+        _workflowManagers = workflowManagers;
     }
 
     [HttpGet]
@@ -109,13 +110,9 @@ public class ShoppingCartController : Controller
                 await _shoppingCartSerializer.ParseCartLineAsync(line),
                 storeIfOk: true);
 
-            if (_workflowManager != null)
-            {
-                await _workflowManager.TriggerEventAsync(
-                    nameof(ProductAddedToCartEvent),
-                    new { LineItem = parsedLine },
-                    "ShoppingCart-" + _shoppingCartPersistence.GetUniqueCartId(shoppingCartId));
-            }
+            await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
+                new { LineItem = parsedLine },
+                $"ShoppingCart-{HttpContext.Session.Id}-{shoppingCartId}");
         }
         catch (FrontendException exception)
         {

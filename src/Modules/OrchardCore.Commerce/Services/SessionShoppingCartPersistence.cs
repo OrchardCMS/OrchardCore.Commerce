@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
-public class SessionShoppingCartPersistence : IShoppingCartPersistence
+public sealed class SessionShoppingCartPersistence : ShoppingCartPersistenceBase
 {
-    private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart:";
-
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
 
@@ -16,27 +15,23 @@ public class SessionShoppingCartPersistence : IShoppingCartPersistence
 
     public SessionShoppingCartPersistence(
         IHttpContextAccessor httpContextAccessor,
+        IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartSerializer shoppingCartSerializer)
+        : base(shoppingCartEvents)
     {
         _httpContextAccessor = httpContextAccessor;
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
-    public string GetUniqueCartId(string shoppingCartId) => Session.Id + shoppingCartId;
+    protected override Task<ShoppingCart> RetrieveInnerAsync(string key) =>
+        _shoppingCartSerializer.DeserializeAsync(Session.GetString(key));
 
-    public async Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
-    {
-        var cartString = Session.GetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty));
-
-        var cart = await _shoppingCartSerializer.DeserializeAsync(cartString);
-        cart.Id = shoppingCartId;
-
-        return cart;
-    }
-
-    public async Task StoreAsync(ShoppingCart items, string shoppingCartId = null)
+    protected override async Task<bool> StoreInnerAsync(string key, ShoppingCart items)
     {
         var cartString = await _shoppingCartSerializer.SerializeAsync(items);
-        Session.SetString(ShoppingCartPrefix + (shoppingCartId ?? string.Empty), cartString);
+        if (Session.GetString(key) == cartString) return false;
+
+        Session.SetString(key, cartString);
+        return true;
     }
 }

@@ -22,8 +22,7 @@ public static class Regions
                 catch { return null; }
             })
             .Where(region =>
-                region != null &&
-                region.TwoLetterISORegionName.Length == 2 && // Filter out world and other 3-digit regions.
+                region is { TwoLetterISORegionName.Length: 2 } && // Filter out world and other 3-digit regions.
                 !string.IsNullOrEmpty(region.EnglishName))
             .Distinct()
             .Select(region => new Region(region))

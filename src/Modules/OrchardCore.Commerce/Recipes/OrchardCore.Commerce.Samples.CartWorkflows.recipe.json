@@ -1,0 +1,254 @@
+{
+  "name": "OrchardCore.Commerce.Samples.CartWorkflows",
+  "displayName": "Orchard Core Commerce - Samples - Cart Workflows",
+  "description": "Adds example workflows that use the shopping cart events.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "1.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "cart", "workflow", "sample" ],
+  "steps": [
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Shipping",
+          "DisplayName": "Shipping",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": false,
+              "Listable": true,
+              "Draftable": false,
+              "Versionable": false,
+              "Securable": false
+            },
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Shipping",
+              "Name": "Shipping",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "ProductPart",
+              "Name": "ProductPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "shipping000000000000000000",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Shipping",
+          "DisplayText": "Shipping",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2023-08-22T06:36:19.0131238Z",
+          "PublishedUtc": "2023-08-22T06:36:19.0302478Z",
+          "CreatedUtc": "2023-08-22T06:36:19.0131238Z",
+          "Owner": null,
+          "Author": "admin",
+          "ProductPart": {
+            "Sku": "SHIPPING"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Templates",
+      "Templates": {
+        "ShoppingCartCell_Workflow": {
+          "Content": "{% assign product = Model.Line | product %}\r\nSome content about product \"{{ product.ContentItemId }}\".",
+          "Description": null
+        }
+      }
+    },
+    {
+      "name": "WorkflowType",
+      "data": [
+        {
+          "WorkflowTypeId": "4y3d4kqxjfg2bzrtcyzvj6qnmn",
+          "Name": "Add Shipping",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "LockTimeout": 0,
+          "LockExpiration": 0,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "4wsjt38d36sd3yktaywdsztk4x",
+              "Name": "CartLoadedEvent",
+              "X": 0,
+              "Y": 80,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                }
+              }
+            },
+            {
+              "ActivityId": "487ynhy9xpyrm25hstpv05ymw2",
+              "Name": "ScriptTask",
+              "X": 280,
+              "Y": 80,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                },
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "const shoppingCart = JSON.parse(input('JSON'));\r\n\r\nif (shoppingCart && Array.isArray(shoppingCart.Items) && shoppingCart.Items.length) {\r\n    shoppingCart.Items.push({\r\n        sku: 'SHIPPING',\r\n        prices: [ \"USD 5.0\" ]\r\n    });\r\n    output('ShoppingCart', shoppingCart);\r\n}\r\n\r\nsetOutcome('Done');"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "Id": 0,
+              "SourceActivityId": "4wsjt38d36sd3yktaywdsztk4x",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "487ynhy9xpyrm25hstpv05ymw2"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "4nevzcbx6peentej4gwtna9m4w",
+          "Name": "Item Verification Sample",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "LockTimeout": 0,
+          "LockExpiration": 0,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "4qejvsm7jmgrn2g9n2g9bwagmv",
+              "Name": "CartVerifyingItemEvent",
+              "X": 10,
+              "Y": 170,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                }
+              }
+            },
+            {
+              "ActivityId": "4ysryfa15zd7nt6vrh9vh95jw6",
+              "Name": "IfElseTask",
+              "X": 280,
+              "Y": 170,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                },
+                "Condition": {
+                  "Expression": "input('Context').ProductSku === 'TESTFREEPRODUCT'"
+                }
+              }
+            },
+            {
+              "ActivityId": "43srnns49cz8a73gveh53behw0",
+              "Name": "SetOutputTask",
+              "X": 700,
+              "Y": 170,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                },
+                "OutputName": "Error",
+                "Value": {
+                  "Expression": "'The \"Item Verification Sample\" workflow has intentionally failed this product.'"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "Id": 0,
+              "SourceActivityId": "4qejvsm7jmgrn2g9n2g9bwagmv",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "4ysryfa15zd7nt6vrh9vh95jw6"
+            },
+            {
+              "Id": 0,
+              "SourceActivityId": "4ysryfa15zd7nt6vrh9vh95jw6",
+              "SourceOutcomeName": "True",
+              "DestinationActivityId": "43srnns49cz8a73gveh53behw0"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "48qcm3r25jm6f2b2tab5yhsmm2",
+          "Name": "Cart Displaying Sample",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "LockTimeout": 0,
+          "LockExpiration": 0,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "47mt9amsq3dzx28h7hejf7g9cm",
+              "Name": "CartDisplayingEvent",
+              "X": 30,
+              "Y": 90,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                }
+              }
+            },
+            {
+              "ActivityId": "4jwhj6w3x42gnz0mx9zb05bhxz",
+              "Name": "ScriptTask",
+              "X": 300,
+              "Y": 90,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": null
+                },
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "const context = input('Context');\r\n\r\nconst headers = JSON.parse(JSON.stringify(context.Headers));\r\nheaders.push('Workflow');\r\n\r\noutput('Headers', headers);\r\nsetOutcome('Done');"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "Id": 0,
+              "SourceActivityId": "47mt9amsq3dzx28h7hejf7g9cm",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "4jwhj6w3x42gnz0mx9zb05bhxz"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

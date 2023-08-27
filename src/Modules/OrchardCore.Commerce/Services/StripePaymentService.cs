@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -174,10 +175,7 @@ public class StripePaymentService : IStripePaymentService
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
 
-        if (_workflowManagers.FirstOrDefault() is { } workflowManager)
-        {
-            await workflowManager.TriggerEventAsync(nameof(OrderCreatedEvent), order, "Order-" + order.ContentItemId);
-        }
+        await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
 
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
 
@@ -342,9 +340,7 @@ public class StripePaymentService : IStripePaymentService
     {
         var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
 
-        if (paymentIntent != null &&
-            (paymentIntent.Status == PaymentIntentStatuses.Succeeded ||
-             paymentIntent.Status == PaymentIntentStatuses.Processing))
+        if (paymentIntent?.Status is PaymentIntentStatuses.Succeeded or PaymentIntentStatuses.Processing)
         {
             return paymentIntent;
         }

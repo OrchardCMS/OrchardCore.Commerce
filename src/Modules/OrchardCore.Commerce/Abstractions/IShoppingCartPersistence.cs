@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Services;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -6,6 +7,10 @@ namespace OrchardCore.Commerce.Abstractions;
 /// <summary>
 /// Service that provides a way to retain shopping cart information.
 /// </summary>
+/// <remarks><para>
+/// When deriving a custom implementation, please inherit from <see cref="ShoppingCartPersistenceBase"/> to retain event
+/// handling and dependency injection scope level caching.
+/// </para></remarks>
 public interface IShoppingCartPersistence
 {
     /// <summary>
@@ -17,10 +22,4 @@ public interface IShoppingCartPersistence
     /// Saves a shopping cart by a given ID.
     /// </summary>
     Task StoreAsync(ShoppingCart items, string shoppingCartId = null);
-
-    /// <summary>
-    /// Generates a shopping cart ID from <paramref name="shoppingCartId"/> that's unique to this persistence
-    /// implementation.
-    /// </summary>
-    string GetUniqueCartId(string shoppingCartId);
 }

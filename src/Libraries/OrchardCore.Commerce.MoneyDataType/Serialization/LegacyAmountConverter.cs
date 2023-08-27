@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
+using System.Linq;
 using static OrchardCore.Commerce.MoneyDataType.Currency;
 using static OrchardCore.Commerce.MoneyDataType.Serialization.AmountConverter;
 
@@ -15,7 +17,10 @@ internal sealed class LegacyAmountConverter : JsonConverter<Amount>
         bool hasExistingValue,
         JsonSerializer serializer)
     {
-        var attribute = (JObject)JToken.Load(reader);
+        var token = JToken.Load(reader);
+        if (token.Type == JTokenType.String) return ReadString(token.Value<string>());
+
+        var attribute = (JObject)token;
 
         var value = attribute.Get<decimal>(ValueName);
         var currencyCode = attribute.Get<string>(CurrencyName);
@@ -77,5 +82,16 @@ internal sealed class LegacyAmountConverter : JsonConverter<Amount>
         }
 
         writer.WriteEndObject();
+    }
+
+    public static Amount ReadString(string text)
+    {
+        var parts = text.Split();
+        if (parts.Length < 2) throw new InvalidOperationException($"Unable to parse string amount \"{text}\".");
+
+        var currency = FromIsoCode(parts[0]);
+        var value = decimal.Parse(string.Join(string.Empty, parts.Skip(1)), CultureInfo.InvariantCulture);
+
+        return new Amount(value, currency);
     }
 }

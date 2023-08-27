@@ -73,17 +73,22 @@ public class LocalInventoryProvider : IProductInventoryProvider
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
-            var relevantInventory = inventoryPart?.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+            var inventoryRootIdentifier = inventoryIdentifier.Contains('-')
+                ? inventoryIdentifier.Split('-')[0]
+                : inventoryIdentifier;
 
-            var newValue = relevantInventory.Value.Value + difference;
+            var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry =>
+                entry.Key == inventoryIdentifier || entry.Key == inventoryRootIdentifier);
+
+            var newValue = relevantInventory.Value + difference;
             if (newValue < 0)
             {
                 throw new InvalidOperationException("Inventory value cannot be negative.");
             }
 
-            var newEntry = new KeyValuePair<string, int>(relevantInventory.Value.Key, newValue);
+            var newEntry = new KeyValuePair<string, int>(relevantInventory.Key, newValue);
 
-            inventoryPart.Inventory.Remove(inventoryIdentifier);
+            inventoryPart.Inventory.Remove(relevantInventory.Key);
             inventoryPart.Inventory.Add(newEntry);
             inventoryPart.Apply();
 

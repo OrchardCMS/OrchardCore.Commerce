@@ -1,6 +1,6 @@
 @model PriceVariantsPartViewModel
 
-@if (Model.Variants != null && Model.Variants.Count > 0)
+@if (Model.Variants is { Count: > 0 })
 {
     <div class="product-price-variants">
         Variants:

@@ -2,7 +2,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ProductAttributeValues;
-using OrchardCore.Commerce.Serialization;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -63,7 +62,7 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
             var item = itemElement.ToObject<ShoppingCartItem>();
             cart.AddItem(item);
 
-            if (item.Prices != null && item.Prices.Any())
+            if (item?.Prices.Any() == true)
             {
                 cart.SetPrices(
                 item,
@@ -74,7 +73,15 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         // Post-process attributes for concrete types according to field definitions (deserialization being essentially
         // non-polymorphic and without access to our type definition contextual information).
         var products = await GetProductsAsync(cart.Items.Select(item => item.ProductSku));
-        var newCartItems = PostProcessAttributes(cart, products);
+        var newCartItems = cart
+            .Items
+            .Where(line => line.Attributes != null)
+            .Select(line => new ShoppingCartItem(
+                line.Quantity,
+                line.ProductSku,
+                PostProcessAttributes(line.Attributes, products[line.ProductSku]),
+                line.Prices))
+            .ToList();
 
         return cart.With(newCartItems);
     }
@@ -83,12 +90,14 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         new HashSet<IProductAttributeValue>(
         line.Attributes is null
             ? Enumerable.Empty<IProductAttributeValue>()
-            : line.Attributes
-                .Select(attr =>
+            : line
+                .Attributes
+                .Where(attribute => attribute.Key.Contains('.'))
+                .Select(attribute =>
                 {
-                    var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(type, attr.Key);
+                    var (attributePartDefinition, attributeFieldDefinition) = type.GetFieldDefinition(attribute.Key);
                     return _attributeProviders
-                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attr.Value))
+                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attribute.Value))
                         .FirstOrDefault(attributeValue => attributeValue != null);
                 }));
 
@@ -101,70 +110,29 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         return parsedLine;
     }
 
+    public ISet<IProductAttributeValue> PostProcessAttributes(IEnumerable<IProductAttributeValue> attributes, ProductPart productPart)
+    {
+        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+
+        return attributes
+            .SelectWhere(attribute =>
+                attribute is RawProductAttributeValue rawAttribute &&
+                type.GetFieldDefinition(rawAttribute.AttributeName) is ({ } partDefinition, { } fieldDefinition)
+                    ? _attributeProviders
+                        .SelectWhere(provider => provider.CreateFromValue(partDefinition, fieldDefinition, rawAttribute.Value))
+                        .FirstOrDefault()
+                    : attribute)
+            .ToHashSet();
+    }
+
     private async Task<Dictionary<string, ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
         (await _productService.GetProductsAsync(skus)).ToDictionary(productPart => productPart.Sku);
-
-    private List<ShoppingCartItem> PostProcessAttributes(ShoppingCart cart, Dictionary<string, ProductPart> products)
-    {
-        var types = ExtractTypeDefinitions(products.Values);
-        var newCartItems = new List<ShoppingCartItem>(cart.Count);
-
-        foreach (var line in cart.Items)
-        {
-            if (line.Attributes is null) continue;
-
-            var attributes = new HashSet<IProductAttributeValue>(line.Attributes.Count);
-
-            foreach (var attr in line.Attributes.OfType<RawProductAttributeValue>())
-            {
-                var product = products[line.ProductSku];
-                var type = types[product.ContentItem.ContentType];
-                var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(type, attr.AttributeName);
-                if (attributePartDefinition != null && attributeFieldDefinition != null)
-                {
-                    var newAttr = _attributeProviders
-                        .Select(provider => provider.CreateFromJsonElement(
-                        attributePartDefinition,
-                        attributeFieldDefinition,
-                        attr.Value is JsonElement element ? element : default))
-                        .FirstOrDefault(attributeValue => attributeValue != null);
-                    attributes.Add(newAttr);
-                }
-                else
-                {
-                    attributes.Add(attr);
-                }
-            }
-
-            newCartItems.Add(new ShoppingCartItem(line.Quantity, line.ProductSku, attributes, line.Prices));
-        }
-
-        return newCartItems;
-    }
 
     private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products) =>
         products
             .Select(productPart => _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType))
             .GroupBy(typeDefinition => typeDefinition.Name)
             .ToDictionary(group => group.Key, group => group.First());
-
-    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
-        GetFieldDefinition(ContentTypeDefinition type, string attributeName)
-    {
-        var partAndField = attributeName.Split('.');
-        var partName = partAndField[0];
-        var fieldName = partAndField[1];
-
-        return type
-            .Parts
-            .Where(partDefinition => partDefinition.Name == partName)
-            .SelectMany(partDefinition => partDefinition
-                .PartDefinition
-                .Fields
-                .Select(fieldDefinition => (PartDefinition: partDefinition, FieldDefinition: fieldDefinition))
-                .Where(pair => pair.FieldDefinition.Name == fieldName))
-            .FirstOrDefault();
-    }
 
     private ContentTypeDefinition GetTypeDefinition(ProductPart product) =>
         _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);

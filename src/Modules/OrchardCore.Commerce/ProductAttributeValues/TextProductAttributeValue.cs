@@ -32,8 +32,7 @@ public class TextProductAttributeValue
     public override bool Equals(IProductAttributeValue<IEnumerable<string>> other) =>
         other?.Value == null || !other.Value.Any()
             ? Value == null || !Value.Any()
-            : Value != null &&
-              Value.Any() &&
+            : Value?.Any() == true &&
               AttributeName == other.AttributeName &&
               new HashSet<string>(Value).SetEquals(other.Value);
 

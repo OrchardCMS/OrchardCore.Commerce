@@ -1,6 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,9 +13,6 @@ public class FakeCartStorage : IShoppingCartPersistence
         _carts[cartId ?? string.Empty] = cart != null
             ? new ShoppingCart(cart.Items)
             : new ShoppingCart();
-
-    public string GetUniqueCartId(string shoppingCartId) =>
-        Guid.NewGuid().ToString();
 
     public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
     {
