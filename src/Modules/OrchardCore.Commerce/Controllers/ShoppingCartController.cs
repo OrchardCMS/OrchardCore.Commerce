@@ -1,4 +1,8 @@
+using Fluid.Parser;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Exceptions;
@@ -22,6 +26,7 @@ public class ShoppingCartController : Controller
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IWorkflowManager _workflowManager;
+    private readonly IHtmlLocalizer<ShoppingCartController> H;
 
     public ShoppingCartController(
         INotifier notifier,
@@ -29,7 +34,8 @@ public class ShoppingCartController : Controller
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IWorkflowManager workflowManager)
+        IWorkflowManager workflowManager,
+        IHtmlLocalizer<ShoppingCartController> htmlLocalizer)
     {
         _notifier = notifier;
         _shapeFactory = shapeFactory;
@@ -37,6 +43,7 @@ public class ShoppingCartController : Controller
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManager = workflowManager;
+        H = htmlLocalizer;
     }
 
     [HttpGet]
@@ -83,7 +90,16 @@ public class ShoppingCartController : Controller
 
     [HttpGet]
     [Route("cart-empty")]
-    public IActionResult Empty() => View();
+    public async Task<ActionResult> Empty()
+    {
+        var trackingConsentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
+        if (trackingConsentFeature?.CanTrack == false)
+        {
+            await _notifier.ErrorAsync(H["You have to accept the cookies, to add items to your shopping cart!"]);
+        }
+
+        return View();
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
