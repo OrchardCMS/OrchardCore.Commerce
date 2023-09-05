@@ -93,7 +93,7 @@ public class ShoppingCartController : Controller
         var trackingConsentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
         if (trackingConsentFeature?.CanTrack == false)
         {
-            await _notifier.ErrorAsync(H["You have to accept the cookies, to add items to your shopping cart!"]);
+            await _notifier.ErrorAsync(H["You have to accept cookies in your browser to add items to your shopping cart."]);
         }
 
         return View();
