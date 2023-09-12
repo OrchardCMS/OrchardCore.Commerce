@@ -7,7 +7,7 @@
 }
 
 <div class="cart-product-name">
-    <a href="@Orchard.GetItemDisplayUrl(line.Product.ContentItem)" class="link-primary">@line.ProductName</a>
+    <a href="@Orchard.GetItemDisplayUrl(line.Product.ContentItem.ContentItemId)" class="link-primary">@line.ProductName</a>
 </div>
 
 @if (line.Attributes?.Any() == true)
