@@ -52,6 +52,27 @@ public class ProductBehaviourTests : UITestBase
         },
         browser);
 
+    [Theory, Chrome]
+    public Task PriceEstimationWithMinimumOrderQuantityShouldNotShowWarning(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                await context.SignInDirectlyAsync();
+                await context.GoToContentItemEditorByIdAsync(TestProduct);
+
+                await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MinimumOrderQuantity_Value"), "2");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MaximumOrderQuantity_Value"), "5");
+
+                await context.ClickReliablyOnSubmitAsync();
+                context.ShouldBeSuccess();
+
+                await context.GoToContentItemByIdAsync(TestProduct);
+                context.ErrorMessageShouldNotExist();
+
+                context.Driver.Exists(By.XPath($"//li[contains(., 'PriceVariantsProduct: Small')]").Visible());
+            },
+            browser);
+
     private static void ShoppingCartItemCountShouldBe(UITestContext context, int count) =>
         context.Get(By.ClassName("shopping-cart-item-count")).Text.ShouldBeAsString(count);
 }
