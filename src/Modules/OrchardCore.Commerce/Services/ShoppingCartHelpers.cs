@@ -10,6 +10,7 @@ using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,15 +20,21 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 {
     private readonly IHttpContextAccessor _hca;
     private readonly IPriceService _priceService;
+    private readonly IEnumerable<IProductEstimationContextUpdater> _productEstimationContextUpdaters;
     private readonly IProductService _productService;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
 
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "This service ties together many cart-related features.")]
     public ShoppingCartHelpers(
         IHttpContextAccessor hca,
         IPriceService priceService,
+        IEnumerable<IProductEstimationContextUpdater> productEstimationContextUpdaters,
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
@@ -36,6 +43,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     {
         _hca = hca;
         _priceService = priceService;
+        _productEstimationContextUpdaters = productEstimationContextUpdaters;
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -168,17 +176,31 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return (cart, item);
     }
 
-    public async Task<ShoppingCartLineViewModel> EstimateProductAsync(
+    public Task<ShoppingCartLineViewModel> EstimateProductAsync(
         string shoppingCartId,
-        ShoppingCartItem item,
+        string sku,
         Address shipping = null,
-        Address billing = null)
-    {
-        var sku = item.ProductSku;
-        var (cart, _) = await AddItemAndGetCartAsync(shoppingCartId, item);
+        Address billing = null) =>
+        EstimateProductAsync(new ProductEstimationContext(
+            shoppingCartId,
+            new ShoppingCartItem(quantity: 1, productSku: sku),
+            shipping,
+            billing));
 
-        return (await CreateShoppingCartViewModelAsync(cart, shipping, billing))
+    private async Task<ShoppingCartLineViewModel> EstimateProductAsync(ProductEstimationContext context)
+    {
+        foreach (var updater in _productEstimationContextUpdaters)
+        {
+            if (await updater.IsApplicableAsync(context))
+            {
+                context = await updater.UpdateAsync(context) ?? context;
+            }
+        }
+
+        var (cart, _) = await AddItemAndGetCartAsync(context.ShoppingCartId, context.ShoppingCartItem);
+
+        return (await CreateShoppingCartViewModelAsync(cart, context.ShippingAddress, context.BillingAddress))
             .Lines
-            .FirstOrDefault(line => line.ProductSku == sku);
+            .FirstOrDefault(line => line.ProductSku == context.ShoppingCartItem.ProductSku);
     }
 }

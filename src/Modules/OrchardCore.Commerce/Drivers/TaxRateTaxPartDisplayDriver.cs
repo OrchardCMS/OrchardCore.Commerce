@@ -39,9 +39,7 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
             var addresses = await _hca.HttpContext.GetUserAddressAsync();
             var model = await _shoppingCartHelpers.EstimateProductAsync(
                 shoppingCartId: null,
-                new ShoppingCartItem(
-                    quantity: 1,
-                    product.Sku),
+                product.Sku,
                 addresses?.ShippingAddress.Address,
                 addresses?.BillingAddress.Address);
 

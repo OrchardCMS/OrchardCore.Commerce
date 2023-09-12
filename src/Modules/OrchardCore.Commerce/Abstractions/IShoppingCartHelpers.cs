@@ -47,12 +47,12 @@ public interface IShoppingCartHelpers
         bool storeIfOk = false);
 
     /// <summary>
-    /// Adds the given <paramref name="item"/> to the shopping cart without saving, validates the cart and calculates
-    /// the display information for the added item.
+    /// Adds the product with the given <paramref name="sku"/> to the shopping cart without saving, validates the cart
+    /// and calculates the display information for the added item.
     /// </summary>
     Task<ShoppingCartLineViewModel> EstimateProductAsync(
         string shoppingCartId,
-        ShoppingCartItem item,
+        string sku,
         Address shipping = null,
         Address billing = null);
 }
