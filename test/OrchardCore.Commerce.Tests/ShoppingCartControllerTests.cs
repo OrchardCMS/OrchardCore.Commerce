@@ -212,6 +212,6 @@ public class ShoppingCartControllerTests
             _cartStorage,
             shoppingCartSerializer,
             workflowManager: null,
-            null);
+            htmlLocalizer: null);
     }
 }
