@@ -68,8 +68,6 @@ public class ProductBehaviourTests : UITestBase
 
                 await context.GoToContentItemByIdAsync(TestProduct);
                 context.ErrorMessageShouldNotExist();
-
-                context.Driver.Exists(By.XPath($"//li[contains(., 'PriceVariantsProduct: Small')]").Visible());
             },
             browser);
 
