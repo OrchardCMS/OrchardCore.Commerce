@@ -5,7 +5,7 @@ using Shouldly;
 
 namespace Lombiq.Tests.UI.Services;
 
-public static class NotificationUITestContextExtenisons
+public static class NotificationUITestContextExtensions
 {
     /// <summary>
     /// Returns the text of the element with the <c>message-error</c> class if one exists.
