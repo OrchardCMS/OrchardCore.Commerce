@@ -343,6 +343,13 @@ public class UserSettingsStartup : StartupBase
     }
 }
 
+[RequireFeatures(Inventory.Constants.FeatureIds.Inventory)]
+public class InventoryStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services.AddScoped<IProductEstimationContextUpdater, InventoryProductEstimationContextUpdater>();
+}
+
 [RequireFeatures("OrchardCore.ContentLocalization")]
 public class ContentLocalizationStartup : StartupBase
 {
