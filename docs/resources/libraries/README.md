@@ -4,7 +4,7 @@ The below table lists the different .NET libraries used in Orchard Core Commerce
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Orchard Core](https://github.com/OrchardCMS/OrchardCore) | Modular and multi-tenant application framework. | 1.5.0 |[BSD-3-Clause](https://github.com/OrchardCMS/OrchardCore/blob/main/LICENSE) |
+| [Orchard Core](https://github.com/OrchardCMS/OrchardCore) | Modular and multi-tenant application framework. | 1.7.0 |[BSD-3-Clause](https://github.com/OrchardCMS/OrchardCore/blob/main/LICENSE) |
 | [Shouldly](https://github.com/shouldly/shouldly) | Should testing for .NET | 4.1.0 |[BSD license](https://github.com/shouldly/shouldly/blob/master/LICENSE.txt) |
 | [Stripe.net](https://github.com/shouldly/shouldly) | Portable class library for stripe.com | 40.4.0 |[Apache 2.0](https://github.com/shouldly/shouldly/blob/master/LICENSE.txt) |
 

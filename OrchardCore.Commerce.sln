@@ -93,6 +93,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "allow", "allow", "{7FB7940D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests.UI.Shortcuts", "test\OrchardCore.Commerce.Tests.UI.Shortcuts\OrchardCore.Commerce.Tests.UI.Shortcuts.csproj", "{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{62DF9FF9-D2B3-4333-948D-2E405699B47B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libraries", "libraries", "{C788AFFF-F440-4259-9102-5B4C1B91FAFA}"
+	ProjectSection(SolutionItems) = preProject
+		docs\resources\libraries\README.md = docs\resources\libraries\README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +174,8 @@ Global
 		{E32B62B8-D737-4713-87C5-8220C9746643} = {83C01924-6F58-4777-A9EC-07943F7A2E31}
 		{7FB7940D-EEF4-4355-BCBF-C160080F257A} = {E32B62B8-D737-4713-87C5-8220C9746643}
 		{3DB5D0DD-1509-40B8-AD1A-47D5672BF484} = {772AFE42-DF1F-49B1-9F64-7C901E588C00}
+		{62DF9FF9-D2B3-4333-948D-2E405699B47B} = {BEBA1764-178A-4722-A193-4DEF26DCE8D1}
+		{C788AFFF-F440-4259-9102-5B4C1B91FAFA} = {62DF9FF9-D2B3-4333-948D-2E405699B47B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}
