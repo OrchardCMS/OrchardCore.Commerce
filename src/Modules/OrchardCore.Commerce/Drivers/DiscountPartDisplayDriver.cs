@@ -70,11 +70,7 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
 
             try
             {
-                var model = await _shoppingCartHelpers.EstimateProductAsync(
-                    shoppingCartId: null,
-                    new ShoppingCartItem(
-                        quantity: 1,
-                        part.Sku));
+                var model = await _shoppingCartHelpers.EstimateProductAsync(shoppingCartId: null, part.Sku);
                 var data = model.AdditionalData;
 
                 var discounts = data.GetDiscounts().ToList();

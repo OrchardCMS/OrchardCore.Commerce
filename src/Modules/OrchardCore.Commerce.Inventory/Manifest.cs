@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Inventory.Constants;
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
@@ -7,4 +8,11 @@ using OrchardCore.Modules.Manifest;
     Version = "0.0.1",
     Description = "Inventory management for Orchard Core Commerce.",
     Category = "Commerce"
+)]
+
+[assembly: Feature(
+    Id = FeatureIds.Inventory,
+    Name = "Orchard Core Commerce - Inventory",
+    Category = "Commerce",
+    Description = "Inventory management for Orchard Core Commerce."
 )]
