@@ -10,8 +10,103 @@
   "tags": [ "product", "sample" ],
   "steps": [
     {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "ProductList",
+          "DisplayName": "Product List",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Listable": true
+            },
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "ProductList",
+              "Name": "ProductList",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "ListPart",
+              "Name": "ListPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "ListPartSettings": {
+                  "PageSize": 10,
+                  "ContainedContentTypes": [
+                    "LocalizedProduct",
+                    "PriceVariantsProduct",
+                    "Product"
+                  ],
+                  "EnableOrdering": true
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                },
+                "AutoroutePartSettings": {
+                  "ShowHomepageOption": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    },
+    {
       "name": "Content",
       "data": [
+        {
+          "ContentItemId": "mainproductlist00000000000",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "ProductList",
+          "DisplayText": "My Shop",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2023-09-15T17:10:18.3635912Z",
+          "PublishedUtc": "2023-09-15T17:10:18.3683599Z",
+          "CreatedUtc": "2023-09-15T16:48:55.6626545Z",
+          "Owner": null,
+          "Author": "admin",
+          "ProductList": {},
+          "ListPart": {
+            "DisableRssFeed": false,
+            "FeedProxyUrl": null,
+            "FeedItemsCount": 20
+          },
+          "AutoroutePart": {
+            "Path": "my-shop",
+            "SetHomepage": true,
+            "Disabled": false,
+            "RouteContainedItems": false,
+            "Absolute": false
+          },
+          "TitlePart": {
+            "Title": "My Shop"
+          }
+        },
         {
           "ContentItemId": "testpricevariantproduct000",
           "ContentItemVersionId": "[js:uuid()]",
@@ -76,6 +171,11 @@
           },
           "ProductPart": {
             "Sku": "TESTPRODUCTVARIANT"
+          },
+          "ContainedPart": {
+            "ListContentItemId": "mainproductlist00000000000",
+            "ListContentType": "ProductList",
+            "Order": 0
           }
         },
         {
@@ -136,7 +236,12 @@
             },
             "ProductSku": "TESTPRODUCT"
           },
-          "Product": {}
+          "Product": {},
+          "ContainedPart": {
+            "ListContentItemId": "mainproductlist00000000000",
+            "ListContentType": "ProductList",
+            "Order": 0
+          }
         },
         {
           "ContentItemId": "testfreeproduct000",
@@ -196,7 +301,12 @@
             },
             "ProductSku": "TESTFREEPRODUCT"
           },
-          "Product": {}
+          "Product": {},
+          "ContainedPart": {
+            "ListContentItemId": "mainproductlist00000000000",
+            "ListContentType": "ProductList",
+            "Order": 0
+          }
         },
         {
           "ContentItemId": "testdiscountedproduct000",
@@ -279,7 +389,12 @@
               "Value": null
             }
           },
-          "Product": {}
+          "Product": {},
+          "ContainedPart": {
+            "ListContentItemId": "mainproductlist00000000000",
+            "ListContentType": "ProductList",
+            "Order": 0
+          }
         },
         {
           "ContentItemId": "testproductlocalized000000",
@@ -312,6 +427,11 @@
           "LocalizationPart": {
             "LocalizationSet": "testproductlocalizationset",
             "Culture": "en-US"
+          },
+          "ContainedPart": {
+            "ListContentItemId": "mainproductlist00000000000",
+            "ListContentType": "ProductList",
+            "Order": 0
           }
         }
       ]
