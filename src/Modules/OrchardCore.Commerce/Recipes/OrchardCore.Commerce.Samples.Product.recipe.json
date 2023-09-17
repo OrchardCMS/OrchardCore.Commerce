@@ -480,8 +480,8 @@
       "name": "media",
       "Files": [
         {
-          "SourcePath": "media/product-image.png",
-          "TargetPath": "product-image.png"
+          "SourcePath": "Media/Product Images/sample-product-image.png",
+          "TargetPath": "Product Images/sample-product-image.png"
         }
       ]
     }

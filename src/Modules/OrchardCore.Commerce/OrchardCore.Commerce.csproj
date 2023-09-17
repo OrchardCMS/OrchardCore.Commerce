@@ -49,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Recipes\media\*.*">
+    <None Update="Recipes\Media\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
