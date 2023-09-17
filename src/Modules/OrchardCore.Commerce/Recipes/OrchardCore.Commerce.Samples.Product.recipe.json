@@ -170,7 +170,15 @@
             "ProductSku": "TESTPRODUCTVARIANT"
           },
           "ProductPart": {
-            "Sku": "TESTPRODUCTVARIANT"
+            "Sku": "TESTPRODUCTVARIANT",
+            "ProductImage": {
+              "Paths": [
+                "product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "ContainedPart": {
             "ListContentItemId": "mainproductlist00000000000",
@@ -204,7 +212,15 @@
             "Html": ""
           },
           "ProductPart": {
-            "Sku": "TESTPRODUCT"
+            "Sku": "TESTPRODUCT",
+            "ProductImage": {
+              "Paths": [
+                "product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "PricePart": {
             "Price": {
@@ -269,7 +285,15 @@
             "Html": ""
           },
           "ProductPart": {
-            "Sku": "TESTFREEPRODUCT"
+            "Sku": "TESTFREEPRODUCT",
+            "ProductImage": {
+              "Paths": [
+                "product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "PricePart": {
             "Price": {
@@ -334,7 +358,15 @@
             "Html": ""
           },
           "ProductPart": {
-            "Sku": "TESTDISCOUNTEDPRODUCT"
+            "Sku": "TESTDISCOUNTEDPRODUCT",
+            "ProductImage": {
+              "Paths": [
+                "product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "PricePart": {
             "Price": {
@@ -414,6 +446,14 @@
           },
           "ProductPart": {
             "Sku": "LOCALIZED",
+            "ProductImage": {
+              "Paths": [
+                "product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            },
             "CanBeBought": {}
           },
           "PricePart": {
