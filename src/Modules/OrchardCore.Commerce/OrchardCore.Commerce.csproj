@@ -47,6 +47,13 @@
     <ProjectReference Include="..\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Inventory\OrchardCore.Commerce.Inventory.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Recipes\mediafields\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
   <PropertyGroup>
     <LombiqNodeJsExtensionsPath>..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions</LombiqNodeJsExtensionsPath>
   </PropertyGroup>
