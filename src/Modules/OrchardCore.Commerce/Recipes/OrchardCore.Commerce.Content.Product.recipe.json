@@ -230,31 +230,6 @@
       ],
       "ContentParts": [
         {
-          "Name": "ProductPart",
-          "Settings": {
-            "ContentPartSettings": {
-              "Attachable": true,
-              "Description": "Makes a content item into a product."
-            }
-          },
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "MediaField",
-              "Name": "ProductImage",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Product Image",
-                  "Position": "0"
-                },
-                "MediaFieldSettings": {
-                  "Multiple": false,
-                  "AllowedExtensions": []
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "PriceVariantsProduct",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [

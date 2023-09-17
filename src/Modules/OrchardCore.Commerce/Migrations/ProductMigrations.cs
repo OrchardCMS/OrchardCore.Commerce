@@ -3,6 +3,8 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Media.Fields;
+using OrchardCore.Media.Settings;
 using YesSql.Sql;
 
 namespace OrchardCore.Commerce.Migrations;
@@ -21,6 +23,10 @@ public class ProductMigrations : DataMigration
     {
         _contentDefinitionManager
             .AlterPartDefinition(nameof(ProductPart), builder => builder
+                .WithField("ProductImage", field => field
+                    .OfType(nameof(MediaField))
+                    .WithDisplayName("Product Image")
+                    .WithSettings(new MediaFieldSettings { Multiple = false }))
                 .Attachable()
                 .WithDescription("Makes a content item into a product."));
 
