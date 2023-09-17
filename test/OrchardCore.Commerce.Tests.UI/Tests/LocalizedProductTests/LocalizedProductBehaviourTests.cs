@@ -27,7 +27,6 @@ public class LocalizedProductBehaviourTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
-                await context.SwitchToInteractiveAsync();
                 await context.SignInDirectlyAsync();
                 await GoToLocalizedProductAsync(context);
 
