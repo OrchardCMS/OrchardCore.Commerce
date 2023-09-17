@@ -475,6 +475,15 @@
           }
         }
       ]
+    },
+    {
+      "name": "media",
+      "Files": [
+        {
+          "SourcePath": "media/product-image.png",
+          "TargetPath": "media/product-image.png"
+        }
+      ]
     }
   ]
 }

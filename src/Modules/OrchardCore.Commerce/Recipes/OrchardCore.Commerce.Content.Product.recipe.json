@@ -279,15 +279,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "media",
-      "Files": [
-        {
-          "SourcePath": "Media/product-image.png",
-          "TargetPath": "Media/product-image.png"
-        }
-      ]
     }
   ]
 }
