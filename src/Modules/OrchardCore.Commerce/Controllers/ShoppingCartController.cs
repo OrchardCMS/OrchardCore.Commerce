@@ -26,6 +26,7 @@ public class ShoppingCartController : Controller
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IHtmlLocalizer<ShoppingCartController> H;
+    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 
     public ShoppingCartController(
         INotifier notifier,
@@ -34,7 +35,8 @@ public class ShoppingCartController : Controller
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IHtmlLocalizer<ShoppingCartController> htmlLocalizer)
+        IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
+        IEnumerable<IShoppingCartEvents> shoppingCartEvents)
     {
         _notifier = notifier;
         _shapeFactory = shapeFactory;
@@ -42,6 +44,7 @@ public class ShoppingCartController : Controller
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManagers = workflowManagers;
+        _shoppingCartEvents = shoppingCartEvents;
         H = htmlLocalizer;
     }
 
@@ -106,8 +109,41 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
+        // should IgnoreInventory affect this?
+
+        var updatedLines = new List<ShoppingCartLineUpdateModel>();
+        foreach (var line in cart.Lines)
+        {
+            var isValid = true;
+            var item = await _shoppingCartSerializer.ParseCartLineAsync(line);
+
+            await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
+                new { LineItem = item },
+                $"ShoppingCart-{HttpContext.Session.Id}-{shoppingCartId}");
+
+            foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
+            {
+                if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
+                {
+                    await _notifier.ErrorAsync(errorMessage);
+                    isValid = false;
+                }
+            }
+
+            // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
+            if (!isValid)
+            {
+                // If an item has been successfully added to the cart, Quantity at 1 must be valid.
+                line.Quantity = 1;
+            }
+
+            updatedLines.Add(line);
+        }
+
+        cart.Lines.SetItems(updatedLines);
         var parsedCart = await _shoppingCartSerializer.ParseCartAsync(cart);
         await _shoppingCartPersistence.StoreAsync(parsedCart, shoppingCartId);
+
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
 
