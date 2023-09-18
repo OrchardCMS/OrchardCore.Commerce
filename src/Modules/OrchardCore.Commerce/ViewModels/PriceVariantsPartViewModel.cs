@@ -12,6 +12,7 @@ public class PriceVariantsPartViewModel
     public IDictionary<string, decimal?> VariantsValues { get; private set; } = new Dictionary<string, decimal?>();
     public IDictionary<string, string> VariantsCurrencies { get; private set; } = new Dictionary<string, string>();
 
+    [BindNever]
     public IEnumerable<ICurrency> Currencies { get; set; }
 
     [BindNever]
