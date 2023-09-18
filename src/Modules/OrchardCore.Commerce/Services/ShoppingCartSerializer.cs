@@ -41,9 +41,9 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         return new ShoppingCart(cart.Lines
             .Where(updateModel => updateModel.Quantity > 0)
             .Select(updateModel => new ShoppingCartItem(
-            updateModel.Quantity,
-            updateModel.ProductSku,
-            ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType]))));
+                updateModel.Quantity,
+                updateModel.ProductSku,
+                ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType]))));
     }
 
     public async Task<ShoppingCart> DeserializeAsync(string serializedCart)
