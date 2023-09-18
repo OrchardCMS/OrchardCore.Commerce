@@ -38,6 +38,17 @@ public class CartVerifyingItemEventDisplayDriver : CartEventActivityDisplayDrive
     }
 }
 
+public class CartUpdatedEventDisplayDriver : CartEventActivityDisplayDriverBase<CartVerifyingItemEvent>
+{
+    public override LocalizedHtmlString Description =>
+        H["Executes before the cart is updated to check whether item quantities can be modified based on inventory status."];
+
+    public CartUpdatedEventDisplayDriver(IHtmlLocalizer<CartUpdatedEventDisplayDriver> htmlLocalizer)
+        : base(htmlLocalizer)
+    {
+    }
+}
+
 public class CartLoadedEventDisplayDriver : CartEventActivityDisplayDriverBase<CartLoadedEvent>
 {
     public override LocalizedHtmlString Description =>
