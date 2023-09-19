@@ -54,14 +54,14 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
         if (await updater.TryUpdateModelAsync(
             viewModel,
             Prefix,
+            viewModel => viewModel.DefaultPrice,
             viewModel => viewModel.TieredValuesSerialized,
             viewModel => viewModel.Currency))
         {
-            IEnumerable<PriceTier> tieredValues = Enumerable.Empty<PriceTier>();
+            var priceTiers = Enumerable.Empty<PriceTier>();
             try
             {
-                viewModel.SortTiersByQuantity();
-                tieredValues = viewModel.GetTieredValues();
+                priceTiers = viewModel.DeserializePriceTiers();
             }
             catch (JsonException)
             {
@@ -71,16 +71,23 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
             }
 
             // Restoring tiers so that only the new values are stored.
-            part.TieredPrices.RemoveAll();
+            part.PriceTiers.RemoveAll();
 
-            if (tieredValues.Any(tier => tier.UnitPrice is null))
+            if (priceTiers.Any(tier => tier.UnitPrice is null))
             {
                 updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
                     T["You need to set a price for every tier."]);
             }
 
-            if (tieredValues
+            if (viewModel.DefaultPrice == null || viewModel.DefaultPrice.Value <= 0)
+            {
+                updater.ModelState.AddModelError(
+                    nameof(TieredPricePartViewModel.DefaultPrice),
+                    T["You need to set a default price greater than 0."]);
+            }
+
+            if (priceTiers
                 .GroupBy(tier => tier.Quantity)
                 .Where(group => group.Count() > 1)
                 .Select(group => group.Key)
@@ -91,27 +98,18 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
                     T["There are duplicate tiers."]);
             }
 
-            if (tieredValues.Any(tier => tier.Quantity < 1))
+            if (priceTiers.Any(tier => tier.UnitPrice < 0))
             {
                 updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
-                    T["You need to set a quantity greater than 0 for every tier."]);
+                    T["You need to set a unit price greater or equal to 0 for every tier."]);
             }
 
-            if (tieredValues.Any(tier => tier.UnitPrice <= 0))
-            {
-                updater.ModelState.AddModelError(
-                    nameof(TieredPricePartViewModel.TieredValuesSerialized),
-                    T["You need to set a unit price greater than 0 for every tier."]);
-            }
+            part.PriceTiers.AddRange(priceTiers);
 
-            foreach (var tieredValue in tieredValues)
-            {
-                part.TieredPrices[tieredValue.Quantity] = _moneyService.Create(
-                    tieredValue.UnitPrice.Value,
-                    viewModel.Currency);
-            }
-
+            part.DefaultPrice = _moneyService.Create(
+                viewModel.DefaultPrice.Value,
+                viewModel.Currency);
         }
 
         return await EditAsync(part, context);
@@ -122,14 +120,11 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
         model.ContentItem = part.ContentItem;
         model.TieredPricePart = part;
 
-        var tieredPrices = part.TieredPrices ?? new Dictionary<int, Amount>();
+        var priceTiers = part.PriceTiers;
 
         model.InitializeTiers(
-            tieredPrices,
-            part.TieredPrices.Any()
-                ? part.TieredPrices.FirstOrDefault().Value.Currency.CurrencyIsoCode
-                : _currencyOptions.Value.CurrentDisplayCurrency);
-
-        model.SortTiersByQuantity();
+            part.DefaultPrice,
+            priceTiers,
+            part.DefaultPrice.Currency.CurrencyIsoCode ?? _currencyOptions.Value.CurrentDisplayCurrency);
     }
 }

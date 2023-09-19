@@ -1,4 +1,3 @@
-@using System.Text.Json
 @model TieredPricePartViewModel
 
 <h3>@T["Price tiers"]</h3>
@@ -6,31 +5,38 @@
 <section id="price-tiers">
     <input type="hidden" name="@Html.NameFor(m => m.TieredValuesSerialized)" v-model="tieredValuesSerialized" />
 
+    <div class="mb-3" asp-validation-class-for="DefaultPrice">
+        <label asp-for="DefaultPrice">@T["Default Price"] </label>
+        <div class="input-group">
+            <input asp-for="DefaultPrice" class="form-control text-muted" />
+            <div class="input-group-append">
+                <select asp-for="Currency" class="form-select" v-model="currency"
+                        asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
+            </div>
+        </div>
+        <span asp-validation-for="DefaultPrice"></span>
+    </div>
+
     <div class="mb-3" v-for="tier in tiers">
         <div class="row g-3 align-items-center">
             <div class="col-auto">
                 <input type="text" class="form-control" v-model="tier.Quantity" placeholder="@T["Quantity"]"/>
             </div>
             <div class="col-auto">
-                <input type="text" class="form-control" v-model="tier.UnitPrice" placeholder="@T["Price"]"/>
+                <div class="input-group">
+                    <input type="text" class="form-control" v-model="tier.UnitPrice" placeholder="@T["Unit Price"]"/>
+                    <div class="input-group-append">
+                        <input type="button" readonly="readonly" :value="currency" class="form-control"/>
+                    </div>
+                </div>
             </div>
             <div class="col-auto">
                 <div class="btn btn-danger" @@click="remove(tier)">@T["Remove"]</div>
             </div>
         </div>
     </div>
-    <div class="btn btn-primary mb-3" @@click="add()">@T["Add"]</div>
+    <div class="btn btn-primary mb-3" @@click="add()">@T["Add Price Tier"]</div>
     <span asp-validation-for="TieredValuesSerialized"></span>
-
-    <div class="mb-3" asp-validation-class-for="Currency">
-        <label asp-for="Currency">@T["Currency"] </label>
-        <div class="input-group">
-            <select asp-for="Currency"
-                    class="form-select"
-                    asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
-        </div>
-        <span asp-validation-for="Currency"></span>
-    </div>
 </section>
 
 <script at="Foot" asp-name="vuejs"></script>
@@ -38,7 +44,8 @@
     let app = new Vue({
         el: "#price-tiers",
         data: {
-            tiers: []
+            tiers: [],
+            currency: "@Model.Currency",
         },
         computed: {
             tieredValuesSerialized() {
@@ -52,12 +59,17 @@
             this.tiers = @(!string.IsNullOrEmpty(Model.TieredValuesSerialized) ? Html.Raw(Model.TieredValuesSerialized) : "[]");
         },
         methods: {
+            sort() {
+                this.tiers.sort((a, b) => a.Quantity - b.Quantity);
+            },
             remove(tier) {
                 this.tiers.splice(this.tiers.indexOf(tier), 1);
+                this.sort();
             },
             add() {
                 const maxQuantity = Math.max(0, ...this.tiers.map(t => t.Quantity ?? 0));
                 this.tiers.push({ Quantity: maxQuantity + 1, UnitPrice: "" });
+                this.sort();
             }
         },
     });

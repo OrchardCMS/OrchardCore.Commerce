@@ -1,13 +1,14 @@
 @model TieredPricePartViewModel
 
-@if (Model.TieredPrices is { Count: > 0 })
+@if (Model.Tiers?.Any() == true)
 {
     <div class="product-price-tiers">
-        @T["Tiers:"]
+        <div>@T["Price:"] @Model.DefaultPrice.ToString()</div>
+        <div>@T["Tiers:"]</div>
         <ul>
-            @foreach (var tier in Model.TieredPrices)
+            @foreach (var tier in Model.Tiers)
             {
-                <li>@tier.Key - @tier.Value.ToString()</li>
+                <li>@tier.Quantity - @tier.UnitPrice</li>
             }
         </ul>
     </div>

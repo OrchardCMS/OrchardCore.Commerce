@@ -119,7 +119,7 @@ public class Startup : StartupBase
             .UseDisplayDriver<TieredPricePartDisplayDriver>()
             .AddHandler<TieredPricePartHandler>();
 
-        // services.AddScoped<IPriceProvider, TieredPriceProvider>();
+        services.AddScoped<IPriceProvider, TieredPriceProvider>();
 
         // Currency
         services.AddScoped<ICurrencyProvider, CurrencyProvider>();
