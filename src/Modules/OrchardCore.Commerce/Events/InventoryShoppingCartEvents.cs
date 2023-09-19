@@ -32,6 +32,12 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
             return null;
         }
 
+        // If IgnoreInventory is set to true, inventory checks are unnecessary.
+        if (inventoryPart.IgnoreInventory.Value)
+        {
+            return null;
+        }
+
         // If there are no attributes on a Price Variant Product, there's no need for the below checks.
         if (productPart.ContentItem.As<PriceVariantsPart>() is not null && !item.Attributes.Any())
         {
