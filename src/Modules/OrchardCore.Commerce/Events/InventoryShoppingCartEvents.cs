@@ -53,7 +53,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.
         if (!inventoryPart.AllowsBackOrder.Value && item.Quantity > relevantInventory.Value)
         {
-            return H["There aren't enough {0} left in stock.", title];
+            return H["There are not enough {0} left in stock.", title];
         }
 
         // Item verification should fail if max order quantity is set and quantity exceeds its value.
