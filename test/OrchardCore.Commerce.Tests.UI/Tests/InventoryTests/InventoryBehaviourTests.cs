@@ -3,6 +3,7 @@ using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
+using System.Globalization;
 using Xunit;
 using Xunit.Abstractions;
 using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
@@ -11,8 +12,6 @@ namespace OrchardCore.Commerce.Tests.UI.Tests.PromotionTests;
 
 public class InventoryBehaviourTests : UITestBase
 {
-    public const string PriceFieldCssSelector = ".price-part-price-field-value";
-
     public InventoryBehaviourTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
@@ -27,18 +26,18 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Add to cart')]"));
 
                 // When quantity is set to a value below the possible max quantity, error message should not appear.
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@class='form-control shopping-cart-table-quantity']"), "2");
-                await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
-                context.Missing(By.XPath(
-                    "//div[contains(., 'The checkout quantity for Test Product is more than the maximum allowed (2).')]"));
+                await UpdateCartAndAssertErrorsAsync(
+                    context,
+                    "2",
+                    "The checkout quantity for Test Product is more than the maximum allowed (2).",
+                    shouldExist: false);
 
                 // When quantity is set to a value above the maximum possible quantity, error message should appear.
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@class='form-control shopping-cart-table-quantity']"), "5");
-                await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
-                context.Exists(By.XPath(
-                    "//div[contains(., 'The checkout quantity for Test Product is more than the maximum allowed (2).')]"));
+                await UpdateCartAndAssertErrorsAsync(
+                    context,
+                    "5",
+                    "The checkout quantity for Test Product is more than the maximum allowed (2).",
+                    shouldExist: true);
 
                 await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{TestProduct}/Edit");
                 await context.ClickReliablyOnAsync(By.XPath("//input[@id='InventoryPart_AllowsBackOrder_Value']"));
@@ -47,50 +46,77 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(
                     By.XPath("//input[@id='InventoryPart_MaximumOrderQuantity_Value']"), "10");
                 await context.ClickPublishAsync();
-
                 await context.GoToRelativeUrlAsync("/cart");
 
                 // When quantity is set to a value below the minimum possible quantity, error message should appear.
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@class='form-control shopping-cart-table-quantity']"), "2");
-                await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
-                context.Exists(By.XPath(
-                    "//div[contains(., 'The checkout quantity for Test Product is less than the minimum allowed (3).')]"));
+                await UpdateCartAndAssertErrorsAsync(
+                    context,
+                    "2",
+                    "The checkout quantity for Test Product is less than the minimum allowed (3).",
+                    shouldExist: true);
 
                 // When quantity is set to a value above the minimum possible quantity, error message should not appear.
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@class='form-control shopping-cart-table-quantity']"), "4");
-                await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
-                context.Missing(By.XPath(
-                    "//div[contains(., 'The checkout quantity for Test Product is less than the minimum allowed (3).')]"));
+                await UpdateCartAndAssertErrorsAsync(
+                    context,
+                    "4",
+                    "The checkout quantity for Test Product is less than the minimum allowed (3).",
+                    shouldExist: false);
 
                 // When quantity is set to a value above the current inventory value, error message should appear.
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@class='form-control shopping-cart-table-quantity']"), "10");
-                await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
-                context.Exists(By.XPath(
-                    "//div[contains(., 'There are not enough Test Product left in stock.')]"));
+                await UpdateCartAndAssertErrorsAsync(
+                    context,
+                    "10",
+                    "There are not enough Test Product left in stock.",
+                    shouldExist: true);
 
                 await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{TestProduct}/Edit");
                 await context.ClickReliablyOnAsync(By.XPath("//input[@id='InventoryPart_IgnoreInventory_Value']"));
                 await context.ClickPublishAsync();
-
                 await context.GoToRelativeUrlAsync("/cart");
 
                 // When inventory is ignored, inventory checks should not apply.
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@class='form-control shopping-cart-table-quantity']"), "2");
-                await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
-                context.Missing(By.XPath(
-                    "//div[contains(., 'The checkout quantity for Test Product is less than the minimum allowed (3).')]"));
+                await UpdateCartAndAssertErrorsAsync(
+                    context,
+                    "2",
+                    "The checkout quantity for Test Product is less than the minimum allowed (3).",
+                    shouldExist: false);
 
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@class='form-control shopping-cart-table-quantity']"), "15");
-                await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
-                context.Missing(By.XPath(
-                    "//div[contains(., 'The checkout quantity for Test Product is more than the maximum allowed (10).')]"));
-                context.Missing(By.XPath(
-                    "//div[contains(., 'There are not enough Test Product left in stock.')]"));
+                await UpdateCartAndAssertErrorsAsync(
+                    context,
+                    "15",
+                    "The checkout quantity for Test Product is more than the maximum allowed (10).",
+                    shouldExist: false);
+                AssertError(context, "There are not enough Test Product left in stock.", shouldExist: false);
             },
             browser);
+
+    private static async Task UpdateCartAndAssertErrorsAsync(
+        UITestContext context,
+        string quantity,
+        string errorMessage,
+        bool shouldExist = true)
+    {
+        await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(1), quantity);
+        await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
+        AssertError(context, errorMessage, shouldExist);
+    }
+
+    private static void AssertError(UITestContext context, string errorMessage, bool shouldExist = true)
+    {
+        var errorDivXPath = $"//div[contains(., '{errorMessage}')]";
+
+        if (shouldExist)
+        {
+            context.Exists(By.XPath(errorDivXPath));
+        }
+        else
+        {
+            context.Missing(By.XPath(errorDivXPath));
+        }
+    }
+
+    private static By QuantityFieldBy(int number) =>
+        By.XPath(string.Create(
+            CultureInfo.InvariantCulture,
+            $"(//table[contains(@class, 'shopping-cart-table')]//input[contains(@name, '.Quantity')])[{number}]"));
 }
