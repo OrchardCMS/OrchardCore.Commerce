@@ -28,6 +28,8 @@ public class ShoppingCartController : Controller
     private readonly IHtmlLocalizer<ShoppingCartController> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 
+    // These are needed.
+#pragma warning disable S107 // Methods should not have too many parameters
     public ShoppingCartController(
         INotifier notifier,
         IShapeFactory shapeFactory,
@@ -37,6 +39,7 @@ public class ShoppingCartController : Controller
         IEnumerable<IWorkflowManager> workflowManagers,
         IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _notifier = notifier;
         _shapeFactory = shapeFactory;
@@ -109,8 +112,6 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
-        // should IgnoreInventory affect this?
-
         var updatedLines = new List<ShoppingCartLineUpdateModel>();
         foreach (var line in cart.Lines)
         {
