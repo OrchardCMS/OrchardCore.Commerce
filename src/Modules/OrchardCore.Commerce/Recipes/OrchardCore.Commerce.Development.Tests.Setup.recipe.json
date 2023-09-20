@@ -43,6 +43,10 @@
         {
           "executionid": "OrchardCore.Commerce",
           "name": "OrchardCore.Commerce.Content.TestPriceVariantsProduct"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
+          "name": "OrchardCore.Commerce.Content.TestTieredPriceProduct"
         }
       ]
     },

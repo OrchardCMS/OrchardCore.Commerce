@@ -20,22 +20,22 @@
     <div class="mb-3" v-for="tier in tiers">
         <div class="row g-3 align-items-center">
             <div class="col-auto">
-                <input type="text" class="form-control" v-model="tier.Quantity" placeholder="@T["Quantity"]"/>
+                <input type="text" class="form-control tier-quantity-editor" v-model="tier.Quantity" placeholder="@T["Quantity"]"/>
             </div>
             <div class="col-auto">
                 <div class="input-group">
-                    <input type="text" class="form-control" v-model="tier.UnitPrice" placeholder="@T["Unit Price"]"/>
+                    <input type="text" class="form-control tier-unit-price-editor" v-model="tier.UnitPrice" placeholder="@T["Unit Price"]"/>
                     <div class="input-group-append">
                         <input type="button" readonly="readonly" :value="currency" class="form-control"/>
                     </div>
                 </div>
             </div>
             <div class="col-auto">
-                <div class="btn btn-danger" @@click="remove(tier)">@T["Remove"]</div>
+                <div class="btn btn-danger remove-price-tier-button" @@click="remove(tier)">@T["Remove"]</div>
             </div>
         </div>
     </div>
-    <div class="btn btn-primary mb-3" @@click="add()">@T["Add Price Tier"]</div>
+    <div class="btn btn-primary mb-3 add-price-tier-button" @@click="add()">@T["Add Price Tier"]</div>
     <span asp-validation-for="TieredValuesSerialized"></span>
 </section>
 
