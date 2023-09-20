@@ -13,10 +13,7 @@ public class TieredPricePartHandler : ContentPartHandler<TieredPricePart>
 
     public override Task LoadingAsync(LoadContentContext context, TieredPricePart part)
     {
-        if (part.DefaultPrice != null)
-        {
-            part.DefaultPrice = _moneyService.EnsureCurrency(part.DefaultPrice);
-        }
+        part.DefaultPrice = _moneyService.EnsureCurrency(part.DefaultPrice);
 
         return base.LoadingAsync(context, part);
     }

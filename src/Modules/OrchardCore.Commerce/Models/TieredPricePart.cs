@@ -19,7 +19,10 @@ public class TieredPricePart : ContentPart
             var closestTier = tiers
                 .OrderByDescending(x => x.Quantity)
                 .FirstOrDefault(x => x.Quantity <= quantity);
-            return moneyService.Create(closestTier.UnitPrice ?? 0, DefaultPrice.Currency.CurrencyIsoCode);
+
+            return moneyService.Create(
+                closestTier?.UnitPrice ?? DefaultPrice.Value,
+                DefaultPrice.Currency.CurrencyIsoCode);
         }
 
         return DefaultPrice;

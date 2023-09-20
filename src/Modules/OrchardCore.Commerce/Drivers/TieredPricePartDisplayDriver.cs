@@ -2,7 +2,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
@@ -10,7 +9,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,7 +59,7 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
             var priceTiers = Enumerable.Empty<PriceTier>();
             try
             {
-                priceTiers = viewModel.DeserializePriceTiers();
+                priceTiers = viewModel.DeserializePriceTiers().ToArray();
             }
             catch (JsonException)
             {
