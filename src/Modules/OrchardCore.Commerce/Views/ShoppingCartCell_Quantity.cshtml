@@ -13,8 +13,12 @@
     var inventoryPart = line.Product.ContentItem.As<InventoryPart>();
     if (inventoryPart != null)
     {
-        minOrderQuantity = (int)(inventoryPart.MinimumOrderQuantity.Value > 0 ? inventoryPart.MinimumOrderQuantity.Value : 0);
-        maxOrderQuantity = (int)(inventoryPart.MaximumOrderQuantity.Value > 0 ? inventoryPart.MaximumOrderQuantity.Value : 1);
+        minOrderQuantity = (int)(inventoryPart.MinimumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
+            ? inventoryPart.MinimumOrderQuantity.Value
+            : 0);
+        maxOrderQuantity = (int)(inventoryPart.MaximumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
+            ? inventoryPart.MaximumOrderQuantity.Value
+            : 1);
     }
 }
 
