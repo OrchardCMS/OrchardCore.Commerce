@@ -7,9 +7,9 @@
     "watch": "npm explore nodejs-extensions -- pnpm watch:styles"
   },
   "devDependencies": {
-    "eslint": "^8.45.0",
+    "eslint": "^8.47.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-promise": "^6.1.1"
