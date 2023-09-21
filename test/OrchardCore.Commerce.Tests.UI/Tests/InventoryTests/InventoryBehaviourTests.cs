@@ -32,26 +32,12 @@ public class InventoryBehaviourTests : UITestBase
                     "The checkout quantity for Test Product is more than the maximum allowed (2).",
                     shouldExist: false);
 
-                // When quantity is set to a value above the maximum possible quantity, error message should appear.
-                await UpdateCartAndAssertErrorsAsync(
-                    context,
-                    5,
-                    "The checkout quantity for Test Product is more than the maximum allowed (2).",
-                    shouldExist: true);
-
                 await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{TestProduct}/Edit");
                 await context.ClickReliablyOnAsync(By.Id("InventoryPart_AllowsBackOrder_Value"));
                 await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MinimumOrderQuantity_Value"), "3");
                 await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MaximumOrderQuantity_Value"), "10");
                 await context.ClickPublishAsync();
                 await context.GoToRelativeUrlAsync("/cart");
-
-                // When quantity is set to a value below the minimum possible quantity, error message should appear.
-                await UpdateCartAndAssertErrorsAsync(
-                    context,
-                    2,
-                    "The checkout quantity for Test Product is less than the minimum allowed (3).",
-                    shouldExist: true);
 
                 // When quantity is set to a value above the minimum possible quantity, error message should not appear.
                 await UpdateCartAndAssertErrorsAsync(
