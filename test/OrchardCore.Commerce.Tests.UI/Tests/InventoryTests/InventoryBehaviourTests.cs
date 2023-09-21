@@ -40,11 +40,9 @@ public class InventoryBehaviourTests : UITestBase
                     shouldExist: true);
 
                 await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{TestProduct}/Edit");
-                await context.ClickReliablyOnAsync(By.XPath("//input[@id='InventoryPart_AllowsBackOrder_Value']"));
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@id='InventoryPart_MinimumOrderQuantity_Value']"), "3");
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.XPath("//input[@id='InventoryPart_MaximumOrderQuantity_Value']"), "10");
+                await context.ClickReliablyOnAsync(By.Id("InventoryPart_AllowsBackOrder_Value"));
+                await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MinimumOrderQuantity_Value"), "3");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MaximumOrderQuantity_Value"), "10");
                 await context.ClickPublishAsync();
                 await context.GoToRelativeUrlAsync("/cart");
 
@@ -70,7 +68,7 @@ public class InventoryBehaviourTests : UITestBase
                     shouldExist: true);
 
                 await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{TestProduct}/Edit");
-                await context.ClickReliablyOnAsync(By.XPath("//input[@id='InventoryPart_IgnoreInventory_Value']"));
+                await context.ClickReliablyOnAsync(By.Id("InventoryPart_IgnoreInventory_Value"));
                 await context.ClickPublishAsync();
                 await context.GoToRelativeUrlAsync("/cart");
 
