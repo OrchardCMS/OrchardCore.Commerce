@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Exceptions;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
@@ -27,6 +29,7 @@ public class ShoppingCartController : Controller
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IHtmlLocalizer<ShoppingCartController> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
+    private readonly IProductService _productService;
 
     // These are needed.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -38,7 +41,8 @@ public class ShoppingCartController : Controller
         IShoppingCartSerializer shoppingCartSerializer,
         IEnumerable<IWorkflowManager> workflowManagers,
         IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
-        IEnumerable<IShoppingCartEvents> shoppingCartEvents)
+        IEnumerable<IShoppingCartEvents> shoppingCartEvents,
+        IProductService productService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _notifier = notifier;
@@ -48,6 +52,7 @@ public class ShoppingCartController : Controller
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManagers = workflowManagers;
         _shoppingCartEvents = shoppingCartEvents;
+        _productService = productService;
         H = htmlLocalizer;
     }
 
@@ -134,8 +139,11 @@ public class ShoppingCartController : Controller
             // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
             if (!isValid)
             {
-                // If an item has been successfully added to the cart, Quantity at 1 must be valid.
-                line.Quantity = 1;
+                var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
+                    .As<InventoryPart>().MinimumOrderQuantity.Value;
+
+                // Choose new quantity based on whether Minimum Order Quantity has a value.
+                line.Quantity = (int)(minOrderQuantity > 0 ? minOrderQuantity : 1);
             }
 
             updatedLines.Add(line);
