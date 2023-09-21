@@ -84,7 +84,4 @@ nav:
     - Workflows: features/workflows.md
   - Resources:
     - Libraries: resources/libraries/README.md
-  - Releases:
-    - 1.1.0: releases/1.1.0.md
-    - 1.0.0: releases/1.0.0.md
-    - 0.0.1: releases/0.0.1.md
+  - Releases: https://github.com/OrchardCMS/OrchardCore.Commerce/releases

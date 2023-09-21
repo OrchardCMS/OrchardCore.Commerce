@@ -133,30 +133,6 @@
       "name": "Content",
       "data": [
         {
-          "ContentItemId": "welcomepage000000000000000",
-          "ContentItemVersionId": "welcomepage000000000000000",
-          "ContentType": "Page",
-          "DisplayText": "Welcome Page",
-          "Latest": true,
-          "Published": true,
-          "ModifiedUtc": "2022-06-04T12:45:43.1197779Z",
-          "PublishedUtc": "2022-06-04T12:45:43.1233064Z",
-          "CreatedUtc": "2022-06-04T12:42:14.3908382Z",
-          "Owner": "40x7jep0kvzja675q6ty7m06dr",
-          "Author": "admin",
-          "Page": {},
-          "AutoroutePart": {
-            "Path": "welcome-page",
-            "SetHomepage": true,
-            "Disabled": false,
-            "RouteContainedItems": false,
-            "Absolute": false
-          },
-          "TitlePart": {
-            "Title": "Welcome Page"
-          }
-        },
-        {
           "ContentItemId": "[js:uuid()]",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "ShoppingCartWidget",

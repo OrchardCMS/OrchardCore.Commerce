@@ -53,11 +53,11 @@ public class LocalizedProductBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.LinkText("View"));
                 context.SwitchToLastWindow();
 
-                context.Missing(By.ClassName("message-error"));
+                context.ErrorMessageShouldNotExist();
                 context.Get(By.CssSelector("header.masthead h1")).Text.Trim().ShouldBe(LocalizedTitle);
 
                 await context.ClickReliablyOnAsync(By.CssSelector("form[action='/shoppingcart/AddItem'] button.btn-primary"));
-                context.Missing(By.ClassName("message-error"));
+                context.ErrorMessageShouldNotExist();
                 context.Get(By.ClassName("cart-product-name")).Text.Trim().ShouldBe(LocalizedTitle);
                 context.Get(By.ClassName("shopping-cart-table-unit-price")).Text.Trim().ShouldBe("3 500,00 Ft");
             },
