@@ -23,7 +23,7 @@ public class ProductMigrations : DataMigration
     {
         _contentDefinitionManager
             .AlterPartDefinition(nameof(ProductPart), builder => builder
-                .WithField("ProductImage", field => field
+                .WithField(nameof(ProductPart.ProductImage), field => field
                     .OfType(nameof(MediaField))
                     .WithDisplayName("Product Image")
                     .WithSettings(new MediaFieldSettings { Multiple = false }))
@@ -41,6 +41,16 @@ public class ProductMigrations : DataMigration
                     $"IDX_{nameof(ProductPartIndex)}_{nameof(ProductPartIndex.Sku)}",
                     nameof(ProductPartIndex.Sku)));
 
-        return 1;
+        return 2;
+    }
+
+    public int UpdateFrom1()
+    {
+        _contentDefinitionManager
+            .AlterPartDefinition<ProductPart>(builder => builder
+                .WithField(part => part.ProductImage, field => field
+                    .WithDisplayName("Product Image")
+                    .WithSettings(new MediaFieldSettings { Multiple = false })));
+        return 2;
     }
 }

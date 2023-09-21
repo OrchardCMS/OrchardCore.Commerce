@@ -173,7 +173,7 @@
             "Sku": "TESTPRODUCTVARIANT",
             "ProductImage": {
               "Paths": [
-                "Product Images/sample-product-image.png"
+                "ProductImages/sample-product-image.png"
               ],
               "MediaTexts": [
                 ""
@@ -215,7 +215,7 @@
             "Sku": "TESTPRODUCT",
             "ProductImage": {
               "Paths": [
-                "Product Images/sample-product-image.png"
+                "ProductImages/sample-product-image.png"
               ],
               "MediaTexts": [
                 ""
@@ -288,7 +288,7 @@
             "Sku": "TESTFREEPRODUCT",
             "ProductImage": {
               "Paths": [
-                "Product Images/sample-product-image.png"
+                "ProductImages/sample-product-image.png"
               ],
               "MediaTexts": [
                 ""
@@ -361,7 +361,7 @@
             "Sku": "TESTDISCOUNTEDPRODUCT",
             "ProductImage": {
               "Paths": [
-                "Product Images/sample-product-image.png"
+                "ProductImages/sample-product-image.png"
               ],
               "MediaTexts": [
                 ""
@@ -448,7 +448,7 @@
             "Sku": "LOCALIZED",
             "ProductImage": {
               "Paths": [
-                "Product Images/sample-product-image.png"
+                "ProductImages/sample-product-image.png"
               ],
               "MediaTexts": [
                 ""
@@ -480,8 +480,8 @@
       "name": "media",
       "Files": [
         {
-          "SourcePath": "Media/Product Images/sample-product-image.png",
-          "TargetPath": "Product Images/sample-product-image.png"
+          "SourcePath": "Media/ProductImages/sample-product-image.png",
+          "TargetPath": "ProductImages/sample-product-image.png"
         }
       ]
     }
