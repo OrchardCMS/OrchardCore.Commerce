@@ -61,9 +61,5 @@
   <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.3.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\TieredPricePart.cshtml" />
-    <Content Include="Views\TieredPricePart.Edit.cshtml" />
-  </ItemGroup>
 
 </Project>
