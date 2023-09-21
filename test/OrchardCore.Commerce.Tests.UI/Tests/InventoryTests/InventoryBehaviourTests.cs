@@ -28,14 +28,14 @@ public class InventoryBehaviourTests : UITestBase
                 // When quantity is set to a value below the possible max quantity, error message should not appear.
                 await UpdateCartAndAssertErrorsAsync(
                     context,
-                    "2",
+                    2,
                     "The checkout quantity for Test Product is more than the maximum allowed (2).",
                     shouldExist: false);
 
                 // When quantity is set to a value above the maximum possible quantity, error message should appear.
                 await UpdateCartAndAssertErrorsAsync(
                     context,
-                    "5",
+                    5,
                     "The checkout quantity for Test Product is more than the maximum allowed (2).",
                     shouldExist: true);
 
@@ -49,21 +49,21 @@ public class InventoryBehaviourTests : UITestBase
                 // When quantity is set to a value below the minimum possible quantity, error message should appear.
                 await UpdateCartAndAssertErrorsAsync(
                     context,
-                    "2",
+                    2,
                     "The checkout quantity for Test Product is less than the minimum allowed (3).",
                     shouldExist: true);
 
                 // When quantity is set to a value above the minimum possible quantity, error message should not appear.
                 await UpdateCartAndAssertErrorsAsync(
                     context,
-                    "4",
+                    4,
                     "The checkout quantity for Test Product is less than the minimum allowed (3).",
                     shouldExist: false);
 
                 // When quantity is set to a value above the current inventory value, error message should appear.
                 await UpdateCartAndAssertErrorsAsync(
                     context,
-                    "10",
+                    10,
                     "There are not enough Test Product left in stock.",
                     shouldExist: true);
 
@@ -75,13 +75,13 @@ public class InventoryBehaviourTests : UITestBase
                 // When inventory is ignored, inventory checks should not apply.
                 await UpdateCartAndAssertErrorsAsync(
                     context,
-                    "2",
+                    2,
                     "The checkout quantity for Test Product is less than the minimum allowed (3).",
                     shouldExist: false);
 
                 await UpdateCartAndAssertErrorsAsync(
                     context,
-                    "15",
+                    15,
                     "The checkout quantity for Test Product is more than the maximum allowed (10).",
                     shouldExist: false);
                 AssertError(context, "There are not enough Test Product left in stock.", shouldExist: false);
@@ -90,11 +90,11 @@ public class InventoryBehaviourTests : UITestBase
 
     private static async Task UpdateCartAndAssertErrorsAsync(
         UITestContext context,
-        string quantity,
+        int quantity,
         string errorMessage,
         bool shouldExist = true)
     {
-        await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(1), quantity);
+        await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(1), quantity.ToString(CultureInfo.InvariantCulture));
         await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
         AssertError(context, errorMessage, shouldExist);
     }
