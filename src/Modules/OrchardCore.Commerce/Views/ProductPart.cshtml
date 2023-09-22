@@ -23,7 +23,7 @@
             : 0);
         maxOrderQuantity = (int)(inventoryPart.MaximumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
             ? inventoryPart.MaximumOrderQuantity.Value
-            : 1);
+            : int.MaxValue);
     }
 }
 
