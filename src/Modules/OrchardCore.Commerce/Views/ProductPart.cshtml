@@ -1,3 +1,6 @@
+@using OrchardCore.Commerce.Inventory.Models;
+@using OrchardCore.ContentManagement;
+
 @model ProductPartViewModel
 
 @{
@@ -8,12 +11,33 @@
 
     // As long as any items can be bought, "Add to cart" button should remain possible to click.
     var canBeBought = Model.CanBeBought.Any(keyValuePair => keyValuePair.Value);
+
+    var minOrderQuantity = 1;
+    var maxOrderQuantity = 1;
+
+    var inventoryPart = Model.ProductPart.ContentItem.As<InventoryPart>();
+    if (inventoryPart != null)
+    {
+        minOrderQuantity = (int)(inventoryPart.MinimumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
+            ? inventoryPart.MinimumOrderQuantity.Value
+            : 0);
+        maxOrderQuantity = (int)(inventoryPart.MaximumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
+            ? inventoryPart.MaximumOrderQuantity.Value
+            : int.MaxValue);
+    }
 }
 
 <form asp-action="AddItem" asp-controller="ShoppingCart" asp-area="OrchardCore.Commerce">
     <input type="hidden" name="line.ProductSku" value="@Model.Sku" />
     <label for="@id-quantity">@T["Quantity"]</label>
-    <input id="@id-quantity" type="number" name="line.Quantity" step="1" min="1" value="1" class="form-control" />
+    <input id="@id-quantity"
+           type="number"
+           name="line.Quantity"
+           step="1"
+           min="@minOrderQuantity"
+           max="@(inventoryPart != null ? maxOrderQuantity : string.Empty)"
+           value="@minOrderQuantity"
+           class="form-control" />
     <ul class="product-attribute-list">
     @foreach (var (attribute, index) in attributes)
     {

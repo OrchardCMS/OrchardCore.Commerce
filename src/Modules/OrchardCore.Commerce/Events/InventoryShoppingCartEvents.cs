@@ -32,6 +32,12 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
             return null;
         }
 
+        // If IgnoreInventory is set to true, inventory checks are unnecessary.
+        if (inventoryPart.IgnoreInventory.Value)
+        {
+            return null;
+        }
+
         // If there are no attributes on a Price Variant Product, there's no need for the below checks.
         if (productPart.ContentItem.As<PriceVariantsPart>() is not null && !item.Attributes.Any())
         {
@@ -47,21 +53,23 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.
         if (!inventoryPart.AllowsBackOrder.Value && item.Quantity > relevantInventory.Value)
         {
-            return H["There aren't enough {0} left in stock.", title];
+            return H["There are not enough {0} left in stock.", title];
         }
 
         // Item verification should fail if max order quantity is set and quantity exceeds its value.
-        var checkMaxQuantity = inventoryPart.MaximumOrderQuantity.Value != 0;
-        if (checkMaxQuantity && item.Quantity > inventoryPart.MaximumOrderQuantity.Value)
+        var maxOrderQuantity = inventoryPart.MaximumOrderQuantity.Value;
+        var checkMaxQuantity = maxOrderQuantity != 0;
+        if (checkMaxQuantity && item.Quantity > maxOrderQuantity)
         {
-            return H["The checkout quantity for {0} is more than the maximum allowed.", title];
+            return H["The checkout quantity for {0} is more than the maximum allowed ({1}).", title, maxOrderQuantity];
         }
 
         // Item verification should fail if min order quantity is set and quantity is below its value.
-        var checkMinQuantity = inventoryPart.MinimumOrderQuantity.Value != 0;
-        if (checkMinQuantity && item.Quantity < inventoryPart.MinimumOrderQuantity.Value)
+        var minOrderQuantity = inventoryPart.MinimumOrderQuantity.Value;
+        var checkMinQuantity = minOrderQuantity != 0;
+        if (checkMinQuantity && item.Quantity < minOrderQuantity)
         {
-            return H["The checkout quantity for {0} is less than the minimum allowed.", title];
+            return H["The checkout quantity for {0} is less than the minimum allowed ({1}).", title, minOrderQuantity];
         }
 
         return null;
