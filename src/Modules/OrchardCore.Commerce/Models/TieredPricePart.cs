@@ -9,20 +9,23 @@ namespace OrchardCore.Commerce.Models;
 public class TieredPricePart : ContentPart
 {
     public Amount DefaultPrice { get; set; }
-    public IList<PriceTier> PriceTiers { get; private set; } = new List<PriceTier>();
+    public IList<PriceTier> PriceTiers { get; } = new List<PriceTier>();
 
     public Amount GetPriceForQuantity(IMoneyService moneyService, int quantity)
     {
-        if (PriceTiers is { } tiers && tiers.Any(tier => tier.Quantity <= quantity))
+        if (PriceTiers != null && PriceTiers.Any(tier => tier.Quantity <= quantity))
         {
             // Get the tiered price for the quantity (or the closest one).
-            var closestTier = tiers
-                .OrderByDescending(x => x.Quantity)
-                .FirstOrDefault(x => x.Quantity <= quantity);
+            var closestTier = PriceTiers
+                .OrderByDescending(tier => tier.Quantity)
+                .FirstOrDefault(tier => tier.Quantity <= quantity);
 
-            return moneyService.Create(
-                closestTier?.UnitPrice ?? DefaultPrice.Value,
-                DefaultPrice.Currency.CurrencyIsoCode);
+            if (closestTier?.UnitPrice != null)
+            {
+                return moneyService.Create(
+                    closestTier.UnitPrice.Value,
+                    DefaultPrice.Currency.CurrencyIsoCode);
+            }
         }
 
         return DefaultPrice;

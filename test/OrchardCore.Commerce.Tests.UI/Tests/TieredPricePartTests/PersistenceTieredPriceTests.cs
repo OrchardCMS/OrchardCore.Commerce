@@ -31,7 +31,7 @@ public class PersistenceTieredPriceTests : UITestBase
                 const string unitPrice1 = "8999";
                 const string quantity2 = "5";
                 const string unitPrice2 = "7999";
-                const string addPriceTierButtonXPath = "//div[contains(@class, 'add-price-tier-button')]";
+                const string addPriceTierButtonClass = "add-price-tier-button";
                 const string quantityInputXPath = "//input[contains(@class, 'tier-quantity-editor')]";
                 const string unitPriceInputXPath = "//input[contains(@class, 'tier-unit-price-editor')]";
                 var currency = Currency.HungarianForint.CurrencyIsoCode;
@@ -40,10 +40,10 @@ public class PersistenceTieredPriceTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(By.Id("TieredPricePart_DefaultPrice"), price);
                 await context.SetDropdownByTextAsync("TieredPricePart_Currency", currency);
 
-                await context.ClickReliablyOnAsync(By.XPath(addPriceTierButtonXPath));
+                await context.ClickReliablyOnAsync(By.ClassName(addPriceTierButtonClass));
                 await context.ClickAndFillInWithRetriesAsync(By.XPath($"({quantityInputXPath})[1]"), quantity1);
                 await context.ClickAndFillInWithRetriesAsync(By.XPath($"({unitPriceInputXPath})[1]"), unitPrice1);
-                await context.ClickReliablyOnAsync(By.XPath(addPriceTierButtonXPath));
+                await context.ClickReliablyOnAsync(By.ClassName(addPriceTierButtonClass));
                 await context.ClickAndFillInWithRetriesAsync(By.XPath($"({quantityInputXPath})[2]"), quantity2);
                 await context.ClickAndFillInWithRetriesAsync(By.XPath($"({unitPriceInputXPath})[2]"), unitPrice2);
 
@@ -51,7 +51,7 @@ public class PersistenceTieredPriceTests : UITestBase
                 context.ShouldBeSuccess();
 
                 await context.GoToContentItemListAsync("TestTieredPriceProduct");
-                await context.ClickReliablyOnAsync(By.XPath("//a[. = 'Edit']"));
+                await context.ClickReliablyOnAsync(By.LinkText("Edit"));
 
                 context.Get(By.Id("ProductPart_Sku")).GetDomProperty("value").ShouldBe(sku);
 

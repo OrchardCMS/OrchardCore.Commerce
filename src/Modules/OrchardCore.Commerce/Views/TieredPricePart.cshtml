@@ -1,14 +1,17 @@
+@using OrchardCore.Commerce.MoneyDataType.Abstractions
 @model TieredPricePartViewModel
+
+@inject IMoneyService MoneyService
 
 @if (Model.Tiers?.Any() == true)
 {
     <div class="product-price-tiers">
-        <div>@T["Price:"] @Model.DefaultPrice.ToString()</div>
+        <div>@T["Default Price:"] @Model.TieredPricePart.DefaultPrice.ToString()</div>
         <div>@T["Tiers:"]</div>
         <ul>
             @foreach (var tier in Model.Tiers)
             {
-                <li>@tier.Quantity - @tier.UnitPrice</li>
+                <li>@T["Starting from {0} units: {1}", tier.Quantity, MoneyService.Create(tier.UnitPrice ?? 0, Model.Currency)]</li>
             }
         </ul>
     </div>

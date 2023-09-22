@@ -9,9 +9,11 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Lombiq.HelpfulLibraries.OrchardCore.Contents.CommonContentDisplayTypes;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -33,8 +35,8 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
 
     public override IDisplayResult Display(TieredPricePart part, BuildPartDisplayContext context) =>
         Initialize<TieredPricePartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
-            .Location("Detail", "Content:25")
-            .Location("Summary", "Meta:10");
+            .Location(Detail, "Content:25")
+            .Location(Summary, "Meta:10");
 
     public override IDisplayResult Edit(TieredPricePart part, BuildPartEditorContext context) =>
         Initialize<TieredPricePartViewModel>(GetEditorShapeType(context), viewModel =>
@@ -56,7 +58,7 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
             viewModel => viewModel.TieredValuesSerialized,
             viewModel => viewModel.Currency))
         {
-            var priceTiers = Enumerable.Empty<PriceTier>();
+            var priceTiers = Array.Empty<PriceTier>();
             try
             {
                 priceTiers = viewModel.DeserializePriceTiers().ToArray();
@@ -71,7 +73,7 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
             // Restoring tiers so that only the new values are stored.
             part.PriceTiers.RemoveAll();
 
-            if (priceTiers.Any(tier => tier.UnitPrice is null))
+            if (priceTiers.Exists(tier => tier.UnitPrice is null))
             {
                 updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
@@ -96,7 +98,7 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
                     T["There are duplicate tiers."]);
             }
 
-            if (priceTiers.Any(tier => tier.UnitPrice < 0))
+            if (priceTiers.Exists(tier => tier.UnitPrice < 0))
             {
                 updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
@@ -106,7 +108,7 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
             part.PriceTiers.AddRange(priceTiers);
 
             part.DefaultPrice = _moneyService.Create(
-                viewModel.DefaultPrice.Value,
+                viewModel.DefaultPrice ?? 0,
                 viewModel.Currency);
         }
 

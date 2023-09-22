@@ -44,7 +44,7 @@
     let app = new Vue({
         el: "#price-tiers",
         data: {
-            tiers: [],
+            tiers: @(!string.IsNullOrEmpty(Model.TieredValuesSerialized) ? Html.Raw(Model.TieredValuesSerialized) : "[]"),
             currency: "@Model.Currency",
         },
         computed: {
@@ -54,9 +54,6 @@
                     UnitPrice: Number(tier.UnitPrice)
                 })));
             }
-        },
-        mounted() {
-            this.tiers = @(!string.IsNullOrEmpty(Model.TieredValuesSerialized) ? Html.Raw(Model.TieredValuesSerialized) : "[]");
         },
         methods: {
             sort() {

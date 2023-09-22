@@ -13,9 +13,6 @@
       "name": "feature",
       "disable": [],
       "enable": [
-        "OrchardCore.Autoroute",
-        "OrchardCore.Html",
-        "OrchardCore.Title",
         "OrchardCore.Commerce"
       ]
     },

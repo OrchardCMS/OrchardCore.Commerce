@@ -31,26 +31,16 @@ public class TieredPriceProvider : IPriceProvider
 
         return model
             .Select(item =>
-            {
-                if (skuProducts.TryGetValue(item.ProductSku, out var productPart))
-                {
-                    var itemWithPrice = AddPriceToShoppingCartItem(item, productPart);
-
-                    if (itemWithPrice != null)
-                    {
-                        return itemWithPrice;
-                    }
-                }
-
-                return item;
-            })
+                skuProducts.TryGetValue(item.ProductSku, out var productPart) &&
+                    AddPriceToShoppingCartItem(item, productPart) is { } itemWithPrice
+                        ? itemWithPrice
+                        : item)
             .ToList();
     }
 
     private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
     {
-        var tieredPricePart = productPart.ContentItem.As<TieredPricePart>();
-        if (tieredPricePart == null) return null;
+        if (productPart.ContentItem.As<TieredPricePart>() is not { } tieredPricePart) return null;
 
         return item.WithPrice(
             new PrioritizedPrice(1, tieredPricePart.GetPriceForQuantity(_moneyService, item.Quantity)));
