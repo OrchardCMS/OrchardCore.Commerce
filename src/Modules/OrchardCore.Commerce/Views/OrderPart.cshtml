@@ -51,6 +51,13 @@
         <p>@T["This order is empty."]</p>
     }
 </section>
+@if (string.Equals(Model.OrderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase) &&
+    Model.OrderPart.LineItems.Any())
+{
+    // form with controller call seems simplest?
+    var k = "";
+    <p>this be pending, yo</p>
+}
 <div class="form-group">
     <div class="panel-heading">
         <label>@T["Charges"]</label>

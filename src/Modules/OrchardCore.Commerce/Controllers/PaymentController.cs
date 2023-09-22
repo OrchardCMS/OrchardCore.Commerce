@@ -12,16 +12,20 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Settings;
+using OrchardCore.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -29,6 +33,8 @@ public class PaymentController : Controller
 {
     private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
 
+    private readonly ISiteService _siteService;
+    private readonly ISession _session;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStripePaymentService _stripePaymentService;
     private readonly ILogger<PaymentController> _logger;
@@ -48,13 +54,17 @@ public class PaymentController : Controller
         IPaymentIntentPersistence paymentIntentPersistence,
         INotifier notifier,
         IMoneyService moneyService,
-        IPaymentService paymentService)
+        IPaymentService paymentService,
+        ISiteService siteService,
+        ISession session)
     {
         _authorizationService = services.AuthorizationService.Value;
         _stripePaymentService = stripePaymentService;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _updateModelAccessor = updateModelAccessor;
+        _siteService = siteService;
+        _session = session;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
@@ -150,6 +160,58 @@ public class PaymentController : Controller
         }
     }
 
+    [Route("paymentRequest/{orderId}")]
+    public async Task<IActionResult> PaymentRequest(string orderId)
+    {
+        if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
+
+        // Users should only see their own Orders.
+        if (order.Author != User.Identity.Name)
+        {
+            return NotFound();
+        }
+
+        var orderPart = order.As<OrderPart>();
+
+        // if no line items or single currency total is zero, return notfound
+        // this is only necessary if payment is to be done. Right?
+        if (!orderPart.LineItems.Any())
+        {
+            return NotFound();
+        }
+
+        var currency = orderPart.LineItems[0].LinePrice.Currency;
+        var singleCurrencyTotal = new Amount(0, currency);
+        foreach (var item in orderPart.LineItems)
+        {
+            singleCurrencyTotal += item.LinePrice;
+        }
+
+        if (singleCurrencyTotal.Value <= 0)
+        {
+            return NotFound();
+        }
+
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var paymentAmount = _stripePaymentService.GetPaymentAmount(singleCurrencyTotal.Value, currency.CurrencyIsoCode);
+        var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(paymentAmount, singleCurrencyTotal);
+
+        _session.Save(new OrderPayment // this OK to have here? Any unforeseen consequences?
+        {
+            OrderId = order.ContentItemId,
+            PaymentIntentId = paymentIntent.Id,
+        });
+
+        return View(new
+        {
+            SingleCurrencyTotal = singleCurrencyTotal,
+            NetTotal = singleCurrencyTotal,
+            GrossTotal = new Amount(0, currency),
+            StripePublishableKey = stripeApiSettings.PublishableKey,
+            PaymentIntentClientSecret = paymentIntent.ClientSecret,
+        });
+    }
+
     [Route("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
     {
@@ -163,6 +225,7 @@ public class PaymentController : Controller
         }
 
         order.DisplayText = T["Success"].Value; // This is only for display, intentionally not saved.
+
         return View(order);
     }
 

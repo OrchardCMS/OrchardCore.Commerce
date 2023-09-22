@@ -107,27 +107,8 @@ public class StripePaymentService : IStripePaymentService
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         var defaultTotal = totals.SingleOrDefault();
 
-        var defaultTotalValue = defaultTotal.Value;
-        long amountForPayment;
         var currencyType = defaultTotal.Currency.CurrencyIsoCode;
-
-        // If I convert it to conditional expression, it will warn me to extract it again.
-#pragma warning disable IDE0045 // Convert to conditional expression
-        // We need to convert the value (decimal) to long.
-        // https://stripe.com/docs/currencies#zero-decimal
-        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(currencyType))
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue);
-        }
-        else if (CurrencyCollectionConstants.SpecialCases.Contains(currencyType))
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue / 100m) * 10000;
-        }
-        else
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue * 100);
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
+        long amountForPayment = GetPaymentAmount(defaultTotal.Value, currencyType);
 
         return string.IsNullOrEmpty(paymentIntentId)
             ? await CreatePaymentIntentAsync(amountForPayment, defaultTotal)
@@ -228,7 +209,7 @@ public class StripePaymentService : IStripePaymentService
             });
         }
 
-        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart); // if this is empty, try get order's line items
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
@@ -277,6 +258,30 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
+    public long GetPaymentAmount(decimal defaultTotalValue, string currencyType)
+    {
+        long amountForPayment;
+
+        // If I convert it to conditional expression, it will warn me to extract it again.
+#pragma warning disable IDE0045 // Convert to conditional expression
+        // We need to convert the value (decimal) to long.
+        // https://stripe.com/docs/currencies#zero-decimal
+        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(currencyType))
+        {
+            amountForPayment = (long)Math.Round(defaultTotalValue);
+        }
+        else if (CurrencyCollectionConstants.SpecialCases.Contains(currencyType))
+        {
+            amountForPayment = (long)Math.Round(defaultTotalValue / 100m) * 10000;
+        }
+        else
+        {
+            amountForPayment = (long)Math.Round(defaultTotalValue * 100);
+        }
+
+        return amountForPayment;
+    }
+
     private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order, IUpdateModelAccessor updateModelAccessor)
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
@@ -284,7 +289,7 @@ public class StripePaymentService : IStripePaymentService
         return updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
-    private async Task<PaymentIntent> CreatePaymentIntentAsync(
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(
         long amountForPayment,
         Amount defaultTotal)
     {
