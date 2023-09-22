@@ -1,0 +1,20 @@
+@using OrchardCore.Commerce.Controllers;
+ee
+
+<div class="payment-form_container">
+    <form asp-action="@nameof(PaymentController.CheckoutWithoutPayment)" id="payment-form" class="payment-form">
+        @Html.AntiForgeryToken()
+
+        <shape type="StripeCheckout"
+               prop-DefaultTotal="@Model.SingleCurrencyTotal"
+               prop-NetTotal="@Model.NetTotal"
+               prop-GrossTotal="@Model.GrossTotal"
+               prop-PublishableKey="@Model.StripePublishableKey"
+               prop-ClientSecret="@Model.PaymentIntentClientSecret" />
+    </form>
+</div>
+
+
+
+<style asp-name="@ResourceNames.PaymentForm"></style>
+
