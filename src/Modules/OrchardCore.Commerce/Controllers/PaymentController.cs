@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISession = YesSql.ISession;
+using YesSql.Services;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -173,9 +174,9 @@ public class PaymentController : Controller
 
         var orderPart = order.As<OrderPart>();
 
-        // if no line items or single currency total is zero, return notfound
-        // this is only necessary if payment is to be done. Right?
-        if (!orderPart.LineItems.Any())
+        // If status is not Pending or there are no line items, there is nothing to be done.
+        if (string.Equals(orderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase) ||
+            !orderPart.LineItems.Any())
         {
             return NotFound();
         }
@@ -202,15 +203,37 @@ public class PaymentController : Controller
             PaymentIntentId = paymentIntent.Id,
         });
 
-        return View(new
+        return View(new // just make a viewmodel lmao
         {
             SingleCurrencyTotal = singleCurrencyTotal,
             NetTotal = singleCurrencyTotal,
             GrossTotal = new Amount(0, currency),
             StripePublishableKey = stripeApiSettings.PublishableKey,
             PaymentIntentClientSecret = paymentIntent.ClientSecret,
+            Email = orderPart.Email.Text,
+            Phone = orderPart.Phone.Text,
+            ShippingAddressName = orderPart.ShippingAddress.Address.Name,
+            ShippingAddressCity = orderPart.ShippingAddress.Address.City,
+            ShippingAddressCountry = orderPart.ShippingAddress.Address.Region,
+            ShippingAddressStreetAddress1 = orderPart.ShippingAddress.Address.StreetAddress1,
+            ShippingAddressStreetAddress2 = orderPart.ShippingAddress.Address.StreetAddress2,
+            ShippingAddressPostalCode = orderPart.ShippingAddress.Address.PostalCode,
+            ShippingAddressState = orderPart.ShippingAddress.Address.Province,
+            BillingAddressName = orderPart.BillingAddress.Address.Name,
+            BillingAddressCity = orderPart.BillingAddress.Address.City,
+            BillingAddressCountry = orderPart.BillingAddress.Address.Region,
+            BillingAddressStreetAddress1 = orderPart.BillingAddress.Address.StreetAddress1,
+            BillingAddressStreetAddress2 = orderPart.BillingAddress.Address.StreetAddress2,
+            BillingAddressPostalCode = orderPart.BillingAddress.Address.PostalCode,
+            BillingAddressState = orderPart.BillingAddress.Address.Province,
         });
     }
+
+
+
+
+
+
 
     [Route("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)

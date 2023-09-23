@@ -1,20 +1,57 @@
-@using OrchardCore.Commerce.Controllers;
-ee
+<section>
+    <div class="payment-form_container">
+        <form id="payment-form" class="payment-form">
+            @Html.AntiForgeryToken()
 
-<div class="payment-form_container">
-    <form asp-action="@nameof(PaymentController.CheckoutWithoutPayment)" id="payment-form" class="payment-form">
-        @Html.AntiForgeryToken()
+            <shape type="StripeCheckout"
+                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                   prop-NetTotal="@Model.NetTotal"
+                   prop-GrossTotal="@Model.GrossTotal"
+                   prop-PublishableKey="@Model.StripePublishableKey"
+                   prop-ClientSecret="@Model.PaymentIntentClientSecret" />
+        </form>
+    </div>
+    <input type="hidden" id="OrderPart_Email_Text" value="@Model.Email" />
+    <input type="hidden" id="OrderPart_Phone_Text" value="@Model.Phone" />
 
-        <shape type="StripeCheckout"
-               prop-DefaultTotal="@Model.SingleCurrencyTotal"
-               prop-NetTotal="@Model.NetTotal"
-               prop-GrossTotal="@Model.GrossTotal"
-               prop-PublishableKey="@Model.StripePublishableKey"
-               prop-ClientSecret="@Model.PaymentIntentClientSecret" />
-    </form>
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Name" value="@Model.ShippingAddressName" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_City" value="@Model.ShippingAddressCity" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Region" value="@Model.ShippingAddressCountry" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress1" value="@Model.ShippingAddressStreetAddress1" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress2" value="@Model.ShippingAddressStreetAddress1" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_PostalCode" value="@Model.ShippingAddressPostalCode" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Province" value="@Model.ShippingAddressState" />
+
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Name" value="@Model.BillingAddressName" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_City" value="@Model.BillingAddressCity" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Region" value="@Model.BillingAddressCountry" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress1" value="@Model.BillingAddressStreetAddress1" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress2" value="@Model.BillingAddressStreetAddress1" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_PostalCode" value="@Model.BillingAddressPostalCode" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Province" value="@Model.BillingAddressState" />
+</section>
+
+@*
+    const shippingAddressName = document.getElementById('OrderPart_ShippingAddress_Address_Name');
+    const shippingAddressCity = document.getElementById('OrderPart_ShippingAddress_Address_City');
+    const shippingAddressCountry = document.getElementById('OrderPart_ShippingAddress_Address_Region');
+    const shippingAddressStreetAddress1 = document.getElementById('OrderPart_ShippingAddress_Address_StreetAddress1');
+    const shippingAddressStreetAddress2 = document.getElementById('OrderPart_ShippingAddress_Address_StreetAddress2');
+    const shippingAddressPostalCode = document.getElementById('OrderPart_ShippingAddress_Address_PostalCode');
+    const shippingAddressState = document.getElementById('OrderPart_ShippingAddress_Address_Province');
+
+    const billingAddressName = document.getElementById('OrderPart_BillingAddress_Address_Name');
+    const billingAddressCity = document.getElementById('OrderPart_BillingAddress_Address_City');
+    const billingAddressCountry = document.getElementById('OrderPart_BillingAddress_Address_Region');
+    const billingAddressStreetAddress1 = document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1');
+    const billingAddressStreetAddress2 = document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2');
+    const billingAddressPostalCode = document.getElementById('OrderPart_BillingAddress_Address_PostalCode');
+    const billingAddressState = document.getElementById('OrderPart_BillingAddress_Address_Province');
+
+e*@
+
+<div class="message-error" hidden>
+    <p>kok</p>
 </div>
 
-
-
 <style asp-name="@ResourceNames.PaymentForm"></style>
-

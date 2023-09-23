@@ -187,11 +187,17 @@ public class StripePaymentService : IStripePaymentService
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 
+        // if there is no current shopping cart, skip these steps?
+
         if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
         {
-            if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+            // this also calls OrderPartDisplayDriver's Update. need to skip?
+            if (currentShoppingCart.Items.Any())
             {
-                return null;
+                if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+                {
+                    return null;
+                }
             }
         }
         else
@@ -209,14 +215,35 @@ public class StripePaymentService : IStripePaymentService
             });
         }
 
+        // do the below modifications alter anything when it's a new order?
+
+        var orderPart = order.As<OrderPart>();
+
         var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart); // if this is empty, try get order's line items
+        if (!lineItems.Any())
+        {
+            lineItems = orderPart.LineItems; // why none?
+        }
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
-            order.As<OrderPart>().ShippingAddress.Address,
-            order.As<OrderPart>().BillingAddress.Address);
+            orderPart.ShippingAddress.Address,
+            orderPart.BillingAddress.Address);
 
-        var defaultTotal = CheckTotals(cartViewModel).SingleOrDefault();
+        // if cartViewModel is null or doesn't contain totals, use Order's totals
+
+        // this will explode when we are creating a new order
+        var orderTotals = new Amount(0, order.As<OrderPart>().LineItems[0].LinePrice.Currency);
+        if (cartViewModel is null)
+        {
+            foreach (var item in orderPart.LineItems)
+            {
+                orderTotals += item.LinePrice;
+            }
+        }
+
+        // if this is null (or 0?), get Order's total
+        var defaultTotal = cartViewModel is null ? orderTotals : CheckTotals(cartViewModel).SingleOrDefault();
 
         order.Alter<OrderPart>(orderPart =>
         {
@@ -230,18 +257,21 @@ public class StripePaymentService : IStripePaymentService
                     CreatedUtc = paymentIntent.Created,
                 });
 
-            // Shopping cart
-            orderPart.LineItems.SetItems(lineItems);
+            // this alteration is unnecessary if we are doing payment request
+            if (cartViewModel is not null)
+            {
+                // Shopping cart
+                orderPart.LineItems.SetItems(lineItems);
+                orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
 
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
-
-            // Store the current applicable discount info so they will be available in the future.
-            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
-                .Lines
-                .Where(line => line.AdditionalData.GetDiscounts().Any())
-                .ToDictionary(
-                    line => line.ProductSku,
-                    line => line.AdditionalData.GetDiscounts()));
+                // Store the current applicable discount info so they will be available in the future.
+                orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                    .Lines
+                    .Where(line => line.AdditionalData.GetDiscounts().Any())
+                    .ToDictionary(
+                        line => line.ProductSku,
+                        line => line.AdditionalData.GetDiscounts()));
+            }
         });
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
