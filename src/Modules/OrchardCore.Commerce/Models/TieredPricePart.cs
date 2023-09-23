@@ -13,7 +13,7 @@ public class TieredPricePart : ContentPart
 
     public Amount GetPriceForQuantity(IMoneyService moneyService, int quantity)
     {
-        if (PriceTiers != null && PriceTiers.Any(tier => tier.Quantity <= quantity))
+        if (PriceTiers.Any(tier => tier.Quantity <= quantity))
         {
             // Get the tiered price for the quantity (or the closest one).
             var closestTier = PriceTiers

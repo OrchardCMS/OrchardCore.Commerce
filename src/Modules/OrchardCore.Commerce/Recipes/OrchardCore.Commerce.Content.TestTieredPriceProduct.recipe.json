@@ -10,13 +10,6 @@
   "tags": [ "product" ],
   "steps": [
     {
-      "name": "feature",
-      "disable": [],
-      "enable": [
-        "OrchardCore.Commerce"
-      ]
-    },
-    {
       "name": "ContentDefinition",
       "ContentTypes": [
         {
