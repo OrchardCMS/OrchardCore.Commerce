@@ -49,11 +49,11 @@ public class OrderSuccessTests : UITestBase
                 await AddProductToCartAsync(context, TestPriceVariantProduct);
 
                 await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(1), "2");
-                await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(2), "3");
+                await context.ClickAndFillInWithRetriesAsync(QuantityFieldBy(2), "2");
                 await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Update')]"));
 
                 context.Get(QuantityFieldBy(1)).GetAttribute("value").ShouldBeAsString(2);
-                context.Get(QuantityFieldBy(2)).GetAttribute("value").ShouldBeAsString(3);
+                context.Get(QuantityFieldBy(2)).GetAttribute("value").ShouldBeAsString(2);
             },
             browser);
 

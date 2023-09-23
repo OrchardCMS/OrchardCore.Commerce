@@ -212,6 +212,7 @@ public class WorkflowStartup : StartupBase
         services.AddActivity<ProductAddedToCartEvent, ProductAddedToCartEventDisplayDriver>();
         services.AddActivity<CartDisplayingEvent, CartDisplayingEventDisplayDriver>();
         services.AddActivity<CartVerifyingItemEvent, CartVerifyingItemEventDisplayDriver>();
+        services.AddActivity<CartUpdatedEvent, CartUpdatedEventDisplayDriver>();
         services.AddActivity<CartLoadedEvent, CartLoadedEventDisplayDriver>();
         services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplayDriver>();
     }

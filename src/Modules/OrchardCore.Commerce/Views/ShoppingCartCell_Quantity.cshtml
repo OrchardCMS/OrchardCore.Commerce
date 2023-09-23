@@ -1,14 +1,31 @@
 @using OrchardCore.Commerce.Abstractions
+@using OrchardCore.Commerce.Inventory.Models;
+@using OrchardCore.ContentManagement;
 
 @{
     var name = Model.Name;
     var line = (ShoppingCartLineViewModel)Model.Line;
     var attributes = (IList<(IProductAttributeValue Value, string Type, int Index)>)Model.ProductAttributes;
+
+    var minOrderQuantity = 0;
+    var maxOrderQuantity = 1;
+
+    var inventoryPart = line.Product.ContentItem.As<InventoryPart>();
+    if (inventoryPart != null)
+    {
+        minOrderQuantity = (int)(inventoryPart.MinimumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
+            ? inventoryPart.MinimumOrderQuantity.Value
+            : 0);
+        maxOrderQuantity = (int)(inventoryPart.MaximumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
+            ? inventoryPart.MaximumOrderQuantity.Value
+            : int.MaxValue);
+    }
 }
 
 <input form="shopping-cart-update"
        type="number"
-       min="0"
+       min="@minOrderQuantity"
+       max="@(inventoryPart != null ? maxOrderQuantity : string.Empty)"
        name="@(name).Quantity"
        value="@line.Quantity"
        aria-label="Quantity"

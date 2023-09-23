@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Exceptions;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
@@ -26,7 +28,11 @@ public class ShoppingCartController : Controller
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IHtmlLocalizer<ShoppingCartController> H;
+    private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
+    private readonly IProductService _productService;
 
+    // These are needed.
+#pragma warning disable S107 // Methods should not have too many parameters
     public ShoppingCartController(
         INotifier notifier,
         IShapeFactory shapeFactory,
@@ -34,7 +40,10 @@ public class ShoppingCartController : Controller
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IHtmlLocalizer<ShoppingCartController> htmlLocalizer)
+        IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
+        IEnumerable<IShoppingCartEvents> shoppingCartEvents,
+        IProductService productService)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _notifier = notifier;
         _shapeFactory = shapeFactory;
@@ -42,6 +51,8 @@ public class ShoppingCartController : Controller
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManagers = workflowManagers;
+        _shoppingCartEvents = shoppingCartEvents;
+        _productService = productService;
         H = htmlLocalizer;
     }
 
@@ -106,8 +117,42 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
+        var updatedLines = new List<ShoppingCartLineUpdateModel>();
+        foreach (var line in cart.Lines)
+        {
+            var isValid = true;
+            var item = await _shoppingCartSerializer.ParseCartLineAsync(line);
+
+            await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
+                new { LineItem = item },
+                $"ShoppingCart-{HttpContext.Session.Id}-{shoppingCartId}");
+
+            foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
+            {
+                if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
+                {
+                    await _notifier.ErrorAsync(errorMessage);
+                    isValid = false;
+                }
+            }
+
+            // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
+            if (!isValid)
+            {
+                var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
+                    .As<InventoryPart>().MinimumOrderQuantity.Value;
+
+                // Choose new quantity based on whether Minimum Order Quantity has a value.
+                line.Quantity = (int)(minOrderQuantity > 0 ? minOrderQuantity : 1);
+            }
+
+            updatedLines.Add(line);
+        }
+
+        cart.Lines.SetItems(updatedLines);
         var parsedCart = await _shoppingCartSerializer.ParseCartAsync(cart);
         await _shoppingCartPersistence.StoreAsync(parsedCart, shoppingCartId);
+
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
 
