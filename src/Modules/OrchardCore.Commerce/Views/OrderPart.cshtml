@@ -50,19 +50,13 @@
         @if (string.Equals(Model.OrderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase))
         {
             <div class="my-2 d-flex justify-content-center">
-                <form asp-action="@nameof(PaymentController.PaymentRequest)"
-                      asp-route-orderId="@Model.OrderPart.ContentItem.ContentItemId"
-                      asp-controller="@nameof(PaymentController)"
-                      asp-area="OrchardCore.Commerce">
-                    @Html.AntiForgeryToken()
-                    <div class="pay-button-container">
-                        <button class="pay-button btn btn-success justify-content-center" type="submit">
-                            <span class="pay-text">
-                                @T["Complete Payment"]
-                            </span>
-                        </button>
-                    </div>
-                </form>
+                <div class="pay-button-container">
+                    <a href="@Href($"~/PaymentRequest/{Model.OrderPart.ContentItem.ContentItemId}")" class="pay-button btn btn-success justify-content-center">
+                        <span class="pay-text">
+                            @T["Complete Payment"]
+                        </span>
+                    </a>
+                </div>
             </div>
         }
     }

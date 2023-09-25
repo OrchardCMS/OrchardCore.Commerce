@@ -157,9 +157,7 @@ public class PaymentController : Controller
         }
     }
 
-    //[Route("paymentRequest/{orderId}")]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [Route("PaymentRequest/{orderId}")]
     public async Task<IActionResult> PaymentRequest(string orderId)
     {
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
