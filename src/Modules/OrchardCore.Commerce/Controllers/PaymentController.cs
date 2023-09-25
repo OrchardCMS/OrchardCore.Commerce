@@ -53,23 +53,21 @@ public class PaymentController : Controller
         IPaymentIntentPersistence paymentIntentPersistence,
         INotifier notifier,
         IMoneyService moneyService,
-        IPaymentService paymentService,
-        ISiteService siteService,
-        ISession session)
+        IPaymentService paymentService)
     {
         _authorizationService = services.AuthorizationService.Value;
         _stripePaymentService = stripePaymentService;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _updateModelAccessor = updateModelAccessor;
-        _siteService = siteService;
-        _session = session;
+        _session = services.Session.Value;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _notifier = notifier;
         _moneyService = moneyService;
         _paymentService = paymentService;
+        _siteService = services.SiteService.Value;
     }
 
     [Route("checkout")]
@@ -159,7 +157,7 @@ public class PaymentController : Controller
         }
     }
 
-    [Route("paymentRequest/{orderId}")]
+    //[Route("paymentRequest/{orderId}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> PaymentRequest(string orderId)
@@ -213,12 +211,6 @@ public class PaymentController : Controller
             OrderPart = orderPart,
         });
     }
-
-
-
-
-
-
 
     [Route("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
