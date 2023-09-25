@@ -52,7 +52,8 @@
                   "ContainedContentTypes": [
                     "LocalizedProduct",
                     "PriceVariantsProduct",
-                    "Product"
+                    "Product",
+                    "TieredPriceProduct"
                   ],
                   "EnableOrdering": true
                 }
@@ -170,7 +171,15 @@
             "ProductSku": "TESTPRODUCTVARIANT"
           },
           "ProductPart": {
-            "Sku": "TESTPRODUCTVARIANT"
+            "Sku": "TESTPRODUCTVARIANT",
+            "ProductImage": {
+              "Paths": [
+                "ProductImages/sample-product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "ContainedPart": {
             "ListContentItemId": "mainproductlist00000000000",
@@ -204,7 +213,15 @@
             "Html": ""
           },
           "ProductPart": {
-            "Sku": "TESTPRODUCT"
+            "Sku": "TESTPRODUCT",
+            "ProductImage": {
+              "Paths": [
+                "ProductImages/sample-product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "PricePart": {
             "Price": {
@@ -269,7 +286,15 @@
             "Html": ""
           },
           "ProductPart": {
-            "Sku": "TESTFREEPRODUCT"
+            "Sku": "TESTFREEPRODUCT",
+            "ProductImage": {
+              "Paths": [
+                "ProductImages/sample-product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "PricePart": {
             "Price": {
@@ -334,7 +359,15 @@
             "Html": ""
           },
           "ProductPart": {
-            "Sku": "TESTDISCOUNTEDPRODUCT"
+            "Sku": "TESTDISCOUNTEDPRODUCT",
+            "ProductImage": {
+              "Paths": [
+                "ProductImages/sample-product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            }
           },
           "PricePart": {
             "Price": {
@@ -414,6 +447,14 @@
           },
           "ProductPart": {
             "Sku": "LOCALIZED",
+            "ProductImage": {
+              "Paths": [
+                "ProductImages/sample-product-image.png"
+              ],
+              "MediaTexts": [
+                ""
+              ]
+            },
             "CanBeBought": {}
           },
           "PricePart": {
@@ -433,6 +474,57 @@
             "ListContentType": "ProductList",
             "Order": 0
           }
+        },
+        {
+          "ContentItemId": "testtieredpriceproduct0000",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "TieredPriceProduct",
+          "DisplayText": "Test Tiered Price Product",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2023-09-22T09:12:34.6566162Z",
+          "PublishedUtc": "2023-09-22T09:12:34.6874141Z",
+          "CreatedUtc": "2023-09-22T09:09:54.1908827Z",
+          "Owner": null,
+          "Author": "admin",
+          "TieredPriceProduct": {},
+          "TieredPricePart": {
+            "DefaultPrice": {
+              "value": 90.0,
+              "currency": "USD"
+            },
+            "PriceTiers": [
+              {
+                "Quantity": 3,
+                "UnitPrice": 80.0
+              },
+              {
+                "Quantity": 5,
+                "UnitPrice": 70.0
+              }
+            ]
+          },
+          "TitlePart": {
+            "Title": "Test Tiered Price Product"
+          },
+          "ContainedPart": {
+            "ListContentItemId": "mainproductlist00000000000",
+            "ListContentType": "ProductList",
+            "Order": 1
+          },
+          "ProductPart": {
+            "Sku": "TESTTIEREDPRICE",
+            "CanBeBought": {}
+          }
+        }
+      ]
+    },
+    {
+      "name": "media",
+      "Files": [
+        {
+          "SourcePath": "Media/ProductImages/sample-product-image.png",
+          "TargetPath": "ProductImages/sample-product-image.png"
         }
       ]
     }
