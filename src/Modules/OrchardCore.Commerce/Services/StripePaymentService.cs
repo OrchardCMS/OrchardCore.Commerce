@@ -226,7 +226,7 @@ public class StripePaymentService : IStripePaymentService
         var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart); // if this is empty, try get order's line items
         if (!lineItems.Any())
         {
-            lineItems = orderPart.LineItems; // why none?
+            lineItems = orderPart.LineItems;
         }
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
