@@ -1,4 +1,12 @@
-<section>
+@using OrchardCore.Commerce.Models;
+
+@{
+    var orderPart = (OrderPart)Model.OrderPart;
+    var shippingAddress = orderPart.ShippingAddress.Address;
+    var billingAddress = orderPart.BillingAddress.Address;
+}
+
+<section class="mt-5">
     <div class="payment-form_container">
         <form id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
@@ -11,47 +19,26 @@
                    prop-ClientSecret="@Model.PaymentIntentClientSecret" />
         </form>
     </div>
-    <input type="hidden" id="OrderPart_Email_Text" value="@Model.Email" />
-    <input type="hidden" id="OrderPart_Phone_Text" value="@Model.Phone" />
+    <input type="hidden" id="OrderPart_Email_Text" value="@orderPart.Email.Text" />
+    <input type="hidden" id="OrderPart_Phone_Text" value="@orderPart.Phone.Text" />
 
-    <input type="hidden" id="OrderPart_ShippingAddress_Address_Name" value="@Model.ShippingAddressName" />
-    <input type="hidden" id="OrderPart_ShippingAddress_Address_City" value="@Model.ShippingAddressCity" />
-    <input type="hidden" id="OrderPart_ShippingAddress_Address_Region" value="@Model.ShippingAddressCountry" />
-    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress1" value="@Model.ShippingAddressStreetAddress1" />
-    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress2" value="@Model.ShippingAddressStreetAddress1" />
-    <input type="hidden" id="OrderPart_ShippingAddress_Address_PostalCode" value="@Model.ShippingAddressPostalCode" />
-    <input type="hidden" id="OrderPart_ShippingAddress_Address_Province" value="@Model.ShippingAddressState" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Name" value="@shippingAddress.Name" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_City" value="@shippingAddress.City" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Region" value="@shippingAddress.Region" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress1" value="@shippingAddress.StreetAddress1" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress2" value="@shippingAddress.StreetAddress2" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_PostalCode" value="@shippingAddress.PostalCode" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Province" value="@shippingAddress.Province" />
 
-    <input type="hidden" id="OrderPart_BillingAddress_Address_Name" value="@Model.BillingAddressName" />
-    <input type="hidden" id="OrderPart_BillingAddress_Address_City" value="@Model.BillingAddressCity" />
-    <input type="hidden" id="OrderPart_BillingAddress_Address_Region" value="@Model.BillingAddressCountry" />
-    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress1" value="@Model.BillingAddressStreetAddress1" />
-    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress2" value="@Model.BillingAddressStreetAddress1" />
-    <input type="hidden" id="OrderPart_BillingAddress_Address_PostalCode" value="@Model.BillingAddressPostalCode" />
-    <input type="hidden" id="OrderPart_BillingAddress_Address_Province" value="@Model.BillingAddressState" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Name" value="@billingAddress.Name" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_City" value="@billingAddress.City" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Region" value="@billingAddress.Region" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress1" value="@billingAddress.StreetAddress1" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress2" value="@billingAddress.StreetAddress2" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_PostalCode" value="@billingAddress.PostalCode" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Province" value="@billingAddress.Province" />
 </section>
 
-@*
-    const shippingAddressName = document.getElementById('OrderPart_ShippingAddress_Address_Name');
-    const shippingAddressCity = document.getElementById('OrderPart_ShippingAddress_Address_City');
-    const shippingAddressCountry = document.getElementById('OrderPart_ShippingAddress_Address_Region');
-    const shippingAddressStreetAddress1 = document.getElementById('OrderPart_ShippingAddress_Address_StreetAddress1');
-    const shippingAddressStreetAddress2 = document.getElementById('OrderPart_ShippingAddress_Address_StreetAddress2');
-    const shippingAddressPostalCode = document.getElementById('OrderPart_ShippingAddress_Address_PostalCode');
-    const shippingAddressState = document.getElementById('OrderPart_ShippingAddress_Address_Province');
-
-    const billingAddressName = document.getElementById('OrderPart_BillingAddress_Address_Name');
-    const billingAddressCity = document.getElementById('OrderPart_BillingAddress_Address_City');
-    const billingAddressCountry = document.getElementById('OrderPart_BillingAddress_Address_Region');
-    const billingAddressStreetAddress1 = document.getElementById('OrderPart_BillingAddress_Address_StreetAddress1');
-    const billingAddressStreetAddress2 = document.getElementById('OrderPart_BillingAddress_Address_StreetAddress2');
-    const billingAddressPostalCode = document.getElementById('OrderPart_BillingAddress_Address_PostalCode');
-    const billingAddressState = document.getElementById('OrderPart_BillingAddress_Address_Province');
-
-e*@
-
-<div class="message-error" hidden>
-    <p>kok</p>
-</div>
+<div class="message-error" hidden></div>
 
 <style asp-name="@ResourceNames.PaymentForm"></style>

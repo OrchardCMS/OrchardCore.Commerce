@@ -12,21 +12,19 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
-using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
-using OrchardCore.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ISession = YesSql.ISession;
-using YesSql.Services;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -175,7 +173,7 @@ public class PaymentController : Controller
         var orderPart = order.As<OrderPart>();
 
         // If status is not Pending or there are no line items, there is nothing to be done.
-        if (string.Equals(orderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase) ||
+        if (!string.Equals(orderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase) ||
             !orderPart.LineItems.Any())
         {
             return NotFound();
@@ -203,29 +201,14 @@ public class PaymentController : Controller
             PaymentIntentId = paymentIntent.Id,
         });
 
-        return View(new // just make a viewmodel lmao
+        return View(new
         {
             SingleCurrencyTotal = singleCurrencyTotal,
             NetTotal = singleCurrencyTotal,
             GrossTotal = new Amount(0, currency),
             StripePublishableKey = stripeApiSettings.PublishableKey,
             PaymentIntentClientSecret = paymentIntent.ClientSecret,
-            Email = orderPart.Email.Text,
-            Phone = orderPart.Phone.Text,
-            ShippingAddressName = orderPart.ShippingAddress.Address.Name,
-            ShippingAddressCity = orderPart.ShippingAddress.Address.City,
-            ShippingAddressCountry = orderPart.ShippingAddress.Address.Region,
-            ShippingAddressStreetAddress1 = orderPart.ShippingAddress.Address.StreetAddress1,
-            ShippingAddressStreetAddress2 = orderPart.ShippingAddress.Address.StreetAddress2,
-            ShippingAddressPostalCode = orderPart.ShippingAddress.Address.PostalCode,
-            ShippingAddressState = orderPart.ShippingAddress.Address.Province,
-            BillingAddressName = orderPart.BillingAddress.Address.Name,
-            BillingAddressCity = orderPart.BillingAddress.Address.City,
-            BillingAddressCountry = orderPart.BillingAddress.Address.Region,
-            BillingAddressStreetAddress1 = orderPart.BillingAddress.Address.StreetAddress1,
-            BillingAddressStreetAddress2 = orderPart.BillingAddress.Address.StreetAddress2,
-            BillingAddressPostalCode = orderPart.BillingAddress.Address.PostalCode,
-            BillingAddressState = orderPart.BillingAddress.Address.Province,
+            OrderPart = orderPart,
         });
     }
 

@@ -9,6 +9,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
@@ -45,6 +46,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
+    private readonly IMoneyService _moneyService;
 
     // We need to use that many, this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -63,7 +65,8 @@ public class StripePaymentService : IStripePaymentService
         IEnumerable<IWorkflowManager> workflowManagers,
         IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
-        IProductService productService)
+        IProductService productService,
+        IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -76,6 +79,7 @@ public class StripePaymentService : IStripePaymentService
         _priceSelectionStrategy = priceSelectionStrategy;
         _priceService = priceService;
         _productService = productService;
+        _moneyService = moneyService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
         _workflowManagers = workflowManagers;
@@ -232,8 +236,10 @@ public class StripePaymentService : IStripePaymentService
 
         // if cartViewModel is null or doesn't contain totals, use Order's totals
 
-        // this will explode when we are creating a new order
-        var orderTotals = new Amount(0, order.As<OrderPart>().LineItems[0].LinePrice.Currency);
+        // this will explode when we are creating a new order -- construct it with default currency and overwrite in below block?
+        var currency = orderPart.LineItems.Any() ? orderPart.LineItems[0].LinePrice.Currency : _moneyService.DefaultCurrency;
+        var orderTotals = new Amount(0, currency);
+
         if (cartViewModel is null)
         {
             foreach (var item in orderPart.LineItems)
