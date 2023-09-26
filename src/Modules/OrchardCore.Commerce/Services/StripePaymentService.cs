@@ -191,17 +191,11 @@ public class StripePaymentService : IStripePaymentService
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 
-        // if there is no current shopping cart, skip these steps?
-
         if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
         {
-            // this also calls OrderPartDisplayDriver's Update. need to skip?
-            if (currentShoppingCart.Items.Any())
+            if (currentShoppingCart.Items.Any() && await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
-                if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
-                {
-                    return null;
-                }
+                return null;
             }
         }
         else
@@ -219,11 +213,9 @@ public class StripePaymentService : IStripePaymentService
             });
         }
 
-        // do the below modifications alter anything when it's a new order?
-
         var orderPart = order.As<OrderPart>();
 
-        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart); // if this is empty, try get order's line items
+        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
         if (!lineItems.Any())
         {
             lineItems = orderPart.LineItems;
@@ -234,53 +226,17 @@ public class StripePaymentService : IStripePaymentService
             orderPart.ShippingAddress.Address,
             orderPart.BillingAddress.Address);
 
-        // if cartViewModel is null or doesn't contain totals, use Order's totals
-
-        // this will explode when we are creating a new order -- construct it with default currency and overwrite in below block?
         var currency = orderPart.LineItems.Any() ? orderPart.LineItems[0].LinePrice.Currency : _moneyService.DefaultCurrency;
         var orderTotals = new Amount(0, currency);
 
         if (cartViewModel is null)
         {
-            foreach (var item in orderPart.LineItems)
-            {
-                orderTotals += item.LinePrice;
-            }
+            CalculateOrderTotals(orderTotals, orderPart);
         }
 
-        // if this is null (or 0?), get Order's total
+        // If there is no cart, use current Order's data.
         var defaultTotal = cartViewModel is null ? orderTotals : CheckTotals(cartViewModel).SingleOrDefault();
-
-        order.Alter<OrderPart>(orderPart =>
-        {
-            orderPart.Charges.Clear();
-            orderPart.Charges.Add(
-                new Payment
-                {
-                    ChargeText = paymentIntent.Description,
-                    TransactionId = paymentIntent.Id,
-                    Amount = defaultTotal,
-                    CreatedUtc = paymentIntent.Created,
-                });
-
-            // this alteration is unnecessary if we are doing payment request
-            if (cartViewModel is not null)
-            {
-                // Shopping cart
-                orderPart.LineItems.SetItems(lineItems);
-                orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
-
-                // Store the current applicable discount info so they will be available in the future.
-                orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
-                    .Lines
-                    .Where(line => line.AdditionalData.GetDiscounts().Any())
-                    .ToDictionary(
-                        line => line.ProductSku,
-                        line => line.AdditionalData.GetDiscounts()));
-            }
-        });
-
-        order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
+        AlterOrder(order, paymentIntent, defaultTotal, cartViewModel, lineItems);
 
         if (string.IsNullOrEmpty(orderId))
         {
@@ -372,6 +328,52 @@ public class StripePaymentService : IStripePaymentService
         }
 
         return lineItems;
+    }
+
+    private static void AlterOrder(
+        ContentItem order,
+        PaymentIntent paymentIntent,
+        Amount defaultTotal,
+        ShoppingCartViewModel cartViewModel,
+        IEnumerable<OrderLineItem> lineItems)
+    {
+        order.Alter<OrderPart>(orderPart =>
+        {
+            orderPart.Charges.Clear();
+            orderPart.Charges.Add(
+                new Payment
+                {
+                    ChargeText = paymentIntent.Description,
+                    TransactionId = paymentIntent.Id,
+                    Amount = defaultTotal,
+                    CreatedUtc = paymentIntent.Created,
+                });
+
+            if (cartViewModel is not null)
+            {
+                // Shopping cart
+                orderPart.LineItems.SetItems(lineItems);
+                orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+
+                // Store the current applicable discount info so they will be available in the future.
+                orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                    .Lines
+                    .Where(line => line.AdditionalData.GetDiscounts().Any())
+                    .ToDictionary(
+                        line => line.ProductSku,
+                        line => line.AdditionalData.GetDiscounts()));
+            }
+        });
+
+        order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
+    }
+
+    private static void CalculateOrderTotals(Amount orderTotals, OrderPart orderPart)
+    {
+        foreach (var item in orderPart.LineItems)
+        {
+            orderTotals += item.LinePrice;
+        }
     }
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(

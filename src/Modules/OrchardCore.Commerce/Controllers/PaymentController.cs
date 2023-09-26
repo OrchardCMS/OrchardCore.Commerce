@@ -193,7 +193,7 @@ public class PaymentController : Controller
         var paymentAmount = _stripePaymentService.GetPaymentAmount(singleCurrencyTotal.Value, currency.CurrencyIsoCode);
         var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(paymentAmount, singleCurrencyTotal);
 
-        _session.Save(new OrderPayment // this OK to have here? Any unforeseen consequences?
+        _session.Save(new OrderPayment
         {
             OrderId = order.ContentItemId,
             PaymentIntentId = paymentIntent.Id,
