@@ -234,7 +234,7 @@ public class StripePaymentService : IStripePaymentService
 
         if (cartViewModel is null)
         {
-            CalculateOrderTotals(orderTotals, orderPart);
+            orderTotals = CalculateOrderTotals(orderTotals, orderPart);
         }
 
         // If there is no cart, use current Order's data.
@@ -284,9 +284,7 @@ public class StripePaymentService : IStripePaymentService
         return updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(
-        long amountForPayment,
-        Amount defaultTotal)
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount defaultTotal)
     {
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
@@ -371,12 +369,14 @@ public class StripePaymentService : IStripePaymentService
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
     }
 
-    private static void CalculateOrderTotals(Amount orderTotals, OrderPart orderPart)
+    private static Amount CalculateOrderTotals(Amount orderTotals, OrderPart orderPart)
     {
         foreach (var item in orderPart.LineItems)
         {
             orderTotals += item.LinePrice;
         }
+
+        return orderTotals;
     }
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
