@@ -6,7 +6,9 @@
     var billingAddress = orderPart.BillingAddress.Address;
 }
 
-<section class="mt-5">
+<mvc-title text="@T["Order Payment"]" />
+
+<section>
     <div class="payment-form_container">
         <form id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
