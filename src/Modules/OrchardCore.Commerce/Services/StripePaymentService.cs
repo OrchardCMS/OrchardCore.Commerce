@@ -193,7 +193,10 @@ public class StripePaymentService : IStripePaymentService
 
         if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
         {
-            if (currentShoppingCart.Items.Any() && await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+            // If there are line items in the Order, use data from Order instead of shopping cart.
+            if (!order.As<OrderPart>().LineItems.Any() &&
+                currentShoppingCart.Items.Any() &&
+                await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
                 return null;
             }
