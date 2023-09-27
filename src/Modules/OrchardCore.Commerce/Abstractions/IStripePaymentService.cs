@@ -27,14 +27,14 @@ public interface IStripePaymentService
     Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId);
 
     /// <summary>
-    /// Calculates payment amount based on the given <paramref name="defaultTotalValue"/> and <paramref name="currencyType"/>.
+    /// Calculates payment amount based on the given <paramref name="total"/>.
     /// </summary>
-    long GetPaymentAmount(decimal defaultTotalValue, string currencyType);
+    long GetPaymentAmount(Amount total);
 
     /// <summary>
-    /// Returns a <see cref="PaymentIntent"/> object based on the given <paramref name="defaultTotal"/>.
+    /// Returns a <see cref="PaymentIntent"/> object based on the given <paramref name="total"/>.
     /// </summary>
-    Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount defaultTotal);
+    Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total);
 
     /// <summary>
     /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see

@@ -163,7 +163,7 @@ public class BehaviorOrderTests : UITestBase
 
                 await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{orderId}");
                 var completePaymentButton = context.Get(By.XPath(CompletePaymentButtonXPath));
-                completePaymentButton.GetAttribute("href").ShouldContain($"PaymentRequest/{orderId}");
+                completePaymentButton.GetAttribute("href").ShouldContain($"checkout/paymentrequest/{orderId}");
 
                 // Complete Payment button should not show up if Order is not Pending.
                 await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{orderId}/Edit");

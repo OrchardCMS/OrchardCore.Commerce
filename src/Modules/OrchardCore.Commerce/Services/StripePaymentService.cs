@@ -10,6 +10,7 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
@@ -110,9 +111,7 @@ public class StripePaymentService : IStripePaymentService
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         var defaultTotal = totals.SingleOrDefault();
-
-        var currencyType = defaultTotal.Currency.CurrencyIsoCode;
-        long amountForPayment = GetPaymentAmount(defaultTotal.Value, currencyType);
+        long amountForPayment = GetPaymentAmount(defaultTotal);
 
         return string.IsNullOrEmpty(paymentIntentId)
             ? await CreatePaymentIntentAsync(amountForPayment, defaultTotal)
@@ -234,7 +233,7 @@ public class StripePaymentService : IStripePaymentService
 
         if (cartViewModel is null)
         {
-            orderTotals = CalculateOrderTotals(orderTotals, orderPart);
+            orderTotals = orderPart.LineItems.Select(item => item.LinePrice).Sum();
         }
 
         // If there is no cart, use current Order's data.
@@ -253,28 +252,16 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public long GetPaymentAmount(decimal defaultTotalValue, string currencyType)
+    public long GetPaymentAmount(Amount total)
     {
-        long amountForPayment;
-
-        // If I convert it to conditional expression, it will warn me to extract it again.
-#pragma warning disable IDE0045 // Convert to conditional expression
-        // We need to convert the value (decimal) to long.
-        // https://stripe.com/docs/currencies#zero-decimal
-        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(currencyType))
+        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(total.Currency.CurrencyIsoCode))
         {
-            amountForPayment = (long)Math.Round(defaultTotalValue);
-        }
-        else if (CurrencyCollectionConstants.SpecialCases.Contains(currencyType))
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue / 100m) * 10000;
-        }
-        else
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue * 100);
+            return (long)Math.Round(total.Value);
         }
 
-        return amountForPayment;
+        return CurrencyCollectionConstants.SpecialCases.Contains(total.Currency.CurrencyIsoCode)
+            ? (long)Math.Round(total.Value / 100m) * 10000
+            : (long)Math.Round(total.Value * 100);
     }
 
     private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order, IUpdateModelAccessor updateModelAccessor)
@@ -284,12 +271,12 @@ public class StripePaymentService : IStripePaymentService
         return updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount defaultTotal)
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total)
     {
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
             Amount = amountForPayment,
-            Currency = defaultTotal.Currency.CurrencyIsoCode,
+            Currency = total.Currency.CurrencyIsoCode,
             Description = T["User checkout on {0}", _siteName].Value,
             AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
         };
@@ -367,16 +354,6 @@ public class StripePaymentService : IStripePaymentService
         });
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
-    }
-
-    private static Amount CalculateOrderTotals(Amount orderTotals, OrderPart orderPart)
-    {
-        foreach (var item in orderPart.LineItems)
-        {
-            orderTotals += item.LinePrice;
-        }
-
-        return orderTotals;
     }
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(

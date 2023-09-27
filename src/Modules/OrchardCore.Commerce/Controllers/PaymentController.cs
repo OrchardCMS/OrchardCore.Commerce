@@ -12,6 +12,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -24,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql.Services;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
@@ -157,7 +159,7 @@ public class PaymentController : Controller
         }
     }
 
-    [Route("PaymentRequest/{orderId}")]
+    [Route("checkout/paymentrequest/{orderId}")]
     public async Task<IActionResult> PaymentRequest(string orderId)
     {
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
@@ -178,19 +180,14 @@ public class PaymentController : Controller
         }
 
         var currency = orderPart.LineItems[0].LinePrice.Currency;
-        var singleCurrencyTotal = new Amount(0, currency);
-        foreach (var item in orderPart.LineItems)
-        {
-            singleCurrencyTotal += item.LinePrice;
-        }
-
+        var singleCurrencyTotal = new Amount(orderPart.LineItems.Select(item => item.LinePrice).Sum().Value, currency);
         if (singleCurrencyTotal.Value <= 0)
         {
             return NotFound();
         }
 
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-        var paymentAmount = _stripePaymentService.GetPaymentAmount(singleCurrencyTotal.Value, currency.CurrencyIsoCode);
+        var paymentAmount = _stripePaymentService.GetPaymentAmount(new Amount(singleCurrencyTotal.Value, currency));
         var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(paymentAmount, singleCurrencyTotal);
 
         _session.Save(new OrderPayment
@@ -203,7 +200,6 @@ public class PaymentController : Controller
         {
             SingleCurrencyTotal = singleCurrencyTotal,
             NetTotal = singleCurrencyTotal,
-            GrossTotal = new Amount(0, currency),
             StripePublishableKey = stripeApiSettings.PublishableKey,
             PaymentIntentClientSecret = paymentIntent.ClientSecret,
             OrderPart = orderPart,
