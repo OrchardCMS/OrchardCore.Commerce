@@ -7,7 +7,6 @@ using Shouldly;
 using System.Globalization;
 using Xunit;
 using Xunit.Abstractions;
-using static OrchardCore.Commerce.Constants.ContentTypes;
 using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.OrderTests;
@@ -28,7 +27,7 @@ public class BehaviorOrderTests : UITestBase
             async context =>
             {
                 await context.SignInDirectlyAndGoToDashboardAsync();
-                await context.CreateNewContentItemAsync(Order);
+                await context.GoToContentItemEditorByIdAsync(TestOrder);
 
                 await ClickAddItemAsync(context);
 
@@ -58,7 +57,6 @@ public class BehaviorOrderTests : UITestBase
                 context.Missing(ByQuantity(1));
 
                 // Fill out required but otherwise irrelevant fields.
-                await FillOutRequiredOrderFieldsAsync(context);
                 await context.ClickPublishAsync();
 
                 // Empty SKU field should result in validation errors being shown and no Product being added.
@@ -147,7 +145,7 @@ public class BehaviorOrderTests : UITestBase
             async context =>
             {
                 await context.SignInDirectlyAndGoToDashboardAsync();
-                await context.CreateNewContentItemAsync(Order);
+                await context.GoToContentItemEditorByIdAsync(TestOrder);
 
                 await ClickAddItemAsync(context);
 
@@ -156,48 +154,30 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(ByUnitPriceValue(0), "10");
 
                 // Fill out required but otherwise irrelevant fields.
-                await FillOutRequiredOrderFieldsAsync(context);
                 await context.ClickPublishAsync();
 
-                var orderId = context.Driver.Url.Split('/')[6];
-
-                await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{orderId}");
+                await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{TestOrder}");
                 var completePaymentButton = context.Get(By.XPath(CompletePaymentButtonXPath));
-                completePaymentButton.GetAttribute("href").ShouldContain($"checkout/paymentrequest/{orderId}");
+                completePaymentButton.GetAttribute("href").ShouldContain($"checkout/paymentrequest/{TestOrder}");
 
                 // Complete Payment button should not show up if Order is not Pending.
-                await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{orderId}/Edit");
+                await context.GoToContentItemEditorByIdAsync(TestOrder);
                 await context.ClickReliablyOnAsync(By.Id("OrderPart_Status_Text_1"));
                 await context.ClickPublishAsync();
 
-                await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{orderId}");
+                await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{TestOrder}");
                 context.Missing(By.XPath(CompletePaymentButtonXPath));
 
                 // Complete Payment button should not show up if Order has no line items.
-                await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{orderId}/Edit");
+                await context.GoToContentItemEditorByIdAsync(TestOrder);
                 await ClickDeleteItemAsync(context, 1);
                 await context.ClickReliablyOnAsync(By.Id("OrderPart_Status_Text_0"));
                 await context.ClickPublishAsync();
 
-                await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{orderId}");
+                await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{TestOrder}");
                 context.Missing(By.XPath(CompletePaymentButtonXPath));
             },
             browser);
-
-    private static async Task FillOutRequiredOrderFieldsAsync(UITestContext context)
-    {
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.Email.Text"), "test@email.com");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.Phone.Text"), "0123456789");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.Name"), "Test Name");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.Department"), "Test Department");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.Company"), "Test Company");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.StreetAddress1"), "Test First Street");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.StreetAddress2"), "Test Second Street");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.City"), "Test City");
-        await context.ClickAndFillInWithRetriesAsync(By.Name("OrderPart.BillingAddress.Address.PostalCode"), "01234");
-        await context.SetDropdownByTextAsync("OrderPart_BillingAddress_Address_Region", "United States");
-        await context.ClickReliablyOnAsync(By.Name("OrderPart.BillingAndShippingAddressesMatch.Value"));
-    }
 
     private static Task ClickDeleteItemAsync(UITestContext context, int index) =>
         context.ClickReliablyOnAsync(By.XPath($"//button[contains(@class, 'btn btn-danger')][{index.ToString(CultureInfo.InvariantCulture)}]"));
