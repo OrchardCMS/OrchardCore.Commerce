@@ -164,26 +164,33 @@ public class PaymentController : Controller
     {
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
-        // Users should only see their own Orders.
-        if (order.Author != User.Identity.Name)
+        if (string.IsNullOrEmpty(User.Identity.Name))
         {
-            return NotFound();
+            return LocalRedirect($"~/Login?ReturnUrl=~/Contents/ContentItems/{orderId}");
         }
 
         var orderPart = order.As<OrderPart>();
 
-        // If status is not Pending or there are no line items, there is nothing to be done.
-        if (!string.Equals(orderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase) ||
-            !orderPart.LineItems.Any())
+        // If there are no line items, there is nothing to be done.
+        if (!orderPart.LineItems.Any())
         {
-            return NotFound();
+            await _notifier.InformationAsync(H["This Order contains no line items, so there is nothing to be paid."]);
+            return LocalRedirect($"~/Contents/ContentItems/{orderId}");
+        }
+
+        // If status is not Pending, there is nothing to be done.
+        if (!string.Equals(orderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase))
+        {
+            await _notifier.InformationAsync(H["This Order is no longer pending."]);
+            return LocalRedirect($"~/Contents/ContentItems/{orderId}");
         }
 
         var currency = orderPart.LineItems[0].LinePrice.Currency;
         var singleCurrencyTotal = new Amount(orderPart.LineItems.Select(item => item.LinePrice).Sum().Value, currency);
         if (singleCurrencyTotal.Value <= 0)
         {
-            return NotFound();
+            await _notifier.InformationAsync(H["This Order's line items have no cost, so there is nothing to be paid."]);
+            return LocalRedirect($"~/Contents/ContentItems/{orderId}");
         }
 
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
