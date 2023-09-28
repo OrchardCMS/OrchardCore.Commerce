@@ -3,7 +3,6 @@ using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
-using OrchardCore.Commerce.Tests.UI.Constants;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
