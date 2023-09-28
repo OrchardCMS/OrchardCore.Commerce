@@ -127,7 +127,7 @@
       "name": "Templates",
       "Templates": {
         "Widget__UserSettingsWidget": {
-          "Content": "<div style=\"position: absolute; right: 8rem; top: .625rem; z-index: 9999; display: flex;\">\r\n    <a class=\"nav-link\" href=\"{{ '~/user/addresses' | href }}\" title=\"{{ 'User Addresses' | t }}\">\r\n        <i class=\"fa-2x fas fa-address-card text-white\"></i>\r\n    </a>\r\n    <a class=\"nav-link\" href=\"{{ '~/user/details' | href }}\" title=\"{{ 'User Details' | t }}\">\r\n        <i class=\"fa-2x fa-solid fa-user text-white\"></i>\r\n    </a>\r\n</div>",
+          "Content": "<div style=\"position: absolute; right: 8rem; top: .625rem; z-index: 9999; display: flex;\">\r\n    <a class=\"nav-link user-addresses-widget\" href=\"{{ '~/user/addresses' | href }}\" title=\"{{ 'User Addresses' | t }}\">\r\n        <i class=\"fa-2x fas fa-address-card text-white\"></i>\r\n    </a>\r\n    <a class=\"nav-link user-details-widget\" href=\"{{ '~/user/details' | href }}\" title=\"{{ 'User Details' | t }}\">\r\n        <i class=\"fa-2x fa-solid fa-user text-white\"></i>\r\n    </a>\r\n</div>",
           "Description": null
         }
       }
