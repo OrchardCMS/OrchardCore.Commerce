@@ -34,6 +34,24 @@
             "Status": {
               "Text": "pending"
             },
+            "LineItems": [
+              {
+                "Quantity": 5,
+                "ProductSku": "TESTPRODUCT",
+                "FullSku": "",
+                "UnitPrice": {
+                  "value": 10.0,
+                  "currency": "USD"
+                },
+                "LinePrice": {
+                  "value": 50.0,
+                  "currency": "USD"
+                },
+                "ContentItemVersion": "testproducttestversion0000",
+                "Attributes": [],
+                "SelectedAttributes": {}
+              }
+            ],
             "AdditionalCosts": [],
             "Charges": [],
             "Email": {

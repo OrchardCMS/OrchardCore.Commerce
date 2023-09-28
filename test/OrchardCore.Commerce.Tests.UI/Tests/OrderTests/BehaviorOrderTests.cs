@@ -29,6 +29,7 @@ public class BehaviorOrderTests : UITestBase
                 await context.SignInDirectlyAndGoToDashboardAsync();
                 await context.GoToContentItemEditorByIdAsync(TestOrder);
 
+                await ClickDeleteItemAsync(context, 1);
                 await ClickAddItemAsync(context);
 
                 // Total value should be 0 by default.
@@ -144,18 +145,9 @@ public class BehaviorOrderTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
-                await context.SignInDirectlyAndGoToDashboardAsync();
-                await context.GoToContentItemEditorByIdAsync(TestOrder);
+                await context.SignInDirectlyAsync();
 
-                await ClickAddItemAsync(context);
-
-                await context.ClickAndFillInWithRetriesAsync(ByQuantity(0), "5");
-                await context.ClickAndFillInWithRetriesAsync(ByProductSku(0), "testproduct");
-                await context.ClickAndFillInWithRetriesAsync(ByUnitPriceValue(0), "10");
-
-                // Fill out required but otherwise irrelevant fields.
-                await context.ClickPublishAsync();
-
+                // Complete Payment button should be present if there are line items that require payment.
                 await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{TestOrder}");
                 var completePaymentButton = context.Get(By.XPath(CompletePaymentButtonXPath));
                 completePaymentButton.GetAttribute("href").ShouldContain($"checkout/paymentrequest/{TestOrder}");
