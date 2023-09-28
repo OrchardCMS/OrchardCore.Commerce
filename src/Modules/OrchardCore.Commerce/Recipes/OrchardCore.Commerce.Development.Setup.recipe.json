@@ -98,6 +98,41 @@
       ]
     },
     {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "UserSettingsWidget",
+          "DisplayName": "User Settings Widget",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "UserSettingsWidget",
+              "Name": "UserSettingsWidget",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
+    },
+    {
+      "name": "Templates",
+      "Templates": {
+        "Widget__UserSettingsWidget": {
+          "Content": "<div style=\"position: absolute; right: 8rem; top: .625rem; z-index: 9999; display: flex;\">\r\n    <a class=\"nav-link\" href=\"{{ '~/user/addresses' | href }}\" title=\"{{ 'User Addresses' | t }}\">\r\n        <i class=\"fa-2x fas fa-address-card text-white\"></i>\r\n    </a>\r\n    <a class=\"nav-link\" href=\"{{ '~/user/details' | href }}\" title=\"{{ 'User Details' | t }}\">\r\n        <i class=\"fa-2x fa-solid fa-user text-white\"></i>\r\n    </a>\r\n</div>",
+          "Description": null
+        }
+      }
+    },
+    {
       "name": "Layers",
       "Layers": [
         {
@@ -166,6 +201,26 @@
             "Position": 1.0,
             "Zone": "Header",
             "Layer": "Always"
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "UserSettingsWidget",
+          "DisplayText": "User Settings Widget",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2023-09-28T13:38:58.1060057Z",
+          "PublishedUtc": "2023-09-28T13:38:58.1092478Z",
+          "CreatedUtc": "2023-09-28T13:37:54.2665808Z",
+          "Owner": null,
+          "Author": "admin",
+          "UserSettingsWidget": {},
+          "LayerMetadata": {
+            "RenderTitle": false,
+            "Position": 2.0,
+            "Zone": "Header",
+            "Layer": "Authenticated"
           }
         }
       ]
