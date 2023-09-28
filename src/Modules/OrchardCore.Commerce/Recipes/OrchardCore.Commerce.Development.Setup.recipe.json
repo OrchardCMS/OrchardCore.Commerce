@@ -116,6 +116,22 @@
             "Name": null,
             "ConditionId": "[js:uuid()]"
           }
+        },
+        {
+          "Name": "Authenticated",
+          "Rule": null,
+          "Description": null,
+          "LayerRule": {
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.IsAuthenticatedCondition, OrchardCore.Rules",
+                "Name": "IsAuthenticatedCondition",
+                "ConditionId": "4dtw6vt2ay40qz1rs90zcy1hnh"
+              }
+            ],
+            "Name": null,
+            "ConditionId": "47yv5v2e0t2hq1jm52hp6xxj4v"
+          }
         }
       ]
     },
