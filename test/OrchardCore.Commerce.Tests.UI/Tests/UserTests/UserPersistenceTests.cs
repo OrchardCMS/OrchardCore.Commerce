@@ -41,8 +41,9 @@ public class UserPersistenceTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
-                await context.SignInDirectlyAsync();
-                await context.GoToRelativeUrlAsync("/user/addresses");
+                context.Missing(By.ClassName("user-addresses-widget"));
+                await context.SignInDirectlyAndGoToHomepageAsync();
+                await context.ClickReliablyOnAsync(By.ClassName("user-addresses-widget"));
 
                 await context.ClickAndFillInWithRetriesAsync(
                     By.Id("UserAddressesPart_ShippingAddress_Address_Name"),

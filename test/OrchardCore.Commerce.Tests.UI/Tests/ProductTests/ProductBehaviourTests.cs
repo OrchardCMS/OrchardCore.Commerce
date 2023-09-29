@@ -71,6 +71,27 @@ public class ProductBehaviourTests : UITestBase
             },
             browser);
 
+    [Theory, Chrome]
+    public Task ShoppingCartWidgetShouldCountCorrectly(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                void ShoppingCartShouldBe(int count) =>
+                    context.Get(By.ClassName("shopping-cart-item-count")).Text.Trim().ShouldBeAsString(count);
+
+                await context.SignInDirectlyAndGoToHomepageAsync();
+                ShoppingCartShouldBe(0);
+
+                await context.GoToContentItemByIdAsync(TestFreeProduct);
+                await context.ClickReliablyOnSubmitAsync();
+                ShoppingCartShouldBe(1);
+
+                await context.ClickAndFillInWithRetriesAsync(By.Name("cart.lines[0].Quantity"), "2");
+                await context.ClickReliablyOnAsync(By.CssSelector("#shopping-cart-update button"));
+                ShoppingCartShouldBe(2);
+            },
+            browser);
+
     private static void ShoppingCartItemCountShouldBe(UITestContext context, int count) =>
         context.Get(By.ClassName("shopping-cart-item-count")).Text.ShouldBeAsString(count);
 }
