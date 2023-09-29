@@ -175,26 +175,25 @@ public class PaymentController : Controller
         if (!orderPart.LineItems.Any())
         {
             await _notifier.InformationAsync(H["This Order contains no line items, so there is nothing to be paid."]);
-            return LocalRedirect($"~/Contents/ContentItems/{orderId}");
+            return this.RedirectToContentDisplay(orderId);
         }
 
         // If status is not Pending, there is nothing to be done.
         if (!string.Equals(orderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase))
         {
             await _notifier.InformationAsync(H["This Order is no longer pending."]);
-            return LocalRedirect($"~/Contents/ContentItems/{orderId}");
+            return this.RedirectToContentDisplay(orderId);
         }
 
-        var currency = orderPart.LineItems[0].LinePrice.Currency;
-        var singleCurrencyTotal = new Amount(orderPart.LineItems.Select(item => item.LinePrice).Sum().Value, currency);
+        var singleCurrencyTotal = orderPart.LineItems.Select(item => item.LinePrice).Sum();
         if (singleCurrencyTotal.Value <= 0)
         {
             await _notifier.InformationAsync(H["This Order's line items have no cost, so there is nothing to be paid."]);
-            return LocalRedirect($"~/Contents/ContentItems/{orderId}");
+            return this.RedirectToContentDisplay(orderId);
         }
 
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-        var paymentAmount = _stripePaymentService.GetPaymentAmount(new Amount(singleCurrencyTotal.Value, currency));
+        var paymentAmount = _stripePaymentService.GetPaymentAmount(singleCurrencyTotal);
         var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(paymentAmount, singleCurrencyTotal);
 
         _session.Save(new OrderPayment
