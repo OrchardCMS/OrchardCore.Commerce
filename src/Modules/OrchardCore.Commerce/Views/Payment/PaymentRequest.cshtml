@@ -1,0 +1,45 @@
+@using OrchardCore.Commerce.Models;
+
+@{
+    var orderPart = (OrderPart)Model.OrderPart;
+    var shippingAddress = orderPart.ShippingAddress.Address;
+    var billingAddress = orderPart.BillingAddress.Address;
+}
+
+<mvc-title text="@T["Order Payment"]" />
+
+<section>
+    <div class="payment-form_container">
+        <form id="payment-form" class="payment-form">
+            @Html.AntiForgeryToken()
+
+            <shape type="StripeCheckout"
+                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                   prop-NetTotal="@Model.NetTotal"
+                   prop-PublishableKey="@Model.StripePublishableKey"
+                   prop-ClientSecret="@Model.PaymentIntentClientSecret" />
+        </form>
+    </div>
+    <input type="hidden" id="OrderPart_Email_Text" value="@orderPart.Email.Text" />
+    <input type="hidden" id="OrderPart_Phone_Text" value="@orderPart.Phone.Text" />
+
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Name" value="@shippingAddress.Name" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_City" value="@shippingAddress.City" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Region" value="@shippingAddress.Region" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress1" value="@shippingAddress.StreetAddress1" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_StreetAddress2" value="@shippingAddress.StreetAddress2" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_PostalCode" value="@shippingAddress.PostalCode" />
+    <input type="hidden" id="OrderPart_ShippingAddress_Address_Province" value="@shippingAddress.Province" />
+
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Name" value="@billingAddress.Name" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_City" value="@billingAddress.City" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Region" value="@billingAddress.Region" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress1" value="@billingAddress.StreetAddress1" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_StreetAddress2" value="@billingAddress.StreetAddress2" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_PostalCode" value="@billingAddress.PostalCode" />
+    <input type="hidden" id="OrderPart_BillingAddress_Address_Province" value="@billingAddress.Province" />
+</section>
+
+<div class="message-error" hidden></div>
+
+<style asp-name="@ResourceNames.PaymentForm"></style>

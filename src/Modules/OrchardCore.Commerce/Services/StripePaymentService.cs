@@ -9,6 +9,8 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
@@ -45,6 +47,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
+    private readonly IMoneyService _moneyService;
 
     // We need to use that many, this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -63,7 +66,8 @@ public class StripePaymentService : IStripePaymentService
         IEnumerable<IWorkflowManager> workflowManagers,
         IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
-        IProductService productService)
+        IProductService productService,
+        IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -76,6 +80,7 @@ public class StripePaymentService : IStripePaymentService
         _priceSelectionStrategy = priceSelectionStrategy;
         _priceService = priceService;
         _productService = productService;
+        _moneyService = moneyService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
         _workflowManagers = workflowManagers;
@@ -106,28 +111,7 @@ public class StripePaymentService : IStripePaymentService
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         var defaultTotal = totals.SingleOrDefault();
-
-        var defaultTotalValue = defaultTotal.Value;
-        long amountForPayment;
-        var currencyType = defaultTotal.Currency.CurrencyIsoCode;
-
-        // If I convert it to conditional expression, it will warn me to extract it again.
-#pragma warning disable IDE0045 // Convert to conditional expression
-        // We need to convert the value (decimal) to long.
-        // https://stripe.com/docs/currencies#zero-decimal
-        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(currencyType))
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue);
-        }
-        else if (CurrencyCollectionConstants.SpecialCases.Contains(currencyType))
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue / 100m) * 10000;
-        }
-        else
-        {
-            amountForPayment = (long)Math.Round(defaultTotalValue * 100);
-        }
-#pragma warning restore IDE0045 // Convert to conditional expression
+        long amountForPayment = GetPaymentAmount(defaultTotal);
 
         return string.IsNullOrEmpty(paymentIntentId)
             ? await CreatePaymentIntentAsync(amountForPayment, defaultTotal)
@@ -208,7 +192,10 @@ public class StripePaymentService : IStripePaymentService
 
         if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
         {
-            if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+            // If there are line items in the Order, use data from Order instead of shopping cart.
+            if (!order.As<OrderPart>().LineItems.Any() &&
+                currentShoppingCart.Items.Any() &&
+                await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
                 return null;
             }
@@ -228,42 +215,30 @@ public class StripePaymentService : IStripePaymentService
             });
         }
 
+        var orderPart = order.As<OrderPart>();
+
         var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
+        if (!lineItems.Any())
+        {
+            lineItems = orderPart.LineItems;
+        }
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,
-            order.As<OrderPart>().ShippingAddress.Address,
-            order.As<OrderPart>().BillingAddress.Address);
+            orderPart.ShippingAddress.Address,
+            orderPart.BillingAddress.Address);
 
-        var defaultTotal = CheckTotals(cartViewModel).SingleOrDefault();
+        var currency = orderPart.LineItems.Any() ? orderPart.LineItems[0].LinePrice.Currency : _moneyService.DefaultCurrency;
+        var orderTotals = new Amount(0, currency);
 
-        order.Alter<OrderPart>(orderPart =>
+        if (cartViewModel is null)
         {
-            orderPart.Charges.Clear();
-            orderPart.Charges.Add(
-                new Payment
-                {
-                    ChargeText = paymentIntent.Description,
-                    TransactionId = paymentIntent.Id,
-                    Amount = defaultTotal,
-                    CreatedUtc = paymentIntent.Created,
-                });
+            orderTotals = orderPart.LineItems.Select(item => item.LinePrice).Sum();
+        }
 
-            // Shopping cart
-            orderPart.LineItems.SetItems(lineItems);
-
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
-
-            // Store the current applicable discount info so they will be available in the future.
-            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
-                .Lines
-                .Where(line => line.AdditionalData.GetDiscounts().Any())
-                .ToDictionary(
-                    line => line.ProductSku,
-                    line => line.AdditionalData.GetDiscounts()));
-        });
-
-        order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
+        // If there is no cart, use current Order's data.
+        var defaultTotal = cartViewModel is null ? orderTotals : CheckTotals(cartViewModel).SingleOrDefault();
+        AlterOrder(order, paymentIntent, defaultTotal, cartViewModel, lineItems);
 
         if (string.IsNullOrEmpty(orderId))
         {
@@ -277,6 +252,18 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
+    public long GetPaymentAmount(Amount total)
+    {
+        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(total.Currency.CurrencyIsoCode))
+        {
+            return (long)Math.Round(total.Value);
+        }
+
+        return CurrencyCollectionConstants.SpecialCases.Contains(total.Currency.CurrencyIsoCode)
+            ? (long)Math.Round(total.Value / 100m) * 10000
+            : (long)Math.Round(total.Value * 100);
+    }
+
     private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order, IUpdateModelAccessor updateModelAccessor)
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
@@ -284,14 +271,12 @@ public class StripePaymentService : IStripePaymentService
         return updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
-    private async Task<PaymentIntent> CreatePaymentIntentAsync(
-        long amountForPayment,
-        Amount defaultTotal)
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total)
     {
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
             Amount = amountForPayment,
-            Currency = defaultTotal.Currency.CurrencyIsoCode,
+            Currency = total.Currency.CurrencyIsoCode,
             Description = T["User checkout on {0}", _siteName].Value,
             AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
         };
@@ -331,6 +316,44 @@ public class StripePaymentService : IStripePaymentService
         }
 
         return lineItems;
+    }
+
+    private static void AlterOrder(
+        ContentItem order,
+        PaymentIntent paymentIntent,
+        Amount defaultTotal,
+        ShoppingCartViewModel cartViewModel,
+        IEnumerable<OrderLineItem> lineItems)
+    {
+        order.Alter<OrderPart>(orderPart =>
+        {
+            orderPart.Charges.Clear();
+            orderPart.Charges.Add(
+                new Payment
+                {
+                    ChargeText = paymentIntent.Description,
+                    TransactionId = paymentIntent.Id,
+                    Amount = defaultTotal,
+                    CreatedUtc = paymentIntent.Created,
+                });
+
+            if (cartViewModel is not null)
+            {
+                // Shopping cart
+                orderPart.LineItems.SetItems(lineItems);
+                orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+
+                // Store the current applicable discount info so they will be available in the future.
+                orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                    .Lines
+                    .Where(line => line.AdditionalData.GetDiscounts().Any())
+                    .ToDictionary(
+                        line => line.ProductSku,
+                        line => line.AdditionalData.GetDiscounts()));
+            }
+        });
+
+        order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
     }
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(

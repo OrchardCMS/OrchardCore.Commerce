@@ -1,0 +1,112 @@
+{
+  "name": "OrchardCore.Commerce.Samples.Order",
+  "displayName": "Orchard Core Commerce - Samples - Order",
+  "description": "Creates sample Order content items.",
+  "author": "The Orchard Team",
+  "website": "https://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": false,
+  "categories": [ "commerce" ],
+  "tags": [ "order", "sample" ],
+  "steps": [
+    {
+      "name": "Content",
+      "data": [
+        {
+          "ContentItemId": "testpendingorder0000000000",
+          "ContentItemVersionId": "[js:uuid()]",
+          "ContentType": "Order",
+          "DisplayText": "Test Order 18a69e01-c98e-4452-b0e4-809f30a561f5",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "2023-09-27T15:56:12.6937089Z",
+          "PublishedUtc": "2023-09-27T15:56:12.8058832Z",
+          "CreatedUtc": "2023-09-27T15:51:06.0898032Z",
+          "Owner": null,
+          "Author": "admin",
+          "TitlePart": {
+            "Title": "Test Order 18a69e01-c98e-4452-b0e4-809f30a561f5"
+          },
+          "OrderPart": {
+            "OrderId": {
+              "Text": "18a69e01-c98e-4452-b0e4-809f30a561f5"
+            },
+            "Status": {
+              "Text": "pending"
+            },
+            "LineItems": [
+              {
+                "Quantity": 5,
+                "ProductSku": "TESTPRODUCT",
+                "FullSku": "",
+                "UnitPrice": {
+                  "value": 10.0,
+                  "currency": "USD"
+                },
+                "LinePrice": {
+                  "value": 50.0,
+                  "currency": "USD"
+                },
+                "ContentItemVersion": "testproducttestversion0000",
+                "Attributes": [],
+                "SelectedAttributes": {}
+              }
+            ],
+            "AdditionalCosts": [],
+            "Charges": [],
+            "Email": {
+              "Text": "admin@admin.com"
+            },
+            "Phone": {
+              "Text": "9876543210"
+            },
+            "VatNumber": {
+              "Text": "123456789"
+            },
+            "BillingAddress": {
+              "Address": {
+                "Name": "Test Name",
+                "Department": "Test Department",
+                "Company": "Test Company",
+                "StreetAddress1": "Test SA1",
+                "StreetAddress2": "TEST SA2",
+                "City": "Test City",
+                "Province": "AL",
+                "PostalCode": "12345",
+                "Region": "US"
+              },
+              "UserAddressToSave": null
+            },
+            "ShippingAddress": {
+              "Address": {
+                "Name": "Test Name",
+                "Department": "Test Department",
+                "Company": "Test Company",
+                "StreetAddress1": "Test SA1",
+                "StreetAddress2": "TEST SA2",
+                "City": "Test City",
+                "Province": "AL",
+                "PostalCode": "12345",
+                "Region": "US"
+              },
+              "UserAddressToSave": null
+            },
+            "BillingAndShippingAddressesMatch": {
+              "Value": true
+            },
+            "IsCorporation": {
+              "Value": false
+            },
+            "AdditionalData": {}
+          },
+          "StripePaymentPart": {
+            "PaymentIntentId": {
+              "Text": null
+            },
+            "RetryCounter": 0
+          }
+        }
+      ]
+    }
+  ]
+}

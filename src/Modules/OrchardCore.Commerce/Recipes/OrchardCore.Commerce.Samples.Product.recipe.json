@@ -189,7 +189,7 @@
         },
         {
           "ContentItemId": "testproduct000",
-          "ContentItemVersionId": "[js:uuid()]",
+          "ContentItemVersionId": "testproducttestversion0000",
           "ContentType": "Product",
           "DisplayText": "Test Product",
           "Latest": true,

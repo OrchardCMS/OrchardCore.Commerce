@@ -12,16 +12,21 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql.Services;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -29,6 +34,8 @@ public class PaymentController : Controller
 {
     private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
 
+    private readonly ISiteService _siteService;
+    private readonly ISession _session;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStripePaymentService _stripePaymentService;
     private readonly ILogger<PaymentController> _logger;
@@ -55,12 +62,14 @@ public class PaymentController : Controller
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _updateModelAccessor = updateModelAccessor;
+        _session = services.Session.Value;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _paymentIntentPersistence = paymentIntentPersistence;
         _notifier = notifier;
         _moneyService = moneyService;
         _paymentService = paymentService;
+        _siteService = services.SiteService.Value;
     }
 
     [Route("checkout")]
@@ -150,6 +159,59 @@ public class PaymentController : Controller
         }
     }
 
+    [Route("checkout/paymentrequest/{orderId}")]
+    public async Task<IActionResult> PaymentRequest(string orderId)
+    {
+        if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
+
+        if (string.IsNullOrEmpty(User.Identity.Name))
+        {
+            return LocalRedirect($"~/Login?ReturnUrl=~/Contents/ContentItems/{orderId}");
+        }
+
+        var orderPart = order.As<OrderPart>();
+
+        // If there are no line items, there is nothing to be done.
+        if (!orderPart.LineItems.Any())
+        {
+            await _notifier.InformationAsync(H["This Order contains no line items, so there is nothing to be paid."]);
+            return this.RedirectToContentDisplay(orderId);
+        }
+
+        // If status is not Pending, there is nothing to be done.
+        if (!string.Equals(orderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase))
+        {
+            await _notifier.InformationAsync(H["This Order is no longer pending."]);
+            return this.RedirectToContentDisplay(orderId);
+        }
+
+        var singleCurrencyTotal = orderPart.LineItems.Select(item => item.LinePrice).Sum();
+        if (singleCurrencyTotal.Value <= 0)
+        {
+            await _notifier.InformationAsync(H["This Order's line items have no cost, so there is nothing to be paid."]);
+            return this.RedirectToContentDisplay(orderId);
+        }
+
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var paymentAmount = _stripePaymentService.GetPaymentAmount(singleCurrencyTotal);
+        var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(paymentAmount, singleCurrencyTotal);
+
+        _session.Save(new OrderPayment
+        {
+            OrderId = order.ContentItemId,
+            PaymentIntentId = paymentIntent.Id,
+        });
+
+        return View(new
+        {
+            SingleCurrencyTotal = singleCurrencyTotal,
+            NetTotal = singleCurrencyTotal,
+            StripePublishableKey = stripeApiSettings.PublishableKey,
+            PaymentIntentClientSecret = paymentIntent.ClientSecret,
+            OrderPart = orderPart,
+        });
+    }
+
     [Route("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
     {
@@ -163,6 +225,7 @@ public class PaymentController : Controller
         }
 
         order.DisplayText = T["Success"].Value; // This is only for display, intentionally not saved.
+
         return View(order);
     }
 

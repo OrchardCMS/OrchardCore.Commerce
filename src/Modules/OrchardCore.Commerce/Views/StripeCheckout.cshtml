@@ -35,7 +35,7 @@
 <div>
     <strong>@T["Net Price: {0}", Model.NetTotal]</strong>
 </div>
-@if (Model.GrossTotal.Value != 0)
+@if (Model.GrossTotal != null && Model.GrossTotal.Value != 0)
 {
     <div>
         <strong>@T["Gross Price: {0}", Model.GrossTotal]</strong>

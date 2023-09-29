@@ -93,6 +93,10 @@
         },
         {
           "executionid": "OrchardCore.Commerce",
+          "name": "OrchardCore.Commerce.Samples.Order"
+        },
+        {
+          "executionid": "OrchardCore.Commerce",
           "name": "OrchardCore.Commerce.Content.MultiCurrencyProduct"
         }
       ]
