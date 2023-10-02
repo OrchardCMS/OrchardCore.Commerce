@@ -17,11 +17,11 @@ jobs:
 
   spelling:
     name: Spelling
-    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@issue/OSOE-636
     with:
       additional-dictionaries: |
         cspell:csharp/csharp.txt
-        cspell:html/html.txt
+        cspell:html/dict/html.txt
         lombiq-lgha:dictionaries/Liquid.txt
         lombiq-lgha:dictionaries/Lombiq.people.txt
 
