@@ -37,7 +37,7 @@ extra:
 
 # Repository
 repo_name: OrchardCMS/OrchardCore.Commerce
-repo_url: https://github.com/OrchardCMS/OrchardCore.Commerce
+repo_url: https://github.com/OrchardCMS/OrchardCore.Commerce/tree/issue/OCC-189
 edit_uri: edit/main/src/
 
 # Extensions
