@@ -37,7 +37,7 @@ extra:
 
 # Repository
 repo_name: OrchardCMS/OrchardCore.Commerce
-repo_url: https://github.com/OrchardCMS/OrchardCore.Commerce/tree/issue/OCC-189
+repo_url: https://github.com/OrchardCMS/OrchardCore.Commerce
 edit_uri: edit/main/src/
 
 # Extensions
@@ -82,6 +82,14 @@ nav:
     - Taxation: features/taxation.md
     - User Features: features/user-features.md
     - Workflows: features/workflows.md
+  - Parts, Fields, and Attributes:
+    - ProductPart: features/product-part.md
+    - PricePart: features/price-part.md
+    - PriceVariantsPart: features/price-variants-part.md
+    - InventoryPart: features/inventory-part.md
+    - BooleanAttribute: features/boolean-attribute.md
+    - NumericAttribute: features/numeric-attribute.md
+    - TextAttribute: features/text-attribute.md
   - Resources:
     - Libraries: resources/libraries/README.md
   - Releases: https://github.com/OrchardCMS/OrchardCore.Commerce/releases
