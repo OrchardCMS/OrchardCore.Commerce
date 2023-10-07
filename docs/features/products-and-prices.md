@@ -13,6 +13,6 @@ You can add fields to a product content type, the buyer can use these to enter f
 
 - [Boolean Product Attribute Field](boolean-product-attribute.md)
 - [Numeric Product Attribute Field](numeric-product-attribute.md)
-- [Text Product Attribute Field](text-pproduct-attribute.md)
+- [Text Product Attribute Field](text-product-attribute.md)
 
 There are more optional details regarding prices, see the [Taxation](taxation.md) and [Promotions](promotions.md) pages.

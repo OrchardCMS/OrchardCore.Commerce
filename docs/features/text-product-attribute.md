@@ -11,6 +11,7 @@ When used with a [PriceVariantsPart](price-variants-part.md) on a product, the `
 - **RestrictToPredefinedValues** (`bool`): Determines whether values should be restricted to the set of predefined values. Note that this must be set to true for `PriceVariantsPart` to pick up the values correctly.
 - **MultipleValues** (`bool`): Determines whether multiple values can be selected.
 
+## Usage examples
 New attribute fields can be added or existing fields can be edited in the relevant product content type's editor.
 ![image](../assets/images/text-product-attribute/content-type-editor-example.png)
 

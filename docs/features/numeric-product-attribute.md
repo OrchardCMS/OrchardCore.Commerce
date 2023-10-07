@@ -11,6 +11,7 @@ This is currently unsupported.
 - **Minimum** (`string`): Determines the minimum value allowed.
 - **Maximum** (`string`): Determines the maximum value allowed.
 
+## Usage examples
 New attribute fields can be added or existing fields can be edited in the relevant product content type's editor.
 ![image](../assets/images/numeric-product-attribute/content-type-editor-example.png)
 
