@@ -71,6 +71,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B
 		docs\features\promotions.md = docs\features\promotions.md
 		docs\features\stripe-payment.md = docs\features\stripe-payment.md
 		docs\features\taxation.md = docs\features\taxation.md
+		docs\features\tiered-price-part.md = docs\features\tiered-price-part.md
 		docs\features\user-features.md = docs\features\user-features.md
 		docs\features\workflows.md = docs\features\workflows.md
 	EndProjectSection

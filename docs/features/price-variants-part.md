@@ -20,7 +20,7 @@ New attribute fields can be added or existing fields can be edited in the conten
 The prices of variants can be set in the content item's editor.
 ![image](../assets/images/price-variants-part/price-variants-editor-example.png)
 
-With InventoryPart present, the inventory of each variant can be set in the content item's editor.
+With `InventoryPart` present, the inventory of each variant can be set in the content item's editor.
 ![image](../assets/images/price-variants-part/price-variants-inventory-example.png)
 
 On the product's page, a variant can be selected and added to the cart. If inventories exist, they are also displayed here.
