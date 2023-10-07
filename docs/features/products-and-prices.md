@@ -2,7 +2,7 @@
 
 To create a content type that represents a sellable product, you must give it a _Product_ part and either _Price_ or _PriceVariant_ part as well. You may have multiple different content types that represent different classes of product but they all must follow this rule.
 
-> ℹ Use the _Orchard Core Commerce - Content - Product_ recipe to set up fully featured Product content type.
+> ℹ Use the _Orchard Core Commerce - Content - Product_ recipe to set up a fully featured Product content type.
 
 - [ProductPart](product-part.md): contains the product's stock keeping unit (SKU) which has to be globally unique.
 - [PricePart](price-part.md): contains a single price for the product.
@@ -11,8 +11,8 @@ To create a content type that represents a sellable product, you must give it a 
 
 You can add fields to a product content type, the buyer can use these to enter further details for their order:
 
-- Boolean Product Attribute Field
-- Numeric Product Attribute Field
-- Text Product Attribute Field
+- [Boolean Product Attribute Field](boolean-product-attribute.md)
+- [Numeric Product Attribute Field](numeric-product-attribute.md)
+- [Text Product Attribute Field](text-pproduct-attribute.md)
 
 There are more optional details regarding prices, see the [Taxation](taxation.md) and [Promotions](promotions.md) pages.

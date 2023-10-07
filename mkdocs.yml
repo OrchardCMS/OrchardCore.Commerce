@@ -88,9 +88,9 @@ nav:
     - PriceVariantsPart: features/price-variants-part.md
     - InventoryPart: features/inventory-part.md
     - TieredPricePart: features/tiered-price-part.md
+    - TextProductAttribute: features/text-product-attribute.md
     - BooleanProductAttribute: features/boolean-product-attribute.md
     - NumericProductAttribute: features/numeric-product-attribute.md
-    - TextProductAttribute: features/text-product-attribute.md
   - Resources:
     - Libraries: resources/libraries/README.md
   - Releases: https://github.com/OrchardCMS/OrchardCore.Commerce/releases
