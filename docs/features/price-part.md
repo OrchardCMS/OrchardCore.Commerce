@@ -1,6 +1,6 @@
 # PricePart
 
-Provides a single price to a product using a custom [PriceField](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce/ContentFields/Models/PriceField.cs).
+Provides a single price to a product using a custom [_PriceField_](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.ContentFields/Models/PriceField.cs).
 
 ## Fields and properties
 - **PriceField** (`PriceField`): Sets the base price of a product using a decimal number and a currency. The final price of a product may differ based on tax settings.
