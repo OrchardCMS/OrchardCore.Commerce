@@ -62,11 +62,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{BEBA1764-1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B2DB1CD-2B4A-4823-9762-CF4E90661404}"
 	ProjectSection(SolutionItems) = preProject
+		docs\features\boolean-product-attribute-field.md = docs\features\boolean-product-attribute-field.md
+		docs\features\inventory-part.md = docs\features\inventory-part.md
 		docs\features\inventory.md = docs\features\inventory.md
+		docs\features\numeric-product-attribute-field.md = docs\features\numeric-product-attribute-field.md
+		docs\features\price-part.md = docs\features\price-part.md
+		docs\features\price-variants-part.md = docs\features\price-variants-part.md
+		docs\features\product-part.md = docs\features\product-part.md
 		docs\features\products-and-prices.md = docs\features\products-and-prices.md
 		docs\features\promotions.md = docs\features\promotions.md
 		docs\features\stripe-payment.md = docs\features\stripe-payment.md
 		docs\features\taxation.md = docs\features\taxation.md
+		docs\features\text-product-attribute-field.md = docs\features\text-product-attribute-field.md
+		docs\features\tiered-price-part.md = docs\features\tiered-price-part.md
 		docs\features\user-features.md = docs\features\user-features.md
 		docs\features\workflows.md = docs\features\workflows.md
 	EndProjectSection

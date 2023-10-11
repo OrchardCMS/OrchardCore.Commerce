@@ -1,7 +1,7 @@
 {
   "name": "OrchardCore.Commerce.Content.Product",
   "displayName": "Orchard Core Commerce - Content - Product",
-  "description": "Creates a Product content type with a Product Part and a Price Part.",
+  "description": "Creates various product content types by combining related content parts such as ProductPart, PricePart, InventoryPart, etc.",
   "author": "The Orchard Team",
   "website": "https://orchardproject.net",
   "version": "2.0",
