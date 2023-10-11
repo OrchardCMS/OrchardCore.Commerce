@@ -1,6 +1,6 @@
 # TextProductAttributeField
 
-Allows adding further details to a product. By default it is displayed as a text input, but this is modified by the some of the properties below. When used in combination with a [`PriceVariantsPart`](price-variants-part.md) and restricted to predefined values, it creates variants for the product. 
+Allows adding further details to a product. By default it is displayed as a text input, but this is modified by some of the properties below. When used in combination with a [`PriceVariantsPart`](price-variants-part.md) and restricted to predefined values, it creates variants for the product. 
 
 When not restricted to predefined values, it can be used to provide a text or note to the merchant. For example, in a clothing store it may be used to supply custom text to be printed on the item.
 
