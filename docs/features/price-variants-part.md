@@ -1,8 +1,8 @@
 # PriceVariantsPart
 
-Provides multiple prices to a product based on predefined attributes. This currently only supports [_TextProductAttributes_](text-product-attribute.md) that are restricted to predefined values.
+Provides multiple prices to a product based on predefined attributes. This currently only supports [`TextProductAttributes`](text-product-attribute.md) that are restricted to predefined values.
 
-If [_InventoryPart_](inventory-part.md) is present, there will be multiple separate inventories for the variants.
+If [`InventoryPart`](inventory-part.md) is present, there will be multiple separate inventories for the variants.
 
 In case of multiple attribute fields on a content type, a price field will be created for each possible combination. Individual inventories can be created using a recipe, see the sample [Price Variant Product](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce/Recipes/OrchardCore.Commerce.Samples.Product.recipe.json#L145).
 

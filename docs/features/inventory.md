@@ -1,6 +1,6 @@
 # Inventory
 
-The local inventory management can help your shop in preventing back orders or managing order quantities. For more details on the InventoryPart itself, see its [documentation page](inventory-part.md).
+The local inventory management can help your shop in preventing back orders or managing order quantities. For more details on the `InventoryPart` itself, see its [documentation page](inventory-part.md).
 
 1. Enable the _Orchard Core Commerce - Inventory_ feature.
 2. Edit the product in the content item editor.
