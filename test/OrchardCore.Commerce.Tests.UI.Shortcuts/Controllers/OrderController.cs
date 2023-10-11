@@ -47,7 +47,7 @@ public class OrderController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> CreateOrderWithSuccessfulPayment(long dateTimeTicks)
     {
-        var testTime = new DateTime(dateTimeTicks);
+        var testTime = new DateTime(dateTimeTicks, DateTimeKind.Utc);
 
         var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(shoppingCart.Id);
