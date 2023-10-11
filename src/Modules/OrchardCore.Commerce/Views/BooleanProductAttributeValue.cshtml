@@ -5,8 +5,7 @@
     {
         TagBuilder tag = Tag(Model, "li");
         tag.AddCssClass("list-inline-item");
-        var label = Model.Label as string;
-        tag.InnerHtml.Append(label);
+        tag.InnerHtml.Append(attr.FieldName);
         @tag
     }
 }
