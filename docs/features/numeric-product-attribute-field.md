@@ -13,9 +13,9 @@ Adds a numeric input field so the buyer can communicate some kind of additional 
 
 ## Usage examples
 New attribute fields can be added or existing fields can be edited in the relevant product content type's editor.
-![image](../assets/images/numeric-product-attribute/content-type-editor-example.png)
+![image](../assets/images/numeric-product-attribute-field/content-type-editor-example.png)
 
-![image](../assets/images/numeric-product-attribute/attribute-field-editor-example.png)
+![image](../assets/images/numeric-product-attribute-field/attribute-field-editor-example.png)
 
 Attribute fields are displayed on the product's page.
-![image](../assets/images/numeric-product-attribute/attribute-field-display-example.png)
+![image](../assets/images/numeric-product-attribute-field/attribute-field-display-example.png)

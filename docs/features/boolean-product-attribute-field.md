@@ -9,9 +9,9 @@ Adds a checkbox so the buyer can communicate some kind of yes/no choice about th
 
 ## Usage examples
 New attribute fields can be added or existing fields can be edited in the relevant product content type's editor.
-![image](../assets/images/boolean-product-attribute/content-type-editor-example.png)
+![image](../assets/images/boolean-product-attribute-field/content-type-editor-example.png)
 
-![image](../assets/images/boolean-product-attribute/attribute-field-editor-example.png)
+![image](../assets/images/boolean-product-attribute-field/attribute-field-editor-example.png)
 
 Attribute fields are displayed on the product's page.
-![image](../assets/images/boolean-product-attribute/attribute-field-display-example.png)
+![image](../assets/images/boolean-product-attribute-field/attribute-field-display-example.png)
