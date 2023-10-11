@@ -11,8 +11,8 @@ To create a content type that represents a sellable product, you must give it a 
 
 You can add fields to a product content type, the buyer can use these to enter further details for their order:
 
-- [Boolean Product Attribute Field](boolean-product-attribute.md)
-- [Numeric Product Attribute Field](numeric-product-attribute.md)
-- [Text Product Attribute Field](text-product-attribute.md)
+- [Boolean Product Attribute Field](boolean-product-attribute-field.md)
+- [Numeric Product Attribute Field](numeric-product-attribute-field.md)
+- [Text Product Attribute Field](text-product-attribute-field.md)
 
 There are more optional details regarding prices, see the [Taxation](taxation.md) and [Promotions](promotions.md) pages.

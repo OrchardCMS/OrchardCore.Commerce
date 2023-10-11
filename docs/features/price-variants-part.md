@@ -1,6 +1,6 @@
 # PriceVariantsPart
 
-Provides multiple prices to a product based on predefined attributes. This currently only supports [`TextProductAttributes`](text-product-attribute.md) that are restricted to predefined values.
+Provides multiple prices to a product based on predefined attributes. This currently only supports [`TextProductAttributeField`](text-product-attribute-field.md)s that are restricted to predefined values.
 
 If [`InventoryPart`](inventory-part.md) is present, there will be multiple separate inventories for the variants.
 
