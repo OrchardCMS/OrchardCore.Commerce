@@ -1,6 +1,6 @@
 # NumericProductAttributeField
 
-This is currently unsupported — while the attributes do show up on the product's page, they serve no purpose for the time being.
+Adds a numeric input field so the buyer can communicate some kind of additional numeric detail about their purchase. Currently this attribute is not supported for price variant creation.
 
 ## Fields and properties
 - **Hint** (`string`): Sets the description text to display for this attribute on the product's page.

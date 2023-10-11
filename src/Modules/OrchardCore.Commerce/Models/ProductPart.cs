@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Media.Fields;
 using System.Collections.Generic;
@@ -14,6 +15,16 @@ public class ProductPart : ContentPart
     /// Gets or sets the product's SKU, which can also be used as an alias for the item.
     /// </summary>
     public string Sku { get; set; }
+
+    /// <summary>
+    /// Gets whether the product can currently be bought based on current inventory settings. If there is no
+    /// <see cref="InventoryPart">InventoryPart</see> on the product, it is unused. This is not editable in the
+    /// product's editor.
+    /// </summary>
     public IDictionary<string, bool> CanBeBought { get; } = new Dictionary<string, bool>();
+
+    /// <summary>
+    /// Gets or sets the image associated with this product, which will be displayed on the product's page.
+    /// </summary>
     public MediaField ProductImage { get; set; }
 }

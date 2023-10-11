@@ -82,15 +82,17 @@ nav:
     - Taxation: features/taxation.md
     - User Features: features/user-features.md
     - Workflows: features/workflows.md
-  - Parts, Fields, and Attributes:
-    - ProductPart: features/product-part.md
-    - PricePart: features/price-part.md
-    - PriceVariantsPart: features/price-variants-part.md
-    - InventoryPart: features/inventory-part.md
-    - TieredPricePart: features/tiered-price-part.md
-    - TextProductAttribute: features/text-product-attribute.md
-    - BooleanProductAttribute: features/boolean-product-attribute.md
-    - NumericProductAttribute: features/numeric-product-attribute.md
+  - Parts and Fields:
+    - Parts:
+      - ProductPart: features/product-part.md
+      - PricePart: features/price-part.md
+      - PriceVariantsPart: features/price-variants-part.md
+      - TieredPricePart: features/tiered-price-part.md
+      - InventoryPart: features/inventory-part.md
+    - Fields:
+      - TextProductAttribute: features/text-product-attribute.md
+      - BooleanProductAttribute: features/boolean-product-attribute.md
+      - NumericProductAttribute: features/numeric-product-attribute.md
   - Resources:
     - Libraries: resources/libraries/README.md
   - Releases: https://github.com/OrchardCMS/OrchardCore.Commerce/releases

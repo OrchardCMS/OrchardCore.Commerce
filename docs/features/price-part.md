@@ -3,7 +3,7 @@
 Provides a single price to a product using a custom [_PriceField_](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.ContentFields/Models/PriceField.cs).
 
 ## Fields and properties
-- **PriceField** (`PriceField`): Sets the base price of a product using a decimal number and a currency. The final price of a product may differ based on tax settings.
+- **PriceField** (`PriceField`): Sets the base price of a product using a decimal number and a currency. The final price of a product may differ based on other features that implement `IShoppingCartEvents`, like promotions and tax settings.
 
 ## Usage examples
 The product's price can be set in the product's editor.
