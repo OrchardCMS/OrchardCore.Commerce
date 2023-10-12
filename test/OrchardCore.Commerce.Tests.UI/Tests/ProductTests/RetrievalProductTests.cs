@@ -45,7 +45,7 @@ public class RetrievalProductTests : UITestBase
             browser);
 
     [Theory, Chrome]
-    public Task ProductAttributesShouldBeDisplayedCorrectlyOnProductPage(Browser browser) =>
+    public Task ProductAttributesShouldBeDisplayedCorrectly(Browser browser) =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -59,7 +59,7 @@ public class RetrievalProductTests : UITestBase
                 // Verify text attribute properties show up correctly.
                 await context.GoToContentItemByIdAsync(TestPriceVariantProduct);
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Medium')]"));
-                context.Exists(By.XPath("//div[contains(., 'Test Boolean Hint')]"));
+                context.Exists(By.XPath("//div[contains(., 'Test Text Hint')]"));
                 await context.ClickReliablyOnSubmitAsync();
 
                 context.Exists(By.XPath("//li[contains(., 'Size: Medium')]"));
