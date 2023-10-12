@@ -48,7 +48,7 @@ public class ProductBehaviourTests : UITestBase
 
             await context.ClickReliablyOnSubmitAsync();
 
-            context.Driver.Exists(By.XPath($"//li[contains(., 'PriceVariantsProduct: Small')]").Visible());
+            context.Driver.Exists(By.XPath($"//li[contains(., 'Size: Small')]").Visible());
         },
         browser);
 
