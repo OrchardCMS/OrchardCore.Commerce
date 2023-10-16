@@ -210,6 +210,12 @@ public class Startup : StartupBase
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
             // Liquid filter to create OrderLineItemViewModels.
             .AddLiquidFilter<OrderLineItemViewModelsAndTaxRatesConverterFilter>("order_line_item_view_models_and_tax_rates");
+
+        // Product List
+        services.AddScoped<IProductListService, ProductListService>();
+        services.AddScoped<IDataMigration, ProductListMigrations>();
+        services.AddContentPart<ProductListPart>()
+            .UseDisplayDriver<ProductListPartDisplayDriver>();
     }
 }
 
