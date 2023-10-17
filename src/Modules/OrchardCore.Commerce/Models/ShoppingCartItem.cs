@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Serialization;
 using OrchardCore.Mvc.Utilities;
 using System;
@@ -124,7 +125,14 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         var price = priceSelectionStrategy.SelectPrice(item.Prices);
         var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
 
-        var selectedAttributes = Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
+        var selectedAttributes = Attributes.ToDictionary(key => key.PartName, value =>
+            value switch
+            {
+                TextProductAttributeValue textAttributeValue => textAttributeValue.PredefinedValue,
+                BooleanProductAttributeValue booleanAttributeValue => booleanAttributeValue.Value.ToString(),
+                NumericProductAttributeValue numericAttributeValue => numericAttributeValue.Value.ToString(),
+                _ => string.Empty,
+            });
 
         return new OrderLineItem(
             quantity,

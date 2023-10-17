@@ -30,19 +30,6 @@ public class ProductAttributeProvider : IProductAttributeProvider
         var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
 
         var element = default(JsonElement);
-        //if (value is JsonElement jsonElement)
-        //{
-        //    element = jsonElement;
-        //}
-        //else if (value is JValue jValue)
-        //{
-        //    element = JsonDocument.Parse(jValue.Value.ToString().ToLowerInvariant()).RootElement;
-        //}
-        //else if (value is JArray jArray)
-        //{
-        //    element = JsonDocument.Parse(jArray.ToString()).RootElement;
-        //}
-
         element = value switch
         {
             JsonElement jsonElement => jsonElement,
