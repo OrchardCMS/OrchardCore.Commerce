@@ -1,5 +1,6 @@
 @using System.Text.Json;
 @using OrchardCore.Commerce.Abstractions;
+@using OrchardCore.Commerce.Fields;
 @using OrchardCore.Commerce.Indexes;
 @using OrchardCore.Commerce.Models;
 @using OrchardCore.Commerce.MoneyDataType.Abstractions;
@@ -11,18 +12,26 @@
 
 @inject IMoneyService MoneyService
 @inject ISession Session
-@inject IPredefinedValuesProductAttributeService AttributesService
+@inject IPredefinedValuesProductAttributeService PredefinedAttributeService
+@inject IProductAttributeService AttributeService
 
 @{
     var serializedAvailableCurrencyCodes = JsonSerializer.Serialize(MoneyService.Currencies.ToDictionary(currency => currency.CurrencyIsoCode, currency => currency.Symbol));
     var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
 
-    var availableAttributes = new Dictionary<string, Dictionary<string, List<string>>>();
+    var availableTextAttributes = new Dictionary<string, Dictionary<string, List<string>>>();
     var allProducts = await Session.Query<ContentItem, ProductPartIndex>().ListAsync();
     foreach (var product in allProducts)
     {
-        var attributes = AttributesService.GetProductAttributesRestrictedToPredefinedValues(product);
-        foreach (var attr in attributes)
+        // handle other attributes too
+        var numericAttributes = AttributeService.GetProductAttributeFields(product)
+            .Where(attr => attr.Field is NumericProductAttributeField)
+            .Select(attr => attr.Name);
+        var booleanAttributes = AttributeService.GetProductAttributeFields(product)
+            .Where(attr => attr.Field is BooleanProductAttributeField);
+
+        var textAttributes = PredefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
+        foreach (var attr in textAttributes)
         {
             var predefinedStrings = new List<string>();
 
@@ -32,16 +41,17 @@
             var attributesValuesByAttributeNames = new Dictionary<string, List<string>>();
             attributesValuesByAttributeNames.Add(attr.Name, predefinedStrings);
 
-            // A Product may already be present in the dictionary, but if it has several different attributes, those still need to be added to its key.
+            // A Product may already be present in the dictionary, but if it has several different attributes,
+            // those still need to be added to its key.
             var productSku = product.As<ProductPart>().Sku;
-            if (!availableAttributes.TryAdd(productSku, attributesValuesByAttributeNames))
+            if (!availableTextAttributes.TryAdd(productSku, attributesValuesByAttributeNames))
             {
-                availableAttributes[productSku].Add(attr.Name, predefinedStrings);
+                availableTextAttributes[productSku].Add(attr.Name, predefinedStrings);
             }
         }
     }
 
-    var serializedAttributesDictionary = JsonSerializer.Serialize(availableAttributes);
+    var serializedTextAttributesDictionary = JsonSerializer.Serialize(availableTextAttributes);
 }
 
 <section id="shopping-cart">
@@ -59,7 +69,7 @@
             </li>
         </ul>
     </fieldset>
-    <div class="container">
+    <div class="p-4">
         <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
             <div class="col-xs-12 col-sm-2">@T["Product Name"]</div>
             <div class="col-xs-12 col-sm-2">@T["Quantity"]</div>
@@ -90,9 +100,9 @@
                        </select>
                     </div>
                     <div class="col-xs-12 col-sm-2 d-flex">
-                        <div v-for="(values, key) in lineItem.availableAttributes[lineItem.productSku]">
+                        <div v-for="(values, key) in lineItem.availableTextAttributes[lineItem.productSku]">
                             <label>{{ key }}</label>
-                            <select :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[' + key + ']'" v-model="lineItem.selectedAttributes[key]">
+                            <select :name="'OrderPart.LineItems[' + index + '].SelectedTextAttributes[' + key + ']'" v-model="lineItem.selectedTextAttributes[key]">
                                 <option value=""></option>
                                 <option v-for="value in values" :value="value">{{ value }}</option>
                             </select>
@@ -182,11 +192,11 @@
 <script at="Foot" depends-on="vuejs">
     const vueQuery = '#orderPart__products';
     let lineItems = @Json.Serialize(Model.LineItems);
-    let availableAttributes = JSON.parse('@Html.Raw(serializedAttributesDictionary)');
+    let availableTextAttributes = JSON.parse('@Html.Raw(serializedTextAttributesDictionary)');
 
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
-        item.availableAttributes = availableAttributes;
+        item.availableTextAttributes = availableTextAttributes;
     })
 
     let products = new Vue({
@@ -216,8 +226,8 @@
             "productSku": null,
             "unitPriceValue": 0,
             "unitPriceCurrencyIsoCode": '@defaultCurrencyCode',
-            "availableAttributes": availableAttributes,
-            "selectedAttributes": '',
+            "availableTextAttributes": availableTextAttributes,
+            "selectedTextAttributes": '',
         });
     });
 </script>

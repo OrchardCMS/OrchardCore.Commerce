@@ -122,16 +122,17 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             }
 
             var attributesList = new List<IProductAttributeValue>();
-            var selectedAttributes = lineItem.SelectedAttributes
+            var selectedTextAttributes = lineItem.SelectedTextAttributes
                 .Where(keyValuePair => keyValuePair.Value != null)
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-            if (selectedAttributes.Any())
+            if (selectedTextAttributes.Any())
             {
-                HandleSelectedAttributes(selectedAttributes, productPart, attributesList);
+                HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
             }
 
             // If attributes exist, there must be a full SKU.
+                // is this also the case for simple products with attributes?
             var fullSku = string.Empty;
             if (attributesList.Any())
             {
@@ -151,15 +152,15 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
                 productPart.ContentItem.ContentItemVersionId,
                 attributesList,
-                selectedAttributes
+                selectedTextAttributes
             ));
         }
 
         return orderLineItems;
     }
 
-    private void HandleSelectedAttributes(
-        IDictionary<string, string> selectedAttributes,
+    private void HandleSelectedTextAttributes(
+        IDictionary<string, string> selectedTextAttributes,
         ProductPart productPart,
         IList<IProductAttributeValue> attributesList)
     {
@@ -167,13 +168,13 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem);
 
         // Predefined attributes must contain the selected attributes.
-        var selectedAttributesList = predefinedAttributes
-            .Where(predefinedAttr => selectedAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
+        var selectedTextAttributesList = predefinedAttributes
+            .Where(predefinedAttr => selectedTextAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
             .ToList();
 
         // Construct actual attributes from strings.
         var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-        foreach (var attribute in selectedAttributesList)
+        foreach (var attribute in selectedTextAttributesList)
         {
             var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
                 type, type.Name + "." + attribute.Name);
@@ -182,12 +183,12 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             predefinedStrings.AddRange(
                 (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
 
-            var valueThen = predefinedStrings.First(
-                item => item == selectedAttributes.First(keyValuePair => keyValuePair.Key == attribute.Name).Value);
+            var value = predefinedStrings.First(
+                item => item == selectedTextAttributes.First(keyValuePair => keyValuePair.Key == attribute.Name).Value);
 
             var matchingAttribute = _attributeProviders
                 .Select(provider => provider.Parse(
-                    attributePartDefinition, attributeFieldDefinition, valueThen))
+                    attributePartDefinition, attributeFieldDefinition, value))
                 .FirstOrDefault(attributeValue => attributeValue != null);
 
             attributesList.Add(matchingAttribute);

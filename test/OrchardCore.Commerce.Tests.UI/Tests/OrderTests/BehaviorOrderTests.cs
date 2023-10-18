@@ -97,11 +97,11 @@ public class BehaviorOrderTests : UITestBase
                     .ShouldBe("EUR");
 
                 // For a Product with existing attributes, attributes should be populated and should be selectable.
-                await context.SetDropdownByTextAsync(By.Name("OrderPart.LineItems[0].SelectedAttributes[Size]"), "Medium");
+                await context.SetDropdownByTextAsync(By.Name("OrderPart.LineItems[0].SelectedTextAttributes[Size]"), "Medium");
                 await context.ClickPublishAsync();
 
                 context
-                    .Get(By.Name("OrderPart.LineItems[0].SelectedAttributes[Size]"))
+                    .Get(By.Name("OrderPart.LineItems[0].SelectedTextAttributes[Size]"))
                     .GetValue()
                     .ShouldBe("Medium");
 
@@ -113,7 +113,7 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickPublishAsync();
 
                 // No attributes should be loaded for Product without attributes.
-                context.Missing(By.Name("OrderPart.LineItems[1].SelectedAttributes[Size]"));
+                context.Missing(By.Name("OrderPart.LineItems[1].SelectedTextAttributes[Size]"));
 
                 await context.SetDropdownByTextAsync(ByUnitPriceCurrencyIsoCode(1), "CAD");
                 await context.ClickPublishAsync();
