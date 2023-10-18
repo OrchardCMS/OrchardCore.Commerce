@@ -7,13 +7,14 @@
 @inject IProductAttributeService AttributeService;
 
 @{
-    var attributes = AttributeService.GetProductAttributeFields(Model.Product as ContentItem);
-    var booleanAttributeFields = attributes.Where(attr => attr.Field is BooleanProductAttributeField);
-    var settings = booleanAttributeFields.FirstOrDefault().Settings as BooleanProductAttributeFieldSettings;
+    var attributeValue = Model.Attribute as BooleanProductAttributeValue;
+    var attributeDescriptions = AttributeService.GetProductAttributeFields(Model.Product as ContentItem);
+    var booleanAttributeFields = attributeDescriptions.Where(attr => attr.Field is BooleanProductAttributeField);
+    var settings = booleanAttributeFields
+        .FirstOrDefault(attr => attr.Name == attributeValue.FieldName).Settings as BooleanProductAttributeFieldSettings;
 
-    var attr = Model.Attribute as BooleanProductAttributeValue;
     TagBuilder tag = Tag(Model, "li");
     tag.AddCssClass("list-inline-item");
-    tag.InnerHtml.Append((settings.Label ?? attr.FieldName) + ": " + (attr.Value ? "Yes" : "No"));
+    tag.InnerHtml.Append((settings.Label ?? attributeValue.FieldName) + ": " + (attributeValue.Value ? "Yes" : "No"));
     @tag
 }
