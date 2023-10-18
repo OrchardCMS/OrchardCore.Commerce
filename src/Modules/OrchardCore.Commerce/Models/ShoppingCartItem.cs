@@ -125,6 +125,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         var price = priceSelectionStrategy.SelectPrice(item.Prices);
         var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
 
+        // divide these into 3 categories
         var selectedAttributes = Attributes.ToDictionary(key => key.PartName, value =>
             value switch
             {
@@ -134,6 +135,19 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
                 _ => string.Empty,
             });
 
+        var selectedTextAttributes = Attributes
+            .Where(attr => attr is TextProductAttributeValue)
+            .ToDictionary(
+                attr => attr.PartName,
+                // using dynamic cast gets rid of analyzer warning, but makes code less readable
+                attr => ((TextProductAttributeValue)attr).PredefinedValue as string);
+
+        var selectedBooleanAttributes = Attributes
+            .Where(attr => attr is BooleanProductAttributeValue)
+            .ToDictionary(
+                attr => attr.PartName,
+                attr => ((BooleanProductAttributeValue)attr).Value.ToString());
+
         return new OrderLineItem(
             quantity,
             ProductSku,
@@ -142,7 +156,8 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             quantity * price,
             contentItemVersion,
             Attributes,
-            selectedAttributes);
+            selectedTextAttributes,
+            selectedBooleanAttributes);
     }
 
     public static async Task<LocalizedHtmlString> GetErrorAsync(

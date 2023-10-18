@@ -19,16 +19,29 @@
     var serializedAvailableCurrencyCodes = JsonSerializer.Serialize(MoneyService.Currencies.ToDictionary(currency => currency.CurrencyIsoCode, currency => currency.Symbol));
     var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
 
+    var availableBooleanAttributes = new Dictionary<string, List<string>>(); // sku, field names
     var availableTextAttributes = new Dictionary<string, Dictionary<string, List<string>>>();
+
     var allProducts = await Session.Query<ContentItem, ProductPartIndex>().ListAsync();
     foreach (var product in allProducts)
     {
+        var productSku = product.As<ProductPart>().Sku;
+
         // handle other attributes too
+        var booleanAttributes = AttributeService.GetProductAttributeFields(product)
+            .Where(attr => attr.Field is BooleanProductAttributeField)
+            .Select(attr => attr.Name)
+            .ToList();
+
+        if (booleanAttributes.Any())
+        {
+            availableBooleanAttributes.Add(productSku, booleanAttributes);
+        }
+
         var numericAttributes = AttributeService.GetProductAttributeFields(product)
             .Where(attr => attr.Field is NumericProductAttributeField)
-            .Select(attr => attr.Name);
-        var booleanAttributes = AttributeService.GetProductAttributeFields(product)
-            .Where(attr => attr.Field is BooleanProductAttributeField);
+            .Select(attr => attr.Name)
+            .ToList();
 
         var textAttributes = PredefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
         foreach (var attr in textAttributes)
@@ -43,7 +56,6 @@
 
             // A Product may already be present in the dictionary, but if it has several different attributes,
             // those still need to be added to its key.
-            var productSku = product.As<ProductPart>().Sku;
             if (!availableTextAttributes.TryAdd(productSku, attributesValuesByAttributeNames))
             {
                 availableTextAttributes[productSku].Add(attr.Name, predefinedStrings);
@@ -52,6 +64,8 @@
     }
 
     var serializedTextAttributesDictionary = JsonSerializer.Serialize(availableTextAttributes);
+    var serializedBooleanAttributesDictionary = JsonSerializer.Serialize(availableBooleanAttributes);
+    var breaker = "";
 }
 
 <section id="shopping-cart">
@@ -72,11 +86,11 @@
     <div class="p-4">
         <div class="d-none d-sm-flex row border-bottom mt-3 pb-2 font-weight-bold">
             <div class="col-xs-12 col-sm-2">@T["Product Name"]</div>
-            <div class="col-xs-12 col-sm-2">@T["Quantity"]</div>
+            <div class="col-xs-12 col-sm-1">@T["Quantity"]</div>
             <div class="col-xs-12 col-sm-2">@T["Product SKU"]</div>
-            <div class="col-xs-12 col-sm-2">@T["Unit Price Value"]</div>
+            <div class="col-xs-12 col-sm-1">@T["Unit Price Value"]</div>
             <div class="col-xs-12 col-sm-1">@T["Unit Price Currency"]</div>
-            <div class="col-xs-12 col-sm-2">@T["Attributes"]</div>
+            <div class="col-xs-12 col-sm-3">@T["Attributes"]</div>
             <div class="col-xs-12 col-sm-1">@T["Actions"]</div>
         </div>
         <div id="orderPart__products" class="orderPart__products">
@@ -85,27 +99,39 @@
                     <div class="col-xs-12 col-sm-2 d-flex">
                         <a :href="lineItem.productUrl" target="_blank">{{ lineItem.productName }}</a>
                     </div>
-                    <div class="col-xs-12 col-sm-2 d-flex">
-                        <input :name="'OrderPart.LineItems[' + index + '].Quantity'" v-model="lineItem.quantity">
+                    <div class="col-xs-12 col-sm-1 d-flex">
+                        <input class="w-100" :name="'OrderPart.LineItems[' + index + '].Quantity'" v-model="lineItem.quantity">
                     </div>
                     <div class="col-xs-12 col-sm-2 d-flex">
                         <input :name="'OrderPart.LineItems[' + index + '].ProductSku'" v-model="lineItem.productSku">
                     </div>
-                    <div class="col-xs-12 col-sm-2 d-flex">
-                        <input :name="'OrderPart.LineItems[' + index + '].UnitPriceValue'" v-model="lineItem.unitPriceValue">
+                    <div class="col-xs-12 col-sm-1 d-flex">
+                        <input class="w-100" :name="'OrderPart.LineItems[' + index + '].UnitPriceValue'" v-model="lineItem.unitPriceValue">
                     </div>
                     <div class="col-xs-12 col-sm-1 d-flex">
                         <select :name="'OrderPart.LineItems[' + index + '].UnitPriceCurrencyIsoCode'" v-model="lineItem.unitPriceCurrencyIsoCode">
                             <option v-for="(value, key) in availableCurrencyCodes" :value="key">{{ key }}</option>
                        </select>
                     </div>
-                    <div class="col-xs-12 col-sm-2 d-flex">
-                        <div v-for="(values, key) in lineItem.availableTextAttributes[lineItem.productSku]">
+                    <div class="col-xs-12 col-sm-3 d-flex">
+                        <div class="col-sm-3" v-for="(values, key) in lineItem.availableTextAttributes[lineItem.productSku]">
                             <label>{{ key }}</label>
                             <select :name="'OrderPart.LineItems[' + index + '].SelectedTextAttributes[' + key + ']'" v-model="lineItem.selectedTextAttributes[key]">
                                 <option value=""></option>
                                 <option v-for="value in values" :value="value">{{ value }}</option>
                             </select>
+                        </div>
+                        <div class="col-sm-3" v-for="(value, key) in lineItem.availableBooleanAttributes[lineItem.productSku]">
+                            <div>
+                                <label :for="lineItem.productSku + '.' + value">{{ value }}</label>
+                                <input v-model="lineItem.selectedBooleanAttributes[value]"
+                                       :id="lineItem.productSku + '.' + value"
+                                       type="checkbox"
+                                       :name="'OrderPart.LineItems[' + index + '].SelectedBooleanAttributes[' + value + ']'"
+                                       @*v:checked="'lineItem.selectedBooleanAttributes[value] ? checked : null'"*@
+                                       value="true"
+                                       class="form-check-input" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-1">
@@ -193,10 +219,15 @@
     const vueQuery = '#orderPart__products';
     let lineItems = @Json.Serialize(Model.LineItems);
     let availableTextAttributes = JSON.parse('@Html.Raw(serializedTextAttributesDictionary)');
+    let availableBooleanAttributes = JSON.parse('@Html.Raw(serializedBooleanAttributesDictionary)');
+
+    //console.log(availableTextAttributes);
+    //console.log(availableBooleanAttributes);
 
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
         item.availableTextAttributes = availableTextAttributes;
+        item.availableBooleanAttributes = availableBooleanAttributes;
     })
 
     let products = new Vue({
@@ -227,7 +258,9 @@
             "unitPriceValue": 0,
             "unitPriceCurrencyIsoCode": '@defaultCurrencyCode',
             "availableTextAttributes": availableTextAttributes,
+            "availableBooleanAttributes": availableBooleanAttributes,
             "selectedTextAttributes": '',
+            "selectedBooleanAttributes": '',
         });
     });
 </script>

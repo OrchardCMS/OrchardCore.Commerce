@@ -1,3 +1,4 @@
+using AngleSharp.Text;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
@@ -131,6 +132,11 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
             }
 
+            var selectedBooleanAttributes = lineItem.SelectedBooleanAttributes.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+
+            // if there are boolean attributes selected, they need to be handled
+
             // If attributes exist, there must be a full SKU.
                 // is this also the case for simple products with attributes?
             var fullSku = string.Empty;
@@ -152,7 +158,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
                 productPart.ContentItem.ContentItemVersionId,
                 attributesList,
-                selectedTextAttributes
+                selectedTextAttributes,
+                selectedBooleanAttributes
             ));
         }
 
