@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Helpers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -125,21 +126,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 continue;
             }
 
-            var attributesList = new List<IProductAttributeValue>();
-            var selectedTextAttributes = lineItem.SelectedTextAttributes
-                .Where(keyValuePair => keyValuePair.Value != null)
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
-
-            if (selectedTextAttributes.Any())
-            {
-                HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
-            }
-
-            var selectedBooleanAttributes = lineItem.SelectedBooleanAttributes.ToDictionary(pair => pair.Key, pair => pair.Value);
-            if (selectedBooleanAttributes.Any())
-            {
-                HandleSelectedBooleanAttributes(selectedBooleanAttributes, productPart, attributesList);
-            }
+            var processedAttributes = ProcessAttributes(lineItem, productPart);
+            var attributesList = processedAttributes.AttributesList;
 
             // If attributes exist, there must be a full SKU.
             var fullSku = string.Empty;
@@ -161,12 +149,52 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
                 productPart.ContentItem.ContentItemVersionId,
                 attributesList,
-                selectedTextAttributes,
-                selectedBooleanAttributes
+                processedAttributes.SelectedTextAttributes,
+                processedAttributes.SelectedBooleanAttributes,
+                processedAttributes.SelectedNumericAttributes
             ));
         }
 
         return orderLineItems;
+    }
+
+    private void HandleSelectedNumericAttributes(
+        IDictionary<string, string> selectedNumericAttributes,
+        ProductPart productPart,
+        IList<IProductAttributeValue> attributesList)
+    {
+        var numericAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
+            .Where(attr => attr.Field is NumericProductAttributeField)
+            .ToList();
+
+        // Construct actual attributes from strings.
+        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        foreach (var attribute in numericAttributesList)
+        {
+            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+                type, type.Name + "." + attribute.Name);
+
+            var defaultValue = ((attribute.Settings as NumericProductAttributeFieldSettings).DefaultValue ?? 0)
+                .ToString(CultureInfo.InvariantCulture);
+            var selectedNumericAttribute = selectedNumericAttributes.FirstOrDefault(keyValuePair => keyValuePair.Key == attribute.Name);
+            var selectedValue = selectedNumericAttribute.Value;
+
+            // if selectedValue is null, set default value in selectedNumericAttributes dictionary too
+            if (string.IsNullOrEmpty(selectedValue))
+            {
+                selectedNumericAttributes.Remove(selectedNumericAttribute);
+                selectedNumericAttributes.Add(selectedNumericAttribute.Key, defaultValue);
+            }
+
+            var matchingAttribute = _attributeProviders
+                .Select(provider => provider.Parse(
+                    attributePartDefinition,
+                    attributeFieldDefinition,
+                    selectedValue ?? defaultValue))
+                .FirstOrDefault(attributeValue => attributeValue != null);
+
+            attributesList.Add(matchingAttribute);
+        }
     }
 
     private void HandleSelectedBooleanAttributes(
@@ -179,6 +207,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             .Select(attr => attr.Name)
             .ToList();
 
+        // Construct actual attributes from strings.
         var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
         foreach (var attribute in booleanAttributesList)
         {
@@ -231,6 +260,39 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             attributesList.Add(matchingAttribute);
         }
+    }
+
+    private (List<IProductAttributeValue> AttributesList,
+        Dictionary<string, string> SelectedTextAttributes,
+        Dictionary<string, string> SelectedBooleanAttributes,
+        Dictionary<string, string> SelectedNumericAttributes)
+        ProcessAttributes(OrderLineItemViewModel lineItem, ProductPart productPart)
+    {
+        var attributesList = new List<IProductAttributeValue>();
+        var selectedTextAttributes = lineItem.SelectedTextAttributes
+            .Where(keyValuePair => keyValuePair.Value != null)
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+        if (selectedTextAttributes.Any())
+        {
+            HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
+        }
+
+        var selectedBooleanAttributes = lineItem.SelectedBooleanAttributes.ToDictionary(
+            pair => pair.Key, pair => pair.Value);
+        if (selectedBooleanAttributes.Any())
+        {
+            HandleSelectedBooleanAttributes(selectedBooleanAttributes, productPart, attributesList);
+        }
+
+        var selectedNumericAttributes = lineItem.SelectedNumericAttributes.ToDictionary(
+            pair => pair.Key, pair => pair.Value);
+        if (selectedNumericAttributes.Any())
+        {
+            HandleSelectedNumericAttributes(selectedNumericAttributes, productPart, attributesList);
+        }
+
+        return (attributesList, selectedTextAttributes, selectedBooleanAttributes, selectedNumericAttributes);
     }
 
     private async ValueTask PopulateViewModelAsync(OrderPartViewModel model, OrderPart part)

@@ -125,16 +125,6 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         var price = priceSelectionStrategy.SelectPrice(item.Prices);
         var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
 
-        // divide these into 3 categories
-        var selectedAttributes = Attributes.ToDictionary(key => key.PartName, value =>
-            value switch
-            {
-                TextProductAttributeValue textAttributeValue => textAttributeValue.PredefinedValue,
-                BooleanProductAttributeValue booleanAttributeValue => booleanAttributeValue.Value.ToString(),
-                NumericProductAttributeValue numericAttributeValue => numericAttributeValue.Value.ToString(),
-                _ => string.Empty,
-            });
-
         var selectedTextAttributes = Attributes
             .Where(attr => attr is TextProductAttributeValue)
             .ToDictionary(
@@ -144,9 +134,11 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 
         var selectedBooleanAttributes = Attributes
             .Where(attr => attr is BooleanProductAttributeValue)
-            .ToDictionary(
-                attr => attr.PartName,
-                attr => ((BooleanProductAttributeValue)attr).Value.ToString());
+            .ToDictionary(attr => attr.PartName, attr => ((BooleanProductAttributeValue)attr).Value.ToString());
+
+        var selectedNumericAttributes = Attributes
+            .Where(attr => attr is NumericProductAttributeValue)
+            .ToDictionary(attr => attr.PartName, attr => ((NumericProductAttributeValue)attr).Value.ToString());
 
         return new OrderLineItem(
             quantity,
@@ -157,7 +149,8 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             contentItemVersion,
             Attributes,
             selectedTextAttributes,
-            selectedBooleanAttributes);
+            selectedBooleanAttributes,
+            selectedNumericAttributes);
     }
 
     public static async Task<LocalizedHtmlString> GetErrorAsync(

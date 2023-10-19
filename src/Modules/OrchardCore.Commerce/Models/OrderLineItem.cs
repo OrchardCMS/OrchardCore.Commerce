@@ -16,6 +16,7 @@ public class OrderLineItem
     public ISet<IProductAttributeValue> Attributes { get; }
     public IDictionary<string, string> SelectedTextAttributes { get; } = new Dictionary<string, string>();
     public IDictionary<string, string> SelectedBooleanAttributes { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string> SelectedNumericAttributes { get; } = new Dictionary<string, string>();
 
     // These are necessary.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -28,7 +29,8 @@ public class OrderLineItem
         string contentItemVersion,
         IEnumerable<IProductAttributeValue> attributes = null,
         IDictionary<string, string> selectedTextAttributes = null,
-        IDictionary<string, string> selectedBooleanAttributes = null)
+        IDictionary<string, string> selectedBooleanAttributes = null,
+        IDictionary<string, string> selectedNumericAttributes = null)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         ArgumentNullException.ThrowIfNull(productSku);
@@ -45,5 +47,6 @@ public class OrderLineItem
             : new HashSet<IProductAttributeValue>(attributes);
         SelectedTextAttributes.AddRange(selectedTextAttributes);
         SelectedBooleanAttributes.AddRange(selectedBooleanAttributes);
+        SelectedNumericAttributes.AddRange(selectedNumericAttributes);
     }
 }

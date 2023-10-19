@@ -76,6 +76,7 @@ public class OrderLineItemService : IOrderLineItemService
                 Attributes = lineItem.Attributes,
                 SelectedTextAttributes = lineItem.SelectedTextAttributes,
                 SelectedBooleanAttributes = lineItem.SelectedBooleanAttributes,
+                SelectedNumericAttributes = lineItem.SelectedNumericAttributes,
             };
         }));
 

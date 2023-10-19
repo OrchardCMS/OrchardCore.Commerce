@@ -30,4 +30,5 @@ public class OrderLineItemViewModel : ILineItem
     public ISet<IProductAttributeValue> Attributes { get; set; }
     public IDictionary<string, string> SelectedTextAttributes { get; set; } = new Dictionary<string, string>();
     public IDictionary<string, string> SelectedBooleanAttributes { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, string> SelectedNumericAttributes { get; set; } = new Dictionary<string, string>();
 }
