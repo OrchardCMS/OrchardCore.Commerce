@@ -1,4 +1,3 @@
-using AngleSharp.Text;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
@@ -143,8 +142,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             }
 
             // If attributes exist, there must be a full SKU.
-                // is this also the case for simple products with attributes?
-                // -> doesn't seem to cause errors, so might as well remain?
             var fullSku = string.Empty;
             if (attributesList.Any())
             {
@@ -188,7 +185,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
                 type, type.Name + "." + attribute);
 
-            // If selected boolean attributes contain the attribute, the value is true, otherwise false.
+            // The value is true if the selected boolean attributes list contains the attribute, otherwise false.
             var value = selectedBooleanAttributes.Any(keyValuePair => keyValuePair.Key == attribute);
 
             var matchingAttribute = _attributeProviders

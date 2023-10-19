@@ -33,7 +33,11 @@ public class ProductAttributeProvider : IProductAttributeProvider
         element = value switch
         {
             JsonElement jsonElement => jsonElement,
+
+            // String needs to be lowercase for JSON parsing to work.
+#pragma warning disable CA1308 // Normalize strings to uppercase
             JValue jValue => JsonDocument.Parse(jValue.Value.ToString().ToLowerInvariant()).RootElement,
+#pragma warning restore CA1308 // Normalize strings to uppercase
             JArray jArray => JsonDocument.Parse(jArray.ToString()).RootElement,
             _ => element,
         };
