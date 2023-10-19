@@ -1,6 +1,7 @@
 using AngleSharp.Text;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
@@ -29,6 +30,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IMoneyService _moneyService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IProductAttributeService _productAttributeService;
 
     // These are needed.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -40,7 +42,8 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         IStringLocalizer<OrderPartDisplayDriver> stringLocalizer,
         IMoneyService moneyService,
         IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
-        IContentDefinitionManager contentDefinitionManager)
+        IContentDefinitionManager contentDefinitionManager,
+        IProductAttributeService productAttributeService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _attributeProviders = attributeProviders;
@@ -50,6 +53,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         _moneyService = moneyService;
         _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
         _contentDefinitionManager = contentDefinitionManager;
+        _productAttributeService = productAttributeService;
         T = stringLocalizer;
     }
 
@@ -133,12 +137,14 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             }
 
             var selectedBooleanAttributes = lineItem.SelectedBooleanAttributes.ToDictionary(pair => pair.Key, pair => pair.Value);
-
-
-            // if there are boolean attributes selected, they need to be handled
+            if (selectedBooleanAttributes.Any())
+            {
+                HandleSelectedBooleanAttributes(selectedBooleanAttributes, productPart, attributesList);
+            }
 
             // If attributes exist, there must be a full SKU.
                 // is this also the case for simple products with attributes?
+                // -> doesn't seem to cause errors, so might as well remain?
             var fullSku = string.Empty;
             if (attributesList.Any())
             {
@@ -164,6 +170,34 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         }
 
         return orderLineItems;
+    }
+
+    private void HandleSelectedBooleanAttributes(
+        IDictionary<string, string> selectedBooleanAttributes,
+        ProductPart productPart,
+        IList<IProductAttributeValue> attributesList)
+    {
+        var booleanAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
+            .Where(attr => attr.Field is BooleanProductAttributeField)
+            .Select(attr => attr.Name)
+            .ToList();
+
+        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        foreach (var attribute in booleanAttributesList)
+        {
+            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+                type, type.Name + "." + attribute);
+
+            // If selected boolean attributes contain the attribute, the value is true, otherwise false.
+            var value = selectedBooleanAttributes.Any(keyValuePair => keyValuePair.Key == attribute);
+
+            var matchingAttribute = _attributeProviders
+                .Select(provider => provider.Parse(
+                    attributePartDefinition, attributeFieldDefinition, value.ToString()))
+                .FirstOrDefault(attributeValue => attributeValue != null);
+
+            attributesList.Add(matchingAttribute);
+        }
     }
 
     private void HandleSelectedTextAttributes(
