@@ -129,16 +129,19 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             .Where(attr => attr is TextProductAttributeValue)
             .ToDictionary(
                 attr => attr.PartName,
-                // using dynamic cast gets rid of analyzer warning, but makes code less readable
-                attr => ((TextProductAttributeValue)attr).PredefinedValue as string);
+                attr => attr is TextProductAttributeValue textAttribute ? textAttribute.PredefinedValue : null);
 
         var selectedBooleanAttributes = Attributes
             .Where(attr => attr is BooleanProductAttributeValue)
-            .ToDictionary(attr => attr.PartName, attr => ((BooleanProductAttributeValue)attr).Value.ToString());
+            .ToDictionary(
+                attr => attr.PartName,
+                attr => attr is BooleanProductAttributeValue booleanAttribute ? booleanAttribute.Value.ToString() : null);
 
         var selectedNumericAttributes = Attributes
             .Where(attr => attr is NumericProductAttributeValue)
-            .ToDictionary(attr => attr.PartName, attr => ((NumericProductAttributeValue)attr).Value.ToString());
+            .ToDictionary(
+                attr => attr.PartName,
+                attr => attr is NumericProductAttributeValue numericAttribute ? numericAttribute.Value.ToString() : null);
 
         return new OrderLineItem(
             quantity,
