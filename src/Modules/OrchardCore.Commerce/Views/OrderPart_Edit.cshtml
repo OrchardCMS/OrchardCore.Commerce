@@ -23,6 +23,7 @@
     var availableTextAttributes = new Dictionary<string, Dictionary<string, List<string>>>();
     var availableBooleanAttributes = new Dictionary<string, List<string>>();
     var availableNumericAttributes = new Dictionary<string, List<string>>();
+    var numericAttributeSettings = new Dictionary<string, Dictionary<string, NumericProductAttributeFieldSettings>>();
 
     var allProducts = await Session.Query<ContentItem, ProductPartIndex>().ListAsync();
     foreach (var product in allProducts)
@@ -39,16 +40,15 @@
             availableBooleanAttributes.Add(productSku, booleanAttributes);
         }
 
-        // create a dictionary of <sku, numericProductAttributeSettings> and use them on input?
-
         var numericAttributes = AttributeService.GetProductAttributeFields(product)
-            .Where(attr => attr.Field is NumericProductAttributeField)
-            .Select(attr => attr.Name)
-            .ToList();
+            .Where(attr => attr.Field is NumericProductAttributeField);
 
         if (numericAttributes.Any())
         {
-            availableNumericAttributes.Add(productSku, numericAttributes);
+            availableNumericAttributes.Add(productSku, numericAttributes.Select(attr => attr.Name).ToList());
+            numericAttributeSettings.Add(
+                productSku,
+                numericAttributes.ToDictionary(attr => attr.Name, attr => attr.Settings as NumericProductAttributeFieldSettings));
         }
 
         var textAttributes = PredefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
@@ -74,6 +74,7 @@
     var serializedTextAttributesDictionary = JsonSerializer.Serialize(availableTextAttributes);
     var serializedBooleanAttributesDictionary = JsonSerializer.Serialize(availableBooleanAttributes);
     var serializedNumericAttributesDictionary = JsonSerializer.Serialize(availableNumericAttributes);
+    var serializedNumericAttributeSettingsDictionary = JsonSerializer.Serialize(numericAttributeSettings);
 }
 
 <section id="shopping-cart">
@@ -140,12 +141,17 @@
                                 <label class="px-1" :for="lineItem.productSku + '.' + value">{{ value }}</label>
                             </div>
                         </div>
-                        <div class="col-sm-3 mx-1" v-for="(value, key) in lineItem.availableNumericAttributes[lineItem.productSku]">
+                        <div class="col-sm-4 mx-1" v-for="(value, key) in lineItem.availableNumericAttributes[lineItem.productSku]">
                             <div class="d-flex flex-row align-items-center">
                                 <label class="px-1">{{ value }}:</label>
                                 <input v-model="lineItem.selectedNumericAttributes[value]"
                                        :id="lineItem.productSku + '.' + value"
                                        type="number"
+                                       :min="lineItem.numericAttributeSettings[lineItem.productSku][value].Minimum"
+                                       :max="lineItem.numericAttributeSettings[lineItem.productSku][value].Maximum"
+                                       :placeholder="lineItem.numericAttributeSettings[lineItem.productSku][value].Placeholder"
+                                       :required="lineItem.numericAttributeSettings[lineItem.productSku][value].Required"
+                                       :step="Math.pow(10, -lineItem.numericAttributeSettings[lineItem.productSku][value].DecimalPlaces)"
                                        :name="'OrderPart.LineItems[' + index + '].SelectedNumericAttributes[' + value + ']'"
                                        class="form-control" />
                             </div>
@@ -238,12 +244,16 @@
     let availableTextAttributes = JSON.parse('@Html.Raw(serializedTextAttributesDictionary)');
     let availableBooleanAttributes = JSON.parse('@Html.Raw(serializedBooleanAttributesDictionary)');
     let availableNumericAttributes = JSON.parse('@Html.Raw(serializedNumericAttributesDictionary)');
+    let numericAttributeSettings = JSON.parse('@Html.Raw(serializedNumericAttributeSettingsDictionary)');
+
+    console.log(numericAttributeSettings);
 
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
         item.availableTextAttributes = availableTextAttributes;
         item.availableBooleanAttributes = availableBooleanAttributes;
         item.availableNumericAttributes = availableNumericAttributes;
+        item.numericAttributeSettings = numericAttributeSettings;
     })
 
     let products = new Vue({
@@ -276,6 +286,7 @@
             "availableTextAttributes": availableTextAttributes,
             "availableBooleanAttributes": availableBooleanAttributes,
             "availableNumericAttributes": availableNumericAttributes,
+            "numericAttributeSettings": numericAttributeSettings,
             "selectedTextAttributes": '',
             "selectedBooleanAttributes": '',
             "selectedNumericAttributes": '',
