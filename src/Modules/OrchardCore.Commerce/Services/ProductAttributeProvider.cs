@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
@@ -34,11 +35,8 @@ public class ProductAttributeProvider : IProductAttributeProvider
         {
             JsonElement jsonElement => jsonElement,
 
-            // String needs to be lowercase for JSON parsing to work.
-#pragma warning disable CA1308 // Normalize strings to uppercase
-            JValue jValue => JsonDocument.Parse(jValue.Value.ToString().ToLowerInvariant()).RootElement,
-#pragma warning restore CA1308 // Normalize strings to uppercase
-            JArray jArray => JsonDocument.Parse(jArray.ToString()).RootElement,
+            JValue jValue => JsonDocument.Parse(JsonConvert.SerializeObject(jValue)).RootElement,
+            JArray jArray => JsonDocument.Parse(JsonConvert.SerializeObject(jArray)).RootElement,
             _ => element,
         };
 
