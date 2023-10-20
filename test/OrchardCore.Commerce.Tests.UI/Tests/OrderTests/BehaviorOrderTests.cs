@@ -96,7 +96,7 @@ public class BehaviorOrderTests : UITestBase
                     .GetValue()
                     .ShouldBe("EUR");
 
-                // For a Product with existing attributes, attributes should be populated and should be selectable.
+                // For a Product with existing text attributes, attributes should be populated and should be selectable.
                 await context.SetDropdownByTextAsync(By.Name("OrderPart.LineItems[0].SelectedTextAttributes[Size]"), "Medium");
                 await context.ClickPublishAsync();
 
@@ -137,6 +137,71 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickPublishAsync();
 
                 context.Missing(ByQuantity(1));
+
+                // Add new boolean attribute and test its functionality in the Order editor.
+                await context.GoToAdminRelativeUrlAsync("/ContentTypes/AddFieldsTo/Product");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "TestBooleanAttribute");
+                await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Boolean Product Attribute Field')]"));
+                await context.ClickReliablyOnSubmitAsync();
+
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("Product_TestBooleanAttribute_BooleanProductAttributeFieldSettingsDriver_Hint"),
+                    "Test Boolean Hint");
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("Product_TestBooleanAttribute_BooleanProductAttributeFieldSettingsDriver_Label"),
+                    "Test Boolean Label");
+                await context.ClickReliablyOnSubmitAsync();
+
+                await context.GoToContentItemEditorByIdAsync(TestOrder);
+                await context.ClickReliablyOnAsync(By.Name("OrderPart.LineItems[0].SelectedBooleanAttributes[TestBooleanAttribute]"));
+                context.Exists(By.XPath("//label[contains(., 'TestBooleanAttribute')]"));
+                await context.ClickPublishAsync();
+
+                context
+                    .Get(By.Name("OrderPart.LineItems[0].SelectedBooleanAttributes[TestBooleanAttribute]"))
+                    .GetValue()
+                    .ShouldBe("true");
+
+                // Add new numeric attribute and test its functionality in the Order editor.
+                await context.GoToAdminRelativeUrlAsync("/ContentTypes/AddFieldsTo/Product");
+                await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "TestNumericAttribute");
+                await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Numeric Product Attribute Field')]"));
+                await context.ClickReliablyOnSubmitAsync();
+
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("Product_TestNumericAttribute_NumericProductAttributeFieldSettingsDriver_Hint"),
+                    "Test Numeric Hint");
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("Product_TestNumericAttribute_NumericProductAttributeFieldSettingsDriver_Placeholder"),
+                    "Test Numeric Placeholder");
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("Product_TestNumericAttribute_NumericProductAttributeFieldSettingsDriver_DecimalPlaces"),
+                    "2");
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("Product_TestNumericAttribute_NumericProductAttributeFieldSettingsDriver_Minimum"),
+                    "1");
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Id("Product_TestNumericAttribute_NumericProductAttributeFieldSettingsDriver_Maximum"),
+                    "2");
+                await context.ClickReliablyOnSubmitAsync();
+
+                await context.GoToContentItemEditorByIdAsync(TestOrder);
+                context.Exists(By.XPath("//label[contains(., 'TestNumericAttribute:')]"));
+
+                var numericInput = context.Get(By.Name("OrderPart.LineItems[0].SelectedNumericAttributes[TestNumericAttribute]"));
+                numericInput.GetAttribute("min").ShouldBe("1");
+                numericInput.GetAttribute("max").ShouldBe("2");
+                numericInput.GetAttribute("placeholder").ShouldBe("Test Numeric Placeholder");
+                numericInput.GetAttribute("step").ShouldBe("0.01");
+
+                await context.ClickAndFillInWithRetriesAsync(
+                    By.Name("OrderPart.LineItems[0].SelectedNumericAttributes[TestNumericAttribute]"),
+                    "2.5");
+                await context.ClickPublishAsync();
+                context
+                    .Get(By.Name("OrderPart.LineItems[0].SelectedNumericAttributes[TestNumericAttribute]"))
+                    .GetValue()
+                    .ShouldBe("2.5");
             },
             browser);
 
