@@ -179,7 +179,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             var selectedNumericAttribute = selectedNumericAttributes.FirstOrDefault(keyValuePair => keyValuePair.Key == attribute.Name);
             var selectedValue = selectedNumericAttribute.Value;
 
-            // If selectedValue is null, set default value in selectedNumericAttributes dictionary too.
+            // If selectedValue is null, set default value in selectedNumericAttributes dictionary to display it properly in editor.
             if (string.IsNullOrEmpty(selectedValue))
             {
                 selectedNumericAttributes.Remove(selectedNumericAttribute);

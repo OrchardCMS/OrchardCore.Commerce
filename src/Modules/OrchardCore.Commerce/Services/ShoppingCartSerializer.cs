@@ -66,7 +66,7 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
             {
                 cart.SetPrices(
                     item,
-                    item.Prices.Select(pp => new PrioritizedPrice(pp.Priority, _moneyService.EnsureCurrency(pp.Price))));
+                    item.Prices.Select(price => new PrioritizedPrice(price.Priority, _moneyService.EnsureCurrency(price.Price))));
             }
         }
 

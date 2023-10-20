@@ -138,7 +138,7 @@ public class BehaviorOrderTests : UITestBase
 
                 context.Missing(ByQuantity(1));
 
-                // Add new boolean attribute and test its functionality in the Order editor.
+                // Boolean attributes should work properly in the Order editor.
                 await context.GoToAdminRelativeUrlAsync("/ContentTypes/AddFieldsTo/Product");
                 await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "TestBooleanAttribute");
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Boolean Product Attribute Field')]"));
@@ -162,7 +162,7 @@ public class BehaviorOrderTests : UITestBase
                     .GetValue()
                     .ShouldBe("true");
 
-                // Add new numeric attribute and test its functionality in the Order editor.
+                // Numeric attributes should work properly in the Order editor.
                 await context.GoToAdminRelativeUrlAsync("/ContentTypes/AddFieldsTo/Product");
                 await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "TestNumericAttribute");
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Numeric Product Attribute Field')]"));
