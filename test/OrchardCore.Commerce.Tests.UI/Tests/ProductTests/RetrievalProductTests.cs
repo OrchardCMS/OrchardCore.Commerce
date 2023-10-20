@@ -86,7 +86,7 @@ public class RetrievalProductTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
 
                 context.Exists(By.XPath("//li[contains(., 'Size: Small')]"));
-                context.Exists(By.XPath("//li[contains(., 'TestBooleanAttribute')]"));
+                context.Exists(By.XPath("//li[contains(., 'Test Boolean Label: Yes')]"));
                 await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Remove')]"));
 
                 // Add new numeric attribute and verify its properties show up correctly.
