@@ -131,11 +131,11 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 
         var selectedBooleanAttributes = Attributes
             .CastWhere<BooleanProductAttributeValue>()
-            .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString());
+            .ToDictionary(attr => attr.FieldName, attr => attr.Value.ToString());
 
         var selectedNumericAttributes = Attributes
             .CastWhere<NumericProductAttributeValue>()
-            .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString());
+            .ToDictionary(attr => attr.FieldName, attr => attr.Value.ToString());
 
         return new OrderLineItem(
             quantity,
