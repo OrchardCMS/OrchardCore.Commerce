@@ -14,12 +14,14 @@ public class OrderLineItem
     public Amount LinePrice { get; set; }
     public string ContentItemVersion { get; set; }
     public ISet<IProductAttributeValue> Attributes { get; }
-    public IDictionary<string, string> SelectedTextAttributes { get; } = new Dictionary<string, string>();
+    public IDictionary<string, IDictionary<string, string>> SelectedAttributes { get; } =
+        new Dictionary<string, IDictionary<string, string>>();
     public IDictionary<string, string> SelectedBooleanAttributes { get; } = new Dictionary<string, string>();
     public IDictionary<string, string> SelectedNumericAttributes { get; } = new Dictionary<string, string>();
 
     // These are necessary.
 #pragma warning disable S107 // Methods should not have too many parameters
+#pragma warning restore S107 // Methods should not have too many parameters
     public OrderLineItem(
         int quantity,
         string productSku,
@@ -28,10 +30,9 @@ public class OrderLineItem
         Amount linePrice,
         string contentItemVersion,
         IEnumerable<IProductAttributeValue> attributes = null,
-        IDictionary<string, string> selectedTextAttributes = null,
+        IDictionary<string, IDictionary<string, string>> selectedAttributes = null,
         IDictionary<string, string> selectedBooleanAttributes = null,
         IDictionary<string, string> selectedNumericAttributes = null)
-#pragma warning restore S107 // Methods should not have too many parameters
     {
         ArgumentNullException.ThrowIfNull(productSku);
         if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
@@ -45,7 +46,7 @@ public class OrderLineItem
         Attributes = attributes is null
             ? new HashSet<IProductAttributeValue>()
             : new HashSet<IProductAttributeValue>(attributes);
-        SelectedTextAttributes.AddRange(selectedTextAttributes);
+        SelectedAttributes.AddRange(selectedAttributes);
         SelectedBooleanAttributes.AddRange(selectedBooleanAttributes);
         SelectedNumericAttributes.AddRange(selectedNumericAttributes);
     }

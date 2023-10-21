@@ -137,6 +137,13 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             .CastWhere<NumericProductAttributeValue>()
             .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString());
 
+        var selectedAttributes = new Dictionary<string, IDictionary<string, string>>
+        {
+            { "Text", selectedTextAttributes },
+            { "Boolean", selectedBooleanAttributes },
+            { "Numeric", selectedNumericAttributes },
+        };
+
         return new OrderLineItem(
             quantity,
             ProductSku,
@@ -145,7 +152,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             quantity * price,
             contentItemVersion,
             Attributes,
-            selectedTextAttributes,
+            selectedAttributes,
             selectedBooleanAttributes,
             selectedNumericAttributes);
     }

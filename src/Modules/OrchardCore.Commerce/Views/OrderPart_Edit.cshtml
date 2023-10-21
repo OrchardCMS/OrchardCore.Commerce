@@ -125,7 +125,7 @@
                     <div class="col-xs-12 col-sm-4 d-flex">
                         <div class="d-flex col-sm-3 mx-1 align-items-center" v-for="(values, key) in lineItem.availableTextAttributes[lineItem.productSku]">
                             <label class="px-1">{{ key }}</label>
-                            <select :name="'OrderPart.LineItems[' + index + '].SelectedTextAttributes[' + key + ']'" v-model="lineItem.selectedTextAttributes[key]">
+                            <select :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[Text][' + key + ']'" v-model="lineItem.selectedAttributes['Text'][key]">
                                 <option value=""></option>
                                 <option v-for="value in values" :value="value">{{ value }}</option>
                             </select>
@@ -246,7 +246,7 @@
     let availableNumericAttributes = JSON.parse('@Html.Raw(serializedNumericAttributesDictionary)');
     let numericAttributeSettings = JSON.parse('@Html.Raw(serializedNumericAttributeSettingsDictionary)');
 
-    console.log(numericAttributeSettings);
+    //console.log(numericAttributeSettings);
 
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
@@ -254,6 +254,8 @@
         item.availableBooleanAttributes = availableBooleanAttributes;
         item.availableNumericAttributes = availableNumericAttributes;
         item.numericAttributeSettings = numericAttributeSettings;
+
+        //console.log(item.selectedAttributes);
     })
 
     let products = new Vue({
@@ -287,7 +289,7 @@
             "availableBooleanAttributes": availableBooleanAttributes,
             "availableNumericAttributes": availableNumericAttributes,
             "numericAttributeSettings": numericAttributeSettings,
-            "selectedTextAttributes": '',
+            "selectedAttributes": '',
             "selectedBooleanAttributes": '',
             "selectedNumericAttributes": '',
         });

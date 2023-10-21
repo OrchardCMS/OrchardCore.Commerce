@@ -28,7 +28,8 @@ public class OrderLineItemViewModel : ILineItem
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
     public ISet<IProductAttributeValue> Attributes { get; set; }
-    public IDictionary<string, string> SelectedTextAttributes { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, IDictionary<string, string>> SelectedAttributes { get; set; } =
+        new Dictionary<string, IDictionary<string, string>>();
     public IDictionary<string, string> SelectedBooleanAttributes { get; set; } = new Dictionary<string, string>();
     public IDictionary<string, string> SelectedNumericAttributes { get; set; } = new Dictionary<string, string>();
 }

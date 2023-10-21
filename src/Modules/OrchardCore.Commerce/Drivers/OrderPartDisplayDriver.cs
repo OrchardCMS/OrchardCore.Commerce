@@ -137,6 +137,13 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 fullSku = _productService.GetOrderFullSku(item, productPart);
             }
 
+            var selectedAttributes = new Dictionary<string, IDictionary<string, string>>
+            {
+                { "Text", processedAttributes.SelectedTextAttributes },
+                { "Boolean", processedAttributes.SelectedBooleanAttributes },
+                { "Numeric", processedAttributes.SelectedNumericAttributes },
+            };
+
             orderLineItems.Add(new OrderLineItem(
                 lineItem.Quantity,
                 lineItemProductSku,
@@ -149,7 +156,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
                 productPart.ContentItem.ContentItemVersionId,
                 attributesList,
-                processedAttributes.SelectedTextAttributes,
+                selectedAttributes,
                 processedAttributes.SelectedBooleanAttributes,
                 processedAttributes.SelectedNumericAttributes
             ));
@@ -269,7 +276,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         ProcessAttributes(OrderLineItemViewModel lineItem, ProductPart productPart)
     {
         var attributesList = new List<IProductAttributeValue>();
-        var selectedTextAttributes = lineItem.SelectedTextAttributes
+        var selectedTextAttributes = lineItem.SelectedAttributes["Text"] // try get value?
             .Where(keyValuePair => keyValuePair.Value != null)
             .ToDictionary(pair => pair.Key, pair => pair.Value);
 
