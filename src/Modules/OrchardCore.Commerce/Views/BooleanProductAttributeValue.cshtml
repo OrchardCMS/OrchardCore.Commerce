@@ -15,6 +15,6 @@
 
     TagBuilder tag = Tag(Model, "li");
     tag.AddCssClass("list-inline-item");
-    tag.InnerHtml.Append((settings.Label ?? attributeValue.FieldName) + ": " + (attributeValue.Value ? "Yes" : "No"));
+    tag.InnerHtml.Append((settings.Label ?? attributeValue.FieldName) + ": " + (T[attributeValue.Value ? "Yes" : "No"]));
     @tag
 }

@@ -126,22 +126,16 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
 
         var selectedTextAttributes = Attributes
-            .Where(attr => attr is TextProductAttributeValue)
-            .ToDictionary(
-                attr => attr.PartName,
-                attr => attr is TextProductAttributeValue textAttribute ? textAttribute.PredefinedValue : null);
+            .CastWhere<TextProductAttributeValue>()
+            .ToDictionary(attr => attr.FieldName, attr => attr.PredefinedValue);
 
         var selectedBooleanAttributes = Attributes
-            .Where(attr => attr is BooleanProductAttributeValue)
-            .ToDictionary(
-                attr => attr.PartName,
-                attr => attr is BooleanProductAttributeValue booleanAttribute ? booleanAttribute.Value.ToString() : null);
+            .CastWhere<BooleanProductAttributeValue>()
+            .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString());
 
         var selectedNumericAttributes = Attributes
-            .Where(attr => attr is NumericProductAttributeValue)
-            .ToDictionary(
-                attr => attr.PartName,
-                attr => attr is NumericProductAttributeValue numericAttribute ? numericAttribute.Value.ToString() : null);
+            .CastWhere<NumericProductAttributeValue>()
+            .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString());
 
         return new OrderLineItem(
             quantity,

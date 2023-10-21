@@ -29,15 +29,11 @@ public class ProductAttributeProvider : IProductAttributeProvider
         if (value == null || !_supportedTypeNames.Contains(attributeFieldTypeName)) return null;
 
         var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
-
-        var element = default(JsonElement);
-        element = value switch
+        var element = value switch
         {
             JsonElement jsonElement => jsonElement,
-
-            JValue jValue => JsonDocument.Parse(JsonConvert.SerializeObject(jValue)).RootElement,
-            JArray jArray => JsonDocument.Parse(JsonConvert.SerializeObject(jArray)).RootElement,
-            _ => element,
+            JToken jToken => JsonDocument.Parse(JsonConvert.SerializeObject(jToken)).RootElement,
+            _ => default,
         };
 
         return attributeFieldTypeName switch
