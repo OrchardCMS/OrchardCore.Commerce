@@ -6,5 +6,4 @@ public static class FeatureIds
 
     public const string Payment = Area;
     public const string DummyProvider = $"{Area}.{nameof(DummyProvider)}";
-    public const string Stripe = $"{Area}.{nameof(Stripe)}";
 }

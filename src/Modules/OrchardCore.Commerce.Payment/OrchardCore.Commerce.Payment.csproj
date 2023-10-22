@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -10,7 +11,7 @@
     <Authors>Bertrand Le Roy</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
     <Description>Payment for Orchard Core Commerce</Description>
-    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Payment;Stripe</PackageTags>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Payment</PackageTags>
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
     <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.Payment/Readme.md</PackageProjectUrl>
     <PackageLicenseFile>License.md</PackageLicenseFile>
@@ -27,14 +28,17 @@
     <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.7.0" />
+    <PackageReference Include="OrchardCore.ContentManagement" Version="1.7.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.7.0" />
+  </ItemGroup>
+
   <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
     <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.0.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
   </ItemGroup>
 
 </Project>

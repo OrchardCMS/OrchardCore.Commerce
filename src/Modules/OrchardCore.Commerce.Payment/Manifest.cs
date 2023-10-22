@@ -18,14 +18,6 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = FeatureIds.Stripe,
-    Name = "Orchard Core Commerce - Payment - Stripe",
-    Category = "Commerce",
-    Description = "Stripe payment provider.",
-    Dependencies = new[] { FeatureIds.Payment }
-)]
-
-[assembly: Feature(
     Id = FeatureIds.DummyProvider,
     Name = "Orchard Core Commerce - Payment - Dummy Provider",
     Category = "Commerce",
