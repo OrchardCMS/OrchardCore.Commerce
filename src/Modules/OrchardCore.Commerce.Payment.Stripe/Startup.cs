@@ -1,19 +1,25 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Services;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using System;
+using OrchardCore.Navigation;
+using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Commerce.Payment.Stripe
+namespace OrchardCore.Commerce.Payment.Stripe;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-        }
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-        }
+        services.AddContentPart<StripePaymentPart>().WithMigration<StripeMigrations>().WithIndex<OrderPaymentIndexProvider>();
+        services.AddScoped<IStripePaymentService, StripePaymentService>();
+        services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
+        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
     }
 }

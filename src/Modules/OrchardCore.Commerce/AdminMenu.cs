@@ -8,10 +8,8 @@ using static OrchardCore.Commerce.Constants.NavigationConstants;
 
 namespace OrchardCore.Commerce;
 
-public class AdminMenu : NavigationProviderBase
+public class AdminMenu : AdminMenuNavigationProviderBase
 {
-    protected override string NavigationName => "admin";
-
     public AdminMenu(IHttpContextAccessor hca, IStringLocalizer<AdminMenu> stringLocalizer)
         : base(hca, stringLocalizer)
     { }
@@ -21,35 +19,15 @@ public class AdminMenu : NavigationProviderBase
             .Add(T["Configuration"], configuration => configuration
                 .Add(T["Commerce"], commerce => commerce
                     .Add(T["Currency"], T["Currency"], entry => entry
-                        .Action(ActionNames.Index, ControllerNames.Admin, new
-                        {
-                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
-                            groupId = CurrencySettingsDisplayDriver.GroupId,
-                        })
+                        .SiteSettings(CurrencySettingsDisplayDriver.GroupId)
                         .Permission(Permissions.ManageCurrencySettings)
                         .LocalNav())
                     .Add(T["Price Display"], T["Price Display"], entry => entry
-                        .Action(ActionNames.Index, ControllerNames.Admin, new
-                        {
-                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
-                            groupId = PriceDisplaySettingsDisplayDriver.GroupId,
-                        })
+                        .SiteSettings(PriceDisplaySettingsDisplayDriver.GroupId)
                         .Permission(Permissions.ManagePriceDisplaySettings)
                         .LocalNav())
-                    .Add(T["Stripe API"], T["Stripe API"], stripeApi => stripeApi
-                        .Action(ActionNames.Index, ControllerNames.Admin, new
-                        {
-                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
-                            groupId = StripeApiSettingsDisplayDriver.GroupId,
-                        })
-                        .Permission(Permissions.ManageStripeApiSettings)
-                        .LocalNav())
                     .Add(T["Region"], T["Region"], region => region
-                        .Action(ActionNames.Index, ControllerNames.Admin, new
-                        {
-                            area = $"{nameof(OrchardCore)}.{nameof(OrchardCore.Settings)}",
-                            groupId = RegionSettingsDisplayDriver.GroupId,
-                        })
+                        .SiteSettings(RegionSettingsDisplayDriver.GroupId)
                         .Permission(Permissions.ManageRegionSettings)
                         .LocalNav())));
 }

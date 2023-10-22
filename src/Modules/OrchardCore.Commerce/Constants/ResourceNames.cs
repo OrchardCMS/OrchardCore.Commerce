@@ -8,6 +8,5 @@ public static class ResourceNames
     public const string ShoppingCart = nameof(ShoppingCart);
     public const string ShoppingCartWidget = nameof(ShoppingCartWidget);
     public const string CommerceRegions = nameof(CommerceRegions);
-    public const string StripePaymentForm = nameof(StripePaymentForm);
     public const string ToggleSecondAddress = nameof(ToggleSecondAddress);
 }

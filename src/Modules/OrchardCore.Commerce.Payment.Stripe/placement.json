@@ -1,0 +1,12 @@
+{
+  "TextField": [
+    {
+      "differentiator": "StripePaymentPart-PaymentMethodId",
+      "place": "-"
+    },
+    {
+      "differentiator": "StripePaymentPart-PaymentIntentId",
+      "place": "-"
+    }
+  ]
+}

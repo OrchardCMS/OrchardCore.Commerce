@@ -45,13 +45,6 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
             .SetVersion("1.0.0");
 
         _manifest
-            .DefineScript(StripePaymentForm)
-            .SetUrl(
-                "~/OrchardCore.Commerce/js/stripe-payment-form.min.js",
-                "~/OrchardCore.Commerce/js/stripe-payment-form.js")
-            .SetVersion("1.0.0");
-
-        _manifest
             .DefineScript(ToggleSecondAddress)
             .SetUrl(
                 "~/OrchardCore.Commerce/js/toggle-second-address.min.js",

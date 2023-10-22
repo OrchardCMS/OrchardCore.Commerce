@@ -166,9 +166,7 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<ISite>, CurrencySettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CurrencySettings>, CurrencySettingsConfiguration>();
-        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, PriceDisplaySettingsDisplayDriver>();
-        services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegionSettings>, RegionSettingsConfiguration>();
 
@@ -177,13 +175,6 @@ public class Startup : StartupBase
 
         // Promotion
         services.AddScoped<IPromotionService, PromotionService>();
-
-        // Stripe payments
-        services.AddContentPart<StripePaymentPart>();
-        services.AddScoped<IStripePaymentService, StripePaymentService>();
-        services.AddScoped<IDataMigration, StripeMigrations>();
-        services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
-        services.AddSingleton<IIndexProvider, OrderPaymentIndexProvider>();
 
         // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>
