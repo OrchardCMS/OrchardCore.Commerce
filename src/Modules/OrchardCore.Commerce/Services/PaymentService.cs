@@ -17,7 +17,6 @@ using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
-using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;

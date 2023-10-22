@@ -1,11 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Drivers;
+using OrchardCore.Commerce.Indexes;
+using OrchardCore.Commerce.Migrations;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Commerce.Payment.Stripe;
 

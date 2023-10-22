@@ -1,6 +1,4 @@
-using Lombiq.HelpfulLibraries.OrchardCore.Data;
 using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentFields.Fields;
@@ -12,7 +10,7 @@ using OrchardCore.Html.Models;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
-using YesSql.Sql;
+using System.Diagnostics.CodeAnalysis;
 using static OrchardCore.Commerce.Constants.ContentTypes;
 using static OrchardCore.Commerce.Constants.OrderStatuses;
 
@@ -104,11 +102,6 @@ public class OrderMigrations : DataMigration
                     .OfType(nameof(BooleanField))
                     .WithDisplayName("Buyer is a corporation"))
             );
-
-        SchemaBuilder
-            .CreateMapIndexTable<OrderPaymentIndex>(table => table
-                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
-                .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
         return 6;
     }
@@ -210,15 +203,8 @@ public class OrderMigrations : DataMigration
         return 4;
     }
 
-    public int UpdateFrom4()
-    {
-        SchemaBuilder
-            .CreateMapIndexTable<OrderPaymentIndex>(table => table
-                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
-                .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
-
-        return 5;
-    }
+    [SuppressMessage("Minor Code Smell", "S3400:Methods should not return constants", Justification = "Special migration.")]
+    public int UpdateFrom4() => 5; // Moved into a separate module.
 
     public int UpdateFrom5()
     {

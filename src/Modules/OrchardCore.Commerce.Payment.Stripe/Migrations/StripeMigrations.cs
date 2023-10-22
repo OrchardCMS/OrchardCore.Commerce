@@ -1,7 +1,10 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Data;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -20,18 +23,16 @@ public class StripeMigrations : DataMigration
                 .WithField(part => part.PaymentIntentId));
 
         _contentDefinitionManager
-            .AlterTypeDefinition(Constants.ContentTypes.Order, builder => builder
+            .AlterTypeDefinition("Order", builder => builder
                 .WithPart(nameof(StripePaymentPart)));
 
-        return 2;
-    }
+        // This table may exist when migrating from an old version of the DB where it was created in a different module.
+        SchemaBuilder.DropMapIndexTable(typeof(OrderPaymentIndex));
+        SchemaBuilder
+            .CreateMapIndexTable<OrderPaymentIndex>(table => table
+                .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
+                .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
-    public int UpdateFrom1()
-    {
-        _contentDefinitionManager.AlterPartDefinition(
-            nameof(StripePaymentPart),
-            builder => builder.RemoveField("PaymentIntentId"));
-
-        return 2;
+        return 1;
     }
 }
