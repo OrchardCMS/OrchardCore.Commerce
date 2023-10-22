@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
   </ItemGroup>
 

@@ -27,7 +27,6 @@ namespace OrchardCore.Commerce.Services;
 
 public class PaymentService : IPaymentService
 {
-    private readonly IStripePaymentService _stripePaymentService;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
@@ -35,7 +34,6 @@ public class PaymentService : IPaymentService
     private readonly UserManager<IUser> _userManager;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
-    private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -44,19 +42,16 @@ public class PaymentService : IPaymentService
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentService(
-        IStripePaymentService stripePaymentService,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentService> services,
         IShoppingCartHelpers shoppingCartHelpers,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
-        IPaymentIntentPersistence paymentIntentPersistence,
         IShoppingCartPersistence shoppingCartPersistence,
         IUpdateModelAccessor updateModelAccessor,
         IContentItemDisplayManager contentItemDisplayManager)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
-        _stripePaymentService = stripePaymentService;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
@@ -66,7 +61,6 @@ public class PaymentService : IPaymentService
         _userServiceLazy = userServiceLazy;
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
-        _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
         _hca = services.HttpContextAccessor.Value;
     }

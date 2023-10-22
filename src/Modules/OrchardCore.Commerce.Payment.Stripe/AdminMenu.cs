@@ -2,9 +2,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.Navigation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Drivers;
-using OrchardCore.Commerce.Settings;
 using OrchardCore.Navigation;
-using static OrchardCore.Commerce.Constants.NavigationConstants;
 
 namespace OrchardCore.Commerce.Payment.Stripe;
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Stripe;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
