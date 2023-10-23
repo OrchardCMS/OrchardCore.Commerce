@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Media.Fields;
@@ -9,11 +10,9 @@ namespace OrchardCore.Commerce.Models;
 /// The product part describes the most basic product attribute: a SKU. It also identifies any content item as a product,
 /// by its mere presence.
 /// </summary>
-public class ProductPart : ContentPart
+public class ProductPart : ContentPart, ISkuHolderContent
 {
-    /// <summary>
-    /// Gets or sets the product's SKU, which can also be used as an alias for the item.
-    /// </summary>
+    /// <inheritdoc cref="ISkuHolder.Sku"/>
     public string Sku { get; set; }
 
     /// <summary>

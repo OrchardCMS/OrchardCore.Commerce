@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class ProductPartViewModel
+public class ProductPartViewModel : ISkuHolderContent
 {
     public string Sku { get; set; }
 
