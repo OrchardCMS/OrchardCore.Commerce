@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
+using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
@@ -12,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -23,6 +28,9 @@ public class OrderLineItemService : IOrderLineItemService
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
     private readonly IPromotionService _promotionService;
+    private readonly ISession _session;
+    private readonly IProductAttributeService _productAttributeService;
+    private readonly IPredefinedValuesProductAttributeService _predefinedAttributeService;
 
     public OrderLineItemService(
         IClock clock,
@@ -30,7 +38,10 @@ public class OrderLineItemService : IOrderLineItemService
         IProductService productService,
         IContentManager contentManager,
         IEnumerable<ITaxProvider> taxProviders,
-        IPromotionService promotionService)
+        IPromotionService promotionService,
+        ISession session,
+        IProductAttributeService productAttributeService,
+        IPredefinedValuesProductAttributeService predefinedAttributeService)
     {
         _clock = clock;
         _hca = hca;
@@ -38,6 +49,9 @@ public class OrderLineItemService : IOrderLineItemService
         _contentManager = contentManager;
         _taxProviders = taxProviders;
         _promotionService = promotionService;
+        _session = session;
+        _productAttributeService = productAttributeService;
+        _predefinedAttributeService = predefinedAttributeService;
     }
 
     public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
@@ -61,15 +75,7 @@ public class OrderLineItemService : IOrderLineItemService
                 fullSku = _productService.GetOrderFullSku(item, productPart);
             }
 
-
-            // pretty sure this should not be created here but in one of the steps before
-            //var selectedAttributes = new Dictionary<string, IDictionary<string, string>>
-            //{
-            //    { "Text", lineItem.SelectedTextAttributes },
-            //    { "Boolean", lineItem.SelectedBooleanAttributes },
-            //    { "Numeric", lineItem.SelectedNumericAttributes },
-            //};
-
+            var availableAttributesAndSettings = await GetAvailableAttributesAndSettingsAsync();
 
             return new OrderLineItemViewModel
             {
@@ -85,6 +91,10 @@ public class OrderLineItemService : IOrderLineItemService
                 ProductRouteValues = metaData.DisplayRouteValues,
                 Attributes = lineItem.Attributes,
                 SelectedAttributes = lineItem.SelectedAttributes,
+                AvailableTextAttributes = availableAttributesAndSettings.AvailableTextAttributes,
+                AvailableBooleanAttributes = availableAttributesAndSettings.AvailableBooleanAttributes,
+                AvailableNumericAttributes = availableAttributesAndSettings.AvailableNumericAttributes,
+                NumericAttributeSettings = availableAttributesAndSettings.NumericAttributeSettings,
             };
         }));
 
@@ -136,6 +146,69 @@ public class OrderLineItemService : IOrderLineItemService
             : new Amount(0, lineItems[0].LinePrice.Currency);
 
         return (viewModelLineItems, total);
+    }
+
+    public async Task<(Dictionary<string, IDictionary<string, List<string>>> AvailableTextAttributes,
+        Dictionary<string, List<string>> AvailableBooleanAttributes,
+        Dictionary<string, List<string>> AvailableNumericAttributes,
+        Dictionary<string, IDictionary<string, NumericProductAttributeFieldSettings>> NumericAttributeSettings)>
+        GetAvailableAttributesAndSettingsAsync()
+    {
+        var availableTextAttributes = new Dictionary<string, IDictionary<string, List<string>>>();
+        var availableBooleanAttributes = new Dictionary<string, List<string>>();
+        var availableNumericAttributes = new Dictionary<string, List<string>>();
+        var numericAttributeSettings = new Dictionary<string, IDictionary<string, NumericProductAttributeFieldSettings>>();
+
+        var allProducts = await _session.Query<ContentItem, ProductPartIndex>().ListAsync();
+        foreach (var product in allProducts)
+        {
+            var productSku = product.As<ProductPart>().Sku;
+
+            var booleanAttributes = _productAttributeService.GetProductAttributeFields(product)
+                .Where(attr => attr.Field is BooleanProductAttributeField)
+                .Select(attr => attr.Name)
+                .ToList();
+
+            if (booleanAttributes.Any())
+            {
+                availableBooleanAttributes.Add(productSku, booleanAttributes);
+            }
+
+            var numericAttributes = _productAttributeService.GetProductAttributeFields(product)
+                .Where(attr => attr.Field is NumericProductAttributeField)
+                .ToList();
+
+            if (numericAttributes.Any())
+            {
+                availableNumericAttributes.Add(productSku, numericAttributes.Select(attr => attr.Name).ToList());
+                numericAttributeSettings.Add(
+                    productSku,
+                    numericAttributes.ToDictionary(attr => attr.Name, attr => attr.Settings as NumericProductAttributeFieldSettings));
+            }
+
+            var textAttributes = _predefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
+            foreach (var attr in textAttributes)
+            {
+                var predefinedStrings = new List<string>();
+
+                var predefinedValues = (attr.Settings as TextProductAttributeFieldSettings).PredefinedValues;
+                predefinedStrings.AddRange(predefinedValues.Select(value => value.ToString()));
+
+                var attributesValuesByAttributeNames = new Dictionary<string, List<string>>
+                {
+                    { attr.Name, predefinedStrings },
+                };
+
+                // A Product may already be present in the dictionary, but if it has several different attributes,
+                // those still need to be added to its key.
+                if (!availableTextAttributes.TryAdd(productSku, attributesValuesByAttributeNames))
+                {
+                    availableTextAttributes[productSku].Add(attr.Name, predefinedStrings);
+                }
+            }
+        }
+
+        return (availableTextAttributes, availableBooleanAttributes, availableNumericAttributes, numericAttributeSettings);
     }
 
     private static IEnumerable<DiscountInformation> GetDiscounts(

@@ -11,70 +11,11 @@
 @model OrderPartViewModel
 
 @inject IMoneyService MoneyService
-@inject ISession Session
-@inject IPredefinedValuesProductAttributeService PredefinedAttributeService
-@inject IProductAttributeService AttributeService
 
 @{
     var serializedAvailableCurrencyCodes = JsonSerializer.Serialize(
         MoneyService.Currencies.ToDictionary(currency => currency.CurrencyIsoCode, currency => currency.Symbol));
     var defaultCurrencyCode = MoneyService.DefaultCurrency.CurrencyIsoCode ?? "USD";
-
-    var availableTextAttributes = new Dictionary<string, Dictionary<string, List<string>>>();
-    var availableBooleanAttributes = new Dictionary<string, List<string>>();
-    var availableNumericAttributes = new Dictionary<string, List<string>>();
-    var numericAttributeSettings = new Dictionary<string, Dictionary<string, NumericProductAttributeFieldSettings>>();
-
-    var allProducts = await Session.Query<ContentItem, ProductPartIndex>().ListAsync();
-    foreach (var product in allProducts)
-    {
-        var productSku = product.As<ProductPart>().Sku;
-
-        var booleanAttributes = AttributeService.GetProductAttributeFields(product)
-            .Where(attr => attr.Field is BooleanProductAttributeField)
-            .Select(attr => attr.Name)
-            .ToList();
-
-        if (booleanAttributes.Any())
-        {
-            availableBooleanAttributes.Add(productSku, booleanAttributes);
-        }
-
-        var numericAttributes = AttributeService.GetProductAttributeFields(product)
-            .Where(attr => attr.Field is NumericProductAttributeField);
-
-        if (numericAttributes.Any())
-        {
-            availableNumericAttributes.Add(productSku, numericAttributes.Select(attr => attr.Name).ToList());
-            numericAttributeSettings.Add(
-                productSku,
-                numericAttributes.ToDictionary(attr => attr.Name, attr => attr.Settings as NumericProductAttributeFieldSettings));
-        }
-
-        var textAttributes = PredefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
-        foreach (var attr in textAttributes)
-        {
-            var predefinedStrings = new List<string>();
-
-            var predefinedValues = (attr.Settings as TextProductAttributeFieldSettings).PredefinedValues;
-            predefinedStrings.AddRange(predefinedValues.Select(value => value.ToString()));
-
-            var attributesValuesByAttributeNames = new Dictionary<string, List<string>>();
-            attributesValuesByAttributeNames.Add(attr.Name, predefinedStrings);
-
-            // A Product may already be present in the dictionary, but if it has several different attributes,
-            // those still need to be added to its key.
-            if (!availableTextAttributes.TryAdd(productSku, attributesValuesByAttributeNames))
-            {
-                availableTextAttributes[productSku].Add(attr.Name, predefinedStrings);
-            }
-        }
-    }
-
-    var serializedTextAttributesDictionary = JsonSerializer.Serialize(availableTextAttributes);
-    var serializedBooleanAttributesDictionary = JsonSerializer.Serialize(availableBooleanAttributes);
-    var serializedNumericAttributesDictionary = JsonSerializer.Serialize(availableNumericAttributes);
-    var serializedNumericAttributeSettingsDictionary = JsonSerializer.Serialize(numericAttributeSettings);
 }
 
 <section id="shopping-cart">
@@ -147,11 +88,11 @@
                                 <input v-model="lineItem.selectedAttributes['Numeric'][value]"
                                        :id="lineItem.productSku + '.' + value"
                                        type="number"
-                                       :min="lineItem.numericAttributeSettings[lineItem.productSku][value].Minimum"
-                                       :max="lineItem.numericAttributeSettings[lineItem.productSku][value].Maximum"
-                                       :placeholder="lineItem.numericAttributeSettings[lineItem.productSku][value].Placeholder"
-                                       :required="lineItem.numericAttributeSettings[lineItem.productSku][value].Required"
-                                       :step="Math.pow(10, -lineItem.numericAttributeSettings[lineItem.productSku][value].DecimalPlaces)"
+                                       :min="lineItem.numericAttributeSettings[lineItem.productSku][value].minimum"
+                                       :max="lineItem.numericAttributeSettings[lineItem.productSku][value].maximum"
+                                       :placeholder="lineItem.numericAttributeSettings[lineItem.productSku][value].placeholder"
+                                       :required="lineItem.numericAttributeSettings[lineItem.productSku][value].required"
+                                       :step="Math.pow(10, -lineItem.numericAttributeSettings[lineItem.productSku][value].decimalPlaces)"
                                        :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[Numeric][' + value + ']'"
                                        class="form-control" />
                             </div>
@@ -240,18 +181,10 @@
 <script at="Head" asp-name="vuejs"></script>
 <script at="Foot" depends-on="vuejs">
     const vueQuery = '#orderPart__products';
-    let lineItems = @Json.Serialize(Model.LineItems);
-    let availableTextAttributes = JSON.parse('@Html.Raw(serializedTextAttributesDictionary)');
-    let availableBooleanAttributes = JSON.parse('@Html.Raw(serializedBooleanAttributesDictionary)');
-    let availableNumericAttributes = JSON.parse('@Html.Raw(serializedNumericAttributesDictionary)');
-    let numericAttributeSettings = JSON.parse('@Html.Raw(serializedNumericAttributeSettingsDictionary)');
 
+    let lineItems = @Json.Serialize(Model.LineItems);
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
-        item.availableTextAttributes = availableTextAttributes;
-        item.availableBooleanAttributes = availableBooleanAttributes;
-        item.availableNumericAttributes = availableNumericAttributes;
-        item.numericAttributeSettings = numericAttributeSettings;
     })
 
     let products = new Vue({
@@ -281,13 +214,11 @@
             "productSku": null,
             "unitPriceValue": 0,
             "unitPriceCurrencyIsoCode": '@defaultCurrencyCode',
-            "availableTextAttributes": availableTextAttributes,
-            "availableBooleanAttributes": availableBooleanAttributes,
-            "availableNumericAttributes": availableNumericAttributes,
-            "numericAttributeSettings": numericAttributeSettings,
+            "availableTextAttributes": '',
+            "availableBooleanAttributes": '',
+            "availableNumericAttributes": '',
+            "numericAttributeSettings": '',
             "selectedAttributes": '',
-            "selectedBooleanAttributes": '',
-            "selectedNumericAttributes": '',
         });
     });
 </script>
