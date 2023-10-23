@@ -153,12 +153,12 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
 
                 await context.GoToContentItemEditorByIdAsync(TestOrder);
-                await context.ClickReliablyOnAsync(By.Name("OrderPart.LineItems[0].SelectedBooleanAttributes[TestBooleanAttribute]"));
+                await context.ClickReliablyOnAsync(By.Name("OrderPart.LineItems[0].SelectedAttributes[Boolean][TestBooleanAttribute]"));
                 context.Exists(By.XPath("//label[contains(., 'TestBooleanAttribute')]"));
                 await context.ClickPublishAsync();
 
                 context
-                    .Get(By.Name("OrderPart.LineItems[0].SelectedBooleanAttributes[TestBooleanAttribute]"))
+                    .Get(By.Name("OrderPart.LineItems[0].SelectedAttributes[Boolean][TestBooleanAttribute]"))
                     .GetValue()
                     .ShouldBe("true");
 
@@ -188,18 +188,18 @@ public class BehaviorOrderTests : UITestBase
                 await context.GoToContentItemEditorByIdAsync(TestOrder);
                 context.Exists(By.XPath("//label[contains(., 'TestNumericAttribute:')]"));
 
-                var numericInput = context.Get(By.Name("OrderPart.LineItems[0].SelectedNumericAttributes[TestNumericAttribute]"));
+                var numericInput = context.Get(By.Name("OrderPart.LineItems[0].SelectedAttributes[Numeric][TestNumericAttribute]"));
                 numericInput.GetAttribute("min").ShouldBe("1");
                 numericInput.GetAttribute("max").ShouldBe("2");
                 numericInput.GetAttribute("placeholder").ShouldBe("Test Numeric Placeholder");
                 numericInput.GetAttribute("step").ShouldBe("0.01");
 
                 await context.ClickAndFillInWithRetriesAsync(
-                    By.Name("OrderPart.LineItems[0].SelectedNumericAttributes[TestNumericAttribute]"),
+                    By.Name("OrderPart.LineItems[0].SelectedAttributes[Numeric][TestNumericAttribute]"),
                     "2.5");
                 await context.ClickPublishAsync();
                 context
-                    .Get(By.Name("OrderPart.LineItems[0].SelectedNumericAttributes[TestNumericAttribute]"))
+                    .Get(By.Name("OrderPart.LineItems[0].SelectedAttributes[Numeric][TestNumericAttribute]"))
                     .GetValue()
                     .ShouldBe("2.5");
             },
