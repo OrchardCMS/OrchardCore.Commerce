@@ -1,16 +1,9 @@
 ﻿using Stripe;
-using System;
 
 namespace OrchardCore.Commerce.Extensions;
 
 public static class PaymentExtensions
 {
-    public static RequestOptions SetIdempotencyKey(this RequestOptions requestOptions)
-    {
-        requestOptions.IdempotencyKey = Guid.NewGuid().ToString();
-        return requestOptions;
-    }
-
     public static void AddExpansions(this BaseOptions baseOptions) => baseOptions.AddExpand("payment_method");
 
     public static string GetFormattedPaymentType(this PaymentMethod paymentMethod) =>

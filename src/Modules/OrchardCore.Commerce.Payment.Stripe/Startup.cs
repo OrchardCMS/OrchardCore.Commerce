@@ -22,10 +22,12 @@ public class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<INavigationProvider, AdminMenu>();
 
-        services.AddContentPart<StripePaymentPart>().WithMigration<StripeMigrations>().WithIndex<OrderPaymentIndexProvider>();
+        services.AddScoped<IRequestOptionsService, RequestOptionsService>();
         services.AddScoped<IStripePaymentService, StripePaymentService>();
         services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
-        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
+
+        services.AddContentPart<StripePaymentPart>().WithMigration<StripeMigrations>().WithIndex<OrderPaymentIndexProvider>();
+        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
     }
 }

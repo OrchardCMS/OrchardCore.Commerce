@@ -36,11 +36,11 @@ public class StripePaymentService : IStripePaymentService
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly PaymentIntentService _paymentIntentService;
     private readonly IContentManager _contentManager;
+    private readonly ISiteService _siteService;
+    private readonly IRequestOptionsService _requestOptionsService;
     private readonly IStringLocalizer T;
     private readonly ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
-    private readonly RequestOptions _requestOptions;
-    private readonly string _siteName;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IProductInventoryService _productInventoryService;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
@@ -56,8 +56,7 @@ public class StripePaymentService : IStripePaymentService
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
         ISiteService siteService,
-        IDataProtectionProvider dataProtectionProvider,
-        ILogger<StripePaymentService> logger,
+        IRequestOptionsService requestOptionsService,
         IStringLocalizer<StripePaymentService> stringLocalizer,
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
@@ -74,6 +73,8 @@ public class StripePaymentService : IStripePaymentService
         _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
+        _siteService = siteService;
+        _requestOptionsService = requestOptionsService;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
         _productInventoryService = productInventoryService;
@@ -84,19 +85,6 @@ public class StripePaymentService : IStripePaymentService
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
         _workflowManagers = workflowManagers;
-
-        var siteSettings = siteService.GetSiteSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
-        _siteName = siteSettings.SiteName;
-        _requestOptions =
-            new RequestOptions
-            {
-                ApiKey = siteSettings
-                    .As<StripeApiSettings>()
-                    .SecretKey
-                    .DecryptStripeApiKey(dataProtectionProvider, logger),
-            };
     }
 
     public async Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId)
@@ -118,14 +106,14 @@ public class StripePaymentService : IStripePaymentService
             : await GetOrUpdatePaymentIntentAsync(paymentIntentId, amountForPayment, defaultTotal);
     }
 
-    public Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
+    public async Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
     {
         var paymentIntentGetOptions = new PaymentIntentGetOptions();
         paymentIntentGetOptions.AddExpansions();
-        return _paymentIntentService.GetAsync(
+        return await _paymentIntentService.GetAsync(
             paymentIntentId,
             paymentIntentGetOptions,
-            _requestOptions.SetIdempotencyKey());
+            await _requestOptionsService.SetIdempotencyKeyAsync());
     }
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null)
@@ -273,17 +261,18 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total)
     {
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
             Amount = amountForPayment,
             Currency = total.Currency.CurrencyIsoCode,
-            Description = T["User checkout on {0}", _siteName].Value,
+            Description = T["User checkout on {0}", siteSettings.SiteName].Value,
             AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
         };
 
         var paymentIntent = await _paymentIntentService.CreateAsync(
             paymentIntentOptions,
-            _requestOptions.SetIdempotencyKey());
+            await _requestOptionsService.SetIdempotencyKeyAsync());
 
         _paymentIntentPersistence.Store(paymentIntent.Id);
 
@@ -365,7 +354,7 @@ public class StripePaymentService : IStripePaymentService
         return await UpdatePaymentIntentAsync(paymentIntentId, amountForPayment, defaultTotal);
     }
 
-    private Task<PaymentIntent> UpdatePaymentIntentAsync(
+    private async Task<PaymentIntent> UpdatePaymentIntentAsync(
         string paymentIntentId,
         long amountForPayment,
         Amount defaultTotal)
@@ -377,10 +366,10 @@ public class StripePaymentService : IStripePaymentService
         };
 
         updateOptions.AddExpansions();
-        return _paymentIntentService.UpdateAsync(
+        return await _paymentIntentService.UpdateAsync(
             paymentIntentId,
             updateOptions,
-            _requestOptions.SetIdempotencyKey());
+            await _requestOptionsService.SetIdempotencyKeyAsync());
     }
 
     private static IList<Amount> CheckTotals(ShoppingCartViewModel viewModel)
