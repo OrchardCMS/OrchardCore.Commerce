@@ -112,6 +112,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Paymen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Payment.Stripe", "src\Modules\OrchardCore.Commerce.Payment.Stripe\OrchardCore.Commerce.Payment.Stripe.csproj", "{A4D69733-CDC0-46AE-B46A-163CCC6F77F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Abstraction", "src\Libraries\OrchardCore.Commerce.Abstraction\OrchardCore.Commerce.Abstraction.csproj", "{28DB6CBB-1527-42A1-8EFE-3D95BF185884}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -170,6 +172,10 @@ Global
 		{A4D69733-CDC0-46AE-B46A-163CCC6F77F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4D69733-CDC0-46AE-B46A-163CCC6F77F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4D69733-CDC0-46AE-B46A-163CCC6F77F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28DB6CBB-1527-42A1-8EFE-3D95BF185884}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28DB6CBB-1527-42A1-8EFE-3D95BF185884}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28DB6CBB-1527-42A1-8EFE-3D95BF185884}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28DB6CBB-1527-42A1-8EFE-3D95BF185884}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -198,6 +204,7 @@ Global
 		{C788AFFF-F440-4259-9102-5B4C1B91FAFA} = {62DF9FF9-D2B3-4333-948D-2E405699B47B}
 		{58DD682C-DA5C-4B51-BCB8-C65D690AAC67} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{A4D69733-CDC0-46AE-B46A-163CCC6F77F9} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
+		{28DB6CBB-1527-42A1-8EFE-3D95BF185884} = {90913510-3D7F-4BCC-B55E-56343128F049}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}

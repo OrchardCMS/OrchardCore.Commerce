@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Orchard Core Commerce - Abstractions</Title>
+    <Authors>Bertrand Le Roy</Authors>
+    <Copyright>Copyright © 2018 .NET Foundation</Copyright>
+    <Description>Contains models and other abstractions that can be used by modules to extend OrchardCore Commerce.</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;abstraction</PackageTags>
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Libraries/OrchardCore.Commerce.Abstractions/Readme.md</PackageProjectUrl>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+    <PackageIcon>OrchardCoreIcon.png</PackageIcon>
+  </PropertyGroup>
+
+</Project>
