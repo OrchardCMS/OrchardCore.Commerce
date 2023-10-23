@@ -300,19 +300,13 @@ public class StripePaymentService : IStripePaymentService
         {
             var trimmedSku = item.ProductSku.Split('-')[0];
 
-            var contentItemId = (await _session
-                    .QueryIndex<ProductPartIndex>(productPartIndex => productPartIndex.Sku == trimmedSku)
-                    .ListAsync())
-                .Select(index => index.ContentItemId)
-                .First();
-
-            var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
+            var contentItem = _productService.GetProductsAsync(new string[] { trimmedSku });
 
             lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
                 _priceSelectionStrategy,
                 _priceService,
                 _productService,
-                contentItemVersion));
+                contentItem.ContentItemVersionId));
         }
 
         return lineItems;
