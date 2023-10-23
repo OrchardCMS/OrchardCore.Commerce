@@ -156,9 +156,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
                 productPart.ContentItem.ContentItemVersionId,
                 attributesList,
-                selectedAttributes,
-                processedAttributes.SelectedBooleanAttributes,
-                processedAttributes.SelectedNumericAttributes
+                selectedAttributes
             ));
         }
 
@@ -276,24 +274,39 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         ProcessAttributes(OrderLineItemViewModel lineItem, ProductPart productPart)
     {
         var attributesList = new List<IProductAttributeValue>();
-        var selectedTextAttributes = lineItem.SelectedAttributes["Text"] // try get value?
-            .Where(keyValuePair => keyValuePair.Value != null)
-            .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+        var selectedTextAttributes = new Dictionary<string, string>();
+        if (lineItem.SelectedAttributes.TryGetValue("Text", out var selectedTextAttributesRaw))
+        {
+            selectedTextAttributes = selectedTextAttributesRaw
+                .Where(keyValuePair => keyValuePair.Value != null)
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
 
         if (selectedTextAttributes.Any())
         {
             HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
         }
 
-        var selectedBooleanAttributes = lineItem.SelectedBooleanAttributes.ToDictionary(
-            pair => pair.Key, pair => pair.Value);
+        var selectedBooleanAttributes = new Dictionary<string, string>();
+        if (lineItem.SelectedAttributes.TryGetValue("Boolean", out var selectedBooleanAttributesRaw))
+        {
+            selectedBooleanAttributes = selectedBooleanAttributesRaw.ToDictionary(
+                pair => pair.Key, pair => pair.Value);
+        }
+
         if (selectedBooleanAttributes.Any())
         {
             HandleSelectedBooleanAttributes(selectedBooleanAttributes, productPart, attributesList);
         }
 
-        var selectedNumericAttributes = lineItem.SelectedNumericAttributes.ToDictionary(
-            pair => pair.Key, pair => pair.Value);
+        var selectedNumericAttributes = new Dictionary<string, string>();
+        if (lineItem.SelectedAttributes.TryGetValue("Numeric", out var selectedNumericAttributesRaw))
+        {
+            selectedNumericAttributes = selectedNumericAttributesRaw.ToDictionary(
+                pair => pair.Key, pair => pair.Value);
+        }
+
         if (selectedNumericAttributes.Any())
         {
             HandleSelectedNumericAttributes(selectedNumericAttributes, productPart, attributesList);

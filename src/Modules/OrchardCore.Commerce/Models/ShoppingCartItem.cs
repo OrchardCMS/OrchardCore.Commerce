@@ -152,9 +152,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             quantity * price,
             contentItemVersion,
             Attributes,
-            selectedAttributes,
-            selectedBooleanAttributes,
-            selectedNumericAttributes);
+            selectedAttributes);
     }
 
     public static async Task<LocalizedHtmlString> GetErrorAsync(

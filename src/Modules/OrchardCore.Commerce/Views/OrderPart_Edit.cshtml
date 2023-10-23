@@ -132,10 +132,10 @@
                         </div>
                         <div class="col-sm-3 mx-1 w-auto my-auto" v-for="(value, key) in lineItem.availableBooleanAttributes[lineItem.productSku]">
                             <div class="d-flex flex-row">
-                                <input v-model="lineItem.selectedBooleanAttributes[value]"
+                                <input v-model="lineItem.selectedAttributes['Boolean'][value]"
                                        :id="lineItem.productSku + '.' + value"
                                        type="checkbox"
-                                       :name="'OrderPart.LineItems[' + index + '].SelectedBooleanAttributes[' + value + ']'"
+                                       :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[Boolean][' + value + ']'"
                                        value="true"
                                        class="form-check-input" />
                                 <label class="px-1" :for="lineItem.productSku + '.' + value">{{ value }}</label>
@@ -144,7 +144,7 @@
                         <div class="col-sm-4 mx-1" v-for="(value, key) in lineItem.availableNumericAttributes[lineItem.productSku]">
                             <div class="d-flex flex-row align-items-center">
                                 <label class="px-1">{{ value }}:</label>
-                                <input v-model="lineItem.selectedNumericAttributes[value]"
+                                <input v-model="lineItem.selectedAttributes['Numeric'][value]"
                                        :id="lineItem.productSku + '.' + value"
                                        type="number"
                                        :min="lineItem.numericAttributeSettings[lineItem.productSku][value].Minimum"
@@ -152,7 +152,7 @@
                                        :placeholder="lineItem.numericAttributeSettings[lineItem.productSku][value].Placeholder"
                                        :required="lineItem.numericAttributeSettings[lineItem.productSku][value].Required"
                                        :step="Math.pow(10, -lineItem.numericAttributeSettings[lineItem.productSku][value].DecimalPlaces)"
-                                       :name="'OrderPart.LineItems[' + index + '].SelectedNumericAttributes[' + value + ']'"
+                                       :name="'OrderPart.LineItems[' + index + '].SelectedAttributes[Numeric][' + value + ']'"
                                        class="form-control" />
                             </div>
                         </div>
@@ -246,16 +246,12 @@
     let availableNumericAttributes = JSON.parse('@Html.Raw(serializedNumericAttributesDictionary)');
     let numericAttributeSettings = JSON.parse('@Html.Raw(serializedNumericAttributeSettingsDictionary)');
 
-    //console.log(numericAttributeSettings);
-
     lineItems.forEach(item => {
         item.productUrl = '/Admin/Contents/ContentItems/' + item.productRouteValues.ContentItemId + '/Edit';
         item.availableTextAttributes = availableTextAttributes;
         item.availableBooleanAttributes = availableBooleanAttributes;
         item.availableNumericAttributes = availableNumericAttributes;
         item.numericAttributeSettings = numericAttributeSettings;
-
-        //console.log(item.selectedAttributes);
     })
 
     let products = new Vue({

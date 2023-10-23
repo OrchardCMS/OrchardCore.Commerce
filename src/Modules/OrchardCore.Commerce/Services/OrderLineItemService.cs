@@ -85,8 +85,6 @@ public class OrderLineItemService : IOrderLineItemService
                 ProductRouteValues = metaData.DisplayRouteValues,
                 Attributes = lineItem.Attributes,
                 SelectedAttributes = lineItem.SelectedAttributes,
-                SelectedBooleanAttributes = lineItem.SelectedBooleanAttributes,
-                SelectedNumericAttributes = lineItem.SelectedNumericAttributes,
             };
         }));
 
