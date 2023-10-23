@@ -33,21 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
+    <ProjectReference Include="..\..\Libraries\OrchardCore.Commerce.Abstractions\OrchardCore.Commerce.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Views\StripeCheckout.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Views\StripeApiSettings.Edit.cshtml">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\_ViewImports.cshtml" />
   </ItemGroup>
 
 </Project>

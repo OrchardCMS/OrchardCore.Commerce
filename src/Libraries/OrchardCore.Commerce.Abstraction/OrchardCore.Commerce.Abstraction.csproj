@@ -17,4 +17,15 @@
     <PackageIcon>OrchardCoreIcon.png</PackageIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.0.2" />
+  </ItemGroup>
+
 </Project>
