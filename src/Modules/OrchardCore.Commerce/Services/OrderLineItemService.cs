@@ -32,6 +32,7 @@ public class OrderLineItemService : IOrderLineItemService
     private readonly IProductAttributeService _productAttributeService;
     private readonly IPredefinedValuesProductAttributeService _predefinedAttributeService;
 
+#pragma warning disable S107 // Methods should not have too many parameters
     public OrderLineItemService(
         IClock clock,
         IHttpContextAccessor hca,
@@ -42,6 +43,7 @@ public class OrderLineItemService : IOrderLineItemService
         ISession session,
         IProductAttributeService productAttributeService,
         IPredefinedValuesProductAttributeService predefinedAttributeService)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _clock = clock;
         _hca = hca;
