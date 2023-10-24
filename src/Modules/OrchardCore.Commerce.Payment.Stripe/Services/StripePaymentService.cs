@@ -201,7 +201,7 @@ public class StripePaymentService : IStripePaymentService
 
         var orderPart = order.As<OrderPart>();
 
-        var lineItems = await CreateOrderLineItemsAsync(currentShoppingCart);
+        var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(currentShoppingCart);
         if (!lineItems.Any())
         {
             lineItems = orderPart.LineItems;
@@ -273,38 +273,6 @@ public class StripePaymentService : IStripePaymentService
         _paymentIntentPersistence.Store(paymentIntent.Id);
 
         return paymentIntent;
-    }
-
-    public async Task<IEnumerable<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
-    {
-        var lineItems = new List<OrderLineItem>();
-
-        // This needs to be done separately because it's async: "Avoid using async lambda when delegate type returns
-        // void."
-        foreach (var item in shoppingCart.Items)
-        {
-            var trimmedSku = item.ProductSku.Split('-')[0];
-
-            var contentItem = _productService.GetProductsAsync(new[] { trimmedSku });
-
-            item = await _priceService.AddPriceAsync(item);
-            var price = _priceSelectionStrategy.SelectPrice(item.Prices);
-            var fullSku = _productService.GetOrderFullSku(item, await _productService.GetProductAsync(item.ProductSku));
-
-            var selectedAttributes = item.Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
-
-            lineItems.Add(new OrderLineItem(
-                item.Quantity,
-                item.ProductSku,
-                fullSku,
-                price,
-                item.Quantity * price,
-                contentItem.ContentItemVersionId,
-                item.Attributes,
-                selectedAttributes));
-        }
-
-        return lineItems;
     }
 
     private static void AlterOrder(

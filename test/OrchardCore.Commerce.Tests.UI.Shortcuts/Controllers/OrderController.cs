@@ -28,20 +28,20 @@ public class OrderController : Controller
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
-    private readonly IStripePaymentService _stripePaymentService;
+    private readonly IShoppingCartHelpers _shoppingCartHelpers;
 
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IStripePaymentService stripePaymentService)
+        IShoppingCartHelpers shoppingCartHelpers)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
         _workflowManagers = workflowManagers;
-        _stripePaymentService = stripePaymentService;
+        _shoppingCartHelpers = shoppingCartHelpers;
     }
 
     [AllowAnonymous]
@@ -52,7 +52,7 @@ public class OrderController : Controller
         var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(shoppingCart.Id);
         var order = await _contentManager.NewAsync(Order);
-        var orderLineItems = await _stripePaymentService.CreateOrderLineItemsAsync(shoppingCart);
+        var orderLineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(shoppingCart);
         order.Apply(checkoutViewModel.OrderPart);
 
         order.Alter<OrderPart>(orderPart =>

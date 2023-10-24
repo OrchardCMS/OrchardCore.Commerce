@@ -192,7 +192,7 @@ public class PaymentService : IPaymentService
             return null;
         }
 
-        var lineItems = await _stripePaymentService.CreateOrderLineItemsAsync(currentShoppingCart);
+        var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(currentShoppingCart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
             shoppingCartId: null,

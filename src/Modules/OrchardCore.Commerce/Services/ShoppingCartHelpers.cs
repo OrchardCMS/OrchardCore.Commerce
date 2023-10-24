@@ -1,3 +1,4 @@
+using AngleSharp.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
@@ -8,6 +9,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace OrchardCore.Commerce.Services;
 public class ShoppingCartHelpers : IShoppingCartHelpers
 {
     private readonly IHttpContextAccessor _hca;
+    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
     private readonly IEnumerable<IProductEstimationContextUpdater> _productEstimationContextUpdaters;
     private readonly IProductService _productService;
@@ -32,6 +35,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         Justification = "This service ties together many cart-related features.")]
     public ShoppingCartHelpers(
         IHttpContextAccessor hca,
+        IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
         IEnumerable<IProductEstimationContextUpdater> productEstimationContextUpdaters,
         IProductService productService,
@@ -41,6 +45,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
         _hca = hca;
+        _priceSelectionStrategy = priceSelectionStrategy;
         _priceService = priceService;
         _productEstimationContextUpdaters = productEstimationContextUpdaters;
         _productService = productService;
@@ -215,5 +220,32 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return item.Prices.Any()
             ? null
             : H["Can't add product {0} because it doesn't have a price, or its currency doesn't match the current display currency.", sku];
+    }
+
+    public async Task<IList<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
+    {
+        static string TrimSku(ShoppingCartItem item) => item.ProductSku.Split('-')[0];
+
+        var contentItems = (await _productService.GetProductsAsync(shoppingCart.Items.Select(TrimSku)))
+            .ToDictionary(item => item.Sku, item => item.ContentItem);
+
+        return await shoppingCart.Items.AwaitEachAsync(async item =>
+        {
+            item = await _priceService.AddPriceAsync(item);
+            var price = _priceSelectionStrategy.SelectPrice(item.Prices);
+            var fullSku = _productService.GetOrderFullSku(item, await _productService.GetProductAsync(item.ProductSku));
+
+            var selectedAttributes = item.Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
+
+            return new OrderLineItem(
+                item.Quantity,
+                item.ProductSku,
+                fullSku,
+                price,
+                item.Quantity * price,
+                contentItems[TrimSku(item)].ContentItemVersionId,
+                item.Attributes,
+                selectedAttributes);
+        });
     }
 }

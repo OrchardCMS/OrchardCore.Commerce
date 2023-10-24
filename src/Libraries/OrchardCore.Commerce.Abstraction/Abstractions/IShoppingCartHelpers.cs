@@ -55,4 +55,9 @@ public interface IShoppingCartHelpers
         string sku,
         Address shipping = null,
         Address billing = null);
+
+    /// <summary>
+    /// Returns a <see cref="OrderLineItem"/> list from the given <paramref name="shoppingCart"/> items.
+    /// </summary>
+    Task<IList<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart);
 }
