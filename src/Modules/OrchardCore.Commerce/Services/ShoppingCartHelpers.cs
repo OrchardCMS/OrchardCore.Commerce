@@ -7,7 +7,6 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -74,7 +73,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                 var product = products[item.ProductSku];
                 var price = _priceService.SelectPrice(item.Prices);
 
-                var attributes = item.Attributes.Any(attribute => attribute is RawProductAttributeValue)
+                var attributes = item.HasRawAttributes()
                     ? _shoppingCartSerializer.PostProcessAttributes(item.Attributes, product)
                     : item.Attributes;
 

@@ -115,11 +115,12 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
 
         return attributes
+            .CastWhere<BaseProductAttributeValue<object>>()
             .SelectWhere(attribute =>
-                attribute is RawProductAttributeValue rawAttribute &&
-                type.GetFieldDefinition(rawAttribute.AttributeName) is ({ } partDefinition, { } fieldDefinition)
+                attribute.IsRaw() &&
+                type.GetFieldDefinition(attribute.AttributeName) is ({ } partDefinition, { } fieldDefinition)
                     ? _attributeProviders
-                        .SelectWhere(provider => provider.CreateFromValue(partDefinition, fieldDefinition, rawAttribute.Value))
+                        .SelectWhere(provider => provider.CreateFromValue(partDefinition, fieldDefinition, attribute.Value))
                         .FirstOrDefault()
                     : attribute)
             .ToHashSet();

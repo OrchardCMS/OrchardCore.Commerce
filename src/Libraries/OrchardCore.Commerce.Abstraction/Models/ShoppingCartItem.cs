@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Serialization;
 using OrchardCore.Mvc.Utilities;
 using System;
@@ -106,6 +107,8 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 
     public bool IsSameProductAs(ShoppingCartItem other) =>
         ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
+
+    public bool HasRawAttributes() => Attributes.Any(attribute => attribute is RawProductAttributeValue);
 
     public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
 }

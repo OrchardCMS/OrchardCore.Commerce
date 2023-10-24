@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace OrchardCore.Commerce.ProductAttributeValues;
@@ -30,6 +31,12 @@ public class BaseProductAttributeValue<T> : IProductAttributeValue<T>
 
     public virtual string Display(CultureInfo culture = null) =>
         FieldName + ": " + Convert.ToString(Value, culture ?? CultureInfo.InvariantCulture);
+
+    [SuppressMessage(
+        "Blocker Code Smell",
+        "S3060:\"is\" should not be used with \"this\"",
+        Justification = "Testing against an internal class.")]
+    public bool IsRaw() => this is RawProductAttributeValue;
 
     public virtual bool Equals(IProductAttributeValue<T> other) =>
         other != null &&

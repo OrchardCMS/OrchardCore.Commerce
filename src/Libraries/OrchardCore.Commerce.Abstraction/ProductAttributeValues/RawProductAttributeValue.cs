@@ -15,5 +15,5 @@ internal sealed class RawProductAttributeValue : BaseProductAttributeValue<objec
     {
     }
 
-    public void SetAttributeName(string name) => AttributeName = name;
+    internal void SetAttributeName(string name) => AttributeName = name;
 }
