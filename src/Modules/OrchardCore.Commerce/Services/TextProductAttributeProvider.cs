@@ -13,13 +13,16 @@ public class TextProductAttributeProvider : IProductAttributeProvider
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
+    private readonly IProductAttributeService _productAttributeService;
 
     public TextProductAttributeProvider(
         IContentDefinitionManager contentDefinitionManager,
-        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService)
+        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
+        IProductAttributeService productAttributeService)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
+        _productAttributeService = productAttributeService;
     }
 
     public IProductAttributeValue Parse(
@@ -62,7 +65,7 @@ public class TextProductAttributeProvider : IProductAttributeProvider
         var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
         foreach (var attribute in selectedTextAttributesList)
         {
-            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+            var (attributePartDefinition, attributeFieldDefinition) = _productAttributeService.GetFieldDefinition(
                 type, type.Name + "." + attribute.Name);
 
             var predefinedStrings = new List<string>();
@@ -76,23 +79,5 @@ public class TextProductAttributeProvider : IProductAttributeProvider
 
             attributesList.Add(matchingAttribute);
         }
-    }
-
-    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
-        GetFieldDefinition(ContentTypeDefinition type, string attributeName)
-    {
-        var partAndField = attributeName.Split('.');
-        var partName = partAndField[0];
-        var fieldName = partAndField[1];
-
-        return type
-            .Parts
-            .Where(partDefinition => partDefinition.Name == partName)
-            .SelectMany(partDefinition => partDefinition
-                .PartDefinition
-                .Fields
-                .Select(fieldDefinition => (PartDefinition: partDefinition, FieldDefinition: fieldDefinition))
-                .Where(pair => pair.FieldDefinition.Name == fieldName))
-            .FirstOrDefault();
     }
 }

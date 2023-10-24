@@ -50,6 +50,24 @@ public class ProductAttributeService : IProductAttributeService
             .Where(description => description.Field != null);
     }
 
+    public (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
+        GetFieldDefinition(ContentTypeDefinition type, string attributeName)
+    {
+        var partAndField = attributeName.Split('.');
+        var partName = partAndField[0];
+        var fieldName = partAndField[1];
+
+        return type
+            .Parts
+            .Where(partDefinition => partDefinition.Name == partName)
+            .SelectMany(partDefinition => partDefinition
+                .PartDefinition
+                .Fields
+                .Select(fieldDefinition => (PartDefinition: partDefinition, FieldDefinition: fieldDefinition))
+                .Where(pair => pair.FieldDefinition.Name == fieldName))
+            .FirstOrDefault();
+    }
+
     private ProductAttributeFieldSettings GetFieldSettings(
         ContentPartFieldDefinition partFieldDefinition,
         ProductAttributeField field) =>

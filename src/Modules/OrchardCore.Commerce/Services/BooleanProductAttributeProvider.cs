@@ -56,7 +56,7 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
         var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
         foreach (var attribute in booleanAttributesList)
         {
-            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+            var (attributePartDefinition, attributeFieldDefinition) = _productAttributeService.GetFieldDefinition(
                 type, type.Name + "." + attribute);
 
             // The value is true if the selected boolean attributes list contains the attribute, otherwise false.
@@ -65,23 +65,5 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
 
             attributesList.Add(matchingAttribute);
         }
-    }
-
-    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
-        GetFieldDefinition(ContentTypeDefinition type, string attributeName)
-    {
-        var partAndField = attributeName.Split('.');
-        var partName = partAndField[0];
-        var fieldName = partAndField[1];
-
-        return type
-            .Parts
-            .Where(partDefinition => partDefinition.Name == partName)
-            .SelectMany(partDefinition => partDefinition
-                .PartDefinition
-                .Fields
-                .Select(fieldDefinition => (PartDefinition: partDefinition, FieldDefinition: fieldDefinition))
-                .Where(pair => pair.FieldDefinition.Name == fieldName))
-            .FirstOrDefault();
     }
 }
