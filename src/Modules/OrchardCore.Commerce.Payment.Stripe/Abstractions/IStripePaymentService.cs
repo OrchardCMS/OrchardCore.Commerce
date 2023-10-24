@@ -1,6 +1,7 @@
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using Stripe;
@@ -19,7 +20,7 @@ public interface IStripePaymentService
     /// </summary>
     /// <returns>A new instance of <see cref="PaymentIntent"/>, or an existing one for the given
     /// <paramref name="paymentIntentId"/>.</returns>
-    Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId);
+    Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId, ShoppingCartViewModel shoppingCartViewModel);
 
     /// <summary>
     /// Returns a <see cref="PaymentIntent"/> object for the given <paramref name="paymentIntentId"/>.

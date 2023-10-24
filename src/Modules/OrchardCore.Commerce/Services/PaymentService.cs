@@ -113,7 +113,7 @@ public class PaymentService : IPaymentService
             total.Value > 0)
         {
             var paymentIntentId = _paymentIntentPersistence.Retrieve();
-            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId);
+            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId, cart);
         }
 
         var currency = total.Currency;

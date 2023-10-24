@@ -87,14 +87,10 @@ public class StripePaymentService : IStripePaymentService
         _workflowManagers = workflowManagers;
     }
 
-    public async Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId)
+    public async Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId, ShoppingCartViewModel shoppingCartViewModel)
     {
         var orderPart = (await GetOrderByPaymentIntentIdAsync(paymentIntentId))?.As<OrderPart>();
-        var totals = CheckTotals(
-            await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-                shoppingCartId: null,
-                orderPart?.ShippingAddress.Address,
-                orderPart?.BillingAddress.Address));
+        var totals = CheckTotals(shoppingCartViewModel);
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
