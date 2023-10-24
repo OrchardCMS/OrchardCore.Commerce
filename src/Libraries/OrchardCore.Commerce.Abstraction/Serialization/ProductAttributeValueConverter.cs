@@ -25,13 +25,10 @@ internal sealed class ProductAttributeValueConverter : JsonConverter<IProductAtt
         var attributeName = attribute.Get<string>(AttributeName);
         var typeName = attribute.Get<string>(Type);
 
-        return typeName switch
-        {
-            nameof(TextProductAttributeValue) => new TextProductAttributeValue(attributeName, attribute.Get<IEnumerable<string>>(Value)),
-            nameof(BooleanProductAttributeValue) => new BooleanProductAttributeValue(attributeName, attribute.Get<bool>(Value)),
-            nameof(NumericProductAttributeValue) => new NumericProductAttributeValue(attributeName, attribute.Get<decimal>(Value)),
-            _ => throw new InvalidOperationException($"Unknown or unsupported type \"{typeName}\"."),
-        };
+        var deserializer = IProductAttributeDeserializer.Deserializers.GetMaybe(typeName) ??
+            throw new InvalidOperationException($"Unknown or unsupported type \"{typeName}\".");
+
+        return deserializer.Deserialize(attributeName, attribute);
     }
 
     public override void WriteJson(JsonWriter writer, IProductAttributeValue productAttributeValue, JsonSerializer serializer)
