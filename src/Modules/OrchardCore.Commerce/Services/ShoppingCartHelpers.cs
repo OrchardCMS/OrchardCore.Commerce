@@ -168,7 +168,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             }
         }
 
-        if (await ShoppingCartItem.GetErrorAsync(parsedLine.ProductSku, parsedLine, H, _priceService) is { } error)
+        if (await GetErrorAsync(parsedLine.ProductSku, parsedLine) is { } error)
         {
             throw new FrontendException(error);
         }
@@ -202,5 +202,19 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return (await CreateShoppingCartViewModelAsync(cart, context.ShippingAddress, context.BillingAddress))
             .Lines
             .FirstOrDefault(line => line.ProductSku == context.ShoppingCartItem.ProductSku);
+    }
+
+    private async Task<LocalizedHtmlString> GetErrorAsync(string sku, ShoppingCartItem item)
+    {
+        if (item is null)
+        {
+            return H["Product with SKU {0} not found.", sku];
+        }
+
+        item = (await _priceService.AddPricesAsync(new[] { item })).Single();
+
+        return item.Prices.Any()
+            ? null
+            : H["Can't add product {0} because it doesn't have a price, or its currency doesn't match the current display currency.", sku];
     }
 }

@@ -1,21 +1,18 @@
-using Microsoft.AspNetCore.Mvc.Localization;
+using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Serialization;
 using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Models;
 
 /// <summary>
 /// A shopping cart item.
 /// </summary>
-[Newtonsoft.Json.JsonConverter(typeof(LegacyShoppingCartItemConverter))]
-[JsonConverter(typeof(ShoppingCartItemConverter))]
+[JsonConverter(typeof(LegacyShoppingCartItemConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(ShoppingCartItemConverter))]
 public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 {
     /// <summary>
@@ -111,47 +108,4 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
     public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
-
-    public async Task<OrderLineItem> CreateOrderLineFromShoppingCartItemAsync(
-        IPriceSelectionStrategy priceSelectionStrategy,
-        IPriceService priceService,
-        IProductService productService,
-        string contentItemVersion)
-    {
-        var quantity = Quantity;
-
-        var item = await priceService.AddPriceAsync(this);
-        var price = priceSelectionStrategy.SelectPrice(item.Prices);
-        var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
-
-        var selectedAttributes = Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
-
-        return new OrderLineItem(
-            quantity,
-            ProductSku,
-            fullSku,
-            price,
-            quantity * price,
-            contentItemVersion,
-            Attributes,
-            selectedAttributes);
-    }
-
-    public static async Task<LocalizedHtmlString> GetErrorAsync(
-        string sku,
-        ShoppingCartItem item,
-        IHtmlLocalizer localizer,
-        IPriceService priceService)
-    {
-        if (item is null)
-        {
-            return localizer["Product with SKU {0} not found.", sku];
-        }
-
-        item = (await priceService.AddPricesAsync(new[] { item })).Single();
-
-        return item.Prices.Any()
-            ? null
-            : localizer["Can't add product {0} because it doesn't have a price, or its currency doesn't match the current display currency.", sku];
-    }
 }

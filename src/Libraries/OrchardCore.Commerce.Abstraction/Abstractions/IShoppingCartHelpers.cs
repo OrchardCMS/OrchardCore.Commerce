@@ -35,7 +35,7 @@ public interface IShoppingCartHelpers
     Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync();
 
     /// <summary>
-    /// Adds a new entry to the shopping cart, optionally saves the cart using <see cref="IShoppingCartPersistence"/> if
+    /// Adds a new entry to the shopping cart, optionally saves the cart using <c>IShoppingCartPersistence</c> if
     /// <paramref name="storeIfOk"/> is <see langword="true"/>.
     /// </summary>
     /// <exception cref="FrontendException">

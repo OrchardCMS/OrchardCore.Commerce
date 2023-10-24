@@ -285,13 +285,23 @@ public class StripePaymentService : IStripePaymentService
         {
             var trimmedSku = item.ProductSku.Split('-')[0];
 
-            var contentItem = _productService.GetProductsAsync(new string[] { trimmedSku });
+            var contentItem = _productService.GetProductsAsync(new[] { trimmedSku });
 
-            lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
-                _priceSelectionStrategy,
-                _priceService,
-                _productService,
-                contentItem.ContentItemVersionId));
+            item = await _priceService.AddPriceAsync(item);
+            var price = _priceSelectionStrategy.SelectPrice(item.Prices);
+            var fullSku = _productService.GetOrderFullSku(item, await _productService.GetProductAsync(item.ProductSku));
+
+            var selectedAttributes = item.Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
+
+            lineItems.Add(new OrderLineItem(
+                item.Quantity,
+                item.ProductSku,
+                fullSku,
+                price,
+                item.Quantity * price,
+                contentItem.ContentItemVersionId,
+                item.Attributes,
+                selectedAttributes));
         }
 
         return lineItems;
