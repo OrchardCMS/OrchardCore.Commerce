@@ -95,11 +95,10 @@ public class StripePaymentService : IStripePaymentService
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         var defaultTotal = totals.SingleOrDefault();
-        long amountForPayment = GetPaymentAmount(defaultTotal);
 
         return string.IsNullOrEmpty(paymentIntentId)
-            ? await CreatePaymentIntentAsync(amountForPayment, defaultTotal)
-            : await GetOrUpdatePaymentIntentAsync(paymentIntentId, amountForPayment, defaultTotal);
+            ? await CreatePaymentIntentAsync(defaultTotal)
+            : await GetOrUpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
     }
 
     public async Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
@@ -236,7 +235,7 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public long GetPaymentAmount(Amount total)
+    private long GetPaymentAmount(Amount total)
     {
         if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(total.Currency.CurrencyIsoCode))
         {
@@ -255,12 +254,12 @@ public class StripePaymentService : IStripePaymentService
         return updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total)
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total)
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
-            Amount = amountForPayment,
+            Amount = GetPaymentAmount(total),
             Currency = total.Currency.CurrencyIsoCode,
             Description = T["User checkout on {0}", siteSettings.SiteName].Value,
             AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
@@ -315,7 +314,6 @@ public class StripePaymentService : IStripePaymentService
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
         string paymentIntentId,
-        long amountForPayment,
         Amount defaultTotal)
     {
         var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
@@ -325,18 +323,17 @@ public class StripePaymentService : IStripePaymentService
             return paymentIntent;
         }
 
-        return await UpdatePaymentIntentAsync(paymentIntentId, amountForPayment, defaultTotal);
+        return await UpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
     }
 
     private async Task<PaymentIntent> UpdatePaymentIntentAsync(
         string paymentIntentId,
-        long amountForPayment,
-        Amount defaultTotal)
+        Amount total)
     {
         var updateOptions = new PaymentIntentUpdateOptions
         {
-            Amount = amountForPayment,
-            Currency = defaultTotal.Currency.CurrencyIsoCode,
+            Amount = GetPaymentAmount(total),
+            Currency = total.Currency.CurrencyIsoCode,
         };
 
         updateOptions.AddExpansions();

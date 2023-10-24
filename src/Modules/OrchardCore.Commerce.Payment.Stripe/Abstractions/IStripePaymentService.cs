@@ -27,11 +27,6 @@ public interface IStripePaymentService
     Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId);
 
     /// <summary>
-    /// Calculates payment amount based on the given <paramref name="total"/>.
-    /// </summary>
-    long GetPaymentAmount(Amount total);
-
-    /// <summary>
     /// Returns a <see cref="PaymentIntent"/> object based on the given <paramref name="total"/>.
     /// </summary>
     Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total);

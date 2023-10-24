@@ -193,8 +193,7 @@ public class PaymentController : Controller
         }
 
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-        var paymentAmount = _stripePaymentService.GetPaymentAmount(singleCurrencyTotal);
-        var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(paymentAmount, singleCurrencyTotal);
+        var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(singleCurrencyTotal);
 
         _session.Save(new OrderPayment
         {
