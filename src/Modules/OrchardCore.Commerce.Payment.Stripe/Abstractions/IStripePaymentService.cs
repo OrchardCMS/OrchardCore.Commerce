@@ -16,9 +16,7 @@ public interface IStripePaymentService
     /// <summary>
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
-    /// <returns>A new instance of <see cref="PaymentIntent"/>, or an existing one for the given
-    /// <paramref name="paymentIntentId"/>.</returns>
-    Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId, ShoppingCartViewModel shoppingCartViewModel);
+    Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart);
 
     /// <summary>
     /// Returns a <see cref="PaymentIntent"/> object for the given <paramref name="paymentIntentId"/>.

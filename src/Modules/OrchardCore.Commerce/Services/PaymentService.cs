@@ -108,15 +108,6 @@ public class PaymentService : IPaymentService
                 "Checkout"))
             .ToList();
 
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
-        var initPaymentIntent = new PaymentIntent();
-        if (!string.IsNullOrEmpty(stripeApiSettings.PublishableKey) &&
-            !string.IsNullOrEmpty(stripeApiSettings.SecretKey) &&
-            total.Value > 0)
-        {
-            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(_paymentIntentPersistence.Retrieve(), cart);
-        }
-
         var currency = total.Currency;
         var netTotal = new Amount(0, currency);
         var grossTotal = new Amount(0, currency);
@@ -147,7 +138,7 @@ public class PaymentService : IPaymentService
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
+            PaymentIntentClientSecret = await _stripePaymentService.CreateClientSecretAsync(total, cart),
         };
     }
 

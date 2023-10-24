@@ -87,18 +87,29 @@ public class StripePaymentService : IStripePaymentService
         _workflowManagers = workflowManagers;
     }
 
-    public async Task<PaymentIntent> InitializePaymentIntentAsync(string paymentIntentId, ShoppingCartViewModel shoppingCartViewModel)
+    public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
     {
-        var orderPart = (await GetOrderByPaymentIntentIdAsync(paymentIntentId))?.As<OrderPart>();
-        var totals = CheckTotals(shoppingCartViewModel);
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+
+        if (string.IsNullOrEmpty(stripeApiSettings.PublishableKey) ||
+            string.IsNullOrEmpty(stripeApiSettings.SecretKey) ||
+            total.Value <= 0)
+        {
+            return null;
+        }
+
+        var paymentIntentId = _paymentIntentPersistence.Retrieve();
+        var totals = CheckTotals(cart);
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
         var defaultTotal = totals.SingleOrDefault();
 
-        return string.IsNullOrEmpty(paymentIntentId)
+        var initPaymentIntent = string.IsNullOrEmpty(paymentIntentId)
             ? await CreatePaymentIntentAsync(defaultTotal)
             : await GetOrUpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
+
+        return initPaymentIntent.ClientSecret;
     }
 
     public async Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
@@ -110,6 +121,8 @@ public class StripePaymentService : IStripePaymentService
             paymentIntentGetOptions,
             await _requestOptionsService.SetIdempotencyKeyAsync());
     }
+    public Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total) =>
+        throw new NotImplementedException();
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent) =>
         _paymentService.UpdateOrderToOrderedAsync(
