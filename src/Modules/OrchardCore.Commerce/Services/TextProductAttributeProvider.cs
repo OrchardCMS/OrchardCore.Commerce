@@ -42,15 +42,13 @@ public class TextProductAttributeProvider : IProductAttributeProvider
         if (selectedAttributes.TryGetValue("Text", out var selectedTextAttributesRaw))
         {
             selectedTextAttributes = selectedTextAttributesRaw
-                //.Where(keyValuePair => keyValuePair.Value != null) // what if we just go without this
+                .Where(keyValuePair => keyValuePair.Value != null)
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
-        //else
-        //{
-        //    selectedAttributes["Text"].Add();
-        //}
-
-        // if there are no 
+        else
+        {
+            selectedAttributes.Add("Text", new Dictionary<string, string>());
+        }
 
         var predefinedAttributes = _predefinedValuesProductAttributeService
             .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem);
@@ -76,7 +74,6 @@ public class TextProductAttributeProvider : IProductAttributeProvider
 
             var matchingAttribute = Parse(attributePartDefinition, attributeFieldDefinition, new[] { value });
 
-            // add here only if not null?
             attributesList.Add(matchingAttribute);
         }
     }

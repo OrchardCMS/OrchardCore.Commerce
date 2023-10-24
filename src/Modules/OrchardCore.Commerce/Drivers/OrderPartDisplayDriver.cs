@@ -1,21 +1,16 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
-using OrchardCore.Commerce.Services;
-using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Helpers;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,32 +24,20 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     private readonly IProductService _productService;
     private readonly IStringLocalizer T;
     private readonly IMoneyService _moneyService;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IProductAttributeService _productAttributeService;
 
-    // These are needed.
-#pragma warning disable S107 // Methods should not have too many parameters
     public OrderPartDisplayDriver(
         IEnumerable<IProductAttributeProvider> attributeProviders,
         IOrderLineItemService orderLineItemService,
         ICurrencyProvider currencyProvider,
         IProductService productService,
         IStringLocalizer<OrderPartDisplayDriver> stringLocalizer,
-        IMoneyService moneyService,
-        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
-        IContentDefinitionManager contentDefinitionManager,
-        IProductAttributeService productAttributeService)
-#pragma warning restore S107 // Methods should not have too many parameters
+        IMoneyService moneyService)
     {
         _attributeProviders = attributeProviders;
         _orderLineItemService = orderLineItemService;
         _currencyProvider = currencyProvider;
         _productService = productService;
         _moneyService = moneyService;
-        _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
-        _contentDefinitionManager = contentDefinitionManager;
-        _productAttributeService = productAttributeService;
         T = stringLocalizer;
     }
 
@@ -129,17 +112,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             var attributesList = new List<IProductAttributeValue>();
 
-            if (lineItem.SelectedAttributes.Any())
+            foreach (var provider in _attributeProviders)
             {
-                foreach (var provider in _attributeProviders)
-                {
-                    provider.HandleSelectedAttributes(lineItem.SelectedAttributes, productPart, attributesList);
-                }
+                provider.HandleSelectedAttributes(lineItem.SelectedAttributes, productPart, attributesList);
             }
-
-
-            //var processedAttributes = ProcessAttributes(lineItem, productPart);
-            //var attributesList = processedAttributes.AttributesList;
 
             // If attributes exist, there must be a full SKU.
             var fullSku = string.Empty;
@@ -148,14 +124,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, attributesList);
                 fullSku = _productService.GetOrderFullSku(item, productPart);
             }
-
-            //// is this even necessary? isn't lineItem.SelectedAttributes the same lol?
-            //var selectedAttributes = new Dictionary<string, IDictionary<string, string>>
-            //{
-            //    { "Text", processedAttributes.SelectedTextAttributes },
-            //    { "Boolean", processedAttributes.SelectedBooleanAttributes },
-            //    { "Numeric", processedAttributes.SelectedNumericAttributes },
-            //};
 
             orderLineItems.Add(new OrderLineItem(
                 lineItem.Quantity,
@@ -176,133 +144,6 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         return orderLineItems;
     }
 
-    //private void HandleSelectedNumericAttributes(
-    //    IDictionary<string, string> selectedNumericAttributes,
-    //    ProductPart productPart,
-    //    IList<IProductAttributeValue> attributesList)
-    //{
-    //    var numericAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
-    //        .Where(attr => attr.Field is NumericProductAttributeField)
-    //        .ToList();
-
-    //    // Construct actual attributes from strings.
-    //    var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-    //    foreach (var attribute in numericAttributesList)
-    //    {
-    //        var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-    //            type, type.Name + "." + attribute.Name);
-
-    //        var defaultValue = ((attribute.Settings as NumericProductAttributeFieldSettings).DefaultValue ?? 0)
-    //            .ToString(CultureInfo.InvariantCulture);
-    //        var selectedNumericAttribute = selectedNumericAttributes.FirstOrDefault(keyValuePair => keyValuePair.Key == attribute.Name);
-    //        var selectedValue = selectedNumericAttribute.Value;
-
-    //        // If selectedValue is null, set default value in selectedNumericAttributes dictionary to display it properly in editor.
-    //        if (string.IsNullOrEmpty(selectedValue))
-    //        {
-    //            selectedNumericAttributes.Remove(selectedNumericAttribute);
-    //            selectedNumericAttributes.Add(selectedNumericAttribute.Key, defaultValue);
-    //        }
-
-    //        var matchingAttribute = _attributeProviders
-    //            .Select(provider => provider.Parse(
-    //                attributePartDefinition,
-    //                attributeFieldDefinition,
-    //                selectedValue ?? defaultValue))
-    //            .FirstOrDefault(attributeValue => attributeValue != null);
-
-    //        attributesList.Add(matchingAttribute);
-    //    }
-    //}
-
-    //private void HandleSelectedBooleanAttributes(
-    //    IDictionary<string, string> selectedBooleanAttributes,
-    //    ProductPart productPart,
-    //    IList<IProductAttributeValue> attributesList)
-    //{
-    //    var booleanAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
-    //        .Where(attr => attr.Field is BooleanProductAttributeField)
-    //        .Select(attr => attr.Name)
-    //        .ToList();
-
-    //    // Construct actual attributes from strings.
-    //    var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-    //    foreach (var attribute in booleanAttributesList)
-    //    {
-    //        var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-    //            type, type.Name + "." + attribute);
-
-    //        // The value is true if the selected boolean attributes list contains the attribute, otherwise false.
-    //        var value = selectedBooleanAttributes.Any(keyValuePair => keyValuePair.Key == attribute);
-
-    //        var matchingAttribute = _attributeProviders
-    //            .Select(provider => provider.Parse(
-    //                attributePartDefinition, attributeFieldDefinition, value.ToString()))
-    //            .FirstOrDefault(attributeValue => attributeValue != null);
-
-    //        attributesList.Add(matchingAttribute);
-    //    }
-    //}
-
-    private (List<IProductAttributeValue> AttributesList,
-        Dictionary<string, string> SelectedTextAttributes,
-        Dictionary<string, string> SelectedBooleanAttributes,
-        Dictionary<string, string> SelectedNumericAttributes)
-        ProcessAttributes(OrderLineItemViewModel lineItem, ProductPart productPart)
-    {
-        var attributesList = new List<IProductAttributeValue>();
-
-        foreach (var provider in _attributeProviders)
-        {
-            provider.HandleSelectedAttributes(lineItem.SelectedAttributes, productPart, attributesList);
-        }
-
-
-        //if (selectedTextAttributes.Any())
-        //{
-
-        //    //_attributeProviders.Where(provider => provider.);
-
-
-        //    //_attributeProviders.Any(provider => provider.HandleSelected(selectedTextAttributes, productPart, attributesList));
-
-        //    //HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
-        //}
-        var selectedTextAttributes = new Dictionary<string, string>();
-        if (lineItem.SelectedAttributes.TryGetValue("Text", out var selectedTextAttributesRaw))
-        {
-            selectedTextAttributes = selectedTextAttributesRaw
-                .Where(keyValuePair => keyValuePair.Value != null)
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
-
-        var selectedBooleanAttributes = new Dictionary<string, string>();
-        if (lineItem.SelectedAttributes.TryGetValue("Boolean", out var selectedBooleanAttributesRaw))
-        {
-            selectedBooleanAttributes = selectedBooleanAttributesRaw.ToDictionary(
-                pair => pair.Key, pair => pair.Value);
-        }
-
-        //if (selectedBooleanAttributes.Any())
-        //{
-        //    HandleSelectedBooleanAttributes(selectedBooleanAttributes, productPart, attributesList);
-        //}
-
-        var selectedNumericAttributes = new Dictionary<string, string>();
-        if (lineItem.SelectedAttributes.TryGetValue("Numeric", out var selectedNumericAttributesRaw))
-        {
-            selectedNumericAttributes = selectedNumericAttributesRaw.ToDictionary(
-                pair => pair.Key, pair => pair.Value);
-        }
-
-        //if (selectedNumericAttributes.Any())
-        //{
-        //    HandleSelectedNumericAttributes(selectedNumericAttributes, productPart, attributesList);
-        //}
-
-        return (attributesList, selectedTextAttributes, selectedBooleanAttributes, selectedNumericAttributes);
-    }
-
     private async ValueTask PopulateViewModelAsync(OrderPartViewModel model, OrderPart part)
     {
         model.ContentItem = part.ContentItem;
@@ -314,23 +155,5 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         model.LineItems.AddRange(lineItemViewModelsAndTotal.ViewModels);
         model.Charges.AddRange(part.Charges);
         model.OrderPart = part;
-    }
-
-    private static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
-        GetFieldDefinition(ContentTypeDefinition type, string attributeName)
-    {
-        var partAndField = attributeName.Split('.');
-        var partName = partAndField[0];
-        var fieldName = partAndField[1];
-
-        return type
-            .Parts
-            .Where(partDefinition => partDefinition.Name == partName)
-            .SelectMany(partDefinition => partDefinition
-                .PartDefinition
-                .Fields
-                .Select(fieldDefinition => (PartDefinition: partDefinition, FieldDefinition: fieldDefinition))
-                .Where(pair => pair.FieldDefinition.Name == fieldName))
-            .FirstOrDefault();
     }
 }

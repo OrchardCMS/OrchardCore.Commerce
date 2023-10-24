@@ -42,6 +42,10 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
             selectedBooleanAttributes = selectedBooleanAttributesRaw.ToDictionary(
                 pair => pair.Key, pair => pair.Value);
         }
+        else
+        {
+            selectedAttributes.Add("Boolean", new Dictionary<string, string>());
+        }
 
         var booleanAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
             .Where(attr => attr.Field is BooleanProductAttributeField)

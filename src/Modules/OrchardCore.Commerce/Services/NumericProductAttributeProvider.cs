@@ -50,6 +50,10 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
             selectedNumericAttributes = selectedNumericAttributesRaw.ToDictionary(
                 pair => pair.Key, pair => pair.Value);
         }
+        else
+        {
+            selectedAttributes.Add("Numeric", new Dictionary<string, string>());
+        }
 
         var numericAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
             .Where(attr => attr.Field is NumericProductAttributeField)
@@ -66,14 +70,6 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
                 .ToString(CultureInfo.InvariantCulture);
             var selectedNumericAttribute = selectedNumericAttributes.FirstOrDefault(keyValuePair => keyValuePair.Key == attribute.Name);
             var selectedValue = selectedNumericAttribute.Value;
-
-            // this is probably unnecessary here now
-            //// If selectedValue is null, set default value in selectedNumericAttributes dictionary to display it properly in editor.
-            //if (string.IsNullOrEmpty(selectedValue))
-            //{
-            //    selectedNumericAttributes.Remove(selectedNumericAttribute);
-            //    selectedNumericAttributes.Add(selectedNumericAttribute.Key, defaultValue);
-            //}
 
             var matchingAttribute = Parse(
                     attributePartDefinition,
