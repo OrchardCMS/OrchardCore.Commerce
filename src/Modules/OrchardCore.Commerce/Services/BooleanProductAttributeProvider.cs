@@ -66,4 +66,15 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
             attributesList.Add(matchingAttribute);
         }
     }
+
+    public IDictionary<string, IDictionary<string, string>> GetSelectedAttributes(ISet<IProductAttributeValue> attributes) =>
+        new Dictionary<string, IDictionary<string, string>>
+        {
+            {
+                "Boolean",
+                attributes
+                    .CastWhere<BooleanProductAttributeValue>()
+                    .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString())
+            },
+        };
 }

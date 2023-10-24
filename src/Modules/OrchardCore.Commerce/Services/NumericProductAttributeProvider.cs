@@ -79,4 +79,15 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
             attributesList.Add(matchingAttribute);
         }
     }
+
+    public IDictionary<string, IDictionary<string, string>> GetSelectedAttributes(ISet<IProductAttributeValue> attributes) =>
+        new Dictionary<string, IDictionary<string, string>>
+        {
+            {
+                "Numeric",
+                attributes
+                    .CastWhere<NumericProductAttributeValue>()
+                    .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString())
+            },
+        };
 }

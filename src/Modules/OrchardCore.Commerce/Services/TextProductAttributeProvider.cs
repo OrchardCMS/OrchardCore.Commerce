@@ -31,11 +31,6 @@ public class TextProductAttributeProvider : IProductAttributeProvider
         string[] value) =>
             new TextProductAttributeValue(partDefinition.Name + "." + attributeFieldDefinition.Name, value);
 
-    //public IDictionary<string, string> GetSelectedAttributes()
-    //{
-
-    //}
-
     public void HandleSelectedAttributes(
         IDictionary<string, IDictionary<string, string>> selectedAttributes,
         ProductPart productPart,
@@ -80,4 +75,15 @@ public class TextProductAttributeProvider : IProductAttributeProvider
             attributesList.Add(matchingAttribute);
         }
     }
+
+    public IDictionary<string, IDictionary<string, string>> GetSelectedAttributes(ISet<IProductAttributeValue> attributes) =>
+        new Dictionary<string, IDictionary<string, string>>
+        {
+            {
+                "Text",
+                attributes
+                    .CastWhere<TextProductAttributeValue>()
+                    .ToDictionary(attr => attr.FieldName, attr => attr.PredefinedValue)
+            },
+        };
 }

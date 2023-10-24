@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Serialization;
 using OrchardCore.Mvc.Utilities;
 using System;
@@ -117,32 +116,14 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
         IProductService productService,
-        string contentItemVersion)
+        string contentItemVersion,
+        IDictionary<string, IDictionary<string, string>> selectedAttributes)
     {
         var quantity = Quantity;
 
         var item = await priceService.AddPriceAsync(this);
         var price = priceSelectionStrategy.SelectPrice(item.Prices);
         var fullSku = productService.GetOrderFullSku(item, await productService.GetProductAsync(ProductSku));
-
-        var selectedTextAttributes = Attributes
-            .CastWhere<TextProductAttributeValue>()
-            .ToDictionary(attr => attr.FieldName, attr => attr.PredefinedValue);
-
-        var selectedBooleanAttributes = Attributes
-            .CastWhere<BooleanProductAttributeValue>()
-            .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString());
-
-        var selectedNumericAttributes = Attributes
-            .CastWhere<NumericProductAttributeValue>()
-            .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString());
-
-        var selectedAttributes = new Dictionary<string, IDictionary<string, string>>
-        {
-            { "Text", selectedTextAttributes },
-            { "Boolean", selectedBooleanAttributes },
-            { "Numeric", selectedNumericAttributes },
-        };
 
         return new OrderLineItem(
             quantity,
