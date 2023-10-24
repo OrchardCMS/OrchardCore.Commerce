@@ -1,6 +1,4 @@
-using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using System;
 using System.Threading.Tasks;
@@ -8,14 +6,14 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
-/// Services related to payment and <see cref="PaymentController"/>.
+/// Services related to payment and <c>PaymentController</c>.
 /// </summary>
 public interface IPaymentService
 {
     /// <summary>
-    /// Creates and returns <see cref="CheckoutViewModel"/>.
+    /// Creates and returns <see cref="ICheckoutViewModel"/>.
     /// </summary>
-    Task<CheckoutViewModel> CreateCheckoutViewModelAsync(
+    Task<ICheckoutViewModel> CreateCheckoutViewModelAsync(
         string shoppingCartId,
         Action<OrderPart> updateOrderPart = null);
 

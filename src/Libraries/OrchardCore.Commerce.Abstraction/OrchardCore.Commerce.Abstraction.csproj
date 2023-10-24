@@ -22,6 +22,10 @@
     <ProjectReference Include="..\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.7.0" />
+  </ItemGroup>
+
   <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>

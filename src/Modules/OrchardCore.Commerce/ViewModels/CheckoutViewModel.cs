@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.DisplayManagement;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class CheckoutViewModel : ShapeViewModel
+public class CheckoutViewModel : ShapeViewModel, ICheckoutViewModel
 {
     public string ShoppingCartId { get; init; }
     public Amount SingleCurrencyTotal { get; init; }

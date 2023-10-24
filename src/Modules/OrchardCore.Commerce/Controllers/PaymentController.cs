@@ -19,14 +19,12 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql.Services;
-using ISession = YesSql.ISession;
+using ISession=YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -74,7 +72,7 @@ public class PaymentController : Controller
             return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await _paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
+        if (await _paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not CheckoutViewModel checkoutViewModel)
         {
             return RedirectToAction(
                 nameof(ShoppingCartController.Empty),

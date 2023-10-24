@@ -67,7 +67,7 @@ public class PaymentService : IPaymentService
         _hca = services.HttpContextAccessor.Value;
     }
 
-    public async Task<CheckoutViewModel> CreateCheckoutViewModelAsync(
+    public async Task<ICheckoutViewModel> CreateCheckoutViewModelAsync(
         string shoppingCartId,
         Action<OrderPart> updateOrderPart = null)
     {
