@@ -111,15 +111,10 @@ public class StripePaymentService : IStripePaymentService
             await _requestOptionsService.SetIdempotencyKeyAsync());
     }
 
-    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null)
-    {
-        var order = paymentIntent != null
-            ? await GetOrderByPaymentIntentIdAsync(paymentIntent.Id)
-            : orderItem;
-
-        order.Alter<OrderPart>(orderPart =>
-        {
-            if (paymentIntent != null)
+    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent) =>
+        _paymentService.UpdateOrderToOrderedAsync(
+            await GetOrderByPaymentIntentIdAsync(paymentIntent.Id),
+            orderPart =>
             {
                 // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
                 // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
@@ -137,20 +132,7 @@ public class StripePaymentService : IStripePaymentService
 
                 orderPart.Charges.Clear();
                 orderPart.Charges.Add(payment);
-            }
-
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
-        });
-
-        await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
-
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-
-        // Decrease inventories of purchased items.
-        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
-
-        await _contentManager.UpdateAsync(order);
-    }
+            });
 
     public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
     {
@@ -166,10 +148,10 @@ public class StripePaymentService : IStripePaymentService
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
             .FirstOrDefaultAsync();
 
-    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
-        PaymentIntent paymentIntent,
-        IUpdateModelAccessor updateModelAccessor)
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor)
     {
+        var paymentIntent = await GetPaymentIntentAsync(_paymentIntentPersistence.Retrieve());
+
         var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 

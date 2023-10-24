@@ -4,7 +4,6 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using Stripe;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -32,16 +31,16 @@ public interface IStripePaymentService
     Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total);
 
     /// <summary>
-    /// Creates an order content item in the database, based on the <see cref="PaymentIntent"/> and on the current <see
-    /// cref="ShoppingCart"/> content.
+    /// Creates an order content item in the database, based on the stored <see cref="PaymentIntent"/> and on the
+    /// current <see cref="ShoppingCart"/> content.
     /// </summary>
-    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(PaymentIntent paymentIntent, IUpdateModelAccessor updateModelAccessor);
+    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor);
 
     /// <summary>
     /// Updates the corresponding order status to <see cref="OrderStatuses.Ordered"/> for the given
-    /// <paramref name="paymentIntent"/> or the provided <paramref name="orderItem"/>.
+    /// <paramref name="paymentIntent"/>.
     /// </summary>
-    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent = null, ContentItem orderItem = null);
+    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
 
     /// <summary>
     /// Updates the corresponding order status to failed payment for the given <paramref name="paymentIntent"/>.

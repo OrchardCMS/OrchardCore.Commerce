@@ -28,4 +28,9 @@ public interface IPaymentService
     /// Creates an order content item without payment in the database based on the current <see cref="ShoppingCart"/> content.
     /// </summary>
     Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync();
+
+    /// <summary>
+    /// Updates the <paramref name="order"/>'s status to <see cref="OrderStatuses.Ordered"/>.
+    /// </summary>
+    Task UpdateOrderToOrderedAsync(ContentItem order, Action<OrderPart> alterOrderPart = null);
 }

@@ -37,35 +37,29 @@ public class PaymentController : Controller
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IStripePaymentService _stripePaymentService;
     private readonly ILogger<PaymentController> _logger;
     private readonly IContentManager _contentManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IStringLocalizer T;
     private readonly IHtmlLocalizer<PaymentController> H;
-    private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
     private readonly IPaymentService _paymentService;
 
     public PaymentController(
-        IStripePaymentService stripePaymentService,
         IOrchardServices<PaymentController> services,
         IUpdateModelAccessor updateModelAccessor,
-        IPaymentIntentPersistence paymentIntentPersistence,
         INotifier notifier,
         IMoneyService moneyService,
         IPaymentService paymentService)
     {
         _authorizationService = services.AuthorizationService.Value;
-        _stripePaymentService = stripePaymentService;
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _updateModelAccessor = updateModelAccessor;
         _session = services.Session.Value;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
-        _paymentIntentPersistence = paymentIntentPersistence;
         _notifier = notifier;
         _moneyService = moneyService;
         _paymentService = paymentService;
@@ -140,9 +134,7 @@ public class PaymentController : Controller
     {
         try
         {
-            var paymentIntent = _paymentIntentPersistence.Retrieve();
-            var paymentIntentInstance = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
-            await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(paymentIntentInstance, _updateModelAccessor);
+            await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(_updateModelAccessor);
 
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
             return Json(new { Errors = errors });
@@ -238,63 +230,9 @@ public class PaymentController : Controller
             return NotFound();
         }
 
-        await _stripePaymentService.UpdateOrderToOrderedAsync(orderItem: order);
+        await _paymentService.UpdateOrderToOrderedAsync(order);
         await _paymentService.FinalModificationOfOrderAsync(order);
 
         return RedirectToAction(nameof(Success), new { orderId = order.ContentItem.ContentItemId });
-    }
-
-    [AllowAnonymous]
-    [HttpGet("checkout/middleware")]
-    public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
-    {
-        // If it is null it means the session was not loaded yet and a redirect is needed.
-        if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
-        {
-            return View();
-        }
-
-        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
-        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId;
-
-        var order = await _contentManager.GetAsync(orderId);
-        var status = order?.As<OrderPart>()?.Status?.Text;
-        var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
-        var finished = succeeded &&
-                       order != null &&
-                       status == OrderStatuses.Ordered.HtmlClassify();
-
-        if (succeeded && status == OrderStatuses.Pending.HtmlClassify())
-        {
-            await _stripePaymentService.UpdateOrderToOrderedAsync(fetchedPaymentIntent);
-            finished = true;
-        }
-
-        if (finished)
-        {
-            await _paymentService.FinalModificationOfOrderAsync(order);
-
-            return RedirectToAction(nameof(Success), new { orderId });
-        }
-
-        var errorMessage = H["The payment failed, please try again."];
-        if (status == OrderStatuses.PaymentFailed.HtmlClassify())
-        {
-            await _notifier.ErrorAsync(errorMessage);
-            return RedirectToAction(nameof(Index));
-        }
-
-        order.Alter<StripePaymentPart>(part => part.RetryCounter++);
-        await _contentManager.UpdateAsync(order);
-
-        if (order.As<StripePaymentPart>().RetryCounter <= 10)
-        {
-            return View();
-        }
-
-        // Delete payment intent from session, to create a new one.
-        _paymentIntentPersistence.Store(string.Empty);
-        await _notifier.ErrorAsync(errorMessage);
-        return RedirectToAction(nameof(Index));
     }
 }

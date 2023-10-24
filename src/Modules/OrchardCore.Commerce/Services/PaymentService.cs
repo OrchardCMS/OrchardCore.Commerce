@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
@@ -10,6 +11,7 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -112,8 +114,7 @@ public class PaymentService : IPaymentService
             !string.IsNullOrEmpty(stripeApiSettings.SecretKey) &&
             total.Value > 0)
         {
-            var paymentIntentId = _paymentIntentPersistence.Retrieve();
-            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(paymentIntentId, cart);
+            initPaymentIntent = await _stripePaymentService.InitializePaymentIntentAsync(_paymentIntentPersistence.Retrieve(), cart);
         }
 
         var currency = total.Currency;
@@ -229,5 +230,26 @@ public class PaymentService : IPaymentService
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
         return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
+    }
+
+    public async Task UpdateOrderToOrderedAsync(ContentItem order, Action<OrderPart> alterOrderPart = null)
+    {
+        ArgumentNullException.ThrowIfNull(order);
+
+        order.Alter<OrderPart>(orderPart =>
+        {
+            alterOrderPart?.Invoke(orderPart);
+
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
+        });
+
+        await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
+
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+
+        // Decrease inventories of purchased items.
+        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
+
+        await _contentManager.UpdateAsync(order);
     }
 }
