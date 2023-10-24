@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -126,8 +127,19 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 continue;
             }
 
-            var processedAttributes = ProcessAttributes(lineItem, productPart);
-            var attributesList = processedAttributes.AttributesList;
+            var attributesList = new List<IProductAttributeValue>();
+
+            if (lineItem.SelectedAttributes.Any())
+            {
+                foreach (var provider in _attributeProviders)
+                {
+                    provider.HandleSelectedAttributes(lineItem.SelectedAttributes, productPart, attributesList);
+                }
+            }
+
+
+            //var processedAttributes = ProcessAttributes(lineItem, productPart);
+            //var attributesList = processedAttributes.AttributesList;
 
             // If attributes exist, there must be a full SKU.
             var fullSku = string.Empty;
@@ -137,12 +149,13 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 fullSku = _productService.GetOrderFullSku(item, productPart);
             }
 
-            var selectedAttributes = new Dictionary<string, IDictionary<string, string>>
-            {
-                { "Text", processedAttributes.SelectedTextAttributes },
-                { "Boolean", processedAttributes.SelectedBooleanAttributes },
-                { "Numeric", processedAttributes.SelectedNumericAttributes },
-            };
+            //// is this even necessary? isn't lineItem.SelectedAttributes the same lol?
+            //var selectedAttributes = new Dictionary<string, IDictionary<string, string>>
+            //{
+            //    { "Text", processedAttributes.SelectedTextAttributes },
+            //    { "Boolean", processedAttributes.SelectedBooleanAttributes },
+            //    { "Numeric", processedAttributes.SelectedNumericAttributes },
+            //};
 
             orderLineItems.Add(new OrderLineItem(
                 lineItem.Quantity,
@@ -156,116 +169,80 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                     : new Amount(0, _moneyService.DefaultCurrency ?? _currencyProvider.GetCurrency("USD")),
                 productPart.ContentItem.ContentItemVersionId,
                 attributesList,
-                selectedAttributes
+                lineItem.SelectedAttributes
             ));
         }
 
         return orderLineItems;
     }
 
-    private void HandleSelectedNumericAttributes(
-        IDictionary<string, string> selectedNumericAttributes,
-        ProductPart productPart,
-        IList<IProductAttributeValue> attributesList)
-    {
-        var numericAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
-            .Where(attr => attr.Field is NumericProductAttributeField)
-            .ToList();
+    //private void HandleSelectedNumericAttributes(
+    //    IDictionary<string, string> selectedNumericAttributes,
+    //    ProductPart productPart,
+    //    IList<IProductAttributeValue> attributesList)
+    //{
+    //    var numericAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
+    //        .Where(attr => attr.Field is NumericProductAttributeField)
+    //        .ToList();
 
-        // Construct actual attributes from strings.
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-        foreach (var attribute in numericAttributesList)
-        {
-            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-                type, type.Name + "." + attribute.Name);
+    //    // Construct actual attributes from strings.
+    //    var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+    //    foreach (var attribute in numericAttributesList)
+    //    {
+    //        var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+    //            type, type.Name + "." + attribute.Name);
 
-            var defaultValue = ((attribute.Settings as NumericProductAttributeFieldSettings).DefaultValue ?? 0)
-                .ToString(CultureInfo.InvariantCulture);
-            var selectedNumericAttribute = selectedNumericAttributes.FirstOrDefault(keyValuePair => keyValuePair.Key == attribute.Name);
-            var selectedValue = selectedNumericAttribute.Value;
+    //        var defaultValue = ((attribute.Settings as NumericProductAttributeFieldSettings).DefaultValue ?? 0)
+    //            .ToString(CultureInfo.InvariantCulture);
+    //        var selectedNumericAttribute = selectedNumericAttributes.FirstOrDefault(keyValuePair => keyValuePair.Key == attribute.Name);
+    //        var selectedValue = selectedNumericAttribute.Value;
 
-            // If selectedValue is null, set default value in selectedNumericAttributes dictionary to display it properly in editor.
-            if (string.IsNullOrEmpty(selectedValue))
-            {
-                selectedNumericAttributes.Remove(selectedNumericAttribute);
-                selectedNumericAttributes.Add(selectedNumericAttribute.Key, defaultValue);
-            }
+    //        // If selectedValue is null, set default value in selectedNumericAttributes dictionary to display it properly in editor.
+    //        if (string.IsNullOrEmpty(selectedValue))
+    //        {
+    //            selectedNumericAttributes.Remove(selectedNumericAttribute);
+    //            selectedNumericAttributes.Add(selectedNumericAttribute.Key, defaultValue);
+    //        }
 
-            var matchingAttribute = _attributeProviders
-                .Select(provider => provider.Parse(
-                    attributePartDefinition,
-                    attributeFieldDefinition,
-                    selectedValue ?? defaultValue))
-                .FirstOrDefault(attributeValue => attributeValue != null);
+    //        var matchingAttribute = _attributeProviders
+    //            .Select(provider => provider.Parse(
+    //                attributePartDefinition,
+    //                attributeFieldDefinition,
+    //                selectedValue ?? defaultValue))
+    //            .FirstOrDefault(attributeValue => attributeValue != null);
 
-            attributesList.Add(matchingAttribute);
-        }
-    }
+    //        attributesList.Add(matchingAttribute);
+    //    }
+    //}
 
-    private void HandleSelectedBooleanAttributes(
-        IDictionary<string, string> selectedBooleanAttributes,
-        ProductPart productPart,
-        IList<IProductAttributeValue> attributesList)
-    {
-        var booleanAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
-            .Where(attr => attr.Field is BooleanProductAttributeField)
-            .Select(attr => attr.Name)
-            .ToList();
+    //private void HandleSelectedBooleanAttributes(
+    //    IDictionary<string, string> selectedBooleanAttributes,
+    //    ProductPart productPart,
+    //    IList<IProductAttributeValue> attributesList)
+    //{
+    //    var booleanAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
+    //        .Where(attr => attr.Field is BooleanProductAttributeField)
+    //        .Select(attr => attr.Name)
+    //        .ToList();
 
-        // Construct actual attributes from strings.
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-        foreach (var attribute in booleanAttributesList)
-        {
-            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-                type, type.Name + "." + attribute);
+    //    // Construct actual attributes from strings.
+    //    var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+    //    foreach (var attribute in booleanAttributesList)
+    //    {
+    //        var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
+    //            type, type.Name + "." + attribute);
 
-            // The value is true if the selected boolean attributes list contains the attribute, otherwise false.
-            var value = selectedBooleanAttributes.Any(keyValuePair => keyValuePair.Key == attribute);
+    //        // The value is true if the selected boolean attributes list contains the attribute, otherwise false.
+    //        var value = selectedBooleanAttributes.Any(keyValuePair => keyValuePair.Key == attribute);
 
-            var matchingAttribute = _attributeProviders
-                .Select(provider => provider.Parse(
-                    attributePartDefinition, attributeFieldDefinition, value.ToString()))
-                .FirstOrDefault(attributeValue => attributeValue != null);
+    //        var matchingAttribute = _attributeProviders
+    //            .Select(provider => provider.Parse(
+    //                attributePartDefinition, attributeFieldDefinition, value.ToString()))
+    //            .FirstOrDefault(attributeValue => attributeValue != null);
 
-            attributesList.Add(matchingAttribute);
-        }
-    }
-
-    private void HandleSelectedTextAttributes(
-        IDictionary<string, string> selectedTextAttributes,
-        ProductPart productPart,
-        IList<IProductAttributeValue> attributesList)
-    {
-        var predefinedAttributes = _predefinedValuesProductAttributeService
-            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem);
-
-        // Predefined attributes must contain the selected attributes.
-        var selectedTextAttributesList = predefinedAttributes
-            .Where(predefinedAttr => selectedTextAttributes.Any(selectedAttr => selectedAttr.Key.Contains(predefinedAttr.Name)))
-            .ToList();
-
-        // Construct actual attributes from strings.
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
-        foreach (var attribute in selectedTextAttributesList)
-        {
-            var (attributePartDefinition, attributeFieldDefinition) = GetFieldDefinition(
-                type, type.Name + "." + attribute.Name);
-
-            var predefinedStrings = new List<string>();
-            predefinedStrings.AddRange(
-                (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
-
-            var value = predefinedStrings.First(
-                item => item == selectedTextAttributes.First(keyValuePair => keyValuePair.Key == attribute.Name).Value);
-
-            var matchingAttribute = _attributeProviders
-                .Select(provider => provider.Parse(
-                    attributePartDefinition, attributeFieldDefinition, value))
-                .FirstOrDefault(attributeValue => attributeValue != null);
-
-            attributesList.Add(matchingAttribute);
-        }
-    }
+    //        attributesList.Add(matchingAttribute);
+    //    }
+    //}
 
     private (List<IProductAttributeValue> AttributesList,
         Dictionary<string, string> SelectedTextAttributes,
@@ -275,17 +252,28 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     {
         var attributesList = new List<IProductAttributeValue>();
 
+        foreach (var provider in _attributeProviders)
+        {
+            provider.HandleSelectedAttributes(lineItem.SelectedAttributes, productPart, attributesList);
+        }
+
+
+        //if (selectedTextAttributes.Any())
+        //{
+
+        //    //_attributeProviders.Where(provider => provider.);
+
+
+        //    //_attributeProviders.Any(provider => provider.HandleSelected(selectedTextAttributes, productPart, attributesList));
+
+        //    //HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
+        //}
         var selectedTextAttributes = new Dictionary<string, string>();
         if (lineItem.SelectedAttributes.TryGetValue("Text", out var selectedTextAttributesRaw))
         {
             selectedTextAttributes = selectedTextAttributesRaw
                 .Where(keyValuePair => keyValuePair.Value != null)
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
-
-        if (selectedTextAttributes.Any())
-        {
-            HandleSelectedTextAttributes(selectedTextAttributes, productPart, attributesList);
         }
 
         var selectedBooleanAttributes = new Dictionary<string, string>();
@@ -295,10 +283,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 pair => pair.Key, pair => pair.Value);
         }
 
-        if (selectedBooleanAttributes.Any())
-        {
-            HandleSelectedBooleanAttributes(selectedBooleanAttributes, productPart, attributesList);
-        }
+        //if (selectedBooleanAttributes.Any())
+        //{
+        //    HandleSelectedBooleanAttributes(selectedBooleanAttributes, productPart, attributesList);
+        //}
 
         var selectedNumericAttributes = new Dictionary<string, string>();
         if (lineItem.SelectedAttributes.TryGetValue("Numeric", out var selectedNumericAttributesRaw))
@@ -307,10 +295,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
                 pair => pair.Key, pair => pair.Value);
         }
 
-        if (selectedNumericAttributes.Any())
-        {
-            HandleSelectedNumericAttributes(selectedNumericAttributes, productPart, attributesList);
-        }
+        //if (selectedNumericAttributes.Any())
+        //{
+        //    HandleSelectedNumericAttributes(selectedNumericAttributes, productPart, attributesList);
+        //}
 
         return (attributesList, selectedTextAttributes, selectedBooleanAttributes, selectedNumericAttributes);
     }

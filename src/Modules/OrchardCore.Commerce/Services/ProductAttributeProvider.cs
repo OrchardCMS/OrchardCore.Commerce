@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System;
@@ -52,6 +53,14 @@ public class ProductAttributeProvider : IProductAttributeProvider
             },
             _ => null,
         };
+    }
+
+    public void HandleSelectedAttributes(
+        IDictionary<string, IDictionary<string, string>> selectedAttributes,
+        ProductPart productPart,
+        IList<IProductAttributeValue> attributesList)
+    {
+        return;
     }
 
     public IProductAttributeValue Parse(

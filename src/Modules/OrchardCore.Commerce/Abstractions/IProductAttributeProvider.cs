@@ -1,5 +1,7 @@
+using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -16,6 +18,14 @@ public interface IProductAttributeProvider
         ContentTypePartDefinition partDefinition,
         ContentPartFieldDefinition attributeFieldDefinition,
         string[] value);
+
+    /// <summary>
+    /// .
+    /// </summary>
+    void HandleSelectedAttributes(
+        IDictionary<string, IDictionary<string, string>> selectedAttributes,
+        ProductPart productPart,
+        IList<IProductAttributeValue> attributesList);
 
     /// <summary>
     /// Parses the provided attribute value.
