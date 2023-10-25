@@ -38,16 +38,12 @@
     <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <LombiqNodeJsExtensionsPath>..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions</LombiqNodeJsExtensionsPath>
-  </PropertyGroup>
-
   <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <ProjectReference Include="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.csproj" />
+    <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
   </ItemGroup>
   <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <Import Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.props" />
-    <Import Project="..\..\..\..\..\Utilities\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions\Lombiq.NodeJs.Extensions.targets" />
+    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.props" />
+    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
   </ImportGroup>
   <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
     <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.3.2" />
