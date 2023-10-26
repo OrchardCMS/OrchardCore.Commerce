@@ -182,8 +182,13 @@ public class PaymentController : Controller
             return this.RedirectToContentDisplay(orderId);
         }
 
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var paymentProviderData = new Dictionary<string, object>();
         var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(singleCurrencyTotal);
+        paymentProviderData["Stripe"] = new
+        {
+            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            PaymentIntentClientSecret = paymentIntent.ClientSecret,
+        };
 
         _session.Save(new OrderPayment
         {
@@ -195,8 +200,7 @@ public class PaymentController : Controller
         {
             SingleCurrencyTotal = singleCurrencyTotal,
             NetTotal = singleCurrencyTotal,
-            StripePublishableKey = stripeApiSettings.PublishableKey,
-            PaymentIntentClientSecret = paymentIntent.ClientSecret,
+            PaymentProviderData = paymentProviderData,
             OrderPart = orderPart,
         });
     }

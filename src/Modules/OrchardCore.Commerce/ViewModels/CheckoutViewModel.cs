@@ -16,7 +16,9 @@ public class CheckoutViewModel : ShapeViewModel, ICheckoutViewModel
     public Amount NetTotal { get; init; }
     public Amount GrossTotal { get; init; }
     public OrderPart OrderPart { get; init; }
-    public string PaymentIntentClientSecret { get; init; }
+
+    [BindNever]
+    public IDictionary<string, object> PaymentProviderData { get; } = new Dictionary<string, object>();
 
     [BindNever]
     public IEnumerable<SelectListItem> Regions { get; set; }
@@ -24,7 +26,6 @@ public class CheckoutViewModel : ShapeViewModel, ICheckoutViewModel
     [BindNever]
     public IDictionary<string, IDictionary<string, string>> Provinces { get; } =
         new Dictionary<string, IDictionary<string, string>>();
-    public string StripePublishableKey { get; init; }
     public string UserEmail { get; init; }
     public IEnumerable<IShape> CheckoutShapes { get; init; }
 

@@ -128,6 +128,13 @@ public class PaymentService : IPaymentService
             netTotal += netPrice * line.Quantity;
         }
 
+        var paymentProviderData = new Dictionary<string, object>();
+        paymentProviderData["Stripe"] = new
+        {
+            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            PaymentIntentClientSecret = await _stripePaymentService.CreateClientSecretAsync(total, cart),
+        };
+
         return new CheckoutViewModel
         {
             ShoppingCartId = shoppingCartId,
@@ -136,10 +143,9 @@ public class PaymentService : IPaymentService
             SingleCurrencyTotal = total,
             NetTotal = netTotal,
             GrossTotal = grossTotal,
-            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentIntentClientSecret = await _stripePaymentService.CreateClientSecretAsync(total, cart),
+            PaymentProviderData = paymentProviderData,
         };
     }
 
