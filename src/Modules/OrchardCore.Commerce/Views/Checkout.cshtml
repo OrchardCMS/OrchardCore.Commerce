@@ -1,4 +1,5 @@
 @using OrchardCore.Commerce.Controllers;
+@using OrchardCore
 
 @model CheckoutViewModel
 
@@ -7,11 +8,14 @@
 
     var regions = Model.Regions.AsList();
     var provinces = Model.Provinces;
+
+    var actionUrl = Orchard.Action<PaymentController>(controller =>
+        controller.CheckoutWithoutPayment(Model.ShoppingCartId));
 }
 
 <section id="checkout">
     <div class="payment-form_container">
-        <form asp-action="@nameof(PaymentController.CheckoutWithoutPayment)" asp-route-shoppingCartId="@Model.ShoppingCartId" id="payment-form" class="payment-form">
+        <form action="@actionUrl" id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
@@ -112,8 +116,6 @@
         </form>
     </div>
 </section>
-
-<style asp-name="@ResourceNames.PaymentForm"></style>
 
 <script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
 <script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Modules\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
     <ProjectReference Include="..\..\src\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 

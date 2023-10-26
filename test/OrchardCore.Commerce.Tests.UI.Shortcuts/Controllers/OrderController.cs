@@ -57,7 +57,7 @@ public class OrderController : Controller
 
         order.Alter<OrderPart>(orderPart =>
         {
-            var payment = new Payment
+            var payment = new Models.Payment
             {
                 Kind = "Card",
                 ChargeText = "Test charge text",
@@ -103,6 +103,6 @@ public class OrderController : Controller
         return RedirectToAction(
             nameof(PaymentController.Success),
             typeof(PaymentController).ControllerName(),
-            new { area = "OrchardCore.Commerce", orderId = order.ContentItemId, });
+            new { area = "OrchardCore.Commerce.Payment", orderId = order.ContentItemId, });
     }
 }

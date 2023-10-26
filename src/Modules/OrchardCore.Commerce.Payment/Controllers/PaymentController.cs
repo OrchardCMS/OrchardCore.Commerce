@@ -72,7 +72,7 @@ public class PaymentController : Controller
             return User.Identity?.IsAuthenticated == true ? Forbid() : LocalRedirect("~/Login?ReturnUrl=~/checkout");
         }
 
-        if (await _paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not CheckoutViewModel checkoutViewModel)
+        if (await _paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
         {
             return RedirectToAction(
                 nameof(ShoppingCartController.Empty),
@@ -221,9 +221,10 @@ public class PaymentController : Controller
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CheckoutWithoutPayment()
+    [Route("checkout/free")]
+    public async Task<IActionResult> CheckoutWithoutPayment(string shoppingCartId)
     {
-        if (await _paymentService.CreateNoPaymentOrderFromShoppingCartAsync() is not { } order)
+        if (await _paymentService.CreateNoPaymentOrderFromShoppingCartAsync(shoppingCartId) is not { } order)
         {
             return NotFound();
         }

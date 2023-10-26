@@ -19,6 +19,7 @@ using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users;
+using OrchardCore.Users.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -174,9 +175,9 @@ public class PaymentService : IPaymentService
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
     }
 
-    public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync()
+    public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId)
     {
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
 
         var order = await _contentManager.NewAsync(Order);
         if (await UpdateOrderWithDriversAsync(order))

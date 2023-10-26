@@ -24,6 +24,7 @@
   <ItemGroup>
     <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.7.0" />
     <PackageReference Include="OrchardCore.Module.Targets" Version="1.7.0" />
+    <PackageReference Include="OrchardCore.Templates" Version="1.7.0" />
   </ItemGroup>
 
   <ItemGroup>

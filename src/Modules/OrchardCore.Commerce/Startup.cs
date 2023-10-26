@@ -144,18 +144,11 @@ public class Startup : StartupBase
 
         services.AddScoped<IAuthorizationHandler, OrderPermissionsAuthorizationHandler>();
 
-        services.AddContentField<AddressField>()
-            .UseDisplayDriver<AddressFieldDisplayDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, AddressFieldSettingsDriver>();
-
         services.AddScoped<IDataMigration, OrderMigrations>();
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
         services.AddScoped<IOrderLineItemService, OrderLineItemService>();
 
         services.AddScoped<IContentTypeDefinitionDisplayDriver, OrderContentTypeDefinitionDisplayDriver>();
-
-        // Checkout
-        services.AddScoped<IPaymentService, PaymentService>();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();

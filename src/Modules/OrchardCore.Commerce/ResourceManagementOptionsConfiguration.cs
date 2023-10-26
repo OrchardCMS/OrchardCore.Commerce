@@ -16,13 +16,6 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     static ResourceManagementOptionsConfiguration()
     {
         _manifest
-            .DefineStyle(PaymentForm)
-            .SetUrl(
-                "~/OrchardCore.Commerce/css/payment-form.min.css",
-                "~/OrchardCore.Commerce/css/payment-form.css")
-            .SetVersion("1.0.0");
-
-        _manifest
             .DefineStyle(ShoppingCart)
             .SetUrl(
                 "~/OrchardCore.Commerce/css/shopping-cart.min.css",

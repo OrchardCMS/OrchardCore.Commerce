@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Mvc.Utilities;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
@@ -63,7 +66,10 @@ public class StripeController : Controller
         if (finished)
         {
             await _paymentService.FinalModificationOfOrderAsync(order);
-            return Redirect("~/success/" + orderId);
+            return RedirectToAction(
+                nameof(PaymentController.Success),
+                typeof(PaymentController).ControllerName(),
+                new { area = OrchardCore.Commerce.Payment.Constants.FeatureIds.Area, orderId });
         }
 
         var errorMessage = H["The payment failed, please try again."];
