@@ -15,8 +15,6 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
     // The built-in fields are rendered from the Checkout shape.
     private static readonly string[] _excludedShapes =
     {
-        "Order_Checkout__StripePaymentPart__PaymentIntentId",
-        "Order_Checkout__StripePaymentPart__PaymentMethodId",
         "Order_Checkout__OrderPart__OrderId",
         "Order_Checkout__OrderPart__Status",
         "Order_Checkout__OrderPart__Email",
@@ -28,13 +26,16 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
 
     private readonly IContentManager _contentManager;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
+    private readonly IEnumerable<IOrderContentTypeDefinitionExclusionProvider> _orderContentTypeDefinitionExclusionProviders;
 
     public OrderContentTypeDefinitionDisplayDriver(
         IContentManager contentManager,
-        IFieldsOnlyDisplayManager fieldsOnlyDisplayManager)
+        IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
+        IEnumerable<IOrderContentTypeDefinitionExclusionProvider> orderContentTypeDefinitionExclusionProviders)
     {
         _contentManager = contentManager;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
+        _orderContentTypeDefinitionExclusionProviders = orderContentTypeDefinitionExclusionProviders;
     }
 
     public override IDisplayResult Edit(ContentTypeDefinition model) =>
@@ -43,11 +44,19 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
                     "OrderPart_TemplateLinks",
                     async viewModel =>
                     {
-                        var templateLinks = await _fieldsOnlyDisplayManager
-                            .GetFieldTemplateEditorUrlsAsync(await _contentManager.NewAsync(Order), "Checkout");
+                        var templateLinks = (await _fieldsOnlyDisplayManager
+                                .GetFieldTemplateEditorUrlsAsync(await _contentManager.NewAsync(Order), "Checkout"))
+                            .AsList();
+
+                        var excludedShapes = new List<string>(_excludedShapes);
+
+                        foreach (var provider in _orderContentTypeDefinitionExclusionProviders)
+                        {
+                            excludedShapes.AddRange(provider.GetExcludedShapes(templateLinks));
+                        }
 
                         viewModel.TemplateLinks = templateLinks
-                            .WhereNot(link => _excludedShapes.Contains(link.ShapeType))
+                            .WhereNot(link => excludedShapes.Contains(link.ShapeType))
                             .Select(link =>
                             {
                                 var displayText = link.Url

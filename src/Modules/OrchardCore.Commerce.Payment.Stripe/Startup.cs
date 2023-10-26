@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -29,5 +30,7 @@ public class Startup : StartupBase
 
         services.AddContentPart<StripePaymentPart>().WithMigration<StripeMigrations>().WithIndex<OrderPaymentIndexProvider>();
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
+
+        services.AddScoped<IOrderContentTypeDefinitionExclusionProvider, StripeOrderContentTypeDefinitionExclusionProvider>();
     }
 }
