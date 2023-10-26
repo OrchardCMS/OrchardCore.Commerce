@@ -2,6 +2,8 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Commerce.ContentFields.Drivers;
 using OrchardCore.Commerce.ContentFields.Models;
+using OrchardCore.Commerce.Drivers;
+using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
@@ -24,5 +26,10 @@ public class Startup : StartupBase
         services.AddContentField<PriceField>()
             .UseDisplayDriver<PriceFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, PriceFieldSettingsDriver>();
+
+        // Address Field
+        services.AddContentField<AddressField>()
+            .UseDisplayDriver<AddressFieldDisplayDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, AddressFieldSettingsDriver>();
     }
 }
