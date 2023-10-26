@@ -15,12 +15,12 @@ namespace OrchardCore.Commerce.Services;
 public class ProductListService : IProductListService
 {
     private readonly ISession _session;
-    private readonly IEnumerable<IProductListItemProvider> _productListQueryProviders;
+    private readonly IEnumerable<IProductFilterProvider> _productListQueryProviders;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public ProductListService(
         ISession session,
-        IEnumerable<IProductListItemProvider> productListQueryProviders,
+        IEnumerable<IProductFilterProvider> productListQueryProviders,
         IContentDefinitionManager contentDefinitionManager)
     {
         _session = session;
@@ -28,7 +28,7 @@ public class ProductListService : IProductListService
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public async Task<IEnumerable<ContentItem>> GetProductsAsync(ProductListPart productList, Pager pager)
+    public async Task<ProductList> GetProductsAsync(ProductListPart productList, ProductListFilterParameters filterParameters)
     {
         if (productList is null)
         {
@@ -40,20 +40,15 @@ public class ProductListService : IProductListService
             .Select(type => type.Name)
             .ToArray();
 
-        var applicableProviders = (await _productListQueryProviders
-            .WhereAsync(async provider => await provider.CanHandleAsync(productList)))
-            .OrderBy(provider => provider.Order)
-            .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize)
-            .ToArray();
+        var applicableProviders = await GetOrderedApplicableProvidersAsync(productList);
 
         var query = _session.Query<ContentItem>();
         query = query.With<ContentItemIndex>(index => index.ContentType.IsIn(productTypes) && index.Published);
 
-        var context = new ProductListQueryContext
+        var context = new ProductListFilterContext
         {
             ProductList = productList,
-            Pager = pager,
+            FilterParameters = filterParameters,
             Query = query,
         };
         foreach (var provider in applicableProviders)
@@ -61,12 +56,41 @@ public class ProductListService : IProductListService
             context.Query = await provider.BuildQueryAsync(context) ?? context.Query;
         }
 
-        var contentItems = await query.ListAsync();
-        foreach (var provider in applicableProviders)
+        var totalItemCount = await query.CountAsync();
+
+        var contentItems = await query
+            .Skip(filterParameters.Pager.GetStartIndex())
+            .Take(filterParameters.Pager.PageSize)
+            .ListAsync();
+
+        return new ProductList
         {
-            context.QueriedProducts = await provider.PostProcessListAsync(context) ?? context.QueriedProducts;
+            Products = contentItems,
+            TotalItemCount = totalItemCount,
+        };
+    }
+
+    public async Task<IEnumerable<string>> GetOrderByOptionsAsync(ProductListPart productList)
+    {
+        if (productList is null)
+        {
+            throw new ArgumentNullException(nameof(productList));
         }
 
-        return contentItems;
+        var applicableProviders = await GetOrderedApplicableProvidersAsync(productList);
+
+        var orderByOptions = new List<string>();
+        foreach (var provider in applicableProviders)
+        {
+            orderByOptions.AddRange(await provider.GetOrderByOptionIdsAsync(productList));
+        }
+
+        return orderByOptions;
     }
+
+    private async Task<IList<IProductFilterProvider>> GetOrderedApplicableProvidersAsync(ProductListPart productList) =>
+        (await _productListQueryProviders
+            .WhereAsync(async provider => await provider.CanHandleAsync(productList)))
+        .OrderBy(provider => provider.Order)
+        .ToList();
 }

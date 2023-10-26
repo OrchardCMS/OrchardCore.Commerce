@@ -4,8 +4,8 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Navigation;
-using OrchardCore.Settings;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static Lombiq.HelpfulLibraries.OrchardCore.Contents.CommonContentDisplayTypes;
 
@@ -13,38 +13,47 @@ namespace OrchardCore.Commerce.Drivers;
 
 public class ProductListPartDisplayDriver : ContentPartDisplayDriver<ProductListPart>
 {
-    private readonly ISiteService _siteService;
     private readonly IProductListService _productListService;
+    private readonly IEnumerable<IProductFilterParametersProvider> _productFilterProviders;
 
-    public ProductListPartDisplayDriver(ISiteService siteService, IProductListService productListService)
+    public ProductListPartDisplayDriver(
+        IProductListService productListService,
+        IEnumerable<IProductFilterParametersProvider> productFilterProviders)
     {
-        _siteService = siteService;
         _productListService = productListService;
+        _productFilterProviders = productFilterProviders;
     }
 
     public override IDisplayResult Display(ProductListPart part, BuildPartDisplayContext context) =>
-        Initialize<ProductListPartViewModel>(GetDisplayShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part, context))
-            .Location(Detail, "Content:25")
-            .Location(Summary, "Meta:10");
+        Combine(
+            Initialize<ProductListPartViewModel>(
+                    GetDisplayShapeType(context),
+                    async viewModel => await BuildViewModelAsync(viewModel, part, context))
+                .Location(Detail, "Content:25")
+                .Location(Summary, "Meta:10"),
+            Initialize<ProductListOrderByViewModel>(
+                    "ProductList_OrderBy",
+                    async viewModel => await BuildOrderByViewModelAsync(viewModel, part))
+                .Location(Detail, "Content:20"));
 
     private async Task BuildViewModelAsync(ProductListPartViewModel viewModel, ProductListPart part, BuildPartDisplayContext context)
     {
         viewModel.ProductListPart = part;
 
-        var pager = await GetPagerAsync(context);
-        viewModel.Pager = await context.New.Pager(pager);
-        viewModel.Products = await _productListService.GetProductsAsync(part, pager);
+        var filterParameters = await _productFilterProviders
+            .MaxBy(provider => provider.Priority).GetFilterParametersAsync(part) ?? new ProductListFilterParameters();
+
+        var productList = await _productListService.GetProductsAsync(part, filterParameters);
+        viewModel.Products = productList.Products;
+        viewModel.Pager = (await context.New.Pager(filterParameters.Pager)).TotalItemCount(productList.TotalItemCount);
         viewModel.Context = context;
     }
 
-    private async Task<Pager> GetPagerAsync(BuildPartDisplayContext context)
+    private async Task BuildOrderByViewModelAsync(ProductListOrderByViewModel viewModel, ProductListPart part)
     {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var pagerParameters = new PagerParameters();
-        await context.Updater.TryUpdateModelAsync(pagerParameters);
+        viewModel.ProductListPart = part;
 
-        var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-        return pager;
+        var options = await _productListService.GetOrderByOptionsAsync(part);
+        viewModel.OrderByOptions = options;
     }
 }
