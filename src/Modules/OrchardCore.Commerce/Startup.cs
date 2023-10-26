@@ -10,6 +10,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.ContentFields.Events;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Events;
@@ -326,6 +327,8 @@ public class UserSettingsStartup : StartupBase
         services
             .AddContentPart<UserDetailsPart>()
             .WithMigration<UserDetailsMigrations>();
+
+        services.AddScoped<IAddressFieldEvents, UserAddressFieldEvents>();
 
         services.AddScoped<IDisplayDriver<User>, UserAddressesUserDisplayDriver>();
     }
