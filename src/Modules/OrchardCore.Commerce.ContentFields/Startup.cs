@@ -2,6 +2,7 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Commerce.ContentFields.Drivers;
 using OrchardCore.Commerce.ContentFields.Models;
+using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -16,6 +17,8 @@ public class Startup : StartupBase
     {
         services.Configure<TemplateOptions>(option =>
             option.MemberAccessStrategy.Register<PriceField>());
+
+        services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
         // Price Field
         services.AddContentField<PriceField>()
