@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class ProductTitleFilterProvider : IProductFilterProvider
 {
-    public const string TitleFilterId = "Title";
+    public const string TitleFilterId = "title";
     public const string TitleAscOrderById = "TitleAsc";
     public const string TitleDescOrderById = "TitleDesc";
 
@@ -19,7 +19,7 @@ public class ProductTitleFilterProvider : IProductFilterProvider
 
     public Task<IEnumerable<string>> GetOrderByOptionIdsAsync(ProductListPart productList) => Task.FromResult<IEnumerable<string>>(new[] { TitleAscOrderById, TitleDescOrderById });
 
-    public Task<IEnumerable<string>> GetFilterOptionIdsAsync(ProductListPart productListPart) => Task.FromResult<IEnumerable<string>>(new[] { TitleFilterId });
+    public Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productListPart) => Task.FromResult<IEnumerable<string>>(new[] { TitleFilterId });
 
     public Task<IQuery<ContentItem>> BuildQueryAsync(ProductListFilterContext context)
     {

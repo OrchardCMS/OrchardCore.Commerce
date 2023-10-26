@@ -9,4 +9,5 @@ public interface IProductListService
 {
     Task<ProductList> GetProductsAsync(ProductListPart productList, ProductListFilterParameters filterParameters);
     Task<IEnumerable<string>> GetOrderByOptionsAsync(ProductListPart productList);
+    Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productList);
 }

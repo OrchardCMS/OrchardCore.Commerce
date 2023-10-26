@@ -11,6 +11,6 @@ public interface IProductFilterProvider
     int Order { get; }
     Task<bool> CanHandleAsync(ProductListPart productList);
     Task<IEnumerable<string>> GetOrderByOptionIdsAsync(ProductListPart productList);
-    Task<IEnumerable<string>> GetFilterOptionIdsAsync(ProductListPart productListPart);
+    Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productListPart);
     Task<IQuery<ContentItem>> BuildQueryAsync(ProductListFilterContext context);
 }

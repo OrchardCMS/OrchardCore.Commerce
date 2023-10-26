@@ -31,9 +31,9 @@ public class ProductListPartDisplayDriver : ContentPartDisplayDriver<ProductList
                     async viewModel => await BuildViewModelAsync(viewModel, part, context))
                 .Location(Detail, "Content:25")
                 .Location(Summary, "Meta:10"),
-            Initialize<ProductListOrderByViewModel>(
-                    "ProductList_OrderBy",
-                    async viewModel => await BuildOrderByViewModelAsync(viewModel, part))
+            Initialize<ProductListFiltersViewModel>(
+                    GetDisplayShapeType(context) + "_Filters",
+                    async viewModel => await BuildFiltersViewModelAsync(viewModel, part))
                 .Location(Detail, "Content:20"));
 
     private async Task BuildViewModelAsync(ProductListPartViewModel viewModel, ProductListPart part, BuildPartDisplayContext context)
@@ -49,11 +49,11 @@ public class ProductListPartDisplayDriver : ContentPartDisplayDriver<ProductList
         viewModel.Context = context;
     }
 
-    private async Task BuildOrderByViewModelAsync(ProductListOrderByViewModel viewModel, ProductListPart part)
+    private async Task BuildFiltersViewModelAsync(ProductListFiltersViewModel viewModel, ProductListPart part)
     {
         viewModel.ProductListPart = part;
 
-        var options = await _productListService.GetOrderByOptionsAsync(part);
-        viewModel.OrderByOptions = options;
+        viewModel.FilterIds = await _productListService.GetFilterIdsAsync(part);
+        viewModel.OrderByOptions = await _productListService.GetOrderByOptionsAsync(part);
     }
 }

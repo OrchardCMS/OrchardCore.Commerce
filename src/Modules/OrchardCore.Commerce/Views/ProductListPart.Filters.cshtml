@@ -1,0 +1,44 @@
+@using OrchardCore.DisplayManagement
+
+@model ProductListFiltersViewModel
+
+@{
+    var filterIdQueryStringKeys = Model.FilterIds.Select(id => "products." + id).ToArray();
+}
+
+<h3>@T["Filter Products"]</h3>
+
+<form method="get" action="@Context.Request.Path">
+    @foreach (var filterId in Model.FilterIds)
+    {
+        dynamic shape = await Factory.CreateAsync("ProductList__Filter__" + filterId);
+        shape.ProductListPart = Model.ProductListPart;
+        @await DisplayAsync(shape)
+    }
+
+    <fieldset class="products-fieldset-order-by">
+        <legend>@T["Sort By"]</legend>
+        <div class="mb-3">
+            <select name="products.orderBy" class="form-select" id="products-order-by">
+                <option value="">@T["Select..."]</option>
+                @foreach (var option in Model.OrderByOptions)
+                {
+                    dynamic shape = await Factory.CreateAsync("ProductList__OrderBy__" + option);
+                    shape.ProductListPart = Model.ProductListPart;
+                    shape.Selected = option == Context.Request.Query["products.orderBy"].ToString();
+                    @await DisplayAsync(shape)
+                }
+            </select>
+        </div>
+    </fieldset>
+
+    @foreach (var key in Context.Request.Query.Keys)
+    {
+        if (key != "products.orderBy" && !filterIdQueryStringKeys.Contains(key, StringComparer.OrdinalIgnoreCase))
+        {
+            <input type="hidden" name="@key" value="@Context.Request.Query[key]"/>
+        }
+    }
+
+    <button type="submit" class="btn btn-primary mb-3">@T["Apply"]</button>
+</form>

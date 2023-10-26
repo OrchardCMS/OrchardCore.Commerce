@@ -88,6 +88,24 @@ public class ProductListService : IProductListService
         return orderByOptions;
     }
 
+    public async Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productList)
+    {
+        if (productList is null)
+        {
+            throw new ArgumentNullException(nameof(productList));
+        }
+
+        var applicableProviders = await GetOrderedApplicableProvidersAsync(productList);
+
+        var filterIds = new List<string>();
+        foreach (var provider in applicableProviders)
+        {
+            filterIds.AddRange(await provider.GetFilterIdsAsync(productList));
+        }
+
+        return filterIds;
+    }
+
     private async Task<IList<IProductFilterProvider>> GetOrderedApplicableProvidersAsync(ProductListPart productList) =>
         (await _productListQueryProviders
             .WhereAsync(async provider => await provider.CanHandleAsync(productList)))
