@@ -30,14 +30,6 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
             .SetVersion("1.0.0");
 
         _manifest
-            .DefineScript(CommerceRegions)
-            .SetDependencies(JQuery)
-            .SetUrl(
-                "~/OrchardCore.Commerce/js/commerce-regions.min.js",
-                "~/OrchardCore.Commerce/js/commerce-regions.js")
-            .SetVersion("1.0.0");
-
-        _manifest
             .DefineScript(ToggleSecondAddress)
             .SetUrl(
                 "~/OrchardCore.Commerce/js/toggle-second-address.min.js",
