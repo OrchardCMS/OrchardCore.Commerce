@@ -18,10 +18,8 @@ public interface ICheckoutViewModel : IShape
     Amount NetTotal { get; }
     Amount GrossTotal { get; }
     OrderPart OrderPart { get; }
-    string PaymentIntentClientSecret { get; }
     IEnumerable<SelectListItem> Regions { get; set; }
     IDictionary<string, IDictionary<string, string>> Provinces { get; }
-    string StripePublishableKey { get; }
     string UserEmail { get; }
     IEnumerable<IShape> CheckoutShapes { get; }
 }
