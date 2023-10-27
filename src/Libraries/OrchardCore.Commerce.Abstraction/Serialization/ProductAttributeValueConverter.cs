@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.ProductAttributeValues;
 using System;
 using System.Collections.Generic;
 
