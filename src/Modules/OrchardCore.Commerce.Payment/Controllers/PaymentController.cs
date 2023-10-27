@@ -13,25 +13,23 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.Payment;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ISession=YesSql.ISession;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
 
 public class PaymentController : Controller
 {
-    private const string FormValidationExceptionMessage = "An exception has occurred during checkout form validation.";
-
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IAuthorizationService _authorizationService;
@@ -74,9 +72,7 @@ public class PaymentController : Controller
 
         if (await _paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
         {
-            return RedirectToAction(
-                nameof(ShoppingCartController.Empty),
-                typeof(ShoppingCartController).ControllerName());
+            return Redirect("~/cart/empty");
         }
 
         foreach (dynamic shape in checkoutViewModel.CheckoutShapes) shape.ViewModel = checkoutViewModel;
@@ -139,11 +135,11 @@ public class PaymentController : Controller
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, FormValidationExceptionMessage);
+            _logger.LogError(exception, "An exception has occurred during checkout form validation.");
 
             var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
                 ? exception.ToString()
-                : FormValidationExceptionMessage;
+                : T["An exception has occurred during checkout form validation."].Value;
 
             return Json(new { Errors = new[] { errorMessage } });
         }
@@ -154,7 +150,7 @@ public class PaymentController : Controller
     {
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
 
-        if (string.IsNullOrEmpty(User.Identity.Name))
+        if (string.IsNullOrEmpty(User.Identity?.Name))
         {
             return LocalRedirect($"~/Login?ReturnUrl=~/Contents/ContentItems/{orderId}");
         }
@@ -212,7 +208,7 @@ public class PaymentController : Controller
 
         // Regular users should only see their own Orders, while users with the ManageOrders permission should be
         // able to see all Orders.
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOrders) && order.Author != User.Identity.Name)
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOrders) && order.Author != User.Identity?.Name)
         {
             return NotFound();
         }

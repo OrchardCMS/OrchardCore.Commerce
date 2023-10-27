@@ -99,7 +99,7 @@ public class ShoppingCartController : Controller
     }
 
     [HttpGet]
-    [Route("cart-empty")]
+    [Route("cart/empty")]
     public async Task<ActionResult> Empty()
     {
         var trackingConsentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();

@@ -26,7 +26,7 @@ public class WorkflowBehaviourTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
 
                 // Due to the expected verification failure, the cart should still be empty and the error message shown.
-                context.Driver.Url.ShouldEndWith("/cart-empty");
+                context.Driver.Url.ShouldEndWith("/cart/empty");
                 context
                     .GetErrorMessage()
                     .ShouldBe("The \"Item Verification Sample\" workflow has intentionally failed this product.");
