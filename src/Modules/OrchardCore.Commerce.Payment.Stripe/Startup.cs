@@ -25,6 +25,7 @@ public class Startup : StartupBase
 
         services.AddScoped<IRequestOptionsService, RequestOptionsService>();
         services.AddScoped<IStripePaymentService, StripePaymentService>();
+        services.AddScoped<IPaymentProvider, StripePaymentProvider>();
         services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
 

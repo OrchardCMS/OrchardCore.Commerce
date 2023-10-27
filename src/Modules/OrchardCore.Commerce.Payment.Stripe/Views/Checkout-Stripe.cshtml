@@ -9,8 +9,8 @@
         throw new InvalidOperationException("Missing DefaultTotal");
     }
 
-    string publishableKey = Model.PublishableKey ?? string.Empty;
-    string clientSecret = Model.ClientSecret ?? string.Empty;
+    string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
+    string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
 
     // We use HtmlString to exclude this from the localization string. This way translators don't have to worry about
     // ruining functional HTML by accident.

@@ -3,6 +3,8 @@
 
 @model CheckoutViewModel
 
+@inject IEnumerable<IPaymentProvider> PaymentProviders
+
 @{
     var orderPart = Model.OrderPart;
 
@@ -96,12 +98,19 @@
             @* If totals are zero, there's no need for payment. *@
             @if (Model.SingleCurrencyTotal.Value > 0)
             {
-                <shape type="StripeCheckout"
-                       prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                       prop-NetTotal="@Model.NetTotal"
-                       prop-GrossTotal="@Model.GrossTotal"
-                       prop-PublishableKey="@Model.StripePublishableKey"
-                       prop-ClientSecret="@Model.PaymentIntentClientSecret"/>
+                <div class="payment-provider-list">
+                    foreach (var providerName in PaymentProviders.Select(provider => provider.Name))
+                    {
+                        var shapeName = "Checkout-" + providerName;
+                        <div class="payment-provider payment-provider-@shapeName.HtmlClassify()">
+                            <shape type="@shapeName"
+                                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                                   prop-NetTotal="@Model.NetTotal"
+                                   prop-GrossTotal="@Model.GrossTotal"
+                                   prop-PaymentProviderData="@Model.PaymentProviderData.GetMaybe(providerName)" />
+                        </div>
+                    }
+                </div>
             }
             else
             {
