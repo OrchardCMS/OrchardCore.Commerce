@@ -5,6 +5,6 @@ docs/requirements\.txt$
 mkdocs\.yml$
 src/Libraries/OrchardCore\.Commerce\.MoneyDataType/Currency\.extra\.cs$
 src/Modules/OrchardCore\.Commerce/Constants/CurrencyCollectionConstants\.cs$
-src/Modules/OrchardCore\.Commerce/Extensions/PaymentExtensions\.cs$
+src/Modules/OrchardCore\.Commerce\.Payment\.Stripe/Extensions/PaymentExtensions\.cs$
 test/OrchardCore\.Commerce\.Tests/Fakes/AnkhMorporkCurrencyProvider\.cs$
 test/OrchardCore\.Commerce\.Tests/ProductAttributeTests\.cs$
