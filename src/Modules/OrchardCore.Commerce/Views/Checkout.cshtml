@@ -1,5 +1,7 @@
 @using OrchardCore.Commerce.Controllers;
 @using OrchardCore
+@using static OrchardCore.Commerce.Constants.ResourceNames
+@using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
 @model CheckoutViewModel
 
@@ -48,26 +50,26 @@
                 <h3 class="address__title">@T["Billing Address"]</h3>
 
                 @await DisplayAsync(
-                    new AddressFieldEditorViewModel
-                    {
-                        AddressField = orderPart.BillingAddress,
-                        CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
-                        Regions = regions,
-                        Provinces = provinces,
-                    })
+                           new AddressFieldEditorViewModel
+                           {
+                               AddressField = orderPart.BillingAddress,
+                               CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
+                               Regions = regions,
+                               Provinces = provinces,
+                           })
             </div>
 
             <div class="address address_shipping-address">
                 <h3 class="address__title">@T["Shipping Address"]</h3>
 
                 @await DisplayAsync(
-                    new AddressFieldEditorViewModel
-                    {
-                        AddressField = orderPart.ShippingAddress,
-                        CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
-                        Regions = regions,
-                        Provinces = provinces,
-                    })
+                           new AddressFieldEditorViewModel
+                           {
+                               AddressField = orderPart.ShippingAddress,
+                               CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
+                               Regions = regions,
+                               Provinces = provinces,
+                           })
             </div>
 
             <div class="mb-3">
@@ -126,8 +128,10 @@
     </div>
 </section>
 
-<script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
-<script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
+<style asp-name="@PaymentForm"></style>
+
+<script asp-name="@ToggleSecondAddress" at="Foot"></script>
+<script depends-on="@ToggleSecondAddress" at="Foot">
     const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
     checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
     initializeToggleSecondAddress(
