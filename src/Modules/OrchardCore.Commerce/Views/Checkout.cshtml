@@ -1,5 +1,7 @@
 @using OrchardCore.Commerce.Controllers;
 @using OrchardCore
+@using OrchardCore.Commerce.Payment.Abstractions
+@using OrchardCore.Mvc.Utilities
 @using static OrchardCore.Commerce.Constants.ResourceNames
 @using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
@@ -101,7 +103,7 @@
             @if (Model.SingleCurrencyTotal.Value > 0)
             {
                 <div class="payment-provider-list">
-                    foreach (var providerName in PaymentProviders.Select(provider => provider.Name))
+                    @foreach (var providerName in PaymentProviders.Select(provider => provider.Name))
                     {
                         var shapeName = "Checkout-" + providerName;
                         <div class="payment-provider payment-provider-@shapeName.HtmlClassify()">

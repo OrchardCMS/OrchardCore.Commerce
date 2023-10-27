@@ -1,4 +1,5 @@
 @using OrchardCore.Commerce.Models;
+@using OrchardCore.Commerce.Payment.Abstractions
 @using OrchardCore.Mvc.Utilities
 
 @inject IEnumerable<IPaymentProvider> PaymentProviders
@@ -17,7 +18,7 @@
             @Html.AntiForgeryToken()
 
             <div class="payment-provider-list">
-                @foreach (var providerName in PaymentProviders.Select(provider => provider.Name)) // Temporary.
+                @foreach (var providerName in PaymentProviders.Select(provider => provider.Name))
                 {
                     var shapeName = "Checkout-" + providerName;
                     <div class="payment-provider payment-provider-@shapeName.HtmlClassify()">
