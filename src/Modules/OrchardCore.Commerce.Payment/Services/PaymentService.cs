@@ -7,6 +7,8 @@ using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -35,6 +37,7 @@ public class PaymentService : IPaymentService
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IEnumerable<IPaymentProvider> _paymentProviders;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -46,7 +49,8 @@ public class PaymentService : IPaymentService
         Lazy<IUserService> userServiceLazy,
         IShoppingCartPersistence shoppingCartPersistence,
         IUpdateModelAccessor updateModelAccessor,
-        IContentItemDisplayManager contentItemDisplayManager)
+        IContentItemDisplayManager contentItemDisplayManager,
+        IEnumerable<IPaymentProvider> paymentProviders)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
@@ -58,6 +62,7 @@ public class PaymentService : IPaymentService
         _userServiceLazy = userServiceLazy;
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _paymentProviders = paymentProviders;
         _shoppingCartPersistence = shoppingCartPersistence;
         _hca = services.HttpContextAccessor.Value;
     }
@@ -129,7 +134,7 @@ public class PaymentService : IPaymentService
             PaymentIntentClientSecret = await _stripePaymentService.CreateClientSecretAsync(total, cart),
         };
 
-        return new CheckoutViewModel
+        var viewModel = new CheckoutViewModel
         {
             ShoppingCartId = shoppingCartId,
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
@@ -139,8 +144,10 @@ public class PaymentService : IPaymentService
             GrossTotal = grossTotal,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
-            PaymentProviderData = paymentProviderData,
         };
+
+        await viewModel.WithProviderDataAsync(_paymentProviders);
+        return viewModel;
     }
 
     public async Task FinalModificationOfOrderAsync(ContentItem order)

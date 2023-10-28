@@ -14,6 +14,8 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment;
+using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -40,6 +42,7 @@ public class PaymentController : Controller
     private readonly IHtmlLocalizer<PaymentController> H;
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
+    private readonly IEnumerable<IPaymentProvider> _paymentProviders;
     private readonly IPaymentService _paymentService;
 
     public PaymentController(
@@ -47,6 +50,7 @@ public class PaymentController : Controller
         IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IMoneyService moneyService,
+        IEnumerable<IPaymentProvider> paymentProviders,
         IPaymentService paymentService)
     {
         _authorizationService = services.AuthorizationService.Value;
@@ -58,6 +62,7 @@ public class PaymentController : Controller
         H = services.HtmlLocalizer.Value;
         _notifier = notifier;
         _moneyService = moneyService;
+        _paymentProviders = paymentProviders;
         _paymentService = paymentService;
         _siteService = services.SiteService.Value;
     }
@@ -178,27 +183,16 @@ public class PaymentController : Controller
             return this.RedirectToContentDisplay(orderId);
         }
 
-        var paymentProviderData = new Dictionary<string, object>();
-        var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(singleCurrencyTotal);
-        paymentProviderData["Stripe"] = new
-        {
-            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            PaymentIntentClientSecret = paymentIntent.ClientSecret,
-        };
-
-        _session.Save(new OrderPayment
-        {
-            OrderId = order.ContentItemId,
-            PaymentIntentId = paymentIntent.Id,
-        });
-
-        return View(new PaymentViewModel
+        var viewModel = new PaymentViewModel
         {
             SingleCurrencyTotal = singleCurrencyTotal,
             NetTotal = singleCurrencyTotal,
-            PaymentProviderData = paymentProviderData,
             OrderPart = orderPart,
-        });
+        };
+
+        await viewModel.WithProviderDataAsync(_paymentProviders);
+
+        return View(viewModel);
     }
 
     [Route("success/{orderId}")]

@@ -121,8 +121,6 @@ public class StripePaymentService : IStripePaymentService
             paymentIntentGetOptions,
             await _requestOptionsService.SetIdempotencyKeyAsync());
     }
-    public Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total) =>
-        throw new NotImplementedException();
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent) =>
         _paymentService.UpdateOrderToOrderedAsync(

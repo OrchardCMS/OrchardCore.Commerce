@@ -14,9 +14,6 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
     public Amount GrossTotal { get; init; }
 
     [BindNever]
-    public IDictionary<string, object> PaymentProviderData { get; } = new Dictionary<string, object>();
-
-    [BindNever]
     public IEnumerable<SelectListItem> Regions { get; set; }
 
     [BindNever]

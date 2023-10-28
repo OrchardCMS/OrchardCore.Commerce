@@ -1,4 +1,6 @@
 ﻿using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Payment.ViewModels;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Abstractions;
 
@@ -12,4 +14,13 @@ public interface IPaymentProvider
     /// suffix to the <c>Checkout-{Name}</c> shape used to display the payment UI during checkout or in the order view.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// Creates the additional data specific to the payment provider that's passed to the <c>Checkout-{Name}</c> shape.
+    /// </summary>
+    /// <returns>
+    /// Arbitrary data which will be set as the value in <see cref="IPaymentViewModel.PaymentProviderData"/>. If it
+    /// returns <see langword="null"/> then the shape won't be displayed.
+    /// </returns>
+    Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model);
 }

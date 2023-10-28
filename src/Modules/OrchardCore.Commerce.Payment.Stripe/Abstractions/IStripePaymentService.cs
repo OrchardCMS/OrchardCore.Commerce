@@ -26,7 +26,7 @@ public interface IStripePaymentService
     /// <summary>
     /// Returns a <see cref="PaymentIntent"/> object based on the given <paramref name="total"/>.
     /// </summary>
-    Task<PaymentIntent> CreatePaymentIntentAsync(long amountForPayment, Amount total);
+    Task<PaymentIntent> CreatePaymentIntentAsync(Amount total);
 
     /// <summary>
     /// Creates an order content item in the database, based on the stored <see cref="PaymentIntent"/> and on the
