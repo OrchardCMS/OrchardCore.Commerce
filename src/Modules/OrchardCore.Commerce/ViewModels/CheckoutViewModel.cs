@@ -1,21 +1,17 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
 
-public class CheckoutViewModel : ShapeViewModel, ICheckoutViewModel
+public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
 {
     public string ShoppingCartId { get; init; }
-    public Amount SingleCurrencyTotal { get; init; }
-    public Amount NetTotal { get; init; }
     public Amount GrossTotal { get; init; }
-    public OrderPart OrderPart { get; init; }
 
     [BindNever]
     public IDictionary<string, object> PaymentProviderData { get; } = new Dictionary<string, object>();

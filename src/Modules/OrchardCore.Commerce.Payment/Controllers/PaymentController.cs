@@ -192,7 +192,7 @@ public class PaymentController : Controller
             PaymentIntentId = paymentIntent.Id,
         });
 
-        return View(new
+        return View(new PaymentViewModel
         {
             SingleCurrencyTotal = singleCurrencyTotal,
             NetTotal = singleCurrencyTotal,

@@ -1,11 +1,12 @@
-@using OrchardCore.Commerce.Models;
+@model OrchardCore.Commerce.Payment.ViewModels.PaymentViewModel
+
 @using OrchardCore.Commerce.Payment.Abstractions
 @using OrchardCore.Mvc.Utilities
 
 @inject IEnumerable<IPaymentProvider> PaymentProviders
 
 @{
-    var orderPart = (OrderPart)Model.OrderPart;
+    var orderPart = Model.OrderPart;
     var shippingAddress = orderPart.ShippingAddress.Address;
     var billingAddress = orderPart.BillingAddress.Address;
 }
