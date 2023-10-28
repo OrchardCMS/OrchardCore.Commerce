@@ -12,6 +12,8 @@ namespace OrchardCore.Commerce.Services;
 
 public class BooleanProductAttributeProvider : IProductAttributeProvider
 {
+    public const string Boolean = nameof(Boolean);
+
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IProductAttributeService _productAttributeService;
 
@@ -37,14 +39,14 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
         IList<IProductAttributeValue> attributesList)
     {
         var selectedBooleanAttributes = new Dictionary<string, string>();
-        if (selectedAttributes.TryGetValue("Boolean", out var selectedBooleanAttributesRaw))
+        if (selectedAttributes.TryGetValue(Boolean, out var selectedBooleanAttributesRaw))
         {
             selectedBooleanAttributes = selectedBooleanAttributesRaw.ToDictionary(
                 pair => pair.Key, pair => pair.Value);
         }
         else
         {
-            selectedAttributes.Add("Boolean", new Dictionary<string, string>());
+            selectedAttributes.Add(Boolean, new Dictionary<string, string>());
         }
 
         var booleanAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
@@ -71,7 +73,7 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
         new Dictionary<string, IDictionary<string, string>>
         {
             {
-                "Boolean",
+                Boolean,
                 attributes
                     .CastWhere<BooleanProductAttributeValue>()
                     .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString())

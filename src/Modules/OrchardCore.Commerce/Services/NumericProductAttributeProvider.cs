@@ -13,6 +13,8 @@ namespace OrchardCore.Commerce.Services;
 
 public class NumericProductAttributeProvider : IProductAttributeProvider
 {
+    public const string Numeric = nameof(Numeric);
+
     private readonly IProductAttributeService _productAttributeService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -31,12 +33,9 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
     {
         var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
 
-        if (decimal.TryParse(value.FirstOrDefault(), out var decimalValue))
-        {
-            return new NumericProductAttributeValue(name, decimalValue);
-        }
-
-        return new NumericProductAttributeValue(name, value: null);
+        return decimal.TryParse(value.FirstOrDefault(), out var decimalValue)
+            ? new NumericProductAttributeValue(name, decimalValue)
+            : new NumericProductAttributeValue(name, value: null);
     }
 
     public void HandleSelectedAttributes(
@@ -45,14 +44,14 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
         IList<IProductAttributeValue> attributesList)
     {
         var selectedNumericAttributes = new Dictionary<string, string>();
-        if (selectedAttributes.TryGetValue("Numeric", out var selectedNumericAttributesRaw))
+        if (selectedAttributes.TryGetValue(Numeric, out var selectedNumericAttributesRaw))
         {
             selectedNumericAttributes = selectedNumericAttributesRaw.ToDictionary(
                 pair => pair.Key, pair => pair.Value);
         }
         else
         {
-            selectedAttributes.Add("Numeric", new Dictionary<string, string>());
+            selectedAttributes.Add(Numeric, new Dictionary<string, string>());
         }
 
         var numericAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
@@ -84,7 +83,7 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
         new Dictionary<string, IDictionary<string, string>>
         {
             {
-                "Numeric",
+                Numeric,
                 attributes
                     .CastWhere<NumericProductAttributeValue>()
                     .ToDictionary(attr => attr.FieldName, attr => attr.UntypedValue?.ToString())

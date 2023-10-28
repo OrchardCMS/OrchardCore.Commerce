@@ -11,6 +11,8 @@ namespace OrchardCore.Commerce.Services;
 
 public class TextProductAttributeProvider : IProductAttributeProvider
 {
+    public const string Text = nameof(Text);
+
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
     private readonly IProductAttributeService _productAttributeService;
@@ -37,7 +39,7 @@ public class TextProductAttributeProvider : IProductAttributeProvider
         IList<IProductAttributeValue> attributesList)
     {
         var selectedTextAttributes = new Dictionary<string, string>();
-        if (selectedAttributes.TryGetValue("Text", out var selectedTextAttributesRaw))
+        if (selectedAttributes.TryGetValue(Text, out var selectedTextAttributesRaw))
         {
             selectedTextAttributes = selectedTextAttributesRaw
                 .Where(keyValuePair => keyValuePair.Value != null)
@@ -45,7 +47,7 @@ public class TextProductAttributeProvider : IProductAttributeProvider
         }
         else
         {
-            selectedAttributes.Add("Text", new Dictionary<string, string>());
+            selectedAttributes.Add(Text, new Dictionary<string, string>());
         }
 
         var predefinedAttributes = _predefinedValuesProductAttributeService
@@ -63,12 +65,10 @@ public class TextProductAttributeProvider : IProductAttributeProvider
             var (attributePartDefinition, attributeFieldDefinition) = _productAttributeService.GetFieldDefinition(
                 type, type.Name + "." + attribute.Name);
 
-            var predefinedStrings = new List<string>();
-            predefinedStrings.AddRange(
-                (attribute.Settings as TextProductAttributeFieldSettings).PredefinedValues.Select(value => value.ToString()));
+            var settings = (TextProductAttributeFieldSettings)attribute.Settings;
+            var predefinedStrings = settings.PredefinedValues.Select(value => value.ToString());
 
-            var value = predefinedStrings.First(
-                item => item == selectedTextAttributes.First(keyValuePair => keyValuePair.Key == attribute.Name).Value);
+            var value = predefinedStrings.First(item => item == selectedTextAttributes[attribute.Name]);
 
             var matchingAttribute = Parse(attributePartDefinition, attributeFieldDefinition, new[] { value });
 
@@ -80,7 +80,7 @@ public class TextProductAttributeProvider : IProductAttributeProvider
         new Dictionary<string, IDictionary<string, string>>
         {
             {
-                "Text",
+                Text,
                 attributes
                     .CastWhere<TextProductAttributeValue>()
                     .ToDictionary(attr => attr.FieldName, attr => attr.PredefinedValue)
