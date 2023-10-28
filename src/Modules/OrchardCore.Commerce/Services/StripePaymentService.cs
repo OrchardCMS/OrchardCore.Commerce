@@ -311,15 +311,10 @@ public class StripePaymentService : IStripePaymentService
 
             var contentItemVersion = (await _contentManager.GetAsync(contentItemId)).ContentItemVersionId;
 
-            var selectedAttributes = new Dictionary<string, IDictionary<string, string>>();
-            foreach (var provider in _productAttributeProviders)
-            {
-                var attributesByType = provider.GetSelectedAttributes(item.Attributes);
-                if (attributesByType.Any())
-                {
-                    selectedAttributes.Add(attributesByType.Keys.First(), attributesByType.Values.First());
-                }
-            }
+            var selectedAttributes = _productAttributeProviders
+                .Select(provider => provider.GetSelectedAttributes(item.Attributes))
+                .Where(attributesByType => attributesByType.Any())
+                .ToDictionary(attributesByType => attributesByType.Keys.First(), attributesByType => attributesByType.Values.First());
 
             lineItems.Add(await item.CreateOrderLineFromShoppingCartItemAsync(
                 _priceSelectionStrategy,

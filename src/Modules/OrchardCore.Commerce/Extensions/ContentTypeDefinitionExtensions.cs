@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models;
 
@@ -7,9 +8,7 @@ public static class ContentTypeDefinitionExtensions
     public static (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
         GetFieldDefinition(this ContentTypeDefinition type, string attributeName)
     {
-        var partAndField = attributeName.Split('.');
-        var partName = partAndField[0];
-        var fieldName = partAndField[1];
+        var (partName, _, fieldName) = attributeName.Partition(".");
 
         return type
             .Parts

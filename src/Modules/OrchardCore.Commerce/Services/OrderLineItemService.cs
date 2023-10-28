@@ -167,8 +167,8 @@ public class OrderLineItemService : IOrderLineItemService
             var productSku = product.As<ProductPart>().Sku;
 
             var booleanAttributes = _productAttributeService.GetProductAttributeFields(product)
-                .Where(attr => attr.Field is BooleanProductAttributeField)
-                .Select(attr => attr.Name)
+                .Where(attribute => attribute.Field is BooleanProductAttributeField)
+                .Select(attribute => attribute.Name)
                 .ToList();
 
             if (booleanAttributes.Any())
@@ -177,35 +177,35 @@ public class OrderLineItemService : IOrderLineItemService
             }
 
             var numericAttributes = _productAttributeService.GetProductAttributeFields(product)
-                .Where(attr => attr.Field is NumericProductAttributeField)
+                .Where(attribute => attribute.Field is NumericProductAttributeField)
                 .ToList();
 
             if (numericAttributes.Any())
             {
-                availableNumericAttributes.Add(productSku, numericAttributes.Select(attr => attr.Name).ToList());
+                availableNumericAttributes.Add(productSku, numericAttributes.Select(attribute => attribute.Name).ToList());
                 numericAttributeSettings.Add(
                     productSku,
-                    numericAttributes.ToDictionary(attr => attr.Name, attr => attr.Settings as NumericProductAttributeFieldSettings));
+                    numericAttributes.ToDictionary(
+                        attribute => attribute.Name,
+                        attribute => attribute.Settings as NumericProductAttributeFieldSettings));
             }
 
             var textAttributes = _predefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
-            foreach (var attr in textAttributes)
+            foreach (var attribute in textAttributes)
             {
-                var predefinedStrings = new List<string>();
-
-                var predefinedValues = (attr.Settings as TextProductAttributeFieldSettings).PredefinedValues;
-                predefinedStrings.AddRange(predefinedValues.Select(value => value.ToString()));
+                var settings = (TextProductAttributeFieldSettings)attribute.Settings;
+                var predefinedStrings = settings.PredefinedValues.Select(value => value.ToString()).ToList();
 
                 var attributesValuesByAttributeNames = new Dictionary<string, List<string>>
                 {
-                    { attr.Name, predefinedStrings },
+                    { attribute.Name, predefinedStrings },
                 };
 
                 // A Product may already be present in the dictionary, but if it has several different attributes,
                 // those still need to be added to its key.
                 if (!availableTextAttributes.TryAdd(productSku, attributesValuesByAttributeNames))
                 {
-                    availableTextAttributes[productSku].Add(attr.Name, predefinedStrings);
+                    availableTextAttributes[productSku].Add(attribute.Name, predefinedStrings);
                 }
             }
         }
