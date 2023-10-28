@@ -22,6 +22,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IHttpContextAccessor _hca;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
+    private readonly IEnumerable<IProductAttributeProvider> _productAttributeProviders;
     private readonly IEnumerable<IProductEstimationContextUpdater> _productEstimationContextUpdaters;
     private readonly IProductService _productService;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
@@ -37,6 +38,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IHttpContextAccessor hca,
         IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
+        IEnumerable<IProductAttributeProvider> productAttributeProviders,
         IEnumerable<IProductEstimationContextUpdater> productEstimationContextUpdaters,
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
@@ -47,6 +49,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _hca = hca;
         _priceSelectionStrategy = priceSelectionStrategy;
         _priceService = priceService;
+        _productAttributeProviders = productAttributeProviders;
         _productEstimationContextUpdaters = productEstimationContextUpdaters;
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
@@ -235,7 +238,10 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             var price = _priceSelectionStrategy.SelectPrice(item.Prices);
             var fullSku = _productService.GetOrderFullSku(item, await _productService.GetProductAsync(item.ProductSku));
 
-            var selectedAttributes = item.Attributes.ToDictionary(key => key.PartName, value => (string)((dynamic)value).PredefinedValue);
+            var selectedAttributes = _productAttributeProviders
+                .Select(provider => provider.GetSelectedAttributes(item.Attributes))
+                .Where(attributesByType => attributesByType.Any())
+                .ToDictionary(attributesByType => attributesByType.Keys.First(), attributesByType => attributesByType.Values.First());
 
             return new OrderLineItem(
                 item.Quantity,
