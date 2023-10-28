@@ -1,5 +1,8 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System;
@@ -27,10 +30,12 @@ public class ProductAttributeProvider : IProductAttributeProvider
         if (value == null || !_supportedTypeNames.Contains(attributeFieldTypeName)) return null;
 
         var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
-
-        var element = value is JsonElement jsonElement
-            ? jsonElement
-            : JsonDocument.Parse(value.ToString()!).RootElement;
+        var element = value switch
+        {
+            JsonElement jsonElement => jsonElement,
+            JToken jToken => JsonDocument.Parse(JsonConvert.SerializeObject(jToken)).RootElement,
+            _ => default,
+        };
 
         return attributeFieldTypeName switch
         {
@@ -48,6 +53,17 @@ public class ProductAttributeProvider : IProductAttributeProvider
             },
             _ => null,
         };
+    }
+
+    public IDictionary<string, IDictionary<string, string>> GetSelectedAttributes(ISet<IProductAttributeValue> attributes) =>
+        new Dictionary<string, IDictionary<string, string>>();
+
+    public void HandleSelectedAttributes(
+        IDictionary<string, IDictionary<string, string>> selectedAttributes,
+        ProductPart productPart,
+        IList<IProductAttributeValue> attributesList)
+    {
+        return;
     }
 
     public IProductAttributeValue Parse(
