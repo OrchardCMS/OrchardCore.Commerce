@@ -48,8 +48,7 @@
                   "currency": "USD"
                 },
                 "ContentItemVersion": "testproducttestversion0000",
-                "Attributes": [],
-                "SelectedAttributes": {}
+                "Attributes": []
               }
             ],
             "AdditionalCosts": [],

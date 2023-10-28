@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Settings;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -28,5 +29,12 @@ public class OrderLineItemViewModel : ILineItem
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
     public ISet<IProductAttributeValue> Attributes { get; set; }
-    public IDictionary<string, string> SelectedAttributes { get; set; } = new Dictionary<string, string>();
+    public IDictionary<string, IDictionary<string, string>> SelectedAttributes { get; set; } =
+        new Dictionary<string, IDictionary<string, string>>();
+    public IDictionary<string, IDictionary<string, List<string>>> AvailableTextAttributes { get; set; } =
+        new Dictionary<string, IDictionary<string, List<string>>>();
+    public IDictionary<string, List<string>> AvailableBooleanAttributes { get; set; } = new Dictionary<string, List<string>>();
+    public IDictionary<string, List<string>> AvailableNumericAttributes { get; set; } = new Dictionary<string, List<string>>();
+    public IDictionary<string, IDictionary<string, NumericProductAttributeFieldSettings>> NumericAttributeSettings { get; set; } =
+        new Dictionary<string, IDictionary<string, NumericProductAttributeFieldSettings>>();
 }

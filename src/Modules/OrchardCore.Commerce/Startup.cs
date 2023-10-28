@@ -89,6 +89,9 @@ public class Startup : StartupBase
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
 
         services.AddScoped<IProductAttributeProvider, ProductAttributeProvider>();
+        services.AddScoped<IProductAttributeProvider, TextProductAttributeProvider>();
+        services.AddScoped<IProductAttributeProvider, BooleanProductAttributeProvider>();
+        services.AddScoped<IProductAttributeProvider, NumericProductAttributeProvider>();
         services.AddScoped<IProductAttributeService, ProductAttributeService>();
         services.AddScoped<IPredefinedValuesProductAttributeService, PredefinedValuesProductAttributeService>();
 

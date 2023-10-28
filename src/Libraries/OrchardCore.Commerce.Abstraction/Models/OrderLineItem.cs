@@ -14,7 +14,8 @@ public class OrderLineItem
     public Amount LinePrice { get; set; }
     public string ContentItemVersion { get; set; }
     public ISet<IProductAttributeValue> Attributes { get; }
-    public IDictionary<string, string> SelectedAttributes { get; } = new Dictionary<string, string>();
+    public IDictionary<string, IDictionary<string, string>> SelectedAttributes { get; } =
+        new Dictionary<string, IDictionary<string, string>>();
 
     // These are necessary.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -26,7 +27,7 @@ public class OrderLineItem
         Amount linePrice,
         string contentItemVersion,
         IEnumerable<IProductAttributeValue> attributes = null,
-        IDictionary<string, string> selectedAttributes = null)
+        IDictionary<string, IDictionary<string, string>> selectedAttributes = null)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         ArgumentNullException.ThrowIfNull(productSku);

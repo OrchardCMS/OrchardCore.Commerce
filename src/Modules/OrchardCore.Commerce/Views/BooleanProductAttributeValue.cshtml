@@ -1,12 +1,20 @@
-@using OrchardCore.Commerce.ProductAttributeValues
+@using OrchardCore.Commerce.Abstractions;
+@using OrchardCore.Commerce.Fields;
+@using OrchardCore.Commerce.ProductAttributeValues;
+@using OrchardCore.Commerce.Settings;
+@using OrchardCore.ContentManagement;
+
+@inject IProductAttributeService AttributeService;
 
 @{
-    var attr = Model.Attribute as BooleanProductAttributeValue;
-    if (attr.Value)
-    {
-        TagBuilder tag = Tag(Model, "li");
-        tag.AddCssClass("list-inline-item");
-        tag.InnerHtml.Append(attr.FieldName);
-        @tag
-    }
+    var attributeValue = Model.Attribute as BooleanProductAttributeValue;
+    var attributeDescriptions = AttributeService.GetProductAttributeFields(Model.Product as ContentItem);
+    var booleanAttributeFields = attributeDescriptions.Where(attr => attr.Field is BooleanProductAttributeField);
+    var settings = booleanAttributeFields
+        .FirstOrDefault(attr => attr.Name == attributeValue.FieldName).Settings as BooleanProductAttributeFieldSettings;
+
+    TagBuilder tag = Tag(Model, "li");
+    tag.AddCssClass("list-inline-item");
+    tag.InnerHtml.Append((settings.Label ?? attributeValue.FieldName) + ": " + (T[attributeValue.Value ? "Yes" : "No"].Value));
+    @tag
 }

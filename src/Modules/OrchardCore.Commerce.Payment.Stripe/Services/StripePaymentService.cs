@@ -48,6 +48,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
     private readonly IMoneyService _moneyService;
+    private readonly IEnumerable<IProductAttributeProvider> _productAttributeProviders;
 
     // We need to use that many, this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -66,7 +67,8 @@ public class StripePaymentService : IStripePaymentService
         IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
         IProductService productService,
-        IMoneyService moneyService)
+        IMoneyService moneyService,
+        IEnumerable<IProductAttributeProvider> productAttributeProviders)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
@@ -82,6 +84,7 @@ public class StripePaymentService : IStripePaymentService
         _priceService = priceService;
         _productService = productService;
         _moneyService = moneyService;
+        _productAttributeProviders = productAttributeProviders;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
         _workflowManagers = workflowManagers;
