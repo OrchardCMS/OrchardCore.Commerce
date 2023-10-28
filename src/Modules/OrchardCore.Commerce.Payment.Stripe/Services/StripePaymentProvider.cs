@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System.Threading.Tasks;
@@ -51,4 +52,7 @@ public class StripePaymentProvider : IPaymentProvider
             PaymentIntentClientSecret = paymentIntent.ClientSecret,
         };
     }
+
+    public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor) =>
+        _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor);
 }

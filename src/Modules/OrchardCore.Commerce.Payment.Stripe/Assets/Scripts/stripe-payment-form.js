@@ -117,7 +117,7 @@ window.stripePaymentForm = function stripePaymentForm(
                         });
                 }
 
-                const validationJson = await fetchPost('checkout/validate', { body: new FormData(form) });
+                const validationJson = await fetchPost('checkout/validate/Stripe', { body: new FormData(form) });
                 if (validationJson?.errors?.length) {
                     toggleInputs(true);
                     throw validationJson.errors;

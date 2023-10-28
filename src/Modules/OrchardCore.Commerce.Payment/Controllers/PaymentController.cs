@@ -20,20 +20,15 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
-using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Controllers;
 
 public class PaymentController : Controller
 {
-    private readonly ISiteService _siteService;
-    private readonly ISession _session;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<PaymentController> _logger;
     private readonly IContentManager _contentManager;
@@ -57,18 +52,16 @@ public class PaymentController : Controller
         _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
         _updateModelAccessor = updateModelAccessor;
-        _session = services.Session.Value;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _notifier = notifier;
         _moneyService = moneyService;
         _paymentProviders = paymentProviders;
         _paymentService = paymentService;
-        _siteService = services.SiteService.Value;
     }
 
     [Route("checkout")]
-    public async Task<IActionResult> Index(string shoppingCartId = null)
+    public async Task<IActionResult> Index(string shoppingCartId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
@@ -126,14 +119,18 @@ public class PaymentController : Controller
             };
         });
 
-    [Route("checkout/validate")]
+    [Route("checkout/validate/{providerName}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Validate()
+    public async Task<IActionResult> Validate(string providerName)
     {
+        if (string.IsNullOrEmpty(providerName)) return NotFound();
+
         try
         {
-            await _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(_updateModelAccessor);
+            await _paymentProviders
+                .Where(provider => provider.Name.EqualsOrdinalIgnoreCase(providerName))
+                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor));
 
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
             return Json(new { Errors = errors });

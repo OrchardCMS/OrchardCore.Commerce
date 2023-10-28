@@ -1,5 +1,6 @@
 ﻿using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Payment.ViewModels;
+using OrchardCore.Commerce.Controllers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Abstractions;
@@ -23,4 +24,9 @@ public interface IPaymentProvider
     /// returns <see langword="null"/> then the shape won't be displayed.
     /// </returns>
     Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model);
+
+    /// <summary>
+    /// Validates the data POSTed to the <see cref="PaymentController.Validate"/> action.
+    /// </summary>
+    Task ValidateAsync(IUpdateModelAccessor updateModelAccessor);
 }
