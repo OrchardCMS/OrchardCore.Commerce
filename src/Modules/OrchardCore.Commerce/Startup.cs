@@ -335,6 +335,7 @@ public class UserSettingsStartup : StartupBase
         services.AddScoped<IAddressFieldEvents, UserAddressFieldEvents>();
         services.AddScoped<IDisplayDriver<User>, UserAddressesUserDisplayDriver>();
         services.AddScoped<IOrderEvents, UserSettingsOrderEvents>();
+        services.AddScoped<ICheckoutEvents, UserSettingsCheckoutEvents>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

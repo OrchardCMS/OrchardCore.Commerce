@@ -25,7 +25,6 @@ namespace OrchardCore.Commerce.Services;
 public class PaymentService : IPaymentService
 {
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
-    private readonly IEnumerable<IOrderEvents> _orderEvents;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly UserManager<IUser> _userManager;
@@ -33,52 +32,45 @@ public class PaymentService : IPaymentService
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IEnumerable<IOrderEvents> _orderEvents;
     private readonly IEnumerable<IPaymentProvider> _paymentProviders;
+    private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentService(
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
-        IEnumerable<IOrderEvents> orderEvents,
         IOrchardServices<PaymentService> services,
         IShoppingCartHelpers shoppingCartHelpers,
         IRegionService regionService,
         IUpdateModelAccessor updateModelAccessor,
         IContentItemDisplayManager contentItemDisplayManager,
-        IEnumerable<IPaymentProvider> paymentProviders)
+        IEnumerable<IOrderEvents> orderEvents,
+        IEnumerable<IPaymentProvider> paymentProviders,
+        IEnumerable<ICheckoutEvents> checkoutEvents)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
-        _orderEvents = orderEvents;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
+        _orderEvents = orderEvents;
         _paymentProviders = paymentProviders;
+        _checkoutEvents = checkoutEvents;
         _hca = services.HttpContextAccessor.Value;
     }
 
-    public async Task<ICheckoutViewModel> CreateCheckoutViewModelAsync(
+    public async Task<ICheckoutViewModel?> CreateCheckoutViewModelAsync(
         string shoppingCartId,
-        Action<OrderPart> updateOrderPart = null)
+        Action<OrderPart>? updateOrderPart = null)
     {
         var orderPart = new OrderPart();
 
-        if (await _hca.HttpContext.GetUserAddressAsync() is { } userAddresses)
-        {
-            orderPart.BillingAddress.Address = userAddresses.BillingAddress.Address;
-            orderPart.ShippingAddress.Address = userAddresses.ShippingAddress.Address;
-            orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
-        }
-
-        if (await _hca.HttpContext.GetUserDetailsAsync() is { } userDetails)
-        {
-            orderPart.Phone.Text = userDetails.PhoneNumber.Text;
-            orderPart.VatNumber.Text = userDetails.VatNumber.Text;
-            orderPart.IsCorporation.Value = userDetails.IsCorporation.Value;
-        }
+        await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
+            checkoutEvents.OrderCreatingAsync(orderPart, shoppingCartId));
 
         var email = _hca.HttpContext?.User is { Identity.IsAuthenticated: true } user
             ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(user))
@@ -197,7 +189,7 @@ public class PaymentService : IPaymentService
     public async Task UpdateOrderToOrderedAsync(
         ContentItem order,
         string shoppingCartId,
-        Func<OrderPart, IEnumerable<IPayment>>? getCharges = null)
+        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
     {
         ArgumentNullException.ThrowIfNull(order);
 
