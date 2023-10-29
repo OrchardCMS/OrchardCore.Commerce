@@ -1,4 +1,6 @@
 using OrchardCore.Modules.Manifest;
+using static OrchardCore.Commerce.Payment.Constants.FeatureIds;
+using static OrchardCore.Commerce.Promotion.Constants.FeatureIds;
 
 [assembly: Module(
     Name = "Orchard Core Commerce - Payment - Stripe",
@@ -7,5 +9,5 @@ using OrchardCore.Modules.Manifest;
     Version = "0.0.1",
     Description = "Stripe payment provider for Orchard Core Commerce.",
     Category = "Commerce",
-    Dependencies = new[] { OrchardCore.Commerce.Payment.Constants.FeatureIds.Payment }
+    Dependencies = new[] { Payment, Promotion }
 )]
