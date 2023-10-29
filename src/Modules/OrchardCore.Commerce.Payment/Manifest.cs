@@ -1,6 +1,7 @@
 using OrchardCore.Modules.Manifest;
 using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
 using static OrchardCore.Commerce.Payment.Constants.FeatureIds;
+using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
 
 [assembly: Module(
     Name = "Orchard Core Commerce - Payment",
@@ -16,7 +17,7 @@ using static OrchardCore.Commerce.Payment.Constants.FeatureIds;
     Name = "Orchard Core Commerce - Payment",
     Category = "Commerce",
     Description = "Payment for Orchard Core Commerce.",
-    Dependencies = new[] { ContentFields }
+    Dependencies = new[] { ContentFields, Tax }
 )]
 
 [assembly: Feature(
