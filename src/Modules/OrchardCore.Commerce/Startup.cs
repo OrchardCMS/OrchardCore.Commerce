@@ -139,7 +139,6 @@ public class Startup : StartupBase
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
-        services.AddScoped<IShoppingCartEvents, WorkflowShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
@@ -216,6 +215,9 @@ public class WorkflowStartup : StartupBase
         services.AddActivity<CartUpdatedEvent, CartUpdatedEventDisplayDriver>();
         services.AddActivity<CartLoadedEvent, CartLoadedEventDisplayDriver>();
         services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplayDriver>();
+
+        services.AddScoped<IShoppingCartEvents, WorkflowShoppingCartEvents>();
+        services.AddScoped<IOrderEvents, WorkflowOrderEvents>();
     }
 }
 

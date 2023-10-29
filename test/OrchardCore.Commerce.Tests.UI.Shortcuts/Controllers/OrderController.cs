@@ -27,21 +27,21 @@ public class OrderController : Controller
     private readonly IPaymentService _paymentService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
-    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
+    private readonly IEnumerable<IOrderEvents> _orderEvents;
 
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
-        IEnumerable<IWorkflowManager> workflowManagers,
-        IShoppingCartHelpers shoppingCartHelpers)
+        IShoppingCartHelpers shoppingCartHelpers,
+        IEnumerable<IOrderEvents> orderEvents)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
-        _workflowManagers = workflowManagers;
         _shoppingCartHelpers = shoppingCartHelpers;
+        _orderEvents = orderEvents;
     }
 
     [AllowAnonymous]
@@ -96,7 +96,7 @@ public class OrderController : Controller
         await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName: null);
 
         // Since the event trigger is tied to "UpdateOrderToOrderedAsync()" we also need to call it here.
-        await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
+        await _orderEvents.AwaitEachAsync(orderEvents => orderEvents.OrderedAsync(order, shoppingCartId));
 
         return RedirectToAction(
             nameof(PaymentController.Success),

@@ -14,14 +14,11 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
-using OrchardCore.Settings;
 using OrchardCore.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -29,9 +26,9 @@ namespace OrchardCore.Commerce.Services;
 public class PaymentService : IPaymentService
 {
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
+    private readonly IEnumerable<IOrderEvents> _orderEvents;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
-    private readonly ISiteService _siteService;
     private readonly UserManager<IUser> _userManager;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
@@ -44,6 +41,7 @@ public class PaymentService : IPaymentService
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentService(
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
+        IEnumerable<IOrderEvents> orderEvents,
         IOrchardServices<PaymentService> services,
         IShoppingCartHelpers shoppingCartHelpers,
         IRegionService regionService,
@@ -54,9 +52,9 @@ public class PaymentService : IPaymentService
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
+        _orderEvents = orderEvents;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
-        _siteService = services.SiteService.Value;
         _userManager = services.UserManager.Value;
         _regionService = regionService;
         _userServiceLazy = userServiceLazy;
@@ -244,9 +242,9 @@ public class PaymentService : IPaymentService
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
 
-        await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
+        await _orderEvents.AwaitEachAsync(orderEvent => orderEvent.OrderedAsync(order, shoppingCartId));
 
-        var cart = await _shoppingCartHelpers.RetrieveAsync();
+        var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
 
         // Decrease inventories of purchased items.
         await _productInventoryService.UpdateInventoriesAsync(cart.Items);
