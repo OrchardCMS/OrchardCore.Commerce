@@ -287,6 +287,7 @@ public class PromotionStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPromotionService, PromotionService>();
+        services.AddScoped<IOrderEvents, PromotionOrderEvents>();
         services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
 
         services

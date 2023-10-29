@@ -155,20 +155,17 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId)
+    public async Task<ContentItem?> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId)
     {
-        var currentShoppingCart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
-
+        var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
         var order = await _contentManager.NewAsync("Order");
-        if (await UpdateOrderWithDriversAsync(order))
-        {
-            return null;
-        }
 
-        var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(currentShoppingCart);
+        if (await UpdateOrderWithDriversAsync(order)) return null;
+
+        var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-            shoppingCartId: null,
+            shoppingCartId,
             order.As<OrderPart>().ShippingAddress.Address,
             order.As<OrderPart>().BillingAddress.Address);
 
@@ -177,20 +174,13 @@ public class PaymentService : IPaymentService
             return null;
         }
 
-        order.Alter<OrderPart>(orderPart =>
+        await order.AlterAsync<OrderPart>(async orderPart =>
         {
-            // Shopping cart
             orderPart.LineItems.SetItems(lineItems);
-
             orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
 
-            // Store the current applicable discount info, so they will be available in the future.
-            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
-                .Lines
-                .Where(line => line.AdditionalData.GetDiscounts().Any())
-                .ToDictionary(
-                    line => line.ProductSku,
-                    line => line.AdditionalData.GetDiscounts()));
+            await _orderEvents.AwaitEachAsync(orderEvents =>
+                orderEvents.CreatedFreeAsnyc(orderPart, cart, cartViewModel));
         });
 
         await _contentManager.CreateAsync(order);
