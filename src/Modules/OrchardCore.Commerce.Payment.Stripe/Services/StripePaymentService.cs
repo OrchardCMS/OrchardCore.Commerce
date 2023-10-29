@@ -1,9 +1,5 @@
-using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
@@ -11,7 +7,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -20,7 +15,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
-using OrchardCore.Workflows.Services;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -33,7 +27,6 @@ namespace OrchardCore.Commerce.Services;
 public class StripePaymentService : IStripePaymentService
 {
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
-    private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly PaymentIntentService _paymentIntentService;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
@@ -42,19 +35,13 @@ public class StripePaymentService : IStripePaymentService
     private readonly ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
-    private readonly IProductInventoryService _productInventoryService;
-    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
     private readonly IPaymentService _paymentService;
-    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
-    private readonly IPriceService _priceService;
-    private readonly IProductService _productService;
     private readonly IMoneyService _moneyService;
 
     // We need to use that many, this cannot be avoided.
 #pragma warning disable S107 // Methods should not have too many parameters
     public StripePaymentService(
         IShoppingCartHelpers shoppingCartHelpers,
-        IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
         ISiteService siteService,
         IRequestOptionsService requestOptionsService,
@@ -62,31 +49,20 @@ public class StripePaymentService : IStripePaymentService
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
         IContentItemDisplayManager contentItemDisplayManager,
-        IProductInventoryService productInventoryService,
-        IEnumerable<IWorkflowManager> workflowManagers,
         IPaymentService paymentService,
-        IPriceSelectionStrategy priceSelectionStrategy,
-        IPriceService priceService,
-        IProductService productService,
         IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _paymentIntentService = new PaymentIntentService();
         _shoppingCartHelpers = shoppingCartHelpers;
-        _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
         _siteService = siteService;
         _requestOptionsService = requestOptionsService;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
-        _productInventoryService = productInventoryService;
-        _priceSelectionStrategy = priceSelectionStrategy;
-        _priceService = priceService;
-        _productService = productService;
         _moneyService = moneyService;
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
-        _workflowManagers = workflowManagers;
         _paymentService = paymentService;
     }
 
@@ -133,20 +109,9 @@ public class StripePaymentService : IStripePaymentService
             {
                 // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
                 // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
-                var orderPartCharge = orderPart.Charges.SingleOrDefault();
-                var amount = orderPartCharge!.Amount;
+                var amount = orderPart.Charges.Single().Amount;
 
-                var payment = new Payment
-                {
-                    Kind = paymentIntent.PaymentMethod.GetFormattedPaymentType(),
-                    ChargeText = paymentIntent.Description,
-                    TransactionId = paymentIntent.Id,
-                    Amount = amount,
-                    CreatedUtc = paymentIntent.Created,
-                };
-
-                orderPart.Charges.Clear();
-                orderPart.Charges.Add(payment);
+                return new[] { CreatePayment(paymentIntent, amount) };
             });
 
     public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
@@ -167,7 +132,8 @@ public class StripePaymentService : IStripePaymentService
     {
         var paymentIntent = await GetPaymentIntentAsync(_paymentIntentPersistence.Retrieve());
 
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        // Stripe doesn't support multiple shopping cart IDs because we can't send that info to the middleware anyway.
+        var currentShoppingCart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId: null);
         var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
 
         if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
@@ -281,14 +247,7 @@ public class StripePaymentService : IStripePaymentService
         order.Alter<OrderPart>(orderPart =>
         {
             orderPart.Charges.Clear();
-            orderPart.Charges.Add(
-                new Payment
-                {
-                    ChargeText = paymentIntent.Description,
-                    TransactionId = paymentIntent.Id,
-                    Amount = defaultTotal,
-                    CreatedUtc = paymentIntent.Created,
-                });
+            orderPart.Charges.Add(CreatePayment(paymentIntent, defaultTotal));
 
             if (cartViewModel is not null)
             {
@@ -308,6 +267,14 @@ public class StripePaymentService : IStripePaymentService
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
     }
+
+    private static IPayment CreatePayment(PaymentIntent paymentIntent, Amount amount) =>
+        new Models.Payment(
+            Kind: paymentIntent.PaymentMethod.GetFormattedPaymentType(),
+            ChargeText: paymentIntent.Description,
+            TransactionId: paymentIntent.Id,
+            Amount: amount,
+            CreatedUtc: paymentIntent.Created);
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
         string paymentIntentId,

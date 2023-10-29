@@ -57,14 +57,12 @@ public class OrderController : Controller
 
         order.Alter<OrderPart>(orderPart =>
         {
-            var payment = new Models.Payment
-            {
-                Kind = "Card",
-                ChargeText = "Test charge text",
-                TransactionId = "Test transaction ID",
-                Amount = checkoutViewModel.SingleCurrencyTotal,
-                CreatedUtc = testTime,
-            };
+            var payment = new Models.Payment(
+                Kind: "Card",
+                ChargeText: "Test charge text",
+                TransactionId: "Test transaction ID",
+                Amount: checkoutViewModel.SingleCurrencyTotal,
+                CreatedUtc: testTime);
 
             orderPart.Charges.Clear();
             orderPart.Charges.Add(payment);
