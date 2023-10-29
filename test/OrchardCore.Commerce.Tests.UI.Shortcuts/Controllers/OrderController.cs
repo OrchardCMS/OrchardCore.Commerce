@@ -49,10 +49,10 @@ public class OrderController : Controller
     {
         var testTime = new DateTime(dateTimeTicks, DateTimeKind.Utc);
 
-        var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(shoppingCart.Id);
+        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId: null);
+        var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(cart.Id);
         var order = await _contentManager.NewAsync(Order);
-        var orderLineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(shoppingCart);
+        var orderLineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
         order.Apply(checkoutViewModel.OrderPart);
 
         order.Alter<OrderPart>(orderPart =>

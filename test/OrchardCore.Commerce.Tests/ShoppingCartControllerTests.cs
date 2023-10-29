@@ -56,14 +56,15 @@ public class ShoppingCartControllerTests
     [Fact]
     public async Task AddExistingItemToCart()
     {
-        await _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")));
+        var cartId = Guid.NewGuid().ToString();
+        await StoreCartAsync(cartId: null);
         using var controller = GetController();
         await controller.AddItem(new ShoppingCartLineUpdateModel
         {
             Quantity = 7,
             ProductSku = "foo",
         });
-        var cart = await _cartStorage.RetrieveAsync();
+        var cart = await _cartStorage.RetrieveAsync(cartId);
 
         Assert.Equal(
             new List<ShoppingCartItem> { new(10, "foo") },
@@ -73,14 +74,15 @@ public class ShoppingCartControllerTests
     [Fact]
     public async Task AddNewItemToCart()
     {
-        await _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")));
+        var cartId = Guid.NewGuid().ToString();
+        await StoreCartAsync(cartId);
         using var controller = GetController();
         await controller.AddItem(new ShoppingCartLineUpdateModel
         {
             Quantity = 7,
             ProductSku = "bar",
         });
-        var cart = await _cartStorage.RetrieveAsync();
+        var cart = await _cartStorage.RetrieveAsync(cartId);
 
         Assert.Equal(
             new List<ShoppingCartItem>
@@ -221,4 +223,7 @@ public class ShoppingCartControllerTests
         controller.ControllerContext = mockContext;
         return controller;
     }
+
+    private Task StoreCartAsync(string cartId) =>
+        _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")), cartId);
 }

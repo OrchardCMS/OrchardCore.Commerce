@@ -23,7 +23,7 @@ public class ShoppingCartWidgetPartDisplayDriver : ContentPartDisplayDriver<Shop
     private async ValueTask PopulateViewModelAsync(ShoppingCartWidgetPartViewModel model)
     {
         // Shopping cart ID is null by default currently.
-        var cart = await _shoppingCartPersistence.RetrieveAsync();
+        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId: null);
 
         model.ItemCount = cart?.ItemCount ?? 0;
     }

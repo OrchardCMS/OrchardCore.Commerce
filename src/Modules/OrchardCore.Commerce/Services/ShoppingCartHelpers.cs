@@ -108,7 +108,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             H["Price"],
             H["Action"],
         };
-        IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
+        IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync(cart)).Values.ToList();
 
         (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);
 
@@ -134,21 +134,16 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return model;
     }
 
-    public async Task<Amount?> CalculateSingleCurrencyTotalAsync()
+    public async Task<Amount?> CalculateSingleCurrencyTotalAsync(ShoppingCart cart)
     {
-        var totals = await CalculateMultipleCurrencyTotalsAsync();
+        var totals = await CalculateMultipleCurrencyTotalsAsync(cart);
         return totals.Count > 0 ? totals.Single().Value : null;
     }
 
-    public async Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync()
-    {
-        // Shopping cart ID is null by default currently.
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        if (currentShoppingCart.Count == 0) return new Dictionary<string, Amount>();
-
-        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService);
-        return totals.ToDictionary(total => total.Currency.CurrencyIsoCode);
-    }
+    public async Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync(ShoppingCart cart) =>
+        cart.Count == 0
+            ? new Dictionary<string, Amount>()
+            : (await cart.CalculateTotalsAsync(_priceService)).ToDictionary(total => total.Currency.CurrencyIsoCode);
 
     public async Task<ShoppingCartItem> AddToCartAsync(
         string shoppingCartId,

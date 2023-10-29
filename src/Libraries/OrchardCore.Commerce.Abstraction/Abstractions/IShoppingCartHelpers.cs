@@ -24,15 +24,15 @@ public interface IShoppingCartHelpers
         Address billing = null);
 
     /// <summary>
-    /// Calculate the total value in the cart. All prices must be of a single currency.
+    /// Calculate the total value in the <paramref name="cart"/>. All prices must be of a single currency.
     /// </summary>
     /// <returns>The total value of the items in the cart, or <see langword="null" /> if the cart is empty.</returns>
-    Task<Amount?> CalculateSingleCurrencyTotalAsync();
+    Task<Amount?> CalculateSingleCurrencyTotalAsync(ShoppingCart cart);
 
     /// <summary>
-    /// Groups the line items in the cart by currency and returns the value by currency code.
+    /// Groups the line items in the <paramref name="cart"/> by currency and returns the value by currency code.
     /// </summary>
-    Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync();
+    Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync(ShoppingCart cart);
 
     /// <summary>
     /// Adds a new entry to the shopping cart, optionally saves the cart using <c>IShoppingCartPersistence</c> if
