@@ -16,6 +16,7 @@
     {
       "name": "settings",
       "UseCdn": false,
+      "PageSize": 5,
       // To make sure that e.g. numbers and dates are formatted the same way on all machines we have to specify the
       // culture too.
       "LocalizationSettings": {

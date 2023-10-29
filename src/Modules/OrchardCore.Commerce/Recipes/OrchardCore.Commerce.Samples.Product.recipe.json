@@ -41,21 +41,11 @@
               }
             },
             {
-              "PartName": "ListPart",
-              "Name": "ListPart",
+              "PartName": "ProductListPart",
+              "Name": "ProductListPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
-                },
-                "ListPartSettings": {
-                  "PageSize": 10,
-                  "ContainedContentTypes": [
-                    "LocalizedProduct",
-                    "PriceVariantsProduct",
-                    "Product",
-                    "TieredPriceProduct"
-                  ],
-                  "EnableOrdering": true
                 }
               }
             },
@@ -92,11 +82,7 @@
           "Owner": null,
           "Author": "admin",
           "ProductList": {},
-          "ListPart": {
-            "DisableRssFeed": false,
-            "FeedProxyUrl": null,
-            "FeedItemsCount": 20
-          },
+          "ProductListPart": {},
           "AutoroutePart": {
             "Path": "my-shop",
             "SetHomepage": true,
