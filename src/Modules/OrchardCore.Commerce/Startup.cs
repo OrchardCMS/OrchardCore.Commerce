@@ -136,7 +136,6 @@ public class Startup : StartupBase
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
-        services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
 
         // Orders
@@ -166,9 +165,6 @@ public class Startup : StartupBase
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
-
-        // Promotion
-        services.AddScoped<IPromotionService, PromotionService>();
 
         // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>
@@ -290,6 +286,9 @@ public class PromotionStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IPromotionService, PromotionService>();
+        services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
+
         services
             .AddContentPart<DiscountPart>()
             .AddHandler<DiscountPartHandler>()
