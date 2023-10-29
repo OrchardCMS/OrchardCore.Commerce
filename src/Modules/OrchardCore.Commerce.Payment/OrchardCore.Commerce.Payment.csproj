@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -65,7 +65,7 @@ public class StripeController : Controller
 
         if (finished)
         {
-            await _paymentService.FinalModificationOfOrderAsync(order);
+            await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId: null);
             return RedirectToAction(
                 nameof(PaymentController.Success),
                 typeof(PaymentController).ControllerName(),

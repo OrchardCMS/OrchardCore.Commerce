@@ -51,7 +51,7 @@ public class WebhookController : Controller
                 // Let the logic handle version mismatch.
                 throwOnApiVersionMismatch: false);
 
-            if (stripeEvent.Type == Stripe.Events.ChargeSucceeded)
+            if (stripeEvent.Type == Events.ChargeSucceeded)
             {
                 var charge = stripeEvent.Data.Object as Charge;
                 if (charge?.PaymentIntentId is not { } paymentIntentId)
@@ -62,7 +62,7 @@ public class WebhookController : Controller
                 var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
                 await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
             }
-            else if (stripeEvent.Type == Stripe.Events.PaymentIntentPaymentFailed)
+            else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
                 var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
                 await _stripePaymentService.UpdateOrderToPaymentFailedAsync(paymentIntent);

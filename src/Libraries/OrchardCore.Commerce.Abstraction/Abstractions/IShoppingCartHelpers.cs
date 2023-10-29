@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,6 +23,19 @@ public interface IShoppingCartHelpers
         string shoppingCartId,
         Address shipping = null,
         Address billing = null);
+
+    /// <summary>
+    /// Returns a <see cref="ShoppingCart"/> identified by <paramref name="shoppingCartId"/>.
+    /// </summary>
+    /// <param name="shoppingCartId">
+    /// The name used to identify the shopping cart. <see langword="null"/> refers to the default shopping cart.
+    /// </param>
+    Task<ShoppingCart> RetrieveAsync(string shoppingCartId);
+
+    /// <summary>
+    /// Retrieves a <see cref="ShoppingCart"/> using <see cref="RetrieveAsync"/>, then updates and stores it.
+    /// </summary>
+    Task UpdateAsync(string shoppingCartId, Func<ShoppingCart, Task> updateTask);
 
     /// <summary>
     /// Calculate the total value in the <paramref name="cart"/>. All prices must be of a single currency.

@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -33,7 +34,6 @@ public class PaymentService : IPaymentService
     private readonly UserManager<IUser> _userManager;
     private readonly IRegionService _regionService;
     private readonly Lazy<IUserService> _userServiceLazy;
-    private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -47,7 +47,6 @@ public class PaymentService : IPaymentService
         IShoppingCartHelpers shoppingCartHelpers,
         IRegionService regionService,
         Lazy<IUserService> userServiceLazy,
-        IShoppingCartPersistence shoppingCartPersistence,
         IUpdateModelAccessor updateModelAccessor,
         IContentItemDisplayManager contentItemDisplayManager,
         IEnumerable<IPaymentProvider> paymentProviders)
@@ -63,7 +62,6 @@ public class PaymentService : IPaymentService
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
         _paymentProviders = paymentProviders;
-        _shoppingCartPersistence = shoppingCartPersistence;
         _hca = services.HttpContextAccessor.Value;
     }
 
@@ -104,7 +102,7 @@ public class PaymentService : IPaymentService
         if (cart?.Totals.Single() is not { } total) return null;
 
         var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
-                await _contentManager.NewAsync(Order),
+                await _contentManager.NewAsync("Order"),
                 "Checkout"))
             .ToList();
 
@@ -150,7 +148,7 @@ public class PaymentService : IPaymentService
         return viewModel;
     }
 
-    public async Task FinalModificationOfOrderAsync(ContentItem order)
+    public async Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
     {
         // Saving addresses.
         var userService = _userServiceLazy.Value;
@@ -172,11 +170,11 @@ public class PaymentService : IPaymentService
             });
         }
 
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        currentShoppingCart?.Items?.Clear();
-
-        // Shopping cart ID is null by default currently.
-        await _shoppingCartPersistence.StoreAsync(currentShoppingCart);
+        await _shoppingCartHelpers.UpdateAsync(shoppingCartId, cart =>
+        {
+            cart.Items?.Clear();
+            return Task.CompletedTask;
+        });
 
         // Set back to default, because a new payment intent should be created on the next checkout.
         _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
@@ -184,7 +182,7 @@ public class PaymentService : IPaymentService
 
     public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId)
     {
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+        var currentShoppingCart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
 
         var order = await _contentManager.NewAsync(Order);
         if (await UpdateOrderWithDriversAsync(order))
@@ -231,7 +229,7 @@ public class PaymentService : IPaymentService
         return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
-    public async Task UpdateOrderToOrderedAsync(ContentItem order, Action<OrderPart> alterOrderPart = null)
+    public async Task UpdateOrderToOrderedAsync(ContentItem order, string shoppingCartId, Action<OrderPart> alterOrderPart = null)
     {
         ArgumentNullException.ThrowIfNull(order);
 
@@ -244,10 +242,10 @@ public class PaymentService : IPaymentService
 
         await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
 
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
+        var cart = await _shoppingCartHelpers.RetrieveAsync();
 
         // Decrease inventories of purchased items.
-        await _productInventoryService.UpdateInventoriesAsync(currentShoppingCart.Items);
+        await _productInventoryService.UpdateInventoriesAsync(cart.Items);
 
         await _contentManager.UpdateAsync(order);
     }

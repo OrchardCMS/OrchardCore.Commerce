@@ -45,7 +45,7 @@ public class OrderController : Controller
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> CreateOrderWithSuccessfulPayment(long dateTimeTicks)
+    public async Task<IActionResult> CreateOrderWithSuccessfulPayment(long dateTimeTicks, string shoppingCartId)
     {
         var testTime = new DateTime(dateTimeTicks, DateTimeKind.Utc);
 
@@ -95,7 +95,7 @@ public class OrderController : Controller
 
         await _contentManager.CreateAsync(order);
 
-        await _paymentService.FinalModificationOfOrderAsync(order);
+        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId);
 
         // Since the event trigger is tied to "UpdateOrderToOrderedAsync()" we also need to call it here.
         await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);

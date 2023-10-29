@@ -1,4 +1,3 @@
-using AngleSharp.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
@@ -9,7 +8,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -132,6 +131,16 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         model.Lines.AddRange(lines);
 
         return model;
+    }
+
+    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId) =>
+        _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+
+    public async Task UpdateAsync(string shoppingCartId, Func<ShoppingCart, Task> updateTask)
+    {
+        var cart = await RetrieveAsync(shoppingCartId);
+        await updateTask(cart);
+        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
     }
 
     public async Task<Amount?> CalculateSingleCurrencyTotalAsync(ShoppingCart cart)

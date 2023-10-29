@@ -44,6 +44,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IProductInventoryService _productInventoryService;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
+    private readonly IPaymentService _paymentService;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
     private readonly IProductService _productService;
@@ -63,6 +64,7 @@ public class StripePaymentService : IStripePaymentService
         IContentItemDisplayManager contentItemDisplayManager,
         IProductInventoryService productInventoryService,
         IEnumerable<IWorkflowManager> workflowManagers,
+        IPaymentService paymentService,
         IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
         IProductService productService,
@@ -85,6 +87,7 @@ public class StripePaymentService : IStripePaymentService
         T = stringLocalizer;
         _contentItemDisplayManager = contentItemDisplayManager;
         _workflowManagers = workflowManagers;
+        _paymentService = paymentService;
     }
 
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
@@ -123,8 +126,9 @@ public class StripePaymentService : IStripePaymentService
     }
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent) =>
-        _paymentService.UpdateOrderToOrderedAsync(
+        await _paymentService.UpdateOrderToOrderedAsync(
             await GetOrderByPaymentIntentIdAsync(paymentIntent.Id),
+            shoppingCartId: null,
             orderPart =>
             {
                 // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -178,7 +182,7 @@ public class StripePaymentService : IStripePaymentService
         }
         else
         {
-            order = await _contentManager.NewAsync(Constants.ContentTypes.Order);
+            order = await _contentManager.NewAsync("Order");
             if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
             {
                 return null;

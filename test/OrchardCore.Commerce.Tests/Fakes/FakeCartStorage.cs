@@ -18,7 +18,7 @@ public class FakeCartStorage : IShoppingCartPersistence
     {
         if (!_carts.TryGetValue(shoppingCartId ?? string.Empty, out var cart))
         {
-            cart = new ShoppingCart();
+            cart = new ShoppingCart { Id = shoppingCartId };
             _carts.Add(shoppingCartId ?? string.Empty, cart);
         }
 

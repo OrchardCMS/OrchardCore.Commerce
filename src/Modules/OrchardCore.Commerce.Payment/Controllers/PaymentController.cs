@@ -220,8 +220,8 @@ public class PaymentController : Controller
             return NotFound();
         }
 
-        await _paymentService.UpdateOrderToOrderedAsync(order);
-        await _paymentService.FinalModificationOfOrderAsync(order);
+        await _paymentService.UpdateOrderToOrderedAsync(order, shoppingCartId);
+        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId);
 
         return RedirectToAction(nameof(Success), new { orderId = order.ContentItem.ContentItemId });
     }
