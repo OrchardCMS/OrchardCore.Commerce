@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -198,7 +199,7 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    private long GetPaymentAmount(Amount total)
+    private static long GetPaymentAmount(Amount total)
     {
         if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(total.Currency.CurrencyIsoCode))
         {
@@ -249,20 +250,19 @@ public class StripePaymentService : IStripePaymentService
             orderPart.Charges.Clear();
             orderPart.Charges.Add(CreatePayment(paymentIntent, defaultTotal));
 
-            if (cartViewModel is not null)
-            {
-                // Shopping cart
-                orderPart.LineItems.SetItems(lineItems);
-                orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+            if (cartViewModel is null) return;
 
-                // Store the current applicable discount info so they will be available in the future.
-                orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
-                    .Lines
-                    .Where(line => line.AdditionalData.GetDiscounts().Any())
-                    .ToDictionary(
-                        line => line.ProductSku,
-                        line => line.AdditionalData.GetDiscounts()));
-            }
+            // Shopping cart
+            orderPart.LineItems.SetItems(lineItems);
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+
+            // Store the current applicable discount info so they will be available in the future.
+            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                .Lines
+                .Where(line => line.AdditionalData.GetDiscounts().Any())
+                .ToDictionary(
+                    line => line.ProductSku,
+                    line => line.AdditionalData.GetDiscounts()));
         });
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
