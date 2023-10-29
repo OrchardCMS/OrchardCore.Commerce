@@ -229,13 +229,19 @@ public class PaymentService : IPaymentService
         return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
-    public async Task UpdateOrderToOrderedAsync(ContentItem order, string shoppingCartId, Action<OrderPart> alterOrderPart = null)
+    public async Task UpdateOrderToOrderedAsync(
+        ContentItem order,
+        string shoppingCartId,
+        Func<OrderPart, IEnumerable<IPayment>>? getCharges = null)
     {
         ArgumentNullException.ThrowIfNull(order);
 
         order.Alter<OrderPart>(orderPart =>
         {
-            alterOrderPart?.Invoke(orderPart);
+            if (getCharges?.Invoke(orderPart)?.AsList() is { } newCharges)
+            {
+                orderPart.Charges.SetItems(newCharges);
+            }
 
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });

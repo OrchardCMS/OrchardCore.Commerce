@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -31,5 +32,12 @@ public interface IPaymentService
     /// <summary>
     /// Updates the <paramref name="order"/>'s status to <see cref="OrderStatuses.Ordered"/>.
     /// </summary>
-    Task UpdateOrderToOrderedAsync(ContentItem order, string shoppingCartId, Action<OrderPart> alterOrderPart = null);
+    /// <param name="getCharges">
+    /// A callback to set the charges of the order. If returns <see langword="null"/> then nothing the <see
+    /// cref="OrderPart.Charges"/> won't be altered, otherwise it will be replaced with the returned value.
+    /// </param>
+    Task UpdateOrderToOrderedAsync(
+        ContentItem order,
+        string shoppingCartId,
+        Func<OrderPart, IEnumerable<IPayment>> getCharges = null);
 }
