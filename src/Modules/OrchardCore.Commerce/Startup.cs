@@ -333,8 +333,8 @@ public class UserSettingsStartup : StartupBase
             .WithMigration<UserDetailsMigrations>();
 
         services.AddScoped<IAddressFieldEvents, UserAddressFieldEvents>();
-
         services.AddScoped<IDisplayDriver<User>, UserAddressesUserDisplayDriver>();
+        services.AddScoped<IOrderEvents, UserSettingsOrderEvents>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

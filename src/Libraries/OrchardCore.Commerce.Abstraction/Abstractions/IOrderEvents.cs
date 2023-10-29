@@ -11,5 +11,10 @@ public interface IOrderEvents
     /// <summary>
     /// Invoked when the <paramref name="order"/> is set to the <c>Ordered</c> state.
     /// </summary>
-    Task OrderedAsync(ContentItem order, string shoppingCartId);
+    Task OrderedAsync(ContentItem order, string shoppingCartId) => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked during cleanup after the order has been finalized.
+    /// </summary>
+    Task FinalizeAsync(ContentItem order, string shoppingCartId, string paymentProviderName) => Task.CompletedTask;
 }

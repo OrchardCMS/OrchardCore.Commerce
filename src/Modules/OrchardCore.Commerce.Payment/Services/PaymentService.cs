@@ -1,7 +1,6 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
@@ -31,7 +30,6 @@ public class PaymentService : IPaymentService
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly UserManager<IUser> _userManager;
     private readonly IRegionService _regionService;
-    private readonly Lazy<IUserService> _userServiceLazy;
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -45,7 +43,6 @@ public class PaymentService : IPaymentService
         IOrchardServices<PaymentService> services,
         IShoppingCartHelpers shoppingCartHelpers,
         IRegionService regionService,
-        Lazy<IUserService> userServiceLazy,
         IUpdateModelAccessor updateModelAccessor,
         IContentItemDisplayManager contentItemDisplayManager,
         IEnumerable<IPaymentProvider> paymentProviders)
@@ -57,7 +54,6 @@ public class PaymentService : IPaymentService
         _shoppingCartHelpers = shoppingCartHelpers;
         _userManager = services.UserManager.Value;
         _regionService = regionService;
-        _userServiceLazy = userServiceLazy;
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
         _paymentProviders = paymentProviders;
@@ -142,25 +138,8 @@ public class PaymentService : IPaymentService
 
     public async Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId, string paymentProviderName)
     {
-        // Saving addresses.
-        var userService = _userServiceLazy.Value;
-        var orderPart = order.As<OrderPart>();
-
-        if (_hca.HttpContext != null && await userService.GetFullUserAsync(_hca.HttpContext.User) is { } user)
-        {
-            var isSame = orderPart.BillingAndShippingAddressesMatch.Value;
-
-            await userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
-            {
-                var part = contentItem.TryGetValue(nameof(UserAddressesPart), out var partJson)
-                    ? partJson.ToObject<UserAddressesPart>()!
-                    : new UserAddressesPart();
-
-                part.BillingAndShippingAddressesMatch.Value = isSame;
-                contentItem[nameof(UserAddressesPart)] = JToken.FromObject(part);
-                return contentItem;
-            });
-        }
+        await _orderEvents.AwaitEachAsync(orderEvent =>
+            orderEvent.FinalizeAsync(order, shoppingCartId, paymentProviderName));
 
         await _shoppingCartHelpers.UpdateAsync(shoppingCartId, cart =>
         {
