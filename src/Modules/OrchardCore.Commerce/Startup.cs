@@ -68,7 +68,6 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, ProductMigrations>();
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
         services.AddScoped<IProductService, ProductService>();
-        services.AddScoped<IProductInventoryService, ProductInventoryService>();
         services.AddScoped<IProductInventoryProvider, LocalInventoryProvider>();
 
         services.AddContentPart<ProductPart>()
@@ -352,8 +351,12 @@ public class UserSettingsStartup : StartupBase
 [RequireFeatures(Inventory.Constants.FeatureIds.Inventory)]
 public class InventoryStartup : StartupBase
 {
-    public override void ConfigureServices(IServiceCollection services) =>
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddScoped<IProductEstimationContextUpdater, InventoryProductEstimationContextUpdater>();
+        services.AddScoped<IOrderEvents, InventoryOrderEvents>();
+        services.AddScoped<IProductInventoryService, ProductInventoryService>();
+    }
 }
 
 [RequireFeatures("OrchardCore.ContentLocalization")]

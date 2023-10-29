@@ -180,7 +180,7 @@ public class PaymentService : IPaymentService
     {
         var currentShoppingCart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
 
-        var order = await _contentManager.NewAsync(Order);
+        var order = await _contentManager.NewAsync("Order");
         if (await UpdateOrderWithDriversAsync(order))
         {
             return null;
@@ -243,12 +243,6 @@ public class PaymentService : IPaymentService
         });
 
         await _orderEvents.AwaitEachAsync(orderEvent => orderEvent.OrderedAsync(order, shoppingCartId));
-
-        var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
-
-        // Decrease inventories of purchased items.
-        await _productInventoryService.UpdateInventoriesAsync(cart.Items);
-
         await _contentManager.UpdateAsync(order);
     }
 }
