@@ -1,5 +1,6 @@
 ﻿using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Controllers;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 
@@ -29,4 +30,9 @@ public interface IPaymentProvider
     /// Validates the data POSTed to the <see cref="PaymentController.Validate"/> action.
     /// </summary>
     Task ValidateAsync(IUpdateModelAccessor updateModelAccessor);
+
+    /// <summary>
+    /// Invoked at the end of <see cref="IPaymentService.FinalModificationOfOrderAsync"/>.
+    /// </summary>
+    Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId) => Task.CompletedTask;
 }

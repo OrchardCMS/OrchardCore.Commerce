@@ -93,7 +93,7 @@ public class OrderController : Controller
 
         await _contentManager.CreateAsync(order);
 
-        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId);
+        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName: null);
 
         // Since the event trigger is tied to "UpdateOrderToOrderedAsync()" we also need to call it here.
         await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);

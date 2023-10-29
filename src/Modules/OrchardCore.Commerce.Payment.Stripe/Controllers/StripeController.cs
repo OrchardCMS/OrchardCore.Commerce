@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
@@ -65,7 +66,10 @@ public class StripeController : Controller
 
         if (finished)
         {
-            await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId: null);
+            await _paymentService.FinalModificationOfOrderAsync(
+                order,
+                shoppingCartId: null,
+                StripePaymentProvider.ProviderName);
             return RedirectToAction(
                 nameof(PaymentController.Success),
                 typeof(PaymentController).ControllerName(),

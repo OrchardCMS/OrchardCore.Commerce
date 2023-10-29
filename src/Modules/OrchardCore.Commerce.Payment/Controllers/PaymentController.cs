@@ -221,7 +221,7 @@ public class PaymentController : Controller
         }
 
         await _paymentService.UpdateOrderToOrderedAsync(order, shoppingCartId);
-        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId);
+        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName: null);
 
         return RedirectToAction(nameof(Success), new { orderId = order.ContentItem.ContentItemId });
     }

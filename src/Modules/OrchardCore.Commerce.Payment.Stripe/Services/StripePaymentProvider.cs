@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -14,20 +15,25 @@ namespace OrchardCore.Commerce.Services;
 
 public class StripePaymentProvider : IPaymentProvider
 {
+    public const string ProviderName = "Stripe";
+
     private readonly IHttpContextAccessor _hca;
+    private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly ISession _session;
     private readonly ISiteService _siteService;
     private readonly IStripePaymentService _stripePaymentService;
 
-    public string Name => "Stripe";
+    public string Name => ProviderName;
 
     public StripePaymentProvider(
         IHttpContextAccessor hca,
+        IPaymentIntentPersistence paymentIntentPersistence,
         ISession session,
         ISiteService siteService,
         IStripePaymentService stripePaymentService)
     {
         _hca = hca;
+        _paymentIntentPersistence = paymentIntentPersistence;
         _session = session;
         _siteService = siteService;
         _stripePaymentService = stripePaymentService;
@@ -55,4 +61,12 @@ public class StripePaymentProvider : IPaymentProvider
 
     public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor) =>
         _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor);
+
+    public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
+    {
+        // Set back to default, because a new payment intent should be created on the next checkout.
+        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
+
+        return Task.CompletedTask;
+    }
 }

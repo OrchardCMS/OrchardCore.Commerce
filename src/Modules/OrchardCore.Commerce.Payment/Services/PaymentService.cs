@@ -21,6 +21,7 @@ using OrchardCore.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -125,13 +126,6 @@ public class PaymentService : IPaymentService
             netTotal += netPrice * line.Quantity;
         }
 
-        var paymentProviderData = new Dictionary<string, object>();
-        paymentProviderData["Stripe"] = new
-        {
-            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            PaymentIntentClientSecret = await _stripePaymentService.CreateClientSecretAsync(total, cart),
-        };
-
         var viewModel = new CheckoutViewModel
         {
             ShoppingCartId = shoppingCartId,
@@ -148,7 +142,7 @@ public class PaymentService : IPaymentService
         return viewModel;
     }
 
-    public async Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
+    public async Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId, string paymentProviderName)
     {
         // Saving addresses.
         var userService = _userServiceLazy.Value;
@@ -176,8 +170,12 @@ public class PaymentService : IPaymentService
             return Task.CompletedTask;
         });
 
-        // Set back to default, because a new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
+        if (!string.IsNullOrEmpty(paymentProviderName))
+        {
+            await _paymentProviders
+                .Where(provider => provider.Name.EqualsOrdinalIgnoreCase(paymentProviderName))
+                .AwaitEachAsync(provider => provider.FinalModificationOfOrderAsync(order, shoppingCartId));
+        }
     }
 
     public async Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId)
