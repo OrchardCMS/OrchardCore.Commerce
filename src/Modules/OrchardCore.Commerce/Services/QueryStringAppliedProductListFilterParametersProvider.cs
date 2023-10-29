@@ -10,13 +10,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
-public interface IProductFilterParametersProvider
-{
-    int Priority { get; }
-    Task<ProductListFilterParameters> GetFilterParametersAsync(ProductListPart productList);
-}
-
-public class QueryStringProductFilterParametersProvider : IProductFilterParametersProvider
+public class QueryStringAppliedProductListFilterParametersProvider : IAppliedProductListFilterParametersProvider
 {
     public const string QueryStringPrefix = "products.";
 
@@ -26,7 +20,7 @@ public class QueryStringProductFilterParametersProvider : IProductFilterParamete
 
     public int Priority { get; } = 10;
 
-    public QueryStringProductFilterParametersProvider(
+    public QueryStringAppliedProductListFilterParametersProvider(
         IHttpContextAccessor hca,
         IUpdateModelAccessor updateModelAccessor,
         ISiteService siteService)

@@ -17,8 +17,8 @@
     }
 
     <fieldset class="products-fieldset-order-by">
-        <legend>@T["Sort By"]</legend>
         <div class="mb-3">
+            <label for="products-order-by">@T["Sort By"]</label>
             <select name="products.orderBy" class="form-select" id="products-order-by">
                 <option value="">@T["Select..."]</option>
                 @foreach (var option in Model.OrderByOptions)
@@ -40,5 +40,5 @@
         }
     }
 
-    <button type="submit" class="btn btn-primary mb-3">@T["Apply"]</button>
+    <button type="submit" class="btn btn-primary mb-3" id="products-filter-apply">@T["Apply"]</button>
 </form>

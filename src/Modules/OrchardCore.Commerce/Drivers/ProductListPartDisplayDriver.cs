@@ -14,11 +14,11 @@ namespace OrchardCore.Commerce.Drivers;
 public class ProductListPartDisplayDriver : ContentPartDisplayDriver<ProductListPart>
 {
     private readonly IProductListService _productListService;
-    private readonly IEnumerable<IProductFilterParametersProvider> _productFilterProviders;
+    private readonly IEnumerable<IAppliedProductListFilterParametersProvider> _productFilterProviders;
 
     public ProductListPartDisplayDriver(
         IProductListService productListService,
-        IEnumerable<IProductFilterParametersProvider> productFilterProviders)
+        IEnumerable<IAppliedProductListFilterParametersProvider> productFilterProviders)
     {
         _productListService = productListService;
         _productFilterProviders = productFilterProviders;
