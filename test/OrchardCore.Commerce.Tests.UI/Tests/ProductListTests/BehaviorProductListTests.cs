@@ -1,4 +1,3 @@
-using Atata.HtmlValidation;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
@@ -37,8 +36,7 @@ public class BehaviorProductListTests : UITestBase
                 titles[0].ShouldBe("Test Tiered Price Product");
                 titles[1].ShouldBe("Test Product");
             },
-            browser,
-            IgnorePagerHtmlPaginationErrors);
+            browser);
 
     [Theory, Chrome]
     public Task FilteringByTitleShouldWork(Browser browser) =>
@@ -53,8 +51,7 @@ public class BehaviorProductListTests : UITestBase
                 titles.Count.ShouldBe(1);
                 titles[0].ShouldBe("Test Tiered Price Product");
             },
-            browser,
-            IgnorePagerHtmlPaginationErrors);
+            browser);
 
     [Theory, Chrome]
     public Task SortingAndPaginationShouldWorkTogether(Browser browser) =>
@@ -71,25 +68,7 @@ public class BehaviorProductListTests : UITestBase
                 titles.Count.ShouldBe(1);
                 titles[0].ShouldBe("Test Discounted Product");
             },
-            browser,
-            IgnorePagerHtmlPaginationErrors);
-
-    private static readonly Func<OrchardCoreUITestExecutorConfiguration, Task>
-        IgnorePagerHtmlPaginationErrors =
-            configuration =>
-            {
-                configuration.HtmlValidationConfiguration.AssertHtmlValidationResultAsync =
-                    AssertHtmValidationResultAsync;
-
-                return Task.CompletedTask;
-            };
-
-    private static async Task AssertHtmValidationResultAsync(HtmlValidationResult validationResult)
-    {
-        var errors = (await validationResult.GetErrorsAsync())
-            .Where(error => !error.ContainsOrdinalIgnoreCase("\"rel\" attribute cannot be used in this context"));
-        errors.ShouldBeEmpty();
-    }
+            browser);
 
     private static IList<string> GetProductTitles(UITestContext context) =>
         context
