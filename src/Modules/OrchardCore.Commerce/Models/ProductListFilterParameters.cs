@@ -1,0 +1,11 @@
+using OrchardCore.Navigation;
+using System.Collections.Generic;
+
+namespace OrchardCore.Commerce.Models;
+
+public class ProductListFilterParameters
+{
+    public Pager Pager { get; set; }
+    public IList<string> OrderBy { get; } = new List<string>();
+    public IDictionary<string, string> FilterValues { get; } = new Dictionary<string, string>();
+}

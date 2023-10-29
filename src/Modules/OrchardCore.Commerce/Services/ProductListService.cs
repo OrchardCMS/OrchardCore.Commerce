@@ -14,12 +14,12 @@ namespace OrchardCore.Commerce.Services;
 public class ProductListService : IProductListService
 {
     private readonly ISession _session;
-    private readonly IEnumerable<IProductFilterProvider> _productListQueryProviders;
+    private readonly IEnumerable<IProductListFilterProvider> _productListQueryProviders;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public ProductListService(
         ISession session,
-        IEnumerable<IProductFilterProvider> productListQueryProviders,
+        IEnumerable<IProductListFilterProvider> productListQueryProviders,
         IContentDefinitionManager contentDefinitionManager)
     {
         _session = session;
@@ -105,7 +105,7 @@ public class ProductListService : IProductListService
         return filterIds;
     }
 
-    private async Task<IList<IProductFilterProvider>> GetOrderedApplicableProvidersAsync(ProductListPart productList) =>
+    private async Task<IList<IProductListFilterProvider>> GetOrderedApplicableProvidersAsync(ProductListPart productList) =>
         (await _productListQueryProviders
             .WhereAsync(async provider => await provider.CanHandleAsync(productList)))
         .OrderBy(provider => provider.Order)

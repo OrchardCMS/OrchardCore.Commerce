@@ -9,10 +9,10 @@ namespace OrchardCore.Commerce.Services;
 /// <summary>
 /// Provides a way to filter a product list.
 /// </summary>
-public interface IProductFilterProvider
+public interface IProductListFilterProvider
 {
     /// <summary>
-    /// The order in which the filter providers are applied.
+    /// Gets the order in which the filter providers are applied.
     /// </summary>
     int Order { get; }
 

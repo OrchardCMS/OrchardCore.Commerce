@@ -7,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Commerce.Services;
 
-public class ProductTitleFilterProvider : IProductFilterProvider
+public class ProductListTitleFilterProvider : IProductListFilterProvider
 {
     public const string TitleFilterId = "title";
     public const string TitleAscOrderById = "TitleAsc";
@@ -17,9 +17,11 @@ public class ProductTitleFilterProvider : IProductFilterProvider
 
     public Task<bool> CanHandleAsync(ProductListPart productList) => Task.FromResult(true);
 
-    public Task<IEnumerable<string>> GetOrderByOptionIdsAsync(ProductListPart productList) => Task.FromResult<IEnumerable<string>>(new[] { TitleAscOrderById, TitleDescOrderById });
+    public Task<IEnumerable<string>> GetOrderByOptionIdsAsync(ProductListPart productList) =>
+        Task.FromResult<IEnumerable<string>>(new[] { TitleAscOrderById, TitleDescOrderById });
 
-    public Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productListPart) => Task.FromResult<IEnumerable<string>>(new[] { TitleFilterId });
+    public Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productListPart) =>
+        Task.FromResult<IEnumerable<string>>(new[] { TitleFilterId });
 
     public Task<IQuery<ContentItem>> BuildQueryAsync(ProductListFilterContext context)
     {

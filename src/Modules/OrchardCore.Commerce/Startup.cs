@@ -213,7 +213,7 @@ public class Startup : StartupBase
 
         // Product List
         services.AddScoped<IProductListService, ProductListService>();
-        services.AddScoped<IProductFilterProvider, ProductTitleFilterProvider>();
+        services.AddScoped<IProductListFilterProvider, ProductListTitleFilterProvider>();
         services.AddScoped<IAppliedProductListFilterParametersProvider, QueryStringAppliedProductListFilterParametersProvider>();
         services.AddScoped<IDataMigration, ProductListMigrations>();
         services.AddContentPart<ProductListPart>()
