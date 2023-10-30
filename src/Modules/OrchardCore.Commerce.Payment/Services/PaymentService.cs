@@ -1,6 +1,7 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
@@ -13,6 +14,7 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Users;
 using System;
@@ -35,6 +37,7 @@ public class PaymentService : IPaymentService
     private readonly IEnumerable<IOrderEvents> _orderEvents;
     private readonly Lazy<IEnumerable<IPaymentProvider>> _paymentProvidersLazy;
     private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
+    private readonly INotifier _notifier;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -47,7 +50,8 @@ public class PaymentService : IPaymentService
         IContentItemDisplayManager contentItemDisplayManager,
         IEnumerable<IOrderEvents> orderEvents,
         Lazy<IEnumerable<IPaymentProvider>> paymentProvidersLazy,
-        IEnumerable<ICheckoutEvents> checkoutEvents)
+        IEnumerable<ICheckoutEvents> checkoutEvents,
+        INotifier notifier)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
@@ -60,11 +64,12 @@ public class PaymentService : IPaymentService
         _orderEvents = orderEvents;
         _paymentProvidersLazy = paymentProvidersLazy;
         _checkoutEvents = checkoutEvents;
+        _notifier = notifier;
         _hca = services.HttpContextAccessor.Value;
     }
 
     public async Task<ICheckoutViewModel?> CreateCheckoutViewModelAsync(
-        string shoppingCartId,
+        string? shoppingCartId,
         Action<OrderPart>? updateOrderPart = null)
     {
         var orderPart = new OrderPart();
@@ -126,7 +131,7 @@ public class PaymentService : IPaymentService
         return viewModel;
     }
 
-    public async Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId, string paymentProviderName)
+    public async Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId, string? paymentProviderName)
     {
         await _orderEvents.AwaitEachAsync(orderEvent =>
             orderEvent.FinalizeAsync(order, shoppingCartId, paymentProviderName));
@@ -146,12 +151,21 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<ContentItem?> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId)
+    public async Task<ContentItem?> CreateNoPaymentOrderFromShoppingCartAsync(string? shoppingCartId)
     {
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
         var order = await _contentManager.NewAsync("Order");
 
-        if (await UpdateOrderWithDriversAsync(order)) return null;
+        var errors = await UpdateOrderWithDriversAsync(order);
+        if (errors.Any())
+        {
+            foreach (var error in errors)
+            {
+                await _notifier.ErrorAsync(new LocalizedHtmlString(error, error));
+            }
+
+            return null;
+        }
 
         var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
 
@@ -179,15 +193,15 @@ public class PaymentService : IPaymentService
         return order;
     }
 
-    private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order)
+    private async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
-        return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
+        return _updateModelAccessor.ModelUpdater.GetModelErrorMessages()?.AsList() ?? Array.Empty<string>();
     }
 
     public async Task UpdateOrderToOrderedAsync(
         ContentItem order,
-        string shoppingCartId,
+        string? shoppingCartId,
         Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
     {
         ArgumentNullException.ThrowIfNull(order);

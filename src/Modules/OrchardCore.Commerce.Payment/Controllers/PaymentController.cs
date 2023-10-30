@@ -61,7 +61,7 @@ public class PaymentController : Controller
     }
 
     [Route("checkout")]
-    public async Task<IActionResult> Index(string shoppingCartId)
+    public async Task<IActionResult> Index(string? shoppingCartId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
@@ -83,7 +83,7 @@ public class PaymentController : Controller
     [Route("checkout/price")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Price(string shoppingCartId) =>
+    public async Task<IActionResult> Price(string? shoppingCartId) =>
         await this.SafeJsonAsync(async () =>
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -209,7 +209,7 @@ public class PaymentController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
-    public async Task<IActionResult> CheckoutWithoutPayment(string shoppingCartId)
+    public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId)
     {
         if (await _paymentService.CreateNoPaymentOrderFromShoppingCartAsync(shoppingCartId) is not { } order)
         {

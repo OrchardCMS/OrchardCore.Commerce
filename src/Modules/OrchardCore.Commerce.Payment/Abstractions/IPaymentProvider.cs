@@ -34,5 +34,5 @@ public interface IPaymentProvider
     /// <summary>
     /// Invoked at the end of <see cref="IPaymentService.FinalModificationOfOrderAsync"/>.
     /// </summary>
-    Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId) => Task.CompletedTask;
+    Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId) => Task.CompletedTask;
 }
