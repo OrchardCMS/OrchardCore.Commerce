@@ -9,13 +9,13 @@ using Stripe;
 using System;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class RequestOptionsService : IRequestOptionsService
 {
     private readonly ISiteService _siteService;
 
-    private Func<ISite, string> _apiKeyAccessor;
+    private readonly Func<ISite, string> _apiKeyAccessor;
     private RequestOptions _requestOptions;
 
     public RequestOptionsService(

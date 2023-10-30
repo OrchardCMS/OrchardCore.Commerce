@@ -5,7 +5,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;

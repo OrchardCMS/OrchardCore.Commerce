@@ -6,6 +6,7 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Handlers;

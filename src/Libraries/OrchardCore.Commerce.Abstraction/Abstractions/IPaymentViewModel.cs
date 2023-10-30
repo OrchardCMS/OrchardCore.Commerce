@@ -1,6 +1,5 @@
 ﻿using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.DisplayManagement;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 

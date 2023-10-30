@@ -9,9 +9,9 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System.Threading.Tasks;
-using ISession=YesSql.ISession;
+using ISession = YesSql.ISession;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentProvider : IPaymentProvider
 {
