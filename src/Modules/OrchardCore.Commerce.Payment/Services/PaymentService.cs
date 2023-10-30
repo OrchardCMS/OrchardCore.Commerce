@@ -33,7 +33,7 @@ public class PaymentService : IPaymentService
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IEnumerable<IOrderEvents> _orderEvents;
-    private readonly IEnumerable<IPaymentProvider> _paymentProviders;
+    private readonly Lazy<IEnumerable<IPaymentProvider>> _paymentProvidersLazy;
     private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
 
     // We need all of them.
@@ -46,7 +46,7 @@ public class PaymentService : IPaymentService
         IUpdateModelAccessor updateModelAccessor,
         IContentItemDisplayManager contentItemDisplayManager,
         IEnumerable<IOrderEvents> orderEvents,
-        IEnumerable<IPaymentProvider> paymentProviders,
+        Lazy<IEnumerable<IPaymentProvider>> paymentProvidersLazy,
         IEnumerable<ICheckoutEvents> checkoutEvents)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
@@ -58,7 +58,7 @@ public class PaymentService : IPaymentService
         _updateModelAccessor = updateModelAccessor;
         _contentItemDisplayManager = contentItemDisplayManager;
         _orderEvents = orderEvents;
-        _paymentProviders = paymentProviders;
+        _paymentProvidersLazy = paymentProvidersLazy;
         _checkoutEvents = checkoutEvents;
         _hca = services.HttpContextAccessor.Value;
     }
@@ -121,7 +121,8 @@ public class PaymentService : IPaymentService
             CheckoutShapes = checkoutShapes,
         };
 
-        await viewModel.WithProviderDataAsync(_paymentProviders);
+        if (viewModel.SingleCurrencyTotal.Value > 0) await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value);
+
         return viewModel;
     }
 
@@ -138,7 +139,8 @@ public class PaymentService : IPaymentService
 
         if (!string.IsNullOrEmpty(paymentProviderName))
         {
-            await _paymentProviders
+            await _paymentProvidersLazy
+                .Value
                 .Where(provider => provider.Name.EqualsOrdinalIgnoreCase(paymentProviderName))
                 .AwaitEachAsync(provider => provider.FinalModificationOfOrderAsync(order, shoppingCartId));
         }

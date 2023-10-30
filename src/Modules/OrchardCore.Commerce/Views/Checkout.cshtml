@@ -18,7 +18,7 @@
 
 <section id="checkout">
     <div class="payment-form_container">
-        <form action="@actionUrl" id="payment-form" class="payment-form">
+        <form action="@actionUrl" method="post" id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
