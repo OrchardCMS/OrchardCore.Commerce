@@ -150,14 +150,16 @@ public class PaymentController : Controller
     [Route("checkout/paymentrequest/{orderId}")]
     public async Task<IActionResult> PaymentRequest(string orderId)
     {
-        if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
+        if (await _contentManager.GetAsync(orderId) is not { } order ||
+            order.As<OrderPart>() is not { } orderPart)
+        {
+            return NotFound();
+        }
 
         if (string.IsNullOrEmpty(User.Identity?.Name))
         {
             return LocalRedirect($"~/Login?ReturnUrl=~/Contents/ContentItems/{orderId}");
         }
-
-        var orderPart = order.As<OrderPart>();
 
         // If there are no line items, there is nothing to be done.
         if (!orderPart.LineItems.Any())
@@ -180,13 +182,7 @@ public class PaymentController : Controller
             return this.RedirectToContentDisplay(orderId);
         }
 
-        var viewModel = new PaymentViewModel
-        {
-            SingleCurrencyTotal = singleCurrencyTotal,
-            NetTotal = singleCurrencyTotal,
-            OrderPart = orderPart,
-        };
-
+        var viewModel = new PaymentViewModel(orderPart, singleCurrencyTotal, singleCurrencyTotal);
         await viewModel.WithProviderDataAsync(_paymentProviders);
 
         return View(viewModel);

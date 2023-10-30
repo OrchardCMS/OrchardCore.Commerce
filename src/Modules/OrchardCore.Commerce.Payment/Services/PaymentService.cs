@@ -112,13 +112,10 @@ public class PaymentService : IPaymentService
             netTotal += netPrice * line.Quantity;
         }
 
-        var viewModel = new CheckoutViewModel
+        var viewModel = new CheckoutViewModel(orderPart, total, netTotal)
         {
             ShoppingCartId = shoppingCartId,
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
-            OrderPart = orderPart,
-            SingleCurrencyTotal = total,
-            NetTotal = netTotal,
             GrossTotal = grossTotal,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,

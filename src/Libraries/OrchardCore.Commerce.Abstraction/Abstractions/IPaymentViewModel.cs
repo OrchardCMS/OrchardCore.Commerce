@@ -10,7 +10,7 @@ namespace OrchardCore.Commerce.Abstractions;
     "StyleCop.CSharp.DocumentationRules",
     "SA1600:Elements should be documented",
     Justification = "Nothing to say besides what's already on the property names.")]
-public interface IPaymentViewModel : IShape
+public interface IPaymentViewModel
 {
     Amount SingleCurrencyTotal { get; }
     Amount NetTotal { get; }

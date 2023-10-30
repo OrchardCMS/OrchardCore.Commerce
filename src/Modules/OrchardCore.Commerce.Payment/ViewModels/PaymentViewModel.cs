@@ -11,14 +11,21 @@ namespace OrchardCore.Commerce.Payment.ViewModels;
 
 public class PaymentViewModel : ShapeViewModel, IPaymentViewModel
 {
-    public Amount SingleCurrencyTotal { get; init; }
+    public Amount SingleCurrencyTotal { get; }
 
-    public Amount NetTotal { get; init; }
+    public Amount NetTotal { get; }
 
-    public OrderPart? OrderPart { get; init; }
+    public OrderPart OrderPart { get; }
 
     [BindNever]
     public IDictionary<string, object> PaymentProviderData { get; } = new Dictionary<string, object>();
+
+    public PaymentViewModel(OrderPart orderPart, Amount singleCurrencyTotal, Amount netTotal)
+    {
+        OrderPart = orderPart;
+        SingleCurrencyTotal = singleCurrencyTotal;
+        NetTotal = netTotal;
+    }
 
     public async Task WithProviderDataAsync(IEnumerable<IPaymentProvider> paymentProviders)
     {
