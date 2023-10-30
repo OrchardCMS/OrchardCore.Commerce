@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Events;
 
 public class PromotionOrderEvents : IOrderEvents
 {
-    public Task CreatedFreeAsnyc(OrderPart orderPart, ShoppingCart cart, ShoppingCartViewModel viewModel)
+    public Task CreatedFreeAsync(OrderPart orderPart, ShoppingCart cart, ShoppingCartViewModel viewModel)
     {
         // Store the current applicable discount info, so they will be available in the future.
         orderPart.AdditionalData.SetDiscountsByProduct(viewModel

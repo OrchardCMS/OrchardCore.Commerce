@@ -169,7 +169,7 @@ public class PaymentService : IPaymentService
             orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
 
             await _orderEvents.AwaitEachAsync(orderEvents =>
-                orderEvents.CreatedFreeAsnyc(orderPart, cart, cartViewModel));
+                orderEvents.CreatedFreeAsync(orderPart, cart, cartViewModel));
         });
 
         await _contentManager.CreateAsync(order);
