@@ -49,16 +49,15 @@ public class ProductListService : IProductListService
             Query = query,
         };
 
-        if (!filterParameters.OrderBy.Any())
+        if (string.IsNullOrEmpty(filterParameters.OrderBy))
         {
-            filterParameters.OrderBy.Add(ProductListTitleFilterProvider.TitleAscOrderById);
+            filterParameters.OrderBy = ProductListTitleFilterProvider.TitleAscOrderById;
         }
 
         foreach (var provider in applicableProviders)
         {
             context.Query = await provider.BuildQueryAsync(context) ?? context.Query;
         }
-
 
         var totalItemCount = await query.CountAsync();
         var contentItems = await query.PaginateAsync(filterParameters.Pager.Page - 1, filterParameters.Pager.PageSize);

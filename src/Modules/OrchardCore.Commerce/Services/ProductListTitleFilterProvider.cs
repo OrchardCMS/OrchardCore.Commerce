@@ -1,6 +1,7 @@
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using YesSql;
@@ -31,11 +32,11 @@ public class ProductListTitleFilterProvider : IProductListFilterProvider
             query = query.With<ContentItemIndex>(index => index.DisplayText.Contains(title));
         }
 
-        if (context.FilterParameters.OrderBy.Contains(TitleAscOrderById))
+        if (context.FilterParameters.OrderBy.EqualsOrdinalIgnoreCase(TitleAscOrderById))
         {
             query = query.With<ContentItemIndex>().OrderBy(index => index.DisplayText);
         }
-        else if (context.FilterParameters.OrderBy.Contains(TitleDescOrderById))
+        else if (context.FilterParameters.OrderBy.EqualsOrdinalIgnoreCase(TitleDescOrderById))
         {
             query = query.With<ContentItemIndex>().OrderByDescending(index => index.DisplayText);
         }

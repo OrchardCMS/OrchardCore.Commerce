@@ -33,10 +33,10 @@ public class QueryStringAppliedProductListFilterParametersProvider : IAppliedPro
     public async Task<ProductListFilterParameters> GetFilterParametersAsync(ProductListPart productList)
     {
         var queryStrings = _hca.HttpContext.Request.Query;
-        var orderByValues = queryStrings
+        var orderByValue = queryStrings
             .Where(queryString => queryString.Key.StartsWith(QueryStringPrefix + "orderBy", StringComparison.InvariantCulture))
             .SelectMany(queryString => queryString.Value)
-            .ToList();
+            .FirstOrDefault();
         var filterValues = queryStrings
             .Where(queryString => queryString.Key.StartsWith(QueryStringPrefix, StringComparison.InvariantCulture))
             .ToDictionary(
@@ -49,8 +49,8 @@ public class QueryStringAppliedProductListFilterParametersProvider : IAppliedPro
         var filterParameters = new ProductListFilterParameters
         {
             Pager = new Pager(pagerParameters, (await _siteService.GetSiteSettingsAsync()).PageSize),
+            OrderBy = orderByValue,
         };
-        filterParameters.OrderBy.AddRange(orderByValues);
         filterParameters.FilterValues.AddRange(filterValues);
 
         return filterParameters;
