@@ -81,10 +81,7 @@ public class ProductListService : IProductListService
 
     public async Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productList)
     {
-        if (productList is null)
-        {
-            throw new ArgumentNullException(nameof(productList));
-        }
+        ArgumentNullException.ThrowIfNull(productList);
 
         var applicableProviders = await GetOrderedApplicableProvidersAsync(productList);
 
