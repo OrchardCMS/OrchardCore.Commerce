@@ -18,7 +18,7 @@ public class QueryStringAppliedProductListFilterParametersProvider : IAppliedPro
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISiteService _siteService;
 
-    public int Priority { get; } = 10;
+    public int Priority => 10;
 
     public QueryStringAppliedProductListFilterParametersProvider(
         IHttpContextAccessor hca,

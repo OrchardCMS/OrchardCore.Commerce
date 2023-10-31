@@ -29,10 +29,8 @@ public class ProductListService : IProductListService
 
     public async Task<ProductList> GetProductsAsync(ProductListPart productList, ProductListFilterParameters filterParameters)
     {
-        if (productList is null)
-        {
-            throw new ArgumentNullException(nameof(productList));
-        }
+        ArgumentNullException.ThrowIfNull(productList);
+        ArgumentNullException.ThrowIfNull(filterParameters);
 
         var productTypes = _contentDefinitionManager.ListTypeDefinitions()
             .Where(type => type.Parts.Any(part => part.PartDefinition.Name == nameof(ProductPart)))
@@ -50,17 +48,20 @@ public class ProductListService : IProductListService
             FilterParameters = filterParameters,
             Query = query,
         };
+
+        if (!filterParameters.OrderBy.Any())
+        {
+            filterParameters.OrderBy.Add(ProductListTitleFilterProvider.TitleAscOrderById);
+        }
+
         foreach (var provider in applicableProviders)
         {
             context.Query = await provider.BuildQueryAsync(context) ?? context.Query;
         }
 
-        var totalItemCount = await query.CountAsync();
 
-        var contentItems = await query
-            .Skip(filterParameters.Pager.GetStartIndex())
-            .Take(filterParameters.Pager.PageSize)
-            .ListAsync();
+        var totalItemCount = await query.CountAsync();
+        var contentItems = await query.PaginateAsync(filterParameters.Pager.Page - 1, filterParameters.Pager.PageSize);
 
         return new ProductList
         {
@@ -71,20 +72,12 @@ public class ProductListService : IProductListService
 
     public async Task<IEnumerable<string>> GetOrderByOptionsAsync(ProductListPart productList)
     {
-        if (productList is null)
-        {
-            throw new ArgumentNullException(nameof(productList));
-        }
+        ArgumentNullException.ThrowIfNull(productList);
 
         var applicableProviders = await GetOrderedApplicableProvidersAsync(productList);
 
-        var orderByOptions = new List<string>();
-        foreach (var provider in applicableProviders)
-        {
-            orderByOptions.AddRange(await provider.GetOrderByOptionIdsAsync(productList));
-        }
-
-        return orderByOptions;
+        return (await applicableProviders.AwaitEachAsync(provider => provider.GetOrderByOptionIdsAsync(productList)))
+            .SelectMany(options => options);
     }
 
     public async Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productList)
@@ -96,18 +89,13 @@ public class ProductListService : IProductListService
 
         var applicableProviders = await GetOrderedApplicableProvidersAsync(productList);
 
-        var filterIds = new List<string>();
-        foreach (var provider in applicableProviders)
-        {
-            filterIds.AddRange(await provider.GetFilterIdsAsync(productList));
-        }
-
-        return filterIds;
+        return (await applicableProviders.AwaitEachAsync(provider => provider.GetFilterIdsAsync(productList)))
+            .SelectMany(options => options);
     }
 
     private async Task<IList<IProductListFilterProvider>> GetOrderedApplicableProvidersAsync(ProductListPart productList) =>
         (await _productListQueryProviders
-            .WhereAsync(async provider => await provider.CanHandleAsync(productList)))
+            .WhereAsync(async provider => await provider.IsApplicableAsync(productList)))
         .OrderBy(provider => provider.Order)
         .ToList();
 }

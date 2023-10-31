@@ -20,7 +20,7 @@ public interface IProductListFilterProvider
     /// Whether this provider can handle the given product list. If not, the next provider will be tried and this
     /// provider will be skipped.
     /// </summary>
-    Task<bool> CanHandleAsync(ProductListPart productList);
+    Task<bool> IsApplicableAsync(ProductListPart productList);
 
     /// <summary>
     /// The IDs of the order by options that this provider can handle.

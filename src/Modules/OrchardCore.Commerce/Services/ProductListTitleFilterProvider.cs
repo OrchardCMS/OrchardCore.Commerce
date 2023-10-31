@@ -10,12 +10,12 @@ namespace OrchardCore.Commerce.Services;
 public class ProductListTitleFilterProvider : IProductListFilterProvider
 {
     public const string TitleFilterId = "title";
-    public const string TitleAscOrderById = "TitleAsc";
-    public const string TitleDescOrderById = "TitleDesc";
+    public const string TitleAscOrderById = "titleAsc";
+    public const string TitleDescOrderById = "titleDesc";
 
-    public int Order { get; } = 10;
+    public int Order => 10;
 
-    public Task<bool> CanHandleAsync(ProductListPart productList) => Task.FromResult(true);
+    public Task<bool> IsApplicableAsync(ProductListPart productList) => Task.FromResult(true);
 
     public Task<IEnumerable<string>> GetOrderByOptionIdsAsync(ProductListPart productList) =>
         Task.FromResult<IEnumerable<string>>(new[] { TitleAscOrderById, TitleDescOrderById });

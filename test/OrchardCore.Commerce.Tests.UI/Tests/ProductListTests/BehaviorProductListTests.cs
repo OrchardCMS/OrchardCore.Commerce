@@ -73,6 +73,6 @@ public class BehaviorProductListTests : UITestBase
     private static IList<string> GetProductTitles(UITestContext context) =>
         context
             .GetAll(By.CssSelector(".content header h2 a"))
-            .Select(e => e.Text)
+            .Select(element => element.Text)
             .ToList();
 }
