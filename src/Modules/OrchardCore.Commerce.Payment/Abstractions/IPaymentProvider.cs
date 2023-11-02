@@ -13,12 +13,12 @@ public interface IPaymentProvider
 {
     /// <summary>
     /// Gets the name used to identify additional payment provider data in the <see cref="ICheckoutViewModel"/> and as a
-    /// suffix to the <c>Checkout-{Name}</c> shape used to display the payment UI during checkout or in the order view.
+    /// suffix to the <c>Checkout{Name}</c> shape used to display the payment UI during checkout or in the order view.
     /// </summary>
     string Name { get; }
 
     /// <summary>
-    /// Creates the additional data specific to the payment provider that's passed to the <c>Checkout-{Name}</c> shape.
+    /// Creates the additional data specific to the payment provider that's passed to the <c>Checkout{Name}</c> shape.
     /// </summary>
     /// <returns>
     /// Arbitrary data which will be set as the value in <see cref="IPaymentViewModel.PaymentProviderData"/>. If it

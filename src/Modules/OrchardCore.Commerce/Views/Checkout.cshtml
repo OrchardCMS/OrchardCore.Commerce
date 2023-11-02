@@ -102,7 +102,7 @@
                 <div class="payment-provider-list">
                     @foreach (var (providerName, data) in Model.PaymentProviderData)
                     {
-                        var shapeName = "Checkout-" + providerName;
+                        var shapeName = "Checkout" + providerName;
                         <div class="payment-provider payment-provider-@shapeName.HtmlClassify()">
                             <shape type="@shapeName"
                                    prop-DefaultTotal="@Model.SingleCurrencyTotal"
