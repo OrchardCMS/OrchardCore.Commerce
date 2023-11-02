@@ -41,21 +41,11 @@
               }
             },
             {
-              "PartName": "ListPart",
-              "Name": "ListPart",
+              "PartName": "ProductListPart",
+              "Name": "ProductListPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"
-                },
-                "ListPartSettings": {
-                  "PageSize": 10,
-                  "ContainedContentTypes": [
-                    "LocalizedProduct",
-                    "PriceVariantsProduct",
-                    "Product",
-                    "TieredPriceProduct"
-                  ],
-                  "EnableOrdering": true
                 }
               }
             },
@@ -92,11 +82,7 @@
           "Owner": null,
           "Author": "admin",
           "ProductList": {},
-          "ListPart": {
-            "DisableRssFeed": false,
-            "FeedProxyUrl": null,
-            "FeedItemsCount": 20
-          },
+          "ProductListPart": {},
           "AutoroutePart": {
             "Path": "my-shop",
             "SetHomepage": true,
@@ -180,11 +166,6 @@
                 ""
               ]
             }
-          },
-          "ContainedPart": {
-            "ListContentItemId": "mainproductlist00000000000",
-            "ListContentType": "ProductList",
-            "Order": 0
           }
         },
         {
@@ -253,12 +234,7 @@
             },
             "ProductSku": "TESTPRODUCT"
           },
-          "Product": {},
-          "ContainedPart": {
-            "ListContentItemId": "mainproductlist00000000000",
-            "ListContentType": "ProductList",
-            "Order": 0
-          }
+          "Product": {}
         },
         {
           "ContentItemId": "testfreeproduct000",
@@ -326,12 +302,7 @@
             },
             "ProductSku": "TESTFREEPRODUCT"
           },
-          "Product": {},
-          "ContainedPart": {
-            "ListContentItemId": "mainproductlist00000000000",
-            "ListContentType": "ProductList",
-            "Order": 0
-          }
+          "Product": {}
         },
         {
           "ContentItemId": "testdiscountedproduct000",
@@ -422,12 +393,7 @@
               "Value": null
             }
           },
-          "Product": {},
-          "ContainedPart": {
-            "ListContentItemId": "mainproductlist00000000000",
-            "ListContentType": "ProductList",
-            "Order": 0
-          }
+          "Product": {}
         },
         {
           "ContentItemId": "testproductlocalized000000",
@@ -468,11 +434,6 @@
           "LocalizationPart": {
             "LocalizationSet": "testproductlocalizationset",
             "Culture": "en-US"
-          },
-          "ContainedPart": {
-            "ListContentItemId": "mainproductlist00000000000",
-            "ListContentType": "ProductList",
-            "Order": 0
           }
         },
         {
@@ -506,11 +467,6 @@
           },
           "TitlePart": {
             "Title": "Test Tiered Price Product"
-          },
-          "ContainedPart": {
-            "ListContentItemId": "mainproductlist00000000000",
-            "ListContentType": "ProductList",
-            "Order": 1
           },
           "ProductPart": {
             "Sku": "TESTTIEREDPRICE",

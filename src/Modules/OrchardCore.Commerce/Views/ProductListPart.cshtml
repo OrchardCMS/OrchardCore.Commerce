@@ -1,0 +1,26 @@
+@using Lombiq.HelpfulLibraries.OrchardCore.Contents
+@model ProductListPartViewModel
+
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@if (Model.Products.Any())
+{
+    <ul class="list-group">
+        @foreach (var contentItem in Model.Products)
+        {
+            var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, CommonContentDisplayTypes.Summary, Model.Context.GroupId);
+
+            <li class="list-group-item">
+                @await DisplayAsync(contentItemSummary)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="alert alert-warning">@T["There are no products to display."]</p>
+}
+
+<!-- [html-validate-disable attribute-misuse] -->
+@await DisplayAsync(Model.Pager)
+<!-- [html-validate-enable attribute-misuse] -->

@@ -32,7 +32,7 @@ public class RetrievalProductTests : UITestBase
                     ".content-price-variants-product > .field-name-product-" +
                     "part-product-image > .name",
                     "Product Image");
-                TextShouldBe(".content-product header h2 a", "Test Product");
+                TextShouldBe(".content-product header h2 a", "Test Discounted Product");
                 TextShouldBe(
                     ".content-product > .field-name-product-" +
                     "part-product-image > .name",

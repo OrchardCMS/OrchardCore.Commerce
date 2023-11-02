@@ -1,0 +1,45 @@
+@using OrchardCore.Commerce.Services
+@model ProductListFiltersViewModel
+
+@{
+    var filterIdQueryStringKeys = Model.FilterIds.Select(id => "products." + id).ToArray();
+    var activeOrderByOption = Context.Request.Query["products.orderBy"].ToString();
+    if (string.IsNullOrEmpty(activeOrderByOption))
+    {
+        activeOrderByOption = ProductListTitleFilterProvider.TitleAscOrderById;
+    }
+}
+
+<h3>@T["Filter Products"]</h3>
+
+<form method="get" action="@Context.Request.Path">
+    @foreach (var filterId in Model.FilterIds)
+    {
+        var shapeType = "ProductList__Filter__" + filterId;
+        <shape type="@shapeType" prop-ProductListPart="@Model.ProductListPart" />
+    }
+
+    <fieldset class="products-fieldset-order-by">
+        <div class="mb-3">
+            <label for="products-order-by">@T["Sort By"]</label>
+            <select name="products.orderBy" class="form-select" id="products-order-by">
+                @foreach (var option in Model.OrderByOptions)
+                {
+                    var shapeType = "ProductList__OrderBy__" + option;
+                    var selected = option == activeOrderByOption;
+                    <shape type="@shapeType" prop-ProductListPart="@Model.ProductListPart" prop-Selected="@selected" />
+                }
+            </select>
+        </div>
+    </fieldset>
+
+    @foreach (var key in Context.Request.Query.Keys)
+    {
+        if (!key.EqualsOrdinalIgnoreCase("products.orderBy") && !filterIdQueryStringKeys.Contains(key, StringComparer.OrdinalIgnoreCase))
+        {
+            <input type="hidden" name="@key" value="@Context.Request.Query[key]"/>
+        }
+    }
+
+    <button type="submit" class="btn btn-primary mb-3" id="products-filter-apply">@T["Apply"]</button>
+</form>
