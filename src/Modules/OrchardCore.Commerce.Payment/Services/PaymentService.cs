@@ -38,6 +38,7 @@ public class PaymentService : IPaymentService
     private readonly Lazy<IEnumerable<IPaymentProvider>> _paymentProvidersLazy;
     private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
     private readonly INotifier _notifier;
+    private readonly IHtmlLocalizer H;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -66,6 +67,7 @@ public class PaymentService : IPaymentService
         _checkoutEvents = checkoutEvents;
         _notifier = notifier;
         _hca = services.HttpContextAccessor.Value;
+        H = services.HtmlLocalizer.Value;
     }
 
     public async Task<ICheckoutViewModel?> CreateCheckoutViewModelAsync(
@@ -176,6 +178,7 @@ public class PaymentService : IPaymentService
 
         if (!cartViewModel.Totals.Any() || cartViewModel.Totals.Any(total => total.Value > 0))
         {
+            await _notifier.ErrorAsync(H["Invalid attempt to check out non-free order as free."]);
             return null;
         }
 
