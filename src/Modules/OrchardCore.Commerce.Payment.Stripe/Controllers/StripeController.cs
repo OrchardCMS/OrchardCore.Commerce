@@ -48,15 +48,18 @@ public class StripeController : Controller
             return View();
         }
 
-        var fetchedPaymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntent);
-        var orderId = (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId;
+        // If we can't find a valid payment intent based on ID or if we can't find the associated order, then something
+        // went wrong and continuing from here would only cause a crash anyway.
+        if (await _stripePaymentService.GetPaymentIntentAsync(paymentIntent) is not { PaymentMethod: not null } fetchedPaymentIntent ||
+            (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId is not { } orderId ||
+            await _contentManager.GetAsync(orderId) is not { } order)
+        {
+            return NotFound();
+        }
 
-        var order = await _contentManager.GetAsync(orderId);
-        var status = order?.As<OrderPart>()?.Status?.Text;
+        var status = order.As<OrderPart>()?.Status?.Text;
         var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
-        var finished = succeeded &&
-                       order != null &&
-                       status == OrderStatuses.Ordered.HtmlClassify();
+        var finished = succeeded && status == OrderStatuses.Ordered.HtmlClassify();
 
         if (succeeded && status == OrderStatuses.Pending.HtmlClassify())
         {
