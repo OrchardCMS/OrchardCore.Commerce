@@ -54,8 +54,8 @@ public class StripePaymentProvider : IPaymentProvider
 
         return new
         {
-            StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            PaymentIntentClientSecret = paymentIntent.ClientSecret,
+            (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            paymentIntent.ClientSecret,
         };
     }
 
