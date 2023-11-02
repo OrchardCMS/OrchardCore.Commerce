@@ -3,14 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
-using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Models;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,20 +22,17 @@ public class OrderController : Controller
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
-    private readonly IEnumerable<IOrderEvents> _orderEvents;
 
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
-        IShoppingCartHelpers shoppingCartHelpers,
-        IEnumerable<IOrderEvents> orderEvents)
+        IShoppingCartHelpers shoppingCartHelpers)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
         _shoppingCartHelpers = shoppingCartHelpers;
-        _orderEvents = orderEvents;
     }
 
     [AllowAnonymous]
@@ -54,16 +48,6 @@ public class OrderController : Controller
 
         order.Alter<OrderPart>(orderPart =>
         {
-            var payment = new Models.Payment(
-                Kind: "Card",
-                ChargeText: "Test charge text",
-                TransactionId: "Test transaction ID",
-                Amount: checkoutViewModel.SingleCurrencyTotal,
-                CreatedUtc: testTime);
-
-            orderPart.Charges.Clear();
-            orderPart.Charges.Add(payment);
-
             orderPart.LineItems.AddRange(orderLineItems);
             var addressField = new AddressField
             {
@@ -84,16 +68,20 @@ public class OrderController : Controller
             orderPart.BillingAddress = addressField;
             orderPart.BillingAndShippingAddressesMatch.Value = true;
             orderPart.ShippingAddress = addressField;
-
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
 
         await _contentManager.CreateAsync(order);
 
+        await _paymentService.UpdateOrderToOrderedAsync(order, shoppingCartId, _ => new[]
+        {
+            new Models.Payment(
+                Kind: "Card",
+                ChargeText: "Test charge text",
+                TransactionId: "Test transaction ID",
+                Amount: checkoutViewModel.SingleCurrencyTotal,
+                CreatedUtc: testTime),
+        });
         await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName: null);
-
-        // Since the event trigger is tied to "UpdateOrderToOrderedAsync()" we also need to call it here.
-        await _orderEvents.AwaitEachAsync(orderEvents => orderEvents.OrderedAsync(order, shoppingCartId));
 
         return RedirectToAction(
             nameof(PaymentController.Success),
