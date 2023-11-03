@@ -26,7 +26,8 @@ namespace OrchardCore.Commerce.Services;
 
 public class StripePaymentService : IStripePaymentService
 {
-    private readonly PaymentIntentService _paymentIntentService;
+    private readonly PaymentIntentService _paymentIntentService = new();
+
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
     private readonly IRequestOptionsService _requestOptionsService;
@@ -44,7 +45,6 @@ public class StripePaymentService : IStripePaymentService
         IPaymentIntentPersistence paymentIntentPersistence,
         IPaymentService paymentService)
     {
-        _paymentIntentService = new PaymentIntentService();
         _contentManager = contentManager;
         _siteService = siteService;
         _requestOptionsService = requestOptionsService;
