@@ -15,19 +15,19 @@ public interface IPaymentService
     /// <summary>
     /// Creates and returns <see cref="ICheckoutViewModel"/>.
     /// </summary>
-    Task<ICheckoutViewModel> CreateCheckoutViewModelAsync(
+    Task<ICheckoutViewModel?> CreateCheckoutViewModelAsync(
         string shoppingCartId,
-        Action<OrderPart> updateOrderPart = null);
+        Action<OrderPart>? updateOrderPart = null);
 
     /// <summary>
     /// When the order is payed this logic should be run to set <paramref name="order"/> properties that represents its state.
     /// </summary>
-    Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId, string paymentProviderName);
+    Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId, string? paymentProviderName);
 
     /// <summary>
     /// Creates an order content item without payment in the database based on the current <see cref="ShoppingCart"/> content.
     /// </summary>
-    Task<ContentItem> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId);
+    Task<ContentItem?> CreateNoPaymentOrderFromShoppingCartAsync(string shoppingCartId);
 
     /// <summary>
     /// Updates the <paramref name="order"/>'s status to <see cref="OrderStatuses.Ordered"/>.
@@ -39,5 +39,5 @@ public interface IPaymentService
     Task UpdateOrderToOrderedAsync(
         ContentItem order,
         string shoppingCartId,
-        Func<OrderPart, IEnumerable<IPayment>> getCharges = null);
+        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null);
 }
