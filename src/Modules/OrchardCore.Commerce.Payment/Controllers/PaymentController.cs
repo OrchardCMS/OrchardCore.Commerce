@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Constants;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -134,6 +135,11 @@ public class PaymentController : Controller
 
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
             return Json(new { Errors = errors });
+        }
+        catch (FrontendException exception)
+        {
+            _logger.LogError(exception, "A front-end exception has occurred during checkout form validation.");
+            return Json(new { Errors = new[] { exception.HtmlMessage.Html() } });
         }
         catch (Exception exception)
         {
