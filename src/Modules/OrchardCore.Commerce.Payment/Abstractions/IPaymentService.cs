@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Constants;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Mvc.Core.Utilities;
 using System;
 using System.Collections.Generic;
@@ -44,7 +48,27 @@ public interface IPaymentService
         ContentItem order,
         string? shoppingCartId,
         Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null);
+
+    /// <summary>
+    /// Tries to get the order identified by <paramref name="orderId"/>, or creates a new one if it's not there. Then
+    /// updates the order's line items and address using the data in the <paramref name="updateModelAccessor"/> and the
+    /// shopping cart identified by the <paramref name="shoppingCartId"/>. Additional alterations may be done via
+    /// <paramref name="alterOrderAsync"/>, and finally the order is created or updated.
+    /// </summary>
+    /// <exception cref="FrontendException">Thrown if the order validation failed.</exception>
+    Task<(ContentItem Order, bool IsNew)> CreateOrUpdateOrderFromShoppingCartAsync(
+        IUpdateModelAccessor updateModelAccessor,
+        string? orderId,
+        string? shoppingCartId,
+        AlterOrderAsyncDelegate? alterOrderAsync = null);
 }
+
+public delegate Task AlterOrderAsyncDelegate(
+    ContentItem order,
+    bool isNew,
+    Amount total,
+    ShoppingCartViewModel? cartViewModel,
+    IList<OrderLineItem> lineItems);
 
 public static class PaymentServiceExtensions
 {

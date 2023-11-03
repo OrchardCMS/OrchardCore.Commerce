@@ -6,14 +6,11 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
-using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
@@ -29,7 +26,6 @@ namespace OrchardCore.Commerce.Services;
 
 public class StripePaymentService : IStripePaymentService
 {
-    private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly PaymentIntentService _paymentIntentService;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
@@ -37,35 +33,24 @@ public class StripePaymentService : IStripePaymentService
     private readonly IStringLocalizer T;
     private readonly ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
-    private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IPaymentService _paymentService;
-    private readonly IMoneyService _moneyService;
 
-    // We need to use that many, this cannot be avoided.
-#pragma warning disable S107 // Methods should not have too many parameters
     public StripePaymentService(
-        IShoppingCartHelpers shoppingCartHelpers,
         IContentManager contentManager,
         ISiteService siteService,
         IRequestOptionsService requestOptionsService,
         IStringLocalizer<StripePaymentService> stringLocalizer,
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IContentItemDisplayManager contentItemDisplayManager,
-        IPaymentService paymentService,
-        IMoneyService moneyService)
-#pragma warning restore S107 // Methods should not have too many parameters
+        IPaymentService paymentService)
     {
         _paymentIntentService = new PaymentIntentService();
-        _shoppingCartHelpers = shoppingCartHelpers;
         _contentManager = contentManager;
         _siteService = siteService;
         _requestOptionsService = requestOptionsService;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
-        _moneyService = moneyService;
         T = stringLocalizer;
-        _contentItemDisplayManager = contentItemDisplayManager;
         _paymentService = paymentService;
     }
 
@@ -110,18 +95,18 @@ public class StripePaymentService : IStripePaymentService
             shoppingCartId: null,
             CreateChargesProvider(paymentIntent));
 
-    public async Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
+    public Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
         Controller controller,
         ContentItem order,
         PaymentIntent paymentIntent) =>
-        await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
+        _paymentService.UpdateAndRedirectToFinishedOrderAsync(
             controller,
             order,
             shoppingCartId: null,
             StripePaymentProvider.ProviderName,
             CreateChargesProvider(paymentIntent));
 
-    private Func<OrderPart, IEnumerable<IPayment>?> CreateChargesProvider(PaymentIntent paymentIntent) =>
+    private static Func<OrderPart, IEnumerable<IPayment>> CreateChargesProvider(PaymentIntent paymentIntent) =>
         orderPart =>
         {
             // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -150,66 +135,45 @@ public class StripePaymentService : IStripePaymentService
         var paymentIntent = await GetPaymentIntentAsync(_paymentIntentPersistence.Retrieve());
 
         // Stripe doesn't support multiple shopping cart IDs because we can't send that info to the middleware anyway.
-        var currentShoppingCart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId: null);
-        var orderId = (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId;
-
-        if (!string.IsNullOrEmpty(orderId) && await _contentManager.GetAsync(orderId) is { } order)
-        {
-            // If there are line items in the Order, use data from Order instead of shopping cart.
-            if (!order.As<OrderPart>().LineItems.Any() &&
-                currentShoppingCart.Items.Any() &&
-                await UpdateOrderWithDriversAsync(order, updateModelAccessor))
+        var (order, isNew) = await _paymentService.CreateOrUpdateOrderFromShoppingCartAsync(
+            updateModelAccessor,
+            (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId,
+            shoppingCartId: null,
+            (order, _, total, cartViewModel, lineItems) =>
             {
-                return null;
-            }
-        }
-        else
-        {
-            order = await _contentManager.NewAsync("Order");
-            if (await UpdateOrderWithDriversAsync(order, updateModelAccessor))
-            {
-                return null;
-            }
+                order.Alter<OrderPart>(orderPart =>
+                {
+                    orderPart.Charges.Clear();
+                    orderPart.Charges.Add(paymentIntent.CreatePayment(total));
 
+                    if (cartViewModel is null) return;
+
+                    // Shopping cart
+                    orderPart.LineItems.SetItems(lineItems);
+                    orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+
+                    // Store the current applicable discount info so they will be available in the future.
+                    orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
+                        .Lines
+                        .Where(line => line.AdditionalData.GetDiscounts().Any())
+                        .ToDictionary(
+                            line => line.ProductSku,
+                            line => line.AdditionalData.GetDiscounts()));
+                });
+
+                order.Alter<StripePaymentPart>(part =>
+                    part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
+
+                return Task.CompletedTask;
+            });
+
+        if (isNew)
+        {
             _session.Save(new OrderPayment
             {
                 OrderId = order.ContentItemId,
                 PaymentIntentId = paymentIntent.Id,
             });
-        }
-
-        var orderPart = order.As<OrderPart>();
-
-        var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(currentShoppingCart);
-        if (!lineItems.Any())
-        {
-            lineItems = orderPart.LineItems;
-        }
-
-        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-            shoppingCartId: null,
-            orderPart.ShippingAddress.Address,
-            orderPart.BillingAddress.Address);
-
-        var currency = orderPart.LineItems.Any() ? orderPart.LineItems[0].LinePrice.Currency : _moneyService.DefaultCurrency;
-        var orderTotals = new Amount(0, currency);
-
-        if (cartViewModel is null)
-        {
-            orderTotals = orderPart.LineItems.Select(item => item.LinePrice).Sum();
-        }
-
-        // If there is no cart, use current Order's data.
-        var defaultTotal = cartViewModel is null ? orderTotals : cartViewModel.GetTotalsOrThrowIfEmpty().SingleOrDefault();
-        AlterOrder(order, paymentIntent, defaultTotal, cartViewModel, lineItems);
-
-        if (string.IsNullOrEmpty(orderId))
-        {
-            await _contentManager.CreateAsync(order);
-        }
-        else
-        {
-            await _contentManager.UpdateAsync(order);
         }
 
         return order;
@@ -225,13 +189,6 @@ public class StripePaymentService : IStripePaymentService
         return CurrencyCollectionConstants.SpecialCases.Contains(total.Currency.CurrencyIsoCode)
             ? (long)Math.Round(total.Value / 100m) * 10000
             : (long)Math.Round(total.Value * 100);
-    }
-
-    private async Task<bool> UpdateOrderWithDriversAsync(ContentItem order, IUpdateModelAccessor updateModelAccessor)
-    {
-        await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
-
-        return updateModelAccessor.ModelUpdater.GetModelErrorMessages().Any();
     }
 
     public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total)
@@ -252,36 +209,6 @@ public class StripePaymentService : IStripePaymentService
         _paymentIntentPersistence.Store(paymentIntent.Id);
 
         return paymentIntent;
-    }
-
-    private static void AlterOrder(
-        ContentItem order,
-        PaymentIntent paymentIntent,
-        Amount defaultTotal,
-        ShoppingCartViewModel cartViewModel,
-        IEnumerable<OrderLineItem> lineItems)
-    {
-        order.Alter<OrderPart>(orderPart =>
-        {
-            orderPart.Charges.Clear();
-            orderPart.Charges.Add(paymentIntent.CreatePayment(defaultTotal));
-
-            if (cartViewModel is null) return;
-
-            // Shopping cart
-            orderPart.LineItems.SetItems(lineItems);
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
-
-            // Store the current applicable discount info so they will be available in the future.
-            orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
-                .Lines
-                .Where(line => line.AdditionalData.GetDiscounts().Any())
-                .ToDictionary(
-                    line => line.ProductSku,
-                    line => line.AdditionalData.GetDiscounts()));
-        });
-
-        order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
     }
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
@@ -313,16 +240,6 @@ public class StripePaymentService : IStripePaymentService
             paymentIntentId,
             updateOptions,
             await _requestOptionsService.SetIdempotencyKeyAsync());
-    }
-
-    private static IList<Amount> CheckTotals(ShoppingCartViewModel viewModel)
-    {
-        if (!viewModel.Totals.Any())
-        {
-            throw new InvalidOperationException("Cannot create a payment without shopping cart total(s)!");
-        }
-
-        return viewModel.Totals;
     }
 
     private async Task<ContentItem> GetOrderByPaymentIntentIdAsync(string paymentIntentId)

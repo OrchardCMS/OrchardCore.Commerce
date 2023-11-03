@@ -1,12 +1,15 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
+using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.ViewModels;
@@ -221,5 +224,57 @@ public class PaymentService : IPaymentService
 
         await _orderEvents.AwaitEachAsync(orderEvent => orderEvent.OrderedAsync(order, shoppingCartId));
         await _contentManager.UpdateAsync(order);
+    }
+
+    public async Task<(ContentItem Order, bool IsNew)> CreateOrUpdateOrderFromShoppingCartAsync(
+        IUpdateModelAccessor updateModelAccessor,
+        string? orderId,
+        string? shoppingCartId,
+        AlterOrderAsyncDelegate? alterOrderAsync = null)
+    {
+        var order = await _contentManager.GetAsync(orderId) ?? await _contentManager.NewAsync("Order");
+        var isNew = order.IsNew();
+        var part = order.As<OrderPart>();
+
+        var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
+        if (cart.Items.Any() && !order.As<OrderPart>().LineItems.Any())
+        {
+            await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
+
+            var errors = updateModelAccessor.ModelUpdater.GetModelErrorMessages().AsList();
+            if (errors.Any())
+            {
+                throw new FrontendException(new HtmlString("<br>").Join(
+                    errors.Select(error => H["{0}", error]).ToArray()));
+            }
+        }
+
+        // If there are line items in the Order, use data from Order instead of shopping cart.
+        var lineItems = part.LineItems.Any()
+            ? part.LineItems
+            : await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
+
+        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+            shoppingCartId,
+            part.ShippingAddress.Address,
+            part.BillingAddress.Address);
+
+        // If there is no cart, use current Order's data.
+        var total = cartViewModel is null
+            ? part.LineItems.Select(item => item.LinePrice).Sum()
+            : cartViewModel.GetTotalsOrThrowIfEmpty().SingleOrDefault();
+
+        if (alterOrderAsync is not null) await alterOrderAsync(order, isNew, total, cartViewModel, lineItems);
+
+        if (isNew)
+        {
+            await _contentManager.CreateAsync(order);
+        }
+        else
+        {
+            await _contentManager.UpdateAsync(order);
+        }
+
+        return (order, isNew);
     }
 }
