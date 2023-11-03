@@ -222,17 +222,10 @@ public class StripePaymentService : IStripePaymentService
             return paymentIntent;
         }
 
-        return await UpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
-    }
-
-    private async Task<PaymentIntent> UpdatePaymentIntentAsync(
-        string paymentIntentId,
-        Amount total)
-    {
         var updateOptions = new PaymentIntentUpdateOptions
         {
-            Amount = GetPaymentAmount(total),
-            Currency = total.Currency.CurrencyIsoCode,
+            Amount = GetPaymentAmount(defaultTotal),
+            Currency = defaultTotal.Currency.CurrencyIsoCode,
         };
 
         updateOptions.AddExpansions();
