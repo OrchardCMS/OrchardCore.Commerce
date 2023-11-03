@@ -81,7 +81,7 @@ public class StripePaymentService : IStripePaymentService
         }
 
         var paymentIntentId = _paymentIntentPersistence.Retrieve();
-        var totals = CheckTotals(cart);
+        var totals = cart.GetTotalsOrThrowIfEmpty();
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
         // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
@@ -200,7 +200,7 @@ public class StripePaymentService : IStripePaymentService
         }
 
         // If there is no cart, use current Order's data.
-        var defaultTotal = cartViewModel is null ? orderTotals : CheckTotals(cartViewModel).SingleOrDefault();
+        var defaultTotal = cartViewModel is null ? orderTotals : cartViewModel.GetTotalsOrThrowIfEmpty().SingleOrDefault();
         AlterOrder(order, paymentIntent, defaultTotal, cartViewModel, lineItems);
 
         if (string.IsNullOrEmpty(orderId))
