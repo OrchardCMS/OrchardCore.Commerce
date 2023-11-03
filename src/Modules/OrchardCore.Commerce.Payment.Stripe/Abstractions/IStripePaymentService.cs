@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -50,4 +51,13 @@ public interface IStripePaymentService
     /// Return the saved <see cref="OrderPayment"/> for the given <paramref name="paymentIntentId"/>.
     /// </summary>
     Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId);
+
+    /// <summary>
+    /// A shortcut method for updating the <paramref name="order"/> status to <see cref="OrderStatuses.Ordered"/>, doing
+    /// final modifications and then redirecting to the success page.
+    /// </summary>
+    Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
+        Controller controller,
+        ContentItem order,
+        PaymentIntent paymentIntent);
 }

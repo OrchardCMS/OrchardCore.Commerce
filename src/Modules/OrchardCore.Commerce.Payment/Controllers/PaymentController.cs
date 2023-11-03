@@ -209,16 +209,8 @@ public class PaymentController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
-    public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId)
-    {
-        if (await _paymentService.CreateNoPaymentOrderFromShoppingCartAsync(shoppingCartId) is not { } order)
-        {
-            return NotFound();
-        }
-
-        await _paymentService.UpdateOrderToOrderedAsync(order, shoppingCartId);
-        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName: null);
-
-        return RedirectToAction(nameof(Success), new { orderId = order.ContentItem.ContentItemId });
-    }
+    public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId) =>
+        await _paymentService.CreateNoPaymentOrderFromShoppingCartAsync(shoppingCartId) is { } order
+            ? await _paymentService.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId)
+            : NotFound();
 }

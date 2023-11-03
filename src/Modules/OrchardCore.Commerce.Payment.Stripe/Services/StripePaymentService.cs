@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
@@ -7,6 +8,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
@@ -106,14 +108,28 @@ public class StripePaymentService : IStripePaymentService
         await _paymentService.UpdateOrderToOrderedAsync(
             await GetOrderByPaymentIntentIdAsync(paymentIntent.Id),
             shoppingCartId: null,
-            orderPart =>
-            {
-                // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
-                // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
-                var amount = orderPart.Charges.Single().Amount;
+            CreateChargesProvider(paymentIntent));
 
-                return new[] { CreatePayment(paymentIntent, amount) };
-            });
+    public async Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
+        Controller controller,
+        ContentItem order,
+        PaymentIntent paymentIntent) =>
+        await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
+            controller,
+            order,
+            shoppingCartId: null,
+            StripePaymentProvider.ProviderName,
+            CreateChargesProvider(paymentIntent));
+
+    private Func<OrderPart, IEnumerable<IPayment>?> CreateChargesProvider(PaymentIntent paymentIntent) =>
+        orderPart =>
+        {
+            // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
+            // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
+            var amount = orderPart.Charges.Single().Amount;
+
+            return new[] { paymentIntent.CreatePayment(amount) };
+        };
 
     public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
     {
@@ -248,7 +264,7 @@ public class StripePaymentService : IStripePaymentService
         order.Alter<OrderPart>(orderPart =>
         {
             orderPart.Charges.Clear();
-            orderPart.Charges.Add(CreatePayment(paymentIntent, defaultTotal));
+            orderPart.Charges.Add(paymentIntent.CreatePayment(defaultTotal));
 
             if (cartViewModel is null) return;
 
@@ -267,14 +283,6 @@ public class StripePaymentService : IStripePaymentService
 
         order.Alter<StripePaymentPart>(part => part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
     }
-
-    private static IPayment CreatePayment(PaymentIntent paymentIntent, Amount amount) =>
-        new Models.Payment(
-            Kind: paymentIntent.PaymentMethod.GetFormattedPaymentType(),
-            ChargeText: paymentIntent.Description,
-            TransactionId: paymentIntent.Id,
-            Amount: amount,
-            CreatedUtc: paymentIntent.Created);
 
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
         string paymentIntentId,

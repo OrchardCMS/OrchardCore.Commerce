@@ -1,4 +1,6 @@
-﻿using Stripe;
+﻿using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.MoneyDataType;
+using Stripe;
 
 namespace OrchardCore.Commerce.Extensions;
 
@@ -41,4 +43,12 @@ public static class PaymentExtensions
             "wechat_pay" => "WeChat Pay",
             _ => paymentMethod.Type,
         };
+
+    public static IPayment CreatePayment(this PaymentIntent paymentIntent, Amount amount) =>
+        new Models.Payment(
+            Kind: paymentIntent.PaymentMethod.GetFormattedPaymentType(),
+            ChargeText: paymentIntent.Description,
+            TransactionId: paymentIntent.Id,
+            Amount: amount,
+            CreatedUtc: paymentIntent.Created);
 }

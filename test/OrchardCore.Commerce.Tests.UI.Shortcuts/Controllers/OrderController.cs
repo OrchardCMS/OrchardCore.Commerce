@@ -72,20 +72,18 @@ public class OrderController : Controller
 
         await _contentManager.CreateAsync(order);
 
-        await _paymentService.UpdateOrderToOrderedAsync(order, shoppingCartId, _ => new[]
-        {
-            new Models.Payment(
-                Kind: "Card",
-                ChargeText: "Test charge text",
-                TransactionId: "Test transaction ID",
-                Amount: checkoutViewModel.SingleCurrencyTotal,
-                CreatedUtc: testTime),
-        });
-        await _paymentService.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName: null);
-
-        return RedirectToAction(
-            nameof(PaymentController.Success),
-            typeof(PaymentController).ControllerName(),
-            new { area = "OrchardCore.Commerce.Payment", orderId = order.ContentItemId, });
+        return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
+            this,
+            order,
+            shoppingCartId,
+            getCharges: _ => new[]
+            {
+                new Models.Payment(
+                    Kind: "Card",
+                    ChargeText: "Test charge text",
+                    TransactionId: "Test transaction ID",
+                    Amount: checkoutViewModel.SingleCurrencyTotal,
+                    CreatedUtc: testTime),
+            });
     }
 }

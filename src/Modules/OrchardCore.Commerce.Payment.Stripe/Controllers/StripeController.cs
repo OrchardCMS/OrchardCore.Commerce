@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
@@ -18,22 +20,23 @@ public class StripeController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly INotifier _notifier;
+    private readonly IOrchardHelper _orchardHelper;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
-    private readonly IPaymentService _paymentService;
     private readonly IStripePaymentService _stripePaymentService;
     private readonly IHtmlLocalizer<StripeController> H;
+
     public StripeController(
         IContentManager contentManager,
         INotifier notifier,
+        IOrchardHelper orchardHelper,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IPaymentService paymentService,
         IStripePaymentService stripePaymentService,
         IHtmlLocalizer<StripeController> htmlLocalizer)
     {
         _contentManager = contentManager;
         _notifier = notifier;
+        _orchardHelper = orchardHelper;
         _paymentIntentPersistence = paymentIntentPersistence;
-        _paymentService = paymentService;
         _stripePaymentService = stripePaymentService;
         H = htmlLocalizer;
     }
@@ -59,31 +62,24 @@ public class StripeController : Controller
 
         var status = order.As<OrderPart>()?.Status?.Text;
         var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
-        var finished = succeeded && status == OrderStatuses.Ordered.HtmlClassify();
+
+        // Looks like there is nothing to do here.
+        if (succeeded && status == OrderStatuses.Ordered.HtmlClassify())
+        {
+            return Redirect(_orchardHelper.GetItemDisplayUrl(orderId));
+        }
 
         if (succeeded && status == OrderStatuses.Pending.HtmlClassify())
         {
-            await _stripePaymentService.UpdateOrderToOrderedAsync(fetchedPaymentIntent);
-            finished = true;
-        }
-
-        if (finished)
-        {
-            await _paymentService.FinalModificationOfOrderAsync(
+            return await _stripePaymentService.UpdateAndRedirectToFinishedOrderAsync(
+                this,
                 order,
-                shoppingCartId: null,
-                StripePaymentProvider.ProviderName);
-            return RedirectToAction(
-                nameof(PaymentController.Success),
-                typeof(PaymentController).ControllerName(),
-                new { area = OrchardCore.Commerce.Payment.Constants.FeatureIds.Area, orderId });
+                fetchedPaymentIntent);
         }
 
-        var errorMessage = H["The payment failed, please try again."];
         if (status == OrderStatuses.PaymentFailed.HtmlClassify())
         {
-            await _notifier.ErrorAsync(errorMessage);
-            return Redirect("~/checkout");
+            return await PaymentFailedAsync();
         }
 
         order.Alter<StripePaymentPart>(part => part.RetryCounter++);
@@ -96,7 +92,12 @@ public class StripeController : Controller
 
         // Delete payment intent from session, to create a new one.
         _paymentIntentPersistence.Store(string.Empty);
-        await _notifier.ErrorAsync(errorMessage);
+        return await PaymentFailedAsync();
+    }
+
+    private async Task<IActionResult> PaymentFailedAsync()
+    {
+        await _notifier.ErrorAsync(H["The payment failed, please try again."]);
         return Redirect("~/checkout");
     }
 }
