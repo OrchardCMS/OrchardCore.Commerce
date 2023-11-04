@@ -1,7 +1,12 @@
-﻿using OrchardCore.Commerce.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Abstractions;
@@ -35,4 +40,10 @@ public interface IPaymentProvider
     /// Invoked at the end of <see cref="IPaymentService.FinalModificationOfOrderAsync"/>.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId) => Task.CompletedTask;
+}
+
+public static class PaymentProviderExtensions
+{
+    public static IEnumerable<IPaymentProvider> WhereName(this IEnumerable<IPaymentProvider> providers, string name) =>
+        providers.Where(provider => provider.Name.EqualsOrdinalIgnoreCase(name));
 }

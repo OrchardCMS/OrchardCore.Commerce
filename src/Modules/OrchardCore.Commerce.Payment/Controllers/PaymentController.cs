@@ -21,6 +21,7 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -130,7 +131,7 @@ public class PaymentController : Controller
         try
         {
             await _paymentProviders
-                .Where(provider => provider.Name.EqualsOrdinalIgnoreCase(providerName))
+                .WhereName(providerName)
                 .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor));
 
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();

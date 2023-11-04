@@ -148,7 +148,7 @@ public class PaymentService : IPaymentService
         {
             await _paymentProvidersLazy
                 .Value
-                .Where(provider => provider.Name.EqualsOrdinalIgnoreCase(paymentProviderName))
+                .WhereName(paymentProviderName)
                 .AwaitEachAsync(provider => provider.FinalModificationOfOrderAsync(order, shoppingCartId));
         }
     }
