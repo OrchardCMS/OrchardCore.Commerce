@@ -92,10 +92,7 @@ public class PaymentService : IPaymentService
 
         updateOrderPart?.Invoke(orderPart);
 
-        var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-            shoppingCartId,
-            orderPart.ShippingAddress.Address,
-            orderPart.BillingAddress.Address);
+        var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, orderPart);
         if (cart?.Totals.Single() is not { } total) return null;
 
         var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
@@ -174,10 +171,7 @@ public class PaymentService : IPaymentService
 
         var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
 
-        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-            shoppingCartId,
-            order.As<OrderPart>().ShippingAddress.Address,
-            order.As<OrderPart>().BillingAddress.Address);
+        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
 
         if (!cartViewModel.Totals.Any() || cartViewModel.Totals.Any(total => total.Value > 0))
         {
@@ -254,10 +248,7 @@ public class PaymentService : IPaymentService
             ? part.LineItems
             : await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
 
-        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(
-            shoppingCartId,
-            part.ShippingAddress.Address,
-            part.BillingAddress.Address);
+        var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, part);
 
         // If there is no cart, use current Order's data.
         var total = cartViewModel is null

@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using System;
 using System.Collections.Generic;
@@ -74,4 +75,20 @@ public interface IShoppingCartHelpers
     /// Returns a <see cref="OrderLineItem"/> list from the given <paramref name="shoppingCart"/> items.
     /// </summary>
     Task<IList<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart);
+}
+
+public static class ShoppingCartHelpersExtensions
+{
+    public static Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(
+        this IShoppingCartHelpers service,
+        string shoppingCartId,
+        IContent order)
+    {
+        var orderPart = order as OrderPart ?? order.As<OrderPart>();
+
+        return service.CreateShoppingCartViewModelAsync(
+            shoppingCartId,
+            orderPart.ShippingAddress.Address,
+            orderPart.BillingAddress.Address);
+    }
 }
