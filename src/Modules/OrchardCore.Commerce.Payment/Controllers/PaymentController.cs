@@ -138,7 +138,6 @@ public class PaymentController : Controller
         }
         catch (FrontendException exception)
         {
-            _logger.LogError(exception, "A front-end exception has occurred during checkout form validation.");
             return Json(new { Errors = new[] { exception.HtmlMessage.Html() } });
         }
         catch (Exception exception)

@@ -33,6 +33,12 @@ public class StripeController : Controller
         H = htmlLocalizer;
     }
 
+    public IActionResult UpdatePaymentIntent(string paymentIntent)
+    {
+        _paymentIntentPersistence.Store(paymentIntent);
+        return Ok();
+    }
+
     [AllowAnonymous]
     [HttpGet("checkout/middleware/Stripe")]
     public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)

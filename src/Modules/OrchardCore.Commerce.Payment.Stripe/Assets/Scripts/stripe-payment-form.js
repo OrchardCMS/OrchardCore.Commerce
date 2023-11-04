@@ -5,7 +5,8 @@ window.stripePaymentForm = function stripePaymentForm(
     antiForgeryToken,
     urlPrefix,
     errorText,
-    missingText) {
+    missingText,
+    updatePaymentIntentUrl) {
     const phone = document.getElementById('OrderPart_Phone_Text');
     const email = document.getElementById('OrderPart_Email_Text');
 
@@ -96,6 +97,9 @@ window.stripePaymentForm = function stripePaymentForm(
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
             toggleInputs(false);
+
+            const paymentIntent = (await stripe.retrievePaymentIntent(clientSecret)).paymentIntent.id;
+            await fetch(updatePaymentIntentUrl.replace('PAYMENT_INTENT', paymentIntent));
 
             let result;
             try {

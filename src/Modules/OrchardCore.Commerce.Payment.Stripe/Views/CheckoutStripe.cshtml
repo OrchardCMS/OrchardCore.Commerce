@@ -1,5 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore
 @using OrchardCore.Commerce.MoneyDataType
+@using OrchardCore.Commerce.Payment.Stripe.Controllers
 @using OrchardCore.Mvc.Core.Utilities
 
 @{
@@ -49,6 +51,7 @@
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
             @T["There was an error during confirming the payment, please try again."].Json(),
-            @T["A value is required for %LABEL%."].Json());
+            @T["A value is required for %LABEL%."].Json(),
+            @(Orchard.Action<StripeController>(controller => controller.UpdatePaymentIntent("PAYMENT_INTENT")).JsonHtmlContent()));
     </script>
 }
