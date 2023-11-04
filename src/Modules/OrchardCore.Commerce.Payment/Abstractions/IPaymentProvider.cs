@@ -24,7 +24,7 @@ public interface IPaymentProvider
     /// Arbitrary data which will be set as the value in <see cref="IPaymentViewModel.PaymentProviderData"/>. If it
     /// returns <see langword="null"/> then the shape won't be displayed.
     /// </returns>
-    Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model);
+    Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model);
 
     /// <summary>
     /// Validates the data POSTed to the <see cref="PaymentController.Validate"/> action.
