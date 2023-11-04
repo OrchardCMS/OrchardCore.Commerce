@@ -1,0 +1,44 @@
+﻿@model OrchardCore.DisplayManagement.IShape
+
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Commerce.MoneyDataType
+@using OrchardCore.DisplayManagement
+
+@{
+    IHtmlContent buttonLabel = Model.GetProperty("Title") is { } title ? T["Pay with {0}", title] : T["Pay"];
+
+    if (Model.GetProperty<IHtmlContent>("Text") is { } textHtml)
+    {
+        buttonLabel = textHtml;
+    }
+    else if (Model.GetProperty("Text")?.ToString() is { } textString)
+    {
+        buttonLabel = T["{0}", textString];
+    }
+    else if (Model.GetProperty("Total") is Amount total &&
+             total.Currency.CurrencyIsoCode != Currency.UnspecifiedCurrency.CurrencyIsoCode)
+    {
+        // We use HtmlString to exclude this from the localization string. This way translators don't have to worry
+        // about ruining functional HTML by accident.
+        var totalHtml = new HtmlString(
+            "<span class=\"pay-button-value\" " +
+            $"data-value=\"{total.Value}\" " +
+            $"data-currency=\"{total.Currency.CurrencyIsoCode}\">" +
+            $"{HtmlEncoder.Encode(total.ToString())}</span>");
+
+        buttonLabel = T["Pay {0}", totalHtml];
+    }
+
+}
+
+<div class="pay-button-container">
+    <button type="submit" class="pay-button btn btn-success justify-content-center">
+        <span class="pay-text">
+            @buttonLabel
+        </span>
+        <span class="payment-processing-container" hidden>
+            <span class="spinner-border spinner-border-sm" role="status"></span>
+            <span>@T["Processing payment..."]</span>
+        </span>
+    </button>
+</div>

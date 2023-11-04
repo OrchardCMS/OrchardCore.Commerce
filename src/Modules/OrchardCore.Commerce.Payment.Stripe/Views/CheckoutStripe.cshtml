@@ -1,7 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Commerce.MoneyDataType
 @using OrchardCore.Mvc.Core.Utilities
-@using Microsoft.AspNetCore.Html
 
 @{
     if (Model.DefaultTotal is not Amount defaultTotal)
@@ -11,14 +10,6 @@
 
     string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
     string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
-
-    // We use HtmlString to exclude this from the localization string. This way translators don't have to worry about
-    // ruining functional HTML by accident.
-    var totalHtml = new HtmlString(
-        "<span class=\"pay-button-value\" " +
-        $"data-value=\"{defaultTotal.Value}\" " +
-        $"data-currency=\"{defaultTotal.Currency.CurrencyIsoCode}\">" +
-        $"{HtmlEncoder.Encode(defaultTotal.ToString())}</span>");
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -42,18 +33,7 @@
     </div>
 }
 
-<div class="pay-button-container">
-    <button type="submit" class="pay-button btn btn-success justify-content-center">
-        <span class="pay-text">
-            @T["Pay {0}", totalHtml]
-        </span>
-        <span class="payment-processing-container" hidden>
-            <span class="spinner-border spinner-border-sm" role="status">
-            </span>
-            <span>@T["Processing payment..."]</span>
-        </span>
-    </button>
-</div>
+<shape type="PayButton" prop-Amount="@defaultTotal" />
 
 <div class="stripe-field-error my-3" hidden></div>
 
