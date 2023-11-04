@@ -14,4 +14,9 @@ public interface IPaymentIntentPersistence
     /// Saves a payment intent Id to the session.
     /// </summary>
     void Store(string paymentIntentId);
+
+    /// <summary>
+    /// Removes the payment intent Id stored in the current session.
+    /// </summary>
+    void Remove();
 }

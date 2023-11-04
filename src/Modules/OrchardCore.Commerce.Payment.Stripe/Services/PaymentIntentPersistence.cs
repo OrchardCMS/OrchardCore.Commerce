@@ -15,4 +15,6 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
     public string Retrieve() => Session.GetString(PaymentIntentKey);
 
     public void Store(string paymentIntentId) => Session.SetString(PaymentIntentKey, paymentIntentId);
+
+    public void Remove() => Session.Remove(PaymentIntentKey);
 }

@@ -83,7 +83,7 @@ public class StripeController : Controller
         }
 
         // Delete payment intent from session, to create a new one.
-        _paymentIntentPersistence.Store(string.Empty);
+        _paymentIntentPersistence.Remove();
         return await PaymentFailedAsync();
     }
 

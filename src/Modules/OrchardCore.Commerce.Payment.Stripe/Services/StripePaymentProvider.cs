@@ -64,8 +64,8 @@ public class StripePaymentProvider : IPaymentProvider
 
     public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
     {
-        // Set back to default, because a new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.Store(paymentIntentId: string.Empty);
+        // A new payment intent should be created on the next checkout.
+        _paymentIntentPersistence.Remove();
 
         return Task.CompletedTask;
     }
