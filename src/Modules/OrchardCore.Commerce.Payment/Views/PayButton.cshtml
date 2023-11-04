@@ -5,6 +5,9 @@
 @using OrchardCore.DisplayManagement
 
 @{
+    var className = Model.GetProperty("PayButtonClass")?.ToString() ??
+        throw new InvalidOperationException("Missing \"PayButtonClass\" property.");
+
     IHtmlContent buttonLabel = Model.GetProperty("Title") is { } title ? T["Pay with {0}", title] : T["Pay"];
 
     if (Model.GetProperty<IHtmlContent>("Text") is { } textHtml)
@@ -32,7 +35,7 @@
 }
 
 <div class="pay-button-container">
-    <button type="submit" class="pay-button btn btn-success justify-content-center">
+    <button type="submit" class="pay-button btn btn-success justify-content-center pay-button-@className">
         <span class="pay-text">
             @buttonLabel
         </span>

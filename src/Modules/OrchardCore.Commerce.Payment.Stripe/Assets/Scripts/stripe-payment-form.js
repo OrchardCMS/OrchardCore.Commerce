@@ -27,7 +27,7 @@ window.stripePaymentForm = function stripePaymentForm(
 
     const allErrorContainers = [document.querySelector('.message-error')];
     const form = document.querySelector('.payment-form');
-    const submitButton = form.querySelector('.pay-button');
+    const submitButton = form.querySelector('.pay-button-stripe');
     const payText = form.querySelector('.pay-text');
     const paymentProcessingContainer = form.querySelector('.payment-processing-container');
     const stripeElements = stripe.elements({
