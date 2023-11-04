@@ -95,7 +95,7 @@ public class StripeController : Controller
 
     private async Task<IActionResult> PaymentFailedAsync()
     {
-        await _notifier.ErrorAsync(H["The payment failed, please try again."]);
+        await _notifier.ErrorAsync(H["The has payment failed, please try again."]);
         return Redirect("~/checkout");
     }
 }
