@@ -34,7 +34,7 @@ public class StripeController : Controller
     }
 
     [AllowAnonymous]
-    [HttpGet("checkout/middleware")]
+    [HttpGet("checkout/middleware/Stripe")]
     public async Task<IActionResult> PaymentConfirmationMiddleware([FromQuery(Name = "payment_intent")] string paymentIntent = null)
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
