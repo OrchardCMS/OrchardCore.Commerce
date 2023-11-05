@@ -1,0 +1,61 @@
+﻿using Lombiq.Tests.UI.Extensions;
+using OpenQA.Selenium;
+using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Models;
+using OrchardCore.ContentFields.Fields;
+
+namespace Lombiq.Tests.UI.Services;
+
+public static class FormUITestContextExtensions
+{
+    public static Task ClickCheckoutAsync(this UITestContext context) =>
+        context.ClickReliablyOnAsync(By.ClassName("checkout"));
+
+    public static async Task FillAddressAsync(this UITestContext context, string prefix, Address address)
+    {
+        Task FillAsync(string suffix, string value) =>
+            context.ClickAndFillInWithRetriesAsync(By.Id(prefix + suffix), value);
+
+        await FillAsync(nameof(address.Name), address.Name);
+        await FillAsync(nameof(address.Department), address.Department);
+        await FillAsync(nameof(address.Company), address.Company);
+        await FillAsync(nameof(address.StreetAddress1), address.StreetAddress1);
+        await FillAsync(nameof(address.StreetAddress2), address.StreetAddress2);
+        await FillAsync(nameof(address.City), address.City);
+        await FillAsync(nameof(address.Province), address.Province);
+        await FillAsync(nameof(address.PostalCode), address.PostalCode);
+        await FillAsync(nameof(address.Region), address.Region);
+    }
+
+    public static async Task FillAddressAsync(this UITestContext context, string fieldName, AddressField field)
+    {
+        await context.FillAddressAsync(
+            $"{nameof(OrderPart)}_{fieldName}_{nameof(field.Address)}_",
+            field.Address);
+
+        await context.SetCheckboxValueAsync(
+            By.Id($"{nameof(OrderPart)}_{fieldName}_ToBeSaved"),
+            field.UserAddressToSave == fieldName);
+    }
+
+    public static async Task FillCheckoutFormAsync(this UITestContext context, OrderPart data)
+    {
+        Task FillTextFieldAsync(string fieldName, TextField field) =>
+            context.ClickAndFillInWithRetriesAsync(By.Id($"{nameof(OrderPart)}_{fieldName}_{nameof(field.Text)}"), field.Text);
+
+        Task FillBooleanFieldAsync(string fieldName, BooleanField field) =>
+            context.SetCheckboxValueAsync(By.Id($"{nameof(OrderPart)}_{fieldName}_{nameof(field.Value)}"), field.Value);
+
+        await FillTextFieldAsync(nameof(data.Email), data.Email);
+        await FillTextFieldAsync(nameof(data.Phone), data.Phone);
+        await FillTextFieldAsync(nameof(data.VatNumber), data.VatNumber);
+        await FillBooleanFieldAsync(nameof(data.IsCorporation), data.IsCorporation);
+
+        await context.FillAddressAsync(nameof(data.BillingAddress), data.BillingAddress);
+
+        var sameAddress = data.BillingAndShippingAddressesMatch;
+        await FillBooleanFieldAsync(nameof(data.BillingAndShippingAddressesMatch), sameAddress);
+        if (!sameAddress.Value) await context.FillAddressAsync(nameof(data.ShippingAddress), data.ShippingAddress);
+    }
+}

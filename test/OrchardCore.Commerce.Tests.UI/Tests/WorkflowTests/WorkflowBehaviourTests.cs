@@ -61,7 +61,7 @@ public class WorkflowBehaviourTests : UITestBase
                     });
 
                 // Verify that it still works even on the next page.
-                await context.ClickReliablyOnAsync(By.ClassName("checkout"));
+                await context.ClickCheckoutAsync();
                 context.Get(By.ClassName("pay-text")).Text.Trim().ShouldBe("Pay $10.00");
             },
             browser);
