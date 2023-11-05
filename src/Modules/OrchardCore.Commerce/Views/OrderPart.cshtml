@@ -51,11 +51,9 @@
         </div>
         @if (string.Equals(Model.OrderPart.Status.Text, OrderStatuses.Pending, StringComparison.OrdinalIgnoreCase))
         {
-            var paymentRequestUrl = Orchard.Action<PaymentController>(controller =>
-                controller.PaymentRequest(Model.OrderPart.ContentItem.ContentItemId));
             <div class="my-2 d-flex justify-content-center">
                 <div class="pay-button-container">
-                    <a href="@paymentRequestUrl"
+                    <a href="@Url.Content($"~/checkout/paymentrequest/{Model.OrderPart.ContentItem.ContentItemId}")"
                        class="pay-button btn btn-success justify-content-center" >
                         <span class="pay-text">
                             @T["Complete Payment"]
