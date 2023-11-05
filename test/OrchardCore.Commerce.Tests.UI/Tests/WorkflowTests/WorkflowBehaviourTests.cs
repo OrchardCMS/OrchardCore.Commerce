@@ -60,9 +60,9 @@ public class WorkflowBehaviourTests : UITestBase
                         "Some content about product \"shipping000000000000000000\".",
                     });
 
-                // Verify that it still works even on the next page.
-                await context.ClickCheckoutAsync();
-                context.Get(By.ClassName("pay-text")).Text.Trim().ShouldBe("Pay $10.00");
+                // Verify that it still works even after a reload.
+                context.Refresh();
+                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe("$10.00");
             },
             browser);
 
