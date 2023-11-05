@@ -14,8 +14,14 @@ public static class FormUITestContextExtensions
 
     public static async Task FillAddressAsync(this UITestContext context, string prefix, Address address)
     {
-        Task FillAsync(string suffix, string value) =>
-            context.ClickAndFillInWithRetriesAsync(By.Id(prefix + suffix), value);
+        if (address is null) return;
+
+        async Task FillAsync(string suffix, string value)
+        {
+            var by = By.Id(prefix + suffix);
+            if (value is null || context.Get(by).GetAttribute("value") == value) return;
+            await context.ClickAndFillInWithRetriesAsync(by, value);
+        }
 
         await FillAsync(nameof(address.Name), address.Name);
         await FillAsync(nameof(address.Department), address.Department);
@@ -30,6 +36,8 @@ public static class FormUITestContextExtensions
 
     public static async Task FillAddressAsync(this UITestContext context, string fieldName, AddressField field)
     {
+        if (field is null) return;
+
         await context.FillAddressAsync(
             $"{nameof(OrderPart)}_{fieldName}_{nameof(field.Address)}_",
             field.Address);
@@ -41,11 +49,19 @@ public static class FormUITestContextExtensions
 
     public static async Task FillCheckoutFormAsync(this UITestContext context, OrderPart data)
     {
-        Task FillTextFieldAsync(string fieldName, TextField field) =>
-            context.ClickAndFillInWithRetriesAsync(By.Id($"{nameof(OrderPart)}_{fieldName}_{nameof(field.Text)}"), field.Text);
+        if (data is null) return;
+
+        async Task FillTextFieldAsync(string fieldName, TextField field)
+        {
+            var by = By.Id($"{nameof(OrderPart)}_{fieldName}_{nameof(field.Text)}");
+            if (field?.Text is not { } text || context.Get(by).GetAttribute("value") == text) return;
+            await context.ClickAndFillInWithRetriesAsync(by, text);
+        }
 
         Task FillBooleanFieldAsync(string fieldName, BooleanField field) =>
-            context.SetCheckboxValueAsync(By.Id($"{nameof(OrderPart)}_{fieldName}_{nameof(field.Value)}"), field.Value);
+            field is null
+                ? Task.CompletedTask
+                : context.SetCheckboxValueAsync(By.Id($"{nameof(OrderPart)}_{fieldName}_{nameof(field.Value)}"), field.Value);
 
         await FillTextFieldAsync(nameof(data.Email), data.Email);
         await FillTextFieldAsync(nameof(data.Phone), data.Phone);
