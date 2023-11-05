@@ -203,7 +203,6 @@ public class Startup : StartupBase
             new TextProductAttributeDeserializer(),
             new BooleanProductAttributeDeserializer(),
             new NumericProductAttributeDeserializer());
-
     }
 }
 

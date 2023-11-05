@@ -47,7 +47,7 @@ public class DummyPaymentProvider : IPaymentProvider
             .GetTotalsOrThrowIfEmpty()
             .Select((total, index) => new Models.Payment(
                 Kind: "Dummy Payment",
-                TransactionId: $"{order.ContentItemId}:{index}",
+                TransactionId: $"{order.ContentItemId}:{index.ToTechnicalString()}",
                 ChargeText: $"Dummy transaction of {total.Currency.EnglishName}.",
                 total,
                 createdUtc));
@@ -61,5 +61,4 @@ public class DummyPaymentProvider : IPaymentProvider
                 ProviderName,
                 _ => totals);
     }
-
 }
