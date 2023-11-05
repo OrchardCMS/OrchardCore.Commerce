@@ -153,7 +153,7 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<ContentItem?> CreateNoPaymentOrderFromShoppingCartAsync(string? shoppingCartId)
+    public async Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree)
     {
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
         var order = await _contentManager.NewAsync("Order");
@@ -173,7 +173,7 @@ public class PaymentService : IPaymentService
 
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
 
-        if (!cartViewModel.Totals.Any() || cartViewModel.Totals.Any(total => total.Value > 0))
+        if (mustBeFree && cartViewModel.Totals.Any(total => total.Value > 0))
         {
             await _notifier.ErrorAsync(H["Invalid attempt to check out non-free order as free."]);
             return null;

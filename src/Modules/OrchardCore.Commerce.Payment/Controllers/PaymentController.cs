@@ -216,7 +216,44 @@ public class PaymentController : Controller
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
     public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId) =>
-        await _paymentService.CreateNoPaymentOrderFromShoppingCartAsync(shoppingCartId) is { } order
+        await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order
             ? await _paymentService.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId)
             : NotFound();
+
+    [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
+    public async Task<IActionResult> Callback(string paymentProviderName, string? orderId, string? shoppingCartId)
+    {
+        if (string.IsNullOrWhiteSpace(paymentProviderName)) return NotFound();
+
+        var order = string.IsNullOrEmpty(orderId)
+            ? await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: false)
+            : await _contentManager.GetAsync(orderId);
+        if (order is null) return NotFound();
+
+        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatuses.Pending.HtmlClassify();
+
+        if (status == OrderStatuses.Ordered.HtmlClassify())
+        {
+            return this.RedirectToContentDisplay(order);
+        }
+
+        if (status == OrderStatuses.Pending.HtmlClassify())
+        {
+            foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
+            {
+                if (await provider.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId) is { } result)
+                {
+                    return result;
+                }
+            }
+
+            return this.RedirectToContentDisplay(order);
+        }
+
+        await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
+        return RedirectToAction(nameof(Index));
+    }
 }

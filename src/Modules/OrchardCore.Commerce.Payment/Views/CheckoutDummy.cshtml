@@ -1,5 +1,3 @@
-@using OrchardCore.Mvc.Core.Utilities
-
 <shape type="PayButton" PayButtonClass="dummy" prop-Text="@T["Make a dummy payment"]" />
 
 <script asp-name="@(FeatureIds.DummyProvider + ".Script")" at="Foot">
@@ -7,11 +5,9 @@
         button.addEventListener('click', async (event) => {
             event.preventDefault();
 
-            const urlPrefix = @Url.GetBaseUrl().JsonHtmlContent();
             const form = document.querySelector('.payment-form');
-
-            const result = await fetch(`${urlPrefix}/validate/Dummy`, { method: 'POST', body: new FormData(form) })
-                .then((response) => response.json());
+            form.action = @Url.Content("~/checkout/callback/Dummy").JsonHtmlContent();
+            form.submit();
         });
     });
 </script>

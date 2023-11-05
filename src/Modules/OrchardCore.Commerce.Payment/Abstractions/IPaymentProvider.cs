@@ -34,12 +34,22 @@ public interface IPaymentProvider
     /// <summary>
     /// Validates the data POSTed to the <see cref="PaymentController.Validate"/> action.
     /// </summary>
-    Task ValidateAsync(IUpdateModelAccessor updateModelAccessor);
+    Task ValidateAsync(IUpdateModelAccessor updateModelAccessor) => Task.CompletedTask;
 
     /// <summary>
     /// Invoked at the end of <see cref="IPaymentService.FinalModificationOfOrderAsync"/>.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId) => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked in <see cref="PaymentController.Callback"/> if the order status is <see cref="OrderStatuses.Pending"/>.
+    /// If the provider thinks it can be resolved, best approach is to return <see
+    /// cref="PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync"/>.
+    /// </summary>
+    Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
+        Controller controller,
+        ContentItem order,
+        string? shoppingCartId);
 }
 
 public static class PaymentProviderExtensions

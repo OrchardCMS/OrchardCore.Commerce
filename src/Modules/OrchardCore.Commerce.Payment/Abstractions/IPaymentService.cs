@@ -35,7 +35,11 @@ public interface IPaymentService
     /// <summary>
     /// Creates an order content item without payment in the database based on the current <see cref="ShoppingCart"/> content.
     /// </summary>
-    Task<ContentItem?> CreateNoPaymentOrderFromShoppingCartAsync(string? shoppingCartId);
+    /// <param name="mustBeFree">
+    /// If <see langword="true"/>, then the order totals will be checked. They must be zero, otherwise an error
+    /// notification will be sent and <see langword="null"/> is returned. If <see langword="false"/>, this is ignored.
+    /// </param>
+    Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree);
 
     /// <summary>
     /// Updates the <paramref name="order"/>'s status to <see cref="OrderStatuses.Ordered"/>.
