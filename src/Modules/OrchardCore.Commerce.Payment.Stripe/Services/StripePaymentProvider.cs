@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
+using Stripe;
 using System;
 using System.Threading.Tasks;
 using ISession = YesSql.ISession;
@@ -43,7 +44,16 @@ public class StripePaymentProvider : IPaymentProvider
 
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model)
     {
-        var paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal);
+        PaymentIntent paymentIntent;
+
+        try
+        {
+            paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal);
+        }
+        catch (StripeException exception) when (exception.Message.StartsWithOrdinal("No API key provided."))
+        {
+            return null;
+        }
 
         if (_hca.HttpContext?.GetRouteValue("action")?.ToString() == nameof(PaymentController.PaymentRequest))
         {
