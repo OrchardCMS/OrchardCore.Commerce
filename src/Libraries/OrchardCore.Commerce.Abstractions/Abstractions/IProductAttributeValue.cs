@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
-using OrchardCore.Commerce.Serialization;
+using OrchardCore.Commerce.Abstractions.Serialization;
 using System;
 using System.Globalization;
 using System.Linq;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// A specific value from a product attribute field.

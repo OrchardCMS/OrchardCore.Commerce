@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
+using OrchardCore.Commerce.Abstractions.Serialization;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Serialization;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace OrchardCore.Commerce.Models;
+namespace OrchardCore.Commerce.Abstractions.Models;
 
 /// <summary>
 /// A price and its priority.

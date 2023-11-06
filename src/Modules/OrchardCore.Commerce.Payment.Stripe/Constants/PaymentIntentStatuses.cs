@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Commerce.Constants;
+﻿namespace OrchardCore.Commerce.Payment.Stripe.Constants;
 
 public static class PaymentIntentStatuses
 {

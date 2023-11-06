@@ -1,12 +1,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Models;
+namespace OrchardCore.Commerce.Abstractions.Models;
 
 public class OrderPart : ContentPart
 {

@@ -1,8 +1,8 @@
-﻿using OrchardCore.Commerce.Abstractions;
+﻿using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.MoneyDataType;
 using Stripe;
 
-namespace OrchardCore.Commerce.Extensions;
+namespace OrchardCore.Commerce.Payment.Stripe.Extensions;
 
 public static class PaymentExtensions
 {
@@ -45,7 +45,7 @@ public static class PaymentExtensions
         };
 
     public static IPayment CreatePayment(this PaymentIntent paymentIntent, Amount amount) =>
-        new Models.Payment(
+        new Commerce.Models.Payment(
             Kind: paymentIntent.PaymentMethod.GetFormattedPaymentType(),
             ChargeText: paymentIntent.Description,
             TransactionId: paymentIntent.Id,

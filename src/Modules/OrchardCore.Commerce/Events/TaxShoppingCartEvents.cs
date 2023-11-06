@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Tax.Extensions;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System.Collections.Generic;

@@ -1,5 +1,5 @@
-using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -12,7 +12,7 @@ using OrchardCore.Title.Models;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
-using static OrchardCore.Commerce.Constants.OrderStatuses;
+using static OrchardCore.Commerce.Abstractions.Constants.OrderStatuses;
 
 namespace OrchardCore.Commerce.Migrations;
 

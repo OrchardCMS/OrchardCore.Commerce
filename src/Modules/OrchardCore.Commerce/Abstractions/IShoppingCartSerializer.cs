@@ -1,5 +1,7 @@
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;

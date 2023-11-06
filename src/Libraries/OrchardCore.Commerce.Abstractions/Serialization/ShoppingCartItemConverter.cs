@@ -1,13 +1,13 @@
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.ProductAttributeValues;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace OrchardCore.Commerce.Serialization;
+namespace OrchardCore.Commerce.Abstractions.Serialization;
 
 internal sealed class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
 {

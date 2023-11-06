@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Events;

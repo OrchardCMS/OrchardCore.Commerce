@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Constants;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Constants;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Constants;
+using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;

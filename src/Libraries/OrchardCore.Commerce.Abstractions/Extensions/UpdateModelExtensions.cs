@@ -3,7 +3,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrchardCore.Commerce.Extensions;
+namespace OrchardCore.Commerce.Abstractions.Extensions;
 
 public static class UpdateModelExtensions
 {

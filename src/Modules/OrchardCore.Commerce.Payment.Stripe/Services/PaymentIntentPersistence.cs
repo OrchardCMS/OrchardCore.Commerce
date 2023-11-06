@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class PaymentIntentPersistence : IPaymentIntentPersistence
 {

@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.Payment.Stripe;
-using OrchardCore.Commerce.Services;
-using OrchardCore.Commerce.ViewModels;
+using OrchardCore.Commerce.Payment.Stripe.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.Stripe.Services;
+using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -14,7 +13,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Drivers;
+namespace OrchardCore.Commerce.Payment.Stripe.Drivers;
 
 public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, StripeApiSettings>
 {

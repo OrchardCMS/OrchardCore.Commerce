@@ -1,5 +1,5 @@
 ﻿using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Services;

@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using System;
 
-namespace OrchardCore.Commerce.Serialization;
+namespace OrchardCore.Commerce.Abstractions.Serialization;
 
 internal sealed class LegacyPrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
 {

@@ -1,7 +1,7 @@
-﻿using OrchardCore.Commerce.Models;
+﻿using OrchardCore.Commerce.Abstractions.Models;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// Extension points for events related to checkout.

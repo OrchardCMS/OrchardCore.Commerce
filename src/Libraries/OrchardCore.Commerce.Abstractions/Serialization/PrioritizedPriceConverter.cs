@@ -1,10 +1,10 @@
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace OrchardCore.Commerce.Serialization;
+namespace OrchardCore.Commerce.Abstractions.Serialization;
 
 internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
 {

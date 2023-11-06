@@ -1,14 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Constants;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Constants;
-using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Indexes;
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Payment.Stripe.Services;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Constants;
+using OrchardCore.Commerce.Payment.Stripe.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Indexes;
+using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Promotion.Extensions;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -22,7 +26,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentService : IStripePaymentService
 {

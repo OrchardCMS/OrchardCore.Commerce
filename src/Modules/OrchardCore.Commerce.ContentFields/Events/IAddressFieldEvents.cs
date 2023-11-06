@@ -1,5 +1,5 @@
-﻿using OrchardCore.Commerce.Drivers;
-using OrchardCore.Commerce.Fields;
+﻿using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;

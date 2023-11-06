@@ -6,7 +6,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// A service for managing user properties.

@@ -1,7 +1,7 @@
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Commerce.Fields;
+namespace OrchardCore.Commerce.Abstractions.Fields;
 
 public class AddressField : ContentField
 {

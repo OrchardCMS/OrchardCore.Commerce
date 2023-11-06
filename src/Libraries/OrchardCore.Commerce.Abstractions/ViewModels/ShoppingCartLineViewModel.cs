@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrchardCore.Commerce.ViewModels;
+namespace OrchardCore.Commerce.Abstractions.ViewModels;
 
 public class ShoppingCartLineViewModel : ILineItem
 {

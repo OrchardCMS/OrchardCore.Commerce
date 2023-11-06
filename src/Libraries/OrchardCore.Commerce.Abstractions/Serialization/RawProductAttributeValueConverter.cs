@@ -1,9 +1,9 @@
-using OrchardCore.Commerce.ProductAttributeValues;
+using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace OrchardCore.Commerce.Serialization;
+namespace OrchardCore.Commerce.Abstractions.Serialization;
 
 internal sealed class RawProductAttributeValueConverter : JsonConverter<RawProductAttributeValue>
 {

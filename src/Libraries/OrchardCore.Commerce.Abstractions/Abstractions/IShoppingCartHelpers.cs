@@ -1,15 +1,15 @@
+using OrchardCore.Commerce.Abstractions.Exceptions;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
-using OrchardCore.Commerce.Exceptions;
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// A service to work with shopping cart data.

@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-namespace OrchardCore.Commerce.Models;
+namespace OrchardCore.Commerce.Abstractions.Models;
 
 /// <summary>
 /// A shopping cart.

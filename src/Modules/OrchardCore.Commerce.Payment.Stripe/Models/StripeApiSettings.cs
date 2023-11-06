@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Extensions;
 
-namespace OrchardCore.Commerce.Models;
+namespace OrchardCore.Commerce.Payment.Stripe.Models;
 
 public class StripeApiSettings
 {

@@ -1,8 +1,8 @@
 ﻿using Lombiq.Tests.UI.Extensions;
 using OpenQA.Selenium;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.AddressDataType;
-using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Models;
 using OrchardCore.ContentFields.Fields;
 
 namespace Lombiq.Tests.UI.Services;

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
-using OrchardCore.Commerce.Serialization;
+using OrchardCore.Commerce.Abstractions.Serialization;
 
-namespace OrchardCore.Commerce.ProductAttributeValues;
+namespace OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 
 /// <summary>
 /// Used only to deserialize attributes, before they're post-processed into concrete attribute values.

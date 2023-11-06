@@ -1,7 +1,7 @@
 ﻿using Stripe;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 
 /// <summary>
 /// A service for accessing and managing this scope's Stripe <see cref="RequestOptions"/> value.

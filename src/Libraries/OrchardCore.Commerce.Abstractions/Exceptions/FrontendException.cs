@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using System;
 using System.Runtime.Serialization;
 
-namespace OrchardCore.Commerce.Exceptions;
+namespace OrchardCore.Commerce.Abstractions.Exceptions;
 
 [Serializable]
 public class FrontendException : Exception

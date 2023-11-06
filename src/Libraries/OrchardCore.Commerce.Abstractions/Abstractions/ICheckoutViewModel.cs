@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 [SuppressMessage(
     "StyleCop.CSharp.DocumentationRules",

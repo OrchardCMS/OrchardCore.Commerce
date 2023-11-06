@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripeApiSettingsConfiguration : IConfigureOptions<StripeApiSettings>
 {

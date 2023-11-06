@@ -1,4 +1,4 @@
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// Represents a predefined <see cref="IProductAttributeValue"/> with no type specified.

@@ -1,9 +1,9 @@
-﻿using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.ViewModels;
+﻿using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.ContentManagement;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// Extension points for events related to orders.

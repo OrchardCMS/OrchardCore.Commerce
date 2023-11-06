@@ -1,7 +1,7 @@
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Commerce.Models;
+namespace OrchardCore.Commerce.Payment.Stripe.Models;
 
 public class StripePaymentPart : ContentPart
 {

@@ -1,6 +1,6 @@
 using OrchardCore.Commerce.MoneyDataType;
 
-namespace OrchardCore.Commerce.Models;
+namespace OrchardCore.Commerce.Abstractions.Models;
 
 public class OrderAdditionalCost
 {

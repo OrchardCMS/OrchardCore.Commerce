@@ -1,4 +1,4 @@
-namespace OrchardCore.Commerce.ViewModels;
+namespace OrchardCore.Commerce.Payment.Stripe.ViewModels;
 
 public class StripeApiSettingsViewModel
 {

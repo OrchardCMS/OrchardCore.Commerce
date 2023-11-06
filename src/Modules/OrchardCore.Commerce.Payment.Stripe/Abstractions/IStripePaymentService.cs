@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Commerce.Constants;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Constants;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.ViewModels;
+using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using Stripe;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 
 /// <summary>
 /// When implemented handles the payment and creates an order.

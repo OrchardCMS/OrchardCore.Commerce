@@ -1,7 +1,7 @@
 using OrchardCore.Commerce.MoneyDataType;
 using System;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// Describes a payment transaction's details.

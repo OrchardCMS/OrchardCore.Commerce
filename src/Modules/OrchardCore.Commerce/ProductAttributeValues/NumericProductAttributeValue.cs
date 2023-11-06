@@ -1,4 +1,6 @@
-﻿namespace OrchardCore.Commerce.ProductAttributeValues;
+﻿using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
+
+namespace OrchardCore.Commerce.ProductAttributeValues;
 
 public class NumericProductAttributeValue : BaseProductAttributeValue<decimal?>
 {

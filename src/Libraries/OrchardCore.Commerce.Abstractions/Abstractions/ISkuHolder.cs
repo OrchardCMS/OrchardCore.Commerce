@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Commerce.Abstractions;
+﻿namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// Represents an object with an <see cref="Sku"/> property. This can identify a product.

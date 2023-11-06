@@ -1,13 +1,13 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Data;
-using OrchardCore.Commerce.Indexes;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Stripe.Indexes;
+using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using YesSql.Sql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
-namespace OrchardCore.Commerce.Migrations;
+namespace OrchardCore.Commerce.Payment.Stripe.Migrations;
 
 public class StripeMigrations : DataMigration
 {

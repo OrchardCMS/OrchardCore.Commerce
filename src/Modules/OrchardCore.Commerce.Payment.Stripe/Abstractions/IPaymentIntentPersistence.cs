@@ -1,4 +1,4 @@
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 
 /// <summary>
 /// Service that provides a way to retain the current payment intent Id from the current session.

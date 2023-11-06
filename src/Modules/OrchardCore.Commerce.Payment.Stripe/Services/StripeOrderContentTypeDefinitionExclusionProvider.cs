@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripeOrderContentTypeDefinitionExclusionProvider : IOrderContentTypeDefinitionExclusionProvider
 {

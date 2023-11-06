@@ -1,10 +1,10 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.ContentFields.Drivers;
 using OrchardCore.Commerce.ContentFields.Models;
 using OrchardCore.Commerce.Drivers;
-using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;

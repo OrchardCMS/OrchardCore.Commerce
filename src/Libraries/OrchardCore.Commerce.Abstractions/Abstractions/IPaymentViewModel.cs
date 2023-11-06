@@ -1,9 +1,9 @@
-﻿using OrchardCore.Commerce.Models;
+﻿using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 [SuppressMessage(
     "StyleCop.CSharp.DocumentationRules",

@@ -1,6 +1,6 @@
 using OrchardCore.Commerce.MoneyDataType;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
 /// <summary>
 /// Represents an object that contains some of an order line item's basic info.

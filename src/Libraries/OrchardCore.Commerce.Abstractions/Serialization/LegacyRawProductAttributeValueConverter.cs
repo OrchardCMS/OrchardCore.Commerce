@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Commerce.ProductAttributeValues;
+using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using System;
 
-namespace OrchardCore.Commerce.Serialization;
+namespace OrchardCore.Commerce.Abstractions.Serialization;
 
 internal sealed class LegacyRawProductAttributeValueConverter : JsonConverter<RawProductAttributeValue>
 {

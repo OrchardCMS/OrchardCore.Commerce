@@ -2,15 +2,15 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using Stripe;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Controllers;
+namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
 
 [Route("stripe-webhook")]
 [ApiController]

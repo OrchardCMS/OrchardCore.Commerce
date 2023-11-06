@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Entities;

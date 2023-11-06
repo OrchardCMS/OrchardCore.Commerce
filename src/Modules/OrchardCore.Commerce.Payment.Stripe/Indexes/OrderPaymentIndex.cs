@@ -1,7 +1,7 @@
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Stripe.Models;
 using YesSql.Indexes;
 
-namespace OrchardCore.Commerce.Indexes;
+namespace OrchardCore.Commerce.Payment.Stripe.Indexes;
 
 public class OrderPaymentIndex : MapIndex
 {

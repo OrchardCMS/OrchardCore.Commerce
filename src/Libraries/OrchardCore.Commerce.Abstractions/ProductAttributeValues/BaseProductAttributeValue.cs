@@ -1,9 +1,9 @@
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-namespace OrchardCore.Commerce.ProductAttributeValues;
+namespace OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 
 public class BaseProductAttributeValue<T> : IProductAttributeValue<T>
 {

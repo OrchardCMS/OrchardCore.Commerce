@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.ViewModels;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Models;

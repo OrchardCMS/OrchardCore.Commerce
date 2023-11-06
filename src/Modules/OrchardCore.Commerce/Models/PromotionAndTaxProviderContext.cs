@@ -1,9 +1,9 @@
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
-namespace OrchardCore.Commerce.TagHelpers;
+namespace OrchardCore.Commerce.Abstractions.TagHelpers;
 
 [HtmlTargetElement("mvc-title", Attributes = "text")]
 public class MvcTitleTagHelper : TagHelper

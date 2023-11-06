@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Commerce.Models;
+﻿namespace OrchardCore.Commerce.Payment.Stripe.Models;
 
 public class OrderPayment
 {
