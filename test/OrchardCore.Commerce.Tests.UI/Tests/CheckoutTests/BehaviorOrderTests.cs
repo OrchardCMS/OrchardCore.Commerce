@@ -52,11 +52,11 @@ public class BehaviorCheckoutTests : UITestBase
                 await context.ClickReliablyOnAsync(By.ClassName("pay-button-dummy"));
 
                 void MatchText(string css, string expected) =>
-                    context.Get(By.CssSelector(css)).Text.Trim().ShouldBe(expected);
+                    context.Get(By.CssSelector(css)).Text.Trim().RegexReplace(@"\s+", " ").ShouldBe(expected);
 
                 MatchText("h4.text-success", "Thank you for your purchase!");
 
-                const string address = "";
+                const string address = "BLACK MESA EAST 1. CITY 17 AF";
                 MatchText(".field-name-order-part-billing-address dd", address);
                 MatchText(".field-name-order-part-shipping-address dd", address);
 
