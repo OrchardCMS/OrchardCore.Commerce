@@ -107,7 +107,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Paymen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Payment.Stripe", "src\Modules\OrchardCore.Commerce.Payment.Stripe\OrchardCore.Commerce.Payment.Stripe.csproj", "{A4D69733-CDC0-46AE-B46A-163CCC6F77F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Abstraction", "src\Libraries\OrchardCore.Commerce.Abstraction\OrchardCore.Commerce.Abstraction.csproj", "{28DB6CBB-1527-42A1-8EFE-3D95BF185884}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Abstractions", "src\Libraries\OrchardCore.Commerce.Abstractions\OrchardCore.Commerce.Abstractions.csproj", "{28DB6CBB-1527-42A1-8EFE-3D95BF185884}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

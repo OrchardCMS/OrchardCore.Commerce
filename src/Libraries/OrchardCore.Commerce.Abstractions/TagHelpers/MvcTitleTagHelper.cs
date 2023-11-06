@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.TagHelpers;
 
@@ -27,7 +29,8 @@ public class MvcTitleTagHelper : TagHelper
         var stringBuilder = new StringBuilder();
         await using (var writer = new StringWriter(stringBuilder)) Text.WriteTo(writer, NullHtmlEncoder.Default);
 
-        var shape = await _contentItemDisplayManager.BuildMvcTitleAsync(stringBuilder.ToString());
+        var header = new ContentItem { ContentType = MvcTitle, DisplayText = stringBuilder.ToString() };
+        var shape = await _contentItemDisplayManager.BuildDisplayAsync(header, updater: null);
         var content = await _displayHelper.ShapeExecuteAsync(shape);
 
         output.TagName = null;
