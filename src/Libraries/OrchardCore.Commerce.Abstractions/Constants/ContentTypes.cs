@@ -1,4 +1,4 @@
-namespace OrchardCore.Commerce.Abstraction.Constants;
+namespace OrchardCore.Commerce.Abstractions.Constants;
 
 public static class ContentTypes
 {

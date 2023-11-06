@@ -5,7 +5,7 @@ using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.PersistenceRegionSettingsTests;
 

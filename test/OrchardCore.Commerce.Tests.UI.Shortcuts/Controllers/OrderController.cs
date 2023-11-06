@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 

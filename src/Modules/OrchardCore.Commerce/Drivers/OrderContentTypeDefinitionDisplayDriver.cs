@@ -7,7 +7,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
-using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Drivers;
 

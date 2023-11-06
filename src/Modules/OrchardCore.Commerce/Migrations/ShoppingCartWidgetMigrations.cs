@@ -2,7 +2,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
-using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
 public class ShoppingCartWidgetMigrations : DataMigration

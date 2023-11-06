@@ -5,7 +5,7 @@ using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace Microsoft.AspNetCore.Identity;
 

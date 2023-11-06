@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.TagHelpers;
 
