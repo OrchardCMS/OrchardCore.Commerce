@@ -147,8 +147,11 @@ public class StripePaymentService : IStripePaymentService
             {
                 order.Alter<OrderPart>(orderPart =>
                 {
-                    orderPart.Charges.Clear();
-                    orderPart.Charges.Add(paymentIntent.CreatePayment(total));
+                    if (paymentIntent.PaymentMethod != null)
+                    {
+                        orderPart.Charges.Clear();
+                        orderPart.Charges.Add(paymentIntent.CreatePayment(total));
+                    }
 
                     if (cartViewModel is null) return;
 
