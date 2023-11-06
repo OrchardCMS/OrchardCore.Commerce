@@ -57,13 +57,9 @@ public class ShoppingCartControllerTests
     public async Task AddExistingItemToCart()
     {
         var cartId = Guid.NewGuid().ToString();
-        await StoreCartAsync(cartId: null);
+        await StoreCartAsync(cartId);
         using var controller = GetController();
-        await controller.AddItem(new ShoppingCartLineUpdateModel
-        {
-            Quantity = 7,
-            ProductSku = "foo",
-        });
+        await AddItemAsync(controller, cartId, 7, "foo");
         var cart = await _cartStorage.RetrieveAsync(cartId);
 
         Assert.Equal(
@@ -77,11 +73,7 @@ public class ShoppingCartControllerTests
         var cartId = Guid.NewGuid().ToString();
         await StoreCartAsync(cartId);
         using var controller = GetController();
-        await controller.AddItem(new ShoppingCartLineUpdateModel
-        {
-            Quantity = 7,
-            ProductSku = "bar",
-        });
+        await AddItemAsync(controller, cartId, 7, "bar");
         var cart = await _cartStorage.RetrieveAsync(cartId);
 
         Assert.Equal(
@@ -102,13 +94,15 @@ public class ShoppingCartControllerTests
             new ShoppingCartItem(4, "foo", _attrSet2Parsed),
             new ShoppingCartItem(5, "foo", _attrSet3Parsed),
             new ShoppingCartItem(6, "bar", _attrSet3Parsed)));
+
         using var controller = GetController();
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "foo" });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 8, ProductSku = "foo", Attributes = _attrSet1 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 9, ProductSku = "foo", Attributes = _attrSet2 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 10, ProductSku = "foo", Attributes = _attrSet3 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 11, ProductSku = "bar", Attributes = _attrSet3 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 13, ProductSku = "baz", Attributes = _attrSet3 });
+        await AddItemAsync(controller, cartId: null, 7, "foo");
+        await AddItemAsync(controller, cartId: null, 8, "foo", _attrSet1);
+        await AddItemAsync(controller, cartId: null, 9, "foo", _attrSet2);
+        await AddItemAsync(controller, cartId: null, 10, "foo", _attrSet3);
+        await AddItemAsync(controller, cartId: null, 11, "bar", _attrSet3);
+        await AddItemAsync(controller, cartId: null, 13, "baz", _attrSet3);
+
         var cart = await controller.Get();
 
         Assert.Equal(
@@ -226,4 +220,19 @@ public class ShoppingCartControllerTests
 
     private Task StoreCartAsync(string cartId) =>
         _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")), cartId);
+
+    private static Task AddItemAsync(
+        ShoppingCartController controller,
+        string cartId,
+        int quantity,
+        string sku,
+        IDictionary<string, string[]> attributes = null) =>
+        controller.AddItem(
+            new ShoppingCartLineUpdateModel
+            {
+                Quantity = quantity,
+                ProductSku = sku,
+                Attributes = attributes,
+            },
+            cartId);
 }
