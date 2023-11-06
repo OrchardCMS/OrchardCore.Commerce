@@ -5,6 +5,7 @@ using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.PersistenceRegionSettingsTests;
 
@@ -23,7 +24,7 @@ public class PersistenceRegionSettingsTests : UITestBase
                 await context.SignInDirectlyAsync();
                 await context.ExecuteRecipeDirectlyAsync("OrchardCore.Commerce.Samples.RegionSettings");
 
-                await context.CreateNewContentItemAsync("Order");
+                await context.CreateNewContentItemAsync(Order);
 
                 context
                     .GetAll(By.XPath("id('OrderPart_BillingAddress_Address_Region')/option"))

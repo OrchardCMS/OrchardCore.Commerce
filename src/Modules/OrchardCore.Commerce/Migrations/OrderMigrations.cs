@@ -11,7 +11,7 @@ using OrchardCore.Mvc.Utilities;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using static OrchardCore.Commerce.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 using static OrchardCore.Commerce.Constants.OrderStatuses;
 
 namespace OrchardCore.Commerce.Migrations;

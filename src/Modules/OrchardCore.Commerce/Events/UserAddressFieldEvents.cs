@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using System;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Events;
 

@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using YesSql.Sql;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -23,7 +24,7 @@ public class StripeMigrations : DataMigration
                 .WithField(part => part.PaymentIntentId));
 
         _contentDefinitionManager
-            .AlterTypeDefinition("Order", builder => builder
+            .AlterTypeDefinition(Order, builder => builder
                 .WithPart(nameof(StripePaymentPart)));
 
         // This table may exist when migrating from an old version of the DB where it was created in a different module.

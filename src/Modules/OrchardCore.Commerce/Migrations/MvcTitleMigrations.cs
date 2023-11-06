@@ -1,7 +1,7 @@
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.Data.Migration;
-using static OrchardCore.Commerce.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
 

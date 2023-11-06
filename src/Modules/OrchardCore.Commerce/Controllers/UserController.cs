@@ -13,7 +13,7 @@ using OrchardCore.Users.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using YesSql;
-using static OrchardCore.Commerce.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Controllers;
 

@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static OrchardCore.Commerce.Abstraction.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -96,7 +97,7 @@ public class PaymentService : IPaymentService
         if (cart?.Totals.Single() is not { } total) return null;
 
         var checkoutShapes = (await _fieldsOnlyDisplayManager.DisplayFieldsAsync(
-                await _contentManager.NewAsync("Order"),
+                await _contentManager.NewAsync(Order),
                 "Checkout"))
             .ToList();
 
@@ -156,7 +157,7 @@ public class PaymentService : IPaymentService
     public async Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree)
     {
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
-        var order = await _contentManager.NewAsync("Order");
+        var order = await _contentManager.NewAsync(Order);
 
         var errors = await UpdateOrderWithDriversAsync(order);
         if (errors.Any())
@@ -226,7 +227,7 @@ public class PaymentService : IPaymentService
         string? shoppingCartId,
         AlterOrderAsyncDelegate? alterOrderAsync = null)
     {
-        var order = await _contentManager.GetAsync(orderId) ?? await _contentManager.NewAsync("Order");
+        var order = await _contentManager.GetAsync(orderId) ?? await _contentManager.NewAsync(Order);
         var isNew = order.IsNew();
         var part = order.As<OrderPart>();
 
