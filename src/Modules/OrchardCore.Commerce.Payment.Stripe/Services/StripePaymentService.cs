@@ -111,14 +111,7 @@ public class StripePaymentService : IStripePaymentService
             CreateChargesProvider(paymentIntent));
 
     private static Func<OrderPart, IEnumerable<IPayment>> CreateChargesProvider(PaymentIntent paymentIntent) =>
-        orderPart =>
-        {
-            // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
-            // totals i.e., multiple currencies. https://github.com/OrchardCMS/OrchardCore.Commerce/issues/132
-            var amount = orderPart.Charges.Single().Amount;
-
-            return new[] { paymentIntent.CreatePayment(amount) };
-        };
+        orderPart => orderPart.Charges.Select(charge => paymentIntent.CreatePayment(charge.Amount));
 
     public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
     {
@@ -147,11 +140,8 @@ public class StripePaymentService : IStripePaymentService
             {
                 order.Alter<OrderPart>(orderPart =>
                 {
-                    if (paymentIntent.PaymentMethod != null)
-                    {
-                        orderPart.Charges.Clear();
-                        orderPart.Charges.Add(paymentIntent.CreatePayment(total));
-                    }
+                    orderPart.Charges.Clear();
+                    orderPart.Charges.Add(paymentIntent.CreatePayment(total));
 
                     if (cartViewModel is null) return;
 
