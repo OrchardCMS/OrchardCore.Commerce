@@ -23,7 +23,7 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ShoppingCartControllerTests
 {
-    private readonly IShoppingCartPersistence _cartStorage;
+    private readonly IShoppingCartPersistence _cartStorage = new FakeCartStorage();
 
     private readonly Dictionary<string, string[]> _attrSet1 = new()
     {
@@ -52,16 +52,10 @@ public class ShoppingCartControllerTests
         new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz"),
     };
 
-    public ShoppingCartControllerTests() => _cartStorage = new FakeCartStorage();
-
     [Fact]
     public async Task AddExistingItemToCart()
     {
-        var cartId = Guid.NewGuid().ToString();
-        await StoreCartAsync(cartId);
-        using var controller = GetController();
-        await AddItemAsync(controller, cartId, 7, "foo");
-        var cart = await _cartStorage.RetrieveAsync(cartId);
+        var cart = await StoreAndRetrieveItemAsync("foo");
 
         Assert.Equal(
             new List<ShoppingCartItem> { new(10, "foo") },
@@ -71,11 +65,7 @@ public class ShoppingCartControllerTests
     [Fact]
     public async Task AddNewItemToCart()
     {
-        var cartId = Guid.NewGuid().ToString();
-        await StoreCartAsync(cartId);
-        using var controller = GetController();
-        await AddItemAsync(controller, cartId, 7, "bar");
-        var cart = await _cartStorage.RetrieveAsync(cartId);
+        var cart = await StoreAndRetrieveItemAsync("bar");
 
         Assert.Equal(
             new List<ShoppingCartItem>
@@ -221,6 +211,17 @@ public class ShoppingCartControllerTests
 
     private Task StoreCartAsync(string cartId) =>
         _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")), cartId);
+
+    private async Task<ShoppingCart> StoreAndRetrieveItemAsync(string sku, int quantity = 7)
+    {
+        var cartId = Guid.NewGuid().ToString();
+        await StoreCartAsync(cartId);
+
+        using var controller = GetController();
+        await AddItemAsync(controller, cartId, quantity, sku);
+
+        return await _cartStorage.RetrieveAsync(cartId);
+    }
 
     private static Task AddItemAsync(
         ShoppingCartController controller,
