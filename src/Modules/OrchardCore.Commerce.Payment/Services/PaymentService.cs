@@ -131,7 +131,17 @@ public class PaymentService : IPaymentService
             CheckoutShapes = checkoutShapes,
         };
 
-        if (viewModel.SingleCurrencyTotal.Value > 0) await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value);
+        if (viewModel.SingleCurrencyTotal.Value > 0)
+        {
+            await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value);
+
+            if (!viewModel.PaymentProviderData.Any())
+            {
+                await _notifier.WarningAsync(new HtmlString(" ").Join(
+                    H["There are no applicable payment providers for this site."],
+                    H["Please make sure there is at least one enabled and properly configured."]));
+            }
+        }
 
         return viewModel;
     }

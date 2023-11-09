@@ -1,5 +1,6 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -190,6 +191,13 @@ public class PaymentController : Controller
 
         var viewModel = new PaymentViewModel(orderPart, singleCurrencyTotal, singleCurrencyTotal);
         await viewModel.WithProviderDataAsync(_paymentProviders);
+
+        if (!viewModel.PaymentProviderData.Any())
+        {
+            await _notifier.WarningAsync(new HtmlString(" ").Join(
+                H["There are no applicable payment providers for this site."],
+                H["Please make sure there is at least one enabled and properly configured."]));
+        }
 
         return View(viewModel);
     }
