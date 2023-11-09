@@ -18,6 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="License.md" Pack="true" PackagePath=""/>
+    <None Include="Readme.md"/>
+    <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
   </ItemGroup>
