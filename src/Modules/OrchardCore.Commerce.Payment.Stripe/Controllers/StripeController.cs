@@ -57,6 +57,8 @@ public class StripeController : Controller
             (await _stripePaymentService.GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId is not { } orderId ||
             await _contentManager.GetAsync(orderId) is not { } order)
         {
+            await _notifier.ErrorAsync(
+                H["Couldn't find the payment intent \"{0}\" or the order associated with it.", paymentIntent ?? string.Empty]);
             return NotFound();
         }
 
