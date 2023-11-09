@@ -164,6 +164,13 @@ public class StripePaymentService : IStripePaymentService
                 return Task.CompletedTask;
             });
 
+        if (!order.As<OrderPart>().LineItems.Any())
+        {
+            updateModelAccessor.ModelUpdater.ModelState.AddModelError(
+                nameof(OrderPart.LineItems),
+                T["The order is empty."].Value);
+        }
+
         if (isNew)
         {
             _session.Save(new OrderPayment
