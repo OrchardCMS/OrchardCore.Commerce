@@ -100,11 +100,6 @@ window.stripePaymentForm = function stripePaymentForm(
 
             const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
 
-            if (paymentIntent.status !== 'succeeded' && paymentIntent.last_payment_error) {
-                displayError(paymentIntent.last_payment_error);
-                return;
-            }
-
             await fetch(updatePaymentIntentUrl.replace('PAYMENT_INTENT', paymentIntent.id));
 
             let result;
