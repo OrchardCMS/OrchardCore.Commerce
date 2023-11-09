@@ -16,13 +16,6 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     static ResourceManagementOptionsConfiguration()
     {
         _manifest
-            .DefineStyle(PaymentForm)
-            .SetUrl(
-                "~/OrchardCore.Commerce/css/payment-form.min.css",
-                "~/OrchardCore.Commerce/css/payment-form.css")
-            .SetVersion("1.0.0");
-
-        _manifest
             .DefineStyle(ShoppingCart)
             .SetUrl(
                 "~/OrchardCore.Commerce/css/shopping-cart.min.css",
@@ -34,21 +27,6 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
             .SetUrl(
                 "~/OrchardCore.Commerce/css/shopping-cart-widget.min.css",
                 "~/OrchardCore.Commerce/css/shopping-cart-widget.css")
-            .SetVersion("1.0.0");
-
-        _manifest
-            .DefineScript(CommerceRegions)
-            .SetDependencies(JQuery)
-            .SetUrl(
-                "~/OrchardCore.Commerce/js/commerce-regions.min.js",
-                "~/OrchardCore.Commerce/js/commerce-regions.js")
-            .SetVersion("1.0.0");
-
-        _manifest
-            .DefineScript(StripePaymentForm)
-            .SetUrl(
-                "~/OrchardCore.Commerce/js/stripe-payment-form.min.js",
-                "~/OrchardCore.Commerce/js/stripe-payment-form.js")
             .SetVersion("1.0.0");
 
         _manifest

@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using System.Collections.Generic;

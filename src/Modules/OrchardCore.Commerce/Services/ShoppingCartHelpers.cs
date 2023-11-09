@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Exceptions;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
-using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using OrchardCore.Commerce.ProductAttributeValues;
-using OrchardCore.Commerce.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -19,7 +21,9 @@ namespace OrchardCore.Commerce.Services;
 public class ShoppingCartHelpers : IShoppingCartHelpers
 {
     private readonly IHttpContextAccessor _hca;
+    private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
+    private readonly IEnumerable<IProductAttributeProvider> _productAttributeProviders;
     private readonly IEnumerable<IProductEstimationContextUpdater> _productEstimationContextUpdaters;
     private readonly IProductService _productService;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
@@ -33,7 +37,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         Justification = "This service ties together many cart-related features.")]
     public ShoppingCartHelpers(
         IHttpContextAccessor hca,
+        IPriceSelectionStrategy priceSelectionStrategy,
         IPriceService priceService,
+        IEnumerable<IProductAttributeProvider> productAttributeProviders,
         IEnumerable<IProductEstimationContextUpdater> productEstimationContextUpdaters,
         IProductService productService,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
@@ -42,7 +48,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
         _hca = hca;
+        _priceSelectionStrategy = priceSelectionStrategy;
         _priceService = priceService;
+        _productAttributeProviders = productAttributeProviders;
         _productEstimationContextUpdaters = productEstimationContextUpdaters;
         _productService = productService;
         _shoppingCartEvents = shoppingCartEvents;
@@ -74,7 +82,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                 var product = products[item.ProductSku];
                 var price = _priceService.SelectPrice(item.Prices);
 
-                var attributes = item.Attributes.Any(attribute => attribute is RawProductAttributeValue)
+                var attributes = item.HasRawAttributes()
                     ? _shoppingCartSerializer.PostProcessAttributes(item.Attributes, product)
                     : item.Attributes;
 
@@ -101,7 +109,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             H["Price"],
             H["Action"],
         };
-        IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync()).Values.ToList();
+        IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync(cart)).Values.ToList();
 
         (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);
 
@@ -127,21 +135,26 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return model;
     }
 
-    public async Task<Amount?> CalculateSingleCurrencyTotalAsync()
+    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId) =>
+        _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+
+    public async Task UpdateAsync(string shoppingCartId, Func<ShoppingCart, Task> updateTask)
     {
-        var totals = await CalculateMultipleCurrencyTotalsAsync();
+        var cart = await RetrieveAsync(shoppingCartId);
+        await updateTask(cart);
+        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
+    }
+
+    public async Task<Amount?> CalculateSingleCurrencyTotalAsync(ShoppingCart cart)
+    {
+        var totals = await CalculateMultipleCurrencyTotalsAsync(cart);
         return totals.Count > 0 ? totals.Single().Value : null;
     }
 
-    public async Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync()
-    {
-        // Shopping cart ID is null by default currently.
-        var currentShoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        if (currentShoppingCart.Count == 0) return new Dictionary<string, Amount>();
-
-        var totals = await currentShoppingCart.CalculateTotalsAsync(_priceService);
-        return totals.ToDictionary(total => total.Currency.CurrencyIsoCode);
-    }
+    public async Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync(ShoppingCart cart) =>
+        cart.Count == 0
+            ? new Dictionary<string, Amount>()
+            : (await cart.CalculateTotalsAsync(_priceService)).ToDictionary(total => total.Currency.CurrencyIsoCode);
 
     public async Task<ShoppingCartItem> AddToCartAsync(
         string shoppingCartId,
@@ -168,7 +181,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             }
         }
 
-        if (await ShoppingCartItem.GetErrorAsync(parsedLine.ProductSku, parsedLine, H, _priceService) is { } error)
+        if (await GetErrorAsync(parsedLine.ProductSku, parsedLine) is { } error)
         {
             throw new FrontendException(error);
         }
@@ -202,5 +215,49 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         return (await CreateShoppingCartViewModelAsync(cart, context.ShippingAddress, context.BillingAddress))
             .Lines
             .FirstOrDefault(line => line.ProductSku == context.ShoppingCartItem.ProductSku);
+    }
+
+    private async Task<LocalizedHtmlString> GetErrorAsync(string sku, ShoppingCartItem item)
+    {
+        if (item is null)
+        {
+            return H["Product with SKU {0} not found.", sku];
+        }
+
+        item = (await _priceService.AddPricesAsync(new[] { item })).Single();
+
+        return item.Prices.Any()
+            ? null
+            : H["Can't add product {0} because it doesn't have a price, or its currency doesn't match the current display currency.", sku];
+    }
+
+    public async Task<IList<OrderLineItem>> CreateOrderLineItemsAsync(ShoppingCart shoppingCart)
+    {
+        static string TrimSku(ShoppingCartItem item) => item.ProductSku.Split('-')[0];
+
+        var contentItems = (await _productService.GetProductsAsync(shoppingCart.Items.Select(TrimSku)))
+            .ToDictionary(item => item.Sku, item => item.ContentItem);
+
+        return await shoppingCart.Items.AwaitEachAsync(async item =>
+        {
+            item = await _priceService.AddPriceAsync(item);
+            var price = _priceSelectionStrategy.SelectPrice(item.Prices);
+            var fullSku = _productService.GetOrderFullSku(item, await _productService.GetProductAsync(item.ProductSku));
+
+            var selectedAttributes = _productAttributeProviders
+                .Select(provider => provider.GetSelectedAttributes(item.Attributes))
+                .Where(attributesByType => attributesByType.Any())
+                .ToDictionary(attributesByType => attributesByType.Keys.First(), attributesByType => attributesByType.Values.First());
+
+            return new OrderLineItem(
+                item.Quantity,
+                item.ProductSku,
+                fullSku,
+                price,
+                item.Quantity * price,
+                contentItems[TrimSku(item)].ContentItemVersionId,
+                item.Attributes,
+                selectedAttributes);
+        });
     }
 }

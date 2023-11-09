@@ -30,7 +30,7 @@ This project uses `Lombiq Node.js Extensions` to compile and lint client-side as
 2. Build and run the `OrchardCore.Commerce.Web` project.
 3. Thanks to [Auto Setup](https://docs.orchardcore.net/en/latest/docs/reference/modules/AutoSetup/), the site will be set up with the `OrchardCore Commerce - Development` recipe.
 4. Go to the dashboard, using the credentials `admin` and `Password1!`.
-5. Go to _Configuration_ → _Commerce_ → _Stripe API_. Set the keys to the test keys found [here](docs/features/stripe-payment.md). If the keys are not set, payment won't work.
+5. If you want to test Stripe, go to _Configuration_ → _Commerce_ → _Stripe API_. Set the keys to the test keys found [here](docs/features/stripe-payment.md). If the keys are not set, the Stripe payment button won't appear during checkout. 
 6. Go to _Content_ → _Content Items_, and create your first `Product`.
 
 ## Documentation
@@ -38,7 +38,8 @@ This project uses `Lombiq Node.js Extensions` to compile and lint client-side as
 - [Inventory](docs/features/inventory.md)
 - [Products and Prices](docs/features/products-and-prices.md)
 - [Promotions](docs/features/promotions.md)
-- [Stripe Payment](docs/features/stripe-payment.md)
+- [Payment providers](docs/features/payment-providers.md)
+  - [Stripe Payment](docs/features/stripe-payment.md)
 - [Taxation](docs/features/taxation.md)
 - [User Features](docs/features/user-features.md)
 - [Workflows](docs/features/workflows.md)

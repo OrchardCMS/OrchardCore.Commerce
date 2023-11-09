@@ -1,0 +1,57 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore
+@using OrchardCore.Commerce.MoneyDataType
+@using OrchardCore.Commerce.Payment.Stripe.Controllers
+@using OrchardCore.Mvc.Core.Utilities
+
+@{
+    if (Model.DefaultTotal is not Amount defaultTotal)
+    {
+        throw new InvalidOperationException("Missing DefaultTotal");
+    }
+
+    string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
+    string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
+}
+
+<input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
+
+<h3>@T["Stripe Payment"]</h3>
+
+<fieldset>
+    <div class="row payment-intent">
+        <div id="payment-form_payment">@T["Stripe payment is not configured for this site."]</div>
+    </div>
+</fieldset>
+
+@* Net Price is always applicable, while Gross Price can only be shown if it's specified. *@
+<div>
+    <strong>@T["Net Price: {0}", Model.NetTotal]</strong>
+</div>
+@if (Model.GrossTotal != null && Model.GrossTotal.Value != 0)
+{
+    <div>
+        <strong>@T["Gross Price: {0}", Model.GrossTotal]</strong>
+    </div>
+}
+
+<shape type="PayButton" PayButtonClass="stripe" prop-Total="@defaultTotal" />
+
+<div class="stripe-field-error my-3" hidden></div>
+
+@if (!string.IsNullOrEmpty(publishableKey))
+{
+    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
+    <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
+    <script at="Foot" depends-on="StripeJs,StripePaymentForm">
+        stripePaymentForm(
+            Stripe(@publishableKey.JsonHtmlContent()),
+            @clientSecret.JsonHtmlContent(),
+            @Url.GetBaseUrl().JsonHtmlContent(),
+            document.querySelector('input[name="__RequestVerificationToken"]').value,
+            @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
+            @T["There was an error during confirming the payment, please try again."].Json(),
+            @T["A value is required for %LABEL%."].Json(),
+            @(Orchard.Action<StripeController>(controller => controller.UpdatePaymentIntent("PAYMENT_INTENT")).JsonHtmlContent()));
+    </script>
+}

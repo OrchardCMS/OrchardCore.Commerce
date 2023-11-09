@@ -2,7 +2,8 @@
 using Fluid.Values;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Liquid;
 using System.Collections.Generic;

@@ -1,10 +1,11 @@
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using YesSql.Indexes;
 
 namespace OrchardCore.Commerce.Indexes;
 
-public class ProductPartIndex : MapIndex
+public class ProductPartIndex : MapIndex, ISkuHolder
 {
     public string ContentItemId { get; set; }
     public string Sku { get; set; }

@@ -1,5 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,20 +14,20 @@ public class FakeCartStorage : IShoppingCartPersistence
             ? new ShoppingCart(cart.Items)
             : new ShoppingCart();
 
-    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
+    public Task<ShoppingCart> RetrieveAsync(string shoppingCartId)
     {
         if (!_carts.TryGetValue(shoppingCartId ?? string.Empty, out var cart))
         {
-            cart = new ShoppingCart();
+            cart = new ShoppingCart { Id = shoppingCartId };
             _carts.Add(shoppingCartId ?? string.Empty, cart);
         }
 
         return Task.FromResult(cart);
     }
 
-    public Task StoreAsync(ShoppingCart items, string shoppingCartId = null)
+    public Task StoreAsync(ShoppingCart items)
     {
-        _carts[shoppingCartId ?? string.Empty] = new ShoppingCart(items.Items);
+        _carts[items.Id ?? string.Empty] = new ShoppingCart(items.Items);
         return Task.CompletedTask;
     }
 }

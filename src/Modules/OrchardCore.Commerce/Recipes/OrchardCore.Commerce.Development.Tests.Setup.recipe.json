@@ -32,6 +32,9 @@
       "enable": [
         // Needed for consistent, machine-independent locale setting.
         "OrchardCore.Localization"
+      ],
+      "disable": [
+        "OrchardCore.Commerce.Payment.Stripe"
       ]
     },
     {

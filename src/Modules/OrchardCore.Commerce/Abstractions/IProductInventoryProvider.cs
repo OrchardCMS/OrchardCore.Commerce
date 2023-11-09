@@ -1,4 +1,4 @@
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -64,9 +64,9 @@
         "OrchardCore.Commerce.CurrencySettingsSelector",
         "OrchardCore.Commerce.SessionCartStorage",
 
-        "OrchardCore.Commerce.ContentFields",
+        "OrchardCore.Commerce.Payment.DummyProvider",
+        "OrchardCore.Commerce.Payment.Stripe",
         "OrchardCore.Commerce.Promotion",
-        "OrchardCore.Commerce.Tax",
         "OrchardCore.Commerce.Inventory",
 
         // Themes

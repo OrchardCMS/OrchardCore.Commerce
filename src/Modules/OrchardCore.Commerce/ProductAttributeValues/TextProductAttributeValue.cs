@@ -1,4 +1,5 @@
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;

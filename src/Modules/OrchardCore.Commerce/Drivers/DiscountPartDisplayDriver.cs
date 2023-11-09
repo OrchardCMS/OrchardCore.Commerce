@@ -1,6 +1,6 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Contents;
-using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Exceptions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;

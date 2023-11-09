@@ -1,6 +1,6 @@
 # Stripe Payment
 
-Orchard Core Commerce [aims to support multiple payment providers](https://github.com/OrchardCMS/OrchardCore.Commerce/issues/149), but at this time [Stripe](https://stripe.com/) is the only supported implementation. This document describes how to set it up for testing, but if you just want to try out the checkout flow you can use the [cards](#cards) listed below without any configuration.
+Orchard Core Commerce supports multiple [payment providers](payment-providers.md). [Stripe](https://stripe.com/) was the first implemented. This document describes how to set it up for testing, including hooking your site up to the Stripe dashboard. If you just want to try out the checkout flow you can skip the Webhook sections.
 
 ## Test data for Stripe Payment
 
@@ -14,13 +14,15 @@ Stripe API uses a secret-publishable key pair. The following API keys are public
 
 **Publishable and secret keys are just publicly available test keys. Don't submit any personally identifiable information in requests made with this key.**
 
-You can obtain your own test keys from the Stripe dashboard. You can find them at _Dashboard → Developers → API keys_.
+You can obtain your own test keys from the Stripe dashboard. You can find them in the [developer dashboard's Api keys tab](https://dashboard.stripe.com/test/apikeys).
+
+In your Orchard Core site go to _Admin_ → _Configuration_ → _Commerce_ → _Stripe API_ and provide at least the _Publishable key_ and _Secret key_. Otherwise the feature can't work and the payment button will be hidden during checkout.
 
 ### Webhook signing key
 
 It is not needed, but recommended to use webhook. Otherwise, if there is a problem with redirecting the user, the payment confirmation will fail.
 
-There is no publicly available webhook signing key. Use your own API keys and Webhook key. Create your own at _Dashboard → Developers → Webhooks_.
+There is no publicly available webhook signing key. Use your own API keys and Webhook key. You can create one in the [developer dashboard's Webhooks tab](https://dashboard.stripe.com/test/webhooks).
 
 Read about webhook status codes [here](https://stripe.com/docs/webhooks/best-practices#pending-webhook-statuses). Our webhook endpoint returns _200_ if the request was received without an exception. It does not mean that it has been processed. It returns _400_ if there was an exception inside the webhook controller. Everything else comes from Stripe itself.
 

@@ -26,7 +26,7 @@ public class WorkflowBehaviourTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
 
                 // Due to the expected verification failure, the cart should still be empty and the error message shown.
-                context.Driver.Url.ShouldEndWith("/cart-empty");
+                context.Driver.Url.ShouldEndWith("/cart/empty");
                 context
                     .GetErrorMessage()
                     .ShouldBe("The \"Item Verification Sample\" workflow has intentionally failed this product.");
@@ -43,7 +43,8 @@ public class WorkflowBehaviourTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
 
                 // Verify that the additional product is added and so the price is higher.
-                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe("$10.00");
+                const string price = "$10.00";
+                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe(price);
 
                 // Verify that the row count is 4 (column headers, 2 line items and summary row), the additional column
                 // is added, and its contents are as expected.
@@ -60,9 +61,9 @@ public class WorkflowBehaviourTests : UITestBase
                         "Some content about product \"shipping000000000000000000\".",
                     });
 
-                // Verify that it still works even on the next page.
-                await context.ClickReliablyOnAsync(By.ClassName("checkout"));
-                context.Get(By.ClassName("pay-text")).Text.Trim().ShouldBe("Pay $10.00");
+                // Verify that it still works even after a reload.
+                context.Refresh();
+                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe(price);
             },
             browser);
 
