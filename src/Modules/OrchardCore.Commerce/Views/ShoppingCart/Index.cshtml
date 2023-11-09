@@ -1,16 +1,33 @@
+@using OrchardCore.Commerce.Inventory.Models;
+@using OrchardCore.ContentManagement;
+
 @model ShoppingCartViewModel
 
 <style asp-name="@ResourceNames.ShoppingCart"></style>
+
+@{
+    // If any of the line items are unpurchasable based on their inventory settings, disable checkout button.
+    var cannotCheckout = Model.Lines
+        .Where(line => line.Product.As<InventoryPart>() is not null)
+        .Any(line => line.Product.As<InventoryPart>().Inventory[line.ProductSku] < 1 &&
+            !line.Product.As<InventoryPart>().AllowsBackOrder.Value);
+}
 
 <mvc-title text="@T["Your Cart"]"/>
 
 <section id="shopping-cart">
     <shape type="ShoppingCartTable" prop-ShoppingCartViewModel="@Model"></shape>
-
-    <div class="col-xs-12 col-sm-1">
-        <a asp-action="Index"
-           asp-controller="Payment"
-           asp-area="OrchardCore.Commerce"
-           class="btn btn-primary checkout">@T["Checkout"]</a>
-    </div>
+    @if (cannotCheckout)
+    {
+        <p>@T["Checkout unavailable — invalid item in cart."]</p>
+    }
+    else
+    {
+        <div class="col-xs-12 col-sm-1">
+            <a asp-action="Index"
+               asp-controller="Payment"
+               asp-area="OrchardCore.Commerce"
+               class="btn btn-primary checkout">@T["Checkout"]</a>
+        </div>        
+    }
 </section>
