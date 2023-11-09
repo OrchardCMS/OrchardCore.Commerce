@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
-using OrchardCore.Commerce.Abstractions.Extensions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;

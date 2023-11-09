@@ -7,7 +7,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
-using OrchardCore.Commerce.Abstractions.Extensions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
