@@ -45,7 +45,7 @@
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.0.2" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="v8.0.3-alpha.1.occ-63" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
