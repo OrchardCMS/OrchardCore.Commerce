@@ -43,7 +43,8 @@ public class WorkflowBehaviourTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
 
                 // Verify that the additional product is added and so the price is higher.
-                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe("$10.00");
+                const string price = "$10.00";
+                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe(price);
 
                 // Verify that the row count is 4 (column headers, 2 line items and summary row), the additional column
                 // is added, and its contents are as expected.
@@ -62,7 +63,7 @@ public class WorkflowBehaviourTests : UITestBase
 
                 // Verify that it still works even after a reload.
                 context.Refresh();
-                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe("$10.00");
+                context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe(price);
             },
             browser);
 
