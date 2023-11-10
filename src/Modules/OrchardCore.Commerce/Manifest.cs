@@ -20,6 +20,7 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Workflows",
         "OrchardCore.Templates",
         "OrchardCore.Commerce.ContentFields",
+        "OrchardCore.Commerce.Payment",
     }
 )]
 

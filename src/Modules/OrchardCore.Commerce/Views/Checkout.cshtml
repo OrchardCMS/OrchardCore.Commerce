@@ -1,4 +1,8 @@
 @using OrchardCore.Commerce.Controllers;
+@using OrchardCore
+@using OrchardCore.Mvc.Utilities
+@using static OrchardCore.Commerce.Constants.ResourceNames
+@using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
 @model CheckoutViewModel
 
@@ -7,11 +11,14 @@
 
     var regions = Model.Regions.AsList();
     var provinces = Model.Provinces;
+
+    var actionUrl = Orchard.Action<PaymentController>(controller =>
+        controller.CheckoutWithoutPayment(Model.ShoppingCartId));
 }
 
 <section id="checkout">
     <div class="payment-form_container">
-        <form asp-action="@nameof(PaymentController.CheckoutWithoutPayment)" asp-route-shoppingCartId="@Model.ShoppingCartId" id="payment-form" class="payment-form">
+        <form action="@actionUrl" method="post" id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
@@ -42,26 +49,26 @@
                 <h3 class="address__title">@T["Billing Address"]</h3>
 
                 @await DisplayAsync(
-                    new AddressFieldEditorViewModel
-                    {
-                        AddressField = orderPart.BillingAddress,
-                        CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
-                        Regions = regions,
-                        Provinces = provinces,
-                    })
+                           new AddressFieldEditorViewModel
+                           {
+                               AddressField = orderPart.BillingAddress,
+                               CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
+                               Regions = regions,
+                               Provinces = provinces,
+                           })
             </div>
 
             <div class="address address_shipping-address">
                 <h3 class="address__title">@T["Shipping Address"]</h3>
 
                 @await DisplayAsync(
-                    new AddressFieldEditorViewModel
-                    {
-                        AddressField = orderPart.ShippingAddress,
-                        CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
-                        Regions = regions,
-                        Provinces = provinces,
-                    })
+                           new AddressFieldEditorViewModel
+                           {
+                               AddressField = orderPart.ShippingAddress,
+                               CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
+                               Regions = regions,
+                               Provinces = provinces,
+                           })
             </div>
 
             <div class="mb-3">
@@ -92,12 +99,19 @@
             @* If totals are zero, there's no need for payment. *@
             @if (Model.SingleCurrencyTotal.Value > 0)
             {
-                <shape type="StripeCheckout"
-                       prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                       prop-NetTotal="@Model.NetTotal"
-                       prop-GrossTotal="@Model.GrossTotal"
-                       prop-PublishableKey="@Model.StripePublishableKey"
-                       prop-ClientSecret="@Model.PaymentIntentClientSecret"/>
+                <div class="payment-provider-list">
+                    @foreach (var (providerName, data) in Model.PaymentProviderData)
+                    {
+                        var shapeName = "Checkout" + providerName;
+                        <div class="payment-provider payment-provider-@shapeName.HtmlClassify()">
+                            <shape type="@shapeName"
+                                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                                   prop-NetTotal="@Model.NetTotal"
+                                   prop-GrossTotal="@Model.GrossTotal"
+                                   prop-PaymentProviderData="@data" />
+                        </div>
+                    }
+                </div>
             }
             else
             {
@@ -113,10 +127,10 @@
     </div>
 </section>
 
-<style asp-name="@ResourceNames.PaymentForm"></style>
+<style asp-name="@PaymentForm"></style>
 
-<script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
-<script depends-on="@ResourceNames.ToggleSecondAddress" at="Foot">
+<script asp-name="@ToggleSecondAddress" at="Foot"></script>
+<script depends-on="@ToggleSecondAddress" at="Foot">
     const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
     checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
     initializeToggleSecondAddress(

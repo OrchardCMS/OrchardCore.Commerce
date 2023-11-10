@@ -1,4 +1,5 @@
-﻿using OrchardCore.Commerce.AddressDataType;
+﻿using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.AddressDataType;
 
 namespace OrchardCore.Commerce.Models;
 

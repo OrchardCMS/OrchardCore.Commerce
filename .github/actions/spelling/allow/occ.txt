@@ -9,6 +9,7 @@ CLA
 contentpart
 CVC
 datetimefield
+deserializers
 disqus
 emoji
 EUR
@@ -27,8 +28,8 @@ pricefield
 roadmap
 shoppingcart
 skus
+testdiscountedproduct
 testproduct
 testproductvariant
-testdiscountedproduct
 unpublish
 webhooks

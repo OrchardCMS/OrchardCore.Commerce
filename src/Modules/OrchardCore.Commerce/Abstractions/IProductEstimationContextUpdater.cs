@@ -1,4 +1,5 @@
-﻿using OrchardCore.Commerce.Models;
+﻿using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Abstractions;
 

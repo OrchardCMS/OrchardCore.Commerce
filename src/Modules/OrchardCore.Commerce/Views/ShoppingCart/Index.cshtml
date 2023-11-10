@@ -1,9 +1,8 @@
-@using OrchardCore.Commerce.Abstractions;
+@model OrchardCore.Commerce.Abstractions.ViewModels.ShoppingCartViewModel
 @using OrchardCore.Commerce.Inventory.Models;
 @using OrchardCore.Commerce.Models;
 @using OrchardCore.ContentManagement;
 
-@model ShoppingCartViewModel
 
 <style asp-name="@ResourceNames.ShoppingCart"></style>
 
@@ -20,7 +19,7 @@
         <div class="col-xs-12 col-sm-1">
             <a asp-action="Index"
                asp-controller="Payment"
-               asp-area="OrchardCore.Commerce"
+               asp-area="OrchardCore.Commerce.Payment"
                class="btn btn-primary checkout">@T["Checkout"]</a>
         </div>        
     }

@@ -1,23 +1,16 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
-using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Activities;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.AddressDataType;
-using OrchardCore.Commerce.Constants;
-using OrchardCore.Commerce.Controllers;
-using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Models;
-using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Mvc.Utilities;
-using OrchardCore.Workflows.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Constants.ContentTypes;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 
@@ -27,48 +20,33 @@ public class OrderController : Controller
     private readonly IPaymentService _paymentService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
-    private readonly IEnumerable<IWorkflowManager> _workflowManagers;
-    private readonly IStripePaymentService _stripePaymentService;
+    private readonly IShoppingCartHelpers _shoppingCartHelpers;
 
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
-        IEnumerable<IWorkflowManager> workflowManagers,
-        IStripePaymentService stripePaymentService)
+        IShoppingCartHelpers shoppingCartHelpers)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
-        _workflowManagers = workflowManagers;
-        _stripePaymentService = stripePaymentService;
+        _shoppingCartHelpers = shoppingCartHelpers;
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> CreateOrderWithSuccessfulPayment(long dateTimeTicks)
+    public async Task<IActionResult> CreateOrderWithSuccessfulPayment(long dateTimeTicks, string shoppingCartId)
     {
         var testTime = new DateTime(dateTimeTicks, DateTimeKind.Utc);
 
-        var shoppingCart = await _shoppingCartPersistence.RetrieveAsync();
-        var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(shoppingCart.Id);
+        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId: null);
+        var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(cart.Id);
         var order = await _contentManager.NewAsync(Order);
-        var orderLineItems = await _stripePaymentService.CreateOrderLineItemsAsync(shoppingCart);
+        var orderLineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
         order.Apply(checkoutViewModel.OrderPart);
 
         order.Alter<OrderPart>(orderPart =>
         {
-            var payment = new Payment
-            {
-                Kind = "Card",
-                ChargeText = "Test charge text",
-                TransactionId = "Test transaction ID",
-                Amount = checkoutViewModel.SingleCurrencyTotal,
-                CreatedUtc = testTime,
-            };
-
-            orderPart.Charges.Clear();
-            orderPart.Charges.Add(payment);
-
             orderPart.LineItems.AddRange(orderLineItems);
             var addressField = new AddressField
             {
@@ -89,20 +67,22 @@ public class OrderController : Controller
             orderPart.BillingAddress = addressField;
             orderPart.BillingAndShippingAddressesMatch.Value = true;
             orderPart.ShippingAddress = addressField;
-
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
         });
 
         await _contentManager.CreateAsync(order);
 
-        await _paymentService.FinalModificationOfOrderAsync(order);
-
-        // Since the event trigger is tied to "UpdateOrderToOrderedAsync()" we also need to call it here.
-        await _workflowManagers.TriggerContentItemEventAsync<OrderCreatedEvent>(order);
-
-        return RedirectToAction(
-            nameof(PaymentController.Success),
-            typeof(PaymentController).ControllerName(),
-            new { area = "OrchardCore.Commerce", orderId = order.ContentItemId, });
+        return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
+            this,
+            order,
+            shoppingCartId,
+            getCharges: _ => new[]
+            {
+                new Models.Payment(
+                    Kind: "Card",
+                    ChargeText: "Test charge text",
+                    TransactionId: "Test transaction ID",
+                    Amount: checkoutViewModel.SingleCurrencyTotal,
+                    CreatedUtc: testTime),
+            });
     }
 }

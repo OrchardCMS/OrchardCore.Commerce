@@ -1,7 +1,9 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
-using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -115,11 +117,12 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
 
         return attributes
+            .CastWhere<BaseProductAttributeValue<object>>()
             .SelectWhere(attribute =>
-                attribute is RawProductAttributeValue rawAttribute &&
-                type.GetFieldDefinition(rawAttribute.AttributeName) is ({ } partDefinition, { } fieldDefinition)
+                attribute.IsRaw() &&
+                type.GetFieldDefinition(attribute.AttributeName) is ({ } partDefinition, { } fieldDefinition)
                     ? _attributeProviders
-                        .SelectWhere(provider => provider.CreateFromValue(partDefinition, fieldDefinition, rawAttribute.Value))
+                        .SelectWhere(provider => provider.CreateFromValue(partDefinition, fieldDefinition, attribute.Value))
                         .FirstOrDefault()
                     : attribute)
             .ToHashSet();

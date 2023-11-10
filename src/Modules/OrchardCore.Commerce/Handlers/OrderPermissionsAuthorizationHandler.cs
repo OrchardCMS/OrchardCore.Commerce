@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Security;
 using System;
@@ -23,7 +23,7 @@ public class OrderPermissionsAuthorizationHandler : AuthorizationHandler<Permiss
 
         // Regular users should only see their own Orders, while users with the ManageOrders permission should be
         // able to see all Orders.
-        if (!await _authorizationServiceLazy.Value.AuthorizeAsync(context.User, Permissions.ManageOrders) &&
+        if (!await _authorizationServiceLazy.Value.AuthorizeAsync(context.User, Payment.Permissions.ManageOrders) &&
             context.User.Identity?.Name != order.ContentItem.Author)
         {
             context.Fail();

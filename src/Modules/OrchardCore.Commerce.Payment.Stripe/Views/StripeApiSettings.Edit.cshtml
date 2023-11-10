@@ -1,0 +1,34 @@
+@model OrchardCore.Commerce.Payment.Stripe.ViewModels.StripeApiSettingsViewModel
+
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<div class="mb-3" asp-validation-class-for="PublishableKey">
+    <label asp-for="PublishableKey">@T["Publishable Key"]</label>
+    <input asp-for="PublishableKey" class="form-control" type="text" />
+    <span asp-validation-for="PublishableKey"></span>
+    <span class="hint">@T["Your Stripe's Publishable API key."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SecretKey">
+    <label asp-for="SecretKey">@T["Secret Key"]</label>
+    <input asp-for="SecretKey" class="form-control" type="password" autocomplete="off" />
+    <span asp-validation-for="SecretKey"></span>
+    <span class="hint">
+        @T["Your Stripe Secret API key. The field will be empty after saving it, for security reasons."]
+    </span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SecretKey">
+    <label asp-for="WebhookSigningSecret">@T["Webhook Signing Secret"]</label>
+    <input asp-for="WebhookSigningSecret" class="form-control" type="password" autocomplete="off" />
+    <span asp-validation-for="WebhookSigningSecret"></span>
+    <span class="hint">
+        @T["Your Webhook Signing Secret key. The field will be empty after saving it, for security reasons."]
+    </span>
+</div>
+
+<div class="mb-3">
+    <span class="hint">
+        @T["Get your Stripe API keys at <a href=\"https://stripe.com/docs/keys\" target=\"_blank\">https://stripe.com/docs/keys</a>. And your Webhook key at <a href=\"https://dashboard.stripe.com/webhooks\" target=\"_blank\">https://dashboard.stripe.com/webhooks</a>"]
+    </span>
+</div>

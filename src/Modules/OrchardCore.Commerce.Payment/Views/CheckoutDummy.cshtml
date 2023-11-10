@@ -1,0 +1,13 @@
+<shape type="PayButton" PayButtonClass="dummy" prop-Text="@T["Make a dummy payment"]" />
+
+<script asp-name="@(FeatureIds.DummyProvider + ".Script")" at="Foot">
+    Array.from(document.querySelectorAll(".pay-button-dummy")).forEach((button) => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+
+            const form = document.querySelector('.payment-form');
+            form.action = @Url.Content("~/checkout/callback/Dummy").JsonHtmlContent();
+            form.submit();
+        });
+    });
+</script>

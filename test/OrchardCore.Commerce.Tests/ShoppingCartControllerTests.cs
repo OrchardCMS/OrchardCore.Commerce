@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Controllers;
-using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
@@ -22,7 +23,7 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ShoppingCartControllerTests
 {
-    private readonly IShoppingCartPersistence _cartStorage;
+    private readonly IShoppingCartPersistence _cartStorage = new FakeCartStorage();
 
     private readonly Dictionary<string, string[]> _attrSet1 = new()
     {
@@ -51,19 +52,10 @@ public class ShoppingCartControllerTests
         new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz"),
     };
 
-    public ShoppingCartControllerTests() => _cartStorage = new FakeCartStorage();
-
     [Fact]
     public async Task AddExistingItemToCart()
     {
-        await _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")));
-        using var controller = GetController();
-        await controller.AddItem(new ShoppingCartLineUpdateModel
-        {
-            Quantity = 7,
-            ProductSku = "foo",
-        });
-        var cart = await _cartStorage.RetrieveAsync();
+        var cart = await StoreAndRetrieveItemAsync("foo");
 
         Assert.Equal(
             new List<ShoppingCartItem> { new(10, "foo") },
@@ -73,14 +65,7 @@ public class ShoppingCartControllerTests
     [Fact]
     public async Task AddNewItemToCart()
     {
-        await _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")));
-        using var controller = GetController();
-        await controller.AddItem(new ShoppingCartLineUpdateModel
-        {
-            Quantity = 7,
-            ProductSku = "bar",
-        });
-        var cart = await _cartStorage.RetrieveAsync();
+        var cart = await StoreAndRetrieveItemAsync("bar");
 
         Assert.Equal(
             new List<ShoppingCartItem>
@@ -100,13 +85,15 @@ public class ShoppingCartControllerTests
             new ShoppingCartItem(4, "foo", _attrSet2Parsed),
             new ShoppingCartItem(5, "foo", _attrSet3Parsed),
             new ShoppingCartItem(6, "bar", _attrSet3Parsed)));
+
         using var controller = GetController();
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 7, ProductSku = "foo" });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 8, ProductSku = "foo", Attributes = _attrSet1 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 9, ProductSku = "foo", Attributes = _attrSet2 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 10, ProductSku = "foo", Attributes = _attrSet3 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 11, ProductSku = "bar", Attributes = _attrSet3 });
-        await controller.AddItem(new ShoppingCartLineUpdateModel { Quantity = 13, ProductSku = "baz", Attributes = _attrSet3 });
+        await AddItemAsync(controller, cartId: null, 7, "foo");
+        await AddItemAsync(controller, cartId: null, 8, "foo", _attrSet1);
+        await AddItemAsync(controller, cartId: null, 9, "foo", _attrSet2);
+        await AddItemAsync(controller, cartId: null, 10, "foo", _attrSet3);
+        await AddItemAsync(controller, cartId: null, 11, "bar", _attrSet3);
+        await AddItemAsync(controller, cartId: null, 13, "baz", _attrSet3);
+
         var cart = await controller.Get();
 
         Assert.Equal(
@@ -221,4 +208,33 @@ public class ShoppingCartControllerTests
         controller.ControllerContext = mockContext;
         return controller;
     }
+
+    private Task StoreCartAsync(string cartId) =>
+        _cartStorage.StoreAsync(new ShoppingCart(new ShoppingCartItem(3, "foo")), cartId);
+
+    private async Task<ShoppingCart> StoreAndRetrieveItemAsync(string sku, int quantity = 7)
+    {
+        var cartId = Guid.NewGuid().ToString();
+        await StoreCartAsync(cartId);
+
+        using var controller = GetController();
+        await AddItemAsync(controller, cartId, quantity, sku);
+
+        return await _cartStorage.RetrieveAsync(cartId);
+    }
+
+    private static Task AddItemAsync(
+        ShoppingCartController controller,
+        string cartId,
+        int quantity,
+        string sku,
+        IDictionary<string, string[]> attributes = null) =>
+        controller.AddItem(
+            new ShoppingCartLineUpdateModel
+            {
+                Quantity = quantity,
+                ProductSku = sku,
+                Attributes = attributes,
+            },
+            cartId);
 }

@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Orchard Core Commerce - Abstractions</Title>
+    <Authors>Bertrand Le Roy</Authors>
+    <Copyright>Copyright © 2018 .NET Foundation</Copyright>
+    <Description>Contains models and other abstractions that can be used by modules to extend OrchardCore Commerce.</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;abstraction</PackageTags>
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Libraries/OrchardCore.Commerce.Abstractions/Readme.md</PackageProjectUrl>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+    <PackageIcon>OrchardCoreIcon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="License.md" Pack="true" PackagePath=""/>
+    <None Include="Readme.md"/>
+    <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentFields" Version="1.7.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.0.3-alpha.1.occ-63" />
+  </ItemGroup>
+
+</Project>

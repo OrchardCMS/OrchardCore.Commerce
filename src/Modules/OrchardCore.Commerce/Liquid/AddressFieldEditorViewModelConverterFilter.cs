@@ -1,6 +1,6 @@
 using Fluid;
 using Fluid.Values;
-using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Liquid;
 using System.Threading.Tasks;

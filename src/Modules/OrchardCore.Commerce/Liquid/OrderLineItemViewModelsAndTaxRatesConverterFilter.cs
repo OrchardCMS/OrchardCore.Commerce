@@ -2,7 +2,7 @@ using Fluid;
 using Fluid.Values;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;

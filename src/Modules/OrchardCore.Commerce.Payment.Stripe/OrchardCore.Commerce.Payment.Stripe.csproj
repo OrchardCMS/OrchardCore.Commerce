@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Orchard Core Commerce - Payment - Stripe</Title>
+    <Authors>Bertrand Le Roy</Authors>
+    <Copyright>Copyright © 2018 .NET Foundation</Copyright>
+    <Description>Stripe payment provider for Orchard Core Commerce</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Payment;Stripe</PackageTags>
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.Payment.Stripe/Readme.md</PackageProjectUrl>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+    <PackageIcon>OrchardCoreIcon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="License.md" Pack="true" PackagePath="" />
+    <None Include="Readme.md" />
+    <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.Module.Targets" Version="1.7.0"/>
+    <PackageReference Include="Stripe.net" Version="41.27.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
+    <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
+  </ItemGroup>
+  <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
+    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.props" />
+    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
+  </ImportGroup>
+  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
+    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.3.2" />
+  </ItemGroup>
+
+</Project>

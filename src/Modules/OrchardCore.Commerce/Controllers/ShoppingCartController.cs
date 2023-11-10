@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Exceptions;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Activities;
-using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -99,7 +101,7 @@ public class ShoppingCartController : Controller
     }
 
     [HttpGet]
-    [Route("cart-empty")]
+    [Route("cart/empty")]
     public async Task<ActionResult> Empty()
     {
         var trackingConsentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();

@@ -7,9 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.TagHelpers;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.ContentFields.Events;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Events;
@@ -25,7 +31,6 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
-using OrchardCore.Commerce.TagHelpers;
 using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -61,14 +66,12 @@ public class Startup : StartupBase
         services.AddTagHelpers<MvcTitleTagHelper>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
         services.AddScoped<IDataMigration, ProductMigrations>();
         services.AddScoped<IContentHandleProvider, ProductPartContentAliasProvider>();
         services.AddScoped<IProductService, ProductService>();
-        services.AddScoped<IProductInventoryService, ProductInventoryService>();
         services.AddScoped<IProductInventoryProvider, LocalInventoryProvider>();
 
         services.AddContentPart<ProductPart>()
@@ -137,9 +140,7 @@ public class Startup : StartupBase
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
-        services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
         services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
-        services.AddScoped<IShoppingCartEvents, WorkflowShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
@@ -148,18 +149,11 @@ public class Startup : StartupBase
 
         services.AddScoped<IAuthorizationHandler, OrderPermissionsAuthorizationHandler>();
 
-        services.AddContentField<AddressField>()
-            .UseDisplayDriver<AddressFieldDisplayDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, AddressFieldSettingsDriver>();
-
         services.AddScoped<IDataMigration, OrderMigrations>();
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
         services.AddScoped<IOrderLineItemService, OrderLineItemService>();
 
         services.AddScoped<IContentTypeDefinitionDisplayDriver, OrderContentTypeDefinitionDisplayDriver>();
-
-        // Checkout
-        services.AddScoped<IPaymentService, PaymentService>();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();
@@ -169,24 +163,12 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<ISite>, CurrencySettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CurrencySettings>, CurrencySettingsConfiguration>();
-        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, PriceDisplaySettingsDisplayDriver>();
-        services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
         services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegionSettings>, RegionSettingsConfiguration>();
 
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
-
-        // Promotion
-        services.AddScoped<IPromotionService, PromotionService>();
-
-        // Stripe payments
-        services.AddContentPart<StripePaymentPart>();
-        services.AddScoped<IStripePaymentService, StripePaymentService>();
-        services.AddScoped<IDataMigration, StripeMigrations>();
-        services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
-        services.AddSingleton<IIndexProvider, OrderPaymentIndexProvider>();
 
         // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>
@@ -221,6 +203,10 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, ProductListMigrations>();
         services.AddContentPart<ProductListPart>()
             .UseDisplayDriver<ProductListPartDisplayDriver>();
+        IProductAttributeDeserializer.AddSerializers(
+            new TextProductAttributeDeserializer(),
+            new BooleanProductAttributeDeserializer(),
+            new NumericProductAttributeDeserializer());
     }
 }
 
@@ -235,6 +221,9 @@ public class WorkflowStartup : StartupBase
         services.AddActivity<CartUpdatedEvent, CartUpdatedEventDisplayDriver>();
         services.AddActivity<CartLoadedEvent, CartLoadedEventDisplayDriver>();
         services.AddActivity<OrderCreatedEvent, OrderCreatedEventDisplayDriver>();
+
+        services.AddScoped<IShoppingCartEvents, WorkflowShoppingCartEvents>();
+        services.AddScoped<IOrderEvents, WorkflowOrderEvents>();
     }
 }
 
@@ -308,6 +297,10 @@ public class PromotionStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IPromotionService, PromotionService>();
+        services.AddScoped<IOrderEvents, PromotionOrderEvents>();
+        services.AddScoped<IShoppingCartEvents, PromotionShoppingCartEvents>();
+
         services
             .AddContentPart<DiscountPart>()
             .AddHandler<DiscountPartHandler>()
@@ -350,7 +343,10 @@ public class UserSettingsStartup : StartupBase
             .AddContentPart<UserDetailsPart>()
             .WithMigration<UserDetailsMigrations>();
 
+        services.AddScoped<IAddressFieldEvents, UserAddressFieldEvents>();
         services.AddScoped<IDisplayDriver<User>, UserAddressesUserDisplayDriver>();
+        services.AddScoped<IOrderEvents, UserSettingsOrderEvents>();
+        services.AddScoped<ICheckoutEvents, UserSettingsCheckoutEvents>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -367,8 +363,12 @@ public class UserSettingsStartup : StartupBase
 [RequireFeatures(Inventory.Constants.FeatureIds.Inventory)]
 public class InventoryStartup : StartupBase
 {
-    public override void ConfigureServices(IServiceCollection services) =>
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddScoped<IProductEstimationContextUpdater, InventoryProductEstimationContextUpdater>();
+        services.AddScoped<IOrderEvents, InventoryOrderEvents>();
+        services.AddScoped<IProductInventoryService, ProductInventoryService>();
+    }
 }
 
 [RequireFeatures("OrchardCore.ContentLocalization")]

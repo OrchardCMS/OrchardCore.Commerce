@@ -1,4 +1,4 @@
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Services;
 using System.Threading.Tasks;
 
@@ -16,10 +16,22 @@ public interface IShoppingCartPersistence
     /// <summary>
     /// Returns a <see cref="ShoppingCart"/> identified by <paramref name="shoppingCartId"/>.
     /// </summary>
-    Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null);
+    /// <param name="shoppingCartId">
+    /// The name used to identify the shopping cart. <see langword="null"/> refers to the default shopping cart.
+    /// </param>
+    Task<ShoppingCart> RetrieveAsync(string shoppingCartId);
 
     /// <summary>
     /// Saves a shopping cart by a given ID.
     /// </summary>
-    Task StoreAsync(ShoppingCart items, string shoppingCartId = null);
+    Task StoreAsync(ShoppingCart items);
+}
+
+public static class ShoppingCartPersistenceExtensions
+{
+    public static Task StoreAsync(this IShoppingCartPersistence service, ShoppingCart items, string shoppingCartId)
+    {
+        items.Id = shoppingCartId ?? items.Id;
+        return service.StoreAsync(items);
+    }
 }

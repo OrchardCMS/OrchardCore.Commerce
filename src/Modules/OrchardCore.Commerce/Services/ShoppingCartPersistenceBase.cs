@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +19,7 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
     protected ShoppingCartPersistenceBase(IEnumerable<IShoppingCartEvents> shoppingCartEvents) =>
         _shoppingCartEvents = shoppingCartEvents;
 
-    public async Task<ShoppingCart> RetrieveAsync(string shoppingCartId = null)
+    public async Task<ShoppingCart> RetrieveAsync(string shoppingCartId)
     {
         var key = GetCacheId(shoppingCartId);
 
@@ -39,9 +39,9 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
         return cart;
     }
 
-    public async Task StoreAsync(ShoppingCart items, string shoppingCartId = null)
+    public async Task StoreAsync(ShoppingCart items)
     {
-        var key = GetCacheId(shoppingCartId);
+        var key = GetCacheId(items.Id);
 
         if (await StoreInnerAsync(key, items))
         {

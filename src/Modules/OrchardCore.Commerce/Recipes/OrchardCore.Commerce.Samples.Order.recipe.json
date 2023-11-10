@@ -52,7 +52,19 @@
               }
             ],
             "AdditionalCosts": [],
-            "Charges": [],
+            "Charges": [
+              {
+                "$type": "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce.Payment",
+                "Kind": "Dummy Payment",
+                "TransactionId": "43p7j4274jq7r3s860gadwv8mf:0",
+                "ChargeText": "Dummy transaction of US Dollar.",
+                "Amount": {
+                  "value": 5.0,
+                  "currency": "USD"
+                },
+                "CreatedUtc": "2023-11-05T01:05:36.6982061Z"
+              }
+            ],
             "Email": {
               "Text": "admin@admin.com"
             },
