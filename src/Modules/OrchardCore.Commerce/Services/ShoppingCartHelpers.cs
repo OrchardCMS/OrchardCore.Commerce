@@ -11,8 +11,8 @@ using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using System;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -137,7 +137,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             line.LinePrice = line.LinePrice.GetRounded();
             line.UnitPrice = line.UnitPrice.GetRounded();
 
-            var productPart = line.Product;
+            var productPart = line.Product.ContentItem.As<ProductPart>();
             var priceVariantsPart = productPart.As<PriceVariantsPart>();
             if (priceVariantsPart is not null && line.Attributes.Any())
             {

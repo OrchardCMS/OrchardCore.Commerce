@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -105,8 +106,8 @@ public class PaymentService : IPaymentService
         var currency = total.Currency;
         var netTotal = new Amount(0, currency);
         var grossTotal = new Amount(0, currency);
-
         var lines = cart.Lines;
+
         foreach (var line in lines)
         {
             var additionalData = line.AdditionalData;
@@ -121,12 +122,16 @@ public class PaymentService : IPaymentService
             netTotal += netPrice * line.Quantity;
         }
 
+        //// Checkout should not be possible if any of the items are unpurchasable.
+        //var cannotCheckout = ProcessLines(lines, netTotal, grossTotal);
+
         var viewModel = new CheckoutViewModel(orderPart, total, netTotal)
         {
             ShoppingCartId = shoppingCartId,
             Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
             GrossTotal = grossTotal,
             UserEmail = email,
+            //IsInvalid = cannotCheckout,
             CheckoutShapes = checkoutShapes,
         };
 
@@ -204,6 +209,49 @@ public class PaymentService : IPaymentService
 
         return order;
     }
+
+    //private bool ProcessLines(IList<ShoppingCartLineViewModel> lines, Amount netTotal, Amount grossTotal)
+    //{
+    //    var cannotCheckout = lines
+    //        .Where(line => line.Product.As<PriceVariantsPart>() is null)
+    //        .Select(line => line.Product.As<InventoryPart>())
+    //        .Where(inventoryPart => inventoryPart is not null)
+    //        .Any(inventoryPart => inventoryPart.Inventory[inventoryPart.ProductSku] < 1 &&
+    //            !inventoryPart.AllowsBackOrder.Value &&
+    //            !inventoryPart.IgnoreInventory.Value);
+
+    //    foreach (var line in lines)
+    //    {
+    //        var additionalData = line.AdditionalData;
+    //        var grossAmount = additionalData.GetGrossPrice();
+    //        if (grossAmount.Value > 0)
+    //        {
+    //            grossTotal += grossAmount * line.Quantity;
+    //        }
+
+    //        var netAmount = additionalData.GetNetPrice();
+    //        var netPrice = netAmount.Value > 0 ? netAmount : line.UnitPrice;
+    //        netTotal += netPrice * line.Quantity;
+
+    //        var productPart = line.Product;
+    //        var priceVariantsPart = productPart.As<PriceVariantsPart>();
+    //        if (priceVariantsPart is not null && line.Attributes.Any())
+    //        {
+    //            var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes.Values);
+    //            var fullSku = _productService.GetOrderFullSku(item, productPart);
+
+    //            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
+    //            var inventoryPart = productPart.As<InventoryPart>();
+    //            var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+
+    //            cannotCheckout = relevantInventory.Value < 1 &&
+    //                !inventoryPart.AllowsBackOrder.Value &&
+    //                !inventoryPart.IgnoreInventory.Value;
+    //        }
+    //    }
+
+    //    return cannotCheckout;
+    //}
 
     private async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
     {
