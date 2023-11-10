@@ -1,16 +1,45 @@
+@using OrchardCore.Commerce.Abstractions;
 @using OrchardCore.Commerce.Inventory.Models;
+@using OrchardCore.Commerce.Models;
 @using OrchardCore.ContentManagement;
 
 @model ShoppingCartViewModel
 
+@inject IProductService ProductService
+
 <style asp-name="@ResourceNames.ShoppingCart"></style>
 
 @{
+    // move to controller or something
+
     // If any of the line items are unpurchasable based on their inventory settings, disable checkout button.
     var cannotCheckout = Model.Lines
-        .Where(line => line.Product.As<InventoryPart>() is not null)
-        .Any(line => line.Product.As<InventoryPart>().Inventory[line.ProductSku] < 1 &&
-            !line.Product.As<InventoryPart>().AllowsBackOrder.Value);
+        .Where(line => line.Product.As<PriceVariantsPart>() is null)
+        .Select(line => line.Product.As<InventoryPart>())
+        .Where(inventoryPart => inventoryPart is not null)
+        .Any(inventoryPart => inventoryPart.Inventory[inventoryPart.ProductSku] < 1 &&
+            !inventoryPart.AllowsBackOrder.Value &&
+            !inventoryPart.IgnoreInventory.Value);
+
+    // Handle Price Variant Products separately.
+    foreach (var line in Model.Lines)
+    {
+        var productPart = line.Product;
+        var priceVariantsPart = productPart.As<PriceVariantsPart>();
+        if (priceVariantsPart is not null && line.Attributes.Any())
+        {
+            var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes.Values);
+            var fullSku = ProductService.GetOrderFullSku(item, productPart);
+
+            var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
+            var inventoryPart = productPart.As<InventoryPart>();
+            var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+
+            cannotCheckout = relevantInventory.Value < 1 &&
+                !inventoryPart.AllowsBackOrder.Value &&
+                !inventoryPart.IgnoreInventory.Value;
+        }
+    }
 }
 
 <mvc-title text="@T["Your Cart"]"/>
@@ -19,7 +48,7 @@
     <shape type="ShoppingCartTable" prop-ShoppingCartViewModel="@Model"></shape>
     @if (cannotCheckout)
     {
-        <p>@T["Checkout unavailable — invalid item in cart."]</p>
+        <p>@T["Checkout unavailable — an item is out of stock."]</p>
     }
     else
     {

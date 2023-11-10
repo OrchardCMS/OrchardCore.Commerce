@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
@@ -41,6 +42,7 @@ public class PaymentService : IPaymentService
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IProductService _productService;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -54,7 +56,8 @@ public class PaymentService : IPaymentService
         IPaymentIntentPersistence paymentIntentPersistence,
         IShoppingCartPersistence shoppingCartPersistence,
         IUpdateModelAccessor updateModelAccessor,
-        IContentItemDisplayManager contentItemDisplayManager)
+        IContentItemDisplayManager contentItemDisplayManager,
+        IProductService productService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _stripePaymentService = stripePaymentService;
@@ -70,6 +73,7 @@ public class PaymentService : IPaymentService
         _paymentIntentPersistence = paymentIntentPersistence;
         _shoppingCartPersistence = shoppingCartPersistence;
         _hca = services.HttpContextAccessor.Value;
+        _productService = productService;
     }
 
     public async Task<CheckoutViewModel> CreateCheckoutViewModelAsync(
@@ -128,6 +132,14 @@ public class PaymentService : IPaymentService
         var grossTotal = new Amount(0, currency);
 
         var lines = cart.Lines;
+        var cannotCheckout = lines
+            .Where(line => line.Product.As<PriceVariantsPart>() is null)
+            .Select(line => line.Product.As<InventoryPart>())
+            .Where(inventoryPart => inventoryPart is not null)
+            .Any(inventoryPart => inventoryPart.Inventory[inventoryPart.ProductSku] < 1 &&
+                !inventoryPart.AllowsBackOrder.Value &&
+                !inventoryPart.IgnoreInventory.Value);
+
         foreach (var line in lines)
         {
             var additionalData = line.AdditionalData;
@@ -140,6 +152,23 @@ public class PaymentService : IPaymentService
             var netAmount = additionalData.GetNetPrice();
             var netPrice = netAmount.Value > 0 ? netAmount : line.UnitPrice;
             netTotal += netPrice * line.Quantity;
+
+            // Handle Price Variant Products separately.
+            var productPart = line.Product;
+            var priceVariantsPart = productPart.As<PriceVariantsPart>();
+            if (priceVariantsPart is not null && line.Attributes.Any())
+            {
+                var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes.Values);
+                var fullSku = _productService.GetOrderFullSku(item, productPart);
+
+                var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
+                var inventoryPart = productPart.As<InventoryPart>();
+                var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+
+                cannotCheckout = relevantInventory.Value < 1 &&
+                    !inventoryPart.AllowsBackOrder.Value &&
+                    !inventoryPart.IgnoreInventory.Value;
+            }
         }
 
         return new CheckoutViewModel
@@ -152,6 +181,7 @@ public class PaymentService : IPaymentService
             GrossTotal = grossTotal,
             StripePublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             UserEmail = email,
+            IsInvalid = cannotCheckout,
             CheckoutShapes = checkoutShapes,
             PaymentIntentClientSecret = initPaymentIntent?.ClientSecret,
         };

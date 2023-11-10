@@ -25,6 +25,7 @@ public class CheckoutViewModel : ShapeViewModel
         new Dictionary<string, IDictionary<string, string>>();
     public string StripePublishableKey { get; init; }
     public string UserEmail { get; init; }
+    public bool IsInvalid { get; init; }
     public IEnumerable<IShape> CheckoutShapes { get; init; }
 
     public CheckoutViewModel() => Metadata.Type = "Checkout";

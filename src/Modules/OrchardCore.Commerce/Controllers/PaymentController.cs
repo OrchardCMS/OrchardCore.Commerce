@@ -87,6 +87,12 @@ public class PaymentController : Controller
                 typeof(ShoppingCartController).ControllerName());
         }
 
+        if (checkoutViewModel.IsInvalid)
+        {
+            await _notifier.ErrorAsync(H["Checkout unavailable — an item is out of stock."]);
+            return LocalRedirect("~/cart");
+        }
+
         foreach (dynamic shape in checkoutViewModel.CheckoutShapes) shape.ViewModel = checkoutViewModel;
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);
