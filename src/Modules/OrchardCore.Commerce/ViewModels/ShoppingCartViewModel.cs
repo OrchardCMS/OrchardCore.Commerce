@@ -8,6 +8,7 @@ namespace OrchardCore.Commerce.ViewModels;
 public class ShoppingCartViewModel
 {
     public string Id { get; set; }
+    public bool IsInvalid { get; set; }
     public IList<LocalizedHtmlString> Headers { get; } = new List<LocalizedHtmlString>();
     public IList<List<IShape>> TableShapes { get; } = new List<List<IShape>>();
     public IList<ShoppingCartLineViewModel> Lines { get; } = new List<ShoppingCartLineViewModel>();

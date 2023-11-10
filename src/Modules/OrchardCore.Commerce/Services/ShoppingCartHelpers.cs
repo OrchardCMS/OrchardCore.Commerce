@@ -4,11 +4,13 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Exceptions;
 using OrchardCore.Commerce.Extensions;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -112,12 +114,39 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             totals = lines.CalculateTotals().ToList();
         }
 
-        // The values are rounded to avoid storing more precision than what the currency supports.
+        // Checkout should not be possible if any of the items are unpurchasable.
+        var cannotCheckout = lines
+            .Where(line => line.Product.As<PriceVariantsPart>() is null)
+            .Select(line => line.Product.As<InventoryPart>())
+            .Where(inventoryPart => inventoryPart is not null)
+            .Any(inventoryPart => inventoryPart.Inventory[inventoryPart.ProductSku] < 1 &&
+                !inventoryPart.AllowsBackOrder.Value &&
+                !inventoryPart.IgnoreInventory.Value);
+
         foreach (var line in lines)
         {
+            // The values are rounded to avoid storing more precision than what the currency supports.
             line.LinePrice = line.LinePrice.GetRounded();
             line.UnitPrice = line.UnitPrice.GetRounded();
+
+            var productPart = line.Product;
+            var priceVariantsPart = productPart.As<PriceVariantsPart>();
+            if (priceVariantsPart is not null && line.Attributes.Any())
+            {
+                var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes.Values);
+                var fullSku = _productService.GetOrderFullSku(item, productPart);
+
+                var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
+                var inventoryPart = productPart.As<InventoryPart>();
+                var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+
+                cannotCheckout = relevantInventory.Value < 1 &&
+                    !inventoryPart.AllowsBackOrder.Value &&
+                    !inventoryPart.IgnoreInventory.Value;
+            }
         }
+
+        model.IsInvalid = cannotCheckout;
 
         model.Totals.AddRange(totals.Any() ? totals.Round() : new List<Amount> { new(0, lines[0].LinePrice.Currency) });
 
