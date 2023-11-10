@@ -22,7 +22,18 @@ See the [discussions page](https://github.com/OrchardCMS/OrchardCore.Commerce/di
 
 ### Pre-requisites
 
-This project uses `Lombiq Node.js Extensions` to compile and lint client-side assets. See its pre-requisites [here](https://github.com/Lombiq/NodeJs-Extensions/tree/dev#pre-requisites).
+This project uses [`Lombiq Node.js Extensions`](https://github.com/Lombiq/NodeJs-Extensions) to compile and lint client-side assets. See its pre-requisites [here](https://github.com/Lombiq/NodeJs-Extensions/tree/dev#pre-requisites).
+
+If you want to include OrchardCore.Commerce as a git submodule instead of NuGet package, include the [`Lombiq Helpful Libraries`](https://github.com/Lombiq/Helpful-Libraries/) and `Lombiq Node.js Extensions` submodules as well. In your solution directory create a _Directory.Build.props_ file if one doesn't exist. This should contain the properties that configure the path to the _Lombiq.HelpfulLibraries.OrchardCore.csproj_ file and the _Lombiq.NodeJs.Extensions_ project directory. For example:
+
+```xml
+<Project>
+  <PropertyGroup>
+    <LombiqHelpfulLibrariesPath>$(MSBuildThisFileDirectory)/src/Libraries/Lombiq.HelpfulLibraries/Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
+    <LombiqNodeJsExtensionsPath>$(MSBuildThisFileDirectory)/src/Utilities/Lombiq.NodeJs.Extensions/Lombiq.NodeJs.Extensions</LombiqNodeJsExtensionsPath>
+  </PropertyGroup>
+</Project>
+```
 
 ### Setup
 
