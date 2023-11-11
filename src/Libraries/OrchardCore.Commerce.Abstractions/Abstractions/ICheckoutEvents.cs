@@ -1,4 +1,6 @@
-﻿using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions.Abstractions;
@@ -13,4 +15,9 @@ public interface ICheckoutEvents
     /// cref="ICheckoutViewModel"/>.
     /// </summary>
     Task OrderCreatingAsync(OrderPart orderPart, string shoppingCartId) => Task.CompletedTask;
+
+    /// <summary>
+    /// Invoked after the creation of <see cref="ICheckoutViewModel"/> to check whether the model is invalid.
+    /// </summary>
+    Task<bool> ViewModelCreatedAsync(IList<ShoppingCartLineViewModel> lines) => Task.FromResult(false);
 }

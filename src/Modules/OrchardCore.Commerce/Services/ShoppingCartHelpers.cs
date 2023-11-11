@@ -123,29 +123,24 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         }
 
         // Checkout should not be possible if any of the items are unpurchasable.
-        var cannotCheckout = lines
-            .Where(line => line.Product.As<PriceVariantsPart>() is null)
-            .Select(line => line.Product.As<InventoryPart>())
-            .Where(inventoryPart => inventoryPart is not null)
-            .Any(inventoryPart => inventoryPart.Inventory[inventoryPart.ProductSku] < 1 &&
-                !inventoryPart.AllowsBackOrder.Value &&
-                !inventoryPart.IgnoreInventory.Value);
-
+        var cannotCheckout = false;
         foreach (var line in lines)
         {
             // The values are rounded to avoid storing more precision than what the currency supports.
             line.LinePrice = line.LinePrice.GetRounded();
             line.UnitPrice = line.UnitPrice.GetRounded();
 
-            var productPart = line.Product.ContentItem.As<ProductPart>();
-            var priceVariantsPart = productPart.As<PriceVariantsPart>();
-            if (priceVariantsPart is not null && line.Attributes.Any())
+            if (!cannotCheckout)
             {
-                var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes.Values);
-                var fullSku = _productService.GetOrderFullSku(item, productPart);
+                var productPart = line.Product.ContentItem.As<ProductPart>();
+                if (productPart.As<InventoryPart>() is not { } inventoryPart)
+                {
+                    continue;
+                }
 
+                var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes?.Values);
+                var fullSku = _productService.GetOrderFullSku(item, productPart);
                 var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
-                var inventoryPart = productPart.As<InventoryPart>();
                 var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
                 cannotCheckout = relevantInventory.Value < 1 &&
