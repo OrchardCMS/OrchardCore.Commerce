@@ -38,7 +38,7 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MinimumOrderQuantity_Value"), "3");
                 await context.ClickAndFillInWithRetriesAsync(By.Id("InventoryPart_MaximumOrderQuantity_Value"), "10");
                 await context.ClickPublishAsync();
-                await context.GoToRelativeUrlAsync("/cart");
+                await context.GoToCartAsync();
 
                 // When quantity is set to a value above the minimum possible quantity, error message should not appear.
                 await UpdateCartAndAssertErrorsAsync(
@@ -57,7 +57,7 @@ public class InventoryBehaviourTests : UITestBase
                 await context.GoToAdminRelativeUrlAsync($"/Contents/ContentItems/{TestProduct}/Edit");
                 await context.ClickReliablyOnAsync(By.Id("InventoryPart_IgnoreInventory_Value"));
                 await context.ClickPublishAsync();
-                await context.GoToRelativeUrlAsync("/cart");
+                await context.GoToCartAsync();
 
                 // When inventory is ignored, inventory checks should not apply.
                 await UpdateCartAndAssertErrorsAsync(
@@ -90,16 +90,16 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickPublishAsync();
 
                 // Verify checkout is unavailable.
-                await context.GoToRelativeUrlAsync("/cart");
+                await context.GoToCartAsync();
                 context.Exists(By.XPath($"//p[contains(., '{CheckoutUnavailableMessage}')]"));
-                await context.GoToRelativeUrlAsync("/checkout");
+                await context.GoToCheckoutAsync();
                 context.Exists(By.XPath($"//div[contains(., '{CheckoutUnavailableMessage}')]"));
 
                 // Add an available product to cart and verify checkout is still not possible.
                 await context.GoToRelativeUrlAsync("testfreeproduct");
                 await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Add to cart')]"));
                 context.Exists(By.XPath($"//p[contains(., '{CheckoutUnavailableMessage}')]"));
-                await context.GoToRelativeUrlAsync("/checkout");
+                await context.GoToCheckoutAsync();
                 context.Exists(By.XPath($"//div[contains(., '{CheckoutUnavailableMessage}')]"));
 
                 // Set Ignore Inventory to true and verify checkout is available.
@@ -107,9 +107,9 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Ignore Inventory')]"));
                 await context.ClickPublishAsync();
 
-                await context.GoToRelativeUrlAsync("/cart");
+                await context.GoToCartAsync();
                 context.Missing(By.XPath($"//p[contains(., '{CheckoutUnavailableMessage}')]"));
-                await context.GoToRelativeUrlAsync("/checkout");
+                await context.GoToCheckoutAsync();
                 context.Missing(By.XPath($"//div[contains(., '{CheckoutUnavailableMessage}')]"));
 
                 // Set Allows Back Order to true and verify checkout is available.
@@ -118,9 +118,9 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Allows Back Order')]"));
                 await context.ClickPublishAsync();
 
-                await context.GoToRelativeUrlAsync("/cart");
+                await context.GoToCartAsync();
                 context.Missing(By.XPath($"//p[contains(., '{CheckoutUnavailableMessage}')]"));
-                await context.GoToRelativeUrlAsync("/checkout");
+                await context.GoToCheckoutAsync();
                 context.Missing(By.XPath($"//div[contains(., '{CheckoutUnavailableMessage}')]"));
             },
             browser);
