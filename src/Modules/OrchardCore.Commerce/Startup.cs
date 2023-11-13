@@ -170,9 +170,6 @@ public class Startup : StartupBase
         // Page
         services.AddScoped<IDataMigration, PageMigrations>();
 
-        // Checkout
-        services.AddScoped<ICheckoutEvents, InventoryCheckoutEvents>();
-
         // Exposing models to liquid templates
         services.Configure<TemplateOptions>(option =>
             {
@@ -371,6 +368,7 @@ public class InventoryStartup : StartupBase
         services.AddScoped<IProductEstimationContextUpdater, InventoryProductEstimationContextUpdater>();
         services.AddScoped<IOrderEvents, InventoryOrderEvents>();
         services.AddScoped<IProductInventoryService, ProductInventoryService>();
+        services.AddScoped<ICheckoutEvents, InventoryCheckoutEvents>();
     }
 }
 
