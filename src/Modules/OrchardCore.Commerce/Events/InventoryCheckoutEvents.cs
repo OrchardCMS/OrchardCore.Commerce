@@ -61,15 +61,6 @@ public class InventoryCheckoutEvents : ICheckoutEvents
             }
         }
 
-        if (checkoutViewModel != null)
-        {
-            checkoutViewModel.IsInvalid = false;
-        }
-        else
-        {
-            shoppingCartViewModel.InvalidReasons.Clear();
-        }
-
         return Task.CompletedTask;
     }
 }

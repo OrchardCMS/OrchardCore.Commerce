@@ -133,7 +133,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
 
-        // Checkout should not be possible if any of the items are unpurchasable.
         await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
             checkoutEvents.ViewModelCreatedAsync(lines, shoppingCartViewModel: model));
 

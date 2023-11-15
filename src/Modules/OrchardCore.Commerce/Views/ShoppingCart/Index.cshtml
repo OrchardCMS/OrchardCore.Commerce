@@ -12,7 +12,7 @@
     <shape type="ShoppingCartTable" prop-ShoppingCartViewModel="@Model"></shape>
     @if (Model.InvalidReasons.Any())
     {
-        <div class="checkout-unavailable">@T["Checkout unavailable due to the following:"]</div>
+        <div class="checkout-unavailable">@T["Checkout unavailable due to the following reasons:"]</div>
         <ul>
             @foreach (var reason in Model.InvalidReasons)
             {

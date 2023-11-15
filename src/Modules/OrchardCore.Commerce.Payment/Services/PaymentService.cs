@@ -142,7 +142,6 @@ public class PaymentService : IPaymentService
             }
         }
 
-        // Checkout should not be possible if any of the items are unpurchasable.
         await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
             checkoutEvents.ViewModelCreatedAsync(lines, checkoutViewModel: viewModel));
 
