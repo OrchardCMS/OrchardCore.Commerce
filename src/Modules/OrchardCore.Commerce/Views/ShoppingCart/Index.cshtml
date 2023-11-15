@@ -12,7 +12,7 @@
     <shape type="ShoppingCartTable" prop-ShoppingCartViewModel="@Model"></shape>
     @if (Model.IsInvalid)
     {
-        <p>@T["Checkout unavailable — an item is out of stock."]</p>
+        <p class="checkout-unavailable">@T["Checkout unavailable — an item is out of stock."]</p>
     }
     else
     {
