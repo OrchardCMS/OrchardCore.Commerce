@@ -54,6 +54,11 @@ public class ProductInventoryService : IProductInventoryService
             cannotCheckout = relevantInventory.Value < 1 &&
                 !inventoryPart.AllowsBackOrder.Value &&
                 !inventoryPart.IgnoreInventory.Value;
+
+            if (cannotCheckout)
+            {
+                return Task.FromResult(true);
+            }
         }
 
         return Task.FromResult(cannotCheckout);
