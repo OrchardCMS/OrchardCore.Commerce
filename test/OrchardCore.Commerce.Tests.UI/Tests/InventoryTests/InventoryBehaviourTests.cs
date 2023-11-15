@@ -102,7 +102,7 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Ignore Inventory')]"));
                 await context.ClickPublishAsync();
 
-                await VerifyCheckoutAvailabilityAsync(context, cartMessageShouldExist: false, checkoutMessageShouldExist: true);
+                await VerifyCheckoutAvailabilityAsync(context, cartMessageShouldExist: false, checkoutMessageShouldExist: false);
 
                 // Set Allows Back Order to true and verify checkout is available.
                 await context.GoToContentItemEditorByIdAsync(TestProduct);
@@ -110,7 +110,7 @@ public class InventoryBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Allows Back Order')]"));
                 await context.ClickPublishAsync();
 
-                await VerifyCheckoutAvailabilityAsync(context, cartMessageShouldExist: false, checkoutMessageShouldExist: true);
+                await VerifyCheckoutAvailabilityAsync(context, cartMessageShouldExist: false, checkoutMessageShouldExist: false);
             },
             browser);
 
