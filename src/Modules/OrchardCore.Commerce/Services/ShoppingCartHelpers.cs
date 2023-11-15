@@ -103,8 +103,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (!lines.Any()) return null;
 
-        var model = new ShoppingCartViewModel { Id = cart.Id };
-
         IList<LocalizedHtmlString> headers = new[]
         {
             H["Quantity"],
@@ -130,8 +128,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             line.UnitPrice = line.UnitPrice.GetRounded();
         }
 
+        var model = new ShoppingCartViewModel { Id = cart.Id };
         model.Totals.AddRange(totals.Any() ? totals.Round() : new List<Amount> { new(0, lines[0].LinePrice.Currency) });
-
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
 
