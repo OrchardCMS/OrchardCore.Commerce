@@ -30,7 +30,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
-    private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
 
     [SuppressMessage(
         "Major Code Smell",
@@ -46,8 +45,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer,
-        IEnumerable<ICheckoutEvents> checkoutEvents)
+        IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
         _hca = hca;
         _priceSelectionStrategy = priceSelectionStrategy;
@@ -58,7 +56,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
-        _checkoutEvents = checkoutEvents;
         H = localizer;
     }
 
@@ -133,8 +130,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
 
-        await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
-            checkoutEvents.ViewModelCreatedAsync(lines, shoppingCartViewModel: model));
+        await _shoppingCartEvents.AwaitEachAsync(shoppingCartEvents => shoppingCartEvents.ViewModelCreatedAsync(model));
 
         return model;
     }

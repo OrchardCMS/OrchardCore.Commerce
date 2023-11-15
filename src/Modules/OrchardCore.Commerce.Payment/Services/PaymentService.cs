@@ -142,8 +142,7 @@ public class PaymentService : IPaymentService
             }
         }
 
-        await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
-            checkoutEvents.ViewModelCreatedAsync(lines, checkoutViewModel: viewModel));
+        await _checkoutEvents.AwaitEachAsync(checkoutEvents => checkoutEvents.ViewModelCreatedAsync(lines, viewModel));
 
         return viewModel;
     }

@@ -84,6 +84,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
             var newValue = relevantInventory.Value + difference < 0 && inventoryPart.AllowsBackOrder.Value
                 ? 0
                 : relevantInventory.Value + difference;
+
             if (newValue < 0)
             {
                 throw new InvalidOperationException("Inventory value cannot be negative.");
