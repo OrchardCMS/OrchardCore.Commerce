@@ -130,12 +130,6 @@ public class PaymentService : IPaymentService
             CheckoutShapes = checkoutShapes,
         };
 
-        // Checkout should not be possible if any of the items are unpurchasable.
-        var cannotCheckout = await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
-            checkoutEvents.ViewModelCreatedAsync(lines));
-
-        viewModel.IsInvalid = cannotCheckout.Contains(item: true);
-
         if (viewModel.SingleCurrencyTotal.Value > 0)
         {
             await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value);
@@ -147,6 +141,10 @@ public class PaymentService : IPaymentService
                     H["Please make sure there is at least one enabled and properly configured."]));
             }
         }
+
+        // Checkout should not be possible if any of the items are unpurchasable.
+        await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
+            checkoutEvents.ViewModelCreatedAsync(lines, checkoutViewModel: viewModel));
 
         return viewModel;
     }

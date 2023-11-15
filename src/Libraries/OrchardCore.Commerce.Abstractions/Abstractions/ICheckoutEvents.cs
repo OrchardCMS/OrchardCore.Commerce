@@ -19,5 +19,8 @@ public interface ICheckoutEvents
     /// <summary>
     /// Invoked after the creation of <see cref="ICheckoutViewModel"/> to check whether the model is invalid.
     /// </summary>
-    Task<bool> ViewModelCreatedAsync(IList<ShoppingCartLineViewModel> lines) => Task.FromResult(false);
+    Task ViewModelCreatedAsync(
+        IList<ShoppingCartLineViewModel> lines,
+        ICheckoutViewModel checkoutViewModel = null,
+        ShoppingCartViewModel shoppingCartViewModel = null) => Task.CompletedTask;
 }

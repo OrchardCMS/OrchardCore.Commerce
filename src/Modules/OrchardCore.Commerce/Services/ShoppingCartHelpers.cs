@@ -7,11 +7,9 @@ using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -32,6 +30,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
+    private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
 
     [SuppressMessage(
         "Major Code Smell",
@@ -47,7 +46,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer)
+        IHtmlLocalizer<ShoppingCartHelpers> localizer,
+        IEnumerable<ICheckoutEvents> checkoutEvents)
     {
         _hca = hca;
         _priceSelectionStrategy = priceSelectionStrategy;
@@ -58,6 +58,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
+        _checkoutEvents = checkoutEvents;
         H = localizer;
     }
 
@@ -122,39 +123,21 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             totals = lines.CalculateTotals().ToList();
         }
 
-        // Checkout should not be possible if any of the items are unpurchasable.
-        var cannotCheckout = false;
         foreach (var line in lines)
         {
             // The values are rounded to avoid storing more precision than what the currency supports.
             line.LinePrice = line.LinePrice.GetRounded();
             line.UnitPrice = line.UnitPrice.GetRounded();
-
-            if (!cannotCheckout)
-            {
-                var productPart = line.Product.ContentItem.As<ProductPart>();
-                if (productPart.As<InventoryPart>() is not { } inventoryPart)
-                {
-                    continue;
-                }
-
-                var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes?.Values);
-                var fullSku = _productService.GetOrderFullSku(item, productPart);
-                var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
-                var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
-
-                cannotCheckout = relevantInventory.Value < 1 &&
-                    !inventoryPart.AllowsBackOrder.Value &&
-                    !inventoryPart.IgnoreInventory.Value;
-            }
         }
-
-        model.IsInvalid = cannotCheckout;
 
         model.Totals.AddRange(totals.Any() ? totals.Round() : new List<Amount> { new(0, lines[0].LinePrice.Currency) });
 
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
+
+        // Checkout should not be possible if any of the items are unpurchasable.
+        await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
+            checkoutEvents.ViewModelCreatedAsync(lines, shoppingCartViewModel: model));
 
         return model;
     }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -14,10 +15,18 @@ namespace OrchardCore.Commerce.Events;
 public class InventoryCheckoutEvents : ICheckoutEvents
 {
     private readonly IProductService _productService;
+    private readonly IHtmlLocalizer H;
 
-    public InventoryCheckoutEvents(IProductService productService) => _productService = productService;
+    public InventoryCheckoutEvents(IProductService productService, IHtmlLocalizer<InventoryCheckoutEvents> htmlLocalizer)
+    {
+        _productService = productService;
+        H = htmlLocalizer;
+    }
 
-    public Task<bool> ViewModelCreatedAsync(IList<ShoppingCartLineViewModel> lines)
+    public Task ViewModelCreatedAsync(
+        IList<ShoppingCartLineViewModel> lines,
+        ICheckoutViewModel checkoutViewModel = null,
+        ShoppingCartViewModel shoppingCartViewModel = null)
     {
         var cannotCheckout = false;
         foreach (var line in lines)
@@ -39,10 +48,28 @@ public class InventoryCheckoutEvents : ICheckoutEvents
 
             if (cannotCheckout)
             {
-                return Task.FromResult(cannotCheckout);
+                if (checkoutViewModel != null)
+                {
+                    checkoutViewModel.IsInvalid = true;
+                }
+                else
+                {
+                    shoppingCartViewModel.InvalidReasons.Add(H["{0} is out of stock.", inventoryIdentifier]);
+                }
+
+                return Task.CompletedTask;
             }
         }
 
-        return Task.FromResult(cannotCheckout);
+        if (checkoutViewModel != null)
+        {
+            checkoutViewModel.IsInvalid = false;
+        }
+        else
+        {
+            shoppingCartViewModel.InvalidReasons.Clear();
+        }
+
+        return Task.CompletedTask;
     }
 }

@@ -10,9 +10,15 @@
 
 <section id="shopping-cart">
     <shape type="ShoppingCartTable" prop-ShoppingCartViewModel="@Model"></shape>
-    @if (Model.IsInvalid)
+    @if (Model.InvalidReasons.Any())
     {
-        <p class="checkout-unavailable">@T["Checkout unavailable — an item is out of stock."]</p>
+        <div class="checkout-unavailable">@T["Checkout unavailable due to the following:"]</div>
+        <ul>
+            @foreach (var reason in Model.InvalidReasons)
+            {
+                <li>@reason</li>
+            }
+        </ul>
     }
     else
     {

@@ -77,7 +77,7 @@ public class PaymentController : Controller
 
         if (checkoutViewModel.IsInvalid)
         {
-            await _notifier.ErrorAsync(H["Checkout unavailable — an item is out of stock."]);
+            await _notifier.ErrorAsync(H["Checkout unavailable — invalid item in cart."]);
             return LocalRedirect("~/cart");
         }
 

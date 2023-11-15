@@ -16,7 +16,7 @@ public class InventoryBehaviourTests : UITestBase
     {
     }
 
-    public const string CheckoutUnavailableMessage = "Checkout unavailable — an item is out of stock.";
+    public const string CheckoutUnavailableMessage = "Checkout unavailable — invalid item in cart.";
 
     [Theory, Chrome]
     public Task InventoryChecksOnCartUpdateShouldWorkProperly(Browser browser) =>
