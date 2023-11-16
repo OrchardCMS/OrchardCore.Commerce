@@ -11,3 +11,27 @@ jobs:
     uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
     secrets:
       API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+  synchronize-with-crowdin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: Lombiq/GitHub-Actions/.github/actions/checkout@dev
+
+      - name: Set up .NET
+        uses: Lombiq/GitHub-Actions/.github/actions/setup-dotnet@dev
+
+      - name: Use PoExtractor and Upload Files
+        shell: pwsh
+        run: |
+          dotnet tool install --global OrchardCoreContrib.PoExtractor
+          extractpo . Translations
+          if (-not (Test-Path .\Translations\*.pot)) { echo '::error::No POT files were found.'; echo exit 1; }
+          
+          $arguments = @(
+            '--rm'
+            '--mount', "type=bind,source=$PWD,target=/data"
+            'crowdin/cli'
+            'sh', '-c', 'cd /data/Translations; sh update-crowdin.sh ${{ secrets.CROWDIN_PROJECT_ID }} ${{ secrets.CROWDIN_PERSONAL_TOKEN }}'
+          )
+          docker run @arguments
