@@ -50,7 +50,6 @@ jobs:
         shell: pwsh
         run: |
           dotnet tool install --global OrchardCoreContrib.PoExtractor
-          New-Item -ItemType Directory Translations
           extractpo . Translations
           if (-not (Test-Path .\Translations\*.pot)) { echo '::error::No POT files were found.'; echo exit 1; }
           
