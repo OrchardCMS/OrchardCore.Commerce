@@ -109,6 +109,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Paymen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Commerce.Abstractions", "src\Libraries\OrchardCore.Commerce.Abstractions\OrchardCore.Commerce.Abstractions.csproj", "{28DB6CBB-1527-42A1-8EFE-3D95BF185884}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Translations", "Translations", "{7DEEEDC7-6695-43D1-8830-1686E7F903C7}"
+	ProjectSection(SolutionItems) = preProject
+		Translations\update-crowdin.sh = Translations\update-crowdin.sh
+		Translations\crowdin.yml.template = Translations\crowdin.yml.template
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -199,6 +205,7 @@ Global
 		{58DD682C-DA5C-4B51-BCB8-C65D690AAC67} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{A4D69733-CDC0-46AE-B46A-163CCC6F77F9} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{28DB6CBB-1527-42A1-8EFE-3D95BF185884} = {90913510-3D7F-4BCC-B55E-56343128F049}
+		{7DEEEDC7-6695-43D1-8830-1686E7F903C7} = {D15D472D-A6EF-441F-8278-6350D89E90D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {456CBC78-579D-483F-A4C3-AF5C12AB3324}
