@@ -30,13 +30,10 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
 
     public override async Task ViewModelCreatedAsync(ShoppingCartViewModel viewModel)
     {
-        var cannotCheckout = await _productInventoryService.VerifyLinesAsync(viewModel.Lines);
-        if (cannotCheckout)
+        if (await _productInventoryService.VerifyLinesAsync(viewModel.Lines))
         {
             viewModel.InvalidReasons.Add(H["An item in cart is out of stock."]);
         }
-
-        return;
     }
 
     public override async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item)

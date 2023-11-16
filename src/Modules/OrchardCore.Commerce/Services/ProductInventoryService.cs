@@ -37,9 +37,9 @@ public class ProductInventoryService : IProductInventoryService
 
     public Task<bool> VerifyLinesAsync(IList<ShoppingCartLineViewModel> lines)
     {
-        var cannotCheckout = false;
         foreach (var line in lines)
         {
+            var cannotCheckout = false;
             var productPart = line.Product.ContentItem.As<ProductPart>();
             if (productPart.As<InventoryPart>() is not { } inventoryPart)
             {
@@ -61,6 +61,6 @@ public class ProductInventoryService : IProductInventoryService
             }
         }
 
-        return Task.FromResult(cannotCheckout);
+        return Task.FromResult(false);
     }
 }

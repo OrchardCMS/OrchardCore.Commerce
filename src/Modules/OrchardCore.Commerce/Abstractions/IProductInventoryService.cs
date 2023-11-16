@@ -19,5 +19,6 @@ public interface IProductInventoryService
     /// <summary>
     /// Verifies the inventory state of the provided <paramref name="lines"/>.
     /// </summary>
+    /// <returns><see langword="true"/> if the line items can't be checked out.</returns>
     Task<bool> VerifyLinesAsync(IList<ShoppingCartLineViewModel> lines);
 }

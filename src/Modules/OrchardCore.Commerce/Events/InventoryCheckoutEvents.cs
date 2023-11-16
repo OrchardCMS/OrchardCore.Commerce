@@ -15,12 +15,9 @@ public class InventoryCheckoutEvents : ICheckoutEvents
 
     public async Task ViewModelCreatedAsync(IList<ShoppingCartLineViewModel> lines, ICheckoutViewModel checkoutViewModel)
     {
-        var cannotCheckout = await _productInventoryService.VerifyLinesAsync(lines);
-        if (cannotCheckout)
+        if (await _productInventoryService.VerifyLinesAsync(lines))
         {
             checkoutViewModel.IsInvalid = true;
         }
-
-        return;
     }
 }
