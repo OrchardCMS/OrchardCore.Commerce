@@ -57,9 +57,10 @@ jobs:
             exit 1
           }
           
-          git clone https://github.com/OrchardCMS/OrchardCore.Commerce.Translations.git Repository
-          
           Set-Location Translations
+          git clone https://github.com/OrchardCMS/OrchardCore.Commerce.Translations.git Repository
+          New-Item -Type Directory -Force Repository/Localization
+          
           $arguments = @(
             '--rm'
             '--mount', "type=bind,source=$PWD,target=/data"
