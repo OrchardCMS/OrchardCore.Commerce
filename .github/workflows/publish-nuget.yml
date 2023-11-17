@@ -64,6 +64,7 @@ jobs:
           docker run @arguments
           
           $currentCommitMessage = $(git show -s --format=%s)
+          Copy-Item *.pot Repository/Localization
           
           Set-Location Repository
           git config user.email "bot@lombiq.com"
