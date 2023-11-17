@@ -74,8 +74,8 @@ jobs:
           git remote remove origin
           git remote add origin 'https://${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git'
           git add .
-          Write-Output "git commit -m `"Update .pot files at ```"$currentCommitMessage```".`" (at $PWD)"
-          git commit -m "Update .pot files at `"$currentCommitMessage`"."
+          Write-Output "git commit -m `"Update .pot files at '$currentCommitMessage'.`" (at $PWD)"
+          git commit -m "Update .pot files at '$currentCommitMessage'."
           Write-Output "git push --set-upstream origin main"
           git push --set-upstream origin main
 
