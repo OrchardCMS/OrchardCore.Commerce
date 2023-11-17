@@ -4,6 +4,6 @@
 files: [
   {
     "source": "*.pot",
-    "translation": "Localization/%locale%/%file_name%.po",
+    "translation": "Repository/Localization/%locale%/%file_name%.po",
   }
 ]

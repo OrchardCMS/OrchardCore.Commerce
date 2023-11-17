@@ -57,6 +57,8 @@ jobs:
             exit 1
           }
           
+          git clone https://github.com/OrchardCMS/OrchardCore.Commerce.Translations.git Repository
+          
           Set-Location Translations
           $arguments = @(
             '--rm'
@@ -65,11 +67,10 @@ jobs:
             'sh', '-c', 'cd /data; sh update-crowdin.sh ${{ secrets.CROWDIN_PROJECT_ID }} ${{ secrets.CROWDIN_PERSONAL_TOKEN }}'
           )
           docker run @arguments
+          tree
           
           $currentCommitMessage = $(git show -s --format=%s)
           
-          git clone https://github.com/OrchardCMS/OrchardCore.Commerce.Translations.git Repository
-          Copy-Item Localization Repository
           Set-Location Repository
           git remote remove origin
           git remote add origin 'https://${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git'
