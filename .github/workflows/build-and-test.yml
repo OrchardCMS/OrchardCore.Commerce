@@ -57,11 +57,9 @@ jobs:
             exit 1
           }
           
-          '${{ secrets.SSH_KEY }}' | Out-File bot 
-          'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK5CArjOvXPwAWfvnCAfjUNYRR3sEhQNcEFRC0rgmNRw bot@lombiq.com' | Out-File bot.pub
-          gh ssh-key add bot.pub
-          
           Set-Location Translations
+          '${{ secrets.SSH_KEY }}' | Out-File ~/.ssh/id_ed25519 
+          'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK5CArjOvXPwAWfvnCAfjUNYRR3sEhQNcEFRC0rgmNRw bot@lombiq.com' | Out-File ~/.ssh/id_ed25519.pub
           git clone git@github.com:OrchardCMS/OrchardCore.Commerce.Translations.git Repository
           New-Item -Type Directory -Force Repository/Localization
           
