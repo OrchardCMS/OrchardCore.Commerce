@@ -75,4 +75,5 @@ jobs:
           git remote add origin 'https://${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git'
           git add .
           git commit -m "Update .pot files at `"$currentCommitMessage`"."
-          git push
+          git push --set-upstream origin main
+
