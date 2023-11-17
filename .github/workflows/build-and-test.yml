@@ -68,7 +68,6 @@ jobs:
             'sh', '-c', 'cd /data; sh update-crowdin.sh ${{ secrets.CROWDIN_PROJECT_ID }} ${{ secrets.CROWDIN_PERSONAL_TOKEN }}'
           )
           docker run @arguments
-          tree
           
           $currentCommitMessage = $(git show -s --format=%s)
           
@@ -78,6 +77,6 @@ jobs:
           git add --all
           Write-Output "git commit -m `"Update .pot files at '$currentCommitMessage'.`" (at $PWD)"
           git commit -m "Update .pot files at '$currentCommitMessage'."
-          Write-Output "git push --set-upstream origin main"
-          git push --set-upstream origin main
+          Write-Output "git push"
+          git push
 
