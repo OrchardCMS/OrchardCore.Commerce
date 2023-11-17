@@ -74,9 +74,9 @@ jobs:
           
           Set-Location Repository
           git remote remove origin
-          git remote add origin 'https://${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git'
-          git config user.email "bot@lombiq.com"
-          git config user.name "Lombiq Bot"
+          git remote add origin 'https://${{ secrets.TRANSLATIONS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git'
+          git config user.email "sara.el-saig@lombiq.com"
+          git config user.name "Sára El-Saig"
           git add --all
           Write-Output "git commit -m `"Update .pot files at '$currentCommitMessage'.`" (at $PWD)"
           git commit -m "Update .pot files at '$currentCommitMessage'."
