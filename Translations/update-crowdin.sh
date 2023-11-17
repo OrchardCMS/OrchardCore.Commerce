@@ -9,3 +9,4 @@ echo "\"api_token\": \"$PERSONAL_TOKEN\"" >> crowdin.yml
 cat crowdin.yml.template >> crowdin.yml
 
 crowdin upload sources
+crowdin download

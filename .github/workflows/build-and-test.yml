@@ -36,3 +36,43 @@ jobs:
       MERGE_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
     with:
       merge-method: "squash"
+
+  synchronize-with-crowdin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: Lombiq/GitHub-Actions/.github/actions/checkout@dev
+
+      - name: Set up .NET
+        uses: Lombiq/GitHub-Actions/.github/actions/setup-dotnet@dev
+
+      - name: Use PoExtractor and Upload Files
+        shell: pwsh
+        run: |
+          dotnet tool install --global OrchardCoreContrib.PoExtractor
+          extractpo . Translations
+          if (-not (Test-Path .\Translations\*.pot))
+          {
+            Write-Output '::error::No POT files were found.'
+            exit 1
+          }
+          
+          Set-Location Translations
+          $arguments = @(
+            '--rm'
+            '--mount', "type=bind,source=$PWD,target=/data"
+            'crowdin/cli'
+            'sh', '-c', 'cd /data; sh update-crowdin.sh ${{ secrets.CROWDIN_PROJECT_ID }} ${{ secrets.CROWDIN_PERSONAL_TOKEN }}'
+          )
+          docker run @arguments
+          
+          $currentCommitMessage = $(git show -s --format=%s)
+          
+          git clone https://github.com/OrchardCMS/OrchardCore.Commerce.Translations.git Repository
+          Copy-Item Localization Repository
+          Set-Location Repository
+          git remote remove origin
+          git remote add origin 'https://${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git'
+          git add .
+          git commit -m "Update .pot files at `"$currentCommitMessage`"."
+          git push
