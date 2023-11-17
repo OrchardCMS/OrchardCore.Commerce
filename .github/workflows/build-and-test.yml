@@ -68,20 +68,14 @@ jobs:
           
           $currentCommitMessage = $(git show -s --format=%s)
           
-          echo a
           git clone https://github.com/OrchardCMS/OrchardCore.Commerce.Translations.git Repository
-          echo b
           Copy-Item Localization Repository
-          echo c
           Set-Location Repository
-          echo d
           git remote remove origin
-          echo e
           git remote add origin 'https://${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git'
-          echo f
           git add .
-          echo g
+          Write-Output "git commit -m `"Update .pot files at ```"$currentCommitMessage```".`" (at $PWD)"
           git commit -m "Update .pot files at `"$currentCommitMessage`"."
-          echo h
+          Write-Output "git push --set-upstream origin main"
           git push --set-upstream origin main
 
