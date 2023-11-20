@@ -10,6 +10,7 @@ namespace OrchardCore.Commerce.Abstractions.ViewModels;
 public class ShoppingCartViewModel
 {
     public string Id { get; set; }
+    public IList<LocalizedHtmlString> InvalidReasons { get; } = new List<LocalizedHtmlString>();
     public IList<LocalizedHtmlString> Headers { get; } = new List<LocalizedHtmlString>();
     public IList<List<IShape>> TableShapes { get; } = new List<List<IShape>>();
     public IList<ShoppingCartLineViewModel> Lines { get; } = new List<ShoppingCartLineViewModel>();

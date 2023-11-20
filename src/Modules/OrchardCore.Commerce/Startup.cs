@@ -368,6 +368,7 @@ public class InventoryStartup : StartupBase
         services.AddScoped<IProductEstimationContextUpdater, InventoryProductEstimationContextUpdater>();
         services.AddScoped<IOrderEvents, InventoryOrderEvents>();
         services.AddScoped<IProductInventoryService, ProductInventoryService>();
+        services.AddScoped<ICheckoutEvents, InventoryCheckoutEvents>();
     }
 }
 

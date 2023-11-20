@@ -25,6 +25,8 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
 
     public string? UserEmail { get; init; }
 
+    public bool IsInvalid { get; set; }
+
     public IEnumerable<IShape> CheckoutShapes { get; init; } = Array.Empty<IShape>();
 
     public CheckoutViewModel(OrderPart orderPart, Amount singleCurrencyTotal, Amount netTotal)

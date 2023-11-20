@@ -1,3 +1,7 @@
+@using OrchardCore.Commerce.Inventory.Models;
+@using OrchardCore.Commerce.Models;
+@using OrchardCore.ContentManagement;
+
 @model OrchardCore.Commerce.Abstractions.ViewModels.ShoppingCartViewModel
 
 <style asp-name="@ResourceNames.ShoppingCart"></style>
@@ -6,11 +10,23 @@
 
 <section id="shopping-cart">
     <shape type="ShoppingCartTable" prop-ShoppingCartViewModel="@Model"></shape>
-
-    <div class="col-xs-12 col-sm-1">
-        <a asp-action="Index"
-           asp-controller="Payment"
-           asp-area="OrchardCore.Commerce.Payment"
-           class="btn btn-primary checkout">@T["Checkout"]</a>
-    </div>
+    @if (Model.InvalidReasons.Any())
+    {
+        <div class="checkout-unavailable">@T["Checkout unavailable due to the following reasons:"]</div>
+        <ul>
+            @foreach (var reason in Model.InvalidReasons)
+            {
+                <li>@reason</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="col-xs-12 col-sm-1">
+            <a asp-action="Index"
+               asp-controller="Payment"
+               asp-area="OrchardCore.Commerce.Payment"
+               class="btn btn-primary checkout">@T["Checkout"]</a>
+        </div>        
+    }
 </section>

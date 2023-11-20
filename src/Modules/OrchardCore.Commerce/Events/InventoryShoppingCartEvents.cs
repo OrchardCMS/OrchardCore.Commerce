@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
@@ -13,16 +14,27 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
 {
     private readonly IProductService _productService;
     private readonly IHtmlLocalizer<InventoryShoppingCartEvents> H;
+    private readonly IProductInventoryService _productInventoryService;
 
     public InventoryShoppingCartEvents(
         IProductService productService,
-        IHtmlLocalizer<InventoryShoppingCartEvents> localizer)
+        IHtmlLocalizer<InventoryShoppingCartEvents> localizer,
+        IProductInventoryService productInventoryService)
     {
         _productService = productService;
+        _productInventoryService = productInventoryService;
         H = localizer;
     }
 
     public override int Order => 0;
+
+    public override async Task ViewModelCreatedAsync(ShoppingCartViewModel viewModel)
+    {
+        if (await _productInventoryService.VerifyLinesAsync(viewModel.Lines))
+        {
+            viewModel.InvalidReasons.Add(H["An item in cart is out of stock."]);
+        }
+    }
 
     public override async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item)
     {

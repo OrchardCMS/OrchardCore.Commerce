@@ -100,8 +100,6 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (!lines.Any()) return null;
 
-        var model = new ShoppingCartViewModel { Id = cart.Id };
-
         IList<LocalizedHtmlString> headers = new[]
         {
             H["Quantity"],
@@ -120,17 +118,19 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             totals = lines.CalculateTotals().ToList();
         }
 
-        // The values are rounded to avoid storing more precision than what the currency supports.
         foreach (var line in lines)
         {
+            // The values are rounded to avoid storing more precision than what the currency supports.
             line.LinePrice = line.LinePrice.GetRounded();
             line.UnitPrice = line.UnitPrice.GetRounded();
         }
 
+        var model = new ShoppingCartViewModel { Id = cart.Id };
         model.Totals.AddRange(totals.Any() ? totals.Round() : new List<Amount> { new(0, lines[0].LinePrice.Currency) });
-
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
+
+        await _shoppingCartEvents.AwaitEachAsync(shoppingCartEvents => shoppingCartEvents.ViewModelCreatedAsync(model));
 
         return model;
     }

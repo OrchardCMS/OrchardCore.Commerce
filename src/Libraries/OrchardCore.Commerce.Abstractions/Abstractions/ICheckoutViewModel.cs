@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.DisplayManagement;
 using System.Collections.Generic;
@@ -17,5 +17,6 @@ public interface ICheckoutViewModel : IPaymentViewModel, IShape
     IEnumerable<SelectListItem> Regions { get; set; }
     IDictionary<string, IDictionary<string, string>> Provinces { get; }
     string UserEmail { get; }
+    bool IsInvalid { get; set; }
     IEnumerable<IShape> CheckoutShapes { get; }
 }

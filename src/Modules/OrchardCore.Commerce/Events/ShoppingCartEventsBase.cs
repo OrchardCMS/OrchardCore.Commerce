@@ -20,4 +20,6 @@ public abstract class ShoppingCartEventsBase : IShoppingCartEvents
         Task.FromResult<LocalizedHtmlString>(null);
 
     public Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart) => Task.FromResult(shoppingCart);
+
+    public virtual Task ViewModelCreatedAsync(ShoppingCartViewModel viewModel) => Task.CompletedTask;
 }

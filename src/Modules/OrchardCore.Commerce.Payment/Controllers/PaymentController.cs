@@ -75,6 +75,12 @@ public class PaymentController : Controller
             return Redirect("~/cart/empty");
         }
 
+        if (checkoutViewModel.IsInvalid)
+        {
+            await _notifier.ErrorAsync(H["Checkout unavailable — invalid item in cart."]);
+            return LocalRedirect("~/cart");
+        }
+
         foreach (dynamic shape in checkoutViewModel.CheckoutShapes) shape.ViewModel = checkoutViewModel;
 
         checkoutViewModel.Provinces.AddRange(Regions.Provinces);

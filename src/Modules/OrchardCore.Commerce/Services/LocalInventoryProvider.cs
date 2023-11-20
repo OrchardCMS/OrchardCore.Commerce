@@ -82,9 +82,9 @@ public class LocalInventoryProvider : IProductInventoryProvider
                 entry.Key == inventoryIdentifier || entry.Key == inventoryRootIdentifier);
 
             var newValue = relevantInventory.Value + difference;
-            if (newValue < 0)
+            if (newValue < 0 && !inventoryPart.AllowsBackOrder.Value)
             {
-                throw new InvalidOperationException("Inventory value cannot be negative.");
+                throw new InvalidOperationException("Unless back ordering is allowed, Inventory value cannot be negative.");
             }
 
             var newEntry = new KeyValuePair<string, int>(relevantInventory.Key, newValue);

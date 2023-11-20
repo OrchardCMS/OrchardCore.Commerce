@@ -28,6 +28,7 @@ pricefield
 roadmap
 shoppingcart
 skus
+testfreeproduct
 testdiscountedproduct
 testproduct
 testproductvariant
