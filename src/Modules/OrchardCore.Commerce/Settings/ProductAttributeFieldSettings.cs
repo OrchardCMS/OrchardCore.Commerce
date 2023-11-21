@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Commerce.Settings;
 
@@ -86,7 +87,7 @@ public class TextProductAttributeFieldSettings
     /// <summary>
     /// Gets or sets the set of suggested or allowed values.
     /// </summary>
-    public IEnumerable<object> PredefinedValues { get; set; }
+    public IEnumerable<object> PredefinedValues { get; set; } = Enumerable.Empty<string>();
 
     /// <summary>
     /// Gets or sets a value indicating whether values should be restricted to the set of predefined values.
