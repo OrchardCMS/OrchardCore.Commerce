@@ -74,6 +74,8 @@ plugins:
 # Page tree
 nav:
   - About: index.md
+  - Guides:
+    - Creating a simple webshop: guides/create-webshop.md
   - Key Features:
     - Inventory: features/inventory.md
     - Products and Prices: features/products-and-prices.md
