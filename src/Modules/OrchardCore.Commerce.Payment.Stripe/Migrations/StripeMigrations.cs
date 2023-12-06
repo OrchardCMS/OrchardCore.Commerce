@@ -1,9 +1,11 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Data;
+using Microsoft.Data.SqlClient;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using System;
 using YesSql.Sql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
@@ -28,7 +30,15 @@ public class StripeMigrations : DataMigration
                 .WithPart(nameof(StripePaymentPart)));
 
         // This table may exist when migrating from an old version of the DB where it was created in a different module.
-        SchemaBuilder.DropMapIndexTable(typeof(OrderPaymentIndex));
+        try
+        {
+            SchemaBuilder.DropMapIndexTable(typeof(OrderPaymentIndex));
+        }
+        catch (SqlException)
+        {
+            // This is fine, it just means that the table didn't exist.
+        }
+
         SchemaBuilder
             .CreateMapIndexTable<OrderPaymentIndex>(table => table
                 .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
