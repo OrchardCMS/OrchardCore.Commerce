@@ -65,10 +65,10 @@ public class StripePaymentProvider : IPaymentProvider
             });
         }
 
-        return new
+        return new StripePaymentProviderData
         {
-            (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            paymentIntent.ClientSecret,
+            PublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            ClientSecret = paymentIntent.ClientSecret,
         };
     }
 
