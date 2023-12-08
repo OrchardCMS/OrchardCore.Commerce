@@ -21,17 +21,15 @@ public class OrderLineItemViewModelsAndTaxRatesConverterFilter : ILiquidFilter
 
     public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
-        if (input?.ToObjectValue() is not IEnumerable<object> objectLineItems)
+        if (input?.ToObjectValue() is not { } objectOrderPart)
         {
             return await new ValueTask<FluidValue>(input);
         }
 
-        var lineItems = objectLineItems
-            .Select(objectLineItem => ((JObject)objectLineItem).ToObject<OrderLineItem>())
-            .ToList();
+        var orderPart = ((JObject)objectOrderPart).ToObject<OrderPart>();
 
         var viewModels = (await _orderLineItemService
-            .CreateOrderLineItemViewModelsAndTotalAsync(lineItems, orderPart: null))
+            .CreateOrderLineItemViewModelsAndTotalAsync(orderPart.LineItems, orderPart))
             .ViewModels;
 
         var viewModelsAndTaxRates = viewModels
