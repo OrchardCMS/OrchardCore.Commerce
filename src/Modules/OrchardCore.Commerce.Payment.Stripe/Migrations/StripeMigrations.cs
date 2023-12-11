@@ -5,7 +5,6 @@ using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
-using System;
 using YesSql.Sql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
