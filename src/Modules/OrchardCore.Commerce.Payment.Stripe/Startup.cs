@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Abstractions;
@@ -33,5 +34,7 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
 
         services.AddScoped<IOrderContentTypeDefinitionExclusionProvider, StripeOrderContentTypeDefinitionExclusionProvider>();
+
+        services.Configure<TemplateOptions>(option => option.MemberAccessStrategy.Register<StripePaymentProviderData>());
     }
 }
