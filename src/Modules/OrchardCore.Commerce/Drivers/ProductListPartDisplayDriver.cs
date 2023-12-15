@@ -46,6 +46,8 @@ public class ProductListPartDisplayDriver : ContentPartDisplayDriver<ProductList
         var productList = await _productListService.GetProductsAsync(part, filterParameters);
         viewModel.Products = productList.Products;
         viewModel.Pager = (await context.New.Pager(filterParameters.Pager)).TotalItemCount(productList.TotalItemCount);
+        viewModel.Pager.Metadata.Alternates.Add($"{nameof(ProductListPart)}__Pager");
+        viewModel.Pager.Metadata.Alternates.Add($"{part.ContentItem.ContentType}_{context.TypePartDefinition.Name}__Pager");
         viewModel.Context = context;
     }
 
