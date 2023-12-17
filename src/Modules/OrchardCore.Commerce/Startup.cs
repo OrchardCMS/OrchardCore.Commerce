@@ -100,6 +100,7 @@ public class Startup : StartupBase
 
         // Price
         services.AddScoped<IDataMigration, PriceMigrations>();
+        services.AddSingleton<IIndexProvider, PriceIndexProvider>();
 
         services.AddContentPart<PricePart>()
             .AddHandler<PricePartHandler>();
