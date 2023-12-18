@@ -23,7 +23,7 @@ public class BasePriceFilterProvider : IProductListFilterProvider
     public Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productListPart) =>
         Task.FromResult(Enumerable.Empty<string>());
 
-    public async Task<IQuery<ContentItem>> BuildQueryAsync(ProductListFilterContext context)
+    public Task<IQuery<ContentItem>> BuildQueryAsync(ProductListFilterContext context)
     {
         var query = context.Query;
 
@@ -36,6 +36,6 @@ public class BasePriceFilterProvider : IProductListFilterProvider
             query = query.With<PriceIndex>().OrderByDescending(index => index.MaxPrice);
         }
 
-        return query;
+        return Task.FromResult(query);
     }
 }
