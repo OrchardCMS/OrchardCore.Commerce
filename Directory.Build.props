@@ -5,7 +5,7 @@
   </PropertyGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.Analyzers.OrchardCore" Version="4.0.0">
+    <PackageReference Condition="!Exists('$(SolutionDir)/tools/Lombiq.Analyzers/Lombiq.Analyzers.OrchardCore/Build.props')" Include="Lombiq.Analyzers.OrchardCore" Version="4.0.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
