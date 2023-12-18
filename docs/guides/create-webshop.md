@@ -73,7 +73,7 @@ _Check Show homepage options. Or don't, up to you._
 _Listing available Products makes browsing easier for customers._
 
 ### Step 5 — Create Shopping Cart Widget
-Shopping without a shopping cart is a difficult task, and while it's not outside the realm of possibility, let's make our lives easier by creating one.
+Shopping without a shopping cart is a difficult task: while it's not outside the realm of possibility, let's make our lives easier by creating one.
 For this, we're going to need to create Zones, Layers, and finally a Widget.
 
 - **Zones**:
