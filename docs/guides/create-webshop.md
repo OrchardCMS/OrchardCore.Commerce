@@ -56,27 +56,17 @@ Now if you visit the item's page, you can add it to the cart.
 _A Product with excellent price to value ratio._
 
 ### Step 4 — Create a Product List
-Listing the available products is another expected feature for a webshop. This can be done in multiple ways, but let's see a simple one that includes a content type which utilizes lists. Go to _Content > Content Types_ and create a new type with the name Product List. Add `TitlePart`, `ListPart`, and `AutoroutePart` to it. The basic settings are up to preferences, however, the `ListPart`'s contained types need to be specified in order to add Products to it.
+Listing the available products is another expected feature for a webshop. This can be done in multiple ways, but let's see a simple one that includes a content type which utilizes the Commerce module's `ProductListPart`. Go to _Content > Content Types_ and create a new type with the name Product List. Add `TitlePart`, `ProductListPart`, and `AutoroutePart` to it. Listing the products is taken care of by `ProductListPart`, which requires no additional configuration, and the basic settings are up to preferences.
 
-![ListPart settings.](../assets/images/create-webshop/step-4/edit-list-part.png)
+![Product List type editor.](../assets/images/create-webshop/step-4/product-list-type-editor.png)
 
-_Set the contained types in the ListPart's settings._
+_This approach only requires using a few parts with no extra configuration steps._
 
-![Contained types.](../assets/images/create-webshop/step-4/set-contained-types.png)
-
-_As this is a list of Products, the Product type alone might do._
-
-Optionally, edit the `AutoroutePart`'s settings to allow setting the Product List as the homepage.
+Optionally, edit the `AutoroutePart`'s configuration to allow setting the Product List as the homepage.
 
 ![AutoroutePart settings.](../assets/images/create-webshop/step-4/edit-autoroute-part.png)
 
 _Check Show homepage options. Or don't, up to you._
-
-Now navigate to _Content > Content Items_ and create an item of the newly added type. Then, within that item, add Products that you want to be listed.
-
-![Add a Product.](../assets/images/create-webshop/step-4/add-product-to-list.png)
-
-_Add a few Products to the list to have a few items to list._
 
 ![I am become Product List, enumerator of Products.](../assets/images/create-webshop/step-4/product-list.png)
 
