@@ -39,7 +39,7 @@ Optionally, enable a few other useful Commerce features as well to get even more
 - **Orchard Core Commerce - Custom Tax Rates**: Enables locally maintaining tax rates.
 
 ### Step 3 — Create a product content type
-Products are rather crucial to a webshop, so let's create a Product content type. Any content type that has a [`ProductPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/product-part.md) and a price-providing part (e.g. [`PricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-part.md), [`PriceVariantsPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-variants-part.md), or [`TieredPricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/tiered-price-part.md)) attached to it qualifies as a product. For a more technical overview of these parts, follow the links.
+Products are rather crucial to a webshop, so let's create a Product content type. Any content type that has a [`ProductPart`](../features/product-part.md) and a price-providing part (e.g. [`PricePart`](../features/price-part.md), [`PriceVariantsPart`](../features/price-variants-part.md), or [`TieredPricePart`](../features/tiered-price-part.md)) attached to it qualifies as a product. For a more technical overview of these parts, follow the links.
 
 Alternatively, running the **Orchard Core Commerce - Content - Product** recipe also sets up a sample Product type with all the necessary parts attached.
 
@@ -128,7 +128,7 @@ To create Orders manually, head to the usual _Content > Content Items_ page and 
 _Products can be added to and removed from any Order manually._
 
 ### Price Variants Products
-Products that have `PriceVariantsPart` attached to them can have multiple different prices associated with them based on predefined attributes. This is handy when there are variants of the given product and you want to set different prices for each version. These prices are generated based on those Text Product Attribute Fields of the content type that are restricted to predefined values. For a more technical overview, see the [part's documentation](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-variants-part.md).
+Products that have `PriceVariantsPart` attached to them can have multiple different prices associated with them based on predefined attributes. This is handy when there are variants of the given product and you want to set different prices for each version. These prices are generated based on those Text Product Attribute Fields of the content type that are restricted to predefined values. For a more technical overview, see the [part's documentation](../features/price-variants-part.md).
 
 Create a new product type, or edit an existing one, and attach `PriceVariantsPart` to it. Then add a new Text Product Attribute Field to it.
 
@@ -156,7 +156,7 @@ _With these settings, one variant may be chosen and added to the cart. Different
 
 ### Taxation
 The module comes with basic tax support capabilities that include specifying gross prices and tax rates on products. These can be utilized by attaching `TaxPart` to content types that also have `ProductPart`.
-For a detailed overview of the feature, see its [documentation](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/taxation.md).
+For a detailed overview of the feature, see its [documentation](../features/taxation.md).
 
 ![Tax fields.](../assets/images/create-webshop/taxation/tax-fields.png)
 
@@ -164,7 +164,7 @@ _With `TaxPart` present, these fields become available in the content item's edi
 
 ### Promotions
 Setting discounts for products is also possible by attaching `DiscountPart` to a type. This enables specifying discount amounts/percentages, as well as the scale and duration of the discount. Global discounts that apply to all products in the shop are also possible to create by using the `GlobalDiscount` stereotype.
-As previously, see the feature's [documentation](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/promotions.md) for details.
+As previously, see the feature's [documentation](../features/promotions.md) for details.
 
 ![Discount fields.](../assets/images/create-webshop/promotion/discount-fields.png)
 
@@ -172,7 +172,7 @@ _Start and end dates can be set for discounts as well._
 
 ### Inventory management
 Basic inventory management capabilities are also present in the Commerce module via the Inventory feature, which not only keeps inventory of products that have `InventoryPart` attached, but also includes settings for back ordering and allowed order quantities.
-Find more details on the feature's [documentation page](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/inventory.md), as well as on the `InventoryPart` [documentation page](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/inventory-part.md).
+Find more details on the feature's [documentation page](../features/inventory.md), as well as on the `InventoryPart` [documentation page](../features/inventory-part.md).
 
 ![Inventory fields.](../assets/images/create-webshop/inventory/inventory-fields.png)
 
