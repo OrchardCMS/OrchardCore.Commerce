@@ -10,6 +10,9 @@ Orchard Core's [Commerce](https://github.com/OrchardCMS/OrchardCore.Commerce) mo
 
 ## Creating a basic webshop
 
+### The one-click approach
+The below steps include manually creating and configuring content types and items. An alternative, albeit less detailed, approach is to simply run the **Orchard Core Commerce - Development** recipe to get the relevant sample content types and items — this may be quicker, but it also misses out on the explanation of the contents. As such, reading the following points is still recommended.
+
 ### Step 1 — Install the Commerce module using NuGet
 Get the latest version of the [Orchard Core Commerce NuGet](https://www.nuget.org/packages/OrchardCore.Commerce) package. Should you be looking for further tips regarding NuGet usage with Orchard Core, see the [Getting Started](https://docs.orchardcore.net/en/latest/docs/getting-started) page.
 
@@ -37,6 +40,8 @@ Optionally, enable a few other useful Commerce features as well to get even more
 
 ### Step 3 — Create a product content type
 Products are rather crucial to a webshop, so let's create a Product content type. Any content type that has a [`ProductPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/product-part.md) and a price-providing part (e.g. [`PricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-part.md), [`PriceVariantsPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-variants-part.md), or [`TieredPricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/tiered-price-part.md)) attached to it qualifies as a product. For a more technical overview of these parts, follow the links.
+
+Alternatively, running the **Orchard Core Commerce - Content - Product** recipe also sets up a sample Product type with all the necessary parts attached.
 
 Navigate to _Content > Content Types_ and create a new type. Name it Product, attach `TitlePart`, `ProductPart`, and `PricePart` to it.
 
