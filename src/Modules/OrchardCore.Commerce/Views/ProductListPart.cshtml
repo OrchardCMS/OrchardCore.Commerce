@@ -21,8 +21,6 @@ else
     <p class="alert alert-warning">@T["There are no products to display."]</p>
 }
 
-<zone name="AfterContent">
-    <!-- [html-validate-disable attribute-misuse] -->
-    @await DisplayAsync(Model.Pager)
-    <!-- [html-validate-enable attribute-misuse] -->
-</zone>
+<!-- [html-validate-disable attribute-misuse] -->
+@await DisplayAsync(Model.Pager)
+<!-- [html-validate-enable attribute-misuse] -->
