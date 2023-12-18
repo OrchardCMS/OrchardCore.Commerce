@@ -84,21 +84,7 @@ Navigate to _Design > Settings > Zones_ and define the zone where you want the S
 _Header, Content, Footer, any zone can be created here. Except for Ozone, that's illegal._
 
 - **Layers**:
-Go to _Design > Widgets_, then click the Add button to define a Layer.
-
-![Layers.](../assets/images/create-webshop/step-5/layers.png)
-
-_The Add button allows you to add things._
-
-![Layer creation.](../assets/images/create-webshop/step-5/create-layer.png)
-
-_The Layer needs to be saved first to reveal additional options._
-
-Once saved, the Rules option becomes available, which contains various conditions that determine when the Layer is visible. For simplicity's sake, let's choose a Boolean condition with its value set to true — this ensures the Layer is always visible.
-
-![Adding Rules.](../assets/images/create-webshop/step-5/rules.png)
-
-_There can be multiple Rules in place for one Layer, but a singular one will do for starting out._
+A Layer is also going to be necessary for the Widget, so if you don't have one set up yet, see the [relevant documentation page](https://github.com/OrchardCMS/OrchardCore/tree/main/src/docs/reference/modules/Layers/).
 
 - **Widget**:
 Widgets are content items that have their stereotype set to Widget. The Commerce module creates a simple Shopping Cart Widget when it's enabled, so we'll just use that. For more extensive documentation about Widgets, see the [usual place](https://docs.orchardcore.net/en/main/docs/reference/modules/Widgets/).
