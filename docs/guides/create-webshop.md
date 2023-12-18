@@ -5,13 +5,13 @@
 Orchard Core's [Commerce](https://github.com/OrchardCMS/OrchardCore.Commerce) module can be used to create a fully functional webshop in a few simple steps. Check out the numbered steps to learn how to set up a webshop featuring highly customizable products and online payment, and read on to learn about using other key features such as order management, inventory management, promotions, and taxation.
 
 ## Prerequisites
-- General familiarity with [Orchard Core](https://docs.orchardcore.net/en/latest) in general, see [Tutorials](https://docs.orchardcore.net/en/latest/docs/resources/tutorials/).
-- An installed Orchard Core website
+- General familiarity with [Orchard Core](https://docs.orchardcore.net/en/latest), see [Tutorials](https://docs.orchardcore.net/en/latest/docs/resources/tutorials/).
+- An installed Orchard Core website.
 
 ## Creating a basic webshop
 
 ### Step 1 — Install the Commerce module using NuGet
-Get the latest version of the [Orchard Core Commerce NuGet](https://www.nuget.org/packages/OrchardCore.Commerce) package. Should you vie for further tips regarding NuGet usage with Orchard Core, see the [Getting Started](https://docs.orchardcore.net/en/latest/docs/getting-started) page.
+Get the latest version of the [Orchard Core Commerce NuGet](https://www.nuget.org/packages/OrchardCore.Commerce) package. Should you be looking for further tips regarding NuGet usage with Orchard Core, see the [Getting Started](https://docs.orchardcore.net/en/latest/docs/getting-started) page.
 
 ### Step 2 — Enable necessary features
 Certain Orchard Core Commerce features, as well as some prerequisite stock Orchard Core features, need to be enabled for the necessary functionality. This can be done under *Configuration > Features*. These features include the following:
@@ -35,101 +35,97 @@ Optionally, enable a few other useful Commerce features as well to get even more
 - **Orchard Core Commerce - Tax**: Provides tax-related functionality.
 - **Orchard Core Commerce - Custom Tax Rates**: Enables locally maintaining tax rates.
 
-### Step 3 — Create Shopping Cart Widget
+### Step 3 — Create a product content type
+Products are rather crucial to a webshop, so let's create a Product content type. Any content type that has a [`ProductPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/product-part.md) and a price-providing part (e.g. [`PricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-part.md), [`PriceVariantsPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-variants-part.md), or [`TieredPricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/tiered-price-part.md)) attached to it qualifies as a product. For a more technical overview of these parts, follow the links.
+
+Navigate to _Content > Content Types_ and create a new type. Name it Product, attach `TitlePart`, `ProductPart`, and `PricePart` to it.
+
+![Create Product.](../assets/images/create-webshop/step-3/create-product.png)
+
+_It's okay to leave the rest of the settings on default, they can be changed anytime._
+
+Now if you visit the item's page, you can add it to the cart.
+
+![View Product.](../assets/images/create-webshop/step-3/view-product.png)
+
+_A Product with excellent price to value ratio._
+
+### Step 4 — Create a Product List
+Listing the available products is another expected feature for a webshop. This can be done in multiple ways, but let's see a simple one that includes a content type which utilizes lists. Go to _Content > Content Types_ and create a new type with the name Product List. Add `TitlePart`, `ListPart`, and `AutoroutePart` to it. The basic settings are up to preferences, however, the `ListPart`'s contained types need to be specified in order to add Products to it.
+
+![ListPart settings.](../assets/images/create-webshop/step-4/edit-list-part.png)
+
+_Set the contained types in the ListPart's settings._
+
+![Contained types.](../assets/images/create-webshop/step-4/set-contained-types.png)
+
+_As this is a list of Products, the Product type alone might do._
+
+Optionally, edit the `AutoroutePart`'s settings to allow setting the Product List as the homepage.
+
+![AutoroutePart settings.](../assets/images/create-webshop/step-4/edit-autoroute-part.png)
+
+_Check Show homepage options. Or don't, up to you._
+
+Now navigate to _Content > Content Items_ and create an item of the newly added type. Then, within that item, add Products that you want to be listed.
+
+![Add a Product.](../assets/images/create-webshop/step-4/add-product-to-list.png)
+
+_Add a few Products to the list to have a few items to list._
+
+![I am become Product List, enumerator of Products.](../assets/images/create-webshop/step-4/product-list.png)
+
+_Listing available Products makes browsing easier for customers._
+
+### Step 5 — Create Shopping Cart Widget
 Shopping without a shopping cart is a difficult task, and while it's not outside the realm of possibility, let's make our lives easier by creating one.
 For this, we're going to need to create Zones, Layers, and finally a Widget.
 
 - **Zones**:
-Navigate to _Design > Settings > Zones_ and define the zone where you want the shopping cart widget to be rendered. Standard Orchard Core zones include Header, Content, and Footer, so it might be best to start with those. To learn more about Zones, refer to their [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/Layers/#zones).
+Navigate to _Design > Settings > Zones_ and define the zone where you want the Shopping Cart Widget to be rendered. Make sure to use zones that are also referenced by your Layout. To learn more about Zones, refer to their [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/Layers/#zones).
 
-![Zones.](../assets/images/create-webshop/step-3/zones.png)
+![Zones.](../assets/images/create-webshop/step-5/zones.png)
 
 _Header, Content, Footer, any zone can be created here. Except for Ozone, that's illegal._
 
 - **Layers**:
 Go to _Design > Widgets_, then click the Add button to define a Layer.
 
-![Layers.](../assets/images/create-webshop/step-3/layers.png)
+![Layers.](../assets/images/create-webshop/step-5/layers.png)
 
-_The Add button towards the right side is the one you'll need._
+_The Add button allows you to add things._
 
-![Layer creation.](../assets/images/create-webshop/step-3/create-layer.png)
+![Layer creation.](../assets/images/create-webshop/step-5/create-layer.png)
 
 _The Layer needs to be saved first to reveal additional options._
 
 Once saved, the Rules option becomes available, which contains various conditions that determine when the Layer is visible. For simplicity's sake, let's choose a Boolean condition with its value set to true — this ensures the Layer is always visible.
 
-![Adding Rules.](../assets/images/create-webshop/step-3/rules.png)
+![Adding Rules.](../assets/images/create-webshop/step-5/rules.png)
 
 _There can be multiple Rules in place for one Layer, but a singular one will do for starting out._
 
 - **Widget**:
-Widgets are content items that have their stereotype set to Widget. As such, the Shopping Cart Widget can be created like any other content type. Go to _Content > Content Types_ and click Create New Type. Name it Shopping Cart Widget, save it, edit its settings, and specify its Stereotype as Widget. For more extensive documentation about Widgets, see the [usual place](https://docs.orchardcore.net/en/main/docs/reference/modules/Widgets/).
+Widgets are content items that have their stereotype set to Widget. The Commerce module creates a simple Shopping Cart Widget when it's enabled, so we'll just use that. For more extensive documentation about Widgets, see the [usual place](https://docs.orchardcore.net/en/main/docs/reference/modules/Widgets/).
 
-![Creating Widgets.](../assets/images/create-webshop/step-3/create-widget.png)
+To actually add a Widget, return to the _Design > Widgets_ page. Click the Add Widget button that's within the Zone of your choice, and select Shopping Cart Widget.
 
-_The Shopping Cart Widget doesn't need to be Creatable, Listable, etc._
-
-Once again on the _Design > Widgets_ page, it's time to finally add a Widget. To do so, click the Add Widget button that's within the Zone of your choice, and select Shopping Cart Widget.
-
-![Adding Widgets.](../assets/images/create-webshop/step-3/add-widget.png)
+![Adding Widgets.](../assets/images/create-webshop/step-5/add-widget.png)
 
 _Any content type with the Widget stereotype can be added this way, but let's just stick to the shopping cart._
 
-![Publishing Widget.](../assets/images/create-webshop/step-3/publish-widget.png)
+![Publishing Widget.](../assets/images/create-webshop/step-5/publish-widget.png)
 
-_Name the Widget and select the Layer where it should be rendered in._
-
-### Step 4 — Create a product content type
-Products are rather crucial to a webshop, so let's create a Product content type. Any content type that has a [`ProductPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/product-part.md) and a price-providing part (e.g. [`PricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-part.md), [`PriceVariantsPart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/price-variants-part.md), or [`TieredPricePart`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/docs/features/tiered-price-part.md)) attached to it qualifies as a product. For a more technical overview of these parts, follow the links.
-
-Navigate to _Content > Content Types_ and create a new type. Name it Product, attach `TitlePart`, `ProductPart`, and `PricePart` to it.
-
-![Create Product.](../assets/images/create-webshop/step-4/create-product.png)
-
-_It's okay to leave the rest of the settings on default, they can be changed anytime._
-
-Now if you visit the item's page, you can add it to the cart.
-
-![View Product.](../assets/images/create-webshop/step-4/view-product.png)
-
-_A Product with excellent price to value ratio._
-
-### Step 5 — Create a Product List
-Listing the available products is another expected feature for a webshop. This can be done in multiple ways, but let's see a simple one that includes a content type which utilizes lists. Go to _Content > Content Types_ and create a new type with the name Product List. Add `TitlePart`, `ListPart`, and `AutoroutePart` to it. The basic settings are up to preferences, however, the `ListPart`'s contained types need to be specified in order to add Products to it.
-
-![ListPart settings.](../assets/images/create-webshop/step-5/edit-list-part.png)
-
-_Set the contained types in the ListPart's settings._
-
-![Contained types.](../assets/images/create-webshop/step-5/set-contained-types.png)
-
-_As this is a list of Products, the Product type alone might do._
-
-Optionally, edit the `AutoroutePart`'s settings to allow setting the Product List as the homepage.
-
-![AutoroutePart settings.](../assets/images/create-webshop/step-5/edit-autoroute-part.png)
-
-_Check Show homepage options. Or don't, up to you._
-
-Now navigate to _Content > Content Items_ and create an item of the newly added type. Then, within that item, add Products that you want to be listed.
-
-![Add a Product.](../assets/images/create-webshop/step-5/add-product-to-list.png)
-
-_Add a few Products to the list to have a few items to list._
-
-![I am become Product List, enumerator of Products.](../assets/images/create-webshop/step-5/product-list.png)
-
-_Listing available Products makes browsing easier for customers._
+_Name the Widget and select the Layer where it should be rendered._
 
 ### Step 6 — Enable a payment provider (Stripe)
 Having Products and being able to browse them is great and all, but customers will also need a way to checkout and pay for their cart's content. This is where payment providers come into the picture. For simplicity's sake, we'll use Stripe as the payment provider here. Ensure the **Orchard Core Commerce - Payment - Stripe** feature is enabled, then go to _Configuration > Commerce > Stripe API_. The Publishable Key and Secret Key fields need to be filled in for the Stripe Payment form to work on the checkout page, see the links on the settings page for more.
 
 ![Stripe settings.](../assets/images/create-webshop/step-6/stripe-settings.png)
 
-_If you don't already have the necessary API keys, follow the links._
+_If you don't already have the necessary API keys, follow the links on the page._
 
-With that done, the Stripe Payment form now appears on the checkout page, making checking out possible.
+With that done, the Stripe Payment form now appears on the checkout page and the purchase can be completed.
 
 ![Stripe Payment.](../assets/images/create-webshop/step-6/stripe-form.png)
 
@@ -203,6 +199,6 @@ _These inventory-related fields show up in the editor after the `InventoryPart` 
 
 ## Video
 
-For a more visual presentation of a simple webshop, check out the relevant recording from the 2023 Orchard Harvest below.
+For a more visual presentation of a simple webshop, [check out the relevant recording](https://www.youtube.com/watch?v=SQHVUUUT8O0) from the 2023 Orchard Harvest below.
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/SQHVUUUT8O0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
