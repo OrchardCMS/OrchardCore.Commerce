@@ -66,40 +66,11 @@ public class OrderLineItemService : IOrderLineItemService
         var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
             lineItems.Select(line => line.ContentItemVersion));
 
-        var viewModelLineItems = await Task.WhenAll(lineItems.Select(async lineItem =>
+        var viewModelLineItems = new List<OrderLineItemViewModel>();
+        foreach (var lineItem in lineItems)
         {
-            var productPart = products[lineItem.ProductSku];
-            var metaData = await _contentManager.GetContentItemMetadataAsync(productPart);
-
-            var fullSku = lineItem.FullSku;
-            if (string.IsNullOrEmpty(lineItem.FullSku))
-            {
-                var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
-                fullSku = _productService.GetOrderFullSku(item, productPart);
-            }
-
-            var availableAttributesAndSettings = await GetAvailableAttributesAndSettingsAsync();
-
-            return new OrderLineItemViewModel
-            {
-                ProductPart = productPart,
-                Quantity = lineItem.Quantity,
-                ProductSku = lineItem.ProductSku,
-                ProductFullSku = fullSku,
-                ProductName = productPart.ContentItem.DisplayText,
-                UnitPriceValue = lineItem.UnitPrice.Value,
-                UnitPriceCurrencyIsoCode = lineItem.UnitPrice.Currency.CurrencyIsoCode,
-                UnitPrice = lineItem.UnitPrice,
-                LinePrice = lineItem.LinePrice,
-                ProductRouteValues = metaData.DisplayRouteValues,
-                Attributes = lineItem.Attributes,
-                SelectedAttributes = lineItem.SelectedAttributes,
-                AvailableTextAttributes = availableAttributesAndSettings.AvailableTextAttributes,
-                AvailableBooleanAttributes = availableAttributesAndSettings.AvailableBooleanAttributes,
-                AvailableNumericAttributes = availableAttributesAndSettings.AvailableNumericAttributes,
-                NumericAttributeSettings = availableAttributesAndSettings.NumericAttributeSettings,
-            };
-        }));
+            viewModelLineItems.Add(await GetOrderLineItemViewModelAsync(products, lineItem));
+        }
 
         var (shipping, billing) = await _hca.GetUserAddressIfNullAsync(
             orderPart?.ShippingAddress.Address,
@@ -222,5 +193,42 @@ public class OrderLineItemService : IOrderLineItemService
         return discounts?.Any() != true
             ? item.ProductPart.GetAllDiscountInformation()
             : discounts;
+    }
+
+    private async Task<OrderLineItemViewModel> GetOrderLineItemViewModelAsync(
+        IDictionary<string, ProductPart> products,
+        OrderLineItem lineItem)
+    {
+        var productPart = products[lineItem.ProductSku];
+        var metaData = await _contentManager.GetContentItemMetadataAsync(productPart);
+
+        var fullSku = lineItem.FullSku;
+        if (string.IsNullOrEmpty(lineItem.FullSku))
+        {
+            var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
+            fullSku = _productService.GetOrderFullSku(item, productPart);
+        }
+
+        var availableAttributesAndSettings = await GetAvailableAttributesAndSettingsAsync();
+
+        return new OrderLineItemViewModel
+        {
+            ProductPart = productPart,
+            Quantity = lineItem.Quantity,
+            ProductSku = lineItem.ProductSku,
+            ProductFullSku = fullSku,
+            ProductName = productPart.ContentItem.DisplayText,
+            UnitPriceValue = lineItem.UnitPrice.Value,
+            UnitPriceCurrencyIsoCode = lineItem.UnitPrice.Currency.CurrencyIsoCode,
+            UnitPrice = lineItem.UnitPrice,
+            LinePrice = lineItem.LinePrice,
+            ProductRouteValues = metaData.DisplayRouteValues,
+            Attributes = lineItem.Attributes,
+            SelectedAttributes = lineItem.SelectedAttributes,
+            AvailableTextAttributes = availableAttributesAndSettings.AvailableTextAttributes,
+            AvailableBooleanAttributes = availableAttributesAndSettings.AvailableBooleanAttributes,
+            AvailableNumericAttributes = availableAttributesAndSettings.AvailableNumericAttributes,
+            NumericAttributeSettings = availableAttributesAndSettings.NumericAttributeSettings,
+        };
     }
 }

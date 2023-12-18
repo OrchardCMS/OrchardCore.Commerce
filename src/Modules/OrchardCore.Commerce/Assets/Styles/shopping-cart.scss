@@ -5,13 +5,15 @@
         text-align: center;
     }
 
-    tbody, tfoot {
-        & tr>*:last-child {
+    tbody,
+    tfoot {
+        & tr > *:last-child {
             text-align: right;
         }
     }
 
-    &-totals, &-unit-price {
+    &-totals,
+    &-unit-price {
         text-align: right;
     }
 

@@ -10,6 +10,7 @@ $cart-widget-circle-size: 2.188rem;
 
     &-link {
         position: relative;
+
         // Making sure widget is always visible.
         z-index: 9999;
     }
@@ -22,5 +23,3 @@ $cart-widget-circle-size: 2.188rem;
         font-size: calc(#{$cart-widget-circle-size} - #{$shopping-cart-widget-offset});
     }
 }
-
-

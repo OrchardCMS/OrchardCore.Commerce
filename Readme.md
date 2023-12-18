@@ -29,7 +29,7 @@ If you want to include OrchardCore.Commerce as a git submodule instead of NuGet 
 ```xml
 <Project>
   <PropertyGroup>
-    <LombiqHelpfulLibrariesPath>$(MSBuildThisFileDirectory)/src/Libraries/Lombiq.HelpfulLibraries/Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
+    <LombiqHelpfulLibrariesPath>$(MSBuildThisFileDirectory)/src/Libraries/Lombiq.HelpfulLibraries</LombiqHelpfulLibrariesPath>
     <LombiqNodeJsExtensionsPath>$(MSBuildThisFileDirectory)/src/Utilities/Lombiq.NodeJs.Extensions/Lombiq.NodeJs.Extensions</LombiqNodeJsExtensionsPath>
   </PropertyGroup>
 </Project>

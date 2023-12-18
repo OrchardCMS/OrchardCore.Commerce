@@ -141,7 +141,6 @@ public class Startup : StartupBase
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
-        services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
@@ -370,6 +369,7 @@ public class InventoryStartup : StartupBase
         services.AddScoped<IOrderEvents, InventoryOrderEvents>();
         services.AddScoped<IProductInventoryService, ProductInventoryService>();
         services.AddScoped<ICheckoutEvents, InventoryCheckoutEvents>();
+        services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
     }
 }
 
