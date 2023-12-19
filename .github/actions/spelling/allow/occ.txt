@@ -34,3 +34,4 @@ testproduct
 testproductvariant
 unpublish
 webhooks
+webshop
