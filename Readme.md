@@ -35,6 +35,16 @@ If you want to include OrchardCore.Commerce as a git submodule instead of NuGet 
 </Project>
 ```
 
+If you have [Lombiq Analyzers](https://github.com/Lombiq/.NET-Analyzers) included in your project as a submodule you should also add the following property to the _Directory.Build.props_ file:
+
+```xml
+<Project>
+  <PropertyGroup>
+    <LombiqAnalyzersPath>$(MSBuildThisFileDirectory)/tools/Lombiq.Analyzers</LombiqAnalyzersPath>
+  </PropertyGroup>
+</Project>
+```
+
 ### Setup
 
 1. Clone this repository.
