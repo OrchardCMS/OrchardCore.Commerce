@@ -1,8 +1,7 @@
-window.initializeToggleSecondAddress = function (
+window.initializeToggleSecondAddress = (
     checkbox,
     firstAddressRow,
-    secondAddressRow) {
-
+    secondAddressRow) => {
     function copyValue(elementName) {
         const selector = '.address__' + elementName;
         const target = secondAddressRow.querySelector(selector);
@@ -39,17 +38,16 @@ window.initializeToggleSecondAddress = function (
 
 (function autoInitializeToggleSecondAddress() {
     if (document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]')) {
-        initializeToggleSecondAddress(
+        window.initializeToggleSecondAddress(
             document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]'),
             document.querySelector('.address_billing-address'),
             document.querySelector('.address_shipping-address'));
     }
 
     if (document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]')) {
-        initializeToggleSecondAddress(
+        window.initializeToggleSecondAddress(
             document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]'),
             document.querySelector('.address_billing-address'),
             document.querySelector('.address_shipping-address'));
     }
 })();
-
