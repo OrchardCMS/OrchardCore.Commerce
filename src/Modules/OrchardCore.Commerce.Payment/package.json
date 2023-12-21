@@ -13,5 +13,11 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-only-warn": "1.1.0",
     "eslint-plugin-promise": "6.1.1"
+  },
+  "nodejsExtensions": {
+    "styles": {
+      "source": "Assets/Styles",
+      "target": "wwwroot/css"
+    }
   }
 }
