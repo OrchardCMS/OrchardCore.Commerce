@@ -13,6 +13,7 @@ namespace OrchardCore.Commerce.Services;
 public class QueryStringAppliedProductListFilterParametersProvider : IAppliedProductListFilterParametersProvider
 {
     public const string QueryStringPrefix = "products.";
+    public const string QueryStringKeyOrderBy = QueryStringPrefix + "orderBy";
 
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -34,7 +35,7 @@ public class QueryStringAppliedProductListFilterParametersProvider : IAppliedPro
     {
         var queryStrings = _hca.HttpContext.Request.Query;
         var orderByValue = queryStrings
-            .Where(queryString => queryString.Key.StartsWith(QueryStringPrefix + "orderBy", StringComparison.InvariantCulture))
+            .Where(queryString => queryString.Key.StartsWith(QueryStringKeyOrderBy, StringComparison.InvariantCulture))
             .SelectMany(queryString => queryString.Value)
             .FirstOrDefault();
         var filterValues = queryStrings

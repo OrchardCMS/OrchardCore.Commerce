@@ -1,8 +1,10 @@
 using OrchardCore.Commerce.ContentFields.Settings;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -32,7 +34,12 @@ public class PriceMigrations : DataMigration
                         Hint = "The base price of the product.",
                     })));
 
-        return 2;
+        SchemaBuilder
+            .CreateMapIndexTable<PriceIndex>(table => table
+                .Column<decimal>(nameof(PriceIndex.MinPrice))
+                .Column<decimal>(nameof(PriceIndex.MaxPrice)));
+
+        return 3;
     }
 
     public int UpdateFrom1()
@@ -48,5 +55,15 @@ public class PriceMigrations : DataMigration
                     })));
 
         return 2;
+    }
+
+    public int UpdateFrom2()
+    {
+        SchemaBuilder
+            .CreateMapIndexTable<PriceIndex>(table => table
+                .Column<decimal>(nameof(PriceIndex.MinPrice))
+                .Column<decimal>(nameof(PriceIndex.MaxPrice)));
+
+        return 3;
     }
 }
