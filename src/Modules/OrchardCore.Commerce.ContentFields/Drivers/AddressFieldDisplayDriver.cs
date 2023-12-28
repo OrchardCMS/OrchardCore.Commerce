@@ -20,6 +20,7 @@ namespace OrchardCore.Commerce.Drivers;
 
 public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 {
+    private readonly IEnumerable<IAddressUpdater> _addressUpdaters;
     private readonly IEnumerable<IAddressFieldEvents> _addressFieldEvents;
     private readonly IAddressFormatterProvider _addressFormatterProvider;
     private readonly IHttpContextAccessor _hca;
@@ -27,12 +28,14 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     private readonly IStringLocalizer<AddressFieldDisplayDriver> T;
 
     public AddressFieldDisplayDriver(
+        IEnumerable<IAddressUpdater> addressUpdaters,
         IEnumerable<IAddressFieldEvents> addressFieldEvents,
         IAddressFormatterProvider addressFormatterProvider,
         IHttpContextAccessor hca,
         IRegionService regionService,
         IStringLocalizer<AddressFieldDisplayDriver> stringLocalizer)
     {
+        _addressUpdaters = addressUpdaters;
         _addressFieldEvents = addressFieldEvents;
         _addressFormatterProvider = addressFormatterProvider;
         _hca = hca;
@@ -69,8 +72,6 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 
     public override async Task<IDisplayResult> UpdateAsync(AddressField field, IUpdateModel updater, UpdateFieldEditorContext context)
     {
-        var viewModel = new AddressFieldViewModel();
-
         // We have to detect if we are in the user editor in the admin dashboard, because then it's okay to save even if
         // the normally required fields are left empty.
         var isInUserEditor = _hca.HttpContext?.Request.RouteValues["area"]?.ToString() == "OrchardCore.Users";
@@ -84,7 +85,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
             return true;
         }
 
-        if (!await updater.TryUpdateModelAsync(viewModel, Prefix) ||
+        if (await TryUpdateModelAsync(updater, Prefix) is not { } viewModel ||
             IsRequiredFieldEmpty(viewModel.Address.Name, nameof(viewModel.Address.Name)) ||
             IsRequiredFieldEmpty(viewModel.Address.StreetAddress1, nameof(viewModel.Address.StreetAddress1)) ||
             IsRequiredFieldEmpty(viewModel.Address.City, nameof(viewModel.Address.City)))
@@ -97,6 +98,19 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
         await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, updater, context));
 
         return await EditAsync(field, context);
+    }
+
+    private async Task<AddressFieldViewModel> TryUpdateModelAsync(IUpdateModel modelUpdater, string prefix)
+    {
+        var viewModel = new AddressFieldViewModel();
+        if (!await modelUpdater.TryUpdateModelAsync(viewModel, prefix)) return null;
+
+        foreach (var addressUpdater in _addressUpdaters)
+        {
+            await addressUpdater.UpdateAsync(viewModel.Address);
+        }
+
+        return viewModel;
     }
 
     private static void PopulateViewModel(
