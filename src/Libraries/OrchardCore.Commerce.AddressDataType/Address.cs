@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace OrchardCore.Commerce.AddressDataType;
@@ -24,4 +25,7 @@ public class Address
     public string PostalCode { get; set; }
 
     public string Region { get; set; }
+
+    public IDictionary<string, string> NameParts { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string> AdditionalFields { get; } = new Dictionary<string, string>();
 }
