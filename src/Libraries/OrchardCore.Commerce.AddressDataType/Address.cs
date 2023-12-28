@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.AddressDataType.Constants;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -27,7 +28,7 @@ public class Address
     public string Region { get; set; }
 
     /// <summary>
-    /// Gets a collection of name metadata. This can be such things as first name or last name.
+    /// Gets a collection of name metadata. Some typical keys can be found in <see cref="CommonNameParts"/>.
     /// </summary>
     public IDictionary<string, string> NameParts { get; } = new Dictionary<string, string>();
 
