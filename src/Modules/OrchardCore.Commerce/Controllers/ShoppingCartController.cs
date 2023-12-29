@@ -120,10 +120,22 @@ public class ShoppingCartController : Controller
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
         var updatedLines = new List<ShoppingCartLineUpdateModel>();
-        foreach (var line in cart.Lines)
+
+        var lines = await cart.Lines.AwaitEachAsync(async line =>
+            (Line: line, Item: await _shoppingCartSerializer.ParseCartLineAsync(line)));
+
+        if (lines.Any(line => line.Item == null))
+        {
+            await _shoppingCartPersistence.StoreAsync(new ShoppingCart(), shoppingCartId);
+
+            await _notifier.ErrorAsync(
+                H["Your shopping cart is broken and had to be replaced. We apologize for the inconvenience."]);
+            return RedirectToAction(nameof(Empty));
+        }
+
+        foreach (var (line, item) in lines)
         {
             var isValid = true;
-            var item = await _shoppingCartSerializer.ParseCartLineAsync(line);
 
             await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
                 new { LineItem = item },
