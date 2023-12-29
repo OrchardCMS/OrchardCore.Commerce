@@ -168,9 +168,11 @@ public class ShoppingCartController : Controller
     {
         try
         {
+            if (await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem) return NotFound();
+
             var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
                 shoppingCartId,
-                await _shoppingCartSerializer.ParseCartLineAsync(line),
+                shoppingCartItem,
                 storeIfOk: true);
 
             await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
