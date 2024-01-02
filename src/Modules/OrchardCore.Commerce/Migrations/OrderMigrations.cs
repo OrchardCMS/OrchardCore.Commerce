@@ -1,3 +1,6 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Settings;
@@ -6,11 +9,13 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Html.Models;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Title.Models;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using YesSql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 using static OrchardCore.Commerce.Abstractions.Constants.OrderStatuses;
 
@@ -220,5 +225,36 @@ public class OrderMigrations : DataMigration
             );
 
         return 6;
+    }
+
+    public int UpdateFrom6()
+    {
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
+            var orders = await session.QueryContentItem(PublicationStatus.Any, Order).ListAsync();
+
+            foreach (var order in orders)
+            {
+                if (order.Content.OrderPart["Charges"] is not { } charges)
+                {
+                    continue;
+                }
+
+                foreach (JObject payment in charges)
+                {
+                    var paymentType = payment["$type"]?.ToString();
+                    if (paymentType is not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce")
+                    {
+                        continue;
+                    }
+
+                    payment["$type"] = "OrchardCore.Commerce.Payment.Models.Payment, OrchardCore.Commerce.Payment";
+                    session.Save(order);
+                }
+            }
+        });
+
+        return 7;
     }
 }
