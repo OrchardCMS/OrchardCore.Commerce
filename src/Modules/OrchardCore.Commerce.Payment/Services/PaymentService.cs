@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
@@ -12,8 +11,9 @@ using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.ViewModels;
+using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tax.Extensions;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -27,7 +27,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Services;
 
 public class PaymentService : IPaymentService
 {

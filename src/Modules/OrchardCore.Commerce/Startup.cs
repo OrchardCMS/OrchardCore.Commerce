@@ -28,6 +28,7 @@ using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;

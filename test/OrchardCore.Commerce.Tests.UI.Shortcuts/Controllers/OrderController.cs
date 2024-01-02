@@ -6,6 +6,7 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
@@ -77,7 +78,7 @@ public class OrderController : Controller
             shoppingCartId,
             getCharges: _ => new[]
             {
-                new Models.Payment(
+                new Payment.Models.Payment(
                     Kind: "Card",
                     ChargeText: "Test charge text",
                     TransactionId: "Test transaction ID",

@@ -1,10 +1,11 @@
 @using OrchardCore.Commerce.Controllers;
 @using OrchardCore
+@using OrchardCore.Commerce.Payment.Controllers
 @using OrchardCore.Mvc.Utilities
 @using static OrchardCore.Commerce.Constants.ResourceNames
 @using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
-@model CheckoutViewModel
+@model OrchardCore.Commerce.Payment.ViewModels.CheckoutViewModel
 
 @{
     var orderPart = Model.OrderPart;
