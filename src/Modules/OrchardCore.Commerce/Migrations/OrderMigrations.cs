@@ -108,7 +108,7 @@ public class OrderMigrations : DataMigration
                     .WithDisplayName("Buyer is a corporation"))
             );
 
-        return 6;
+        return 7;
     }
 
     public int UpdateFrom1()
