@@ -244,7 +244,8 @@ public class OrderMigrations : DataMigration
                 foreach (JObject payment in charges)
                 {
                     var paymentType = payment["$type"]?.ToString();
-                    if (paymentType is not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce")
+                    if (paymentType is not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce" and
+                        not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce.Payment")
                     {
                         continue;
                     }
