@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Constants;
+namespace OrchardCore.Commerce.Payment.Constants;
 public static class CurrencyCollectionConstants
 {
     public static readonly IEnumerable<string> SpecialCases = new List<string> { "HUF", "TWD", "UGX" };

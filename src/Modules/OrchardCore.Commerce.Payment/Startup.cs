@@ -1,9 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Constants;
-using OrchardCore.Commerce.Services;
+using OrchardCore.Commerce.Payment.Services;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 

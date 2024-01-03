@@ -1,18 +1,27 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Html.Models;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Title.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using YesSql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 using static OrchardCore.Commerce.Abstractions.Constants.OrderStatuses;
+using JArray = Newtonsoft.Json.Linq.JArray;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -103,7 +112,7 @@ public class OrderMigrations : DataMigration
                     .WithDisplayName("Buyer is a corporation"))
             );
 
-        return 6;
+        return 7;
     }
 
     public int UpdateFrom1()
@@ -220,5 +229,58 @@ public class OrderMigrations : DataMigration
             );
 
         return 6;
+    }
+
+    public int UpdateFrom6()
+    {
+        ShellScope.AddDeferredTask(async scope =>
+        {
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
+            var orders = await session.QueryContentItem(PublicationStatus.Any, Order).ListAsync();
+            var expectedType = JToken.FromObject(
+                new Payment.Models.Payment(
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    Amount.Unspecified,
+                    DateTime.UtcNow),
+                new JsonSerializer
+                {
+                    // Same as for <see cref="OrderPart.Charges"/>. We need to use different type name handling other
+                    // than none, otherwise we won't have the $type property in the serialized JSON.
+#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
+#pragma warning disable SCS0028 // TypeNameHandling is set to the other value than 'None'. It may lead to deserialization vulnerability.
+                    TypeNameHandling = TypeNameHandling.Objects,
+#pragma warning restore SCS0028 // TypeNameHandling is set to the other value than 'None'. It may lead to deserialization vulnerability.
+#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
+                })["$type"]?.ToString();
+
+            foreach (var order in orders)
+            {
+                if (order.Content.OrderPart["Charges"] is not JArray charges)
+                {
+                    continue;
+                }
+
+                foreach (var payment in charges)
+                {
+                    var paymentType = payment["$type"]?.ToString();
+
+                    // We should modify only if the old Payment type or wrongly saved Payment type is present before
+                    // this migration was written. There might be other serialized types in the Charges JArray that
+                    // implements IPayment which shouldn't be modified. Otherwise continue with the next one.
+                    if (paymentType is not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce" and
+                        not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce.Payment")
+                    {
+                        continue;
+                    }
+
+                    payment["$type"] = expectedType;
+                    session.Save(order);
+                }
+            }
+        });
+
+        return 7;
     }
 }

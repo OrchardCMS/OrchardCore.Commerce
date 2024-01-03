@@ -54,7 +54,7 @@
             "AdditionalCosts": [],
             "Charges": [
               {
-                "$type": "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce.Payment",
+                "$type": "OrchardCore.Commerce.Payment.Models.Payment, OrchardCore.Commerce.Payment",
                 "Kind": "Dummy Payment",
                 "TransactionId": "43p7j4274jq7r3s860gadwv8mf:0",
                 "ChargeText": "Dummy transaction of US Dollar.",
