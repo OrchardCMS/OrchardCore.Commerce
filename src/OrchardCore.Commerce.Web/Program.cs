@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.AddressDataType.Services;
 using OrchardCore.Logging;
 using System.Diagnostics.CodeAnalysis;
 
@@ -13,6 +15,7 @@ builder.Host.UseNLogHost();
 var configuration = builder.Configuration;
 
 builder.Services
+    .AddScoped<IAddressUpdater, WesternCommonNamePartsAddressUpdater>()
     .AddSingleton(configuration)
     .AddOrchardCms(builder =>
     {
