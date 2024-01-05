@@ -90,18 +90,17 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
 
     public ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type) =>
         new HashSet<IProductAttributeValue>(
-        line.Attributes is null
-            ? Enumerable.Empty<IProductAttributeValue>()
-            : line
-                .Attributes
-                .Where(attribute => attribute.Key.Contains('.'))
-                .Select(attribute =>
-                {
-                    var (attributePartDefinition, attributeFieldDefinition) = type.GetFieldDefinition(attribute.Key);
-                    return _attributeProviders
-                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attribute.Value))
-                        .FirstOrDefault(attributeValue => attributeValue != null);
-                }));
+            line.Attributes is null
+                ? Enumerable.Empty<IProductAttributeValue>()
+                : line
+                    .Attributes
+                    .Where(attribute => attribute.Key?.Contains('.') == true)
+                    .SelectWhere(attribute =>
+                        type.GetFieldDefinition(attribute.Key) is ({ } partDefinition, { } fieldDefinition)
+                            ? _attributeProviders
+                                .Select(provider => provider.Parse(partDefinition, fieldDefinition, attribute.Value))
+                                .FirstOrDefault(attributeValue => attributeValue != null)
+                            : null));
 
     public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
     {
