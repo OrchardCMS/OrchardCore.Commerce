@@ -76,7 +76,7 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
                     attributeFieldDefinition,
                     new[] { selectedValue ?? defaultValue });
 
-            attributesList.Add(matchingAttribute);
+            if (matchingAttribute is not null) attributesList.Add(matchingAttribute);
         }
     }
 
