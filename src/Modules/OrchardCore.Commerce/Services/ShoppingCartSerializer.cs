@@ -104,11 +104,10 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
 
     public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
     {
-        var product = await _productService.GetProductAsync(line.ProductSku);
-        if (product is null) return null;
+        if (await _productService.GetProductAsync(line?.ProductSku) is not { } product) return null;
+
         var type = GetTypeDefinition(product);
-        var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
-        return parsedLine;
+        return new ShoppingCartItem(line!.Quantity, line.ProductSku, ParseAttributes(line, type));
     }
 
     public ISet<IProductAttributeValue> PostProcessAttributes(IEnumerable<IProductAttributeValue> attributes, ProductPart productPart)
