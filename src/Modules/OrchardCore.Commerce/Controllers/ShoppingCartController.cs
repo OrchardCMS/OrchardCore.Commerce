@@ -130,6 +130,7 @@ public class ShoppingCartController : Controller
 
             await _notifier.ErrorAsync(
                 H["Your shopping cart is broken and had to be replaced. We apologize for the inconvenience."]);
+
             return RedirectToAction(nameof(Empty));
         }
 
