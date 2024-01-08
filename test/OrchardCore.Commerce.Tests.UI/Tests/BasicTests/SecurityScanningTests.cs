@@ -14,12 +14,23 @@ public class SecurityScanningTests : UITestBase
     [Fact]
     public Task FullSecurityScanShouldPass() =>
         ExecuteTestAfterSetupAsync(context => context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync(configuration =>
-        {
-            const string antiCsrfJustification =
-                "Absence of Anti-CSRF Tokens: The ProductListPart-Filters intentionally uses a GET form. No XSS risk.";
+            FalsePositive(
+                configuration,
+                10202,
+                "Absence of Anti-CSRF Tokens: The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
+                @"https://[^/]+/",
+                @".*/\?.*pagenum=.*", // #spell-check-ignore-line
+                @".*/\?.*products\..*")));
 
-            configuration.MarkScanRuleAsFalsePositiveForUrlWithRegex(@"https://[^/]+/", 10202, antiCsrfJustification);
-            configuration.MarkScanRuleAsFalsePositiveForUrlWithRegex(@".*/\?.*pagenum=.*", 10202, antiCsrfJustification);
-            configuration.MarkScanRuleAsFalsePositiveForUrlWithRegex(@".*/\?.*products\..*", 10202, antiCsrfJustification);
-        }));
+    private static void FalsePositive(
+        SecurityScanConfiguration configuration,
+        int id,
+        string justification,
+        params string[] urls)
+    {
+        foreach (var url in urls)
+        {
+            configuration.MarkScanRuleAsFalsePositiveForUrlWithRegex(url, id, justification);
+        }
+    }
 }
