@@ -13,5 +13,9 @@ public class SecurityScanningTests : UITestBase
 
     [Fact]
     public Task FullSecurityScanShouldPass() =>
-        ExecuteTestAfterSetupAsync(context => context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync());
+        ExecuteTestAfterSetupAsync(context => context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync(configuration =>
+            configuration.MarkScanRuleAsFalsePositiveForUrlWithRegex(
+                @"https://[^/]+/(\?.*pagenum=[0-9]+&.*)?(\?.*products\..*)?",
+                10202,
+                "Absence of Anti-CSRF Tokens: The product list filters are intentionally in a GET form. No XSS risk here.")));
 }
