@@ -13,11 +13,5 @@ public class SecurityScanningTests : UITestBase
 
     [Fact]
     public Task FullSecurityScanShouldPass() =>
-        ExecuteTestAfterSetupAsync(context =>
-            context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync(ConfigureSecurityScan));
-
-    private static void ConfigureSecurityScan(SecurityScanConfiguration configuration)
-    {
-        // Not sure if we need anything here, for now.
-    }
+        ExecuteTestAfterSetupAsync(context => context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync());
 }
