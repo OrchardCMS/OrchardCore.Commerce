@@ -16,6 +16,8 @@ builder.Services
     .AddSingleton(configuration)
     .AddOrchardCms(builder =>
     {
+        builder.ConfigureSecurityDefaults();
+
         if (!configuration.IsUITesting())
         {
             builder.AddSetupFeatures("OrchardCore.AutoSetup");
