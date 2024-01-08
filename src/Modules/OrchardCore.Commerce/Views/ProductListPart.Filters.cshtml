@@ -16,7 +16,7 @@
 
 <h3>@T["Filter Products"]</h3>
 
-<form id="products-filter-form">
+<form method="get" action="@Context.Request.Path">
     @foreach (var filterId in Model.FilterIds)
     {
         var shapeType = "ProductList__Filter__" + filterId;
@@ -45,19 +45,5 @@
         }
     }
 
-    <a href="#" class="btn btn-primary mb-3" id="products-filter-apply">@T["Apply"]</a>
+    <button type="submit" class="btn btn-primary mb-3" id="products-filter-apply">@T["Apply"]</button>
 </form>
-
-<script>
-    function updateButton() {
-        const search = new URLSearchParams(new FormData(document.getElementById('products-filter-form')));
-        const button = document.getElementById('products-filter-apply');
-        button.href = `${new URL(location.href).pathname}?${search}`;
-    }
-
-    document
-        .querySelectorAll('#products-filter-form *[name]')
-        .forEach(input => input.addEventListener('change', updateButton));
-
-    updateButton();
-</script>
