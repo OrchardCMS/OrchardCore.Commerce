@@ -18,5 +18,6 @@ public class SecurityScanningTests : UITestBase
 
     private static void ConfigureSecurityScan(SecurityScanConfiguration configuration)
     {
+        // Not sure if we need anything here, for now.
     }
 }
