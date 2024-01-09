@@ -23,7 +23,7 @@ public class SecurityScanningTests : UITestBase
                     10202,
                     "Absence of Anti-CSRF Tokens: The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
                     @"https://[^/]+/",
-                    @".*/\?.*pagenum=.*",// #spell-check-ignore-line
+                    @".*/\?.*pagenum=.*", // #spell-check-ignore-line
                     @".*/\?.*products\..*"),
                 sarifLog =>
                 {
