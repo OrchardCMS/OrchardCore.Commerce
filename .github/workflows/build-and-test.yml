@@ -24,6 +24,7 @@ jobs:
         cspell:html/dict/html.txt
         lombiq-lgha:dictionaries/Liquid.txt
         lombiq-lgha:dictionaries/Lombiq.people.txt
+        lombiq-lgha:dictionaries/Security.txt
 
   post-pull-request-checks-automation:
     needs: [call-build-and-test-workflow, spelling]
