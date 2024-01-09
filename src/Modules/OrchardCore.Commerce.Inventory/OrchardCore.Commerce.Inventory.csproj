@@ -37,7 +37,7 @@
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.1.1-alpha.2.tdeal-16" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.1.1-alpha.3.tdeal-16" />
   </ItemGroup>
 
 </Project>
