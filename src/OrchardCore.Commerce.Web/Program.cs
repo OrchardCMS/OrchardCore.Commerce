@@ -28,8 +28,11 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseStaticFiles();
-app.UseOrchardCore();
+app
+    .UseNosniffContentTypeOptionsHeader() // This should run before UseStaticFiles.
+    .UseStaticFiles()
+    .UseOrchardCore();
+
 app.Run();
 
 [SuppressMessage(
