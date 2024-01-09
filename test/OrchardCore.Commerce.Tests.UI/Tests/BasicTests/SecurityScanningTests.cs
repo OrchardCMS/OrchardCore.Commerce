@@ -34,6 +34,12 @@ public class SecurityScanningTests : UITestBase
                             result.Kind == ResultKind.Fail &&
                             result.Level != FailureLevel.None &&
                             result.Level != FailureLevel.Note)
+                        .Select(result => new
+                        {
+                            Kind = result.Kind.ToString(),
+                            Level = result.Level.ToString(),
+                            Details = result,
+                        })
                         .ToList();
                     errors.ShouldBeEmpty(JsonConvert.SerializeObject(errors));
                 }));
