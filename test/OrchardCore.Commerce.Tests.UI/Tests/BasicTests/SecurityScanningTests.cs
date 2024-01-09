@@ -33,13 +33,17 @@ public class SecurityScanningTests : UITestBase
                         .Where(result =>
                             result.Kind == ResultKind.Fail &&
                             result.Level != FailureLevel.None &&
-                            result.Level != FailureLevel.Note)
+                            result.Level != FailureLevel.Note &&
+                            // Exclude this specific false positive that was mentioned above in the configuration. It
+                            // somehow shows up in the report JSON, but not in the report HTML, suggesting that this is
+                            // some kind of a bug with ZAP.
+                            result
+                                .Locations?
+                                .Any(location => location.PhysicalLocation?.Region?.Snippet?.Text == "<form method=\"get\" action=\"/\">") != true)
                         .Select(result => new
                         {
                             Kind = result.Kind.ToString(),
                             Level = result.Level.ToString(),
-                            result.Suppressions,
-                            SarifNodeKind = result.SarifNodeKind.ToString(),
                             Details = result,
                         })
                         .ToList();
