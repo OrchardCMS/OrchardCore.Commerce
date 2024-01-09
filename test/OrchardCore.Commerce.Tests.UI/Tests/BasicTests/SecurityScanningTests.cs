@@ -38,6 +38,8 @@ public class SecurityScanningTests : UITestBase
                         {
                             Kind = result.Kind.ToString(),
                             Level = result.Level.ToString(),
+                            result.Suppressions,
+                            SarifNodeKind = result.SarifNodeKind.ToString(),
                             Details = result,
                         })
                         .ToList();
