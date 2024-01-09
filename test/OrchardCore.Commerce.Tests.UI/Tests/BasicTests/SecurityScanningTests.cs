@@ -1,4 +1,7 @@
 ﻿using Lombiq.Tests.UI.SecurityScanning;
+using Microsoft.CodeAnalysis.Sarif;
+using Newtonsoft.Json;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,14 +16,27 @@ public class SecurityScanningTests : UITestBase
 
     [Fact]
     public Task FullSecurityScanShouldPass() =>
-        ExecuteTestAfterSetupAsync(context => context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync(configuration =>
-            FalsePositive(
-                configuration,
-                10202,
-                "Absence of Anti-CSRF Tokens: The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
-                @"https://[^/]+/",
-                @".*/\?.*pagenum=.*", // #spell-check-ignore-line
-                @".*/\?.*products\..*")));
+        ExecuteTestAfterSetupAsync(
+            context => context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync(
+                configuration => FalsePositive(
+                    configuration,
+                    10202,
+                    "Absence of Anti-CSRF Tokens: The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
+                    @"https://[^/]+/",
+                    @".*/\?.*pagenum=.*",// #spell-check-ignore-line
+                    @".*/\?.*products\..*"),
+                sarifLog =>
+                {
+                    var errors = sarifLog
+                        .Runs[0]
+                        .Results
+                        .Where(result =>
+                            result.Kind == ResultKind.Fail &&
+                            result.Level != FailureLevel.None &&
+                            result.Level != FailureLevel.Note)
+                        .ToList();
+                    errors.ShouldBeEmpty(JsonConvert.SerializeObject(errors));
+                }));
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
