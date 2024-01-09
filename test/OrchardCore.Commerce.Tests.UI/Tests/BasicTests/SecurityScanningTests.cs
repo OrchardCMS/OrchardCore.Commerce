@@ -35,7 +35,7 @@ public class SecurityScanningTests : UITestBase
                             result.Level != FailureLevel.None &&
                             result.Level != FailureLevel.Note &&
                             // Exclude this specific false positive that was mentioned above in the configuration. It
-                            // somehow shows up in the report JSON, but not in the report HTML, suggesting that this is
+                            // somehow shows up in the Sarif report but not in the report HTML, suggesting that this is
                             // some kind of a bug with ZAP.
                             result
                                 .Locations?
