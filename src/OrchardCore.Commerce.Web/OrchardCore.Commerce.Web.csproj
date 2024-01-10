@@ -13,8 +13,8 @@
   </ItemGroup> -->
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="8.2.1-alpha.8.tdeal-16" />
-    <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="8.2.1-alpha.8.tdeal-16" />
+    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="8.2.1-alpha.10.tdeal-16" />
+    <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="8.2.1-alpha.10.tdeal-16" />
     <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.7.0" />
     <PackageReference Include="OrchardCore.Logging.NLog" Version="1.7.0" />
   </ItemGroup>
