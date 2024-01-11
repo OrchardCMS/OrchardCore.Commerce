@@ -3,12 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.DisplayManagement;
 using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.ViewModels;
+namespace OrchardCore.Commerce.Payment.ViewModels;
 
 public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
 {

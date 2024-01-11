@@ -4,9 +4,9 @@ using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
-using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Constants;
+using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Mvc.Core.Utilities;
@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Payment.Abstractions;
 
 /// <summary>
 /// Services related to payment and <c>PaymentController</c>.

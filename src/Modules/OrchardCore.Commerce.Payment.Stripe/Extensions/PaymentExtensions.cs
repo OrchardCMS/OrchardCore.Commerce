@@ -45,7 +45,7 @@ public static class PaymentExtensions
         };
 
     public static IPayment CreatePayment(this PaymentIntent paymentIntent, Amount amount) =>
-        new Commerce.Models.Payment(
+        new Payment.Models.Payment(
             Kind: paymentIntent.PaymentMethod?.GetFormattedPaymentType() ?? "Unset",
             ChargeText: paymentIntent.Description,
             TransactionId: paymentIntent.Id,

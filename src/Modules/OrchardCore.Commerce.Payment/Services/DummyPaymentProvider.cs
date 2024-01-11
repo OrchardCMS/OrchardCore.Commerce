@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.ContentManagement;
@@ -9,7 +8,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Services;
+namespace OrchardCore.Commerce.Payment.Services;
 
 public class DummyPaymentProvider : IPaymentProvider
 {
@@ -46,7 +45,7 @@ public class DummyPaymentProvider : IPaymentProvider
         var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
         var totals = cart
             .GetTotalsOrThrowIfEmpty()
-            .Select((total, index) => new Models.Payment(
+            .Select((total, index) => new Payment.Models.Payment(
                 Kind: "Dummy Payment",
                 TransactionId: $"{order.ContentItemId}:{index.ToTechnicalString()}",
                 ChargeText: $"Dummy transaction of {total.Currency.EnglishName}.",
