@@ -21,15 +21,8 @@
             return region;
         });
 
-    // if (!address.NameParts.ContainsKey(CommonNameParts.Honorific)) { address.NameParts.Add(CommonNameParts.Honorific, string.Empty); }
-    if (!address.NameParts.ContainsKey(CommonNameParts.GivenName)) { address.NameParts.Add(CommonNameParts.GivenName, string.Empty); }
-    if (!address.NameParts.ContainsKey(CommonNameParts.MiddleName)) { address.NameParts.Add(CommonNameParts.MiddleName, string.Empty); }
-    if (!address.NameParts.ContainsKey(CommonNameParts.FamilyName)) { address.NameParts.Add(CommonNameParts.FamilyName, string.Empty); }
-    var namePartKeys = address.NameParts.Select(pair => pair.Key).ToList();
-
-    string IdForNamePart(string key) => $"{idPrefix}_{nameof(Address.NameParts)}_{key}";
-    string NameForNamePart(string key, bool isKey) =>
-        $"{namePrefix}.{nameof(Address.NameParts)}[{namePartKeys.IndexOf(key)}].{(isKey ? "Key" : "Value")}";
+    string NameForNamePart(string key) => $"{namePrefix}{nameof(Address.NameParts)}.{key}";
+    string IdForNamePart(string key) => NameForNamePart(key).Replace('.', '_');
 }
 
 <div class="row">
@@ -37,13 +30,10 @@
         <label for="@(idPrefix + nameof(Address.Name))">@T["Given Name *"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input type="hidden"
-               name="@NameForNamePart(nameof(CommonNameParts.GivenName), isKey: true)"
-               value="@nameof(CommonNameParts.GivenName)"/>
         <input type="text"
                id="@IdForNamePart(nameof(CommonNameParts.GivenName))"
-               name="@NameForNamePart(nameof(CommonNameParts.GivenName), isKey: false)"
-               value="@address.NameParts[CommonNameParts.GivenName]"
+               name="@NameForNamePart(nameof(CommonNameParts.GivenName))"
+               value="@address.NameParts.GetMaybe(CommonNameParts.GivenName)"
                class="form-control content-preview-text address__name"
                required/>
     </div>
@@ -54,13 +44,10 @@
         <label for="@(idPrefix + nameof(Address.Name))">@T["Middle Name"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input type="hidden"
-               name="@NameForNamePart(nameof(CommonNameParts.MiddleName), isKey: true)"
-               value="@nameof(CommonNameParts.MiddleName)"/>
         <input type="text"
                id="@IdForNamePart(nameof(CommonNameParts.MiddleName))"
-               name="@NameForNamePart(nameof(CommonNameParts.MiddleName), isKey: false)"
-               value="@address.NameParts[CommonNameParts.MiddleName]"
+               name="@NameForNamePart(nameof(CommonNameParts.MiddleName))"
+               value="@address.NameParts.GetMaybe(CommonNameParts.MiddleName)"
                class="form-control content-preview-text address__name"/>
     </div>
 </div>
@@ -70,13 +57,10 @@
         <label for="@(idPrefix + nameof(Address.Name))">@T["Family Name *"]</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input type="hidden"
-               name="@NameForNamePart(nameof(CommonNameParts.FamilyName), isKey: true)"
-               value="@nameof(CommonNameParts.FamilyName)"/>
         <input type="text"
                id="@IdForNamePart(nameof(CommonNameParts.FamilyName))"
-               name="@NameForNamePart(nameof(CommonNameParts.FamilyName), isKey: false)"
-               value="@address.NameParts[CommonNameParts.FamilyName]"
+               name="@NameForNamePart(nameof(CommonNameParts.FamilyName))"
+               value="@address.NameParts.GetMaybe(CommonNameParts.FamilyName)"
                class="form-control content-preview-text address__name"
                required/>
     </div>
