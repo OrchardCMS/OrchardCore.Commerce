@@ -21,7 +21,7 @@ public class SecurityScanningTests : UITestBase
         // On GitHub when running from Windows, this test always fails with the following error:
         // The `docker.exe pull softwaresecurityproject/zap-stable:2.14.0 --quiet` command failed with the output below.
         // no matching manifest for windows/amd64 10.0.20348 in the manifest list entries
-        // This is because the runner only supports Windows Docker images.
+        // This is because the Docker on the runner is in Windows mode but zap-stable only has Linux images.
         GitHubHelper.IsGitHubEnvironment && OSInfo.IsWindows
             ? Task.CompletedTask
             : ExecuteTestAfterSetupAsync(
