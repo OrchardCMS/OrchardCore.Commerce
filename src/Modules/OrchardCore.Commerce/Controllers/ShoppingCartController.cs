@@ -124,6 +124,9 @@ public class ShoppingCartController : Controller
         var lines = await cart.Lines.AwaitEachAsync(async line =>
             (Line: line, Item: await _shoppingCartSerializer.ParseCartLineAsync(line)));
 
+        // Check if there are any line items that failed to deserialize. This can only happen if the shopping cart
+        // update model was manually altered or if a product from cart was removed in the backend. This is however
+        // unlikely, because products should be made unavailable rather than deleted.
         if (lines.Any(line => line.Item == null))
         {
             await _shoppingCartPersistence.StoreAsync(new ShoppingCart(), shoppingCartId);
