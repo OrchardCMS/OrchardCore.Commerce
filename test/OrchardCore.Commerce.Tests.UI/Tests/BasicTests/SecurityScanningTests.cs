@@ -34,9 +34,8 @@ public class SecurityScanningTests : UITestBase
                             result.Kind == ResultKind.Fail &&
                             result.Level != FailureLevel.None &&
                             result.Level != FailureLevel.Note &&
-                            // Exclude this specific false positive that was mentioned above in the configuration. It
-                            // somehow shows up in the Sarif report but not in the report HTML, suggesting that this is
-                            // some kind of a bug with ZAP.
+                            // Exclude the specific false positive that was already excluded above in the configuration.
+                            // See https://github.com/Lombiq/UI-Testing-Toolbox/issues/336 for more details.
                             result
                                 .Locations?
                                 .Any(location => location.PhysicalLocation?.Region?.Snippet?.Text == "<form method=\"get\" action=\"/\">") != true)
