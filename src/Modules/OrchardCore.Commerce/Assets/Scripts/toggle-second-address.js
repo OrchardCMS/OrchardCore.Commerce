@@ -2,31 +2,20 @@ window.initializeToggleSecondAddress = (
     checkbox,
     firstAddressRow,
     secondAddressRow) => {
-    function copyValue(elementName) {
-        const selector = '.address__' + elementName;
-        const target = secondAddressRow.querySelector(selector);
-        const source = firstAddressRow.querySelector(selector);
-        if (!target || !source) return;
-
-        target.value = source.value;
-        target.checked = source.checked;
-        target.dispatchEvent(new Event('change'));
-    }
-
     function onCheckboxChange() {
         secondAddressRow.hidden = checkbox.checked;
-        if (!checkbox.checked) return;
-
-        copyValue('name');
-        copyValue('department');
-        copyValue('company');
-        copyValue('street_first');
-        copyValue('street_second');
-        copyValue('city');
-        copyValue('postalCode');
-        copyValue('region');
-        copyValue('province');
-        copyValue('toBeSaved');
+        if (checkbox.checked) {
+            Array.from(document.querySelectorAll('.address_billing-address *[name*=".BillingAddress."]'))
+                .map((input) => [
+                    input,
+                    document.getElementsByName(input.name.replace('.BillingAddress.', '.ShippingAddress.'))[0],
+                ])
+                .filter((pair) => pair[1])
+                .forEach((pair) => {
+                    pair[1].value = pair[0].value;
+                    pair[1].checked = pair[0].checked;
+                });
+        }
     }
 
     checkbox.addEventListener('change', onCheckboxChange);
