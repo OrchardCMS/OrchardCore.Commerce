@@ -1,6 +1,4 @@
-﻿using Atata.WebDriverSetup;
-using Lombiq.Tests.UI.SecurityScanning;
-using Lombiq.Tests.UI.Services.GitHub;
+﻿using Lombiq.Tests.UI.SecurityScanning;
 using Microsoft.CodeAnalysis.Sarif;
 using Newtonsoft.Json;
 using Shouldly;
