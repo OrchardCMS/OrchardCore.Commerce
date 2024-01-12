@@ -1,6 +1,7 @@
 @using OrchardCore.Commerce.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Commerce.AddressDataType
 @model AddressFieldViewModel
 
 @{
@@ -23,6 +24,10 @@
                        class="form-control content-preview-text address__name"
                        value="@Model.Address.Name"
                        disabled>
+                <span class="hint">
+                    @T["The address contains name parts that were combined into this full name (<code>{0}</code>).", $"{nameof(Address)}.{nameof(Address.Name)}"]
+                    @T["Most features use this unified name string instead of the name parts, as those can be region dependent."]
+                </span>
             </div>
         </div>
     }
