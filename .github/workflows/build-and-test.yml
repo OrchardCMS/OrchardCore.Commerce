@@ -8,15 +8,15 @@ on:
       - main
 
 jobs:
-  call-build-and-test-workflow:
-    name: Build and Test
+  build-and-test-linux:
+    name: Build and Test (Linux)
     uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
     with:
       machine-types: '["ubuntu-latest"]'
       timeout-minutes: 60
 
-  call-build-and-test-workflow-windows:
-    name: Build and Test
+  build-and-test-windows:
+    name: Build and Test (Windows)
     uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
     with:
       machine-types: '["windows-latest"]'
@@ -37,7 +37,7 @@ jobs:
         lombiq-lgha:dictionaries/Security.txt
 
   post-pull-request-checks-automation:
-    needs: [call-build-and-test-workflow, call-build-and-test-workflow-windows, spelling]
+    needs: [build-and-test-linux, build-and-test-windows, spelling]
     if: github.event.pull_request != ''
     uses: Lombiq/GitHub-Actions/.github/workflows/post-pull-request-checks-automation.yml@dev
     secrets:
