@@ -1,7 +1,7 @@
 ﻿using Lombiq.Tests.UI.SecurityScanning;
 using Microsoft.CodeAnalysis.Sarif;
-using Newtonsoft.Json;
 using Shouldly;
+using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,7 +45,7 @@ public class SecurityScanningTests : UITestBase
                             Details = result,
                         })
                         .ToList();
-                    errors.ShouldBeEmpty(JsonConvert.SerializeObject(errors));
+                    errors.ShouldBeEmpty(JsonSerializer.Serialize(errors));
                 }));
 
     private static void FalsePositive(
