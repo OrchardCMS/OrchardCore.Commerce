@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Exceptions;
@@ -53,7 +54,7 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
                     new[] { model.LinePrice },
                     addresses?.ShippingAddress.Address,
                     addresses?.BillingAddress.Address))
-                .Location("Detail", "Content");
+                .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content);
         }
         catch (FrontendException exception)
         {

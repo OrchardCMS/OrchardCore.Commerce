@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -55,8 +56,8 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
                             .Format(field.Address)
                             .Replace(System.Environment.NewLine, "<br/>"));
                 })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content)
+            .Location(CommonContentDisplayTypes.Summary, CommonLocationNames.Content);
 
     public override IDisplayResult Edit(AddressField field, BuildFieldEditorContext context) =>
         Initialize<AddressFieldViewModel>(

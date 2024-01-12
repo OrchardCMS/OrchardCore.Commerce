@@ -59,7 +59,7 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
 
                 model.WebhookSigningSecret = section.WebhookSigningSecret.DecryptStripeApiKey(_dataProtectionProvider, _logger);
             })
-            .Location("Content")
+            .PlaceInContent()
             .OnGroup(GroupId);
     }
 

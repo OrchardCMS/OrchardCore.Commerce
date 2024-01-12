@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.ContentFields.Models;
 using OrchardCore.Commerce.ContentFields.Settings;
@@ -43,8 +44,8 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
                             $"Unknown {nameof(CurrencySelectionMode)} value \"{settings.CurrencySelectionMode}\"."),
                     };
                 })
-                .Location("Detail", "Content")
-                .Location("Summary", "Content")
+                .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content)
+                .Location(CommonContentDisplayTypes.Summary, CommonLocationNames.Content)
             : null;
 
     public override IDisplayResult Edit(PriceField field, BuildFieldEditorContext context) =>
