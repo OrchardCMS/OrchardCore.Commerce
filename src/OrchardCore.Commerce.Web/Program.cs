@@ -18,7 +18,7 @@ builder.Services
     {
         // Necessary because style attributes are used in the Blog theme. Re-evaluate if this is still true during the
         // review of https://github.com/OrchardCMS/OrchardCore.Commerce/issues/300.
-        builder.ConfigureSecurityDefaults(allowInlineStyle: true);
+        builder.ConfigureSecurityDefaultsWithStaticFiles(allowInlineStyle: true);
 
         if (!configuration.IsUITesting())
         {
@@ -27,12 +27,7 @@ builder.Services
     });
 
 var app = builder.Build();
-
-app
-    .UseNosniffContentTypeOptionsHeader() // This should run before UseStaticFiles.
-    .UseStaticFiles()
-    .UseOrchardCore();
-
+app.UseOrchardCore();
 app.Run();
 
 [SuppressMessage(

@@ -17,7 +17,7 @@ public class SecurityScanningTests : UITestBase
     [Fact]
     public Task FullSecurityScanShouldPass() =>
         ExecuteTestAfterSetupAsync(
-            context => context.RunAndConfigureAndAssertFullSecurityScanForAutomationAsync(
+            context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
                 configuration => FalsePositive(
                     configuration,
                     10202,
