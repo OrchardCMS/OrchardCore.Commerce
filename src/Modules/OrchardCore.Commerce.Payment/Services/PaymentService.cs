@@ -198,6 +198,21 @@ public class PaymentService : IPaymentService
             orderPart.LineItems.SetItems(lineItems);
             orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
 
+            // When billing and shipping addresses should match, if an address field is null but the other one is not,
+            // fill out the null field's data.
+            if (orderPart.BillingAndShippingAddressesMatch.Value)
+            {
+                if (orderPart.BillingAddress.Address.Name is null && orderPart.ShippingAddress.Address.Name is not null)
+                {
+                    orderPart.BillingAddress = orderPart.ShippingAddress;
+                }
+
+                if (orderPart.ShippingAddress.Address.Name is null && orderPart.BillingAddress.Address.Name is not null)
+                {
+                    orderPart.ShippingAddress = orderPart.BillingAddress;
+                }
+            }
+
             await _orderEvents.AwaitEachAsync(orderEvents =>
                 orderEvents.CreatedFreeAsync(orderPart, cart, cartViewModel));
         });
