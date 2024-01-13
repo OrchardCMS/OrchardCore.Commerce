@@ -84,7 +84,13 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
             return true;
         }
 
-        if (!await updater.TryUpdateModelAsync(viewModel, Prefix) ||
+        var updated = await updater.TryUpdateModelAsync(viewModel, Prefix);
+        if (viewModel.Address is null)
+        {
+            return await EditAsync(field, context);
+        }
+
+        if (!updated ||
             IsRequiredFieldEmpty(viewModel.Address.Name, nameof(viewModel.Address.Name)) ||
             IsRequiredFieldEmpty(viewModel.Address.StreetAddress1, nameof(viewModel.Address.StreetAddress1)) ||
             IsRequiredFieldEmpty(viewModel.Address.City, nameof(viewModel.Address.City)))
