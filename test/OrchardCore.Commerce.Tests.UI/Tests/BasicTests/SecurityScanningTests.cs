@@ -21,7 +21,8 @@ public class SecurityScanningTests : UITestBase
                 configuration => FalsePositive(
                     configuration,
                     10202,
-                    "Absence of Anti-CSRF Tokens: The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
+                    "Absence of Anti-CSRF Tokens",
+                    "The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
                     @"https://[^/]+/",
                     @".*/\?.*pagenum=.*",
                     @".*/\?.*products\..*"),
@@ -51,12 +52,13 @@ public class SecurityScanningTests : UITestBase
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
         int id,
+        string name,
         string justification,
         params string[] urls)
     {
         foreach (var url in urls)
         {
-            configuration.MarkScanRuleAsFalsePositiveForUrlWithRegex(url, id, justification);
+            configuration.MarkScanRuleAsFalsePositiveForUrlWithRegex(url, id, name, justification);
         }
     }
 }

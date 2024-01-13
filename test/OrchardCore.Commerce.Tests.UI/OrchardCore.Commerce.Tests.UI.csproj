@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Lombiq.Tests.UI" Version="8.2.1-alpha.12.tdeal-16" />
-      <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="8.2.1-alpha.12.tdeal-16" />
+      <PackageReference Include="Lombiq.Tests.UI" Version="8.2.1-alpha.13.tdeal-16" />
+      <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="8.2.1-alpha.13.tdeal-16" />
       <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
       <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0">
         <PrivateAssets>all</PrivateAssets>
