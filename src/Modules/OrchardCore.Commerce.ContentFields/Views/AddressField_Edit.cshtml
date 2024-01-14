@@ -4,6 +4,7 @@
 @using OrchardCore.Commerce.AddressDataType
 @using Microsoft.Extensions.Options
 @using OrchardCore.Admin
+@using OrchardCore.DisplayManagement
 @model AddressFieldViewModel
 
 @inject IOptions<AdminOptions> AdminOptions
@@ -46,6 +47,7 @@
             CityName = Html.NameFor(model => model.Address.City),
             Regions = Model.Regions,
             Provinces = Model.Provinces,
+            Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{(Model as IShape)?.Metadata.Differentiator}" },
         })
 
     @if (!string.IsNullOrWhiteSpace(hint))
