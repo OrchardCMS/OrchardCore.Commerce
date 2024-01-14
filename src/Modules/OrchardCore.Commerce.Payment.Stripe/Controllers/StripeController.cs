@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Abstractions;
@@ -13,7 +14,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using Stripe;
 using System.Threading.Tasks;
-
 using Address = OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
@@ -126,34 +126,18 @@ public class StripeController : Controller
                     Email = part.Email?.Text,
                     Name = billing.Name,
                     Phone = part.Phone?.Text,
-                    Address = new AddressOptions
-                    {
-                        City = billing.City,
-                        Country = billing.Region,
-                        Line1 = billing.StreetAddress1,
-                        Line2 = billing.StreetAddress2,
-                        PostalCode = billing.PostalCode,
-                        State = billing.Province,
-                    },
+                    Address = CreateAddressOptions(billing),
                 },
             },
             Shipping = new ChargeShippingOptions
             {
                 Name = shipping.Name,
                 Phone = part.Phone?.Text,
-                Address = new AddressOptions
-                {
-                    City = shipping.City,
-                    Country = shipping.Region,
-                    Line1 = shipping.StreetAddress1,
-                    Line2 = shipping.StreetAddress2,
-                    PostalCode = shipping.PostalCode,
-                    State = shipping.Province,
-                },
+                Address = CreateAddressOptions(shipping),
             },
         };
 
-        return Json(model);
+        return Json(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
     }
 
     private async Task<IActionResult> PaymentFailedAsync()
@@ -161,4 +145,15 @@ public class StripeController : Controller
         await _notifier.ErrorAsync(H["The has payment failed, please try again."]);
         return Redirect("~/checkout");
     }
+
+    private static AddressOptions CreateAddressOptions(Address address) =>
+        new()
+        {
+            City = address.City ?? string.Empty,
+            Country = address.Region ?? string.Empty,
+            Line1 = address.StreetAddress1 ?? string.Empty,
+            Line2 = address.StreetAddress2 ?? string.Empty,
+            PostalCode = address.PostalCode ?? string.Empty,
+            State = address.Province ?? string.Empty,
+        };
 }
