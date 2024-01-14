@@ -76,8 +76,8 @@ window.stripePaymentForm = function stripePaymentForm(
         container.scrollIntoView({ block: 'center' });
     }
 
-    function fetchPost(path, options) {
-        return fetch(`${urlPrefix}/${path}`, { method: 'POST', ...options })
+    function fetchPost(path) {
+        return fetch(`${urlPrefix}/${path}`, { method: 'POST', body: new FormData(form) })
             .then((response) => response.json());
     }
 
@@ -122,7 +122,7 @@ window.stripePaymentForm = function stripePaymentForm(
                         });
                 }
 
-                const validationJson = await fetchPost('checkout/validate/Stripe', { body: new FormData(form) });
+                const validationJson = await fetchPost('checkout/validate/Stripe');
                 if (validationJson?.errors?.length) {
                     toggleInputs(true);
                     throw validationJson.errors;
@@ -184,7 +184,7 @@ window.stripePaymentForm = function stripePaymentForm(
                 submitButton.disabled = true;
 
                 setTimeout(async () => {
-                    const priceJson = await fetchPost('checkout/price', { body: new FormData(form) });
+                    const priceJson = await fetchPost('checkout/price');
                     debounce = false;
                     submitButton.disabled = false;
 
