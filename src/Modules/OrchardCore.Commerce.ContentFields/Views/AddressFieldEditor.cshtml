@@ -21,105 +21,15 @@
         });
 }
 
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.Name))">@T["Name *"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@(idPrefix + nameof(Address.Name))"
-               name="@(namePrefix + nameof(Address.Name))"
-               value="@address?.Name"
-               class="form-control content-preview-text address__name"
-               required />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.Department))">@T["Department"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@(idPrefix + nameof(Address.Department))"
-               name="@(namePrefix + nameof(Address.Department))"
-               value="@address?.Department"
-               class="form-control content-preview-text address__department" />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.Company))">@T["Company or institution"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@(idPrefix + nameof(Address.Company))"
-               name="@(namePrefix + nameof(Address.Company))"
-               value="@address?.Company"
-               class="form-control content-preview-text address__company" />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.StreetAddress1))">@T["First street address *"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@(idPrefix + nameof(Address.StreetAddress1))"
-               name="@(namePrefix + nameof(Address.StreetAddress1))"
-               value="@address?.StreetAddress1"
-               class="form-control content-preview-text address__street address__street_first"
-               required />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.StreetAddress2))">@T["Second street address"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@(idPrefix + nameof(Address.StreetAddress2))"
-               name="@(namePrefix + nameof(Address.StreetAddress2))"
-               value="@address?.StreetAddress2"
-               class="form-control content-preview-text address__street address__street_second" />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.City))">@T["City *"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@(idPrefix + nameof(Address.City))"
-               name="@(namePrefix + nameof(Address.City))"
-               value="@address?.City"
-               class="form-control content-preview-text address__city"
-               required />
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.Province))">@T["State or province"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <select id="@(idPrefix + nameof(Address.Province))"
-                name="@(namePrefix + nameof(Address.Province))"
-                value="@address?.Province"
-                class="form-control content-preview-text address__province"
-                required></select>
-    </div>
-</div>
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.PostalCode))">@T["Postal code"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@(idPrefix + nameof(Address.PostalCode))"
-               name="@(namePrefix + nameof(Address.PostalCode))"
-               value="@address?.PostalCode"
-               class="form-control content-preview-text address__postalCode" />
-    </div>
-</div>
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Name)" prop-Text="@T["Name"]" prop-Value="@address?.Name" prop-Required="@true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Department)" prop-Text="@T["Department"]" prop-Value="@address?.Department" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Company)" prop-Text="@T["Company or institution"]" prop-Value="@address?.Company" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress1)" prop-Text="@T["First street address"]" prop-Value="@address?.StreetAddress1" prop-ClassNames="@("address__street address__street_first")" prop-Required="@true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress2)" prop-Text="@T["Second street address"]" prop-Value="@address?.StreetAddress2" prop-ClassNames="@("address__street address__street_second")" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.City)" prop-Text="@T["City"]" prop-Value="@address?.City" prop-Required="@true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Province)" prop-Text="@T["State or province"]" prop-Value="@address?.Province" prop-Required="@true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.PostalCode)" prop-Text="@T["Postal code"]" prop-Value="@address?.PostalCode" prop-ClassNames="@("address__postalCode")" />
+
 <div class="row">
     <div class="mb-3 col-md-12">
         <label for="@(idPrefix + nameof(Address.Region))">@T["Country or region"]</label>

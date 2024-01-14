@@ -2,17 +2,24 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Commerce.AddressDataType
+@using Microsoft.Extensions.Options
+@using OrchardCore.Admin
 @model AddressFieldViewModel
+
+@inject IOptions<AdminOptions> AdminOptions
 
 @{
     var hint = Model.PartFieldDefinition.GetSettings<AddressPartFieldSettings>().Hint;
     var addressElementName = "address_" + Model.PartFieldDefinition.Name.HtmlClassify();
+
+    var adminPrefix = AdminOptions?.Value.AdminUrlPrefix ?? "Admin";
+    var isAdmin = Context.Request.Path.Value?.Split('/').Contains(adminPrefix, StringComparer.OrdinalIgnoreCase) == true;
 }
 
 <div class="@addressElementName">
     <h3>@Model.PartFieldDefinition.DisplayName()</h3>
 
-    @if (Model.Address.NameParts.Any())
+    @if (isAdmin && Model.Address.NameParts.Any())
     {
         <div class="row">
             <div class="mb-3 col-md-12">
