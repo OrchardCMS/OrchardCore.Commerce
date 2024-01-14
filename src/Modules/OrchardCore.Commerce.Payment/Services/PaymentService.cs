@@ -207,7 +207,7 @@ public class PaymentService : IPaymentService
         return order;
     }
 
-    private async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
+    public async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
         return _updateModelAccessor.ModelUpdater.GetModelErrorMessages()?.AsList() ?? Array.Empty<string>();
