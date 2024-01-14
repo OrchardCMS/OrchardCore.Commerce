@@ -1,7 +1,9 @@
 @using Newtonsoft.Json
 @using OrchardCore.Commerce.Abstractions.Fields
+@using OrchardCore.Commerce.Abstractions.Models
 @using OrchardCore.Commerce.AddressDataType
 @using OrchardCore.Commerce.AddressDataType.Constants
+@using OrchardCore.DisplayManagement
 @model AddressFieldEditorViewModel
 
 @{
@@ -50,6 +52,16 @@
                 required></select>
     </div>
 </div>
+
+@if (Model.AddressField?.UserAddressToSave == nameof(OrderPart.ShippingAddress) ||
+     (Model as IShape).Metadata.Differentiator?.Split('-').Contains(nameof(OrderPart.ShippingAddress)) == true)
+{
+    <shape type="InputRow"
+           prop-Prefix="@namePrefix"
+           prop-Name="@($"{nameof(Address.AdditionalFields)}.NoteForCourier")"
+           prop-Text="@T["Note for Courier"]"
+           prop-Value="@address.AdditionalFields.GetMaybe("NoteForCourier")" />
+}
 
 @if (!string.IsNullOrEmpty(Model.AddressField?.UserAddressToSave))
 {

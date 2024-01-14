@@ -1,6 +1,7 @@
 @using static OrchardCore.Commerce.Constants.ResourceNames
 @using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 @using OrchardCore
+@using OrchardCore.Commerce.Abstractions.Models
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Commerce.Payment.Controllers
 
@@ -62,6 +63,7 @@
                                CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
                                Regions = regions,
                                Provinces = provinces,
+                               Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{nameof(OrderPart.BillingAddress)}" },
                            })
             </div>
 
@@ -75,6 +77,7 @@
                                CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
                                Regions = regions,
                                Provinces = provinces,
+                               Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{nameof(OrderPart.ShippingAddress)}" },
                            })
             </div>
 
