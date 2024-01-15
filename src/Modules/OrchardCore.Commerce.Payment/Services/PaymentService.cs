@@ -202,12 +202,12 @@ public class PaymentService : IPaymentService
             // fill out the null field's data.
             if (orderPart.BillingAndShippingAddressesMatch.Value)
             {
-                if (orderPart.BillingAddress.Address.Name is null && orderPart.ShippingAddress.Address.Name is not null)
+                if (orderPart.BillingAddress.Address.Name is null)
                 {
                     orderPart.BillingAddress = orderPart.ShippingAddress;
                 }
 
-                if (orderPart.ShippingAddress.Address.Name is null && orderPart.BillingAddress.Address.Name is not null)
+                if (orderPart.ShippingAddress.Address.Name is null)
                 {
                     orderPart.ShippingAddress = orderPart.BillingAddress;
                 }
