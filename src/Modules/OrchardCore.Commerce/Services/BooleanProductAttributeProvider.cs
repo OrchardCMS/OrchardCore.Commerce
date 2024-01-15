@@ -64,9 +64,11 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
 
             // The value is true if the selected boolean attributes list contains the attribute, otherwise false.
             var value = selectedBooleanAttributes.Any(keyValuePair => keyValuePair.Key == attribute);
-            var matchingAttribute = Parse(attributePartDefinition, attributeFieldDefinition, new[] { value.ToString() });
 
-            attributesList.Add(matchingAttribute);
+            if (Parse(attributePartDefinition, attributeFieldDefinition, new[] { value.ToString() }) is { } matchingAttribute)
+            {
+                attributesList.Add(matchingAttribute);
+            }
         }
     }
 

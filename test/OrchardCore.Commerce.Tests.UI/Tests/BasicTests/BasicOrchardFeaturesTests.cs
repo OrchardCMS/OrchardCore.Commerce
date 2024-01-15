@@ -5,7 +5,7 @@ using OrchardCore.Commerce.Tests.UI.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace OrchardCore.Commerce.Tests.UI.Tests.BasicOrchardFeaturesTests;
+namespace OrchardCore.Commerce.Tests.UI.Tests.BasicTests;
 
 public class BasicOrchardFeaturesTests : UITestBase
 {
