@@ -71,9 +71,10 @@ public class TextProductAttributeProvider : IProductAttributeProvider
 
             var value = predefinedStrings.First(item => item == selectedTextAttributes[attribute.Name]);
 
-            var matchingAttribute = Parse(attributePartDefinition, attributeFieldDefinition, new[] { value });
-
-            attributesList.Add(matchingAttribute);
+            if (Parse(attributePartDefinition, attributeFieldDefinition, new[] { value }) is { } matchingAttribute)
+            {
+                attributesList.Add(matchingAttribute);
+            }
         }
     }
 

@@ -72,8 +72,14 @@ public class ProductAttributeProvider : IProductAttributeProvider
         ContentPartFieldDefinition attributeFieldDefinition,
         string[] value)
     {
-        var attributeFieldTypeName = attributeFieldDefinition.FieldDefinition.Name;
-        var name = partDefinition.Name + "." + attributeFieldDefinition.Name;
+        if (partDefinition?.Name is not { } partTypeName ||
+            attributeFieldDefinition?.Name is not { } attributeFieldName ||
+            attributeFieldDefinition.FieldDefinition?.Name is not { } attributeFieldTypeName)
+        {
+            return null;
+        }
+
+        var name = $"{partTypeName}.{attributeFieldName}";
         switch (attributeFieldTypeName)
         {
             case nameof(BooleanProductAttributeField):

@@ -106,7 +106,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         $"{Quantity} x {ProductSku}" + (Attributes.Count != 0 ? $" ({string.Join(", ", Attributes)})" : string.Empty);
 
     public bool IsSameProductAs(ShoppingCartItem other) =>
-        ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
+        other != null && ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
     public bool HasRawAttributes() => Attributes.Any(attribute => attribute is RawProductAttributeValue);
 
