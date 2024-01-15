@@ -85,6 +85,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
         }
 
         var updated = await updater.TryUpdateModelAsync(viewModel, Prefix);
+
         if (viewModel.Address is null)
         {
             return await EditAsync(field, context);
