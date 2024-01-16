@@ -86,17 +86,14 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
             return true;
         }
 
-        if (await TryUpdateModelAsync(updater, Prefix) is not { } viewModel ||
-            IsRequiredFieldEmpty(viewModel.Address.Name, nameof(viewModel.Address.Name)) ||
-            IsRequiredFieldEmpty(viewModel.Address.StreetAddress1, nameof(viewModel.Address.StreetAddress1)) ||
-            IsRequiredFieldEmpty(viewModel.Address.City, nameof(viewModel.Address.City)))
+        if (await TryUpdateModelAsync(updater, Prefix) is { } viewModel &&
+            !IsRequiredFieldEmpty(viewModel.Address.Name, nameof(viewModel.Address.Name)) &&
+            !IsRequiredFieldEmpty(viewModel.Address.StreetAddress1, nameof(viewModel.Address.StreetAddress1)) &&
+            !IsRequiredFieldEmpty(viewModel.Address.City, nameof(viewModel.Address.City)))
         {
-            return await EditAsync(field, context);
+            field.Address = viewModel.Address;
+            await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, updater, context));
         }
-
-        field.Address = viewModel.Address;
-
-        await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, updater, context));
 
         return await EditAsync(field, context);
     }
@@ -104,7 +101,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     private async Task<AddressFieldViewModel> TryUpdateModelAsync(IUpdateModel modelUpdater, string prefix)
     {
         var viewModel = new AddressFieldViewModel();
-        if (!await modelUpdater.TryUpdateModelAsync(viewModel, prefix)) return null;
+        if (!await modelUpdater.TryUpdateModelAsync(viewModel, prefix) || viewModel.Address is null) return null;
 
         foreach (var addressUpdater in _addressUpdaters)
         {
