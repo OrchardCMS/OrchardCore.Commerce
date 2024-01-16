@@ -115,7 +115,7 @@ public class TaxBehaviourTests : UITestBase
                     "$5.20");
 
                 await UpdateAddressAndVerifyPriceAsync(
-                    () => context.FillAddressAsync(prefix, new Address { Province = "NY" }),
+                    () => context.FillAddressAsync(prefix, new Address { Province = "NJ" }),
                     "$5.33");
             },
             browser);

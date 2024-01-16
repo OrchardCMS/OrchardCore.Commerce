@@ -9,18 +9,18 @@ window.initializeToggleSecondAddress = (
 
     function onCheckboxChange() {
         secondAddressRow.hidden = checkbox.checked;
-        if (checkbox.checked) {
-            Array.from(document.querySelectorAll('.address_billing-address *[name*=".BillingAddress."]'))
-                .map((input) => [
-                    input,
-                    document.getElementsByName(input.name.replace('.BillingAddress.', '.ShippingAddress.'))[0],
-                ])
-                .filter((pair) => pair[1])
-                .forEach((pair) => {
-                    pair[1].value = pair[0].value;
-                    pair[1].checked = pair[0].checked;
-                });
-        }
+        if (!checkbox.checked) return;
+
+        Array.from(document.querySelectorAll('.address_billing-address *[name*=".BillingAddress."]'))
+            .map((input) => [
+                input,
+                document.getElementsByName(input.name.replace('.BillingAddress.', '.ShippingAddress.'))[0],
+            ])
+            .filter((pair) => pair[1])
+            .forEach((pair) => {
+                pair[1].value = pair[0].value;
+                pair[1].checked = pair[0].checked;
+            });
     }
 
     checkbox.addEventListener('change', onCheckboxChange);
@@ -32,11 +32,16 @@ window.initializeToggleSecondAddress = (
 };
 
 (function autoInitializeToggleSecondAddress() {
+
+})();
+
+document.addEventListener("DOMContentLoaded", () => {
     Array.from(document.querySelectorAll('[name*="BillingAndShippingAddressesMatch.Value"]'))
-        .forEach((checbox) => {
+        .filter((checkbox) => !checkbox.hidden && checkbox.type !== 'hidden')
+        .forEach((checkbox) => {
             window.initializeToggleSecondAddress(
-                checbox,
+                checkbox,
                 document.querySelector('.address_billing-address'),
                 document.querySelector('.address_shipping-address'));
         });
-})();
+});
