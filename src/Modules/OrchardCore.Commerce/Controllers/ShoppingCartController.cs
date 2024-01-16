@@ -120,10 +120,26 @@ public class ShoppingCartController : Controller
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
         var updatedLines = new List<ShoppingCartLineUpdateModel>();
-        foreach (var line in cart.Lines)
+
+        var lines = await cart.Lines.AwaitEachAsync(async line =>
+            (Line: line, Item: await _shoppingCartSerializer.ParseCartLineAsync(line)));
+
+        // Check if there are any line items that failed to deserialize. This can only happen if the shopping cart
+        // update model was manually altered or if a product from cart was removed in the backend. This is however
+        // unlikely, because products should be made unavailable rather than deleted.
+        if (lines.Any(line => line.Item == null))
+        {
+            await _shoppingCartPersistence.StoreAsync(new ShoppingCart(), shoppingCartId);
+
+            await _notifier.ErrorAsync(
+                H["Your shopping cart is broken and had to be replaced. We apologize for the inconvenience."]);
+
+            return RedirectToAction(nameof(Empty));
+        }
+
+        foreach (var (line, item) in lines)
         {
             var isValid = true;
-            var item = await _shoppingCartSerializer.ParseCartLineAsync(line);
 
             await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
                 new { LineItem = item },
@@ -168,9 +184,11 @@ public class ShoppingCartController : Controller
     {
         try
         {
+            if (await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem) return NotFound();
+
             var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
                 shoppingCartId,
-                await _shoppingCartSerializer.ParseCartLineAsync(line),
+                shoppingCartItem,
                 storeIfOk: true);
 
             await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(

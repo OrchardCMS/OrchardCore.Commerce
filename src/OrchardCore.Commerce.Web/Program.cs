@@ -19,6 +19,10 @@ builder.Services
     .AddSingleton(configuration)
     .AddOrchardCms(builder =>
     {
+        // Necessary because style attributes are used in the Blog theme. Re-evaluate if this is still true during the
+        // review of https://github.com/OrchardCMS/OrchardCore.Commerce/issues/300.
+        builder.ConfigureSecurityDefaultsWithStaticFiles(allowInlineStyle: true);
+
         if (!configuration.IsUITesting())
         {
             builder.AddSetupFeatures("OrchardCore.AutoSetup");
@@ -26,8 +30,6 @@ builder.Services
     });
 
 var app = builder.Build();
-
-app.UseStaticFiles();
 app.UseOrchardCore();
 app.Run();
 

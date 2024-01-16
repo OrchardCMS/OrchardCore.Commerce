@@ -23,6 +23,7 @@ numericfield
 Nunavut
 Nwazet
 osoe
+pagenum
 paymentrequest
 pricefield
 roadmap
