@@ -3,6 +3,7 @@
     var name = $"{prefix}.{Model.Name}".Trim('.');
     var id = Html.Id(name);
     var classes = Model.ClassNames ?? $"address__{Model.Name}".ToLowerInvariant();
+    var type = Model.InputType ?? "text";
     var isRequired = false;
 
     if (Model.Required is bool requiredBool)

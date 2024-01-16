@@ -25,7 +25,26 @@
 
     string NameForNamePart(string key) => $"{nameof(Address.NameParts)}.{key}";
     string ClassesForNamePart(string key) => $"address__name address__name_{key.ToLowerInvariant()}";
+
+    var titleName = NameForNamePart(CommonNameParts.Honorific);
+    var titleId = Html.Id(titleName);
 }
+
+<div class="row">
+    <div class="mb-3 col-md-12">
+        <label for="@titleId">@T["Title"]</label>
+    </div>
+    <div class="mb-3 col-md-6">
+        <select id="@titleId" name="@titleName" class="form-control content-preview-text @ClassesForNamePart(CommonNameParts.Honorific)">
+            <option value="" selected></option>
+            <option value="Mr">@T["Mr"]</option>
+            <option value="Miss">@T["Miss"]</option>
+            <option value="Mrs">@T["Mrs"]</option>
+            <option value="Mx">@T["Mx"]</option>
+            <option value="Dr">@T["Dr"]</option>
+        </select>
+    </div>
+</div>
 
 <shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@NameForNamePart(CommonNameParts.GivenName)" prop-Text="@T["Given Name"]" prop-Value="@address.NameParts.GetMaybe(CommonNameParts.GivenName)" prop-ClassNames="@ClassesForNamePart(CommonNameParts.GivenName)" prop-Required="@true" />
 <shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@NameForNamePart(CommonNameParts.MiddleName)" prop-Text="@T["Middle Name"]" prop-Value="@address.NameParts.GetMaybe(CommonNameParts.MiddleName)" prop-ClassNames="@ClassesForNamePart(CommonNameParts.MiddleName)" />
