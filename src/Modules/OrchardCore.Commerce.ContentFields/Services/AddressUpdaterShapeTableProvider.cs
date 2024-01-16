@@ -40,6 +40,7 @@ public class AddressUpdaterShapeTableProvider : IShapeTableProvider
                     alternates.Add($"{differentiator}__{typeNameWithoutSuffix}");
                 }
             }
+
             return Task.CompletedTask;
         });
 }

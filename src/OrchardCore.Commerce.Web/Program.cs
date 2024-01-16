@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Logging;
 using System.Diagnostics.CodeAnalysis;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.ClearProviders();

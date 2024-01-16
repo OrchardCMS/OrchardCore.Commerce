@@ -12,7 +12,7 @@
 
     var address = Model.AddressField?.Address;
 
-    var province = address?.Province ?? string.Empty;
+    var province = address.Province ?? string.Empty;
 
     var regions = Model.Regions.Select(region =>
         {
@@ -27,7 +27,7 @@
 <shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress1)" prop-Text="@T["First street address"]" prop-Value="@address?.StreetAddress1" prop-ClassNames="@("address__street address__street_first")" prop-Required="@true" />
 <shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress2)" prop-Text="@T["Second street address"]" prop-Value="@address?.StreetAddress2" prop-ClassNames="@("address__street address__street_second")" />
 <shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.City)" prop-Text="@T["City"]" prop-Value="@address?.City" prop-Required="@true" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Province)" prop-Text="@T["State or province"]" prop-Value="@address?.Province" prop-Required="@true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Province)" prop-Text="@T["State or province"]" prop-Value="@province" prop-Required="@true" />
 <shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.PostalCode)" prop-Text="@T["Postal code"]" prop-Value="@address?.PostalCode" prop-ClassNames="@("address__postalCode")" />
 
 <div class="row">
