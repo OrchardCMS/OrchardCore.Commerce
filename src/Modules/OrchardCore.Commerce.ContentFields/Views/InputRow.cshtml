@@ -21,11 +21,30 @@
         <label for="@id">@Model.Text@(isRequired ? " *" : string.Empty)</label>
     </div>
     <div class="mb-3 col-md-6">
-        <input type="text"
-               id="@id"
-               name="@name"
-               value="@Model.Value"
-               class="form-control content-preview-text @classes"
-               required="@isRequired"/>
+        @if (type == "dropdown")
+        {
+            <select id="@id"
+                    name="@name"
+                    value="@(Model.Value is IEnumerable<SelectListItem> ? null : Model.Value)"
+                    class="form-control content-preview-text @classes"
+                    required="@isRequired">
+                @if (Model.Value is IEnumerable<SelectListItem> selectListItems)
+                {
+                    foreach (var item in selectListItems)
+                    {
+                        <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+                    }
+                }
+            </select>
+        }
+        else
+        {
+            <input type="text"
+                   id="@id"
+                   name="@name"
+                   value="@Model.Value"
+                   class="form-control content-preview-text @classes"
+                   required="@isRequired"/>
+        }
     </div>
 </div>
