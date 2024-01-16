@@ -28,20 +28,15 @@ window.initializeToggleSecondAddress = (
 
     addEvent(firstAddressRow.querySelectorAll('*[name]'), 'change', onCheckboxChange);
     addEvent(document.forms, 'submit', onCheckboxChange);
+    setTimeout(onCheckboxChange, 50);
 };
 
 (function autoInitializeToggleSecondAddress() {
-    if (document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]')) {
-        window.initializeToggleSecondAddress(
-            document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]'),
-            document.querySelector('.address_billing-address'),
-            document.querySelector('.address_shipping-address'));
-    }
-
-    if (document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]')) {
-        window.initializeToggleSecondAddress(
-            document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]'),
-            document.querySelector('.address_billing-address'),
-            document.querySelector('.address_shipping-address'));
-    }
+    Array.from(document.querySelectorAll('[name*="BillingAndShippingAddressesMatch.Value"]'))
+        .forEach((checbox) => {
+            window.initializeToggleSecondAddress(
+                checbox,
+                document.querySelector('.address_billing-address'),
+                document.querySelector('.address_shipping-address'));
+        });
 })();
