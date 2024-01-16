@@ -2,6 +2,11 @@ window.initializeToggleSecondAddress = (
     checkbox,
     firstAddressRow,
     secondAddressRow) => {
+
+    function addEvent(items, event, callback) {
+        Array.from(items).forEach((item) => item.addEventListener(event, callback));
+    }
+
     function onCheckboxChange() {
         secondAddressRow.hidden = checkbox.checked;
         if (checkbox.checked) {
@@ -21,8 +26,8 @@ window.initializeToggleSecondAddress = (
     checkbox.addEventListener('change', onCheckboxChange);
     onCheckboxChange();
 
-    Array.from(firstAddressRow.querySelectorAll('input, select'))
-        .forEach((input) => input.addEventListener('change', onCheckboxChange));
+    addEvent(firstAddressRow.querySelectorAll('*[name]'), 'change', onCheckboxChange);
+    addEvent(document.forms, 'submit', onCheckboxChange);
 };
 
 (function autoInitializeToggleSecondAddress() {

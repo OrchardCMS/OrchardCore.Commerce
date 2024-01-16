@@ -10,38 +10,26 @@
     var namePrefixWithoutAddress = namePrefix[..^((nameof(AddressField.Address)).Length + 1)];
     var idPrefixWithoutAddress = namePrefixWithoutAddress.Replace('.', '_');
 
-    var address = Model.AddressField?.Address;
+    var address = Model.AddressField?.Address ?? new Address();
 
     var province = address.Province ?? string.Empty;
 
     var regions = Model.Regions.Select(region =>
         {
-            region.Selected = region.Value == address?.Region;
+            region.Selected = region.Value == address.Region;
             return region;
         });
 }
 
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Name)" prop-Text="@T["Name"]" prop-Value="@address?.Name" prop-Required="@true" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Department)" prop-Text="@T["Department"]" prop-Value="@address?.Department" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Company)" prop-Text="@T["Company or institution"]" prop-Value="@address?.Company" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress1)" prop-Text="@T["First street address"]" prop-Value="@address?.StreetAddress1" prop-ClassNames="@("address__street address__street_first")" prop-Required="@true" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress2)" prop-Text="@T["Second street address"]" prop-Value="@address?.StreetAddress2" prop-ClassNames="@("address__street address__street_second")" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.City)" prop-Text="@T["City"]" prop-Value="@address?.City" prop-Required="@true" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Province)" prop-Text="@T["State or province"]" prop-Value="@province" prop-Required="@true" />
-<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.PostalCode)" prop-Text="@T["Postal code"]" prop-Value="@address?.PostalCode" prop-ClassNames="@("address__postalCode")" />
-
-<div class="row">
-    <div class="mb-3 col-md-12">
-        <label for="@(idPrefix + nameof(Address.Region))">@T["Country or region"]</label>
-    </div>
-    <div class="mb-3 col-md-6">
-        <select id="@(idPrefix + nameof(Address.Region))"
-                name="@(namePrefix + nameof(Address.Region))"
-                asp-items="regions"
-                class="form-control content-preview-text address__region"
-                required></select>
-    </div>
-</div>
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Name)" prop-Text="@T["Name"]" prop-Value="@address.Name" Required="true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Department)" prop-Text="@T["Department"]" prop-Value="@address.Department" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Company)" prop-Text="@T["Company or institution"]" prop-Value="@address.Company" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress1)" prop-Text="@T["First street address"]" prop-Value="@address.StreetAddress1" ClassNames="address__street address__street_first" Required="true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress2)" prop-Text="@T["Second street address"]" prop-Value="@address.StreetAddress2" ClassNames="address__street address__street_second" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.City)" prop-Text="@T["City"]" prop-Value="@address.City" Required="true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Province)" prop-Text="@T["State or province"]" prop-Value="@address.Province" Required="true" InputType="dropdown" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.PostalCode)" prop-Text="@T["Postal code"]" prop-Value="@address.PostalCode" ClassNames="address__postalCode" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Region)" prop-Text="@T["Country or region"]" prop-Value="@regions" Required="true" InputType="dropdown" />
 
 @if (!string.IsNullOrEmpty(Model.AddressField?.UserAddressToSave))
 {
