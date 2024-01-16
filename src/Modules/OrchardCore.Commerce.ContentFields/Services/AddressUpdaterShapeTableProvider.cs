@@ -1,8 +1,8 @@
-﻿using OrchardCore.Commerce.AddressDataType.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Descriptors;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,11 +12,6 @@ public class AddressUpdaterShapeTableProvider : IShapeTableProvider
 {
     // The conventional suffix of services inheriting from IAddressUpdater may be omitted.
     private const string Suffix = "AddressUpdater";
-
-    private readonly IEnumerable<IAddressUpdater> _addressUpdaters;
-
-    public AddressUpdaterShapeTableProvider(IEnumerable<IAddressUpdater> addressUpdaters) =>
-        _addressUpdaters = addressUpdaters;
 
     public void Discover(ShapeTableBuilder builder) => builder
         .Describe(AddressFieldEditorViewModel.ShapeType)
@@ -28,7 +23,14 @@ public class AddressUpdaterShapeTableProvider : IShapeTableProvider
             var alternates = metadata.Alternates;
             var differentiator = metadata.Differentiator;
 
-            foreach (var typeName in _addressUpdaters.Select(updater => updater.GetType().Name).Distinct())
+            var addressUpdaterTypeNames = displaying
+                .DisplayContext
+                .ServiceProvider
+                .GetServices<IAddressUpdater>()
+                .Select(updater => updater.GetType().Name)
+                .Distinct();
+
+            foreach (var typeName in addressUpdaterTypeNames)
             {
                 alternates.Add($"{type}__{typeName}");
                 alternates.Add($"{differentiator}__{typeName}");

@@ -66,6 +66,7 @@ public class BehaviorCheckoutTests : UITestBase
                 await context.EnableFeatureDirectlyAsync(WesternNameParts);
 
                 await context.GoToContentItemDisplayByIdAsync(TestProduct);
+                await context.ClickReliablyOnSubmitAsync();
                 await context.ClickCheckoutAsync();
 
                 var noteBy = By.Name("OrderPart.ShippingAddress.Address.AdditionalFields.NoteForCourier");
