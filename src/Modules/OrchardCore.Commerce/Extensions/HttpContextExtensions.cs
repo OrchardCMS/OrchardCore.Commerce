@@ -24,8 +24,8 @@ public static class HttpContextExtensions
             httpContext != null &&
             await httpContext.GetUserAddressAsync() is { } userAddresses)
         {
-            shipping ??= userAddresses.ShippingAddress.Address;
-            billing ??= userAddresses.BillingAddress.Address;
+            shipping ??= userAddresses.GetShippingAddress();
+            billing ??= userAddresses.GetBillingAddress();
         }
 
         return (shipping, billing);
