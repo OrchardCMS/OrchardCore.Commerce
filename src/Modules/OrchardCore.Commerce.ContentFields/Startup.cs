@@ -10,6 +10,7 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 
@@ -34,5 +35,6 @@ public class Startup : StartupBase
         services.AddContentField<AddressField>()
             .UseDisplayDriver<AddressFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, AddressFieldSettingsDriver>();
+        services.AddScoped<IShapeTableProvider, AddressUpdaterShapeTableProvider>();
     }
 }
