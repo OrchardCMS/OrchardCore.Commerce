@@ -9,6 +9,8 @@ using OrchardCore.ContentFields.Fields;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
+
+using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
 using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.OrderTests;
@@ -32,23 +34,7 @@ public class BehaviorCheckoutTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
                 await context.ClickCheckoutAsync();
 
-                await context.FillCheckoutFormAsync(new OrderPart
-                {
-                    Email = new TextField { Text = "admin@example.com" },
-                    Phone = new TextField { Text = "1234567" },
-                    BillingAddress = new AddressField
-                    {
-                        Address = new Address
-                        {
-                            Name = "Gordon Freeman",
-                            StreetAddress1 = "Black Mesa East 1.",
-                            City = "City 17",
-                        },
-                        UserAddressToSave = nameof(OrderPart.BillingAddress),
-                    },
-                    BillingAndShippingAddressesMatch = new BooleanField { Value = true },
-                });
-
+                await FillCheckoutFormAsync(context);
                 await context.ClickReliablyOnAsync(By.ClassName("pay-button-dummy"));
 
                 void MatchText(string css, string expected) =>
@@ -70,4 +56,59 @@ public class BehaviorCheckoutTests : UITestBase
                 MatchText(".order-charge-text", "Dummy transaction of US Dollar.");
             },
             browser);
+
+    [Theory, Chrome]
+    public Task AddressPartsFeatureShouldOverrideRegularCheckout(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                await context.SignInDirectlyAsync();
+                await context.EnableFeatureDirectlyAsync(WesternNameParts);
+
+                await context.GoToContentItemDisplayByIdAsync(TestProduct);
+                await context.ClickCheckoutAsync();
+
+                var noteBy = By.Name("OrderPart.ShippingAddress.Address.AdditionalFields.NoteForCourier");
+                var noteText = "Don't take the old passage to Ravenholm. We don't go there anymore."; // #spell-check-ignore-line
+                await context.ClickAndFillInWithRetriesAsync(noteBy, noteText);
+                await context.ClickAndFillInWithRetriesAsync(AddressName("GivenName"), "Gordon");
+                await context.ClickAndFillInWithRetriesAsync(AddressName("FamilyName"), "Freeman");
+                await context.SetDropdownByValueAsync(AddressName("Honorific"), "Dr");
+                await FillCheckoutFormAsync(context, includeName: false);
+
+                await context.ClickReliablyOnAsync(By.ClassName("pay-button-dummy"));
+                context.Get(By.CssSelector("h4.text-success"));
+
+                await context.GoToContentItemsPageAsync();
+                await context.ClickReliablyOnAsync(By.ClassName("edit"));
+                context
+                    .Get(By.Id("OrderPart_BillingAddress_Address_Name"))
+                    .GetAttribute("value")
+                    .ShouldBe("Dr Gordon Freeman");
+
+                await context.ClickReliablyOnAsync(By.Id("OrderPart_BillingAndShippingAddressesMatch_Value"));
+                context.Get(noteBy).GetAttribute("value").ShouldBe(noteText);
+            },
+            browser);
+
+    private static By AddressName(string key) =>
+        By.Name($"OrderPart.BillingAddress.Address.NameParts.{key}");
+
+    private static Task FillCheckoutFormAsync(UITestContext context, bool includeName = true) =>
+        context.FillCheckoutFormAsync(new OrderPart
+        {
+            Email = new TextField { Text = "admin@example.com" },
+            Phone = new TextField { Text = "1234567" },
+            BillingAddress = new AddressField
+            {
+                Address = new Address
+                {
+                    Name = includeName ? "Gordon Freeman" : null,
+                    StreetAddress1 = "Black Mesa East 1.",
+                    City = "City 17",
+                },
+                UserAddressToSave = nameof(OrderPart.BillingAddress),
+            },
+            BillingAndShippingAddressesMatch = new BooleanField { Value = true },
+        });
 }
