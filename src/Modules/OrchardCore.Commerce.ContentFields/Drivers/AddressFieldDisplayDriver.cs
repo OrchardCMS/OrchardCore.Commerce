@@ -14,13 +14,22 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
 public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 {
+    private static readonly Dictionary<string, Func<Address, string>> RequiredFields = new()
+    {
+        [nameof(Address.Name)] = address => address.Name,
+        [nameof(Address.StreetAddress1)] = address => address.StreetAddress1,
+        [nameof(Address.City)] = address => address.City,
+    };
+
     private readonly IEnumerable<IAddressUpdater> _addressUpdaters;
     private readonly IEnumerable<IAddressFieldEvents> _addressFieldEvents;
     private readonly IAddressFormatterProvider _addressFormatterProvider;
@@ -73,23 +82,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 
     public override async Task<IDisplayResult> UpdateAsync(AddressField field, IUpdateModel updater, UpdateFieldEditorContext context)
     {
-        // We have to detect if we are in the user editor in the admin dashboard, because then it's okay to save even if
-        // the normally required fields are left empty.
-        var isInUserEditor = _hca.HttpContext?.Request.RouteValues["area"]?.ToString() == "OrchardCore.Users";
-
-        bool IsRequiredFieldEmpty(string value, string key)
-        {
-            if (isInUserEditor || !string.IsNullOrWhiteSpace(value)) return false;
-
-            // This doesn't need to be too complex as it's just a fallback from the client-side validation.
-            updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
-            return true;
-        }
-
-        if (await TryUpdateModelAsync(updater, Prefix) is { } viewModel &&
-            !IsRequiredFieldEmpty(viewModel.Address.Name, nameof(viewModel.Address.Name)) &&
-            !IsRequiredFieldEmpty(viewModel.Address.StreetAddress1, nameof(viewModel.Address.StreetAddress1)) &&
-            !IsRequiredFieldEmpty(viewModel.Address.City, nameof(viewModel.Address.City)))
+        if (await TryUpdateModelAsync(updater, Prefix) is { } viewModel)
         {
             field.Address = viewModel.Address;
             await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, updater, context));
@@ -98,17 +91,35 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
         return await EditAsync(field, context);
     }
 
-    private async Task<AddressFieldViewModel> TryUpdateModelAsync(IUpdateModel modelUpdater, string prefix)
+    private async Task<AddressFieldViewModel> TryUpdateModelAsync(IUpdateModel updater, string prefix)
     {
         var viewModel = new AddressFieldViewModel();
-        if (!await modelUpdater.TryUpdateModelAsync(viewModel, prefix) || viewModel.Address is null) return null;
+        if (!await updater.TryUpdateModelAsync(viewModel, prefix) || viewModel.Address is not { } address)
+        {
+            return null;
+        }
 
         foreach (var addressUpdater in _addressUpdaters)
         {
-            await addressUpdater.UpdateAsync(viewModel.Address);
+            await addressUpdater.UpdateAsync(address);
         }
 
-        return viewModel;
+        // We have to detect if we are in the user editor in the admin dashboard, because then it's okay to save even if
+        // the normally required fields are left empty.
+        if (_hca.HttpContext?.Request.RouteValues["area"]?.ToString() == "OrchardCore.Users") return viewModel;
+
+        var missingFields = RequiredFields
+            .Where(pair => string.IsNullOrWhiteSpace(pair.Value(address)))
+            .Select(pair => pair.Key)
+            .ToList();
+
+        foreach (var key in missingFields)
+        {
+            // This doesn't need to be too complex as it's just a fallback from the client-side validation.
+            updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
+        }
+
+        return missingFields.Any() ? null : viewModel;
     }
 
     private static void PopulateViewModel(
