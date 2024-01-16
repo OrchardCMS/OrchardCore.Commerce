@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -19,7 +20,7 @@ public class AddressUpdaterShapeTableProvider : IShapeTableProvider
 
     public void Discover(ShapeTableBuilder builder) => builder
         .Describe(AddressFieldEditorViewModel.ShapeType)
-        .OnDisplaying(async displaying =>
+        .OnDisplaying(displaying =>
         {
             var metadata = displaying.Shape.Metadata;
 
@@ -39,5 +40,6 @@ public class AddressUpdaterShapeTableProvider : IShapeTableProvider
                     alternates.Add($"{differentiator}__{typeNameWithoutSuffix}");
                 }
             }
+            return Task.CompletedTask;
         });
 }
