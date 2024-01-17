@@ -5,7 +5,6 @@ baz
 Bitcoin
 blogs
 BTC
-checbox
 CLA
 contentpart
 CVC
