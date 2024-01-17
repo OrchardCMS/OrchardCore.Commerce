@@ -15,8 +15,8 @@ public class UserSettingsCheckoutEvents : ICheckoutEvents
     {
         if (await _hca.HttpContext.GetUserAddressAsync() is { } userAddresses)
         {
-            orderPart.BillingAddress.Address = userAddresses.GetBillingAddress();
-            orderPart.ShippingAddress.Address = userAddresses.GetShippingAddress();
+            orderPart.BillingAddress.Address = userAddresses.GetSafeBillingAddress();
+            orderPart.ShippingAddress.Address = userAddresses.GetSafeShippingAddress();
             orderPart.BillingAndShippingAddressesMatch.Value = userAddresses.BillingAndShippingAddressesMatch.Value;
         }
 

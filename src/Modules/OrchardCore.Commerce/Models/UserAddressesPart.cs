@@ -12,13 +12,14 @@ public class UserAddressesPart : ContentPart
     public AddressField BillingAddress { get; set; } = new();
     public BooleanField BillingAndShippingAddressesMatch { get; set; } = new();
 
-    public Address GetShippingAddress() =>
-        string.IsNullOrWhiteSpace(ShippingAddress.Address.Name)
+    // If BillingAndShippingAddressesMatch is ticked, we return the billing address for the shipping address as well.
+    public Address GetSafeShippingAddress() =>
+        BillingAndShippingAddressesMatch.Value
             ? BillingAddress.Address
             : ShippingAddress.Address;
 
-    public Address GetBillingAddress() =>
-        BillingAndShippingAddressesMatch.Value
-            ? GetShippingAddress()
+    public Address GetSafeBillingAddress() =>
+        string.IsNullOrWhiteSpace(BillingAddress.Address.Name)
+            ? ShippingAddress.Address
             : BillingAddress.Address;
 }

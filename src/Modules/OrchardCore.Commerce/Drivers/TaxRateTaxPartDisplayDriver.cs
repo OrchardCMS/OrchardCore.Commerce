@@ -41,8 +41,8 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
             var model = await _shoppingCartHelpers.EstimateProductAsync(
                 shoppingCartId: null,
                 product.Sku,
-                addresses?.GetShippingAddress(),
-                addresses?.GetBillingAddress());
+                addresses?.GetSafeShippingAddress(),
+                addresses?.GetSafeBillingAddress());
 
             if (!model.AdditionalData.HasGrossPrice()) return null;
 
@@ -52,8 +52,8 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
                 viewModel.Context = new PromotionAndTaxProviderContext(
                     new[] { new PromotionAndTaxProviderContextLineItem(model) },
                     new[] { model.LinePrice },
-                    addresses?.GetShippingAddress(),
-                    addresses?.GetBillingAddress()))
+                    addresses?.GetSafeShippingAddress(),
+                    addresses?.GetSafeBillingAddress()))
                 .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content);
         }
         catch (FrontendException exception)
