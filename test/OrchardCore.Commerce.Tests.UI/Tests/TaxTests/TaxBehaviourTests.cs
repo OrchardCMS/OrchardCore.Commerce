@@ -80,7 +80,6 @@ public class TaxBehaviourTests : UITestBase
                 async Task VerifyPriceAsync(string expectedPrice)
                 {
                     await context.GoToContentItemByIdAsync(TestProduct);
-                    if (expectedPrice == "$5.20") await context.SwitchToInteractiveAsync();
                     context.Exists(selector);
                     context.GetAll(selector)[^1].Text.Trim().ShouldBe(expectedPrice);
                 }
