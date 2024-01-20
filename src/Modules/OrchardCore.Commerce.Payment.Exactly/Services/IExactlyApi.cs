@@ -1,4 +1,5 @@
-﻿using Refit;
+﻿using OrchardCore.Commerce.Payment.Exactly.Models;
+using Refit;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;
@@ -16,5 +17,5 @@ public interface IExactlyApi
     /// callback/webhook must be used to retrieve status of the transaction when it's completed.
     /// </summary>
     [Post("/api/v1/transactions")]
-    Task<> CreateTransactionAsync([Body]  data);
+    Task<> CreateTransactionAsync([Body] ExactlyRequest<ChargeRequest> data);
 }
