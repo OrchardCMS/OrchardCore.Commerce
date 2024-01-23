@@ -40,7 +40,11 @@ public interface IPaymentService
     /// If <see langword="true"/>, then the order totals will be checked. They must be zero, otherwise an error
     /// notification will be sent and <see langword="null"/> is returned. If <see langword="false"/>, this is ignored.
     /// </param>
-    Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree);
+    Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(
+        string? shoppingCartId,
+        bool mustBeFree = false,
+        bool notifyOnError = true,
+        bool throwOnError = false);
 
     /// <summary>
     /// Updates the <paramref name="order"/>'s status to <see cref="OrderStatuses.Ordered"/>.

@@ -167,24 +167,21 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree)
+    public async Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(
+        string? shoppingCartId,
+        bool mustBeFree = false,
+        bool notifyOnError = true,
+        bool throwOnError = false)
     {
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
         var order = await _contentManager.NewAsync(Order);
 
-        var errors = await UpdateOrderWithDriversAsync(order);
-        if (errors.Any())
+        if (!await HandleErrorsAsync(await UpdateOrderWithDriversAsync(order), notifyOnError, throwOnError))
         {
-            foreach (var error in errors)
-            {
-                await _notifier.ErrorAsync(new LocalizedHtmlString(error, error));
-            }
-
             return null;
         }
 
         var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
-
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
 
         if (mustBeFree && cartViewModel.Totals.Any(total => total.Value > 0))
@@ -221,6 +218,26 @@ public class PaymentService : IPaymentService
         await _contentManager.CreateAsync(order);
 
         return order;
+    }
+
+    private async Task<bool> HandleErrorsAsync(IList<string> errors, bool notifyOnError, bool throwOnError)
+    {
+        if (!errors.Any()) return true;
+
+        if (notifyOnError)
+        {
+            foreach (var error in errors)
+            {
+                await _notifier.ErrorAsync(new LocalizedHtmlString(error, error));
+            }
+        }
+
+        if (throwOnError)
+        {
+            FrontendException.ThrowIfAny(errors);
+        }
+
+        return false;
     }
 
     private async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)

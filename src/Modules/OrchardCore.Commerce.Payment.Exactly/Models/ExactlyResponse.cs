@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Payment.Exactly.Models;
 public class ExactlyResponse<T>
     where T : IExactlyResponseData
 {
-    public IExactlyResponseData Data { get; set; }
+    public T Data { get; set; }
     public IList<ExactlyError> Errors { get; set; }
 
     public void ThrowIfHasErrors()

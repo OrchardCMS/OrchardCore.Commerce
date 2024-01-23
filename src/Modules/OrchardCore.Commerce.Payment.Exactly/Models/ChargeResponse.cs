@@ -17,6 +17,7 @@ public class ChargeResponse : IExactlyResponseData
 
     public string Type => "charge";
     public string Id { get; set; }
+    public ChargeAttributes Attributes { get; set; }
 
     public enum ChargeResponseStatus
     {
