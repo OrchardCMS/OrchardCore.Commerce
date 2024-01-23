@@ -266,11 +266,7 @@ public class PaymentService : IPaymentService
             await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
 
             var errors = updateModelAccessor.ModelUpdater.GetModelErrorMessages().AsList();
-            if (errors.Any())
-            {
-                throw new FrontendException(new HtmlString("<br>").Join(
-                    errors.Select(error => H["{0}", error]).ToArray()));
-            }
+            FrontendException.ThrowIfAny(errors);
         }
 
         // If there are line items in the Order, use data from Order instead of shopping cart.

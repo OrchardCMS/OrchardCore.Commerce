@@ -1,4 +1,4 @@
-﻿using System;
+﻿using OrchardCore.Commerce.Abstractions.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,8 +14,7 @@ public class ExactlyResponse<T>
     {
         if (Errors?.Any() != true) return;
 
-        if (Errors.Count == 1) throw new ExactlyException(Errors.Single());
-
-        throw new AggregateException(Errors.Select(error => new ExactlyException(error)));
+        var errors = Errors.Select(error => $"{error.Code}: {error.Title} ({error.Details})").ToList();
+        FrontendException.ThrowIfAny(errors);
     }
 }
