@@ -10,12 +10,14 @@ using OrchardCore.Users.Models;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Models;
 
-public class ChargeRequest : IExactlyRequestAttributes
+public class ChargeRequest : IExactlyRequestAttributes,  IExactlyAmount
 {
+    [JsonIgnore]
     public string Type => "charge";
 
     public string ProjectId { get; set; }
@@ -37,8 +39,6 @@ public class ChargeRequest : IExactlyRequestAttributes
 
     public ChargeRequest(OrderPart orderPart, User user, string projectId, string tenantId, Uri returnUrl)
     {
-        var total = orderPart.Charges.Select(payment => payment.Amount).Sum();
-
         if (!returnUrl.IsAbsoluteUri) throw new ArgumentException("The return URL must be absolute.", nameof(returnUrl));
 
         ProjectId = projectId;
@@ -47,9 +47,9 @@ public class ChargeRequest : IExactlyRequestAttributes
         ReturnUrl = returnUrl.AbsoluteUri;
         CustomerId = user.UserId;
         Email = user.Email;
-        Amount = total.Value.ToString("0.00", CultureInfo.InvariantCulture);
-        Currency = total.Currency.CurrencyIsoCode;
         Meta = orderPart;
+
+        this.SetAmount(orderPart.Charges.Select(payment => payment.Amount).Sum());
     }
 
     public static implicit operator ExactlyRequest<ChargeRequest>(ChargeRequest attributes) =>
