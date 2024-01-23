@@ -27,6 +27,7 @@ public class ExactlyController : Controller
         H = stringLocalizer;
     }
 
+    [HttpPost]
     public async Task<IActionResult> CreateTransaction(string shoppingCartId) =>
         await this.SafeJsonAsync<object>(async () =>
         {

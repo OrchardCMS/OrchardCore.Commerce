@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore
+@using OrchardCore.Commerce.Payment.Exactly.Controllers
+
+@{
+    var actionUrl = Orchard.Action<ExactlyController>(controller => controller.CreateTransaction(null));
+    var statusUrl = Orchard.Action<ExactlyController>(controller => controller.GetRedirectUrl("TRANSACTION_ID"));
+    var defaultErrorMessage =
+        T["An error has occurred while trying to connect to the payment service. Please try again later."];
+}
+
+<shape type="PayButton" PayButtonClass="exactly" prop-Text="@T["Pay with exactly"]" />
+
+<script asp-name="OrchardCore.Commerce.Payment.Exactly.Script" at="Foot">
+    Array.from(document.querySelectorAll(".pay-button-exactly")).forEach((button) => {
+        function setButtons(enabled) {
+            document.querySelectorAll(".pay-button-exactly").forEach(button => button.disabled = !enabled)
+        }
+
+        function fetchJson(url, config) {
+            return fetch(url, config).then(response => response.json());
+        }
+
+        function sleep(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            setButtons(false);
+
+            const form = document.querySelector('.payment-form');
+            const json = await fetchJson(@actionUrl.JsonHtmlContent(), { method: 'post', body: new FormData(form) });
+
+            if (!json || json.error) {
+                alert(json?.error ?? @defaultErrorMessage.Json());
+            }
+            else {
+                const statusUrl = (@statusUrl.JsonHtmlContent()).replace('TRANSACTION_ID', json.id);
+                while (true) {
+                    const redirectUrl = await fetchJson(statusUrl, { method: 'get' });
+
+                    if (redirectUrl) {
+                        location.href = redirectUrl;
+                        break;
+                    }
+
+                    await sleep(200);
+                }
+            }
+
+            setButtons(true);
+        });
+    });
+</script>
