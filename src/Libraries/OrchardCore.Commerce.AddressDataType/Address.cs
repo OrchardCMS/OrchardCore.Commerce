@@ -1,3 +1,5 @@
+using OrchardCore.Commerce.AddressDataType.Constants;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace OrchardCore.Commerce.AddressDataType;
@@ -24,4 +26,14 @@ public class Address
     public string PostalCode { get; set; }
 
     public string Region { get; set; }
+
+    /// <summary>
+    /// Gets a collection of name metadata. Some typical keys can be found in <see cref="CommonNameParts"/>.
+    /// </summary>
+    public IDictionary<string, string> NameParts { get; } = new Dictionary<string, string>();
+
+    /// <summary>
+    /// Gets a collection of other address metadata not related to names.
+    /// </summary>
+    public IDictionary<string, string> AdditionalFields { get; } = new Dictionary<string, string>();
 }

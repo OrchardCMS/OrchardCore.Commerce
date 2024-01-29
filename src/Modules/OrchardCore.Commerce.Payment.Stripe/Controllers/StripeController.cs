@@ -1,15 +1,20 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
+using Stripe;
 using System.Threading.Tasks;
+using Address = OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
 
@@ -18,6 +23,7 @@ public class StripeController : Controller
     private readonly IContentManager _contentManager;
     private readonly INotifier _notifier;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
+    private readonly IPaymentService _paymentService;
     private readonly IStripePaymentService _stripePaymentService;
     private readonly IHtmlLocalizer<StripeController> H;
 
@@ -25,12 +31,14 @@ public class StripeController : Controller
         IContentManager contentManager,
         INotifier notifier,
         IPaymentIntentPersistence paymentIntentPersistence,
+        IPaymentService paymentService,
         IStripePaymentService stripePaymentService,
         IHtmlLocalizer<StripeController> htmlLocalizer)
     {
         _contentManager = contentManager;
         _notifier = notifier;
         _paymentIntentPersistence = paymentIntentPersistence;
+        _paymentService = paymentService;
         _stripePaymentService = stripePaymentService;
         H = htmlLocalizer;
     }
@@ -97,9 +105,55 @@ public class StripeController : Controller
         return await PaymentFailedAsync();
     }
 
+    [HttpPost("checkout/params/Stripe")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GetConfirmPaymentParameters()
+    {
+        var order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
+        await _paymentService.UpdateOrderWithDriversAsync(order);
+
+        var part = order.As<OrderPart>();
+        var billing = part.BillingAddress.Address ?? new Address();
+        var shipping = part.ShippingAddress.Address ?? new Address();
+
+        var model = new PaymentIntentConfirmOptions
+        {
+            ReturnUrl = Url.ToAbsoluteUrl("~/checkout/middleware/Stripe"),
+            PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
+            {
+                BillingDetails = new PaymentIntentPaymentMethodDataBillingDetailsOptions
+                {
+                    Email = part.Email?.Text,
+                    Name = billing.Name,
+                    Phone = part.Phone?.Text,
+                    Address = CreateAddressOptions(billing),
+                },
+            },
+            Shipping = new ChargeShippingOptions
+            {
+                Name = shipping.Name,
+                Phone = part.Phone?.Text,
+                Address = CreateAddressOptions(shipping),
+            },
+        };
+
+        return Json(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+    }
+
     private async Task<IActionResult> PaymentFailedAsync()
     {
         await _notifier.ErrorAsync(H["The has payment failed, please try again."]);
         return Redirect("~/checkout");
     }
+
+    private static AddressOptions CreateAddressOptions(Address address) =>
+        new()
+        {
+            City = address.City ?? string.Empty,
+            Country = address.Region ?? string.Empty,
+            Line1 = address.StreetAddress1 ?? string.Empty,
+            Line2 = address.StreetAddress2 ?? string.Empty,
+            PostalCode = address.PostalCode ?? string.Empty,
+            State = address.Province ?? string.Empty,
+        };
 }

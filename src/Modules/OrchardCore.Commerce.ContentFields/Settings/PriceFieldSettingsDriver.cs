@@ -51,7 +51,7 @@ public class PriceFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<
                     localizer: T,
                     currentValue: settings.SpecificCurrencyIsoCode);
             }))
-            .Location("Content");
+            .PlaceInContent();
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {

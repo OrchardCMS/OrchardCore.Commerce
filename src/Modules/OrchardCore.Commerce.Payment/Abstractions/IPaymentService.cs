@@ -66,6 +66,11 @@ public interface IPaymentService
         string? orderId,
         string? shoppingCartId,
         AlterOrderAsyncDelegate? alterOrderAsync = null);
+
+    /// <summary>
+    /// Updates the provided Order content item from the update model as if it was just edited.
+    /// </summary>
+    Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order);
 }
 
 public delegate Task AlterOrderAsyncDelegate(

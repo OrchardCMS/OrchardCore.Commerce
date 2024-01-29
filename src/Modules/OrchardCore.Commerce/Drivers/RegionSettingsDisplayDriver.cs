@@ -46,13 +46,13 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings)) return null;
 
         return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
-        {
-            model.AllowedRegions = section.AllowedRegions;
-            model.Regions = _regionService
-                .GetAllRegions()
-                .CreateSelectListOptions();
-        })
-            .Location("Content")
+            {
+                model.AllowedRegions = section.AllowedRegions;
+                model.Regions = _regionService
+                    .GetAllRegions()
+                    .CreateSelectListOptions();
+            })
+            .PlaceInContent()
             .OnGroup(GroupId);
     }
 

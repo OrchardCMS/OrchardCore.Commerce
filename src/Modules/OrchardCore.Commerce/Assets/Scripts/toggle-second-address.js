@@ -2,52 +2,46 @@ window.initializeToggleSecondAddress = (
     checkbox,
     firstAddressRow,
     secondAddressRow) => {
-    function copyValue(elementName) {
-        const selector = '.address__' + elementName;
-        const target = secondAddressRow.querySelector(selector);
-        const source = firstAddressRow.querySelector(selector);
-        if (!target || !source) return;
 
-        target.value = source.value;
-        target.checked = source.checked;
-        target.dispatchEvent(new Event('change'));
+    function addEvent(items, event, callback) {
+        Array.from(items).forEach((item) => item.addEventListener(event, callback));
     }
 
     function onCheckboxChange() {
         secondAddressRow.hidden = checkbox.checked;
         if (!checkbox.checked) return;
 
-        copyValue('name');
-        copyValue('department');
-        copyValue('company');
-        copyValue('street_first');
-        copyValue('street_second');
-        copyValue('city');
-        copyValue('postalCode');
-        copyValue('region');
-        copyValue('province');
-        copyValue('toBeSaved');
+        Array.from(document.querySelectorAll('.address_billing-address *[name*=".BillingAddress."]'))
+            .map((input) => [
+                input,
+                document.getElementsByName(input.name.replace('.BillingAddress.', '.ShippingAddress.'))[0],
+            ])
+            .filter((pair) => pair[1])
+            .forEach((pair) => {
+                pair[1].value = pair[0].value;
+                pair[1].checked = pair[0].checked;
+            });
     }
 
     checkbox.addEventListener('change', onCheckboxChange);
     onCheckboxChange();
 
-    Array.from(firstAddressRow.querySelectorAll('input, select'))
-        .forEach((input) => input.addEventListener('change', onCheckboxChange));
+    addEvent(firstAddressRow.querySelectorAll('*[name]'), 'change', onCheckboxChange);
+    addEvent(document.forms, 'submit', onCheckboxChange);
+    setTimeout(onCheckboxChange, 50);
 };
 
 (function autoInitializeToggleSecondAddress() {
-    if (document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]')) {
-        window.initializeToggleSecondAddress(
-            document.querySelector('[id$=UserAddressesPart_BillingAndShippingAddressesMatch_Value]'),
-            document.querySelector('.address_billing-address'),
-            document.querySelector('.address_shipping-address'));
-    }
 
-    if (document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]')) {
-        window.initializeToggleSecondAddress(
-            document.querySelector('[id$=OrderPart_BillingAndShippingAddressesMatch_Value]'),
-            document.querySelector('.address_billing-address'),
-            document.querySelector('.address_shipping-address'));
-    }
 })();
+
+document.addEventListener("DOMContentLoaded", () => {
+    Array.from(document.querySelectorAll('[name*="BillingAndShippingAddressesMatch.Value"]'))
+        .filter((checkbox) => !checkbox.hidden && checkbox.type !== 'hidden')
+        .forEach((checkbox) => {
+            window.initializeToggleSecondAddress(
+                checkbox,
+                document.querySelector('.address_billing-address'),
+                document.querySelector('.address_shipping-address'));
+        });
+});

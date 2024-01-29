@@ -31,25 +31,25 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
         if (model.PartDefinition.Name != nameof(PricePart)) return null;
 
         return Initialize("PricePartSettings_Edit", (Action<PricePartSettingsViewModel>)(viewModel =>
-        {
-            var settings = model.GetSettings<PricePartSettings>();
-
-            viewModel.CurrencySelectionMode = settings.CurrencySelectionMode;
-            viewModel.CurrencySelectionModes = new List<SelectListItem>
             {
-                new(CurrencySelectionMode.AllCurrencies.ToString(), T["All Currencies"]),
-                new(CurrencySelectionMode.DefaultCurrency.ToString(), T["Default Currency"]),
-                new(CurrencySelectionMode.SpecificCurrency.ToString(), T["Specific Currency"]),
-            };
-            viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
-            viewModel.Currencies = _moneyService.Currencies
-                .Where(currency => !string.IsNullOrEmpty(currency.EnglishName))
-                .OrderBy(currency => currency.CurrencyIsoCode)
-                .Select(currency => new SelectListItem(
-                    currency.CurrencyIsoCode,
-                    $"{currency.CurrencyIsoCode} {currency.Symbol} - {T[currency.EnglishName]}"));
-        }))
-            .Location("Content");
+                var settings = model.GetSettings<PricePartSettings>();
+
+                viewModel.CurrencySelectionMode = settings.CurrencySelectionMode;
+                viewModel.CurrencySelectionModes = new List<SelectListItem>
+                {
+                    new(CurrencySelectionMode.AllCurrencies.ToString(), T["All Currencies"]),
+                    new(CurrencySelectionMode.DefaultCurrency.ToString(), T["Default Currency"]),
+                    new(CurrencySelectionMode.SpecificCurrency.ToString(), T["Specific Currency"]),
+                };
+                viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
+                viewModel.Currencies = _moneyService.Currencies
+                    .Where(currency => !string.IsNullOrEmpty(currency.EnglishName))
+                    .OrderBy(currency => currency.CurrencyIsoCode)
+                    .Select(currency => new SelectListItem(
+                        currency.CurrencyIsoCode,
+                        $"{currency.CurrencyIsoCode} {currency.Symbol} - {T[currency.EnglishName]}"));
+            }))
+            .PlaceInContent();
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
