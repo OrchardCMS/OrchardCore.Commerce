@@ -30,6 +30,6 @@ using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
                   "up the Name field into Title, Given Name, Middle Name and Family Name fields.",
     Dependencies = new[]
     {
-        WesternNameParts,
+        ContentFields,
     }
 )]
