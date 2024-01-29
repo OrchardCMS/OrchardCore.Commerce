@@ -17,7 +17,7 @@ using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
     Description = "Commerce-specific content fields for Orchard Core.",
     Dependencies = new[]
     {
-        "OrchardCore.Commerce.ContentFields",
+        "OrchardCore.ContentFields",
     }
 )]
 

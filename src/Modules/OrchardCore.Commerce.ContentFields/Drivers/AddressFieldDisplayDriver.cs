@@ -99,10 +99,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
             return null;
         }
 
-        foreach (var addressUpdater in _addressUpdaters)
-        {
-            await addressUpdater.UpdateAsync(address);
-        }
+        await _addressUpdaters.AwaitEachAsync(addressUpdater => addressUpdater.UpdateAsync(address));
 
         // We have to detect if we are in the user editor in the admin dashboard, because then it's okay to save even if
         // the normally required fields are left empty.
