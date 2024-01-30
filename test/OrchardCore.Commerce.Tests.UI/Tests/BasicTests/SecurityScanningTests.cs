@@ -18,14 +18,18 @@ public class SecurityScanningTests : UITestBase
     public Task FullSecurityScanShouldPass() =>
         ExecuteTestAfterSetupAsync(
             context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
-                configuration => FalsePositive(
-                    configuration,
-                    10202,
-                    "Absence of Anti-CSRF Tokens",
-                    "The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
-                    @"https://[^/]+/",
-                    @".*/\?.*pagenum=.*",
-                    @".*/\?.*products\..*"),
+                configuration =>
+                {
+                    configuration.DisableActiveScanRule(40024, "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
+                    FalsePositive(
+                        configuration,
+                        10202,
+                        "Absence of Anti-CSRF Tokens",
+                        "The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
+                        @"https://[^/]+/",
+                        @".*/\?.*pagenum=.*",
+                        @".*/\?.*products\..*");
+                },
                 sarifLog =>
                 {
                     var errors = sarifLog
