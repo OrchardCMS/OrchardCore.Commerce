@@ -20,7 +20,10 @@ public class SecurityScanningTests : UITestBase
             context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
                 configuration =>
                 {
-                    configuration.DisableActiveScanRule(40024, "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
+                    configuration.DisableActiveScanRule(
+                        40024,
+                        "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
+
                     FalsePositive(
                         configuration,
                         10202,
