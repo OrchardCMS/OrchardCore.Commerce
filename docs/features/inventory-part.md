@@ -3,6 +3,7 @@
 The `InventoryPart` adds basic inventory management capabilities to a product. Requires [`ProductPart`](product-part.md) to be present on the content type as well.
 
 ## Fields and properties
+
 - **AllowsBackOrder** (`BooleanField`): When set to true, product can be ordered even when the Inventory field's value is below 1.
 - **IgnoreInventory** (`BooleanField`): When set to true, all inventory checks (within [`InventoryShoppingCartEvents`](https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce/Events/InventoryShoppingCartEvents.cs)) are bypassed.
 - **Inventory** (`IDictionary<string, int>`): Sets the number of available products. Uses a `Dictionary<string, int>` object to keep track of multiple inventories (which is mostly relevant for products with a [`PriceVariantsPart`](price-variants-part.md) attached to them).
@@ -18,6 +19,7 @@ By default, the below fields' shapes are empty, so they do not show up on the us
 - _MinimumOrderQuantity_
 
 ## Usage examples
+
 All the inventory-related settings can be found in the product's editor.
 ![image](../assets/images/inventory-part/inventory-editor-example.png)
 
