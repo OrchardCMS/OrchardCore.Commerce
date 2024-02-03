@@ -10,9 +10,11 @@ Allows setting several prices for a product based on the quantity purchased at o
 ## Usage examples
 
 The price tiers can be set in the product's editor.
+
 ![image](../assets/images/tiered-price-part/tiered-price-part-editor-example.png)
 
 The product's tiered prices appear on the product's page and modify the line price in the cart if applicable.
+
 ![image](../assets/images/tiered-price-part/tiered-price-display-example.png)
 
 ![image](../assets/images/tiered-price-part/tiered-price-cart-example.png)

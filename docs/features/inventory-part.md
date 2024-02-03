@@ -21,16 +21,21 @@ By default, the below fields' shapes are empty, so they do not show up on the us
 ## Usage examples
 
 All the inventory-related settings can be found in the product's editor.
+
 ![image](../assets/images/inventory-part/inventory-editor-example.png)
 
 With a product's inventory set to a valid value, the current inventory count will appear on the product's page.
+
 ![image](../assets/images/inventory-part/inventory-value-example.png)
 
 With a maximum order quantity specified, trying to add more products to the cart than allowed will result in a validation error.
+
 ![image](../assets/images/inventory-part/inventory-max-quantity-example.png)
 
 With a minimum order quantity specified, trying to add fewer products to the cart than allowed will result in a validation error.
+
 ![image](../assets/images/inventory-part/inventory-min-quantity-example.png)
 
 With a custom out of stock message provided, the message will show up on the product's page when its inventory is below 1 and back ordering is not allowed.
+
 ![image](../assets/images/inventory-part/inventory-out-of-stock-example.png)

@@ -11,7 +11,9 @@ A content item becomes a product if it has a `ProductPart` and a price providing
 ## Usage examples
 
 The _SKU_ and the _Product Image_ properties can be set in the product's editor.
+
 ![image](../assets/images/product-part/product-editor-example.png)
 
 If _Product Image_ is set, it will appear on the product's page.
+
 ![image](../assets/images/product-part/product-image-example.png)

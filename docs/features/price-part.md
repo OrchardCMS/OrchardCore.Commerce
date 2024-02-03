@@ -9,10 +9,13 @@ Provides a single price to a product using a custom [`PriceField`](https://githu
 ## Usage examples
 
 The product's price can be set in the product's editor.
+
 ![image](../assets/images/price-part/price-editor-example.png)
 
 The product's price appears on the product's page, showing the specified decimal value and currency.
+
 ![image](../assets/images/price-part/price-display-example.png)
 
 Price is also shown in the cart once the product has been added.
+
 ![image](../assets/images/price-part/price-cart-example.png)

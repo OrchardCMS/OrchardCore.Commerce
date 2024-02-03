@@ -17,9 +17,11 @@ When not restricted to predefined values, it can be used to provide a text or no
 ## Usage examples
 
 New attribute fields can be added or existing fields can be edited in the relevant product content type's editor.
+
 ![image](../assets/images/text-product-attribute-field/content-type-editor-example.png)
 
 ![image](../assets/images/text-product-attribute-field/attribute-field-editor-example.png)
 
 The predefined values of the attribute are displayed on the product's page.
+
 ![image](../assets/images/text-product-attribute-field/attribute-field-display-example.png)
