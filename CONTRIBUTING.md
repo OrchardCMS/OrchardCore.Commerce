@@ -8,7 +8,7 @@ Start a discussion on the [repository issue tracker](https://github.com/OrchardC
 
 ## Reporting security issues
 
-Security issues should be reported privately, via email, to contact@orchardcore.net.
+Security issues should be reported privately, via email, to <contact@orchardcore.net>.
 
 ## Other discussions
 
