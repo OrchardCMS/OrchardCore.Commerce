@@ -3,6 +3,7 @@ Contributors.md$
 docs/releases
 docs/requirements\.txt$
 mkdocs\.yml$
+Directory.Packages.props$
 src/Libraries/OrchardCore\.Commerce\.MoneyDataType/Currency\.extra\.cs$
 src/Modules/OrchardCore\.Commerce\.Payment/Constants/CurrencyCollectionConstants\.cs$
 src/Modules/OrchardCore\.Commerce\.Payment\.Stripe/Extensions/PaymentExtensions\.cs$
