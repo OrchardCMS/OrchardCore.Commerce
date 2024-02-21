@@ -6,7 +6,9 @@
 
   <ItemGroup>
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="4.0.0" />
-    <PackageVersion Include="Lombiq.Tests" Version="2.2.3" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.1.1-alpha.6.tdeal-16" />
+    <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="1.3.2" />
+    <PackageVersion Include="Lombiq.Tests" Version="2.2.5" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="8.2.1-alpha.21.osoe-817" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="8.2.1-alpha.21.osoe-817" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="8.2.1-alpha.21.osoe-817" />
@@ -32,11 +34,5 @@
     <PackageVersion Include="System.Text.Json" Version="8.0.2" />
     <PackageVersion Include="xunit" Version="2.7.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.7" />
-  </ItemGroup>
-  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.1.1-alpha.5.tdeal-16" />
-  </ItemGroup>
-  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="1.3.2" />
   </ItemGroup>
 </Project>
