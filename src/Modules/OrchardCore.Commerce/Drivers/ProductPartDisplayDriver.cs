@@ -120,6 +120,6 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             viewModel.CanBeBought[part.ContentItem.ContentItemId] = true;
         }
 
-        viewModel.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
+        viewModel.Attributes = _productAttributeService.GetProductAttributeFieldsAsync(part.ContentItem);
     }
 }

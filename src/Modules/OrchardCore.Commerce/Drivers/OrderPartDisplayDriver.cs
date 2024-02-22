@@ -114,7 +114,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             foreach (var provider in _attributeProviders)
             {
-                provider.HandleSelectedAttributes(lineItem.SelectedAttributes, productPart, attributesList);
+                provider.HandleSelectedAttributesAsync(lineItem.SelectedAttributes, productPart, attributesList);
             }
 
             // If attributes exist, there must be a full SKU.

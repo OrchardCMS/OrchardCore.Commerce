@@ -73,7 +73,7 @@ public class UserController : Controller
         if (_updateModelAccessor.ModelUpdater.ModelState.IsValid)
         {
             user.Put(UserAddresses, userAddresses);
-            _session.Save(user);
+            await _session.SaveAsync(user);
             await _notifier.SuccessAsync(H["Your addresses have been updated."]);
         }
         else
@@ -114,7 +114,7 @@ public class UserController : Controller
         if (_updateModelAccessor.ModelUpdater.ModelState.IsValid)
         {
             user.Put(UserDetails, userDetails);
-            _session.Save(user);
+            await _session.SaveAsync(user);
             await _notifier.SuccessAsync(H["Your details have been updated."]);
         }
         else
