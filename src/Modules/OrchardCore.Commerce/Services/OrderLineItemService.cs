@@ -138,7 +138,7 @@ public class OrderLineItemService : IOrderLineItemService
         {
             var productSku = product.As<ProductPart>().Sku;
 
-            var booleanAttributes = _productAttributeService.GetProductAttributeFields(product)
+            var booleanAttributes = _productAttributeService.GetProductAttributeFieldsAsync(product)
                 .Where(attribute => attribute.Field is BooleanProductAttributeField)
                 .Select(attribute => attribute.Name)
                 .ToList();
@@ -148,7 +148,7 @@ public class OrderLineItemService : IOrderLineItemService
                 availableBooleanAttributes.Add(productSku, booleanAttributes);
             }
 
-            var numericAttributes = _productAttributeService.GetProductAttributeFields(product)
+            var numericAttributes = _productAttributeService.GetProductAttributeFieldsAsync(product)
                 .Where(attribute => attribute.Field is NumericProductAttributeField)
                 .ToList();
 

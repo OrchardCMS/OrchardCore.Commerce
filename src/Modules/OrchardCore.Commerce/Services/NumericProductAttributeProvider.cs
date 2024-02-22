@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -39,7 +40,7 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
             : new NumericProductAttributeValue(name, value: null);
     }
 
-    public void HandleSelectedAttributes(
+    public async Task HandleSelectedAttributesAsync(
         IDictionary<string, IDictionary<string, string>> selectedAttributes,
         ProductPart productPart,
         IList<IProductAttributeValue> attributesList)
@@ -55,12 +56,12 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
             selectedAttributes.Add(Numeric, new Dictionary<string, string>());
         }
 
-        var numericAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
+        var numericAttributesList = (await _productAttributeService.GetProductAttributeFieldsAsync(productPart.ContentItem))
             .Where(attr => attr.Field is NumericProductAttributeField)
             .ToList();
 
         // Construct actual attributes from strings.
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        var type = await _contentDefinitionManager.GetTypeDefinitionAsync(productPart.ContentItem.ContentType);
         foreach (var attribute in numericAttributesList)
         {
             var (attributePartDefinition, attributeFieldDefinition) = _productAttributeService.GetFieldDefinition(
@@ -74,7 +75,7 @@ public class NumericProductAttributeProvider : IProductAttributeProvider
             var matchingAttribute = Parse(
                     attributePartDefinition,
                     attributeFieldDefinition,
-                    new[] { selectedValue ?? defaultValue });
+                    [selectedValue ?? defaultValue]);
 
             if (matchingAttribute is not null) attributesList.Add(matchingAttribute);
         }

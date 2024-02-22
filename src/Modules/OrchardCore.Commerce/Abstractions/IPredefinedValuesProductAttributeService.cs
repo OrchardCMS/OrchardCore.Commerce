@@ -11,7 +11,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IPredefinedValuesProductAttributeService
 {
     /// <summary>
-    /// Filters <see cref="IProductAttributeService.GetProductAttributeFields"/> result to only those attribute fields
+    /// Filters <see cref="IProductAttributeService.GetProductAttributeFieldsAsync"/> result to only those attribute fields
     /// that have predefined values.
     /// </summary>
     IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product);

@@ -59,7 +59,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
     public IDictionary<string, IDictionary<string, string>> GetSelectedAttributes(ISet<IProductAttributeValue> attributes) =>
         new Dictionary<string, IDictionary<string, string>>();
 
-    public void HandleSelectedAttributes(
+    public void HandleSelectedAttributesAsync(
         IDictionary<string, IDictionary<string, string>> selectedAttributes,
         ProductPart productPart,
         IList<IProductAttributeValue> attributesList)

@@ -93,7 +93,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
             inventoryPart.Inventory.Add(newEntry);
             inventoryPart.Apply();
 
-            _session.Save(productPart.ContentItem);
+            await _session.SaveAsync(productPart.ContentItem);
         }
         finally
         {

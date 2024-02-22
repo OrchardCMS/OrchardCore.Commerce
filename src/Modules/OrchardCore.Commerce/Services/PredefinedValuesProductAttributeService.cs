@@ -15,7 +15,7 @@ public class PredefinedValuesProductAttributeService : IPredefinedValuesProductA
 
     public IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product) =>
         _productAttributeService
-            .GetProductAttributeFields(product)
+            .GetProductAttributeFieldsAsync(product)
             .Where(description => description.Settings is
                 IPredefinedValuesProductAttributeFieldSettings { RestrictToPredefinedValues: true })
             .OrderBy(description => description.PartName)
