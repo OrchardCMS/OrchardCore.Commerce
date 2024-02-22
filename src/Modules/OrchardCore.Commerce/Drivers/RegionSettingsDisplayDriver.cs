@@ -71,12 +71,12 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                var allowedRegions = model.AllowedRegions.AsList();
+                var allowedRegions = model.AllowedRegions.AsList() ?? [];
                 var allRegionTwoLetterIsoRegionNames = _regionService
                     .GetAllRegions()
                     .Select(region => region.TwoLetterISORegionName);
 
-                section.AllowedRegions = allowedRegions?.Count != 0
+                section.AllowedRegions = allowedRegions.Count != 0
                     ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
                     : allRegionTwoLetterIsoRegionNames;
 
