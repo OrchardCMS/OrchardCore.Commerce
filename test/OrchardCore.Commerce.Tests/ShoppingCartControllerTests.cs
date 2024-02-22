@@ -24,7 +24,11 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ShoppingCartControllerTests
 {
-    private readonly FakeCartStorage _cartStorage = new();
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+    // This change would break the IShoppingCartPersistence reference in the consumer classes and
+    // it would lead to multiple test failing due to NRE when accessing methods in IShoppingCartPersistence.
+    private readonly IShoppingCartPersistence _cartStorage = new FakeCartStorage();
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
     private readonly Dictionary<string, string[]> _attrSet1 = new()
     {
