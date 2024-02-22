@@ -4,6 +4,7 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tax.Migrations;
 
@@ -17,10 +18,10 @@ public class TaxPartMigrations : DataMigration
     public TaxPartMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition<TaxPart>(builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<TaxPart>(builder => builder
                 .Configure(part => part
                     .Attachable()
                     .Reusable()

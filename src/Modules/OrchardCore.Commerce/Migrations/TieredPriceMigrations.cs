@@ -18,7 +18,7 @@ public class TieredPriceMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition(nameof(TieredPricePart), builder => builder
+            .AlterPartDefinitionAsync(nameof(TieredPricePart), builder => builder
                 .Attachable()
                 .WithDescription("Adds tiered prices to a product based on quantity."));
         return 1;

@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Settings;
+using System.Threading.Tasks;
 using YesSql.Sql;
 
 namespace OrchardCore.Commerce.Migrations;
@@ -19,10 +20,10 @@ public class ProductMigrations : DataMigration
     public ProductMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(ProductPart), builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(ProductPart), builder => builder
                 .WithField(nameof(ProductPart.ProductImage), field => field
                     .OfType(nameof(MediaField))
                     .WithDisplayName("Product Image")
@@ -30,13 +31,13 @@ public class ProductMigrations : DataMigration
                 .Attachable()
                 .WithDescription("Makes a content item into a product."));
 
-        SchemaBuilder
-            .CreateMapIndexTable<ProductPartIndex>(table => table
+        await SchemaBuilder
+            .CreateMapIndexTableAsync<ProductPartIndex>(table => table
                 .Column<string>(nameof(ProductPartIndex.Sku), column => column.WithLength(128))
                 .Column<string>(nameof(ProductPartIndex.ContentItemId), column => column.WithLength(26)));
 
-        SchemaBuilder
-            .AlterTable(nameof(ProductPartIndex), table => table
+        await SchemaBuilder
+            .AlterTableAsync(nameof(ProductPartIndex), table => table
                 .CreateIndex(
                     $"IDX_{nameof(ProductPartIndex)}_{nameof(ProductPartIndex.Sku)}",
                     nameof(ProductPartIndex.Sku)));
@@ -44,10 +45,10 @@ public class ProductMigrations : DataMigration
         return 2;
     }
 
-    public int UpdateFrom1()
+    public async Task<int> UpdateFrom1Async()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition<ProductPart>(builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<ProductPart>(builder => builder
                 .WithField(part => part.ProductImage, field => field
                     .WithDisplayName("Product Image")
                     .WithSettings(new MediaFieldSettings { Multiple = false })));

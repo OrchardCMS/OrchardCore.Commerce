@@ -15,7 +15,7 @@ public class ProductListMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition(nameof(ProductListPart), builder => builder
+            .AlterPartDefinitionAsync(nameof(ProductListPart), builder => builder
                 .Attachable()
                 .WithDescription("Displays a list of products with optional filtering and sorting controlled by widgets."));
 

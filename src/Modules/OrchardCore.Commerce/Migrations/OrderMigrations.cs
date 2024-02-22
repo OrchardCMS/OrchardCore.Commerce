@@ -16,8 +16,8 @@ using OrchardCore.Html.Models;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Title.Models;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using YesSql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 using static OrchardCore.Commerce.Abstractions.Constants.OrderStatuses;
@@ -35,17 +35,17 @@ public class OrderMigrations : DataMigration
     public OrderMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(OrderPart), builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(OrderPart), builder => builder
                 .Attachable()
                 .WithDescription("Makes a content item into an order."));
 
-        _contentDefinitionManager.MigrateFieldSettings<AddressField, AddressPartFieldSettings>();
+        await _contentDefinitionManager.MigrateFieldSettingsAsync<AddressField, AddressPartFieldSettings>();
 
-        _contentDefinitionManager
-            .AlterTypeDefinition(Order, type => type
+        await _contentDefinitionManager
+            .AlterTypeDefinitionAsync(Order, type => type
                 .Creatable()
                 .Listable()
                 .Securable()
@@ -59,8 +59,8 @@ public class OrderMigrations : DataMigration
                 )
                 .WithPart(nameof(OrderPart)));
 
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(OrderPart), part => part
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(OrderPart), part => part
                 .Attachable()
                 .WithDescription("Makes a content item into an order.")
                 .WithField(nameof(OrderPart.OrderId), field => field
@@ -78,13 +78,13 @@ public class OrderMigrations : DataMigration
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
-                        Options = new[]
-                        {
+                        Options =
+                        [
                             new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
                             new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
                             new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
                             new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
-                        },
+                        ],
                         DefaultValue = Pending.HtmlClassify(),
                         Editor = EditorOption.Radio,
                     }))
@@ -115,10 +115,10 @@ public class OrderMigrations : DataMigration
         return 7;
     }
 
-    public int UpdateFrom1()
+    public async Task<int> UpdateFrom1Async()
     {
-        _contentDefinitionManager
-            .AlterTypeDefinition(Order, type => type
+        await _contentDefinitionManager
+            .AlterTypeDefinitionAsync(Order, type => type
                 .Creatable()
                 .Listable()
                 .Securable()
@@ -132,8 +132,8 @@ public class OrderMigrations : DataMigration
                 )
                 .WithPart(nameof(OrderPart)));
 
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(OrderPart), part => part
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(OrderPart), part => part
                 .Attachable()
                 .WithDescription("Makes a content item into an order.")
                 .WithField(nameof(OrderPart.OrderId), field => field
@@ -147,13 +147,12 @@ public class OrderMigrations : DataMigration
                     .WithEditor("PredefinedList")
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
-                        Options = new List<ListValueOption>
-                            {
+                        Options =
+                            [
                                 new() { Name = Ordered, Value = Ordered.HtmlClassify() },
                                 new() { Name = Shipped, Value = Shipped.HtmlClassify() },
                                 new() { Name = Arrived, Value = Arrived.HtmlClassify() },
-                            }
-                            .ToArray(),
+                            ],
                         DefaultValue = Pending.HtmlClassify(),
                         Editor = EditorOption.Radio,
                     }))
@@ -170,10 +169,10 @@ public class OrderMigrations : DataMigration
         return 2;
     }
 
-    public int UpdateFrom2()
+    public async Task<int> UpdateFrom2Async()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(OrderPart), part => part
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(OrderPart), part => part
                 .WithField(nameof(OrderPart.Email), field => field
                     .OfType(nameof(TextField))
                     .WithDisplayName("E-mail")
@@ -185,13 +184,13 @@ public class OrderMigrations : DataMigration
                 .WithField(nameof(OrderPart.Status), field => field
                     .WithSettings(new TextFieldPredefinedListEditorSettings
                     {
-                        Options = new[]
-                        {
+                        Options =
+                        [
                             new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
                             new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
                             new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
                             new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
-                        },
+                        ],
                         DefaultValue = Pending.HtmlClassify(),
                         Editor = EditorOption.Radio,
                     }))
@@ -200,10 +199,10 @@ public class OrderMigrations : DataMigration
         return 3;
     }
 
-    public int UpdateFrom3()
+    public async Task<int> UpdateFrom3Async()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(OrderPart), part => part
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(OrderPart), part => part
                 .WithField(nameof(OrderPart.BillingAndShippingAddressesMatch), field => field
                     .OfType(nameof(BooleanField))
                     .WithDisplayName("Shipping Address and Billing Address are the same"))
@@ -215,10 +214,10 @@ public class OrderMigrations : DataMigration
     [SuppressMessage("Minor Code Smell", "S3400:Methods should not return constants", Justification = "Special migration.")]
     public int UpdateFrom4() => 5; // Moved into a separate module.
 
-    public int UpdateFrom5()
+    public async Task<int> UpdateFrom5Async()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(OrderPart), part => part
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(OrderPart), part => part
                 .WithField(nameof(OrderPart.IsCorporation), field => field
                     .OfType(nameof(BooleanField))
                     .WithDisplayName("Buyer is a corporation"))
@@ -249,9 +248,7 @@ public class OrderMigrations : DataMigration
                     // Same as for <see cref="OrderPart.Charges"/>. We need to use different type name handling other
                     // than none, otherwise we won't have the $type property in the serialized JSON.
 #pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
-#pragma warning disable SCS0028 // TypeNameHandling is set to the other value than 'None'. It may lead to deserialization vulnerability.
                     TypeNameHandling = TypeNameHandling.Objects,
-#pragma warning restore SCS0028 // TypeNameHandling is set to the other value than 'None'. It may lead to deserialization vulnerability.
 #pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
                 })["$type"]?.ToString();
 
@@ -276,7 +273,7 @@ public class OrderMigrations : DataMigration
                     }
 
                     payment["$type"] = expectedType;
-                    session.Save(order);
+                    await session.SaveAsync(order);
                 }
             }
         });

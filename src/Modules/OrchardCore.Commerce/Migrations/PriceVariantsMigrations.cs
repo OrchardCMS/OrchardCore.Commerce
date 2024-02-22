@@ -18,7 +18,7 @@ public class PriceVariantsMigrations : DataMigration
     public int Create()
     {
         _contentDefinitionManager
-            .AlterPartDefinition(nameof(PriceVariantsPart), builder => builder
+            .AlterPartDefinitionAsync(nameof(PriceVariantsPart), builder => builder
                 .Attachable()
                 .WithDescription("A product variants prices based on predefined attributes."));
         return 1;
