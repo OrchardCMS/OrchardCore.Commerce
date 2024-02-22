@@ -50,10 +50,10 @@ public class ProductService : IProductService
         return await FillContentItemsAndGetProductPartsAsync(contentItems);
     }
 
-    public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart)
+    public async Task<string> GetOrderFullSkuAsync(ShoppingCartItem item, ProductPart productPart)
     {
-        var attributesRestrictedToPredefinedValues = _predefinedValuesService
-            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
+        var attributesRestrictedToPredefinedValues = (await _predefinedValuesService
+            .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
             .Select(attr => attr.PartName + "." + attr.Name)
             .ToHashSet();
 

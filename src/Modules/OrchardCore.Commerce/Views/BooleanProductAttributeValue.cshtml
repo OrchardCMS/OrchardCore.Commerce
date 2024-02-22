@@ -8,7 +8,7 @@
 
 @{
     var attributeValue = Model.Attribute as BooleanProductAttributeValue;
-    var attributeDescriptions = AttributeService.GetProductAttributeFieldsAsync(Model.Product as ContentItem);
+    var attributeDescriptions = await AttributeService.GetProductAttributeFieldsAsync(Model.Product as ContentItem);
     var booleanAttributeFields = attributeDescriptions.Where(attr => attr.Field is BooleanProductAttributeField);
     var settings = booleanAttributeFields
         .FirstOrDefault(attr => attr.Name == attributeValue.FieldName).Settings as BooleanProductAttributeFieldSettings;

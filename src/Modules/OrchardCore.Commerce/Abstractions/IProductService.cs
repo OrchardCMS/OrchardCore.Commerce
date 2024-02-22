@@ -28,7 +28,7 @@ public interface IProductService
     /// <summary>
     /// Returns the full SKU of a Price Variant Product's variant.
     /// </summary>
-    string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart);
+    Task<string> GetOrderFullSkuAsync(ShoppingCartItem item, ProductPart productPart);
 
     /// <summary>
     /// Returns the exact variant of a product, as well as its identifying key, associated with the provided SKU.

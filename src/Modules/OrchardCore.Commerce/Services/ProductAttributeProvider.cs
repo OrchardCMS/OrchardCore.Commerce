@@ -17,11 +17,11 @@ namespace OrchardCore.Commerce.Services;
 public class ProductAttributeProvider : IProductAttributeProvider
 {
     private static readonly string[] _supportedTypeNames =
-    {
+    [
         nameof(BooleanProductAttributeField),
         nameof(NumericProductAttributeField),
         nameof(TextProductAttributeField),
-    };
+    ];
 
     public IProductAttributeValue CreateFromValue(
         ContentTypePartDefinition partDefinition,

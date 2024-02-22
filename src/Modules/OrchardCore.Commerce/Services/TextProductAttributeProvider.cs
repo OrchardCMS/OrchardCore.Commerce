@@ -52,8 +52,8 @@ public class TextProductAttributeProvider : IProductAttributeProvider
             selectedAttributes.Add(Text, new Dictionary<string, string>());
         }
 
-        var predefinedAttributes = _predefinedValuesProductAttributeService
-            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem);
+        var predefinedAttributes = await _predefinedValuesProductAttributeService
+            .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem);
 
         // Predefined attributes must contain the selected attributes.
         var selectedTextAttributesList = predefinedAttributes
