@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -15,9 +16,9 @@ public class TieredPriceMigrations : DataMigration
     public TieredPriceMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
+        await _contentDefinitionManager
             .AlterPartDefinitionAsync(nameof(TieredPricePart), builder => builder
                 .Attachable()
                 .WithDescription("Adds tiered prices to a product based on quantity."));

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -12,7 +12,7 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
 {
     private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart";
 
-    private readonly Dictionary<string, JObject> _scopeCache = new();
+    private readonly Dictionary<string, JObject> _scopeCache = [];
 
     protected readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 

@@ -76,7 +76,7 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
                     .GetAllRegions()
                     .Select(region => region.TwoLetterISORegionName);
 
-                section.AllowedRegions = allowedRegions?.Any() == true
+                section.AllowedRegions = allowedRegions?.Count != 0
                     ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
                     : allRegionTwoLetterIsoRegionNames;
 

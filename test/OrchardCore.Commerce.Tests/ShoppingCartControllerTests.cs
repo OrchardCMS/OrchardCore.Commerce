@@ -1,5 +1,6 @@
 using Lombiq.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions;
@@ -23,7 +24,7 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ShoppingCartControllerTests
 {
-    private readonly IShoppingCartPersistence _cartStorage = new FakeCartStorage();
+    private readonly FakeCartStorage _cartStorage = new();
 
     private readonly Dictionary<string, string[]> _attrSet1 = new()
     {
@@ -38,19 +39,19 @@ public class ShoppingCartControllerTests
         { "ProductPart3.attr1", new[] { "true" } },
         { "ProductPart3.attr2", new[] { "bar", "baz" } },
     };
-    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new()
-    {
+    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed =
+    [
         new BooleanProductAttributeValue("ProductPart3.attr1", value: true),
-    };
-    private readonly HashSet<IProductAttributeValue> _attrSet2Parsed = new()
-    {
+    ];
+    private readonly HashSet<IProductAttributeValue> _attrSet2Parsed =
+    [
         new BooleanProductAttributeValue("ProductPart3.attr1", value: false),
-    };
-    private readonly HashSet<IProductAttributeValue> _attrSet3Parsed = new()
-    {
+    ];
+    private readonly HashSet<IProductAttributeValue> _attrSet3Parsed =
+    [
         new BooleanProductAttributeValue("ProductPart3.attr1", value: true),
         new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz"),
-    };
+    ];
 
     [Fact]
     public async Task AddExistingItemToCart()
@@ -223,7 +224,7 @@ public class ShoppingCartControllerTests
         return await _cartStorage.RetrieveAsync(cartId);
     }
 
-    private static Task AddItemAsync(
+    private static Task<ActionResult> AddItemAsync(
         ShoppingCartController controller,
         string cartId,
         int quantity,

@@ -31,7 +31,7 @@ public class OrderLineItem
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         ArgumentNullException.ThrowIfNull(productSku);
-        if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
+        ArgumentOutOfRangeException.ThrowIfNegative(quantity);
 
         Quantity = quantity;
         ProductSku = productSku;
@@ -40,7 +40,7 @@ public class OrderLineItem
         LinePrice = linePrice;
         ContentItemVersion = contentItemVersion;
         Attributes = attributes is null
-            ? new HashSet<IProductAttributeValue>()
+            ? []
             : new HashSet<IProductAttributeValue>(attributes);
         SelectedAttributes.AddRange(selectedAttributes);
     }
