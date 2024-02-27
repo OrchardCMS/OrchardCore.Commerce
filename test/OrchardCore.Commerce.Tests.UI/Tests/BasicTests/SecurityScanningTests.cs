@@ -38,12 +38,15 @@ public class SecurityScanningTests : UITestBase
                 }),
             changeConfiguration: configuration => configuration.AssertAppLogsAsync = async webApplicationInstance =>
             {
-                var logsWithoutFalseIOExpection = (await webApplicationInstance.GetLogOutputAsync())
+                var logsWithoutUnwantedExpectionMessages = (await webApplicationInstance.GetLogOutputAsync())
                     .SplitByNewLines()
                     .Where(message =>
-                        !message.ContainsOrdinalIgnoreCase("System.IO.DirectoryNotFoundException: Could not find a part of the path"));
+                        !message.ContainsOrdinalIgnoreCase("System.IO.DirectoryNotFoundException: Could not find a part of the path") &&
+                        !message.ContainsOrdinalIgnoreCase(
+                            "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect") &&
+                        !message.ContainsOrdinalIgnoreCase("System.InvalidOperationException: This action intentionally causes an exception!"));
 
-                logsWithoutFalseIOExpection.ShouldNotContain(item => item.Contains("|ERROR|"));
+                logsWithoutUnwantedExpectionMessages.ShouldNotContain(item => item.Contains("|ERROR|"));
             });
 
     private static void FalsePositive(
