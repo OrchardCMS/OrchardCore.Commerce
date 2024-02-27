@@ -1,4 +1,6 @@
+using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.SecurityScanning;
+using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,6 +23,10 @@ public class SecurityScanningTests : UITestBase
                         40024,
                         "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
 
+                    configuration.DisableActiveScanRule(
+                        40027,
+                        "The query time is controllable using parameter value [some SQL injection]");
+
                     FalsePositive(
                         configuration,
                         10202,
@@ -29,7 +35,16 @@ public class SecurityScanningTests : UITestBase
                         @"https://[^/]+/",
                         @".*/\?.*pagenum=.*",
                         @".*/\?.*products\..*");
-                }));
+                }),
+            changeConfiguration: configuration => configuration.AssertAppLogsAsync = async webApplicationInstance =>
+            {
+                var logsWithoutFalseIOExpection = (await webApplicationInstance.GetLogOutputAsync())
+                    .SplitByNewLines()
+                    .Where(message =>
+                        !message.ContainsOrdinalIgnoreCase("System.IO.DirectoryNotFoundException: Could not find a part of the path"));
+
+                logsWithoutFalseIOExpection.ShouldNotContain(item => item.Contains("|ERROR|"));
+            });
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
