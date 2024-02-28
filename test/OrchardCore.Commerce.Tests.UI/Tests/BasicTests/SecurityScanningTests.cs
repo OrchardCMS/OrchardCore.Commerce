@@ -20,6 +20,10 @@ public class SecurityScanningTests : UITestBase
                 configuration =>
                 {
                     configuration.DisableActiveScanRule(
+                        6,
+                        "Path Traversal (all paths are virtual so it's not a real concern, also creates too many errors)");
+
+                    configuration.DisableActiveScanRule(
                         40024,
                         "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
 
