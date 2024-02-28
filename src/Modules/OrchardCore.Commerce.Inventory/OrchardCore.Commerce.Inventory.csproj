@@ -28,16 +28,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.ContentFields" Version="1.8.2" />
-    <PackageReference Include="OrchardCore.ContentManagement" Version="1.8.2" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.8.2" />
+    <PackageReference Include="OrchardCore.ContentFields" />
+    <PackageReference Include="OrchardCore.ContentManagement" />
+    <PackageReference Include="OrchardCore.Module.Targets" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
     <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="9.1.0" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
   </ItemGroup>
 
 </Project>

@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.8.2"/>
-    <PackageReference Include="Stripe.net" Version="41.27.0" />
+    <PackageReference Include="OrchardCore.Module.Targets" />
+    <PackageReference Include="Stripe.net" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,7 +45,7 @@
     <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
   </ImportGroup>
   <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
+    <PackageReference Include="Lombiq.NodeJs.Extensions" />
   </ItemGroup>
 
 </Project>

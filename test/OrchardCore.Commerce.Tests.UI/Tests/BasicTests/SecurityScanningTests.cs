@@ -20,6 +20,10 @@ public class SecurityScanningTests : UITestBase
                 configuration =>
                 {
                     configuration.DisableActiveScanRule(
+                        6,
+                        "Path Traversal (all paths are virtual so it's not a real concern, also creates too many errors)");
+
+                    configuration.DisableActiveScanRule(
                         40024,
                         "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
 
@@ -38,7 +42,7 @@ public class SecurityScanningTests : UITestBase
                 }),
             changeConfiguration: configuration => configuration.AssertAppLogsAsync = async webApplicationInstance =>
             {
-                var logsWithoutUnwantedExpectionMessages = (await webApplicationInstance.GetLogOutputAsync())
+                var logsWithoutUnwantedExceptionMessages = (await webApplicationInstance.GetLogOutputAsync())
                     .SplitByNewLines()
                     .Where(message =>
                         !message.ContainsOrdinalIgnoreCase("System.IO.DirectoryNotFoundException: Could not find a part of the path") &&
@@ -46,7 +50,7 @@ public class SecurityScanningTests : UITestBase
                             "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect") &&
                         !message.ContainsOrdinalIgnoreCase("System.InvalidOperationException: This action intentionally causes an exception!"));
 
-                logsWithoutUnwantedExpectionMessages.ShouldNotContain(item => item.Contains("|ERROR|"));
+                logsWithoutUnwantedExceptionMessages.ShouldNotContain(item => item.Contains("|ERROR|"));
             });
 
     private static void FalsePositive(
