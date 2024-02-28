@@ -29,12 +29,12 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     }
 
     public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
-        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
+        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part))
             .Location("Detail", "Content:20")
             .Location("Summary", "Meta:5");
 
     public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) =>
-        Initialize<ProductPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part));
+        Initialize<ProductPartViewModel>(GetEditorShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(
         ProductPart part,
@@ -92,7 +92,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         part.CanBeBought.AddRange(newAvailabilities);
     }
 
-    private void BuildViewModel(ProductPartViewModel viewModel, ProductPart part)
+    private async Task BuildViewModelAsync(ProductPartViewModel viewModel, ProductPart part)
     {
         viewModel.ContentItem = part.ContentItem;
         viewModel.Sku = part.Sku;
@@ -120,6 +120,6 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             viewModel.CanBeBought[part.ContentItem.ContentItemId] = true;
         }
 
-        viewModel.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
+        viewModel.Attributes = await _productAttributeService.GetProductAttributeFieldsAsync(part.ContentItem);
     }
 }

@@ -15,7 +15,7 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
 {
     // The built-in fields are rendered from the Checkout shape.
     private static readonly string[] _excludedShapes =
-    {
+    [
         "Order_Checkout__OrderPart__OrderId",
         "Order_Checkout__OrderPart__Status",
         "Order_Checkout__OrderPart__Email",
@@ -23,7 +23,7 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
         "Order_Checkout__OrderPart__BillingAddress",
         "Order_Checkout__OrderPart__ShippingAddress",
         "Order_Checkout__OrderPart__BillingAndShippingAddressesMatch",
-    };
+    ];
 
     private readonly IContentManager _contentManager;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;

@@ -34,11 +34,11 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         _templatesManager = templatesManager;
     }
 
-    public IEnumerable<string> GetFieldShapeTypes(
+    public async Task<IEnumerable<string>> GetFieldShapeTypesAsync(
         ContentItem contentItem,
         string displayType = CommonContentDisplayTypes.Detail)
     {
-        var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+        var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
         return typeDefinition
             .Parts
             .SelectMany(part =>
@@ -46,7 +46,7 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
                 {
                     PartName = part.Name,
                     FieldName = field.Name,
-                    PartOrder = GetNumericOrder(part),
+                    PartOrder = GetNumericOrderAsync(part),
                     FieldOrder = GetNumericOrder(field),
                 }))
             .OrderBy(item => item.PartOrder)
@@ -56,9 +56,12 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
 
     public async Task<IEnumerable<IShape>> DisplayFieldsAsync(
         ContentItem contentItem,
-        string displayType = CommonContentDisplayTypes.Detail) =>
-        await GetFieldShapeTypes(contentItem, displayType)
-            .AwaitEachAsync(async shapeType => await _shapeFactory.CreateAsync(shapeType));
+        string displayType = CommonContentDisplayTypes.Detail)
+    {
+        var fieldShapeTypes = await GetFieldShapeTypesAsync(contentItem, displayType);
+
+        return await fieldShapeTypes.AwaitEachAsync(async shapeType => await _shapeFactory.CreateAsync(shapeType));
+    }
 
     public async Task<IEnumerable<(string ShapeType, Uri Url, bool IsNew)>> GetFieldTemplateEditorUrlsAsync(
         ContentItem contentItem,
@@ -72,7 +75,7 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         var editAction = context.ActionTask<TemplateController>(controller => controller.Edit(null, false, returnUrl));
         var createAction = context.ActionTask<TemplateController>(controller => controller.Create(false, returnUrl));
 
-        return GetFieldShapeTypes(contentItem, displayType)
+        return (await GetFieldShapeTypesAsync(contentItem, displayType))
             .Select(name =>
             {
                 var exists = existingTemplates.Contains(name);
@@ -81,10 +84,9 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
             });
     }
 
-    private int GetNumericOrder(ContentTypePartDefinition part)
+    private async Task<int> GetNumericOrderAsync(ContentTypePartDefinition part)
     {
-        var defaultPosition = _contentDefinitionManager
-            .GetPartDefinition(part.PartDefinition.Name)?
+        var defaultPosition = (await _contentDefinitionManager.GetPartDefinitionAsync(part.PartDefinition.Name))?
             .DefaultPosition() ?? "5";
         return int.Parse(
             part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition,

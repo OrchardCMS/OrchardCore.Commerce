@@ -14,10 +14,10 @@ public class AnkhMorporkCurrencyProvider : ICurrencyProvider
         = new Currency("Sixpence", "Sixpence", "6p", "SXP");
 
     private readonly ICurrency[] _currencies =
-    {
+    [
         AnkhMorporkDollar,
         SixPence,
-    };
+    ];
 
     public IEnumerable<ICurrency> Currencies => _currencies;
 

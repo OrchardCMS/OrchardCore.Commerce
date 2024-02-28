@@ -32,9 +32,9 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         T = stringLocalizer;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context, PricePart part)
+    public override async Task UpdatedAsync(UpdateContentContext context, PricePart part)
     {
-        if (part.ContentItem.As<TaxPart>() is not { } taxPart) return Task.CompletedTask;
+        if (part.ContentItem.As<TaxPart>() is not { } taxPart) return;
 
         var taxRate = taxPart.TaxRate?.Value ?? 0;
 
@@ -43,25 +43,25 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
 
         if (isGrossPricePresent && isTaxRatePresent)
         {
-            UpdatePricePart(part.ContentItem, taxPart.GrossPrice.Amount, taxRate);
+            await UpdatePricePartAsync(part.ContentItem, taxPart.GrossPrice.Amount, taxRate);
         }
         else if (isGrossPricePresent ^ isTaxRatePresent)
         {
-            InvalidateUnevenState();
+            await InvalidateUnevenStateAsync();
         }
 
-        return Task.CompletedTask;
+        return;
     }
 
-    private void UpdatePricePart(ContentItem contentItem, Amount grossPrice, decimal taxRate)
+    private Task UpdatePricePartAsync(ContentItem contentItem, Amount grossPrice, decimal taxRate)
     {
         contentItem.Alter<PricePart>(instance => instance.PriceField.Amount = grossPrice.WithoutTax(taxRate));
-        _session.Save(contentItem);
+        return _session.SaveAsync(contentItem);
     }
 
-    private void InvalidateUnevenState()
+    private async Task InvalidateUnevenStateAsync()
     {
-        var definition = _contentDefinitionManager.GetPartDefinition(nameof(TaxPart));
+        var definition = await _contentDefinitionManager.GetPartDefinitionAsync(nameof(TaxPart));
         var grossPriceName = definition.Fields.Single(field => field.Name == nameof(TaxPart.GrossPrice)).DisplayName();
         var taxRateName = definition.Fields.Single(field => field.Name == nameof(TaxPart.TaxRate)).DisplayName();
 

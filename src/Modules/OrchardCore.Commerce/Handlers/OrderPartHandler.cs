@@ -19,9 +19,9 @@ public class OrderPartHandler : ContentPartHandler<OrderPart>
         T = stringLocalizer;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context, OrderPart part)
+    public override async Task UpdatedAsync(UpdateContentContext context, OrderPart part)
     {
-        if (part.ContentItem.As<OrderPart>() is not { } orderPart) return Task.CompletedTask;
+        if (part.ContentItem.As<OrderPart>() is not { } orderPart) return;
 
         var guid = orderPart.OrderId.Text ?? Guid.NewGuid().ToString();
         orderPart.OrderId.Text = guid;
@@ -29,8 +29,8 @@ public class OrderPartHandler : ContentPartHandler<OrderPart>
         orderPart.ContentItem.DisplayText = T["Order {0}", guid];
 
         orderPart.Apply();
-        _session.Save(orderPart.ContentItem);
+        await _session.SaveAsync(orderPart.ContentItem);
 
-        return Task.CompletedTask;
+        return;
     }
 }

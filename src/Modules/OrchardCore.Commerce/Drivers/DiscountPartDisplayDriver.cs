@@ -74,7 +74,7 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
                 var data = model.AdditionalData;
 
                 var discounts = data.GetDiscounts().ToList();
-                if (!discounts.Any()) return null;
+                if (discounts.Count == 0) return null;
 
                 var shapes = discounts
                     .Select(discount => Initialize<DiscountPartViewModel>(

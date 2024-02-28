@@ -28,9 +28,9 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         T = stringLocalizer;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context, DiscountPart part)
+    public override async Task UpdatedAsync(UpdateContentContext context, DiscountPart part)
     {
-        if (part.ContentItem.As<DiscountPart>() is not { } discountPart) return Task.CompletedTask;
+        if (part.ContentItem.As<DiscountPart>() is not { } discountPart) return;
 
         var discountPercentage = discountPart.DiscountPercentage?.Value ?? 0;
         var discountAmount = discountPart.DiscountAmount.Amount;
@@ -39,7 +39,7 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
 
         if (isDiscountPercentagePresent && discountAmount.IsValidAndNonZero)
         {
-            InvalidateEvenState();
+            await InvalidateEvenStateAsync();
         }
 
         if ((part.ContentItem.As<PricePart>()?.Price is { } pricePartPrice &&
@@ -50,15 +50,15 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
             taxPartGrossPriceAmount.Currency.Equals(discountAmount.Currency) &&
             taxPartGrossPriceAmount < discountAmount))
         {
-            InvalidateNegativePriceState();
+            await InvalidateNegativePriceStateAsync();
         }
 
-        return Task.CompletedTask;
+        return;
     }
 
-    private void InvalidateEvenState()
+    private async Task InvalidateEvenStateAsync()
     {
-        var definition = _contentDefinitionManager.GetPartDefinition(nameof(DiscountPart));
+        var definition = await _contentDefinitionManager.GetPartDefinitionAsync(nameof(DiscountPart));
         var percentageName = definition.Fields
             .Single(field => field.Name == nameof(DiscountPart.DiscountPercentage)).DisplayName();
 
@@ -70,9 +70,9 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
             T["You must either provide only {0}, or {1}, or neither of them.", percentageName, amountName]);
     }
 
-    private void InvalidateNegativePriceState()
+    private async Task InvalidateNegativePriceStateAsync()
     {
-        var definition = _contentDefinitionManager.GetPartDefinition(nameof(DiscountPart));
+        var definition = await _contentDefinitionManager.GetPartDefinitionAsync(nameof(DiscountPart));
 
         var amountName = definition.Fields
             .Single(field => field.Name == nameof(DiscountPart.DiscountAmount)).DisplayName();

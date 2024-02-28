@@ -38,7 +38,7 @@ internal static class KnownCurrencyTable
 
             // Prioritize when the language and country ISO codes match, e.g. hu-HU, no-NO, etc. This doesn't help with
             // cultures like sv-SE, ja-SP or fa-IR.
-            if (parts.Length == 2 && parts[0].ToUpperInvariant() == parts[1]) return 0;
+            if (parts.Length == 2 && parts[0].Equals(parts[1], StringComparison.OrdinalIgnoreCase)) return 0;
 
             // English is usually a safe choice on the Internet.
             if (cultureInfo.TwoLetterISOLanguageName == "en") return 1;

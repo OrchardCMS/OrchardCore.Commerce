@@ -84,8 +84,9 @@ public class PaymentService : IPaymentService
         await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
             checkoutEvents.OrderCreatingAsync(orderPart, shoppingCartId));
 
-        var email = _hca.HttpContext?.User is { Identity.IsAuthenticated: true } user
-            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(user))
+        var email = _hca.HttpContext?.User is { Identity.IsAuthenticated: true } user &&
+            await _userManager.GetUserAsync(user) is { } userPrincipal
+            ? await _userManager.GetEmailAsync(userPrincipal)
             : string.Empty;
 
         orderPart.Email.Text = email;

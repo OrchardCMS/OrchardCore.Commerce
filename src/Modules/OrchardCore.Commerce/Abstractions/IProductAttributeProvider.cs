@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
 
@@ -29,7 +30,7 @@ public interface IProductAttributeProvider
     /// Procures a dictionary of <paramref name="selectedAttributes"/> using the given <paramref name="productPart"/>
     /// and <paramref name="attributesList"/>.
     /// </summary>
-    void HandleSelectedAttributes(
+    Task HandleSelectedAttributesAsync(
         IDictionary<string, IDictionary<string, string>> selectedAttributes,
         ProductPart productPart,
         IList<IProductAttributeValue> attributesList);
@@ -66,5 +67,5 @@ public static class ProductAttributeProviderExtensions
         ContentTypePartDefinition partDefinition,
         ContentPartFieldDefinition attributeFieldDefinition,
         string value) =>
-        provider.Parse(partDefinition, attributeFieldDefinition, new[] { value });
+        provider.Parse(partDefinition, attributeFieldDefinition, [value]);
 }

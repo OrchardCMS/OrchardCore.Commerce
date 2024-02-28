@@ -22,8 +22,8 @@ using OrchardCore.Modules.Manifest;
     Name = "Orchard Core Commerce - Custom Tax Rates",
     Category = "Commerce",
     Description = "Enables administrators to locally maintain a set of tax rates.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         FeatureIds.Tax,
-    }
+    ]
 )]

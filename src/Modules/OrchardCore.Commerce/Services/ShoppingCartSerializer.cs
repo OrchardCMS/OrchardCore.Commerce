@@ -38,7 +38,7 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     public async Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart)
     {
         var products = await GetProductsAsync(cart.Lines.Select(line => line.ProductSku));
-        var types = ExtractTypeDefinitions(products.Values);
+        var types = await ExtractTypeDefinitionsAsync(products.Values);
 
         return new ShoppingCart(cart.Lines
             .Where(updateModel => updateModel.Quantity > 0)
@@ -75,15 +75,13 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
         // Post-process attributes for concrete types according to field definitions (deserialization being essentially
         // non-polymorphic and without access to our type definition contextual information).
         var products = await GetProductsAsync(cart.Items.Select(item => item.ProductSku));
-        var newCartItems = cart
-            .Items
+        var newCartItems = await Task.WhenAll(cart.Items
             .Where(line => line.Attributes != null)
-            .Select(line => new ShoppingCartItem(
+            .Select(async line => new ShoppingCartItem(
                 line.Quantity,
                 line.ProductSku,
-                PostProcessAttributes(line.Attributes, products[line.ProductSku]),
-                line.Prices))
-            .ToList();
+                await PostProcessAttributesAsync(line.Attributes, products[line.ProductSku]),
+                line.Prices)));
 
         return cart.With(newCartItems);
     }
@@ -106,13 +104,15 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     {
         if (await _productService.GetProductAsync(line?.ProductSku) is not { } product) return null;
 
-        var type = GetTypeDefinition(product);
+        var type = await GetTypeDefinitionAsync(product);
         return new ShoppingCartItem(line!.Quantity, line.ProductSku, ParseAttributes(line, type));
     }
 
-    public ISet<IProductAttributeValue> PostProcessAttributes(IEnumerable<IProductAttributeValue> attributes, ProductPart productPart)
+    public async Task<ISet<IProductAttributeValue>> PostProcessAttributesAsync(
+        IEnumerable<IProductAttributeValue> attributes,
+        ProductPart productPart)
     {
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        var type = await _contentDefinitionManager.GetTypeDefinitionAsync(productPart.ContentItem.ContentType);
 
         return attributes
             .CastWhere<BaseProductAttributeValue<object>>()
@@ -129,12 +129,18 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     private async Task<Dictionary<string, ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
         (await _productService.GetProductsAsync(skus)).ToDictionary(productPart => productPart.Sku);
 
-    private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products) =>
-        products
-            .Select(productPart => _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType))
-            .GroupBy(typeDefinition => typeDefinition.Name)
-            .ToDictionary(group => group.Key, group => group.First());
+    private async Task<Dictionary<string, ContentTypeDefinition>> ExtractTypeDefinitionsAsync(IEnumerable<ProductPart> products)
+    {
+        var typeDefinitions = await Task.WhenAll(products.Select(async productPart =>
+        {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(productPart.ContentItem.ContentType);
+            return new { Key = typeDefinition.Name, Value = typeDefinition };
+        }));
 
-    private ContentTypeDefinition GetTypeDefinition(ProductPart product) =>
-        _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
+        return typeDefinitions.GroupBy(td => td.Key)
+                              .ToDictionary(group => group.Key, group => group.First().Value);
+    }
+
+    private Task<ContentTypeDefinition> GetTypeDefinitionAsync(ProductPart product) =>
+        _contentDefinitionManager.GetTypeDefinitionAsync(product.ContentItem.ContentType);
 }

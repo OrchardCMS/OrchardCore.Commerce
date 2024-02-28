@@ -35,7 +35,7 @@ public class ProductInventoryService : IProductInventoryService
         return items;
     }
 
-    public Task<bool> VerifyLinesAsync(IList<ShoppingCartLineViewModel> lines)
+    public async Task<bool> VerifyLinesAsync(IList<ShoppingCartLineViewModel> lines)
     {
         foreach (var line in lines)
         {
@@ -47,7 +47,7 @@ public class ProductInventoryService : IProductInventoryService
             }
 
             var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes?.Values);
-            var fullSku = _productService.GetOrderFullSku(item, productPart);
+            var fullSku = await _productService.GetOrderFullSkuAsync(item, productPart);
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
             var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
@@ -57,10 +57,10 @@ public class ProductInventoryService : IProductInventoryService
 
             if (cannotCheckout)
             {
-                return Task.FromResult(true);
+                return true;
             }
         }
 
-        return Task.FromResult(false);
+        return false;
     }
 }

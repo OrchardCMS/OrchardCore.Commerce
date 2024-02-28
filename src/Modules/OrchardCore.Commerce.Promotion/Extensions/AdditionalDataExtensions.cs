@@ -24,7 +24,7 @@ public static class AdditionalDataExtensions
         additionalData
             .GetMaybe(Discounts)?
             .ToObject<Dictionary<string, IEnumerable<DiscountInformation>>>()
-        ?? new Dictionary<string, IEnumerable<DiscountInformation>>();
+        ?? [];
 
     public static void SetDiscountsByProduct(
         this IDictionary<string, JToken> additionalData,
