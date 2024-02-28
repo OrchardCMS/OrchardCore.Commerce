@@ -9,9 +9,9 @@
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.1.1-alpha.6.tdeal-16" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="1.3.2" />
     <PackageVersion Include="Lombiq.Tests" Version="2.2.5" />
-    <PackageVersion Include="Lombiq.Tests.UI" Version="8.2.1-alpha.21.osoe-817" />
-    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="8.2.1-alpha.21.osoe-817" />
-    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="8.2.1-alpha.21.osoe-817" />
+    <PackageVersion Include="Lombiq.Tests.UI" Version="9.0.0-alpha.1.occ-218" />
+    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="9.0.0-alpha.1.occ-218" />
+    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="9.0.0-alpha.1.occ-218" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="1.7.2" />
