@@ -13,10 +13,10 @@
   </ItemGroup> -->
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" Version="8.2.1-alpha.14.osoe-767" />
-    <PackageReference Include="Lombiq.Tests.UI.Shortcuts" Version="8.2.1-alpha.14.osoe-767" />
-    <PackageReference Include="OrchardCore.Application.Cms.Targets" Version="1.8.2" />
-    <PackageReference Include="OrchardCore.Logging.NLog" Version="1.8.2" />
+    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
+    <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" />
+    <PackageReference Include="OrchardCore.Logging.NLog" />
   </ItemGroup>
 
   <ItemGroup>
