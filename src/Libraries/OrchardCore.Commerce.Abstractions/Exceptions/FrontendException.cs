@@ -1,14 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Localization;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OrchardCore.Commerce.Abstractions.Exceptions;
 
-[Serializable]
-[SuppressMessage(
-    "Maintainability",
-    "S3925: ISerializable should be implemented correctly",
-    Justification = "Exception(SerializationInfo info, StreamingContext context) is obsolete and should not be called.")]
 public class FrontendException : Exception
 {
     public LocalizedHtmlString HtmlMessage { get; }
