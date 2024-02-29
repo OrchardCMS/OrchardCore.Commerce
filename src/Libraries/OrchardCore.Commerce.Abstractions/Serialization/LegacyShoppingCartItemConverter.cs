@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -47,7 +47,7 @@ internal sealed class LegacyShoppingCartItemConverter : JsonConverter<ShoppingCa
     {
         var quantity = 1;
         string sku = null;
-        ISet<IProductAttributeValue> attributes = new HashSet<IProductAttributeValue>();
+        HashSet<IProductAttributeValue> attributes = [];
         IList<PrioritizedPrice> prices = null;
 
         var properties = (JToken.ReadFrom(reader) as JObject)?.Properties() ?? Enumerable.Empty<JProperty>();

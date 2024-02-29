@@ -15,10 +15,10 @@ using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
     Name = "Orchard Core Commerce - Content Fields",
     Category = "Commerce",
     Description = "Commerce-specific content fields for Orchard Core.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.ContentFields",
-    }
+    ]
 )]
 
 [assembly: Feature(
@@ -28,8 +28,8 @@ using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
     Description = "Enabling this feature provides an address updater and shape override for the address editor that " +
                   "implements common name parts in English-speaking and many other western cultures. This will break " +
                   "up the Name field into Title, Given Name, Middle Name and Family Name fields.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         ContentFields,
-    }
+    ]
 )]

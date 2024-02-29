@@ -1,5 +1,4 @@
 using OrchardCore.Commerce.AddressDataType.Abstractions;
-using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -8,7 +7,7 @@ namespace OrchardCore.Commerce.AddressDataType;
 /// <summary>
 /// A flexible address formatter that can be built with a couple format strings.
 /// </summary>
-public class AddressFormatter :
+public partial class AddressFormatter :
     IAddressFormatter
 {
     private readonly string _addressFormat;
@@ -68,11 +67,12 @@ public class AddressFormatter :
             address.StreetAddress2,
             string.Format(CultureInfo.InvariantCulture, _cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
-        var withoutEmptyLines = Regex
-            .Replace(rawFormatted, @"(?<first>\r?\n)[\r\n]+", "${first}", RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1))
-            .Trim('\r', '\n');
+        var withoutEmptyLines = GeneratedRegex().Replace(rawFormatted, "${first}").Trim('\r', '\n');
         return _uppercase
             ? withoutEmptyLines.ToUpperInvariant()
             : withoutEmptyLines;
     }
+
+    [GeneratedRegex(@"(?<first>\r?\n)[\r\n]+", RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 1000)]
+    private static partial Regex GeneratedRegex();
 }

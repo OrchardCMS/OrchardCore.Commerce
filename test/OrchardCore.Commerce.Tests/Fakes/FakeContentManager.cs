@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using System;
@@ -45,7 +44,7 @@ public class FakeContentManager : IContentManager
         if (typeof(TAspect) != typeof(ContentItemMetadata)) throw new NotSupportedException();
         var metadata = new ContentItemMetadata
         {
-            DisplayRouteValues = new RouteValueDictionary(),
+            DisplayRouteValues = [],
         };
         return Task.FromResult((TAspect)(object)metadata);
     }

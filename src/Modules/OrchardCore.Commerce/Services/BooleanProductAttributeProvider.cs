@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -34,7 +35,7 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
                 partDefinition.Name + "." + attributeFieldDefinition.Name,
                 value?.Contains("true", StringComparer.InvariantCultureIgnoreCase) == true);
 
-    public void HandleSelectedAttributes(
+    public async Task HandleSelectedAttributesAsync(
         IDictionary<string, IDictionary<string, string>> selectedAttributes,
         ProductPart productPart,
         IList<IProductAttributeValue> attributesList)
@@ -50,13 +51,13 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
             selectedAttributes.Add(Boolean, new Dictionary<string, string>());
         }
 
-        var booleanAttributesList = _productAttributeService.GetProductAttributeFields(productPart.ContentItem)
+        var booleanAttributesList = (await _productAttributeService.GetProductAttributeFieldsAsync(productPart.ContentItem))
             .Where(attr => attr.Field is BooleanProductAttributeField)
             .Select(attr => attr.Name)
             .ToList();
 
         // Construct actual attributes from strings.
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        var type = await _contentDefinitionManager.GetTypeDefinitionAsync(productPart.ContentItem.ContentType);
         foreach (var attribute in booleanAttributesList)
         {
             var (attributePartDefinition, attributeFieldDefinition) = _productAttributeService.GetFieldDefinition(
@@ -65,7 +66,7 @@ public class BooleanProductAttributeProvider : IProductAttributeProvider
             // The value is true if the selected boolean attributes list contains the attribute, otherwise false.
             var value = selectedBooleanAttributes.Any(keyValuePair => keyValuePair.Key == attribute);
 
-            if (Parse(attributePartDefinition, attributeFieldDefinition, new[] { value.ToString() }) is { } matchingAttribute)
+            if (Parse(attributePartDefinition, attributeFieldDefinition, [value.ToString()]) is { } matchingAttribute)
             {
                 attributesList.Add(matchingAttribute);
             }

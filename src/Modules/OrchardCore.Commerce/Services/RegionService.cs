@@ -2,7 +2,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System.Collections.Generic;
 using System.Linq;

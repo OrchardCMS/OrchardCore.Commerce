@@ -62,6 +62,8 @@ public class TextProductAttributeFieldSettingsDriver
                 viewModel.MultipleValues = settings.MultipleValues;
             }).PlaceInContent();
 
+    private static readonly char[] Separators = ['\r', '\n'];
+
     public override async Task<IDisplayResult> UpdateAsync(
         ContentPartFieldDefinition model,
         UpdatePartFieldEditorContext context)
@@ -78,7 +80,7 @@ public class TextProductAttributeFieldSettingsDriver
                 RestrictToPredefinedValues = viewModel.RestrictToPredefinedValues,
                 MultipleValues = viewModel.MultipleValues,
                 PredefinedValues = (viewModel.PredefinedValues ?? string.Empty)
-                    .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Split(Separators, StringSplitOptions.RemoveEmptyEntries)
                     .Select(line => line.Trim())
                     .Where(line => !string.IsNullOrWhiteSpace(line))
                     .ToList(),

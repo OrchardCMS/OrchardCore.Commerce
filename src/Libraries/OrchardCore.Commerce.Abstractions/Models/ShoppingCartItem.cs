@@ -43,12 +43,12 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
         IEnumerable<PrioritizedPrice> prices = null)
     {
         ArgumentNullException.ThrowIfNull(productSku);
-        if (quantity < 0) throw new ArgumentOutOfRangeException(nameof(quantity));
+        ArgumentOutOfRangeException.ThrowIfNegative(quantity);
 
         Quantity = quantity;
         ProductSku = productSku;
         Attributes = attributes is null
-            ? new HashSet<IProductAttributeValue>()
+            ? []
             : new HashSet<IProductAttributeValue>(attributes);
         Prices = prices is null
             ? new List<PrioritizedPrice>().AsReadOnly()

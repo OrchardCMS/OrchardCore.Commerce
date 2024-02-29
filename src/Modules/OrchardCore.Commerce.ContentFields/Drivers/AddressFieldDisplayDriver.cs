@@ -116,7 +116,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
             updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
         }
 
-        return missingFields.Any() ? null : viewModel;
+        return missingFields.Count != 0 ? null : viewModel;
     }
 
     private static void PopulateViewModel(

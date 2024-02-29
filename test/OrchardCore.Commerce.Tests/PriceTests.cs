@@ -87,7 +87,7 @@ public class PriceTests
             .Items
             .Select(item => item.Prices.Single().Price.Value)
             .ToArray()
-            .ShouldBe(new decimal[] { 1, 3, 1 });
+            .ShouldBe([1, 3, 1]);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class PriceTests
         public string GetVariantKey(string sku) => throw new NotSupportedException();
 
         // IProductService's method needs to be created, but implementation is unnecessary as the tests do not use it.
-        public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart) => throw new NotSupportedException();
+        public Task<string> GetOrderFullSkuAsync(ShoppingCartItem item, ProductPart productPart) => throw new NotSupportedException();
     }
 
     private sealed class DummyPriceProvider : IPriceProvider

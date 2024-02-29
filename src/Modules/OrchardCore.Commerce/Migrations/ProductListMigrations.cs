@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -12,10 +13,10 @@ public class ProductListMigrations : DataMigration
     public ProductListMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition(nameof(ProductListPart), builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(ProductListPart), builder => builder
                 .Attachable()
                 .WithDescription("Displays a list of products with optional filtering and sorting controlled by widgets."));
 

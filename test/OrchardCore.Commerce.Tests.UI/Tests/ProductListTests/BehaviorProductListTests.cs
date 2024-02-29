@@ -70,7 +70,7 @@ public class BehaviorProductListTests : UITestBase
             },
             browser);
 
-    private static IList<string> GetProductTitles(UITestContext context) =>
+    private static List<string> GetProductTitles(UITestContext context) =>
         context
             .GetAll(By.CssSelector(".content header h2 a"))
             .Select(element => element.Text)

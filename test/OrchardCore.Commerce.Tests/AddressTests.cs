@@ -1,5 +1,4 @@
 using OrchardCore.Commerce.AddressDataType;
-using OrchardCore.Commerce.AddressDataType.Abstractions;
 using Shouldly;
 using Xunit;
 
@@ -10,7 +9,7 @@ public class AddressTests
     [Fact]
     public void AddressFormatterShouldOmitBlankEntries()
     {
-        IAddressFormatter formatter = new DefaultAddressFormatter();
+        var formatter = new DefaultAddressFormatter();
 
         void VerifyAddress(string expectation, Address address) =>
             formatter

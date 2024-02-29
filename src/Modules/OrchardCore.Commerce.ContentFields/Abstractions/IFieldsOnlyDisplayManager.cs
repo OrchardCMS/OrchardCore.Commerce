@@ -15,7 +15,7 @@ public interface IFieldsOnlyDisplayManager
     /// <summary>
     /// Returns a collection of display type names for each field in the given <paramref name="displayType"/>.
     /// </summary>
-    IEnumerable<string> GetFieldShapeTypes(
+    Task<IEnumerable<string>> GetFieldShapeTypesAsync(
         ContentItem contentItem,
         string displayType = CommonContentDisplayTypes.Detail);
 

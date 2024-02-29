@@ -138,21 +138,21 @@ public class OrderLineItemService : IOrderLineItemService
         {
             var productSku = product.As<ProductPart>().Sku;
 
-            var booleanAttributes = _productAttributeService.GetProductAttributeFields(product)
+            var booleanAttributes = (await _productAttributeService.GetProductAttributeFieldsAsync(product))
                 .Where(attribute => attribute.Field is BooleanProductAttributeField)
                 .Select(attribute => attribute.Name)
                 .ToList();
 
-            if (booleanAttributes.Any())
+            if (booleanAttributes.Count != 0)
             {
                 availableBooleanAttributes.Add(productSku, booleanAttributes);
             }
 
-            var numericAttributes = _productAttributeService.GetProductAttributeFields(product)
+            var numericAttributes = (await _productAttributeService.GetProductAttributeFieldsAsync(product))
                 .Where(attribute => attribute.Field is NumericProductAttributeField)
                 .ToList();
 
-            if (numericAttributes.Any())
+            if (numericAttributes.Count != 0)
             {
                 availableNumericAttributes.Add(productSku, numericAttributes.Select(attribute => attribute.Name).ToList());
                 numericAttributeSettings.Add(
@@ -162,7 +162,7 @@ public class OrderLineItemService : IOrderLineItemService
                         attribute => attribute.Settings as NumericProductAttributeFieldSettings));
             }
 
-            var textAttributes = _predefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
+            var textAttributes = await _predefinedAttributeService.GetProductAttributesRestrictedToPredefinedValuesAsync(product);
             foreach (var attribute in textAttributes)
             {
                 var settings = (TextProductAttributeFieldSettings)attribute.Settings;
@@ -206,7 +206,7 @@ public class OrderLineItemService : IOrderLineItemService
         if (string.IsNullOrEmpty(lineItem.FullSku))
         {
             var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
-            fullSku = _productService.GetOrderFullSku(item, productPart);
+            fullSku = await _productService.GetOrderFullSkuAsync(item, productPart);
         }
 
         var availableAttributesAndSettings = await GetAvailableAttributesAndSettingsAsync();

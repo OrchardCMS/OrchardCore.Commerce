@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
 
@@ -14,7 +15,7 @@ public interface IProductAttributeService
     /// <summary>
     /// Returns <see cref="ProductAttributeField"/>s and their settings of a given <paramref name="product"/>.
     /// </summary>
-    IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product);
+    Task<IEnumerable<ProductAttributeDescription>> GetProductAttributeFieldsAsync(ContentItem product);
 
     /// <summary>
     /// Returns the part and field definitions of the given <paramref name="type"/>'s specified <paramref name="attributeName"/>.

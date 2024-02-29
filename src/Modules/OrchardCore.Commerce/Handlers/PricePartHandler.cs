@@ -19,7 +19,7 @@ public class PricePartHandler : ContentPartHandler<PricePart>
         _session = session;
     }
 
-    public override Task LoadingAsync(LoadContentContext context, PricePart part)
+    public override async Task LoadingAsync(LoadContentContext context, PricePart part)
     {
         var amount = _moneyService.EnsureCurrency(part.Price);
         part.Price = amount;
@@ -30,9 +30,9 @@ public class PricePartHandler : ContentPartHandler<PricePart>
             part.Content.PriceField = JObject.FromObject(new PriceField { Amount = amount });
             ((JObject)part.Content).Remove(nameof(PricePart.Price));
 
-            _session.Save(part.ContentItem);
+            await _session.SaveAsync(part.ContentItem);
         }
 
-        return base.LoadingAsync(context, part);
+        await base.LoadingAsync(context, part);
     }
 }
