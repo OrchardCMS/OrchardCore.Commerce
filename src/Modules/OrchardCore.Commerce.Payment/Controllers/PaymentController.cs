@@ -60,7 +60,7 @@ public class PaymentController : Controller
         _paymentService = paymentService;
     }
 
-    [Route("checkout")]
+    [HttpGet("checkout")]
     public async Task<IActionResult> Index(string? shoppingCartId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -157,7 +157,7 @@ public class PaymentController : Controller
         }
     }
 
-    [Route("checkout/paymentrequest/{orderId}")]
+    [HttpGet("checkout/paymentrequest/{orderId}")]
     public async Task<IActionResult> PaymentRequest(string orderId)
     {
         if (await _contentManager.GetAsync(orderId) is not { } order ||
@@ -205,7 +205,7 @@ public class PaymentController : Controller
         return View(viewModel);
     }
 
-    [Route("success/{orderId}")]
+    [HttpGet("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
     {
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
