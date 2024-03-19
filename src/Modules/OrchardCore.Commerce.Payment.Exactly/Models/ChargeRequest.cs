@@ -8,14 +8,13 @@ using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Exactly.Controllers;
 using OrchardCore.Users.Models;
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Models;
 
-public class ChargeRequest : IExactlyRequestAttributes,  IExactlyAmount
+public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
 {
     [JsonIgnore]
     public string Type => "charge";

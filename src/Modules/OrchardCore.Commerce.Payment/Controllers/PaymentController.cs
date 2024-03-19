@@ -240,7 +240,7 @@ public class PaymentController : Controller
         if (string.IsNullOrWhiteSpace(paymentProviderName)) return NotFound();
 
         var order = string.IsNullOrEmpty(orderId)
-            ? await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: false)
+            ? await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId)
             : await _contentManager.GetAsync(orderId);
         if (order is null) return NotFound();
 

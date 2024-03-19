@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     </PropertyGroup>
 
@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="OrchardCore.Module.Targets" Version="1.7.0"/>
+        <PackageReference Include="OrchardCore.Module.Targets" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,7 +40,7 @@
         <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.Refit/Lombiq.HelpfulLibraries.Refit.csproj" />
     </ItemGroup>
     <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-        <PackageReference Include="Lombiq.HelpfulLibraries.Refit" Version="8.1.1-alpha.5.tdeal-16" />
+        <PackageReference Include="Lombiq.HelpfulLibraries.Refit" />
     </ItemGroup>
 
 </Project>

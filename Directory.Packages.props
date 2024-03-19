@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="9.1.0" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="9.1.0" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
     <PackageVersion Include="Lombiq.Tests" Version="3.0.0" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="9.0.1-alpha.2.occ-218" />

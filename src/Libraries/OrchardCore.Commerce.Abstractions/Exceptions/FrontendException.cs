@@ -29,12 +29,13 @@ public class FrontendException : Exception
     }
 
     /// <summary>
-    /// If the provided collection of <see cref="errors"/> is not empty, throws an exception with the included texts.
+    /// If the provided collection of <paramref name="errors"/> is not empty, it throws an exception with the included
+    /// texts. If there are multiple, they are merged with a HTML line break.
     /// </summary>
     /// <param name="errors">The possible collection of error texts.</param>
     public static void ThrowIfAny([AllowNull] ICollection<string> errors)
     {
-        if (errors?.Any() != true) return;
+        if (errors == null || errors.Count == 0) return;
 
         if (errors.Count == 1) throw new FrontendException(errors.Single());
 
@@ -45,10 +46,11 @@ public class FrontendException : Exception
     /// <inheritdoc cref="ThrowIfAny(System.Collections.Generic.ICollection{string})"/>
     public static void ThrowIfAny([AllowNull] ICollection<LocalizedHtmlString> errors)
     {
-        if (errors?.Any() != true) return;
+        if (errors == null || errors.Count == 0) return;
 
         if (errors.Count == 1) throw new FrontendException(errors.Single());
 
-        throw new FrontendException(new HtmlString("<br>").Join(errors.ToArray()));
+        var errorsArray = errors.ToArray();
+        throw new FrontendException(new HtmlString("<br>").Join(errorsArray));
     }
 }
