@@ -76,14 +76,14 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPricesAsync(cart.Items);
 
-        IList<ShoppingCartLineViewModel> lines = items
-            .Select(item =>
+        var lines = (await Task.WhenAll(items
+            .Select(async item =>
             {
                 var product = products[item.ProductSku];
                 var price = _priceService.SelectPrice(item.Prices);
 
                 var attributes = item.HasRawAttributes()
-                    ? _shoppingCartSerializer.PostProcessAttributes(item.Attributes, product)
+                    ? await _shoppingCartSerializer.PostProcessAttributesAsync(item.Attributes, product)
                     : item.Attributes;
 
                 return new ShoppingCartLineViewModel(attributes: attributes.ToDictionary(attr => attr.AttributeName))
@@ -95,10 +95,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                     UnitPrice = price,
                     LinePrice = item.Quantity * price,
                 };
-            })
-            .ToList();
+            }))).AsList();
 
-        if (!lines.Any()) return null;
+        if (lines.Count == 0) return null;
 
         IList<LocalizedHtmlString> headers = new[]
         {
@@ -153,7 +152,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
     public async Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync(ShoppingCart cart) =>
         cart.Count == 0
-            ? new Dictionary<string, Amount>()
+            ? []
             : (await cart.CalculateTotalsAsync(_priceService)).ToDictionary(total => total.Currency.CurrencyIsoCode);
 
     public async Task<ShoppingCartItem> AddToCartAsync(
@@ -245,7 +244,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         {
             item = await _priceService.AddPriceAsync(item);
             var price = _priceSelectionStrategy.SelectPrice(item.Prices);
-            var fullSku = _productService.GetOrderFullSku(item, await _productService.GetProductAsync(item.ProductSku));
+            var fullSku = await _productService.GetOrderFullSkuAsync(item, await _productService.GetProductAsync(item.ProductSku));
 
             var selectedAttributes = _productAttributeProviders
                 .Select(provider => provider.GetSelectedAttributes(item.Attributes))

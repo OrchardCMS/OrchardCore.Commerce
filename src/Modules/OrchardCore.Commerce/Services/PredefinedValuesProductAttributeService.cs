@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -13,9 +14,8 @@ public class PredefinedValuesProductAttributeService : IPredefinedValuesProductA
     public PredefinedValuesProductAttributeService(IProductAttributeService productAttributeService) =>
         _productAttributeService = productAttributeService;
 
-    public IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product) =>
-        _productAttributeService
-            .GetProductAttributeFields(product)
+    public async Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product) =>
+        (await _productAttributeService.GetProductAttributeFieldsAsync(product))
             .Where(description => description.Settings is
                 IPredefinedValuesProductAttributeFieldSettings { RestrictToPredefinedValues: true })
             .OrderBy(description => description.PartName)

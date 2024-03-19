@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Exceptions;
@@ -40,8 +41,8 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
             var model = await _shoppingCartHelpers.EstimateProductAsync(
                 shoppingCartId: null,
                 product.Sku,
-                addresses?.ShippingAddress.Address,
-                addresses?.BillingAddress.Address);
+                addresses?.GetSafeShippingAddress(),
+                addresses?.GetSafeBillingAddress());
 
             if (!model.AdditionalData.HasGrossPrice()) return null;
 
@@ -51,9 +52,9 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
                 viewModel.Context = new PromotionAndTaxProviderContext(
                     new[] { new PromotionAndTaxProviderContextLineItem(model) },
                     new[] { model.LinePrice },
-                    addresses?.ShippingAddress.Address,
-                    addresses?.BillingAddress.Address))
-                .Location("Detail", "Content");
+                    addresses?.GetSafeShippingAddress(),
+                    addresses?.GetSafeBillingAddress()))
+                .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content);
         }
         catch (FrontendException exception)
         {

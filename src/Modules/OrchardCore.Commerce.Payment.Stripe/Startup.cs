@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Commerce.Payment.Stripe;
@@ -23,6 +24,7 @@ public class Startup : StartupBase
     {
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IPermissionProvider, Permissions>();
 
         services.AddScoped<IRequestOptionsService, RequestOptionsService>();
         services.AddScoped<IStripePaymentService, StripePaymentService>();

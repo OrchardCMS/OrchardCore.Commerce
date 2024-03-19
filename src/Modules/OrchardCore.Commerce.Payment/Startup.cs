@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.Services;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Commerce.Payment;
 
@@ -14,6 +15,7 @@ public class Startup : StartupBase
     {
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IPermissionProvider, Permissions>();
     }
 }
 

@@ -1,9 +1,9 @@
-@using OrchardCore.Commerce.Controllers;
-@using OrchardCore
-@using OrchardCore.Commerce.Payment.Controllers
-@using OrchardCore.Mvc.Utilities
 @using static OrchardCore.Commerce.Constants.ResourceNames
 @using static OrchardCore.Commerce.Payment.Constants.ResourceNames
+@using OrchardCore
+@using OrchardCore.Commerce.Abstractions.Models
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Commerce.Payment.Controllers
 
 @model OrchardCore.Commerce.Payment.ViewModels.CheckoutViewModel
 
@@ -22,18 +22,25 @@
         <form action="@actionUrl" method="post" id="payment-form" class="payment-form">
             @Html.AntiForgeryToken()
 
-            <div class="mb-3">
-                <label asp-for="OrderPart.Email.Text">@T["E-mail *"]</label>
-                <input asp-for="OrderPart.Email.Text" class="form-control content-preview-text" required />
-            </div>
-            <div class="mb-3">
-                <label asp-for="OrderPart.Phone.Text">@T["Phone Number *"]</label>
-                <input asp-for="OrderPart.Phone.Text" class="form-control content-preview-text" required />
-            </div>
-            <div class="mb-3">
-                <label asp-for="OrderPart.VatNumber.Text">@T["VAT Number"]</label>
-                <input asp-for="OrderPart.VatNumber.Text" class="form-control content-preview-text" />
-            </div>
+            <shape type="InputRow"
+                   prop-Name="@Html.NameFor(model => model.OrderPart.Email.Text)"
+                   prop-Text="@T["E-mail"]"
+                   prop-Value="@Model.OrderPart.Email.Text"
+                   prop-ClassNames="@("payment-form-email")"
+                   prop-Required="@true" />
+
+            <shape type="InputRow"
+                   prop-Name="@Html.NameFor(model => model.OrderPart.Phone.Text)"
+                   prop-Text="@T["Phone Number"]"
+                   prop-Value="@Model.OrderPart.Phone.Text"
+                   prop-ClassNames="@("payment-form-phone")"
+                   prop-Required="@true" />
+
+            <shape type="InputRow"
+                   prop-Name="@Html.NameFor(model => model.OrderPart.VatNumber.Text)"
+                   prop-Text="@T["VAT Number"]"
+                   prop-Value="@Model.OrderPart.VatNumber.Text"
+                   prop-ClassNames="@("payment-form-vat")" />
 
             <div class="mb-3">
                 <div class="form-check">
@@ -56,6 +63,7 @@
                                CityName = Html.NameFor(model => model.OrderPart.BillingAddress.Address.City),
                                Regions = regions,
                                Provinces = provinces,
+                               Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{nameof(OrderPart.BillingAddress)}" },
                            })
             </div>
 
@@ -69,6 +77,7 @@
                                CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
                                Regions = regions,
                                Provinces = provinces,
+                               Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{nameof(OrderPart.ShippingAddress)}" },
                            })
             </div>
 

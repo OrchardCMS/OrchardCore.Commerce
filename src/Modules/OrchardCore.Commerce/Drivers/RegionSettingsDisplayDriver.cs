@@ -46,13 +46,13 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings)) return null;
 
         return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
-        {
-            model.AllowedRegions = section.AllowedRegions;
-            model.Regions = _regionService
-                .GetAllRegions()
-                .CreateSelectListOptions();
-        })
-            .Location("Content")
+            {
+                model.AllowedRegions = section.AllowedRegions;
+                model.Regions = _regionService
+                    .GetAllRegions()
+                    .CreateSelectListOptions();
+            })
+            .PlaceInContent()
             .OnGroup(GroupId);
     }
 
@@ -71,12 +71,12 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                var allowedRegions = model.AllowedRegions.AsList();
+                var allowedRegions = model.AllowedRegions.AsList() ?? [];
                 var allRegionTwoLetterIsoRegionNames = _regionService
                     .GetAllRegions()
                     .Select(region => region.TwoLetterISORegionName);
 
-                section.AllowedRegions = allowedRegions?.Any() == true
+                section.AllowedRegions = allowedRegions.Count != 0
                     ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
                     : allRegionTwoLetterIsoRegionNames;
 

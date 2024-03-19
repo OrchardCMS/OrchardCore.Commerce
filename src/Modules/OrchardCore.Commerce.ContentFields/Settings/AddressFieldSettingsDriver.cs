@@ -13,7 +13,7 @@ public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDrive
         Initialize(
             "AddressFieldSettings_Edit",
             (Action<AddressPartFieldSettings>)model.PopulateSettings)
-            .Location("Content");
+            .PlaceInContent();
 
     public override async Task<IDisplayResult> UpdateAsync(
         ContentPartFieldDefinition model,

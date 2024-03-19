@@ -58,7 +58,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         }
 
         var title = productPart.ContentItem.DisplayText;
-        var fullSku = _productService.GetOrderFullSku(item, productPart);
+        var fullSku = await _productService.GetOrderFullSkuAsync(item, productPart);
 
         var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
         var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);

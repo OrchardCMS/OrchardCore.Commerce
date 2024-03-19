@@ -10,17 +10,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
 public class ProductAttributeProvider : IProductAttributeProvider
 {
     private static readonly string[] _supportedTypeNames =
-    {
+    [
         nameof(BooleanProductAttributeField),
         nameof(NumericProductAttributeField),
         nameof(TextProductAttributeField),
-    };
+    ];
 
     public IProductAttributeValue CreateFromValue(
         ContentTypePartDefinition partDefinition,
@@ -59,13 +60,10 @@ public class ProductAttributeProvider : IProductAttributeProvider
     public IDictionary<string, IDictionary<string, string>> GetSelectedAttributes(ISet<IProductAttributeValue> attributes) =>
         new Dictionary<string, IDictionary<string, string>>();
 
-    public void HandleSelectedAttributes(
+    public Task HandleSelectedAttributesAsync(
         IDictionary<string, IDictionary<string, string>> selectedAttributes,
         ProductPart productPart,
-        IList<IProductAttributeValue> attributesList)
-    {
-        return;
-    }
+        IList<IProductAttributeValue> attributesList) => Task.CompletedTask;
 
     public IProductAttributeValue Parse(
         ContentTypePartDefinition partDefinition,

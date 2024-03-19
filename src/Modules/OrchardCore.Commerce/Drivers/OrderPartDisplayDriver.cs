@@ -73,7 +73,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             // If selected currencies don't match, add model error and set prices to 0.
             var currenciesMatch = distinctCurrencies.Count() == 1;
-            if (!currenciesMatch && viewModelLineItems.Any())
+            if (!currenciesMatch && viewModelLineItems.Count != 0)
             {
                 updater.ModelState.AddModelError(
                     nameof(viewModel.LineItems),
@@ -114,15 +114,15 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
             foreach (var provider in _attributeProviders)
             {
-                provider.HandleSelectedAttributes(lineItem.SelectedAttributes, productPart, attributesList);
+                await provider.HandleSelectedAttributesAsync(lineItem.SelectedAttributes, productPart, attributesList);
             }
 
             // If attributes exist, there must be a full SKU.
             var fullSku = string.Empty;
-            if (attributesList.Any())
+            if (attributesList.Count != 0)
             {
                 var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, attributesList);
-                fullSku = _productService.GetOrderFullSku(item, productPart);
+                fullSku = await _productService.GetOrderFullSkuAsync(item, productPart);
             }
 
             orderLineItems.Add(new OrderLineItem(

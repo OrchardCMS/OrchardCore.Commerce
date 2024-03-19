@@ -12,6 +12,7 @@ Each provider is a stand-alone feature you can turn on or off.
 ## Creating your own
 
 To create a custom payment provider your code must contain the following:
+
 - An implementation of `IPaymentProvider` registered as a service.
 - A shape type `Checkout{provider.Name}`, such as _CheckoutStripe.cshtml_ and _CheckoutDummy.cshtml_.
 

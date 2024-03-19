@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.MoneyDataType;
 
 public readonly partial struct Currency
 {
-    private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
+    private static readonly CurrencyProvider _defaultProvider = new();
 
     private static ICurrency _unspecifiedCurrency;
     private static ICurrency _euro;

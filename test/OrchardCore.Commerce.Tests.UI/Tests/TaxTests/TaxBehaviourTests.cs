@@ -2,6 +2,7 @@ using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
+using OrchardCore.Commerce.AddressDataType;
 using Shouldly;
 using System.Globalization;
 using Xunit;
@@ -91,7 +92,7 @@ public class TaxBehaviourTests : UITestBase
                     await VerifyPriceAsync(expectedPrice);
                 }
 
-                By ByField(string name) => By.Id("UserAddressesPart_BillingAddress_Address_" + name);
+                const string prefix = "UserAddressesPart_BillingAddress_Address_";
 
                 await VerifyPriceAsync("$5.00");
 
@@ -99,23 +100,22 @@ public class TaxBehaviourTests : UITestBase
                     async () =>
                     {
                         await context.SetCheckboxValueAsync(By.Id("UserAddressesPart_BillingAndShippingAddressesMatch_Value"), isChecked: true);
-                        await context.ClickAndFillInWithRetriesAsync(ByField("Name"), "Test Customer");
-                        await context.ClickAndFillInWithRetriesAsync(ByField("StreetAddress1"), "Test Address");
-                        await context.ClickAndFillInWithRetriesAsync(ByField("City"), "Test City");
-                        await context.SetDropdownByValueAsync(ByField("Region"), "HU");
+                        await context.FillAddressAsync(prefix, new Address
+                        {
+                            Name = "Test Customer",
+                            StreetAddress1 = "Test Address",
+                            City = "Test City",
+                            Region = "HU",
+                        });
                     },
                     "$6.25");
 
                 await UpdateAddressAndVerifyPriceAsync(
-                    async () =>
-                    {
-                        await context.SetDropdownByValueAsync(ByField("Region"), "US");
-                        await context.SetDropdownByValueAsync(ByField("Province"), "NY");
-                    },
+                    () => context.FillAddressAsync(prefix, new Address { Region = "US", Province = "NY" }),
                     "$5.20");
 
                 await UpdateAddressAndVerifyPriceAsync(
-                    async () => await context.SetDropdownByValueAsync(ByField("Province"), "NJ"),
+                    () => context.FillAddressAsync(prefix, new Address { Province = "NJ" }),
                     "$5.33");
             },
             browser);

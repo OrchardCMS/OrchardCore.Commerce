@@ -11,5 +11,5 @@ using static OrchardCore.Commerce.Promotion.Constants.FeatureIds;
         "Stripe payment provider for Orchard Core Commerce. Note: you must configure it in Admin > Configuration > " +
         "Commerce > Stripe API or it won't appear in the front end.",
     Category = "Commerce",
-    Dependencies = new[] { Payment, Promotion }
+    Dependencies = [Payment, Promotion]
 )]

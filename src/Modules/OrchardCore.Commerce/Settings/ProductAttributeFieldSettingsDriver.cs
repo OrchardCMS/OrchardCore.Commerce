@@ -15,10 +15,8 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
     where TSettings : ProductAttributeFieldSettings, new()
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model) =>
-        Initialize(
-            typeof(TSettings).Name + "_Edit",
-            (Action<TSettings>)model.PopulateSettings)
-            .Location("Content");
+        Initialize(typeof(TSettings).Name + "_Edit", (Action<TSettings>)model.PopulateSettings)
+            .PlaceInContent();
 
     public override async Task<IDisplayResult> UpdateAsync(
         ContentPartFieldDefinition model,
@@ -62,7 +60,9 @@ public class TextProductAttributeFieldSettingsDriver
                     : string.Empty;
                 viewModel.RestrictToPredefinedValues = settings.RestrictToPredefinedValues;
                 viewModel.MultipleValues = settings.MultipleValues;
-            }).Location("Content");
+            }).PlaceInContent();
+
+    private static readonly char[] Separators = ['\r', '\n'];
 
     public override async Task<IDisplayResult> UpdateAsync(
         ContentPartFieldDefinition model,
@@ -80,7 +80,7 @@ public class TextProductAttributeFieldSettingsDriver
                 RestrictToPredefinedValues = viewModel.RestrictToPredefinedValues,
                 MultipleValues = viewModel.MultipleValues,
                 PredefinedValues = (viewModel.PredefinedValues ?? string.Empty)
-                    .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Split(Separators, StringSplitOptions.RemoveEmptyEntries)
                     .Select(line => line.Trim())
                     .Where(line => !string.IsNullOrWhiteSpace(line))
                     .ToList(),

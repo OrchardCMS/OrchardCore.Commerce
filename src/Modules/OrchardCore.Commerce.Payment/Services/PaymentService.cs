@@ -84,8 +84,9 @@ public class PaymentService : IPaymentService
         await _checkoutEvents.AwaitEachAsync(checkoutEvents =>
             checkoutEvents.OrderCreatingAsync(orderPart, shoppingCartId));
 
-        var email = _hca.HttpContext?.User is { Identity.IsAuthenticated: true } user
-            ? await _userManager.GetEmailAsync(await _userManager.GetUserAsync(user))
+        var email = _hca.HttpContext?.User is { Identity.IsAuthenticated: true } user &&
+            await _userManager.GetUserAsync(user) is { } userPrincipal
+            ? await _userManager.GetEmailAsync(userPrincipal)
             : string.Empty;
 
         orderPart.Email.Text = email;
@@ -195,20 +196,17 @@ public class PaymentService : IPaymentService
             orderPart.LineItems.SetItems(lineItems);
             orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
 
-            // When billing and shipping addresses are set to match and an address field is null, fill out its data
-            // with the other field's data. This is to properly store it in the order and display it on the order
-            // confirmation page.
             if (orderPart.BillingAndShippingAddressesMatch.Value)
             {
+                // When billing and shipping addresses are set to match and an address field is null, fill out its data
+                // with the other field's data. This is to properly store it in the order and display it on the order
+                // confirmation page.
                 if (orderPart.BillingAddress.Address.Name is null)
                 {
                     orderPart.BillingAddress = orderPart.ShippingAddress;
                 }
 
-                if (orderPart.ShippingAddress.Address.Name is null)
-                {
-                    orderPart.ShippingAddress = orderPart.BillingAddress;
-                }
+                orderPart.ShippingAddress = orderPart.BillingAddress;
             }
 
             await _orderEvents.AwaitEachAsync(orderEvents =>
@@ -240,7 +238,7 @@ public class PaymentService : IPaymentService
         return false;
     }
 
-    private async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
+    public async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
         return _updateModelAccessor.ModelUpdater.GetModelErrorMessages()?.AsList() ?? Array.Empty<string>();

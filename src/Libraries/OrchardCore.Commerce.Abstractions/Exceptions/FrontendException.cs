@@ -4,11 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Exceptions;
 
-[Serializable]
 public class FrontendException : Exception
 {
     public LocalizedHtmlString HtmlMessage { get; }
@@ -27,11 +25,6 @@ public class FrontendException : Exception
 
     public FrontendException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    protected FrontendException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 

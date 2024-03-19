@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Modules;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,7 +55,7 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     private async Task<IEnumerable<DiscountInformation>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
-        var typeNames = _contentDefinitionService.GetTypes()
+        var typeNames = (await _contentDefinitionService.GetTypesAsync())
             .Where(type => type
                 .Settings
                 .Get<ContentTypeSettings>(nameof(ContentTypeSettings))?
