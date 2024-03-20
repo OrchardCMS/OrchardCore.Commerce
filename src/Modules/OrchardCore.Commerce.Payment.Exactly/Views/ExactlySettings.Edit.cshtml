@@ -1,5 +1,7 @@
 @using Microsoft.AspNetCore.Html
 @using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore
+@using OrchardCore.Commerce.Payment.Exactly.Controllers
 @model OrchardCore.Commerce.Payment.Exactly.Models.ExactlySettings
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
@@ -24,3 +26,8 @@
         @T["You can find your project information at <a href=\"https://dashboard.exactly.com/projects/\" target=\"_blank\">https://dashboard.exactly.com/projects/</a>."]
     </span>
 </div>
+
+<a href="@(Orchard.Action<ExactlyController>(controller => controller.VerifyApi()))"
+   class="btn btn-sm btn-primary my-3">
+    @T["Verify currently saved API configuration"]
+</a>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Exactly.Models;
@@ -37,9 +38,11 @@ public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlyS
 
     public override async Task<IDisplayResult> EditAsync(ExactlySettings section, BuildEditorContext context) =>
         await AuthorizeAsync()
-            ? Initialize<ExactlySettings>(
-                    $"{nameof(ExactlySettings)}_Edit",
-                    settings => _ssoSettings.CopyTo(settings, copyPassword: false))
+            ? Initialize<ExactlySettings>($"{nameof(ExactlySettings)}_Edit", settings =>
+                {
+                    _ssoSettings.CopyTo(settings);
+                    settings.ApiKey = string.Empty;
+                })
                 .PlaceInContent()
                 .OnGroup(EditorGroupId)
             : null;
