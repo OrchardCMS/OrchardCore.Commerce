@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <PackageReference Include="OrchardCore.Module.Targets" />
+        <PackageReference Include="OrchardCore.Settings" />
     </ItemGroup>
 
     <ItemGroup>
