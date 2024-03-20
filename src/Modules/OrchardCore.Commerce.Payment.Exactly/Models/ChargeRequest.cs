@@ -36,12 +36,12 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
     {
     }
 
-    public ChargeRequest(OrderPart orderPart, User user, string projectId, string tenantId, Uri returnUrl)
+    public ChargeRequest(OrderPart orderPart, User user, string projectId, Uri returnUrl)
     {
         if (!returnUrl.IsAbsoluteUri) throw new ArgumentException("The return URL must be absolute.", nameof(returnUrl));
 
         ProjectId = projectId;
-        ReferenceId = $"{tenantId}-{orderPart.OrderId.Text}";
+        ReferenceId = orderPart.OrderId.Text;
         CustomerDescription = string.Join(", ", orderPart.Charges.Select(payment => $"{payment.Amount} × {payment.ChargeText}"));
         ReturnUrl = returnUrl.AbsoluteUri;
         CustomerId = user.UserId;
@@ -63,7 +63,6 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
             orderPart,
             await provider.GetRequiredService<IUserService>().GetFullUserAsync(context.User),
             provider.GetRequiredService<IOptionsSnapshot<ExactlySettings>>().Value.ProjectId,
-            context.Request.Host.Host,
             new Uri(new Uri(context.Request.GetDisplayUrl()), returnurl));
     }
 }
