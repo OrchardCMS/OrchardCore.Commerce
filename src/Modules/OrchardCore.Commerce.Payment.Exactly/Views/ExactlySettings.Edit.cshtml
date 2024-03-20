@@ -1,5 +1,26 @@
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.Localization
 @model OrchardCore.Commerce.Payment.Exactly.Models.ExactlySettings
 
-<fieldset asp-for="BaseAddress" label="@T["API base address"]"></fieldset>
-<fieldset asp-for="ApiKey" label="@T["API key"]" type="password"></fieldset>
-<fieldset asp-for="ProjectId" label="@T["Project ID"]"></fieldset>
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+<fieldset asp-for="BaseAddress"
+          label="@T["API base address"]"
+          hint="@T["The base URL of the Exactly API. Don't change it unless you are certain of what you're doing."]"></fieldset>
+
+<fieldset asp-for="ProjectId"
+          label="@T["Project ID"]"
+          hint="@T["The GUID identifying the project."]"></fieldset>
+
+<fieldset asp-for="ApiKey"
+          label="@T["API key"]"
+          hint="@(new HtmlString(" ").Join(
+                    T["The secret API key for the project."],
+                    T["The field will be empty after saving it, for security reasons."]))"
+          type="password"></fieldset>
+
+<div class="mb-3">
+    <span class="hint">
+        @T["You can find your project information at <a href=\"https://dashboard.exactly.com/projects/\" target=\"_blank\">https://dashboard.exactly.com/projects/</a>."]
+    </span>
+</div>

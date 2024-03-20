@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using System.Threading.Tasks;
 
@@ -16,21 +17,29 @@ public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlyS
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _hca;
+    private readonly IShellHost _shellHost;
+    private readonly ShellSettings _shellSettings;
     private readonly ExactlySettings _ssoSettings;
 
     public ExactlySettingsDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor hca,
+        IShellHost shellHost,
+        ShellSettings shellSettings,
         IOptionsSnapshot<ExactlySettings> ssoSettings)
     {
         _authorizationService = authorizationService;
         _hca = hca;
+        _shellHost = shellHost;
+        _shellSettings = shellSettings;
         _ssoSettings = ssoSettings.Value;
     }
 
     public override async Task<IDisplayResult> EditAsync(ExactlySettings section, BuildEditorContext context) =>
         await AuthorizeAsync()
-            ? Initialize<ExactlySettings>($"{nameof(ExactlySettings)}_Edit", _ssoSettings.CopyTo)
+            ? Initialize<ExactlySettings>(
+                    $"{nameof(ExactlySettings)}_Edit",
+                    settings => _ssoSettings.CopyTo(settings, copyPassword: false))
                 .PlaceInContent()
                 .OnGroup(EditorGroupId)
             : null;
@@ -44,6 +53,9 @@ public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlyS
             await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             viewModel.CopyTo(section);
+
+            // Release the tenant to apply settings.
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
         return await EditAsync(section, context);
