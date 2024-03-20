@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -7,9 +8,9 @@ using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Exactly.Drivers;
-using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Commerce.Payment.Exactly.Services;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using Refit;
@@ -23,7 +24,7 @@ namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
 
 public class ExactlyController : Controller
 {
-    private readonly IExactlyApi _api;
+    private readonly IExactlyService _exactlyService;
     private readonly ILogger<ExactlyController> _logger;
     private readonly INotifier _notifier;
     private readonly IPaymentService _paymentService;
@@ -31,14 +32,14 @@ public class ExactlyController : Controller
     private readonly IStringLocalizer<ExactlyController> S;
 
     public ExactlyController(
-        IExactlyApi api,
+        IExactlyService exactlyService,
         ILogger<ExactlyController> logger,
         INotifier notifier,
         IPaymentService paymentService,
         IHtmlLocalizer<ExactlyController> htmlLocalizer,
         IStringLocalizer<ExactlyController> stringLocalizer)
     {
-        _api = api;
+        _exactlyService = exactlyService;
         _logger = logger;
         _notifier = notifier;
         _paymentService = paymentService;
@@ -48,7 +49,7 @@ public class ExactlyController : Controller
 
     [HttpPost]
     public async Task<IActionResult> CreateTransaction(string shoppingCartId) =>
-        await this.SafeJsonAsync<object>(async () =>
+        await this.SafeJsonAsync(async () =>
         {
             try
             {
@@ -56,13 +57,11 @@ public class ExactlyController : Controller
                     shoppingCartId,
                     notifyOnError: false,
                     throwOnError: true);
-                var request = await ChargeRequest.CreateUserAsync(order!.As<OrderPart>(), HttpContext);
-
-                return ThrowIfError(await _api.CreateTransactionAsync(request));
+                return await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
             }
-            catch (FrontendException exception)
+            catch (Exception exception)
             {
-                return new { error = exception.Message, html = exception.HtmlMessage.Html() };
+                return Error(exception);
             }
         });
 
@@ -71,8 +70,8 @@ public class ExactlyController : Controller
         {
             try
             {
-                var content = ThrowIfError(await _api.GetTransactionDetailsAsync(transactionId));
-                return content.Attributes.Actions.First(action => action.Action != null).Action;
+                var result = await _exactlyService.GetTransactionDetailsAsync(transactionId);
+                return result.Attributes.Actions.First(action => action.Action != null).Action;
             }
             catch (FrontendException exception)
             {
@@ -102,16 +101,13 @@ public class ExactlyController : Controller
                         "card",
                         Guid.NewGuid().ToString("D"),
                         "Test Transaction",
-                        new Amount(0, Currency.Euro), DateTime.UtcNow),
+                        new Amount(1, Currency.Euro),
+                        DateTime.UtcNow),
                 },
             };
 
-            var charge = await ChargeRequest.CreateUserAsync(orderPart, HttpContext);
-            using var result = await _api.CreateTransactionAsync(new ExactlyRequest<ChargeRequest> { Attributes = charge });
-            await result.EnsureSuccessStatusCodeAsync();
-            result.Content!.ThrowIfHasErrors();
-
-            await _notifier.SuccessAsync(H["The Exactly API access works correctly ({0}).", JsonSerializer.Serialize(result.Content.Data)]);
+            var result = await _exactlyService.CreateTransactionAsync(orderPart);
+            await _notifier.SuccessAsync(H["The Exactly API access works correctly ({0}).", JsonSerializer.Serialize(result)]);
         }
         catch (ApiException exception)
         {
@@ -135,19 +131,18 @@ public class ExactlyController : Controller
             new { area = "OrchardCore.Settings", groupId = ExactlySettingsDisplayDriver.EditorGroupId });
     }
 
-    private T ThrowIfError<T>(ApiResponse<ExactlyResponse<T>> response)
-        where T : IExactlyResponseData
+    private object Error(Exception exception)
     {
-        using (response)
+        if (exception is FrontendException frontendException)
         {
-            response.Content?.ThrowIfHasErrors();
-            if (response.Error is { } error) throw new FrontendException(error.Message);
-            if (response.Content is not { } content)
-            {
-                throw new FrontendException(S["There was an unknown error while contacting with the payment service, please try again."]);
-            }
-
-            return content.Data;
+            return Error(exception.Message, frontendException.HtmlMessage.Html());
         }
+
+        return Error(HttpContext.IsDevelopmentAndLocalhost()
+            ? exception.Message
+            : S["There was an unknown error while contacting with the payment service, please try again."]);
     }
+
+    private object Error(string text, string html = null) =>
+        new { error = text, html = html ?? new HtmlContentString(text).Html() };
 }

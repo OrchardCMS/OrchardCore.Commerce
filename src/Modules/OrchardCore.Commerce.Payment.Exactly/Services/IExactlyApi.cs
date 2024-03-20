@@ -17,7 +17,8 @@ public interface IExactlyApi
     /// callback/webhook must be used to retrieve status of the transaction when it's completed.
     /// </summary>
     [Post("/api/v1/transactions")]
-    Task<ApiResponse<ExactlyResponse<ChargeResponse>>> CreateTransactionAsync([Body] ExactlyRequest<ChargeRequest> data);
+    Task<ApiResponse<ExactlyResponse<ChargeResponse>>> CreateTransactionAsync(
+        [Body(buffered: true)] ExactlyDataWrapper<ExactlyRequest<ChargeRequest>> data);
 
     /// <summary>
     /// Returns details of a transaction.

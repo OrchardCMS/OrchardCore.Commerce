@@ -26,7 +26,7 @@ public class Startup : StartupBase
     {
         // Payment services
         services.AddScoped<IPaymentProvider, ExactlyPaymentProvider>();
-        //services.AddScoped<IExactlyService, ExactlyService>();
+        services.AddScoped<IExactlyService, ExactlyService>();
 
         // Configuration, permission, admin things
         services.Configure<ExactlySettings>(_shellConfiguration.GetSection("OrchardCoreCommerce_Payment_Exactly"));
