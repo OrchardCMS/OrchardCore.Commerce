@@ -13,7 +13,7 @@
   <!-- Copying the Orchard logo as an icon to all NuGet-published projects. -->
   <Target Name="Copy NuGet icon"
           AfterTargets="AfterResolveReferences"
-          Condition="'$(PackageIcon)' == 'OrchardCoreIcon.png' AND !Exists('$(ProjectDir)OrchardCoreIcon.png') AND '$(DesignTimeBuild)' != 'true'">
+          Condition="'$(DesignTimeBuild)' != 'true' AND '$(PackageIcon)' == 'OrchardCoreIcon.png' AND !Exists('$(ProjectDir)OrchardCoreIcon.png')">
     <Copy SourceFiles="$(MSBuildThisFileDirectory)OrchardCoreIcon.png"
           DestinationFiles="$(ProjectDir)OrchardCoreIcon.png"
           SkipUnchangedFiles="true" />
