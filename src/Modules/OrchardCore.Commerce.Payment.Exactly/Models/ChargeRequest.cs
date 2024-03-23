@@ -46,7 +46,7 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
         ReturnUrl = returnUrl.AbsoluteUri;
         CustomerId = user.UserId;
         Email = user.Email;
-        Meta = orderPart;
+        Meta = orderPart.ContentItem.ContentItemId;
 
         this.SetAmount(orderPart.Charges.Select(payment => payment.Amount).Sum());
     }

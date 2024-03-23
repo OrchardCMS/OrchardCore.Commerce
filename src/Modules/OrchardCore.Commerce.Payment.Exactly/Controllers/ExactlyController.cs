@@ -18,12 +18,14 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using AdminController=OrchardCore.Settings.Controllers.AdminController;
+using AdminController = OrchardCore.Settings.Controllers.AdminController;
+using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
 
 public class ExactlyController : Controller
 {
+    private readonly IContentManager _contentManager;
     private readonly IExactlyService _exactlyService;
     private readonly ILogger<ExactlyController> _logger;
     private readonly INotifier _notifier;
@@ -32,6 +34,7 @@ public class ExactlyController : Controller
     private readonly IStringLocalizer<ExactlyController> S;
 
     public ExactlyController(
+        IContentManager contentManager,
         IExactlyService exactlyService,
         ILogger<ExactlyController> logger,
         INotifier notifier,
@@ -39,6 +42,7 @@ public class ExactlyController : Controller
         IHtmlLocalizer<ExactlyController> htmlLocalizer,
         IStringLocalizer<ExactlyController> stringLocalizer)
     {
+        _contentManager = contentManager;
         _exactlyService = exactlyService;
         _logger = logger;
         _notifier = notifier;
@@ -89,24 +93,19 @@ public class ExactlyController : Controller
     {
         try
         {
-            var orderPart = new OrderPart
+            var order = await _contentManager.NewAsync(Order);
+            order.Alter<OrderPart>(part =>
             {
-                OrderId =
-                {
-                    Text = Guid.NewGuid().ToString("D"),
-                },
-                Charges =
-                {
-                    new Payment.Models.Payment(
-                        "card",
-                        Guid.NewGuid().ToString("D"),
-                        "Test Transaction",
-                        new Amount(1, Currency.Euro),
-                        DateTime.UtcNow),
-                },
-            };
+                part.OrderId.Text = Guid.NewGuid().ToString("D");
+                part.Charges.Add(new Payment.Models.Payment(
+                    "card",
+                    Guid.NewGuid().ToString("D"),
+                    "Test Transaction",
+                    new Amount(1, Currency.Euro),
+                    DateTime.UtcNow));
+            });
 
-            var result = await _exactlyService.CreateTransactionAsync(orderPart);
+            var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
             await _notifier.SuccessAsync(H["The Exactly API access works correctly ({0}).", JsonSerializer.Serialize(result)]);
         }
         catch (ApiException exception)
