@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using Refit;
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;
@@ -46,6 +46,10 @@ public class ExactlyService : IExactlyService
             {
                 var content = JsonConvert.DeserializeObject<ExactlyResponse<T>>(error);
                 content.ThrowIfHasErrors();
+            }
+            catch (FrontendException frontendException)
+            {
+                throw;
             }
             catch
             {

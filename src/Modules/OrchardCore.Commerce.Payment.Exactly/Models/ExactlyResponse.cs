@@ -14,7 +14,10 @@ public class ExactlyResponse<T>
     {
         if (Errors?.Any() != true) return;
 
-        var errors = Errors.Select(error => $"{error.Code}: {error.Title} ({error.Details})").ToList();
+        var errors = Errors
+            .Select(error => $"{error.Code}: {error.Title} ({error.Details?.Trim()})".Replace(" ()", string.Empty))
+            .ToList();
+
         FrontendException.ThrowIfAny(errors);
     }
 }
