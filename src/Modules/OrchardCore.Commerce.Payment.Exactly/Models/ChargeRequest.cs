@@ -28,7 +28,6 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
     public string ReturnUrl { get; set; }
     public string CustomerId { get; set; }
     public string Email { get; set; }
-    public bool TokenizeSource { get; set; } = true;
     public int Lifetime { get; set; } = 3600;
     public object Meta { get; set; }
 
