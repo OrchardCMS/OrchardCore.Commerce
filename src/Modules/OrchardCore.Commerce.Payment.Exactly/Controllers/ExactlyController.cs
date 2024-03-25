@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -121,7 +122,10 @@ public class ExactlyController : Controller
         catch (Exception exception)
         {
             _logger.LogError(exception, "An unknown error was encountered.");
-            await _notifier.ErrorAsync(H["An unknown error was encountered: {0}", exception.ToString()]);
+
+            var error = exception.ToString();
+            var html = $"{H["An unknown error was encountered:"].Html()}<br>{error.Replace("\n", "<br>")}";
+            await _notifier.ErrorAsync(new LocalizedHtmlString(html, html));
         }
 
         return RedirectToAction(
