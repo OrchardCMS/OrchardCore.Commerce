@@ -57,6 +57,9 @@ public class ExactlyService : IExactlyService
             }
         }
 
+        // Handle any other non-specific ApiExceptions.
+        if (result.Error is { } apiException) throw apiException;
+
         // In the unlikely case that the HTTP response is success but there was still an error somehow.
         result.Content!.ThrowIfHasErrors();
 
