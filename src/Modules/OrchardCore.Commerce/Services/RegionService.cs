@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
+
 public class RegionService : IRegionService
 {
     private readonly ISiteService _siteService;
