@@ -8,6 +8,6 @@ on:
 jobs:
   call-publish-workflow:
     if: contains(github.ref, 'preview') == false
-    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@issue/OSOE-832
+    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
     secrets:
       API_KEY: ${{ secrets.NUGET_API_KEY }}
