@@ -85,7 +85,8 @@ public class ExactlyController : Controller
         });
 
     [HttpGet("checkout/middleware/Exactly")]
-    public Task<IActionResult> Middleware() => throw new NotSupportedException("TODO");
+    public Task<IActionResult> Middleware() =>
+        Task.FromResult<IActionResult>(Json(new { Request = Request.ToString() }));
 
     public async Task<IActionResult> VerifyApi()
     {
