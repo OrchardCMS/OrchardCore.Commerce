@@ -47,7 +47,7 @@ public class ExactlyService : IExactlyService
                 var content = JsonConvert.DeserializeObject<ExactlyResponse<T>>(error);
                 content.ThrowIfHasErrors();
             }
-            catch (FrontendException frontendException)
+            catch (FrontendException)
             {
                 throw;
             }
