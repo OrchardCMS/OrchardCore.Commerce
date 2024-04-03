@@ -1,5 +1,6 @@
 ﻿using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Exactly.Models;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;
@@ -17,5 +18,8 @@ public interface IExactlyService
     /// <summary>
     /// Returns details of a transaction.
     /// </summary>
-    Task<ChargeResponse> GetTransactionDetailsAsync(string transactionId);
+    Task<ChargeResponse> GetTransactionDetailsAsync(
+        string transactionId,
+        ChargeResponse.ChargeResponseStatus? waitForStatus = null,
+        CancellationToken cancellationToken = default);
 }

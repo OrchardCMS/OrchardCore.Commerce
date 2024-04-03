@@ -4,6 +4,8 @@ using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using Refit;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;
@@ -29,10 +31,26 @@ public class ExactlyService : IExactlyService
         return EvaluateResult(result);
     }
 
-    public async Task<ChargeResponse> GetTransactionDetailsAsync(string transactionId)
+    public async Task<ChargeResponse> GetTransactionDetailsAsync(
+        string transactionId,
+        ChargeResponse.ChargeResponseStatus? waitForStatus = null,
+        CancellationToken cancellationToken = default)
     {
-        using var result = await _api.GetTransactionDetailsAsync(transactionId);
-        return EvaluateResult(result);
+        ArgumentNullException.ThrowIfNull(transactionId);
+
+        for (var i = 0; i < 100 && !cancellationToken.IsCancellationRequested; i++)
+        {
+            using var result = await _api.GetTransactionDetailsAsync(transactionId);
+            var content = EvaluateResult(result);
+
+            if (waitForStatus == null || content.Attributes.Status == waitForStatus) return content;
+
+            await Task.Delay(100, cancellationToken);
+        }
+
+        throw new TimeoutException(
+            $"Couldn't get the transaction \"{transactionId}\" with the status \"{waitForStatus}\" within " +
+            $"the expected timeframe.");
     }
 
     private T EvaluateResult<T>(IApiResponse<ExactlyResponse<T>> result)

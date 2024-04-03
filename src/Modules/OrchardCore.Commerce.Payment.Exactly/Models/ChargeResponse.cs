@@ -54,12 +54,6 @@ public class ChargeResponse : IExactlyResponseData
         public string ResultCode { get; set; }
     }
 
-    public class ChargeAction
-    {
-        public string Action { get; set; }
-        public object RequiredAttributes { get; set; }
-    }
-
     public class ChargeAttributes
     {
         public string ProjectId { get; set; }

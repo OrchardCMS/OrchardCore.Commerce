@@ -9,6 +9,7 @@ using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Exactly.Drivers;
+using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Commerce.Payment.Exactly.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Html;
@@ -75,8 +76,7 @@ public class ExactlyController : Controller
         {
             try
             {
-                var result = await _exactlyService.GetTransactionDetailsAsync(transactionId);
-                return result.Attributes.Actions.First(action => action.Action != null).Action;
+                return await GetActionRedirectRequested(transactionId);
             }
             catch (FrontendException exception)
             {
@@ -105,7 +105,11 @@ public class ExactlyController : Controller
             });
 
             var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
-            await _notifier.SuccessAsync(H["The Exactly API access works correctly ({0}).", JsonSerializer.Serialize(result)]);
+            var action = await GetActionRedirectRequested(result.Id);
+
+            await _notifier.SuccessAsync(
+                H["The Exactly API access works correctly. You can test the redirection by clicking <a href=\"{0}\">here</a>",
+                    action.Url]);
         }
         catch (ApiException exception)
         {
@@ -130,6 +134,20 @@ public class ExactlyController : Controller
             nameof(AdminController.Index),
             typeof(AdminController).ControllerName(),
             new { area = "OrchardCore.Settings", groupId = ExactlySettingsDisplayDriver.EditorGroupId });
+    }
+
+    private async Task<ChargeAction.ChargeActionAttributes> GetActionRedirectRequested(string transactionId)
+    {
+
+        var result = await _exactlyService.GetTransactionDetailsAsync(
+            transactionId,
+            ChargeResponse.ChargeResponseStatus.ActionRequired,
+            HttpContext.RequestAborted);
+        return result
+            .Attributes
+            .Actions
+            .Select(action => action.Attributes)
+            .First(action => action.Action == "redirect-required" && action.HttpMethod == "GET");
     }
 
     private object Error(Exception exception)
