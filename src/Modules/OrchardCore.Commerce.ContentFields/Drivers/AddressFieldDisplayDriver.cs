@@ -76,7 +76,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
                 viewModel.UserAddressToSave = field.UserAddressToSave;
 
                 viewModel.Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions();
-                viewModel.Provinces.AddRange(Regions.Provinces);
+                viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
                 PopulateViewModel(field, viewModel, context.PartFieldDefinition);
             });
 
