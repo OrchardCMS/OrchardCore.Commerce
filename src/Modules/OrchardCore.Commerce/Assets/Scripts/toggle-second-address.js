@@ -2,7 +2,6 @@ window.initializeToggleSecondAddress = (
     checkbox,
     firstAddressRow,
     secondAddressRow) => {
-
     function addEvent(items, event, callback) {
         Array.from(items).forEach((item) => item.addEventListener(event, callback));
     }
@@ -35,7 +34,7 @@ window.initializeToggleSecondAddress = (
 
 })();
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
     Array.from(document.querySelectorAll('[name*="BillingAndShippingAddressesMatch.Value"]'))
         .filter((checkbox) => !checkbox.hidden && checkbox.type !== 'hidden')
         .forEach((checkbox) => {

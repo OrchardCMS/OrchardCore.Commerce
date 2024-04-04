@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
+
 public class RegionService : IRegionService
 {
     private readonly ISiteService _siteService;
@@ -33,4 +34,13 @@ public class RegionService : IRegionService
 
         return allRegions.Where(region => allowedRegionCodes.Contains(region.TwoLetterISORegionName));
     }
+
+    // Placeholder implementations until https://github.com/OrchardCMS/OrchardCore.Commerce/issues/112 is finished.
+#pragma warning disable CS0618 // Type or member is obsolete.
+    public Task<IDictionary<string, string>> GetProvincesAsync(string twoLetterCode) =>
+        Task.FromResult(Regions.Provinces.GetMaybe(twoLetterCode) ?? new Dictionary<string, string>());
+
+    public Task<IDictionary<string, IDictionary<string, string>>> GetAllProvincesAsync() =>
+        Task.FromResult(Regions.Provinces);
+#pragma warning restore CS0618 // Type or member is obsolete.
 }
