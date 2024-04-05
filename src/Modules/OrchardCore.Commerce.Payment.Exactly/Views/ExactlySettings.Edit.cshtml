@@ -6,13 +6,14 @@
 
 <div class="mb-3">
     <div>
-        <a href="@(Orchard.Action<ExactlyController>(controller => controller.VerifyApi()))"
+        <a id="ExactlySettings__testButton"
+            href="@(Orchard.Action<ExactlyController>(controller => controller.VerifyApi()))"
            class="btn btn-sm btn-primary">
             @T["Verify currently saved API configuration"]
         </a>
     </div>
     <span class="hint">
-        @T["Warning: pressing this button won't save any edits you made on this page. Save before pressing it."]
+        @T["Warning: pressing this button won't save the current page. If you have edited any fields it gets disabled."]
     </span>
 </div>
 
@@ -38,3 +39,17 @@
         @T["You can find your project information at <a href=\"https://dashboard.exactly.com/projects/\" target=\"_blank\">https://dashboard.exactly.com/projects/</a>."]
     </span>
 </div>
+
+<script at="Foot" depends-on="jQuery">
+    jQuery(function($) {
+        const button = document.getElementById('ExactlySettings__testButton');
+        const ids = @Json.Serialize(new[]
+        {
+            Html.IdFor(model => model.BaseAddress),
+            Html.IdFor(model => model.ProjectId),
+            Html.IdFor(model => model.ApiKey),
+        });
+
+        $(ids.map((id) => document.getElementById(id))).change(() => button.classList.add('disabled'));
+    });
+</script>
