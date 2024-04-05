@@ -15,8 +15,8 @@ public class ExactlySettings
 
     public void CopyTo(ExactlySettings target)
     {
-        if (Uri.TryCreate(BaseAddress, UriKind.Absolute, out var _)) target.BaseAddress = BaseAddress;
-        if (!string.IsNullOrWhiteSpace(ProjectId)) target.ProjectId = ProjectId;
-        if (!string.IsNullOrWhiteSpace(ApiKey)) target.ApiKey = ApiKey;
+        if (Uri.TryCreate(BaseAddress, UriKind.Absolute, out var baseUri)) target.BaseAddress = baseUri.AbsoluteUri;
+        if (!string.IsNullOrWhiteSpace(ProjectId)) target.ProjectId = ProjectId.Trim();
+        if (!string.IsNullOrWhiteSpace(ApiKey)) target.ApiKey = ApiKey.Trim();
     }
 }
