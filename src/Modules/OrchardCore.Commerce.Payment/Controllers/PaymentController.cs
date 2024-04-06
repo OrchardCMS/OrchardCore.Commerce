@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
@@ -24,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Controllers;
 
@@ -146,7 +146,7 @@ public class PaymentController : Controller
         }
         catch (FrontendException exception)
         {
-            return Json(new { Errors = new[] { exception.HtmlMessage.Html() } });
+            return Json(new { Errors = exception.HtmlMessages });
         }
         catch (Exception exception)
         {
