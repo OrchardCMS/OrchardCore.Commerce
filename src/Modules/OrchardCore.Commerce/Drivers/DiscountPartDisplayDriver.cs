@@ -1,6 +1,6 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using System.Linq;
 using System.Threading.Tasks;
+using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -104,7 +105,7 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
             }
             catch (FrontendException exception)
             {
-                await _notifier.ErrorAsync(exception.HtmlMessage);
+                await _notifier.FrontEndErrorAsync(exception);
                 return null;
             }
         }

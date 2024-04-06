@@ -7,6 +7,7 @@ using Refit;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;
 

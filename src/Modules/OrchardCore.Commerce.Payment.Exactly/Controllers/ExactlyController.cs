@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -12,16 +10,16 @@ using OrchardCore.Commerce.Payment.Exactly.Drivers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Commerce.Payment.Exactly.Services;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using Refit;
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
-using AdminController = OrchardCore.Settings.Controllers.AdminController;
+
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
+
+using AdminController = OrchardCore.Settings.Controllers.AdminController;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
 
@@ -57,32 +55,15 @@ public class ExactlyController : Controller
     public async Task<IActionResult> CreateTransaction(string shoppingCartId) =>
         await this.SafeJsonAsync(async () =>
         {
-            try
-            {
-                var order = await _paymentService.CreatePendingOrderFromShoppingCartAsync(
-                    shoppingCartId,
-                    notifyOnError: false,
-                    throwOnError: true);
-                return await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
-            }
-            catch (Exception exception)
-            {
-                return Error(exception);
-            }
+            var order = await _paymentService.CreatePendingOrderFromShoppingCartAsync(
+                shoppingCartId,
+                notifyOnError: false,
+                throwOnError: true);
+            return await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
         });
 
     public async Task<IActionResult> GetRedirectUrl(string transactionId) =>
-        await this.SafeJsonAsync<object>(async () =>
-        {
-            try
-            {
-                return await GetActionRedirectRequested(transactionId);
-            }
-            catch (FrontendException exception)
-            {
-                return new { error = exception.Message, html = exception.HtmlMessage.Html() };
-            }
-        });
+        await this.SafeJsonAsync<object>(async () => await GetActionRedirectRequested(transactionId));
 
     [HttpGet("checkout/middleware/Exactly")]
     public Task<IActionResult> Middleware() =>
@@ -138,7 +119,6 @@ public class ExactlyController : Controller
 
     private async Task<ChargeAction.ChargeActionAttributes> GetActionRedirectRequested(string transactionId)
     {
-
         var result = await _exactlyService.GetTransactionDetailsAsync(
             transactionId,
             ChargeResponse.ChargeResponseStatus.ActionRequired,
@@ -149,19 +129,4 @@ public class ExactlyController : Controller
             .Select(action => action.Attributes)
             .First(action => action.Action == "redirect-required" && action.HttpMethod == "GET");
     }
-
-    private object Error(Exception exception)
-    {
-        if (exception is FrontendException frontendException)
-        {
-            return Error(exception.Message, frontendException.HtmlMessage.Html());
-        }
-
-        return Error(HttpContext.IsDevelopmentAndLocalhost()
-            ? exception.Message
-            : S["There was an unknown error while contacting with the payment service, please try again."]);
-    }
-
-    private object Error(string text, string html = null) =>
-        new { error = text, html = html ?? new HtmlContentString(text).Html() };
 }

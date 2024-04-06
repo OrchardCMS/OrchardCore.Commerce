@@ -1,6 +1,6 @@
-﻿using OrchardCore.Commerce.Abstractions.Exceptions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Models;
 

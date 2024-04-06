@@ -1,10 +1,10 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Inventory.Models;
@@ -18,6 +18,7 @@ using OrchardCore.Workflows.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -197,7 +198,7 @@ public class ShoppingCartController : Controller
         }
         catch (FrontendException exception)
         {
-            await _notifier.ErrorAsync(exception.HtmlMessage);
+            await _notifier.FrontEndErrorAsync(exception);
         }
 
         return RedirectToAction(nameof(Index), new { shoppingCartId });
