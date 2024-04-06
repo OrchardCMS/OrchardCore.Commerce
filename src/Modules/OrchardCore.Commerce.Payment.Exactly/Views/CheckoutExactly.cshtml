@@ -33,7 +33,17 @@
             const json = await fetchJson(@actionUrl.JsonHtmlContent(), { method: 'post', body: new FormData(form) });
 
             if (!json || json.error) {
-                alert(json?.error ?? @defaultErrorMessage.Json());
+                let error = json?.error ?? @defaultErrorMessage.Json();
+
+                if (json?.html) {
+                    const div = document.createElement('div');
+                    div.innerHTML = json.html;
+                    document.body.append(div);
+                    error = div.innerText.trim();
+                    document.body.removeChild(div);
+                }
+
+                alert(error);
             }
             else {
                 const statusUrl = (@statusUrl.JsonHtmlContent()).replace('TRANSACTION_ID', json.id);
