@@ -16,6 +16,7 @@ public class ExactlyResponse<T>
 
         var errors = Errors
             .Select(error => $"{error.Code}: {error.Title} ({error.Details?.Trim()})".Replace(" ()", string.Empty))
+            .Distinct()
             .ToList();
 
         FrontendException.ThrowIfAny(errors);
