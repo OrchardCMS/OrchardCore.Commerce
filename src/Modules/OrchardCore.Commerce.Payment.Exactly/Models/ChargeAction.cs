@@ -13,7 +13,7 @@ public class ChargeAction : IExactlyResponseData
     {
         public string Action { get; set; }
         public Uri Url { get; set; }
-        public IList<object> Parameters { get; set; }
+        public IEnumerable<object> Parameters { get; set; }
         public string HttpMethod { get; set; }
     }
 }

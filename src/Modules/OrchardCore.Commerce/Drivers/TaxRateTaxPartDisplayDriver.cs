@@ -12,7 +12,8 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using System.Threading.Tasks;
-using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
+
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Drivers;
 

@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using Refit;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
+
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;
 
@@ -39,6 +39,7 @@ public class ExactlyService : IExactlyService
     {
         ArgumentNullException.ThrowIfNull(transactionId);
 
+#pragma warning disable // Boolean expressions should not be gratuitous (false positive)
         for (var i = 0; i < 100 && !cancellationToken.IsCancellationRequested; i++)
         {
             using var result = await _api.GetTransactionDetailsAsync(transactionId);
@@ -48,13 +49,14 @@ public class ExactlyService : IExactlyService
 
             await Task.Delay(100, cancellationToken);
         }
+#pragma warning restore S2589 // Boolean expressions should not be gratuitous (false positive)
 
         throw new TimeoutException(
             $"Couldn't get the transaction \"{transactionId}\" with the status \"{waitForStatus}\" within " +
             $"the expected timeframe.");
     }
 
-    private T EvaluateResult<T>(IApiResponse<ExactlyResponse<T>> result)
+    private static T EvaluateResult<T>(IApiResponse<ExactlyResponse<T>> result)
         where T : IExactlyResponseData
     {
         // If the request is not successful, try to parse the response error and throw a more specific FrontendException

@@ -8,13 +8,11 @@ public class ExactlyResponse<T>
     where T : IExactlyResponseData
 {
     public T Data { get; set; }
-    public IList<ExactlyError> Errors { get; set; }
+    public IEnumerable<ExactlyError> Errors { get; set; }
 
     public void ThrowIfHasErrors()
     {
-        if (Errors?.Any() != true) return;
-
-        var errors = Errors
+        var errors = Errors?
             .Select(error => $"{error.Code}: {error.Title} ({error.Details?.Trim()})".Replace(" ()", string.Empty))
             .Distinct()
             .ToList();

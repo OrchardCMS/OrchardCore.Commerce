@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Exactly.Models;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;

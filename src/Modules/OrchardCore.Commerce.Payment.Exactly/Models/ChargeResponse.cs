@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Payment.Exactly.Models;
 
 public class ChargeResponse : IExactlyResponseData
 {
-    private static Dictionary<string, ChargeResponseStatus> StatusMap = new()
+    private static readonly Dictionary<string, ChargeResponseStatus> _statusMap = new()
     {
         ["action-required"] = ChargeResponseStatus.ActionRequired,
         ["processing"] = ChargeResponseStatus.Processing,
@@ -64,8 +64,8 @@ public class ChargeResponse : IExactlyResponseData
         [JsonIgnore]
         public ChargeResponseStatus Status
         {
-            get => StatusMap.GetMaybe(StringStatus);
-            set => StringStatus = StatusMap.Single(pair => pair.Value == value).Key;
+            get => _statusMap.GetMaybe(StringStatus);
+            set => StringStatus = _statusMap.Single(pair => pair.Value == value).Key;
         }
 
         [JsonPropertyName("environmentMode")]
@@ -81,10 +81,10 @@ public class ChargeResponse : IExactlyResponseData
         public DateTime CreatedAt { get; set; }
 
         public ChargeProcessing Processing { get; set; }
-        public IList<object> StatusHistory { get; set; }
+        public IEnumerable<object> StatusHistory { get; set; }
         public object Meta { get; set; }
         public string ReferenceId { get; set; }
         public DateTime ExpireAt { get; set; }
-        public IList<ChargeAction> Actions { get; set; }
+        public IEnumerable<ChargeAction> Actions { get; set; }
     }
 }

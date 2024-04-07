@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Lombiq.HelpfulLibraries.OrchardCore.Validation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
@@ -16,10 +16,10 @@ using Refit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 using AdminController = OrchardCore.Settings.Controllers.AdminController;
+using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
 
@@ -52,6 +52,7 @@ public class ExactlyController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateTransaction(string shoppingCartId) =>
         await this.SafeJsonAsync(async () =>
         {
@@ -63,7 +64,7 @@ public class ExactlyController : Controller
         });
 
     public async Task<IActionResult> GetRedirectUrl(string transactionId) =>
-        await this.SafeJsonAsync<object>(async () => await GetActionRedirectRequested(transactionId));
+        await this.SafeJsonAsync<object>(async () => await GetActionRedirectRequestedAsync(transactionId));
 
     [HttpGet("checkout/middleware/Exactly")]
     public Task<IActionResult> Middleware() =>
@@ -86,11 +87,10 @@ public class ExactlyController : Controller
             });
 
             var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
-            var action = await GetActionRedirectRequested(result.Id);
+            var action = await GetActionRedirectRequestedAsync(result.Id);
 
             await _notifier.SuccessAsync(
-                H["The Exactly API access works correctly. You can test the redirection by clicking <a href=\"{0}\">here</a>",
-                    action.Url]);
+                H["The Exactly API access works correctly. You can test the redirection by clicking <a href=\"{0}\">here</a>", action.Url]);
         }
         catch (ApiException exception)
         {
@@ -100,7 +100,7 @@ public class ExactlyController : Controller
         catch (FrontendException exception)
         {
             _logger.LogError(exception, "A front-end readable error was encountered.");
-            await _notifier.ErrorAsync(exception.HtmlMessage);
+            await _notifier.FrontEndErrorAsync(exception);
         }
         catch (Exception exception)
         {
@@ -117,7 +117,7 @@ public class ExactlyController : Controller
             new { area = "OrchardCore.Settings", groupId = ExactlySettingsDisplayDriver.EditorGroupId });
     }
 
-    private async Task<ChargeAction.ChargeActionAttributes> GetActionRedirectRequested(string transactionId)
+    private async Task<ChargeAction.ChargeActionAttributes> GetActionRedirectRequestedAsync(string transactionId)
     {
         var result = await _exactlyService.GetTransactionDetailsAsync(
             transactionId,

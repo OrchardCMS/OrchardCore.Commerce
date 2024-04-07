@@ -9,14 +9,14 @@ namespace OrchardCore.Commerce.Payment.Exactly.Models;
 public interface IExactlyAmount
 {
     /// <summary>
-    /// Gets the decimal amount represented as string. Point (".") must be used as decimal separator. Decimal separator
-    /// must always be present for currencies with minor units. Max len is 37 chars: 18 digits before decimal separator,
-    /// decimal separator, 18 digits after
+    /// Gets or sets the decimal amount represented as string. Point (".") must be used as decimal separator. Decimal
+    /// separator must always be present for currencies with minor units. The maximum length is 37 characters: 18 digits
+    /// before the decimal separator, the decimal separator and 18 digits after.
     /// </summary>
     public string Amount { get; set; }
 
     /// <summary>
-    /// Gets the currency code, can be ISO 4217 alpha code or unofficial, e.g. XBT for Bitcoin.
+    /// Gets or sets the currency code, can be ISO 4217 alpha code or unofficial, e.g. XBT for Bitcoin.
     /// </summary>
     public string Currency { get; set; }
 }

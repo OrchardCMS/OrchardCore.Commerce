@@ -23,7 +23,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
+
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Controllers;
 

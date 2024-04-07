@@ -10,9 +10,10 @@ namespace OrchardCore.Commerce.Payment.Exactly.Services;
 
 public class ExactlyPaymentProvider : IPaymentProvider
 {
+    public const string ProviderName = "Exactly";
+
     private readonly IExactlyService _exactlyService;
     private readonly ISiteService _siteService;
-    public const string ProviderName = "Exactly";
 
     public string Name => ProviderName;
 
