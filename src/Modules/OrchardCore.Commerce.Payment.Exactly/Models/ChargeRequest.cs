@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Lombiq.HelpfulLibraries.Common.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -38,30 +39,33 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
     public ChargeRequest(OrderPart orderPart, User user, string projectId, Uri returnUrl)
     {
         if (!returnUrl.IsAbsoluteUri) throw new ArgumentException("The return URL must be absolute.", nameof(returnUrl));
+        var descriptionParts = orderPart
+            .LineItems
+            .Select(item => StringHelper.CreateInvariant($"{item.Quantity} × {item.UnitPrice} {item.FullSku}"));
 
         ProjectId = projectId;
         ReferenceId = orderPart.OrderId.Text;
-        CustomerDescription = string.Join(", ", orderPart.Charges.Select(payment => $"{payment.Amount} × {payment.ChargeText}"));
+        CustomerDescription = string.Join(", ", descriptionParts);
         ReturnUrl = returnUrl.AbsoluteUri;
         CustomerId = user.UserId;
         Email = user.Email;
         Meta = orderPart.ContentItem.ContentItemId;
 
-        this.SetAmount(orderPart.Charges.Select(payment => payment.Amount).Sum());
+        this.SetAmount(orderPart.LineItems.Select(item => item.LinePrice).Sum());
     }
 
     public static implicit operator ExactlyRequest<ChargeRequest>(ChargeRequest attributes) =>
         new() { Attributes = attributes };
 
-    public static async Task<ChargeRequest> CreateUserAsync(OrderPart orderPart, HttpContext context)
+    public static async Task<ChargeRequest> CreateForCurrentUserAsync(OrderPart orderPart, HttpContext context)
     {
         var provider = context.RequestServices;
-        var returnurl = context.ActionTask<ExactlyController>(controller => controller.Middleware());
+        var returnUrl = context.ActionTask<ExactlyController>(controller => controller.Middleware());
 
         return new ChargeRequest(
             orderPart,
             await provider.GetRequiredService<IUserService>().GetFullUserAsync(context.User),
             provider.GetRequiredService<IOptionsSnapshot<ExactlySettings>>().Value.ProjectId,
-            new Uri(new Uri(context.Request.GetDisplayUrl()), returnurl));
+            new Uri(new Uri(context.Request.GetDisplayUrl()), returnUrl));
     }
 }

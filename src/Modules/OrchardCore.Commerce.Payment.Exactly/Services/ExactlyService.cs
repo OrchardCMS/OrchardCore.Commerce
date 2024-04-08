@@ -24,7 +24,7 @@ public class ExactlyService : IExactlyService
 
     public async Task<ChargeResponse> CreateTransactionAsync(OrderPart orderPart)
     {
-        var charge = await ChargeRequest.CreateUserAsync(orderPart, _hca.HttpContext);
+        var charge = await ChargeRequest.CreateForCurrentUserAsync(orderPart, _hca.HttpContext);
         var request = new ExactlyDataWrapper<ExactlyRequest<ChargeRequest>>(
             new ExactlyRequest<ChargeRequest> { Attributes = charge });
 

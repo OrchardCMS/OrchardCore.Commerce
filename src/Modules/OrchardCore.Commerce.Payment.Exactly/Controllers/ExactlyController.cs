@@ -74,12 +74,13 @@ public class ExactlyController : Controller
             order.Alter<OrderPart>(part =>
             {
                 part.OrderId.Text = Guid.NewGuid().ToString("D");
-                part.Charges.Add(new Payment.Models.Payment(
-                    "card",
-                    Guid.NewGuid().ToString("D"),
-                    "Test Transaction",
+                part.LineItems.Add(new OrderLineItem(
+                    quantity: 1,
+                    "TEST",
+                    "TEST",
                     new Amount(1, Currency.Euro),
-                    DateTime.UtcNow));
+                    new Amount(1, Currency.Euro),
+                    contentItemVersion: null));
             });
 
             var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
