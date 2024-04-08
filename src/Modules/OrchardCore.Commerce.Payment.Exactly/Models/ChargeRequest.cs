@@ -60,7 +60,7 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
     public static async Task<ChargeRequest> CreateForCurrentUserAsync(OrderPart orderPart, HttpContext context)
     {
         var provider = context.RequestServices;
-        var returnUrl = context.ActionTask<ExactlyController>(controller => controller.Middleware());
+        var returnUrl = context.ActionTask<ExactlyController>(controller => controller.Middleware(null, null));
 
         return new ChargeRequest(
             orderPart,

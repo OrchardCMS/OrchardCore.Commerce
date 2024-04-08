@@ -19,6 +19,18 @@ public class ChargeResponse : IExactlyResponseData
     public string Id { get; set; }
     public ChargeAttributes Attributes { get; set; }
 
+    public Payment.Models.Payment ToPayment()
+    {
+        var type = Attributes.Processing.PaymentMethod.Type;
+        var amount = Attributes.Processing.GetAmount();
+        return new(
+            type,
+            Id,
+            $"Exactly transaction via {type} for {amount}",
+            amount,
+            Attributes.CreatedAt);
+    }
+
     public enum ChargeResponseStatus
     {
         /// <summary>

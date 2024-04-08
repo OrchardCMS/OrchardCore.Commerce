@@ -271,4 +271,7 @@ public class PaymentController : Controller
         await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
         return RedirectToAction(nameof(Index));
     }
+
+    [Route("checkout/wait")]
+    public IActionResult Wait(string returnUrl) => View(returnUrl);
 }
