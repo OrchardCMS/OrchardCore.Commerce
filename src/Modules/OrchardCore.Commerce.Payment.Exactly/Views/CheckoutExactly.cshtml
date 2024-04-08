@@ -25,6 +25,29 @@
             return new Promise(r => setTimeout(r, ms));
         }
 
+        function handleError(json) {
+            if (json && !json.error) return true;
+
+            let error = json?.error ?? @defaultErrorMessage.Json();
+
+            if (Array.isArray(json?.html)) {
+                error = json.html.map((html) => {
+                    const div = document.createElement('div');
+                    div.innerHTML = html;
+
+                    document.body.append(div);
+                    const text = div.innerText.trim();
+                    document.body.removeChild(div);
+
+                    return text;
+                }).join('\n');
+            }
+
+            alert(error);
+            setButtons(true);
+            return false;
+        }
+
         button.addEventListener('click', async (event) => {
             event.preventDefault();
             setButtons(false);
@@ -32,31 +55,13 @@
             const form = document.querySelector('.payment-form');
             const json = await fetchJson(@actionUrl.JsonHtmlContent(), { method: 'post', body: new FormData(form) });
 
-            if (!json || json.error) {
-                let error = json?.error ?? @defaultErrorMessage.Json();
-
-                if (Array.isArray(json?.html)) {
-                    error = json.html.map((html) => {
-                        const div = document.createElement('div');
-                        div.innerHTML = html;
-
-                        document.body.append(div);
-                        const text = div.innerText.trim();
-                        document.body.removeChild(div);
-
-                        return text;
-                    }).join('\n');
-                }
-
-                alert(error);
-            }
-            else {
+            if (handleError(json)) {
                 const statusUrl = (@statusUrl.JsonHtmlContent()).replace('TRANSACTION_ID', json.id);
                 while (true) {
-                    const redirectUrl = await fetchJson(statusUrl, { method: 'get' });
+                    const response = await fetchJson(statusUrl, { method: 'get' });
 
-                    if (redirectUrl) {
-                        location.href = redirectUrl;
+                    if (handleError(response)) {
+                        location.href = response.url;
                         break;
                     }
 
