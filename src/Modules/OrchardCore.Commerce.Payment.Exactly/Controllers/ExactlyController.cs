@@ -1,7 +1,6 @@
 ﻿using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -19,7 +18,7 @@ using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 using AdminController = OrchardCore.Settings.Controllers.AdminController;
-using FrontendException=Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
 
@@ -31,7 +30,6 @@ public class ExactlyController : Controller
     private readonly INotifier _notifier;
     private readonly IPaymentService _paymentService;
     private readonly IHtmlLocalizer<ExactlyController> H;
-    private readonly IStringLocalizer<ExactlyController> S;
 
     public ExactlyController(
         IContentManager contentManager,
@@ -39,8 +37,7 @@ public class ExactlyController : Controller
         ILogger<ExactlyController> logger,
         INotifier notifier,
         IPaymentService paymentService,
-        IHtmlLocalizer<ExactlyController> htmlLocalizer,
-        IStringLocalizer<ExactlyController> stringLocalizer)
+        IHtmlLocalizer<ExactlyController> htmlLocalizer)
     {
         _contentManager = contentManager;
         _exactlyService = exactlyService;
@@ -48,7 +45,6 @@ public class ExactlyController : Controller
         _notifier = notifier;
         _paymentService = paymentService;
         H = htmlLocalizer;
-        S = stringLocalizer;
     }
 
     [HttpPost]
