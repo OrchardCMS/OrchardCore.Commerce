@@ -124,6 +124,6 @@ public class ExactlyController : Controller
             .Attributes
             .Actions
             .Select(action => action.Attributes)
-            .First(action => action.Action == "redirect-required" && action.HttpMethod == "GET");
+            .FirstOrDefault(action => action.Action == "redirect-required" && action.HttpMethod == "GET");
     }
 }

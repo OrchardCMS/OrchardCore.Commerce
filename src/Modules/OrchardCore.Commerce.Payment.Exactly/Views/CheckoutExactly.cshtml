@@ -44,7 +44,6 @@
             }
 
             alert(error);
-            setButtons(true);
             return false;
         }
 
@@ -53,15 +52,15 @@
             setButtons(false);
 
             const form = document.querySelector('.payment-form');
-            const json = await fetchJson(@actionUrl.JsonHtmlContent(), { method: 'post', body: new FormData(form) });
+            const actionResponse = await fetchJson(@actionUrl.JsonHtmlContent(), { method: 'post', body: new FormData(form) });
 
-            if (handleError(json)) {
-                const statusUrl = (@statusUrl.JsonHtmlContent()).replace('TRANSACTION_ID', json.id);
+            if (handleError(actionResponse)) {
+                const statusUrl = (@statusUrl.JsonHtmlContent()).replace('TRANSACTION_ID', actionResponse.id);
                 while (true) {
-                    const response = await fetchJson(statusUrl, { method: 'get' });
+                    const statusResponse = await fetchJson(statusUrl, { method: 'get' });
 
-                    if (handleError(response)) {
-                        location.href = response.url;
+                    if (statusResponse && handleError(statusResponse)) {
+                        location.href = statusResponse.url;
                         break;
                     }
 
