@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
+using OrchardCore.Commerce.Inventory.Drivers;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
@@ -58,10 +59,12 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         }
 
         var title = productPart.ContentItem.DisplayText;
-        var fullSku = _productService.GetOrderFullSku(item, productPart);
+        var fullSku = _productService.GetOrderFullSku(item, productPart)?.TrimEnd('-');
 
         var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
-        var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+        var relevantInventory = inventoryPart.Inventory.Count == 1 && inventoryPart.Inventory.Single().Key == InventoryPartDisplayDriver.DefaultKey
+            ? inventoryPart.Inventory.Single()
+            : inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
         // Item verification should fail if back ordering is not allowed and quantity exceeds available inventory.
         if (!inventoryPart.AllowsBackOrder.Value && item.Quantity > relevantInventory.Value)

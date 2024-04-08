@@ -13,6 +13,8 @@ namespace OrchardCore.Commerce.Inventory.Drivers;
 
 public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
 {
+    public const string DefaultKey = "DEFAULT";
+    
     private readonly IHttpContextAccessor _hca;
 
     public InventoryPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
@@ -36,7 +38,7 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
             var currentSku = _hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
             var skuBefore = viewModel.Inventory.FirstOrDefault().Key != null
                 ? viewModel.Inventory.FirstOrDefault().Key.Split('-')[0]
-                : "DEFAULT";
+                : DefaultKey;
 
             part.Inventory.Clear();
             part.Inventory.AddRange(viewModel.Inventory);
