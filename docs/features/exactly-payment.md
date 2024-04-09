@@ -13,7 +13,7 @@ To start using, follow these steps:
 5. On your Orchard Core tenant go to Admin dashboard > Configuration > Features. 
 6. Make sure the _Orchard Core Commerce - Payment - Exactly_ feature is enabled.
 7. Go to Admin dashboard > Configuration > Commerce > Exactly API.
-8. Fill out the _Project ID_ and _API key_ fields. (Don't alter the _API base address_ field!)
+8. Fill out the _Project ID_ and _API key_ fields.
 9. Save and then click the _Verify currently saved API configuration_ button to test it. This will create a new transaction you can check on <https://dashboard.exactly.com/transactions>.
 
 Once you have set up the site configuration, an additional _Pay with Exactly_ button will appear during checkout.
