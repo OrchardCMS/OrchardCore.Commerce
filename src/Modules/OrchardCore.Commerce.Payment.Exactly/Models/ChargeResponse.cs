@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -19,10 +20,10 @@ public class ChargeResponse : IExactlyResponseData
     public string Id { get; set; }
     public ChargeAttributes Attributes { get; set; }
 
-    public Payment.Models.Payment ToPayment()
+    public Payment.Models.Payment ToPayment(IMoneyService moneyService)
     {
         var type = Attributes.Processing.PaymentMethod.Type;
-        var amount = Attributes.Processing.GetAmount();
+        var amount = Attributes.Processing.GetAmount(moneyService);
         return new(
             type,
             Id,

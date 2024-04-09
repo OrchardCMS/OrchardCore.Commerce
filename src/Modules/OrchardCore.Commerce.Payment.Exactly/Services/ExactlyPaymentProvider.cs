@@ -65,24 +65,26 @@ public class ExactlyPaymentProvider : IPaymentProvider
         var context = _hca.HttpContext!;
         var transactionId = context.Request.Query["transactionId"];
         var response = await _exactlyService.GetTransactionDetailsAsync(transactionId, cancellationToken: context.RequestAborted);
+        var data = response.Attributes;
 
-        switch (response.Attributes.Status)
+        switch (data.Processing.ResultCode, data.Status)
         {
-            case ChargeResponse.ChargeResponseStatus.ActionRequired:
-            case ChargeResponse.ChargeResponseStatus.Processing:
-                return controller.RedirectToAction(
-                    nameof(PaymentController.Wait),
-                    typeof(PaymentController).ControllerName(),
-                    new { area = PaymentFeatureIds.Payment, returnUrl = context.Request.GetDisplayUrl() });
-            case ChargeResponse.ChargeResponseStatus.Processed:
+            case (_, ChargeResponse.ChargeResponseStatus.Processing):
+                return PaymentController.RedirectToWait(controller);
+            case (_, ChargeResponse.ChargeResponseStatus.Processed):
+            case ("success", _):
                 return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-                    controller, order, shoppingCartId, ProviderName, _ => [response.ToPayment()]);
-            case ChargeResponse.ChargeResponseStatus.Failed:
+                    controller, order, shoppingCartId, ProviderName, _ => [response.ToPayment(_moneyService)]);
+            case (_, ChargeResponse.ChargeResponseStatus.ActionRequired)
+                when data.Actions?.FirstOrDefault(action => action.Attributes.IsGet) is { } action:
+                return PaymentController.RedirectToWait(controller, action.Attributes.Url.AbsoluteUri);
+            case (_, ChargeResponse.ChargeResponseStatus.ActionRequired):
+            case (_, ChargeResponse.ChargeResponseStatus.Failed):
                 order.Alter<OrderPart>(part => part.Status.Text = OrderStatuses.PaymentFailed.HtmlClassify());
                 await _contentManager.PublishAsync(order);
 
                 await _notifier.ErrorAsync(H["Your transaction has failed."]);
-                return controller.Redirect("~/cart");
+                return controller.Redirect("~/checkout");
             default:
                 throw new ArgumentOutOfRangeException(response.Attributes.Status.ToString());
         }
