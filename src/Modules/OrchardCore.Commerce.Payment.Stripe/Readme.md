@@ -1,4 +1,4 @@
-# Orchard Core Commerce - Inventory
+# Orchard Core Commerce - Payment - Stripe
 
 ## About
 
