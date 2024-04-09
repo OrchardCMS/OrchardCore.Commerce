@@ -70,16 +70,16 @@ public class StripeController : Controller
             return NotFound();
         }
 
-        var status = order.As<OrderPart>()?.Status?.Text;
+        var part = order.As<OrderPart>() ?? new OrderPart();
         var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
 
         // Looks like there is nothing to do here.
-        if (succeeded && status == OrderStatuses.Ordered.HtmlClassify())
+        if (succeeded && part.IsOrdered)
         {
             return this.RedirectToContentDisplay(order);
         }
 
-        if (succeeded && status == OrderStatuses.Pending.HtmlClassify())
+        if (succeeded && part.IsPending)
         {
             return await _stripePaymentService.UpdateAndRedirectToFinishedOrderAsync(
                 this,
@@ -87,7 +87,7 @@ public class StripeController : Controller
                 fetchedPaymentIntent);
         }
 
-        if (status == OrderStatuses.PaymentFailed.HtmlClassify())
+        if (part.IsFailed)
         {
             return await PaymentFailedAsync();
         }

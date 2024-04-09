@@ -194,7 +194,7 @@ public class PaymentService : IPaymentService
         await order.AlterAsync<OrderPart>(async orderPart =>
         {
             orderPart.LineItems.SetItems(lineItems);
-            orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
+            orderPart.Status.Text = OrderStatuses.OrderStatusCodes.Pending;
 
             if (orderPart.BillingAndShippingAddressesMatch.Value)
             {
@@ -258,7 +258,7 @@ public class PaymentService : IPaymentService
                 orderPart.Charges.SetItems(newCharges);
             }
 
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.OrderStatusCodes.Ordered };
         });
 
         await _orderEvents.AwaitEachAsync(orderEvent => orderEvent.OrderedAsync(order, shoppingCartId));

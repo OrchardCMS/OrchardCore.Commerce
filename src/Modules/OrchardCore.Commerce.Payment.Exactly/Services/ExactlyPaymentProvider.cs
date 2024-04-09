@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Controllers;
@@ -23,6 +24,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
     public const string ProviderName = "Exactly";
 
     private readonly IStringLocalizer<ChargeResponse> _chargeResponseStringLocalizer;
+    private readonly IContentManager _contentManager;
     private readonly IExactlyService _exactlyService;
     private readonly IHttpContextAccessor _hca;
     private readonly IMoneyService _moneyService;
@@ -42,6 +44,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
         IOrchardServices<ExactlyPaymentProvider> services)
     {
         _chargeResponseStringLocalizer = chargeResponseStringLocalizer;
+        _contentManager = services.ContentManager.Value;
         _exactlyService = exactlyService;
         _hca = services.HttpContextAccessor.Value;
         _moneyService = moneyService;
@@ -92,6 +95,9 @@ public class ExactlyPaymentProvider : IPaymentProvider
 
     private async Task<IActionResult> FailAsync(Controller controller, ContentItem order, LocalizedHtmlString message)
     {
+        order.Alter<OrderPart>(part => part.FailPayment());
+        await _contentManager.UpdateAsync(order);
+
         await _notifier.ErrorAsync(message);
         return PaymentController.RedirectToWait(controller, controller.Url.Content("~/checkout"));
     }
