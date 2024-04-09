@@ -256,9 +256,11 @@ public class PaymentController : Controller
             : await _contentManager.GetAsync(orderId);
         if (order is null) return NotFound();
 
-        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatuses.Pending.HtmlClassify();
+        var pending = OrderStatuses.Pending.HtmlClassify();
+        var failed = OrderStatuses.PaymentFailed.HtmlClassify();
+        var status = order.As<OrderPart>()?.Status?.Text ?? pending;
 
-        if (status != OrderStatuses.Pending.HtmlClassify())
+        if (status != pending && status != failed)
         {
             return this.RedirectToContentDisplay(order);
         }
@@ -271,8 +273,6 @@ public class PaymentController : Controller
             }
         }
 
-        return this.RedirectToContentDisplay(order);
-
         await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
         return RedirectToAction(nameof(Index));
     }
@@ -280,7 +280,7 @@ public class PaymentController : Controller
     [Route("checkout/wait")]
     public IActionResult Wait(string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
 
-    public static IActionResult RedirectToWait(Controller controller, string returnUrl = null) =>
+    public static IActionResult RedirectToWait(Controller controller, string? returnUrl = null) =>
         controller.RedirectToAction(
             nameof(Wait),
             typeof(PaymentController).ControllerName(),

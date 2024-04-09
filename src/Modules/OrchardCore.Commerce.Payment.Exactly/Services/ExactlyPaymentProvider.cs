@@ -2,18 +2,17 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Constants;
-using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,7 +22,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
 {
     public const string ProviderName = "Exactly";
 
-    private readonly IContentManager _contentManager;
+    private readonly IStringLocalizer<ChargeResponse> _chargeResponseStringLocalizer;
     private readonly IExactlyService _exactlyService;
     private readonly IHttpContextAccessor _hca;
     private readonly IMoneyService _moneyService;
@@ -35,13 +34,14 @@ public class ExactlyPaymentProvider : IPaymentProvider
     public string Name => ProviderName;
 
     public ExactlyPaymentProvider(
+        IStringLocalizer<ChargeResponse> chargeResponseStringLocalizer,
         IExactlyService exactlyService,
         IMoneyService moneyService,
         INotifier notifier,
         IPaymentService paymentService,
         IOrchardServices<ExactlyPaymentProvider> services)
     {
-        _contentManager = services.ContentManager.Value;
+        _chargeResponseStringLocalizer = chargeResponseStringLocalizer;
         _exactlyService = exactlyService;
         _hca = services.HttpContextAccessor.Value;
         _moneyService = moneyService;
@@ -78,15 +78,21 @@ public class ExactlyPaymentProvider : IPaymentProvider
             case (_, ChargeResponse.ChargeResponseStatus.ActionRequired)
                 when data.Actions?.FirstOrDefault(action => action.Attributes.IsGet) is { } action:
                 return PaymentController.RedirectToWait(controller, action.Attributes.Url.AbsoluteUri);
-            case (_, ChargeResponse.ChargeResponseStatus.ActionRequired):
+            case ({ } resultCode, _) when !string.IsNullOrEmpty(resultCode):
+                var resultCodes = ChargeResponse.GetResultCodes(_chargeResponseStringLocalizer);
+                var resultMessage = resultCodes.GetMaybe(resultCode) ?? resultCodes["transaction_failed"];
+                return await FailAsync(controller, order, H["Your transaction has failed: {0}.", resultMessage]);
             case (_, ChargeResponse.ChargeResponseStatus.Failed):
-                order.Alter<OrderPart>(part => part.Status.Text = OrderStatuses.PaymentFailed.HtmlClassify());
-                await _contentManager.PublishAsync(order);
-
-                await _notifier.ErrorAsync(H["Your transaction has failed."]);
-                return controller.Redirect("~/checkout");
+            case (_, ChargeResponse.ChargeResponseStatus.ActionRequired):
+                return await FailAsync(controller, order, H["Your transaction has failed."]);
             default:
                 throw new ArgumentOutOfRangeException(response.Attributes.Status.ToString());
         }
+    }
+
+    private async Task<IActionResult> FailAsync(Controller controller, ContentItem order, LocalizedHtmlString message)
+    {
+        await _notifier.ErrorAsync(message);
+        return PaymentController.RedirectToWait(controller, controller.Url.Content("~/checkout"));
     }
 }
