@@ -256,9 +256,9 @@ public class PaymentController : Controller
             : await _contentManager.GetAsync(orderId);
         if (order is null) return NotFound();
 
-        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatuses.OrderStatusCodes.Pending;
+        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
 
-        if (status != OrderStatuses.OrderStatusCodes.Pending && status != OrderStatuses.OrderStatusCodes.PaymentFailed)
+        if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
         {
             return this.RedirectToContentDisplay(order);
         }

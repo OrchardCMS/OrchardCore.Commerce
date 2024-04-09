@@ -2,6 +2,7 @@
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -21,6 +22,10 @@ public class ChargeResponse : IExactlyResponseData
     public string Id { get; set; }
     public ChargeAttributes Attributes { get; set; }
 
+    [SuppressMessage(
+        "StyleCop.CSharp.NamingRules",
+        "SA1313:Parameter names should begin with lower-case letter",
+        Justification = "Necessary for localization extractor.")]
     public static IDictionary<string, LocalizedString> GetResultCodes(IStringLocalizer<ChargeResponse> T) =>
         new Dictionary<string, LocalizedString>
         {

@@ -5,11 +5,8 @@ using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
-
-using static OrchardCore.Commerce.Abstractions.Constants.OrderStatuses;
 
 namespace OrchardCore.Commerce.Abstractions.Models;
 
@@ -61,12 +58,12 @@ public class OrderPart : ContentPart
     public bool IsFailed => Status?.Text?.EqualsOrdinalIgnoreCase(OrderStatusCodes.PaymentFailed) == true;
 
     /// <summary>
-    /// Sets the <see cref="Status"/> to <see cref="OrderStatuses.OrderStatusCodes.PaymentFailed"/>.
+    /// Sets the <see cref="Status"/> OrderStatusCodesderStatusCodes.PaymentFailed"/>.
     /// </summary>
     public void FailPayment() => Status.Text = OrderStatusCodes.PaymentFailed;
 
     /// <summary>
-    /// Sets the <see cref="Status"/> to <see cref="OrderStatuses.OrderStatusCodes.Ordered"/>.
+    /// Sets the <see cref="Status"/> to <see cref="OrderStatusCodes.Ordered"/>.
     /// </summary>
     public void SucceedPayment() => Status.Text = OrderStatusCodes.Ordered;
 }

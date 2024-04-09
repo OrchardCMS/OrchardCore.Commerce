@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json;
-using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
@@ -11,7 +10,6 @@ using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Mvc.Utilities;
 using Stripe;
 using System.Threading.Tasks;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
