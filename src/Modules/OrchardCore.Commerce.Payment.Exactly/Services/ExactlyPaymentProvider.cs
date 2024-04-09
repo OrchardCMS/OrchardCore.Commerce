@@ -1,22 +1,21 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
+﻿using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-
-using PaymentFeatureIds = OrchardCore.Commerce.Payment.Constants.FeatureIds;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Services;
 
@@ -27,6 +26,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
     private readonly IContentManager _contentManager;
     private readonly IExactlyService _exactlyService;
     private readonly IHttpContextAccessor _hca;
+    private readonly IMoneyService _moneyService;
     private readonly INotifier _notifier;
     private readonly IPaymentService _paymentService;
     private readonly ISiteService _siteService;
@@ -35,21 +35,20 @@ public class ExactlyPaymentProvider : IPaymentProvider
     public string Name => ProviderName;
 
     public ExactlyPaymentProvider(
-        IContentManager contentManager,
         IExactlyService exactlyService,
-        IHttpContextAccessor hca,
+        IMoneyService moneyService,
         INotifier notifier,
         IPaymentService paymentService,
-        ISiteService siteService,
-        IHtmlLocalizer<ExactlyPaymentProvider> htmlLocalizer)
+        IOrchardServices<ExactlyPaymentProvider> services)
     {
-        _contentManager = contentManager;
+        _contentManager = services.ContentManager.Value;
         _exactlyService = exactlyService;
-        _hca = hca;
+        _hca = services.HttpContextAccessor.Value;
+        _moneyService = moneyService;
         _notifier = notifier;
         _paymentService = paymentService;
-        _siteService = siteService;
-        H = htmlLocalizer;
+        _siteService = services.SiteService.Value;
+        H = services.HtmlLocalizer.Value;
     }
 
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model)

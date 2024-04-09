@@ -1,4 +1,5 @@
 ﻿using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System.Globalization;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Models;
@@ -29,8 +30,8 @@ public static class ExactlyAmountExtensions
         target.Currency = source.Currency.CurrencyIsoCode;
     }
 
-    public static Amount GetAmount(this IExactlyAmount source) =>
+    public static Amount GetAmount(this IExactlyAmount source, IMoneyService moneyService) =>
         new(
             decimal.Parse(source.Amount, CultureInfo.InvariantCulture),
-            Currency.FromIsoCurrencyCode(source.Currency));
+            moneyService.GetCurrency(source.Currency));
 }
