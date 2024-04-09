@@ -3,9 +3,9 @@
 Orchard Core Commerce supports multiple [payment providers](payment-providers.md). [Exactly](https://exactly.com/) is one of the officially included ones. Unlike [our Stripe implementation](stripe-payment.md), it uses redirects to send you to a payment interface on their domain.
 
 To start using, follow these steps:
-1. Sign up via <https://application.exactly.com/>.
+1. Sign up [here](https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ).
 2. Once they respond, ask your contact person for the following:
-   - Whitelist for your web domain (at the time of writing _localhost_ is not supported).
+   - Whitelist for your web domain.
    - If needed, a sandbox project you can use for testing.
    - A live project for your final site.
 3. Go to <https://dashboard.exactly.com/projects/>.
@@ -18,14 +18,16 @@ To start using, follow these steps:
 
 Once you have set up the site configuration, an additional _Pay with Exactly_ button will appear during checkout.
 
+> ℹ At the time of writing callback URLs targeting _localhost_ are not supported. If you want to test your site locally, we suggest adding a whitelisted domain to your [hosts file](https://en.wikipedia.org/wiki/Hosts_(file)). The address doesn't have to be accessible from their server so this approach is safer than exposing your machine via port forwarding or tunneling..
+
 ### Cards
 
 There are available test cards that can be found in [Stripe's documentation](https://stripe.com/docs/testing).
 
 There are multiple test cards that can simulate any scenario, including error codes. Here are two examples:
 
-| Brand      | Number              |      CVC     |       Date      | Result                                           |
-|------------|---------------------| ------------ | --------------- |--------------------------------------------------|
+| Brand      | Number              | CVC          | Date            | Result                                           |
+|------------|---------------------|--------------|-----------------|--------------------------------------------------|
 | Visa       | 4000 0000 0000 7775 | Any 3 digits | Any future date | the card has insufficient funds                  |
 | Visa       | 4000 0000 0000 3220 | Any 3 digits | Any future date | success during 3DS Auth (3DS is always expected) |
 | Visa       | 4000 0084 0000 1280 | Any 3 digits | Any future date | the card fails 3DS Auth (3DS is always expected) |
