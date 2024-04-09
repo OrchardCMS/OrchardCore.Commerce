@@ -1,4 +1,4 @@
-﻿@model string
+﻿@model OrchardCore.Commerce.Payment.ViewModels.CheckoutWaitViewModel
 
 <div class="row pt-md-5">
     <div class="col-6 mx-auto">
@@ -16,5 +16,5 @@
 </div>
 
 <script at="Foot">
-    setTimeout(() => location.href = @Model.JsonHtmlContent(), 1000);
+    setTimeout(() => location.href = @Model.ReturnUrl.JsonHtmlContent(), 1000);
 </script>
