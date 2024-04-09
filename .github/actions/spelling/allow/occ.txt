@@ -19,6 +19,7 @@ GST
 htmlfield
 LCID
 markdownlint
+Mastercard
 mkdocs
 numericfield
 Nunavut
@@ -30,10 +31,12 @@ pricefield
 roadmap
 shoppingcart
 skus
+sso
 testfreeproduct
 testdiscountedproduct
 testproduct
 testproductvariant
 unpublish
+vnd
 webhooks
 webshop

@@ -58,7 +58,7 @@ public class OrderPart : ContentPart
     public bool IsFailed => Status?.Text?.EqualsOrdinalIgnoreCase(OrderStatusCodes.PaymentFailed) == true;
 
     /// <summary>
-    /// Sets the <see cref="Status"/> OrderStatusCodesderStatusCodes.PaymentFailed"/>.
+    /// Sets the <see cref="Status"/> to <see cref="OrderStatusCodes.PaymentFailed"/>.
     /// </summary>
     public void FailPayment() => Status.Text = OrderStatusCodes.PaymentFailed;
 

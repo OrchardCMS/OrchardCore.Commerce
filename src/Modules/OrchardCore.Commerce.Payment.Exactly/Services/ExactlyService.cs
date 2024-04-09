@@ -53,7 +53,7 @@ public class ExactlyService : IExactlyService
 
         throw new TimeoutException(
             $"Couldn't get the transaction \"{transactionId}\" with the status \"{waitForStatus}\" within " +
-            $"the expected timeframe.");
+            $"the expected time frame.");
     }
 
     private static T EvaluateResult<T>(IApiResponse<ExactlyResponse<T>> result)
