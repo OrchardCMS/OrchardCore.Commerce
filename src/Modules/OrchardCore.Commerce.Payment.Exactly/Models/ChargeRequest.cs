@@ -6,7 +6,9 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
+using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Controllers;
+using OrchardCore.Commerce.Payment.Exactly.Services;
 using OrchardCore.Users.Models;
 using System;
 using System.Linq;
@@ -32,7 +34,8 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
     public int Lifetime { get; set; } = 3600;
     public object Meta { get; set; }
 
-    public ChargeRequest()
+    [JsonConstructor]
+    private ChargeRequest()
     {
     }
 
@@ -60,12 +63,17 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
     public static async Task<ChargeRequest> CreateForCurrentUserAsync(OrderPart orderPart, HttpContext context)
     {
         var provider = context.RequestServices;
-        var returnUrl = context.ActionTask<ExactlyController>(controller => controller.Middleware(null, null));
+
+        var returnUrl = context.ActionTask<PaymentController>(controller => controller.Callback(
+            ExactlyPaymentProvider.ProviderName,
+            orderPart.ContentItem.ContentItemId,
+            null));
+        var absoluteReturnUrl = new Uri(new Uri(context.Request.GetDisplayUrl()), returnUrl);
 
         return new ChargeRequest(
             orderPart,
             await provider.GetRequiredService<IUserService>().GetFullUserAsync(context.User),
             provider.GetRequiredService<IOptionsSnapshot<ExactlySettings>>().Value.ProjectId,
-            new Uri(new Uri(context.Request.GetDisplayUrl()), returnUrl));
+            absoluteReturnUrl);
     }
 }

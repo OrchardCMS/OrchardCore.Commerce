@@ -1,33 +1,25 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.Contents;
-using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+﻿using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Lombiq.HelpfulLibraries.OrchardCore.Validation;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
-using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Drivers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Commerce.Payment.Exactly.Services;
-using OrchardCore.ContentFields.Indexing.SQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Mvc.Utilities;
 using Refit;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 using AdminController = OrchardCore.Settings.Controllers.AdminController;
 using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
-using PaymentFeatureIds = OrchardCore.Commerce.Payment.Constants.FeatureIds;
 
 
 namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
@@ -39,7 +31,6 @@ public class ExactlyController : Controller
     private readonly ILogger<ExactlyController> _logger;
     private readonly INotifier _notifier;
     private readonly IPaymentService _paymentService;
-    private readonly ISession _session;
     private readonly IHtmlLocalizer<ExactlyController> H;
 
     public ExactlyController(
@@ -53,7 +44,6 @@ public class ExactlyController : Controller
         _logger = services.Logger.Value;
         _notifier = notifier;
         _paymentService = paymentService;
-        _session = services.Session.Value;
         H = services.HtmlLocalizer.Value;
     }
 
@@ -71,52 +61,6 @@ public class ExactlyController : Controller
 
     public async Task<IActionResult> GetRedirectUrl(string transactionId) =>
         await this.SafeJsonAsync<object>(async () => await GetActionRedirectRequestedAsync(transactionId));
-
-    [HttpGet("checkout/middleware/Exactly")]
-    public async Task<IActionResult> Middleware(string transactionId, string referenceId)
-    {
-        var response = await _exactlyService.GetTransactionDetailsAsync(transactionId, cancellationToken: HttpContext.RequestAborted);
-        var order = response.Attributes.Status is ChargeResponse.ChargeResponseStatus.Failed or ChargeResponse.ChargeResponseStatus.Processed
-            ? await _session.QueryContentItem(PublicationStatus.Published, Order)
-                .With<TextFieldIndex>(index => index.ContentField == nameof(OrderPart.OrderId) && index.Text == referenceId)
-                .FirstOrDefaultAsync()
-            : null;
-
-        switch (response.Attributes.Status)
-        {
-            case ChargeResponse.ChargeResponseStatus.ActionRequired:
-            case ChargeResponse.ChargeResponseStatus.Processing:
-                return RedirectToAction(
-                    nameof(PaymentController.Wait),
-                    typeof(PaymentController).ControllerName(),
-                    new { area = PaymentFeatureIds.Payment, returnUrl = HttpContext.Request.GetDisplayUrl() });
-            case ChargeResponse.ChargeResponseStatus.Processed:
-                if (order == null)
-                {
-                    await _notifier.ErrorAsync(
-                        H["Couldn't find the order associated with the reference ID \"{0}\".", referenceId ?? string.Empty]);
-                    return NotFound();
-                }
-
-                return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-                    controller: this,
-                    order,
-                    shoppingCartId: null,
-                    ExactlyPaymentProvider.ProviderName,
-                    _ => [response.ToPayment()]);
-            case ChargeResponse.ChargeResponseStatus.Failed:
-                if (order != null)
-                {
-                    order.Alter<OrderPart>(part => part.Status.Text = OrderStatuses.PaymentFailed.HtmlClassify());
-                    await _contentManager.PublishAsync(order);
-                }
-
-                await _notifier.ErrorAsync(H["Your transaction has failed."]);
-                return Redirect("~/cart");
-            default:
-                throw new ArgumentOutOfRangeException(response.Attributes.Status.ToString());
-        }
-    }
 
     public async Task<IActionResult> VerifyApi()
     {
