@@ -79,6 +79,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B
 		docs\features\user-features.md = docs\features\user-features.md
 		docs\features\workflows.md = docs\features\workflows.md
 		docs\features\payment-providers.md = docs\features\payment-providers.md
+		docs\features\exactly-payment.md = docs\features\exactly-payment.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{83C01924-6F58-4777-A9EC-07943F7A2E31}"
