@@ -21,7 +21,6 @@ using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 using AdminController = OrchardCore.Settings.Controllers.AdminController;
 using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
-
 namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
 
 public class ExactlyController : Controller

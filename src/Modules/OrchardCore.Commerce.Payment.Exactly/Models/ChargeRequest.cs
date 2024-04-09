@@ -7,7 +7,6 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Controllers;
-using OrchardCore.Commerce.Payment.Exactly.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Services;
 using OrchardCore.Users.Models;
 using System;
