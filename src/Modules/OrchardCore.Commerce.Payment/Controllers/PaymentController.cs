@@ -238,6 +238,11 @@ public class PaymentController : Controller
             ? await _paymentService.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId)
             : NotFound();
 
+    [HttpGet]
+    [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
+    public Task<IActionResult> CallbackGet(string paymentProviderName, string? orderId, string? shoppingCartId) =>
+        Callback(paymentProviderName, orderId, shoppingCartId);
+
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -253,23 +258,20 @@ public class PaymentController : Controller
 
         var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatuses.Pending.HtmlClassify();
 
-        if (status == OrderStatuses.Ordered.HtmlClassify())
+        if (status != OrderStatuses.Pending.HtmlClassify())
         {
             return this.RedirectToContentDisplay(order);
         }
 
-        if (status == OrderStatuses.Pending.HtmlClassify())
+        foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
         {
-            foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
+            if (await provider.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId) is { } result)
             {
-                if (await provider.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId) is { } result)
-                {
-                    return result;
-                }
+                return result;
             }
-
-            return this.RedirectToContentDisplay(order);
         }
+
+        return this.RedirectToContentDisplay(order);
 
         await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
         return RedirectToAction(nameof(Index));
