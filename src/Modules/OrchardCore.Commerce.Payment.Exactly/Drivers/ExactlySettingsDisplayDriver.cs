@@ -4,9 +4,11 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Drivers;
@@ -35,16 +37,20 @@ public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlyS
         _ssoSettings = ssoSettings.Value;
     }
 
-    public override async Task<IDisplayResult> EditAsync(ExactlySettings section, BuildEditorContext context) =>
-        await AuthorizeAsync()
-            ? Initialize<ExactlySettings>($"{nameof(ExactlySettings)}_Edit", settings =>
-                {
-                    _ssoSettings.CopyTo(settings);
-                    settings.ApiKey = string.Empty;
-                })
-                .PlaceInContent()
-                .OnGroup(EditorGroupId)
-            : null;
+    public override async Task<IDisplayResult> EditAsync(ExactlySettings section, BuildEditorContext context)
+    {
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(EditorGroupId) || !await AuthorizeAsync()) return null;
+
+        context.Shape.AddTenantReloadWarning();
+
+        return Initialize<ExactlySettings>($"{nameof(ExactlySettings)}_Edit", settings =>
+            {
+                _ssoSettings.CopyTo(settings);
+                settings.ApiKey = string.Empty;
+            })
+            .PlaceInContent()
+            .OnGroup(EditorGroupId);
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(ExactlySettings section, BuildEditorContext context)
     {

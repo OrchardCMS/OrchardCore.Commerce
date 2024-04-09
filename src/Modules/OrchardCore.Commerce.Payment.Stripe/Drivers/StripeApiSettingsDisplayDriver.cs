@@ -8,9 +8,11 @@ using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Drivers;
@@ -45,10 +47,13 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
     {
         var user = _hca.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
+            !await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
         {
             return null;
         }
+
+        context.Shape.AddTenantReloadWarning();
 
         return Initialize<StripeApiSettingsViewModel>("StripeApiSettings_Edit", model =>
             {
