@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Inventory;
+using OrchardCore.Commerce.Inventory.Drivers;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -111,8 +112,8 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             // When creating a new Product item, initialize default inventory.
             if (part.ContentItem.As<PriceVariantsPart>() == null && !inventoryPart.Inventory.Any())
             {
-                inventoryPart.Inventory.Add("DEFAULT", 0);
-                inventoryPart.InventoryKeys.Add("DEFAULT");
+                inventoryPart.Inventory.Add(part.Sku, 0);
+                inventoryPart.InventoryKeys.Add(part.Sku);
             }
         }
         else

@@ -62,7 +62,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         var fullSku = _productService.GetOrderFullSku(item, productPart)?.TrimEnd('-');
 
         var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
-        var relevantInventory = inventoryPart.Inventory.Count == 1 && inventoryPart.Inventory.Single().Key == InventoryPartDisplayDriver.DefaultKey
+        var relevantInventory = inventoryPart.Inventory.Count == 1
             ? inventoryPart.Inventory.Single()
             : inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
 
