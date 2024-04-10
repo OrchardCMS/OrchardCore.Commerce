@@ -57,7 +57,7 @@ public class ProductService : IProductService
             .Select(attr => attr.PartName + "." + attr.Name)
             .ToHashSet();
 
-        if (!attributesRestrictedToPredefinedValues.Any()) return item.ProductSku;
+        if (attributesRestrictedToPredefinedValues.Count == 0) return item.ProductSku;
 
         var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
         var fullSku = item.Attributes.Any()
