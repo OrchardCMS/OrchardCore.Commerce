@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Inventory;
-using OrchardCore.Commerce.Inventory.Drivers;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
