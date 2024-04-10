@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Abstractions.Abstractions;
@@ -8,7 +8,6 @@ using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using Stripe;
 using System;
@@ -58,7 +57,7 @@ public class StripePaymentProvider : IPaymentProvider
 
         if (_hca.HttpContext?.GetRouteValue("action")?.ToString() == nameof(PaymentController.PaymentRequest))
         {
-            _session.Save(new OrderPayment
+            await _session.SaveAsync(new OrderPayment
             {
                 OrderId = model.OrderPart.ContentItem.ContentItemId,
                 PaymentIntentId = paymentIntent.Id,

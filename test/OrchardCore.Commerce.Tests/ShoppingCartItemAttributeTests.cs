@@ -8,11 +8,11 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ShoppingCartItemAttributeTests
 {
-    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new()
-    {
+    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed =
+    [
         new TextProductAttributeValue("ProductPart1.Size", "small"),
         new TextProductAttributeValue("ProductPart1.Color", "green"),
-    };
+    ];
 
     [Fact]
     public void GenerateVariantKeyFromShoppingCartItemAttributes()

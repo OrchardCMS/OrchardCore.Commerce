@@ -22,17 +22,17 @@ public sealed class DiscountTests
 
         var viewModelLineItems = new List<OrderLineItemViewModel>
             {
-                new OrderLineItemViewModel
-                    {
-                        ProductPart = null,
-                        Quantity = 10,
-                        ProductSku = "test",
-                        ProductName = "Test",
-                        UnitPrice = CreateUsDollarAmount(10),
-                        LinePrice = CreateUsDollarAmount(100),
-                        ProductRouteValues = null,
-                        Attributes = null,
-                    },
+                new()
+                {
+                    ProductPart = null,
+                    Quantity = 10,
+                    ProductSku = "test",
+                    ProductName = "Test",
+                    UnitPrice = CreateUsDollarAmount(10),
+                    LinePrice = CreateUsDollarAmount(100),
+                    ProductRouteValues = null,
+                    Attributes = null,
+                },
             };
 
         var total = viewModelLineItems.Select(item => item.LinePrice).Sum();

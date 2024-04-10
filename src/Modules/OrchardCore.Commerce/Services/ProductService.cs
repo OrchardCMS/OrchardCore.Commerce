@@ -47,13 +47,13 @@ public class ProductService : IProductService
 
         // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
-        return FillContentItemsAndGetProductParts(contentItems);
+        return await FillContentItemsAndGetProductPartsAsync(contentItems);
     }
 
-    public string GetOrderFullSku(ShoppingCartItem item, ProductPart productPart)
+    public async Task<string> GetOrderFullSkuAsync(ShoppingCartItem item, ProductPart productPart)
     {
-        var attributesRestrictedToPredefinedValues = _predefinedValuesService
-            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem)
+        var attributesRestrictedToPredefinedValues = (await _predefinedValuesService
+            .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
             .Select(attr => attr.PartName + "." + attr.Name)
             .ToHashSet();
 
@@ -74,7 +74,7 @@ public class ProductService : IProductService
 
         // We have to replicate some things that BuildDisplayAsync does to fill part.Elements with the fields. We can't
         // use BuildDisplayAsync directly because it requires a BuildDisplayContext.
-        return FillContentItemsAndGetProductParts(contentItems);
+        return await FillContentItemsAndGetProductPartsAsync(contentItems);
     }
 
     public string GetVariantKey(string sku) =>
@@ -104,14 +104,14 @@ public class ProductService : IProductService
         }
     }
 
-    private List<ProductPart> FillContentItemsAndGetProductParts(IEnumerable<ContentItem> contentItems)
+    private async Task<List<ProductPart>> FillContentItemsAndGetProductPartsAsync(IEnumerable<ContentItem> contentItems)
     {
         var results = new List<ProductPart>();
 
         foreach (var contentItem in contentItems)
         {
-            var contentItemsPartDefinitions = _contentDefinitionManager
-                .GetTypeDefinition(contentItem.ContentType)
+            var contentItemsPartDefinitions = (await _contentDefinitionManager
+                .GetTypeDefinitionAsync(contentItem.ContentType))
                 .Parts;
 
             foreach (var partDefinition in contentItemsPartDefinitions)

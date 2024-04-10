@@ -84,8 +84,8 @@ public class UserPersistenceTests : UITestBase
                 inputs
                     .Take(18)
                     .ToArray()
-                    .ShouldBe(new[]
-                    {
+                    .ShouldBe(
+                    [
                         BillingName,
                         BillingDepartment,
                         BillingCompany,
@@ -104,7 +104,7 @@ public class UserPersistenceTests : UITestBase
                         string.Empty,
                         ShippingPostalCode,
                         ShippingCountryCode,
-                    });
+                    ]);
             },
             browser);
 
@@ -136,12 +136,12 @@ public class UserPersistenceTests : UITestBase
                 inputs
                     .Take(3)
                     .ToArray()
-                    .ShouldBe(new[]
-                    {
+                    .ShouldBe(
+                    [
                         PhoneNumber,
                         VatNumber,
                         "true",
-                    });
+                    ]);
             },
             browser);
 

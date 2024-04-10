@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using System;
+using System.Threading.Tasks;
 using YesSql.Sql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
@@ -23,21 +24,21 @@ public class StripeMigrations : DataMigration
         _logger = logger;
     }
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition<StripePaymentPart>(builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<StripePaymentPart>(builder => builder
                 .Configure(part => part.Attachable())
                 .WithField(part => part.PaymentIntentId));
 
-        _contentDefinitionManager
-            .AlterTypeDefinition(Order, builder => builder
+        await _contentDefinitionManager
+            .AlterTypeDefinitionAsync(Order, builder => builder
                 .WithPart(nameof(StripePaymentPart)));
 
         // This table may exist when migrating from an old version of the DB where it was created in a different module.
         try
         {
-            SchemaBuilder.DropMapIndexTable(typeof(OrderPaymentIndex));
+            await SchemaBuilder.DropMapIndexTableAsync(typeof(OrderPaymentIndex));
         }
         catch (Exception exception) when (exception is SqlException)
         {
@@ -48,8 +49,8 @@ public class StripeMigrations : DataMigration
                 exception.Message);
         }
 
-        SchemaBuilder
-            .CreateMapIndexTable<OrderPaymentIndex>(table => table
+        await SchemaBuilder
+            .CreateMapIndexTableAsync<OrderPaymentIndex>(table => table
                 .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
                 .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 

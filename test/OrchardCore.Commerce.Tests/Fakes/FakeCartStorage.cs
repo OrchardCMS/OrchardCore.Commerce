@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Tests.Fakes;
 
 public class FakeCartStorage : IShoppingCartPersistence
 {
-    private readonly Dictionary<string, ShoppingCart> _carts = new();
+    private readonly Dictionary<string, ShoppingCart> _carts = [];
 
     public FakeCartStorage(ShoppingCart cart = null, string cartId = null) =>
         _carts[cartId ?? string.Empty] = cart != null

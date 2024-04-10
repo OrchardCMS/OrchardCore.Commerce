@@ -76,7 +76,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
                 viewModel.UserAddressToSave = field.UserAddressToSave;
 
                 viewModel.Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions();
-                viewModel.Provinces.AddRange(Regions.Provinces);
+                viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
                 PopulateViewModel(field, viewModel, context.PartFieldDefinition);
             });
 
@@ -116,7 +116,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
             updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
         }
 
-        return missingFields.Any() ? null : viewModel;
+        return missingFields.Count != 0 ? null : viewModel;
     }
 
     private static void PopulateViewModel(

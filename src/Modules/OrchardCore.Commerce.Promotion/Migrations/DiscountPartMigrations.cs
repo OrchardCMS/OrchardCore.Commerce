@@ -4,6 +4,7 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Promotion.Migrations;
 
@@ -17,10 +18,10 @@ public class DiscountPartMigrations : DataMigration
     public DiscountPartMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition<DiscountPart>(builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<DiscountPart>(builder => builder
                 .Configure(part => part
                     .Attachable()
                     .Reusable()

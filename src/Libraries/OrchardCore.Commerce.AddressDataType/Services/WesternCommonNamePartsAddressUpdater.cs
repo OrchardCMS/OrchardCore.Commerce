@@ -1,4 +1,4 @@
-﻿using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.AddressDataType.Constants;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,7 @@ public class WesternCommonNamePartsAddressUpdater : IAddressUpdater
         AddNamePart(parts, address, CommonNameParts.MiddleName);
         AddNamePart(parts, address, CommonNameParts.FamilyName);
 
-        if (parts.Any())
+        if (parts.Count != 0)
         {
             address.Name = string.Join(' ', parts);
         }
@@ -33,7 +33,7 @@ public class WesternCommonNamePartsAddressUpdater : IAddressUpdater
         return Task.CompletedTask;
     }
 
-    private static void AddNamePart(ICollection<string> parts, Address address, string key)
+    private static void AddNamePart(List<string> parts, Address address, string key)
     {
         if (address.NameParts.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
         {

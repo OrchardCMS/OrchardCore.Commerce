@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using Stripe;
 using System.IO;
@@ -38,7 +37,7 @@ public class WebhookController : Controller
     public async Task<IActionResult> Index()
     {
         using var streamReader = new StreamReader(HttpContext.Request.Body);
-        var json = await streamReader.ReadToEndAsync();
+        var json = await streamReader.ReadToEndAsync(HttpContext.RequestAborted);
         try
         {
             var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();

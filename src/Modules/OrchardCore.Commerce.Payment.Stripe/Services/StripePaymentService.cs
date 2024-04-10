@@ -173,7 +173,7 @@ public class StripePaymentService : IStripePaymentService
 
         if (isNew)
         {
-            _session.Save(new OrderPayment
+            await _session.SaveAsync(new OrderPayment
             {
                 OrderId = order.ContentItemId,
                 PaymentIntentId = paymentIntent.Id,

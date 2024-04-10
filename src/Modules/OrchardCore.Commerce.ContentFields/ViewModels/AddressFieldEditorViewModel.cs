@@ -10,7 +10,11 @@ public class AddressFieldEditorViewModel : ShapeViewModel
 {
     public const string ShapeType = "AddressFieldEditor";
 
-    public AddressField AddressField { get; set; }
+    public IAddressField AddressField { get; set; }
+
+    public bool HidePersonFields { get; set; }
+    public bool HidePostalFields { get; set; }
+
     public string CityName { get; set; }
 
     [BindNever]

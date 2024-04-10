@@ -1,6 +1,7 @@
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
@@ -15,9 +16,9 @@ public class MvcTitleMigrations : DataMigration
     public MvcTitleMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterTypeDefinition(MvcTitle, type => type
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(MvcTitle, type => type
             .NoAbilities()
             .WithTitlePart());
 

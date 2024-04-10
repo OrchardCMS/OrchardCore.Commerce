@@ -3,6 +3,7 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Inventory.Migrations;
 
@@ -16,10 +17,10 @@ public class InventoryPartMigrations : DataMigration
     public InventoryPartMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterPartDefinition<InventoryPart>(builder => builder
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<InventoryPart>(builder => builder
                 .Configure(part => part
                     .Attachable()
                     .WithDescription("Adds basic inventory management capabilities to a product."))

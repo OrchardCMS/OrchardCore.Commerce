@@ -1,4 +1,4 @@
-﻿using Lombiq.Tests.UI.Attributes;
+using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -54,12 +54,12 @@ public class WorkflowBehaviourTests : UITestBase
                     .Take(3)
                     .Select(element => element.Text.Trim())
                     .ToArray()
-                    .ShouldBe(new[]
-                    {
+                    .ShouldBe(
+                    [
                         "Workflow",
                         "Some content about product \"testproduct000\".",
                         "Some content about product \"shipping000000000000000000\".",
-                    });
+                    ]);
 
                 // Verify that it still works even after a reload.
                 context.Refresh();

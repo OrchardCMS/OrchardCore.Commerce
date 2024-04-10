@@ -35,14 +35,14 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
+        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), viewModel =>
+        Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), async viewModel =>
         {
-            BuildViewModel(viewModel, part);
+            await BuildViewModelAsync(viewModel, part);
             viewModel.Currencies = _moneyService.Currencies;
         });
 
@@ -76,13 +76,12 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         return await EditAsync(part, context);
     }
 
-    private void BuildViewModel(PriceVariantsPartViewModel model, PriceVariantsPart part)
+    private async Task BuildViewModelAsync(PriceVariantsPartViewModel model, PriceVariantsPart part)
     {
         model.ContentItem = part.ContentItem;
         model.PriceVariantsPart = part;
 
-        var allVariantsKeys = _predefinedValuesProductAttributeService
-            .GetProductAttributesCombinations(part.ContentItem)
+        var allVariantsKeys = (await _predefinedValuesProductAttributeService.GetProductAttributesCombinationsAsync(part.ContentItem))
             .Select(attr => attr.HtmlClassify().ToUpperInvariant())
             .ToList();
 

@@ -43,5 +43,5 @@ public interface IShoppingCartSerializer
     /// Process the products attributes for a cart line item, substitute temporary storage attributes such as <see
     /// cref="RawProductAttributeValue"/>.
     /// </summary>
-    ISet<IProductAttributeValue> PostProcessAttributes(IEnumerable<IProductAttributeValue> attributes, ProductPart productPart);
+    Task<ISet<IProductAttributeValue>> PostProcessAttributesAsync(IEnumerable<IProductAttributeValue> attributes, ProductPart productPart);
 }

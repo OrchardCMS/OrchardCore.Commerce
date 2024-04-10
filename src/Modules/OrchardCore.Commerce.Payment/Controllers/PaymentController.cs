@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
-using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -39,6 +39,7 @@ public class PaymentController : Controller
     private readonly IMoneyService _moneyService;
     private readonly IEnumerable<IPaymentProvider> _paymentProviders;
     private readonly IPaymentService _paymentService;
+    private readonly IRegionService _regionService;
 
     public PaymentController(
         IOrchardServices<PaymentController> services,
@@ -46,7 +47,8 @@ public class PaymentController : Controller
         INotifier notifier,
         IMoneyService moneyService,
         IEnumerable<IPaymentProvider> paymentProviders,
-        IPaymentService paymentService)
+        IPaymentService paymentService,
+        IRegionService regionService)
     {
         _authorizationService = services.AuthorizationService.Value;
         _logger = services.Logger.Value;
@@ -58,9 +60,10 @@ public class PaymentController : Controller
         _moneyService = moneyService;
         _paymentProviders = paymentProviders;
         _paymentService = paymentService;
+        _regionService = regionService;
     }
 
-    [Route("checkout")]
+    [HttpGet("checkout")]
     public async Task<IActionResult> Index(string? shoppingCartId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -81,7 +84,7 @@ public class PaymentController : Controller
 
         foreach (dynamic shape in checkoutViewModel.CheckoutShapes) shape.ViewModel = checkoutViewModel;
 
-        checkoutViewModel.Provinces.AddRange(Regions.Provinces);
+        checkoutViewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
 
         return View(checkoutViewModel);
     }
@@ -157,7 +160,7 @@ public class PaymentController : Controller
         }
     }
 
-    [Route("checkout/paymentrequest/{orderId}")]
+    [HttpGet("checkout/paymentrequest/{orderId}")]
     public async Task<IActionResult> PaymentRequest(string orderId)
     {
         if (await _contentManager.GetAsync(orderId) is not { } order ||
@@ -205,7 +208,7 @@ public class PaymentController : Controller
         return View(viewModel);
     }
 
-    [Route("success/{orderId}")]
+    [HttpGet("success/{orderId}")]
     public async Task<IActionResult> Success(string orderId)
     {
         if (await _contentManager.GetAsync(orderId) is not { } order) return NotFound();
