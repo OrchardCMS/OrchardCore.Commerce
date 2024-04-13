@@ -65,7 +65,7 @@ public class PriceVariantProvider : IPriceProvider
 
             if (item.HasRawAttributes())
             {
-                item.Attributes.SetItems(await _shoppingCartSerializer.PostProcessAttributesAsync(item.Attributes, productPart));
+                item.Attributes.SetItems(_shoppingCartSerializer.PostProcessAttributes(item.Attributes, productPart));
             }
 
             var key = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);

@@ -64,7 +64,7 @@ public class ProductService : IProductService
 
         if (item.HasRawAttributes())
         {
-            item.Attributes.SetItems(await _shoppingCartSerializer.Value.PostProcessAttributesAsync(item.Attributes, productPart));
+            item.Attributes.SetItems(_shoppingCartSerializer.Value.PostProcessAttributes(item.Attributes, productPart));
         }
 
         var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
