@@ -1,3 +1,4 @@
+using GraphQL.Introspection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Inventory.ViewModels;
@@ -5,6 +6,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,24 +46,12 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
             // If SKU was changed, inventory keys need to be updated.
             if (!string.IsNullOrEmpty(currentSku) && currentSku != skuBefore)
             {
-                part.InventoryKeys.Clear();
+                var newInventory = part.Inventory.ToDictionary(
+                    item => item.Key.Partition("-").Right is { } suffix ? $"{currentSku}-{suffix}" : currentSku,
+                    item => item.Value);
 
-                var newInventory = new Dictionary<string, int>();
-                var oldInventory = part.Inventory.ToDictionary(key => key.Key, value => value.Value);
-                foreach (var inventoryEntry in oldInventory)
-                {
-                    var updatedKey = oldInventory.Count > 1
-                        ? currentSku + "-" + inventoryEntry.Key.Split('-')[^1]
-                        : currentSku;
-
-                    part.Inventory.Remove(inventoryEntry.Key);
-                    newInventory.Add(updatedKey, inventoryEntry.Value);
-
-                    part.InventoryKeys.Add(updatedKey);
-                }
-
-                part.Inventory.Clear();
-                part.Inventory.AddRange(newInventory);
+                part.Inventory.SetItems(newInventory);
+                part.InventoryKeys.SetItems(newInventory.Keys);
             }
 
             part.ProductSku = currentSku;
@@ -72,15 +62,6 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
 
     // Despite the Clear() calls inside UpdateAsync(), the Inventory property retains its old values along with the
     // new ones, hence the filtering below.
-    private static void BuildViewModel(InventoryPartViewModel model, InventoryPart part)
-    {
-        var inventory = part.Inventory ?? new Dictionary<string, int>();
-        if (inventory.Any())
-        {
-            // Workaround for InventoryPart storing the outdated inventory entries along with the updated ones.
-            var filteredInventory = part.Inventory.FilterOutdatedEntries(part.InventoryKeys);
-
-            model.Inventory.AddRange(filteredInventory);
-        }
-    }
+    private static void BuildViewModel(InventoryPartViewModel model, InventoryPart part) =>
+        model.Inventory.SetItems(part.FilterOutdatedEntries());
 }
