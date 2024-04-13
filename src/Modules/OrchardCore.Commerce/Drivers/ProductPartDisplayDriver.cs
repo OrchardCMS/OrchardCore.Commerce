@@ -57,7 +57,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         {
             part.CanBeBought.Clear();
 
-            var filteredInventory = inventoryPart.Inventory.FilterOutdatedEntries(inventoryPart.InventoryKeys);
+            var filteredInventory = inventoryPart.FilterOutdatedEntries();
 
             // If an inventory's value is below 1 and back ordering is not allowed, corresponding
             // CanBeBought entry needs to be set to false; should be set to true otherwise.
@@ -100,12 +100,11 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
-            var filteredInventory = inventoryPart.Inventory.FilterOutdatedEntries(inventoryPart.InventoryKeys);
-            foreach (var inventory in filteredInventory)
+            foreach (var (key, value) in inventoryPart.FilterOutdatedEntries())
             {
                 // If an inventory's value is below 1 and back ordering is not allowed, corresponding
                 // CanBeBought entry needs to be set to false; should be set to true otherwise.
-                viewModel.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+                viewModel.CanBeBought[key] = inventoryPart.AllowsBackOrder.Value || value >= 1;
             }
 
             // When creating a new Product item, initialize default inventory.
