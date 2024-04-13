@@ -106,13 +106,6 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
                 // CanBeBought entry needs to be set to false; should be set to true otherwise.
                 viewModel.CanBeBought[key] = inventoryPart.AllowsBackOrder.Value || value >= 1;
             }
-
-            // When creating a new Product item, initialize default inventory.
-            if (part.ContentItem.As<PriceVariantsPart>() == null && !inventoryPart.Inventory.Any())
-            {
-                inventoryPart.Inventory.Add(part.Sku, 0);
-                inventoryPart.InventoryKeys.Add(part.Sku);
-            }
         }
         else
         {
