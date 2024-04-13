@@ -13,8 +13,6 @@ namespace OrchardCore.Commerce.Inventory.Drivers;
 
 public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
 {
-    public const string DefaultKey = "DEFAULT";
-
     private readonly IHttpContextAccessor _hca;
 
     public InventoryPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
