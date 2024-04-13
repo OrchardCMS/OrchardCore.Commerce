@@ -58,11 +58,16 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
 
             part.Inventory.SetItems(viewModel.Inventory);
 
-            // If SKU was changed, inventory keys need to be updated.
-            if (!string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore))
+            var skuChanged = !string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore);
+            if (skuChanged && part.Inventory.Count == 1 && !part.Inventory.Keys.Single().Contains('-'))
+            {
+                part.Inventory.SetItems([new KeyValuePair<string, int>(currentSku, part.Inventory.Values.Single())]);
+                part.InventoryKeys.SetItems([currentSku]);
+            }
+            else if (skuChanged)
             {
                 var newInventory = part.Inventory.ToDictionary(
-                    item => item.Key.Partition("-").Right is { } suffix ? $"{currentSku}-{suffix}" : currentSku,
+                    item => $"{currentSku}-{item.Key.Split('-', 2)[^1]}",
                     item => item.Value);
 
                 part.Inventory.SetItems(newInventory);
