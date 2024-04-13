@@ -53,7 +53,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
         foreach (var item in model)
         {
             var productPart = await _productService.GetProductAsync(item.ProductSku);
-            var fullSku = await _productService.GetOrderFullSkuAsync(item, productPart);
+            var fullSku = (await _productService.GetOrderFullSkuAsync(item, productPart)).TrimEnd('-');
 
             await UpdateInventoryAsync(
                 await _productService.GetProductAsync(item.ProductSku),

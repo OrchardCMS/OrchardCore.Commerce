@@ -20,17 +20,20 @@ public class ProductService : IProductService
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
+    private readonly Lazy<IShoppingCartSerializer> _shoppingCartSerializer;
 
     public ProductService(
         ISession session,
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IPredefinedValuesProductAttributeService predefinedValuesService)
+        IPredefinedValuesProductAttributeService predefinedValuesService,
+        Lazy<IShoppingCartSerializer> shoppingCartSerializer)
     {
         _session = session;
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
         _predefinedValuesService = predefinedValuesService;
+        _shoppingCartSerializer = shoppingCartSerializer;
     }
 
     public virtual async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
@@ -58,6 +61,11 @@ public class ProductService : IProductService
             .ToHashSet();
 
         if (attributesRestrictedToPredefinedValues.Count == 0) return item.ProductSku;
+
+        if (item.HasRawAttributes())
+        {
+            item.Attributes.SetItems(await _shoppingCartSerializer.Value.PostProcessAttributesAsync(item.Attributes, productPart));
+        }
 
         var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
         var fullSku = item.Attributes.Any()

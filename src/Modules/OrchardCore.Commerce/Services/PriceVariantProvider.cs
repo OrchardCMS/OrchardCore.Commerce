@@ -16,13 +16,18 @@ public class PriceVariantProvider : IPriceProvider
 {
     private readonly IProductService _productService;
     private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
+    private readonly IShoppingCartSerializer _shoppingCartSerializer;
 
     public int Order => 1;
 
-    public PriceVariantProvider(IProductService productService, IPredefinedValuesProductAttributeService predefinedValuesService)
+    public PriceVariantProvider(
+        IProductService productService,
+        IPredefinedValuesProductAttributeService predefinedValuesService,
+        IShoppingCartSerializer shoppingCartSerializer)
     {
         _productService = productService;
         _predefinedValuesService = predefinedValuesService;
+        _shoppingCartSerializer = shoppingCartSerializer;
     }
 
     public async Task<IList<ShoppingCartItem>> UpdateAsync(IList<ShoppingCartItem> model)
@@ -58,6 +63,11 @@ public class PriceVariantProvider : IPriceProvider
                 .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
                 .Select(attr => attr.PartName + "." + attr.Name)
                 .ToHashSet();
+
+            if (item.HasRawAttributes())
+            {
+                item.Attributes.SetItems(await _shoppingCartSerializer.PostProcessAttributesAsync(item.Attributes, productPart));
+            }
 
             var key = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
 
