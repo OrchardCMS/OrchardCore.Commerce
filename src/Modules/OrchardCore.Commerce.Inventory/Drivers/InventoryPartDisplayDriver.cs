@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Inventory.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -13,9 +14,16 @@ namespace OrchardCore.Commerce.Inventory.Drivers;
 
 public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
 {
-    private readonly IHttpContextAccessor _hca;
+    public const string NewProductKey = "DEFAULT";
 
-    public InventoryPartDisplayDriver(IHttpContextAccessor hca) => _hca = hca;
+    private readonly IHttpContextAccessor _hca;
+    private readonly IStringLocalizer<InventoryPartDisplayDriver> T;
+
+    public InventoryPartDisplayDriver(IHttpContextAccessor hca, IStringLocalizer<InventoryPartDisplayDriver> localizer)
+    {
+        _hca = hca;
+        T = localizer;
+    }
 
     public override IDisplayResult Display(InventoryPart part, BuildPartDisplayContext context) =>
         Initialize<InventoryPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
@@ -31,37 +39,38 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
         UpdatePartEditorContext context)
     {
         var viewModel = new InventoryPartViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+
+        if (_hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant() is not { } currentSku)
         {
-            var currentSku = _hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant();
-            var skuBefore = viewModel.Inventory.FirstOrDefault().Key != null
-                ? viewModel.Inventory.FirstOrDefault().Key.Split('-')[0]
-                : "DEFAULT";
-
-            part.Inventory.Clear();
-            part.Inventory.AddRange(viewModel.Inventory);
-
-            // If SKU was changed, inventory keys need to be updated.
-            if (!string.IsNullOrEmpty(currentSku) && currentSku != skuBefore)
+            updater.ModelState.AddModelError("ProductPart.Sku", T["The Product SKU is missing."].Value);
+        }
+        else if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        {
+            // Workaround for accepting inventory values during content item creation where the SKU is not yet known.
+            if (viewModel.Inventory.TryGetValue(NewProductKey, out var defaultCount))
             {
-                part.InventoryKeys.Clear();
+                viewModel.Inventory.Remove(NewProductKey);
+                viewModel.Inventory.Add(currentSku, defaultCount);
+            }
 
-                var newInventory = new Dictionary<string, int>();
-                var oldInventory = part.Inventory.ToDictionary(key => key.Key, value => value.Value);
-                foreach (var inventoryEntry in oldInventory)
-                {
-                    var updatedKey = oldInventory.Count > 1
-                        ? currentSku + "-" + inventoryEntry.Key.Split('-')[^1]
-                        : currentSku;
+            var skuBefore = viewModel.Inventory.FirstOrDefault().Key.Split('-')[0];
 
-                    part.Inventory.Remove(inventoryEntry.Key);
-                    newInventory.Add(updatedKey, inventoryEntry.Value);
+            part.Inventory.SetItems(viewModel.Inventory);
 
-                    part.InventoryKeys.Add(updatedKey);
-                }
+            var skuChanged = !string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore);
+            if (skuChanged && part.Inventory.Count == 1 && !part.Inventory.Keys.Single().Contains('-'))
+            {
+                part.Inventory.SetItems([new KeyValuePair<string, int>(currentSku, part.Inventory.Values.Single())]);
+                part.InventoryKeys.SetItems([currentSku]);
+            }
+            else if (skuChanged)
+            {
+                var newInventory = part.Inventory.ToDictionary(
+                    item => $"{currentSku}-{item.Key.Split('-', 2)[^1]}",
+                    item => item.Value);
 
-                part.Inventory.Clear();
-                part.Inventory.AddRange(newInventory);
+                part.Inventory.SetItems(newInventory);
+                part.InventoryKeys.SetItems(newInventory.Keys);
             }
 
             part.ProductSku = currentSku;
@@ -74,13 +83,9 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
     // new ones, hence the filtering below.
     private static void BuildViewModel(InventoryPartViewModel model, InventoryPart part)
     {
-        var inventory = part.Inventory ?? new Dictionary<string, int>();
-        if (inventory.Any())
-        {
-            // Workaround for InventoryPart storing the outdated inventory entries along with the updated ones.
-            var filteredInventory = part.Inventory.FilterOutdatedEntries(part.InventoryKeys);
+        model.Inventory.SetItems(part.FilterOutdatedEntries());
 
-            model.Inventory.AddRange(filteredInventory);
-        }
+        var sku = part.ContentItem?.Content.ProductPart?.Sku?.ToString() as string;
+        if (model.Inventory.Count == 0) model.Inventory.Add(sku ?? NewProductKey, 0);
     }
 }

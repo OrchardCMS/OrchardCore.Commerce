@@ -20,7 +20,7 @@
     {
         minOrderQuantity = (int)(inventoryPart.MinimumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
             ? inventoryPart.MinimumOrderQuantity.Value
-            : 0);
+            : 1);
         maxOrderQuantity = (int)(inventoryPart.MaximumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value
             ? inventoryPart.MaximumOrderQuantity.Value
             : int.MaxValue);
