@@ -60,8 +60,8 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
             var skuChanged = !string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore);
             if (skuChanged && part.Inventory.Count == 1 && !part.Inventory.Keys.Single().Contains('-'))
             {
-                part.Inventory.SetItems([new KeyValuePair<string, int>(currentSku, part.Inventory.Values.Single())]);
-                part.InventoryKeys.SetItems([currentSku]);
+                part.Inventory.SetItems(new[] { new KeyValuePair<string, int>(currentSku, part.Inventory.Values.Single()) });
+                part.InventoryKeys.SetItems(new[] { currentSku });
             }
             else if (skuChanged)
             {
