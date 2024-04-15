@@ -10,6 +10,6 @@ public static class InventoryDictionaryExtensions
         this InventoryPart part) =>
             part
                 .Inventory
-                .Where(inventory => part.InventoryKeys.Contains(inventory.Key))
+                .Where(inventory => part.InventoryKeys.Count == 0 || part.InventoryKeys.Contains(inventory.Key))
                 .ToDictionary(key => key.Key, value => value.Value);
 }
