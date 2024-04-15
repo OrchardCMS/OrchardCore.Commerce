@@ -27,7 +27,7 @@ public class BehaviorExactlyTests : UITestBase
 
                 await context.GoToAdminRelativeUrlAsync("/Settings/Exactly");
                 context
-                    .Get(By.CssSelector(".exactly-signup-info a"))
+                    .Get(By.CssSelector(".exactly-sign-up-info a"))
                     .GetAttribute("href")
                     .ShouldBe(ExactlySettingsDisplayDriver.SignUpLink);
             },
