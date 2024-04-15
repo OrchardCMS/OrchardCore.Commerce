@@ -26,7 +26,10 @@ public class OrderPartHandler : ContentPartHandler<OrderPart>
         var guid = orderPart.OrderId.Text ?? Guid.NewGuid().ToString();
         orderPart.OrderId.Text = guid;
 
-        orderPart.ContentItem.DisplayText = T["Order {0}", guid];
+        if (string.IsNullOrWhiteSpace(orderPart.ContentItem.DisplayText))
+        {
+            orderPart.ContentItem.DisplayText = T["Order {0}", guid];
+        }
 
         orderPart.Apply();
         await _session.SaveAsync(orderPart.ContentItem);

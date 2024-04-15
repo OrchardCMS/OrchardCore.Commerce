@@ -82,7 +82,7 @@ public class ExactlyController : Controller
                     testAmount,
                     contentItemVersion: null));
             });
-            order.Alter<TitlePart>(part => part.Title = S["Exactly API test order"]);
+            order.DisplayText = S["Exactly API test order"];
             await _contentManager.CreateAsync(order);
 
             var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>(), testAmount);
