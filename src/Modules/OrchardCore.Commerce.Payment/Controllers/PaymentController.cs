@@ -21,12 +21,10 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Controllers;
@@ -104,15 +102,8 @@ public class PaymentController : Controller
                 throw new InvalidOperationException("Unauthorized.");
             }
 
-            var updater = _updateModelAccessor.ModelUpdater;
-            var shippingViewModel = new AddressFieldViewModel();
-            var billingViewModel = new AddressFieldViewModel();
-            if (!await updater.TryUpdateModelAsync(shippingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.ShippingAddress)}") ||
-                !await updater.TryUpdateModelAsync(billingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.BillingAddress)}"))
-            {
-                throw new InvalidOperationException(
-                    _updateModelAccessor.ModelUpdater.GetModelErrorMessages().JoinNotNullOrEmpty());
-            }
+            var (shippingViewModel, billingViewModel) =
+                await _updateModelAccessor.ModelUpdater.CreateOrderPartAddressViewModelsAsync();
 
             var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(
                 shoppingCartId,
