@@ -14,11 +14,11 @@ public class StripeContentSecurityPolicyProvider : IContentSecurityPolicyProvide
     {
         securityPolicies[ScriptSrc] = ContentSecurityPolicyProvider
             .GetDirective(securityPolicies, ScriptSrc)
-            .MergeWordSets("https://js.stripe.com/v3/");
+            .MergeWordSets("https://js.stripe.com/");
 
         securityPolicies[FrameSrc] = ContentSecurityPolicyProvider
             .GetDirective(securityPolicies, FrameSrc)
-            .MergeWordSets("https://js.stripe.com/v3/");
+            .MergeWordSets("https://js.stripe.com/");
 
         return ValueTask.CompletedTask;
     }
