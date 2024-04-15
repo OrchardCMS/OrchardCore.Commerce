@@ -10,13 +10,10 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
-using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.ViewModels;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -38,7 +35,6 @@ public class PaymentController : Controller
     private readonly IStringLocalizer T;
     private readonly IHtmlLocalizer<PaymentController> H;
     private readonly INotifier _notifier;
-    private readonly IMoneyService _moneyService;
     private readonly IEnumerable<IPaymentProvider> _paymentProviders;
     private readonly IPaymentService _paymentService;
     private readonly IRegionService _regionService;
@@ -47,7 +43,6 @@ public class PaymentController : Controller
         IOrchardServices<PaymentController> services,
         IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
-        IMoneyService moneyService,
         IEnumerable<IPaymentProvider> paymentProviders,
         IPaymentService paymentService,
         IRegionService regionService)
@@ -59,7 +54,6 @@ public class PaymentController : Controller
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _notifier = notifier;
-        _moneyService = moneyService;
         _paymentProviders = paymentProviders;
         _paymentService = paymentService;
         _regionService = regionService;
