@@ -18,7 +18,7 @@ public class BehaviorExactlyTests : UITestBase
     }
 
     [Theory, Chrome]
-    public Task ExactlySettingsSignupLinkShouldDisplayCorrectly(Browser browser) =>
+    public Task ExactlySettingsSignUpLinkShouldDisplayCorrectly(Browser browser) =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
