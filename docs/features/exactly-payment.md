@@ -16,7 +16,7 @@ To start using, follow these steps:
 8. Fill out the _Project ID_ and _API key_ fields.
 9. Save and then click the _Verify currently saved API configuration_ button to test it. This will create a new transaction you can check on <https://dashboard.exactly.com/transactions>.
 
-Once you have set up the site configuration, an additional _Pay with Exactly_ button will appear during checkout.
+Once you have set up the site configuration, an additional _Pay with exactly_ button will appear during checkout.
 
 > ℹ At the time of writing callback URLs targeting _localhost_ are not supported. If you want to test your site locally, we suggest adding a whitelisted domain to your [hosts file](https://en.wikipedia.org/wiki/Hosts_(file)). The address doesn't have to be accessible from their server so this approach is safer than exposing your machine via port forwarding or tunneling..
 
@@ -30,3 +30,13 @@ There are available test cards that can be found in [Exactly's documentation](ht
 | Visa       | 4000 0000 0000 3220 | Any 3 digits | Any future date | success during 3DS Auth (3DS is always expected) |
 | Visa       | 4000 0084 0000 1280 | Any 3 digits | Any future date | the card fails 3DS Auth (3DS is always expected) |
 | Mastercard | 5555 5555 5555 4444 | Any 3 digits | Any future date | Mastercard test card                             |
+
+### Technical overview
+
+As mentioned above, this module uses redirects to communicate with the payment processor. This means the OrchardCore.Commerce site never sees the buyer's payment information, which avoids potential liability and improves buyer confidence. Here is a broad overview of what happens when you click on the _Pay with exactly_ button:
+- JS script sends a POST request that only contains the contents of the checkout page (i.e. addresses).
+- C# backend creates a new Order content item from the checkout data and the stored shopping cart.
+- C# backend sends a POST request to the Exactly API including the order total and the return URL.
+- JS script gets a redirect URL (on Exactly's domain) as response, then navigates there.
+- Payment continues on Exactly, then redirects back to the return URL.
+- C# backend validates the transaction state, updates Order and redirects to the Success page.
