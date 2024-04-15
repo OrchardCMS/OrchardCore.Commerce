@@ -18,6 +18,6 @@ public class ChargeAction : IExactlyResponseData
         public string HttpMethod { get; set; }
 
         [JsonIgnore]
-        public bool IsGet => HttpMethod == "GET";
+        public bool IsGet => "GET".EqualsOrdinalIgnoreCase(HttpMethod);
     }
 }
