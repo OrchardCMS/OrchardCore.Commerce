@@ -38,5 +38,7 @@ public class Startup : StartupBase
         services.AddScoped<IOrderContentTypeDefinitionExclusionProvider, StripeOrderContentTypeDefinitionExclusionProvider>();
 
         services.Configure<TemplateOptions>(option => option.MemberAccessStrategy.Register<StripePaymentProviderData>());
+
+        services.AddContentSecurityPolicyProvider<StripeContentSecurityPolicyProvider>();
     }
 }
