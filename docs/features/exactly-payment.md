@@ -22,9 +22,7 @@ Once you have set up the site configuration, an additional _Pay with Exactly_ bu
 
 ### Cards
 
-There are available test cards that can be found in [Stripe's documentation](https://stripe.com/docs/testing).
-
-There are multiple test cards that can simulate any scenario, including error codes. Here are two examples:
+There are available test cards that can be found in [Exactly's documentation](https://exactly.com/docs/api#tag/Transactions/operation/createTransaction). Some of these test card numbers are commonly used by other payment providers as well.
 
 | Brand      | Number              | CVC          | Date            | Result                                           |
 |------------|---------------------|--------------|-----------------|--------------------------------------------------|
