@@ -2,6 +2,7 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -12,6 +13,7 @@ using OrchardCore.Commerce.Payment.Exactly.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Title.Models;
 using Refit;
 using System;
 using System.Linq;
@@ -31,6 +33,7 @@ public class ExactlyController : Controller
     private readonly INotifier _notifier;
     private readonly IPaymentService _paymentService;
     private readonly IHtmlLocalizer<ExactlyController> H;
+    private readonly IStringLocalizer<ExactlyController> S;
 
     public ExactlyController(
         IExactlyService exactlyService,
@@ -44,6 +47,7 @@ public class ExactlyController : Controller
         _notifier = notifier;
         _paymentService = paymentService;
         H = services.HtmlLocalizer.Value;
+        S = services.StringLocalizer.Value;
     }
 
     [HttpPost]
@@ -78,6 +82,7 @@ public class ExactlyController : Controller
                     testAmount,
                     contentItemVersion: null));
             });
+            order.Alter<TitlePart>(part => part.Title = S["Exactly API test order"]);
             await _contentManager.CreateAsync(order);
 
             var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>(), testAmount);
