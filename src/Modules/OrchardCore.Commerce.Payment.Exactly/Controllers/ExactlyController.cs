@@ -65,6 +65,7 @@ public class ExactlyController : Controller
     {
         try
         {
+            var testAmount = new Amount(1, Currency.Euro);
             var order = await _contentManager.NewAsync(Order);
             order.Alter<OrderPart>(part =>
             {
@@ -73,13 +74,13 @@ public class ExactlyController : Controller
                     quantity: 1,
                     "TEST",
                     "TEST",
-                    new Amount(1, Currency.Euro),
-                    new Amount(1, Currency.Euro),
+                    testAmount,
+                    testAmount,
                     contentItemVersion: null));
             });
             await _contentManager.CreateAsync(order);
 
-            var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
+            var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>(), testAmount);
             var action = await GetActionRedirectRequestedAsync(result.Id);
 
             await _notifier.SuccessAsync(

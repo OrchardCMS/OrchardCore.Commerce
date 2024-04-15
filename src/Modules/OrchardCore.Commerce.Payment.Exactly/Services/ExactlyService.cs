@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using Refit;
 using System;
@@ -22,9 +23,9 @@ public class ExactlyService : IExactlyService
         _hca = hca;
     }
 
-    public async Task<ChargeResponse> CreateTransactionAsync(OrderPart orderPart)
+    public async Task<ChargeResponse> CreateTransactionAsync(OrderPart orderPart, Amount? total = null)
     {
-        var charge = await ChargeRequest.CreateForCurrentUserAsync(orderPart, _hca.HttpContext);
+        var charge = await ChargeRequest.CreateForCurrentUserAsync(orderPart, _hca.HttpContext, total);
         var request = new ExactlyDataWrapper<ExactlyRequest<ChargeRequest>>(
             new ExactlyRequest<ChargeRequest> { Attributes = charge });
 
