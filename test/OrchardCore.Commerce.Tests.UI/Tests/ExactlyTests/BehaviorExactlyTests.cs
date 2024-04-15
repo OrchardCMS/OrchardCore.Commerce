@@ -29,7 +29,7 @@ public class BehaviorExactlyTests : UITestBase
                 context
                     .Get(By.CssSelector(".exactly-signup-info a"))
                     .GetAttribute("href")
-                    .ShouldBe(ExactlySettingsDisplayDriver.SignupLink);
+                    .ShouldBe(ExactlySettingsDisplayDriver.SignUpLink);
             },
             browser);
 }
