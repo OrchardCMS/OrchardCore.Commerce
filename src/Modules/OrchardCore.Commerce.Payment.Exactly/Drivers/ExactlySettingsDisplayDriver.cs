@@ -16,6 +16,7 @@ namespace OrchardCore.Commerce.Payment.Exactly.Drivers;
 public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlySettings>
 {
     public const string EditorGroupId = "Exactly";
+    public const string SignupLink = "https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ";
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _hca;

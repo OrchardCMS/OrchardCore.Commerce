@@ -2,10 +2,11 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore
 @using OrchardCore.Commerce.Payment.Exactly.Controllers
+@using OrchardCore.Commerce.Payment.Exactly.Drivers
 @model OrchardCore.Commerce.Payment.Exactly.Models.ExactlySettings
 
-<p class="alert alert-info">
-    @T["Please be sure to use <a href=\"{0}\">this link</a> to create your exactly account. That way <a href=\"https://lombiq.com/\">Lombiq</a> (the steward of the Orchard Core Commerce project) will get a commission on the payment fees, which helps cover some of the development costs of OCC. This is at no cost to you; the fees you pay are the same either way.", "https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ"]
+<p class="alert alert-info exactly-signup-info">
+    @T["Please be sure to use <a href=\"{0}\">this link</a> to create your exactly account. That way <a href=\"https://lombiq.com/\">Lombiq</a> (the steward of the Orchard Core Commerce project) will get a commission on the payment fees, which helps cover some of the development costs of OCC. This is at no cost to you; the fees you pay are the same either way.", ExactlySettingsDisplayDriver.SignupLink]
 </p>
 
 <div class="mb-3">
