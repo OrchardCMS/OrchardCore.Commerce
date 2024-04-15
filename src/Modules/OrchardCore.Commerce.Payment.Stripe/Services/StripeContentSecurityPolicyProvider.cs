@@ -12,11 +12,11 @@ public class StripeContentSecurityPolicyProvider : IContentSecurityPolicyProvide
 {
     public ValueTask UpdateAsync(IDictionary<string, string> securityPolicies, HttpContext context)
     {
-        securityPolicies[ScriptSrc] = IContentSecurityPolicyProvider
+        securityPolicies[ScriptSrc] = ContentSecurityPolicyProvider
             .GetDirective(securityPolicies, ScriptSrc)
             .MergeWordSets("https://js.stripe.com/v3/");
 
-        securityPolicies[FrameSrc] = IContentSecurityPolicyProvider
+        securityPolicies[FrameSrc] = ContentSecurityPolicyProvider
             .GetDirective(securityPolicies, FrameSrc)
             .MergeWordSets("https://js.stripe.com/v3/");
 
