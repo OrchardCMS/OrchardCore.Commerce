@@ -9,17 +9,18 @@ using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tax.Extensions;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Users;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,7 @@ public class PaymentService : IPaymentService
     private readonly Lazy<IEnumerable<IPaymentProvider>> _paymentProvidersLazy;
     private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
     private readonly INotifier _notifier;
+    private readonly IMoneyService _moneyService;
     private readonly IHtmlLocalizer H;
 
     // We need all of them.
@@ -57,7 +59,8 @@ public class PaymentService : IPaymentService
         IEnumerable<IOrderEvents> orderEvents,
         Lazy<IEnumerable<IPaymentProvider>> paymentProvidersLazy,
         IEnumerable<ICheckoutEvents> checkoutEvents,
-        INotifier notifier)
+        INotifier notifier,
+        IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
@@ -71,6 +74,7 @@ public class PaymentService : IPaymentService
         _paymentProvidersLazy = paymentProvidersLazy;
         _checkoutEvents = checkoutEvents;
         _notifier = notifier;
+        _moneyService = moneyService;
         _hca = services.HttpContextAccessor.Value;
         H = services.HtmlLocalizer.Value;
     }
@@ -146,6 +150,22 @@ public class PaymentService : IPaymentService
         await _checkoutEvents.AwaitEachAsync(checkoutEvents => checkoutEvents.ViewModelCreatedAsync(lines, viewModel));
 
         return viewModel;
+    }
+
+    public async Task<Amount> GetTotalAsync(string? shoppingCartId)
+    {
+        var (shippingViewModel, billingViewModel) =
+            await _updateModelAccessor.ModelUpdater.CreateOrderPartAddressViewModelsAsync();
+
+        var checkoutViewModel = await CreateCheckoutViewModelAsync(
+            shoppingCartId,
+            part =>
+            {
+                part.ShippingAddress.Address = shippingViewModel.Address ?? part.ShippingAddress.Address;
+                part.BillingAddress.Address = billingViewModel.Address ?? part.BillingAddress.Address;
+            });
+
+        return checkoutViewModel?.SingleCurrencyTotal ?? new Amount(0, _moneyService.DefaultCurrency);
     }
 
     public async Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId, string? paymentProviderName)

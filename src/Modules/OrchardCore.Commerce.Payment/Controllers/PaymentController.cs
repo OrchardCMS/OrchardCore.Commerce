@@ -102,18 +102,7 @@ public class PaymentController : Controller
                 throw new InvalidOperationException("Unauthorized.");
             }
 
-            var (shippingViewModel, billingViewModel) =
-                await _updateModelAccessor.ModelUpdater.CreateOrderPartAddressViewModelsAsync();
-
-            var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(
-                shoppingCartId,
-                part =>
-                {
-                    part.ShippingAddress.Address = shippingViewModel.Address ?? part.ShippingAddress.Address;
-                    part.BillingAddress.Address = billingViewModel.Address ?? part.BillingAddress.Address;
-                });
-
-            var total = checkoutViewModel?.SingleCurrencyTotal ?? new Amount(0, _moneyService.DefaultCurrency);
+            var total = await _paymentService.GetTotalAsync(shoppingCartId);
 
             return new
             {
