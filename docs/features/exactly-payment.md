@@ -22,7 +22,7 @@ Once you have set up the site configuration, an additional _Pay with exactly_ bu
 
 ### Cards
 
-There are available test cards that can be found in [Exactly's documentation](https://exactly.com/docs/api#tag/Transactions/operation/createTransaction). Some of these test card numbers are commonly used by other payment providers as well.
+There are available test cards for the sandbox environment that can be found in [Exactly's documentation](https://exactly.com/docs/api#tag/Transactions/operation/createTransaction). Some of these test card numbers are commonly used by other payment providers as well.
 
 | Brand      | Number              | CVC          | Date            | Result                                           |
 |------------|---------------------|--------------|-----------------|--------------------------------------------------|
@@ -30,6 +30,8 @@ There are available test cards that can be found in [Exactly's documentation](ht
 | Visa       | 4000 0000 0000 3220 | Any 3 digits | Any future date | success during 3DS Auth (3DS is always expected) |
 | Visa       | 4000 0084 0000 1280 | Any 3 digits | Any future date | the card fails 3DS Auth (3DS is always expected) |
 | Mastercard | 5555 5555 5555 4444 | Any 3 digits | Any future date | Mastercard test card                             |
+
+> ⚠ The sandbox environment only supports EUR and USD currencies. If payment is attempted with anything else, it will display a _403.21: Unsupported currency_ error.
 
 ### Technical overview
 
