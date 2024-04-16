@@ -62,6 +62,7 @@ Check out the complete documentation portal here: <https://commerce.orchardcore.
 - [Products and Prices](docs/features/products-and-prices.md)
 - [Promotions](docs/features/promotions.md)
 - [Payment providers](docs/features/payment-providers.md)
+  - [Exactly Payment](docs/features/exactly-payment.md)
   - [Stripe Payment](docs/features/stripe-payment.md)
 - [Taxation](docs/features/taxation.md)
 - [User Features](docs/features/user-features.md)
