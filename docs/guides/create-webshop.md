@@ -21,11 +21,11 @@ Get the latest version of the [Orchard Core Commerce NuGet](https://www.nuget.or
 
 ### Step 2 — Enable necessary features
 
-Certain Orchard Core Commerce features, as well as some prerequisite stock Orchard Core features, need to be enabled for the necessary functionality. This can be done under _Configuration > Features_. These features include the following:
+Certain Orchard Core Commerce features, as well as some prerequisite stock Orchard Core features, need to be enabled for the necessary functionality. This can be done under _Configuration > Features_, but if you used the _Orchard Core Commerce - Development_ setup recipe then they are already enabled. These features include the following:
 
 - **Orchard Core Commerce - Core**: Registers core components of Commerce features.
 - **Orchard Core Commerce - Payment** Provides the basics for online payment.
-- **Orchard Core Commerce - Payment - Stripe**: Provides online payment implementation using Stripe.
+- **Orchard Core Commerce - Payment - Exactly**: Provides online payment implementation using Exactly.
 - **Orchard Core Commerce - Session Cart Storage**: Provides shopping cart functionality.
 - **Widgets**: Allows rendering widgets in zones.
 - **Layers**: Allows rendering widgets across pages based on conditions.
@@ -106,17 +106,17 @@ _Any content type with the Widget stereotype can be added this way, but let's ju
 
 _Name the Widget and select the Layer where it should be rendered._
 
-### Step 6 — Enable a payment provider (Stripe)
+### Step 6 — Enable a payment provider (Exactly)
 
-Having Products and being able to browse them is great and all, but customers will also need a way to checkout and pay for their cart's content. This is where payment providers come into the picture. For simplicity's sake, we'll use Stripe as the payment provider here. Ensure the **Orchard Core Commerce - Payment - Stripe** feature is enabled, then go to _Configuration > Commerce > Stripe API_. The Publishable Key and Secret Key fields need to be filled in for the Stripe Payment form to work on the checkout page, see the links on the settings page for more.
+Having Products and being able to browse them is great and all, but customers will also need a way to checkout and pay for their cart's content. This is where payment providers come into the picture. We will use Exactly, the default built-in payment provider. Ensure the **Orchard Core Commerce - Payment - Exactly** feature is enabled, then go to _Configuration > Commerce > Exactly API_. The Project ID and API Key fields need to be filled in sp payments are directed towards your account.
 
-![Stripe settings.](../assets/images/create-webshop/step-6/stripe-settings.png)
+![Exactly settings.](../assets/images/create-webshop/step-6/exactly-settings.png)
 
-_If you don't already have the necessary API keys, follow the links on the page._
+_See the links on the settings page and the [feature documentation](../features/exactly-payment.md) for info if you haven't got your keys yet._
 
-With that done, the Stripe Payment form now appears on the checkout page and the purchase can be completed.
+Once you're saved the settings, feel free to click on the _Verify currently saved API configuration_ to test your API access. With that done, the _Pay with exactly_ button now appears on the checkout page which redirects the customer to the payment processor's site and then if everything went well sends them back to the success page.
 
-![Stripe Payment.](../assets/images/create-webshop/step-6/stripe-form.png)
+![Exactly Payment.](../assets/images/create-webshop/step-6/exactly-form.png)
 
 _This will allow customers to pay to their card's content._
 

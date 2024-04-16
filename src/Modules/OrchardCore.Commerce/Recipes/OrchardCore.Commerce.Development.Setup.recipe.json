@@ -66,7 +66,6 @@
 
         "OrchardCore.Commerce.Payment.DummyProvider",
         "OrchardCore.Commerce.Payment.Exactly",
-        "OrchardCore.Commerce.Payment.Stripe",
         "OrchardCore.Commerce.Promotion",
         "OrchardCore.Commerce.Inventory",
 
