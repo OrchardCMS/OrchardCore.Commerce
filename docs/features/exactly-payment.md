@@ -36,6 +36,7 @@ There are available test cards for the sandbox environment that can be found in 
 ### Technical overview
 
 As mentioned above, this module uses redirects to communicate with the payment processor. This means the OrchardCore.Commerce site never sees the buyer's payment information, which avoids potential liability and improves buyer confidence. Here is a broad overview of what happens when you click on the _Pay with exactly_ button:
+
 - JS script sends a POST request that only contains the contents of the checkout page (i.e. addresses).
 - C# backend creates a new Order content item from the checkout data and the stored shopping cart.
 - C# backend sends a POST request to the Exactly API including the order total and the return URL.
