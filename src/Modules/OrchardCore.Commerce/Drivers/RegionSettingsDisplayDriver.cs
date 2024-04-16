@@ -7,9 +7,11 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,7 +45,13 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
     {
         var user = _hca.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings)) return null;
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
+            !await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings))
+        {
+            return null;
+        }
+
+        context.Shape.AddTenantReloadWarning();
 
         return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
             {

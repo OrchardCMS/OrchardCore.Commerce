@@ -1,0 +1,20 @@
+﻿@model OrchardCore.Commerce.Payment.ViewModels.CheckoutWaitViewModel
+
+<div class="row pt-md-5">
+    <div class="col-6 mx-auto">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="text-success text-center">@T["Your transaction is being processed..."]</h4>
+            </div>
+            <div class="panel-body">
+                <p>
+                    <b>@T["Please wait a moment, this page will automatically reload."] </b>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    setTimeout(() => location.href = @Model.ReturnUrl.JsonHtmlContent(), 1000);
+</script>

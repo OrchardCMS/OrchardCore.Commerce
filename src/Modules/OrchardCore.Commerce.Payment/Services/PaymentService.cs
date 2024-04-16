@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -5,21 +6,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tax.Extensions;
+using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Users;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,7 @@ public class PaymentService : IPaymentService
     private readonly Lazy<IEnumerable<IPaymentProvider>> _paymentProvidersLazy;
     private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
     private readonly INotifier _notifier;
+    private readonly IMoneyService _moneyService;
     private readonly IHtmlLocalizer H;
 
     // We need all of them.
@@ -57,7 +59,8 @@ public class PaymentService : IPaymentService
         IEnumerable<IOrderEvents> orderEvents,
         Lazy<IEnumerable<IPaymentProvider>> paymentProvidersLazy,
         IEnumerable<ICheckoutEvents> checkoutEvents,
-        INotifier notifier)
+        INotifier notifier,
+        IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
@@ -71,6 +74,7 @@ public class PaymentService : IPaymentService
         _paymentProvidersLazy = paymentProvidersLazy;
         _checkoutEvents = checkoutEvents;
         _notifier = notifier;
+        _moneyService = moneyService;
         _hca = services.HttpContextAccessor.Value;
         H = services.HtmlLocalizer.Value;
     }
@@ -148,6 +152,22 @@ public class PaymentService : IPaymentService
         return viewModel;
     }
 
+    public async Task<Amount> GetTotalAsync(string? shoppingCartId)
+    {
+        var (shippingViewModel, billingViewModel) =
+            await _updateModelAccessor.ModelUpdater.CreateOrderPartAddressViewModelsAsync();
+
+        var checkoutViewModel = await CreateCheckoutViewModelAsync(
+            shoppingCartId,
+            part =>
+            {
+                part.ShippingAddress.Address = shippingViewModel.Address ?? part.ShippingAddress.Address;
+                part.BillingAddress.Address = billingViewModel.Address ?? part.BillingAddress.Address;
+            });
+
+        return checkoutViewModel?.SingleCurrencyTotal ?? new Amount(0, _moneyService.DefaultCurrency);
+    }
+
     public async Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId, string? paymentProviderName)
     {
         await _orderEvents.AwaitEachAsync(orderEvent =>
@@ -168,24 +188,21 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree)
+    public async Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(
+        string? shoppingCartId,
+        bool mustBeFree = false,
+        bool notifyOnError = true,
+        bool throwOnError = false)
     {
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
         var order = await _contentManager.NewAsync(Order);
 
-        var errors = await UpdateOrderWithDriversAsync(order);
-        if (errors.Any())
+        if (!await HandleErrorsAsync(await UpdateOrderWithDriversAsync(order), notifyOnError, throwOnError))
         {
-            foreach (var error in errors)
-            {
-                await _notifier.ErrorAsync(new LocalizedHtmlString(error, error));
-            }
-
             return null;
         }
 
         var lineItems = await _shoppingCartHelpers.CreateOrderLineItemsAsync(cart);
-
         var cartViewModel = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
 
         if (mustBeFree && cartViewModel.Totals.Any(total => total.Value > 0))
@@ -197,7 +214,7 @@ public class PaymentService : IPaymentService
         await order.AlterAsync<OrderPart>(async orderPart =>
         {
             orderPart.LineItems.SetItems(lineItems);
-            orderPart.Status.Text = OrderStatuses.Pending.HtmlClassify();
+            orderPart.Status.Text = OrderStatusCodes.Pending;
 
             if (orderPart.BillingAndShippingAddressesMatch.Value)
             {
@@ -221,6 +238,26 @@ public class PaymentService : IPaymentService
         return order;
     }
 
+    private async Task<bool> HandleErrorsAsync(IList<string> errors, bool notifyOnError, bool throwOnError)
+    {
+        if (!errors.Any()) return true;
+
+        if (notifyOnError)
+        {
+            foreach (var error in errors)
+            {
+                await _notifier.ErrorAsync(new LocalizedHtmlString(error, error));
+            }
+        }
+
+        if (throwOnError)
+        {
+            FrontendException.ThrowIfAny(errors);
+        }
+
+        return false;
+    }
+
     public async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
@@ -241,7 +278,7 @@ public class PaymentService : IPaymentService
                 orderPart.Charges.SetItems(newCharges);
             }
 
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Ordered.HtmlClassify() };
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatusCodes.Ordered };
         });
 
         await _orderEvents.AwaitEachAsync(orderEvent => orderEvent.OrderedAsync(order, shoppingCartId));
@@ -264,11 +301,7 @@ public class PaymentService : IPaymentService
             await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
 
             var errors = updateModelAccessor.ModelUpdater.GetModelErrorMessages().AsList();
-            if (errors.Any())
-            {
-                throw new FrontendException(new HtmlString("<br>").Join(
-                    errors.Select(error => H["{0}", error]).ToArray()));
-            }
+            FrontendException.ThrowIfAny(errors);
         }
 
         // If there are line items in the Order, use data from Order instead of shopping cart.

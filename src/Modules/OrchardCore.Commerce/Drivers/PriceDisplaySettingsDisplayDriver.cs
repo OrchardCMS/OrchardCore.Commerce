@@ -4,9 +4,11 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
@@ -36,10 +38,13 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
     {
         var user = _hca.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
+            !await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
         {
             return null;
         }
+
+        context.Shape.AddTenantReloadWarning();
 
         return Initialize<PriceDisplaySettingsViewModel>("PriceDisplaySettings_Edit", model =>
         {

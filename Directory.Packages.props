@@ -3,10 +3,10 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.0.0" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="9.1.0" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="9.1.1-alpha.6.occ-203" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="9.1.1-alpha.6.occ-203" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
     <PackageVersion Include="Lombiq.Tests" Version="3.0.0" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="9.0.1-alpha.2.occ-218" />
@@ -26,6 +26,7 @@
     <PackageVersion Include="OrchardCore.Logging.NLog" Version="1.8.2" />
     <PackageVersion Include="OrchardCore.Module.Targets" Version="1.8.2" />
     <PackageVersion Include="OrchardCore.Navigation.Core" Version="1.8.2" />
+    <PackageVersion Include="OrchardCore.Settings" Version="1.8.2" />
     <PackageVersion Include="OrchardCore.Templates" Version="1.8.2" />
     <PackageVersion Include="OrchardCore.Title" Version="1.8.2" />
     <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="1.8.2" />

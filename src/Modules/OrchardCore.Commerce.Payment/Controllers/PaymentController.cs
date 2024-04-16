@@ -2,28 +2,27 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
-using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.ViewModels;
-using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.Mvc.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Controllers;
 
@@ -36,7 +35,6 @@ public class PaymentController : Controller
     private readonly IStringLocalizer T;
     private readonly IHtmlLocalizer<PaymentController> H;
     private readonly INotifier _notifier;
-    private readonly IMoneyService _moneyService;
     private readonly IEnumerable<IPaymentProvider> _paymentProviders;
     private readonly IPaymentService _paymentService;
     private readonly IRegionService _regionService;
@@ -45,7 +43,6 @@ public class PaymentController : Controller
         IOrchardServices<PaymentController> services,
         IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
-        IMoneyService moneyService,
         IEnumerable<IPaymentProvider> paymentProviders,
         IPaymentService paymentService,
         IRegionService regionService)
@@ -57,7 +54,6 @@ public class PaymentController : Controller
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _notifier = notifier;
-        _moneyService = moneyService;
         _paymentProviders = paymentProviders;
         _paymentService = paymentService;
         _regionService = regionService;
@@ -100,25 +96,7 @@ public class PaymentController : Controller
                 throw new InvalidOperationException("Unauthorized.");
             }
 
-            var updater = _updateModelAccessor.ModelUpdater;
-            var shippingViewModel = new AddressFieldViewModel();
-            var billingViewModel = new AddressFieldViewModel();
-            if (!await updater.TryUpdateModelAsync(shippingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.ShippingAddress)}") ||
-                !await updater.TryUpdateModelAsync(billingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.BillingAddress)}"))
-            {
-                throw new InvalidOperationException(
-                    _updateModelAccessor.ModelUpdater.GetModelErrorMessages().JoinNotNullOrEmpty());
-            }
-
-            var checkoutViewModel = await _paymentService.CreateCheckoutViewModelAsync(
-                shoppingCartId,
-                part =>
-                {
-                    part.ShippingAddress.Address = shippingViewModel.Address ?? part.ShippingAddress.Address;
-                    part.BillingAddress.Address = billingViewModel.Address ?? part.BillingAddress.Address;
-                });
-
-            var total = checkoutViewModel?.SingleCurrencyTotal ?? new Amount(0, _moneyService.DefaultCurrency);
+            var total = await _paymentService.GetTotalAsync(shoppingCartId);
 
             return new
             {
@@ -146,7 +124,7 @@ public class PaymentController : Controller
         }
         catch (FrontendException exception)
         {
-            return Json(new { Errors = new[] { exception.HtmlMessage.Html() } });
+            return Json(new { Errors = exception.HtmlMessages });
         }
         catch (Exception exception)
         {
@@ -234,6 +212,11 @@ public class PaymentController : Controller
             ? await _paymentService.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId)
             : NotFound();
 
+    [HttpGet]
+    [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
+    public Task<IActionResult> CallbackGet(string paymentProviderName, string? orderId, string? shoppingCartId) =>
+        Callback(paymentProviderName, orderId, shoppingCartId);
+
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -243,31 +226,41 @@ public class PaymentController : Controller
         if (string.IsNullOrWhiteSpace(paymentProviderName)) return NotFound();
 
         var order = string.IsNullOrEmpty(orderId)
-            ? await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: false)
+            ? await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId)
             : await _contentManager.GetAsync(orderId);
         if (order is null) return NotFound();
 
-        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatuses.Pending.HtmlClassify();
+        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
 
-        if (status == OrderStatuses.Ordered.HtmlClassify())
+        if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
         {
             return this.RedirectToContentDisplay(order);
         }
 
-        if (status == OrderStatuses.Pending.HtmlClassify())
+        foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
         {
-            foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
+            if (await provider.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId) is { } result)
             {
-                if (await provider.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId) is { } result)
-                {
-                    return result;
-                }
+                return result;
             }
-
-            return this.RedirectToContentDisplay(order);
         }
 
         await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
         return RedirectToAction(nameof(Index));
     }
+
+    [Route("checkout/wait")]
+    public IActionResult Wait(string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
+
+    public static IActionResult RedirectToWait(Controller controller, string? returnUrl = null) =>
+        controller.RedirectToAction(
+            nameof(Wait),
+            typeof(PaymentController).ControllerName(),
+            new
+            {
+                area = FeatureIds.Payment,
+                returnUrl = string.IsNullOrEmpty(returnUrl)
+                    ? controller.HttpContext.Request.GetDisplayUrl()
+                    : returnUrl,
+            });
 }

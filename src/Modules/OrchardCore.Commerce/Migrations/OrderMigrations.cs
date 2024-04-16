@@ -2,6 +2,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -13,7 +14,6 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Html.Models;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Title.Models;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -80,12 +80,13 @@ public class OrderMigrations : DataMigration
                     {
                         Options =
                         [
-                            new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
-                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
-                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
-                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
+                            new ListValueOption { Name = Pending, Value = OrderStatusCodes.Pending },
+                            new ListValueOption { Name = Ordered, Value = OrderStatusCodes.Ordered },
+                            new ListValueOption { Name = Shipped, Value = OrderStatusCodes.Shipped },
+                            new ListValueOption { Name = Arrived, Value = OrderStatusCodes.Arrived },
+                            new ListValueOption { Name = PaymentFailed, Value = OrderStatusCodes.PaymentFailed },
                         ],
-                        DefaultValue = Pending.HtmlClassify(),
+                        DefaultValue = OrderStatusCodes.Pending,
                         Editor = EditorOption.Radio,
                     }))
                 .WithField(nameof(OrderPart.Email), field => field
@@ -112,7 +113,7 @@ public class OrderMigrations : DataMigration
                     .WithDisplayName("Buyer is a corporation"))
             );
 
-        return 7;
+        return 8;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -149,11 +150,11 @@ public class OrderMigrations : DataMigration
                     {
                         Options =
                             [
-                                new() { Name = Ordered, Value = Ordered.HtmlClassify() },
-                                new() { Name = Shipped, Value = Shipped.HtmlClassify() },
-                                new() { Name = Arrived, Value = Arrived.HtmlClassify() },
+                                new() { Name = Ordered, Value = OrderStatusCodes.Ordered },
+                                new() { Name = Shipped, Value = OrderStatusCodes.Shipped },
+                                new() { Name = Arrived, Value = OrderStatusCodes.Arrived },
                             ],
-                        DefaultValue = Pending.HtmlClassify(),
+                        DefaultValue = OrderStatusCodes.Pending,
                         Editor = EditorOption.Radio,
                     }))
                 .WithField(nameof(OrderPart.BillingAddress), field => field
@@ -186,12 +187,12 @@ public class OrderMigrations : DataMigration
                     {
                         Options =
                         [
-                            new ListValueOption { Name = Pending, Value = Pending.HtmlClassify() },
-                            new ListValueOption { Name = Ordered, Value = Ordered.HtmlClassify() },
-                            new ListValueOption { Name = Shipped, Value = Shipped.HtmlClassify() },
-                            new ListValueOption { Name = Arrived, Value = Arrived.HtmlClassify() },
+                            new ListValueOption { Name = Pending, Value = OrderStatusCodes.Pending },
+                            new ListValueOption { Name = Ordered, Value = OrderStatusCodes.Ordered },
+                            new ListValueOption { Name = Shipped, Value = OrderStatusCodes.Shipped },
+                            new ListValueOption { Name = Arrived, Value = OrderStatusCodes.Arrived },
                         ],
-                        DefaultValue = Pending.HtmlClassify(),
+                        DefaultValue = OrderStatusCodes.Pending,
                         Editor = EditorOption.Radio,
                     }))
             );
@@ -279,5 +280,32 @@ public class OrderMigrations : DataMigration
         });
 
         return 7;
+    }
+
+    public async Task<int> UpdateFrom7Async()
+    {
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync(nameof(OrderPart), part => part
+                .WithField(nameof(OrderPart.Status), field => field
+                    .OfType(nameof(TextField))
+                    .WithDisplayName(nameof(OrderPart.Status))
+                    .WithDescription("The status of the order.")
+                    .WithEditor("PredefinedList")
+                    .WithSettings(new TextFieldPredefinedListEditorSettings
+                    {
+                        Options =
+                        [
+                            new ListValueOption { Name = Pending, Value = OrderStatusCodes.Pending },
+                            new ListValueOption { Name = Ordered, Value = OrderStatusCodes.Ordered },
+                            new ListValueOption { Name = Shipped, Value = OrderStatusCodes.Shipped },
+                            new ListValueOption { Name = Arrived, Value = OrderStatusCodes.Arrived },
+                            new ListValueOption { Name = PaymentFailed, Value = OrderStatusCodes.PaymentFailed },
+                        ],
+                        DefaultValue = OrderStatusCodes.Pending,
+                        Editor = EditorOption.Radio,
+                    }))
+            );
+
+        return 8;
     }
 }

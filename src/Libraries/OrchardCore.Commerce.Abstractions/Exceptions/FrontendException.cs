@@ -3,6 +3,7 @@ using System;
 
 namespace OrchardCore.Commerce.Abstractions.Exceptions;
 
+[Obsolete("Use the version in Lombiq.HelpfulLibraries.AspNetCore.Exceptions instead.")]
 public class FrontendException : Exception
 {
     public LocalizedHtmlString HtmlMessage { get; }

@@ -34,6 +34,7 @@
         "OrchardCore.Localization"
       ],
       "disable": [
+        "OrchardCore.Commerce.Payment.Exactly",
         "OrchardCore.Commerce.Payment.Stripe"
       ]
     },

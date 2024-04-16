@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json;
-using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
@@ -11,7 +10,6 @@ using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Mvc.Utilities;
 using Stripe;
 using System.Threading.Tasks;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
@@ -70,16 +68,16 @@ public class StripeController : Controller
             return NotFound();
         }
 
-        var status = order.As<OrderPart>()?.Status?.Text;
+        var part = order.As<OrderPart>() ?? new OrderPart();
         var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
 
         // Looks like there is nothing to do here.
-        if (succeeded && status == OrderStatuses.Ordered.HtmlClassify())
+        if (succeeded && part.IsOrdered)
         {
             return this.RedirectToContentDisplay(order);
         }
 
-        if (succeeded && status == OrderStatuses.Pending.HtmlClassify())
+        if (succeeded && part.IsPending)
         {
             return await _stripePaymentService.UpdateAndRedirectToFinishedOrderAsync(
                 this,
@@ -87,7 +85,7 @@ public class StripeController : Controller
                 fetchedPaymentIntent);
         }
 
-        if (status == OrderStatuses.PaymentFailed.HtmlClassify())
+        if (part.IsFailed)
         {
             return await PaymentFailedAsync();
         }

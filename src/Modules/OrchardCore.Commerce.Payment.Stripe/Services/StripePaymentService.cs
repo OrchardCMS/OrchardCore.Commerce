@@ -117,7 +117,7 @@ public class StripePaymentService : IStripePaymentService
     {
         var order = await GetOrderByPaymentIntentIdAsync(paymentIntent.Id);
         order.Alter<OrderPart>(orderPart =>
-            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.PaymentFailed.HtmlClassify() });
+            orderPart.Status = new TextField { ContentItem = order, Text = OrderStatusCodes.PaymentFailed });
 
         await _contentManager.UpdateAsync(order);
     }
@@ -147,7 +147,7 @@ public class StripePaymentService : IStripePaymentService
 
                     // Shopping cart
                     orderPart.LineItems.SetItems(lineItems);
-                    orderPart.Status = new TextField { ContentItem = order, Text = OrderStatuses.Pending.HtmlClassify() };
+                    orderPart.Status = new TextField { ContentItem = order, Text = OrderStatusCodes.Pending };
 
                     // Store the current applicable discount info so they will be available in the future.
                     orderPart.AdditionalData.SetDiscountsByProduct(cartViewModel
