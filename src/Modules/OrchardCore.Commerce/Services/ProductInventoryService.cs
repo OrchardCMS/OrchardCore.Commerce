@@ -49,9 +49,11 @@ public class ProductInventoryService : IProductInventoryService
             var item = new ShoppingCartItem(line.Quantity, line.ProductSku, line.Attributes?.Values);
             var fullSku = _productService.GetOrderFullSku(item, productPart);
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
-            var relevantInventory = inventoryPart.Inventory.FirstOrDefault(entry => entry.Key == inventoryIdentifier);
+            var relevantInventory = inventoryPart.Inventory.TryGetValue(inventoryIdentifier, out var inventory)
+                ? inventory
+                : inventoryPart.Inventory.GetMaybe(productPart.Sku);
 
-            cannotCheckout = relevantInventory.Value < 1 &&
+            cannotCheckout = relevantInventory < 1 &&
                 !inventoryPart.AllowsBackOrder.Value &&
                 !inventoryPart.IgnoreInventory.Value;
 
