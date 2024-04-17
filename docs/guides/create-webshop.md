@@ -106,11 +106,11 @@ _Any content type with the Widget stereotype can be added this way, but let's ju
 
 _Name the Widget and select the Layer where it should be rendered._
 
-### Step 6 — Enable a payment provider (Exactly)
+### Step 6 — Enable a payment provider (Exactly®)
 
 > ℹ If Exactly is not available in your region [try Stripe instead](../features/exactly-payment.md), the other payment provider OCC has built-in integration for.
 
-Having Products and being able to browse them is great and all, but customers will also need a way to checkout and pay for their cart's content. This is where payment providers come into the picture. We will use Exactly, the default built-in payment provider. Ensure the **Orchard Core Commerce - Payment - Exactly** feature is enabled, then go to _Configuration > Commerce > Exactly API_. The Project ID and API Key fields need to be filled in sp payments are directed towards your account.
+Having Products and being able to browse them is great and all, but customers will also need a way to checkout and pay for their cart's content. This is where payment providers come into the picture. We will use Exactly®, the default built-in payment provider. Ensure the **Orchard Core Commerce - Payment - Exactly** feature is enabled, then go to _Configuration > Commerce > Exactly API_. The Project ID and API Key fields need to be filled in sp payments are directed towards your account.
 
 ![Exactly settings.](../assets/images/create-webshop/step-6/exactly-settings.png)
 

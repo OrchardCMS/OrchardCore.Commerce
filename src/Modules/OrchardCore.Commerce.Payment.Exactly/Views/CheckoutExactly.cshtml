@@ -9,7 +9,7 @@
         T["An error has occurred while trying to connect to the payment service. Please try again later."];
 }
 
-<shape type="PayButton" PayButtonClass="exactly" prop-Text="@T["Pay with exactly"]" />
+<shape type="PayButton" PayButtonClass="exactly" prop-Text="@T["Pay with exactly\u00ae"]" />
 
 <script asp-name="OrchardCore.Commerce.Payment.Exactly.Script" at="Foot">
     Array.from(document.querySelectorAll(".pay-button-exactly")).forEach((button) => {
