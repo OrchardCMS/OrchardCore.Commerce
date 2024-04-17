@@ -4,7 +4,7 @@ Orchard Core Commerce supports multiple [payment providers](payment-providers.md
 
 To start using, follow these steps:
 
-1. Sign up to Exactly. Please be sure to use [this link](https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ) to create your account. That way [Lombiq](https://lombiq.com) (the steward of the Orchard Core Commerce project) will get a commission on the payment fees, which helps cover some of the development costs of OCC. This is at no cost to you; the fees you pay are the same either way.
+1. Sign up to Exactly®. Please be sure to use [this link](https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ) to create your account. That way [Lombiq](https://lombiq.com) (the steward of the Orchard Core Commerce project) will get a commission on the payment fees, which helps cover some of the development costs of OCC. This is at no cost to you; the fees you pay are the same either way.
 2. Once they respond, ask your contact person for the following:
    - Whitelist for your web domain.
    - If needed, a sandbox project you can use for testing.
