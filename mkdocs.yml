@@ -80,8 +80,10 @@ nav:
     - Inventory: features/inventory.md
     - Products and Prices: features/products-and-prices.md
     - Promotions: features/promotions.md
-    - Exactly Payment: features/exactly-payment.md
-    - Stripe Payment: features/stripe-payment.md
+    - Payment Providers:
+      - Overview: features/payment-providers.md
+      - Exactly® Payment: features/exactly-payment.md
+      - Stripe Payment: features/stripe-payment.md
     - Taxation: features/taxation.md
     - User Features: features/user-features.md
     - Workflows: features/workflows.md

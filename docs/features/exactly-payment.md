@@ -1,9 +1,10 @@
-# Exactly Payment
+# Exactly® Payment
 
-Orchard Core Commerce supports multiple [payment providers](payment-providers.md). [Exactly](https://exactly.com/) is one of the officially included ones. Unlike [our Stripe implementation](stripe-payment.md), it uses redirects to send you to a payment interface on their domain.
+Orchard Core Commerce supports multiple [payment providers](payment-providers.md). [Exactly®](https://exactly.com/) is one of the officially included ones. Unlike [our Stripe implementation](stripe-payment.md), it uses redirects to send you to a payment interface on their domain.
 
 To start using, follow these steps:
-1. Sign up to Exactly. Please be sure to use [this link](https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ) to create your account. That way [Lombiq](https://lombiq.com) (the steward of the Orchard Core Commerce project) will get a commission on the payment fees, which helps cover some of the development costs of OCC. This is at no cost to you; the fees you pay are the same either way.
+
+1. Sign up to Exactly®. Please be sure to use [this link](https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ) to create your account. That way [Lombiq](https://lombiq.com) (the steward of the Orchard Core Commerce project) will get a commission on the payment fees, which helps cover some of the development costs of OCC. This is at no cost to you; the fees you pay are the same either way.
 2. Once they respond, ask your contact person for the following:
    - Whitelist for your web domain.
    - If needed, a sandbox project you can use for testing.
@@ -36,6 +37,7 @@ There are available test cards for the sandbox environment that can be found in 
 ### Technical overview
 
 As mentioned above, this module uses redirects to communicate with the payment processor. This means the OrchardCore.Commerce site never sees the buyer's payment information, which avoids potential liability and improves buyer confidence. Here is a broad overview of what happens when you click on the _Pay with exactly_ button:
+
 - JS script sends a POST request that only contains the contents of the checkout page (i.e. addresses).
 - C# backend creates a new Order content item from the checkout data and the stored shopping cart.
 - C# backend sends a POST request to the Exactly API including the order total and the return URL.
