@@ -5,7 +5,6 @@ using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -39,7 +38,6 @@ public class ProductInventoryService : IProductInventoryService
     {
         foreach (var line in lines)
         {
-            var cannotCheckout = false;
             var productPart = line.Product.ContentItem.As<ProductPart>();
             if (productPart.As<InventoryPart>() is not { } inventoryPart)
             {
@@ -53,7 +51,7 @@ public class ProductInventoryService : IProductInventoryService
                 ? inventory
                 : inventoryPart.Inventory.GetMaybe(productPart.Sku);
 
-            cannotCheckout = relevantInventory < 1 &&
+            var cannotCheckout = relevantInventory < 1 &&
                 !inventoryPart.AllowsBackOrder.Value &&
                 !inventoryPart.IgnoreInventory.Value;
 
