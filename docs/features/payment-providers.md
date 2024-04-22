@@ -6,6 +6,7 @@ Orchard Core Commerce supports multiple payment providers and allows developers 
 
 Each provider is a stand-alone feature you can turn on or off.
 
+- [Exactly](exactly-payment.md): A production-ready provider for [exactly.com](https://exactly.com/).
 - [Stripe](stripe-payment.md): A production-ready provider for [stripe.com](https://stripe.com/).
 - Dummy: A development-only provider that lets you click through the checkout without going off-site. Mainly used for UI testing.
 

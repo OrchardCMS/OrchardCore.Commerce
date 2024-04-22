@@ -11,7 +11,7 @@ Enable the _Orchard Core Commerce - Tax_ feature. This grants you the _Tax_ cont
 
 ## Basic tax support
 
-Filling out the _Gross Price_ and _Tax Rate_ (percentage) fields, automatically updates the product's regular price field to the calculated net price during publish. For products configured like this the shopping cart shows the _Gross Price_ instead of the _Price_ field. This is suitable for stores that only ship locally.
+Filling out the _Gross Price_ and _Tax Rate_ (percentage) fields, automatically updates the product's regular price field to the calculated net price during publish. For products configured like this the shopping cart shows the _Gross Price_ instead of the _Price_ field (so it only works with _Price_ part and not the _PriceVariant_ part). This is suitable for stores that only ship locally.
 
 ## Locally maintained tax rates
 

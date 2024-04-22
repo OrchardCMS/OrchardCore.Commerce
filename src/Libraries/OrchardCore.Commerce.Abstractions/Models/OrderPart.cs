@@ -1,9 +1,11 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Abstractions.Models;
@@ -45,4 +47,23 @@ public class OrderPart : ContentPart
     public BooleanField IsCorporation { get; set; } = new();
 
     public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
+
+    [JsonIgnore]
+    public bool IsPending => string.IsNullOrWhiteSpace(Status?.Text) || Status.Text.EqualsOrdinalIgnoreCase(OrderStatusCodes.Pending);
+
+    [JsonIgnore]
+    public bool IsOrdered => Status?.Text?.EqualsOrdinalIgnoreCase(OrderStatusCodes.Ordered) == true;
+
+    [JsonIgnore]
+    public bool IsFailed => Status?.Text?.EqualsOrdinalIgnoreCase(OrderStatusCodes.PaymentFailed) == true;
+
+    /// <summary>
+    /// Sets the <see cref="Status"/> to <see cref="OrderStatusCodes.PaymentFailed"/>.
+    /// </summary>
+    public void FailPayment() => Status.Text = OrderStatusCodes.PaymentFailed;
+
+    /// <summary>
+    /// Sets the <see cref="Status"/> to <see cref="OrderStatusCodes.Ordered"/>.
+    /// </summary>
+    public void SucceedPayment() => Status.Text = OrderStatusCodes.Ordered;
 }

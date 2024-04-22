@@ -1,7 +1,7 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.Tax.Models;
@@ -12,6 +12,8 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using System.Threading.Tasks;
+
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -58,7 +60,7 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
         }
         catch (FrontendException exception)
         {
-            await _notifier.ErrorAsync(exception.HtmlMessage);
+            await _notifier.FrontEndErrorAsync(exception);
             return null;
         }
     }

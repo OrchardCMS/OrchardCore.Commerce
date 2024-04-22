@@ -29,6 +29,11 @@ public interface IPaymentService
         Action<OrderPart>? updateOrderPart = null);
 
     /// <summary>
+    /// Calculates the shopping cart's checkout total.
+    /// </summary>
+    public Task<Amount> GetTotalAsync(string? shoppingCartId);
+
+    /// <summary>
     /// When the order is payed this logic should be run to set <paramref name="order"/> properties that represents its state.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId, string? paymentProviderName);
@@ -40,7 +45,11 @@ public interface IPaymentService
     /// If <see langword="true"/>, then the order totals will be checked. They must be zero, otherwise an error
     /// notification will be sent and <see langword="null"/> is returned. If <see langword="false"/>, this is ignored.
     /// </param>
-    Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree);
+    Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(
+        string? shoppingCartId,
+        bool mustBeFree = false,
+        bool notifyOnError = true,
+        bool throwOnError = false);
 
     /// <summary>
     /// Updates the <paramref name="order"/>'s status to <see cref="OrderStatuses.Ordered"/>.

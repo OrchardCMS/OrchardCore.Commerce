@@ -1,8 +1,8 @@
+using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
@@ -172,13 +172,16 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var parsedLine = cart.AddItem(item);
 
+        var errors = new List<LocalizedHtmlString>();
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
             if (await shoppingCartEvent.VerifyingItemAsync(parsedLine) is { } errorMessage)
             {
-                throw new FrontendException(errorMessage);
+                errors.Add(errorMessage);
             }
         }
+
+        FrontendException.ThrowIfAny(errors);
 
         if (await GetErrorAsync(parsedLine.ProductSku, parsedLine) is { } error)
         {

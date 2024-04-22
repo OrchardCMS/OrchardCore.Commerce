@@ -61,7 +61,10 @@ public class OrderLineItemService : IOrderLineItemService
         IList<OrderLineItem> lineItems,
         OrderPart orderPart)
     {
-        if (!lineItems.Any()) return (Array.Empty<OrderLineItemViewModel>(), Amount.Unspecified);
+        if (lineItems.Count == 0 || lineItems.All(item => item.ContentItemVersion == null))
+        {
+            return (Array.Empty<OrderLineItemViewModel>(), Amount.Unspecified);
+        }
 
         var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
             lineItems.Select(line => line.ContentItemVersion));
