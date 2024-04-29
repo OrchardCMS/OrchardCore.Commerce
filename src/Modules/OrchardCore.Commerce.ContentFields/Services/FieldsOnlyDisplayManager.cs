@@ -39,16 +39,18 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         string displayType = CommonContentDisplayTypes.Detail)
     {
         var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-        return typeDefinition
+
+        return (await typeDefinition
             .Parts
             .SelectMany(part =>
-                part.PartDefinition.Fields.Select(field => new
+                part.PartDefinition.Fields.Select(async field => new
                 {
                     PartName = part.Name,
                     FieldName = field.Name,
-                    PartOrder = GetNumericOrderAsync(part),
+                    PartOrder = await GetNumericOrderAsync(part),
                     FieldOrder = GetNumericOrder(field),
                 }))
+            .AwaitEachAsync(async fieldShapeData => await fieldShapeData))
             .OrderBy(item => item.PartOrder)
             .ThenBy(item => item.FieldOrder)
             .Select(item => $"{contentItem.ContentType}_{displayType}__{item.PartName}__{item.FieldName}");
