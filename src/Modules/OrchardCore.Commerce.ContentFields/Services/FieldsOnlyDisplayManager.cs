@@ -40,17 +40,22 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
     {
         var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-        return (await typeDefinition
+        var partsOrders = new Dictionary<string, int>();
+        foreach (var part in typeDefinition.Parts)
+        {
+            partsOrders.Add(part.Name, await GetNumericOrderAsync(part));
+        }
+
+        return typeDefinition
             .Parts
             .SelectMany(part =>
-                part.PartDefinition.Fields.Select(async field => new
+                part.PartDefinition.Fields.Select(field => new
                 {
                     PartName = part.Name,
                     FieldName = field.Name,
-                    PartOrder = await GetNumericOrderAsync(part),
+                    PartOrder = partsOrders[part.Name],
                     FieldOrder = GetNumericOrder(field),
                 }))
-            .AwaitEachAsync(async fieldShapeData => await fieldShapeData))
             .OrderBy(item => item.PartOrder)
             .ThenBy(item => item.FieldOrder)
             .Select(item => $"{contentItem.ContentType}_{displayType}__{item.PartName}__{item.FieldName}");
