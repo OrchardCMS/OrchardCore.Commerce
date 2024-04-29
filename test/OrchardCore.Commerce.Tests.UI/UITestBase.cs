@@ -48,7 +48,7 @@ public class UITestBase : OrchardCoreUITestBase<Program>
                 configuration.HtmlValidationConfiguration.HtmlValidationOptions =
                     configuration.HtmlValidationConfiguration.HtmlValidationOptions
                         .CloneWith(validationOptions => validationOptions.ConfigPath =
-                            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "orchardcore.htmlvalidate.json"));
+                            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "orchardcore.htmlvalidate.json")); // #spell-check-ignore-line
 
                 if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
             });
