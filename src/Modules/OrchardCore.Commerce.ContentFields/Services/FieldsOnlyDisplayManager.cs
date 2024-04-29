@@ -39,6 +39,13 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         string displayType = CommonContentDisplayTypes.Detail)
     {
         var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+        var partsOrders = new Dictionary<string, int>();
+        foreach (var part in typeDefinition.Parts)
+        {
+            partsOrders.Add(part.Name, await GetNumericOrderAsync(part));
+        }
+
         return typeDefinition
             .Parts
             .SelectMany(part =>
@@ -46,7 +53,7 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
                 {
                     PartName = part.Name,
                     FieldName = field.Name,
-                    PartOrder = GetNumericOrderAsync(part),
+                    PartOrder = partsOrders[part.Name],
                     FieldOrder = GetNumericOrder(field),
                 }))
             .OrderBy(item => item.PartOrder)
