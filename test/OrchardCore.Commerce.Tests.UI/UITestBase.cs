@@ -45,6 +45,11 @@ public class UITestBase : OrchardCoreUITestBase<Program>
                     OrchardCoreUITestExecutorConfiguration.AssertBrowserLogIsEmpty(messageWithoutJqueryError);
                 };
 
+                configuration.HtmlValidationConfiguration.HtmlValidationOptions =
+                    configuration.HtmlValidationConfiguration.HtmlValidationOptions
+                        .CloneWith(validationOptions => validationOptions.ConfigPath =
+                            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "orchardcore.htmlvalidate.json"));
+
                 if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
             });
 }

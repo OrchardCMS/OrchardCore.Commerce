@@ -23,9 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Remove=".htmlvalidate.json" />
-      <None Remove=".htmlvalidate.json" />
-      <None Update=".htmlvalidate.json">
+      <None Update="orchardcore.htmlvalidate.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
