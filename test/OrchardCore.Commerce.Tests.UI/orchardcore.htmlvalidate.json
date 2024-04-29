@@ -14,5 +14,6 @@
     "wcag/h67": "off",
     "wcag/h71": "off",
     "form-dup-name": "off"
-  }
+  },
+  "root":  true
 }
