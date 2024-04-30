@@ -20,7 +20,7 @@ jobs:
     uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
     with:
       machine-types: '["windows-latest"]'
-      timeout-minutes: 60
+      timeout-minutes: 300
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
