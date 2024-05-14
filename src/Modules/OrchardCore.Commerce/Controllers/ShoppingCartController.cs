@@ -159,11 +159,11 @@ public class ShoppingCartController : Controller
             // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
             if (!isValid)
             {
-                var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
-                    .As<InventoryPart>().MinimumOrderQuantity.Value;
+                var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))?
+                    .As<InventoryPart>()?.MinimumOrderQuantity.Value;
 
                 // Choose new quantity based on whether Minimum Order Quantity has a value.
-                line.Quantity = (int)(minOrderQuantity > 0 ? minOrderQuantity : 1);
+                line.Quantity = (int)(minOrderQuantity.HasValue && minOrderQuantity > 0 ? minOrderQuantity : 1);
             }
 
             updatedLines.Add(line);

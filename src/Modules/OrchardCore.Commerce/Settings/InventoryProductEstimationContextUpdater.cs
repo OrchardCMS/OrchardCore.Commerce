@@ -1,4 +1,4 @@
-﻿using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
@@ -22,8 +22,12 @@ public class InventoryProductEstimationContextUpdater : IProductEstimationContex
 
     public async Task<ProductEstimationContext> UpdateAsync(ProductEstimationContext model)
     {
-        var product = await _productService.GetProductAsync(model.ShoppingCartItem.ProductSku);
-        if (product.As<InventoryPart>() is not { } inventory) return model;
+        // If the product doesn't have InventoryPart then this event is not applicable.
+        if (await _productService.GetProductAsync(model.ShoppingCartItem.ProductSku) is not { } product ||
+            product.ContentItem.As<InventoryPart>() is not { } inventory)
+        {
+            return model;
+        }
 
         var cart = await _shoppingCartPersistence.RetrieveAsync(model.ShoppingCartId);
         var item = cart.AddItem(model.ShoppingCartItem.WithQuantity(0));
