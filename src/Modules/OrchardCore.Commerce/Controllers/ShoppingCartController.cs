@@ -163,7 +163,7 @@ public class ShoppingCartController : Controller
                     .As<InventoryPart>()?.MinimumOrderQuantity.Value ?? 0;
 
                 // Choose new quantity based on whether Minimum Order Quantity has a value.
-                line.Quantity = (int)(minOrderQuantity.HasValue && minOrderQuantity > 0 ? minOrderQuantity : 1);
+                line.Quantity = (int)(minOrderQuantity > 0 ? minOrderQuantity : 1);
             }
 
             updatedLines.Add(line);
