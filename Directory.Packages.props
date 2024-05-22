@@ -2,38 +2,41 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+    <OrchardCoreVersion Condition="'$(NuGetBuild)' != 'true'">1.8.3</OrchardCoreVersion>
+    <OrchardCoreVersion Condition="'$(NuGetBuild)' == 'true'">1.8.0</OrchardCoreVersion>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.0.0" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="9.1.1-alpha.6.occ-203" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="9.1.1-alpha.6.occ-203" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="10.0.0" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="10.0.0" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
     <PackageVersion Include="Lombiq.Tests" Version="3.0.0" />
-    <PackageVersion Include="Lombiq.Tests.UI" Version="9.1.1" />
-    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="9.1.1" />
-    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="9.1.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageVersion Include="Lombiq.Tests.UI" Version="10.0.1" />
+    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="10.0.1" />
+    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.ContentFields" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.ContentManagement" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.ContentManagement.Abstractions" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.ContentTypes" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.ContentTypes.Abstractions" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Html" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Indexing.Abstractions" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Localization" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Logging.NLog" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Module.Targets" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Navigation.Core" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Settings" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Templates" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Title" Version="1.8.3" />
-    <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="1.8.3" />
+    <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.ContentManagement" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.ContentManagement.Abstractions" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.ContentTypes" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.ContentTypes.Abstractions" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Html" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Indexing.Abstractions" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Localization" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Logging.NLog" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Module.Targets" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Navigation.Core" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Settings" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Templates" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Title" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="Shouldly" Version="4.2.1" />
-    <PackageVersion Include="Stripe.net" Version="43.15.0" />
+    <PackageVersion Include="Stripe.net" Version="44.8.0" />
     <PackageVersion Include="System.Text.Json" Version="8.0.3" />
-    <PackageVersion Include="xunit" Version="2.7.0" />
+    <PackageVersion Include="xunit" Version="2.8.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0" />
   </ItemGroup>
 </Project>
