@@ -55,7 +55,7 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
             .OnGroup(GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(PriceDisplaySettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(PriceDisplaySettings section, UpdateEditorContext context)
     {
         var user = _hca.HttpContext?.User;
 

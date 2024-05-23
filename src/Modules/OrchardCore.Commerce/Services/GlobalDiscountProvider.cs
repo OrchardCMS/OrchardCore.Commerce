@@ -12,6 +12,7 @@ using OrchardCore.ContentTypes.Services;
 using OrchardCore.Modules;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using YesSql;
 using YesSql.Services;
@@ -57,8 +58,8 @@ public class GlobalDiscountProvider : IPromotionProvider
     {
         var typeNames = (await _contentDefinitionService.GetTypesAsync())
             .Where(type => type
-                .Settings
-                .Get<ContentTypeSettings>(nameof(ContentTypeSettings))?
+                .Settings[nameof(ContentTypeSettings)]
+                .ToObject<ContentTypeSettings>()?
                 .Stereotype?
                 .EqualsOrdinalIgnoreCase(StereotypeName) == true)
             .Select(type => type.Name)
