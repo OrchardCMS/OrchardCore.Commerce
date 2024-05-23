@@ -1,6 +1,5 @@
 @model AddressFieldEditorViewModel
 
-@using Newtonsoft.Json
 @using OrchardCore.Commerce.Abstractions.Fields
 @using OrchardCore.Commerce.Abstractions.Models
 @using OrchardCore.Commerce.AddressDataType
@@ -24,7 +23,7 @@
 
     var regions = Model.Regions.Select(region =>
         {
-            region.Selected = region.Value == address?.Region;
+            region.Selected = region.Value == address.Region;
             return region;
         });
 
@@ -112,7 +111,7 @@
 <script at="Foot" depends-on="@ResourceNames.CommerceRegions">
     @if (Context.Items["commerce-regions-initialized"] == null)
     {
-        <text>commerceRegionsInitialize(@Html.Raw(JsonConvert.SerializeObject(Model.Provinces)));</text>
+        <text>commerceRegionsInitialize(@Json.Serialize(Model.Provinces));</text>
         Context.Items["commerce-regions-initialized"] = true;
     }
 
