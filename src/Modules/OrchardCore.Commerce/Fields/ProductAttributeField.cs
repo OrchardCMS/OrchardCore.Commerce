@@ -25,7 +25,7 @@ public abstract class ProductAttributeField<TSettings> : ProductAttributeField
     public TSettings GetSettings(ContentPartFieldDefinition partFieldDefinition)
     {
         var settings = new TSettings();
-        partFieldDefinition.PopulateSettings(settings);
+        partFieldDefinition.CopySettingsTo(settings);
         return settings;
     }
 }

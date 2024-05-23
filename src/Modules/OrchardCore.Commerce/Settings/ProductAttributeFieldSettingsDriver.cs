@@ -15,7 +15,7 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
     where TSettings : ProductAttributeFieldSettings, new()
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model) =>
-        Initialize(typeof(TSettings).Name + "_Edit", (Action<TSettings>)model.PopulateSettings)
+        Initialize(typeof(TSettings).Name + "_Edit", model.CopySettingsTo)
             .PlaceInContent();
 
     public override async Task<IDisplayResult> UpdateAsync(
@@ -50,7 +50,7 @@ public class TextProductAttributeFieldSettingsDriver
             viewModel =>
             {
                 var settings = new TextProductAttributeFieldSettings();
-                model.PopulateSettings(settings);
+                model.CopySettingsTo(settings);
                 viewModel.Hint = settings.Hint;
                 viewModel.DefaultValue = settings.DefaultValue;
                 viewModel.Required = settings.Required;

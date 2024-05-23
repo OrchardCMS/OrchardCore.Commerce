@@ -23,7 +23,7 @@ public abstract class ProductAttributeFieldDriver<TField, TFieldSettings> : Cont
             GetEditorShapeType(context), model =>
             {
                 var settings = new TFieldSettings();
-                context.PartFieldDefinition.PopulateSettings(settings);
+                context.PartFieldDefinition.CopySettingsTo(settings);
                 model.Field = field;
                 model.Settings = settings;
                 model.Part = context.ContentPart;
