@@ -11,7 +11,7 @@ To start using, follow these steps:
    - A live project for your final site.
 3. Go to <https://dashboard.exactly.com/projects/>.
 4. Take note of your _Project ID_ and your _Project API key_ (both are GUID style hexadecimal strings).
-5. On your Orchard Core tenant go to Admin dashboard > Configuration > Features.
+5. On your Orchard Core tenant go to Admin dashboard → Configuration → Features.
 6. Make sure the _Orchard Core Commerce - Payment - Exactly_ feature is enabled.
 7. Go to Admin dashboard > Configuration > Commerce > Exactly API.
 8. Fill out the _Project ID_ and _API key_ fields.
