@@ -22,11 +22,4 @@
     <ProjectReference Include="..\OrchardCore.Commerce.Tests.UI.Shortcuts\OrchardCore.Commerce.Tests.UI.Shortcuts.csproj"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="orchardcore.htmlvalidate.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackageCopyToOutput>true</PackageCopyToOutput>
-    </Content>
-  </ItemGroup>
-
 </Project>

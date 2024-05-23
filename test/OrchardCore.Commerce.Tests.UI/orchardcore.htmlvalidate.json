@@ -1,9 +1,0 @@
-﻿{
-  "extends": [
-    "./.htmlvalidate.json"
-  ],
-  "rules": {
-    "form-dup-name": "off"
-  },
-  "root":  true
-}
