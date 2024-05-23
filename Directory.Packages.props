@@ -2,8 +2,7 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
-    <OrchardCoreVersion Condition="'$(NuGetBuild)' != 'true'">1.8.3</OrchardCoreVersion>
-    <OrchardCoreVersion Condition="'$(NuGetBuild)' == 'true'">1.8.0</OrchardCoreVersion>
+    <OrchardCoreVersion>1.8.0</OrchardCoreVersion>
   </PropertyGroup>
 
   <ItemGroup>
