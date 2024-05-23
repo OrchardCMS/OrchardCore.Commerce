@@ -55,6 +55,8 @@ public class ProductService : IProductService
 
     public async Task<string> GetOrderFullSkuAsync(ShoppingCartItem item, ProductPart productPart)
     {
+        if (productPart == null) return item.ProductSku;
+
         var attributesRestrictedToPredefinedValues = (await _predefinedValuesService
             .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
             .Select(attr => attr.PartName + "." + attr.Name)
