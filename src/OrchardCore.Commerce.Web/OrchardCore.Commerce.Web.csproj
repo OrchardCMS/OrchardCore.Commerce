@@ -15,6 +15,9 @@
   <ItemGroup>
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
+
+    <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
+         Directory.Packages.props file for more details. -->
     <PackageReference Include="OrchardCore.Application.Cms.Targets" VersionOverride="1.8.3" />
     <PackageReference Include="OrchardCore.Logging.NLog" VersionOverride="1.8.3" />
   </ItemGroup>
