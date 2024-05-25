@@ -13,6 +13,12 @@ public class AddressUpdaterShapeTableProvider : IShapeTableProvider
     // The conventional suffix of services inheriting from IAddressUpdater may be omitted.
     private const string Suffix = "AddressUpdater";
 
+    public ValueTask DiscoverAsync(ShapeTableBuilder builder)
+    {
+        Discover(builder);
+        return ValueTask.CompletedTask;
+    }
+
     public void Discover(ShapeTableBuilder builder) => builder
         .Describe(AddressFieldEditorViewModel.ShapeType)
         .OnDisplaying(displaying =>
