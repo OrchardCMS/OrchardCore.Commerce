@@ -9,3 +9,4 @@ src/Modules/OrchardCore\.Commerce\.Payment/Constants/CurrencyCollectionConstants
 src/Modules/OrchardCore\.Commerce\.Payment\.Stripe/Extensions/PaymentExtensions\.cs$
 test/OrchardCore\.Commerce\.Tests/Fakes/AnkhMorporkCurrencyProvider\.cs$
 test/OrchardCore\.Commerce\.Tests/ProductAttributeTests\.cs$
+CompatibilitySuppressions\.xml$
