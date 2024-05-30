@@ -2,8 +2,8 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
-    <OrchardCoreVersion Condition="'$(NuGetBuild)' != 'true'">2.0.0-preview-18217</OrchardCoreVersion>
-    <OrchardCoreVersion Condition="'$(NuGetBuild)' == 'true'">2.0.0-preview-18217</OrchardCoreVersion>
+    <OrchardCoreVersion Condition="'$(NuGetBuild)' != 'true'">2.0.0-preview-18222</OrchardCoreVersion>
+    <OrchardCoreVersion Condition="'$(NuGetBuild)' == 'true'">2.0.0-preview-18222</OrchardCoreVersion>
   </PropertyGroup>
 
   <ItemGroup>
