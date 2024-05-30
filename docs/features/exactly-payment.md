@@ -11,15 +11,15 @@ To start using, follow these steps:
    - A live project for your final site.
 3. Go to <https://dashboard.exactly.com/projects/>.
 4. Take note of your _Project ID_ and your _Project API key_ (both are GUID style hexadecimal strings).
-5. On your Orchard Core tenant go to Admin dashboard > Configuration > Features.
+5. On your Orchard Core tenant go to Admin dashboard → Configuration → Features.
 6. Make sure the _Orchard Core Commerce - Payment - Exactly_ feature is enabled.
-7. Go to Admin dashboard > Configuration > Commerce > Exactly API.
+7. Go to Admin dashboard → Configuration → Commerce → Exactly API.
 8. Fill out the _Project ID_ and _API key_ fields.
 9. Save and then click the _Verify currently saved API configuration_ button to test it. This will create a new transaction you can check on <https://dashboard.exactly.com/transactions>.
 
 Once you have set up the site configuration, an additional _Pay with exactly_ button will appear during checkout.
 
-> ℹ At the time of writing callback URLs targeting _localhost_ are not supported. If you want to test your site locally, we suggest adding a whitelisted domain to your [hosts file](https://en.wikipedia.org/wiki/Hosts_(file)). The address doesn't have to be accessible from their server so this approach is safer than exposing your machine via port forwarding or tunneling..
+> ℹ At the time of writing callback URLs targeting _localhost_ are not supported. If you want to test your site locally, we suggest adding a whitelisted domain to your [hosts file](https://en.wikipedia.org/wiki/Hosts_(file)). The address doesn't have to be accessible from their server so this approach is safer than exposing your machine via port forwarding or tunneling.
 
 ## Cards
 
