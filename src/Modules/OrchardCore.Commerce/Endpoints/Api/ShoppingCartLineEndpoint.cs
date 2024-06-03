@@ -40,11 +40,12 @@ public static class ShoppingCartLineEndpoint
             return httpContext.ChallengeOrForbid("Api");
         }
 
-        ShoppingCartLineViewModel shoppingCartLineViewModel = new ShoppingCartLineViewModel();
-        ShoppingCartLineViewModelVM shoppingCartLineViewModelVM = new ShoppingCartLineViewModelVM(shoppingCartLineViewModel);
+        var shoppingCartLineViewModel = new ShoppingCartLineViewModel();
+        var shoppingCartLineViewModelVM = new ShoppingCartLineViewModelVM(shoppingCartLineViewModel);
         try
         {
-            shoppingCartLineViewModel = await shoppingCartHelpers.EstimateProductAsync(estimateProductVM.ShoppingCartId, estimateProductVM.Sku, estimateProductVM.Shipping, estimateProductVM.Billing);
+            shoppingCartLineViewModel = await shoppingCartHelpers.EstimateProductAsync(
+                estimateProductVM.ShoppingCartId, estimateProductVM.Sku, estimateProductVM.Shipping, estimateProductVM.Billing);
         }
         catch (FrontendException ex)
         {
@@ -54,7 +55,6 @@ public static class ShoppingCartLineEndpoint
 
         if (shoppingCartLineViewModel == null)
             return TypedResults.NotFound();
-
 
         return TypedResults.Ok(shoppingCartLineViewModelVM);
     }
@@ -84,7 +84,8 @@ public static class ShoppingCartLineEndpoint
         ShoppingCartViewModel shoppingCartViewModel;
         try
         {
-            shoppingCartViewModel = await shoppingCartHelpers.CreateShoppingCartViewModelAsync(createShoppingCartVM.shoppingCartId, createShoppingCartVM.shipping, createShoppingCartVM.billing);
+            shoppingCartViewModel = await shoppingCartHelpers.CreateShoppingCartViewModelAsync(
+                createShoppingCartVM.ShoppingCartId, createShoppingCartVM.Shipping, createShoppingCartVM.Billing);
         }
         catch (FrontendException ex)
         {
@@ -95,10 +96,8 @@ public static class ShoppingCartLineEndpoint
         if (shoppingCartViewModel == null)
             return TypedResults.NotFound();
 
-        ShoppingCartViewModelVM shoppingCartViewModelVM = new ShoppingCartViewModelVM(shoppingCartViewModel);
-        return TypedResults.Created<ShoppingCartViewModelVM>("api/ShoppingCart/CreateShoppingCartViewModel", shoppingCartViewModelVM);
-        //string? path = null;
-        //return TypedResults.Created<ShoppingCartViewModelVM>(path, shoppingCartViewModelVM);
+        var shoppingCartViewModelVM = new ShoppingCartViewModelVM(shoppingCartViewModel);
+        return TypedResults.Created("api/ShoppingCart/CreateShoppingCartViewModel", shoppingCartViewModelVM);
     }
 
     public static IEndpointRouteBuilder AddAddItemEndpoint(this IEndpointRouteBuilder builder)
@@ -128,16 +127,14 @@ public static class ShoppingCartLineEndpoint
         {
             return TypedResults.NoContent();
         }
-        else
+
+        var problemDetails = new ProblemDetails
         {
-            ProblemDetails problemDetails = new ProblemDetails
-            {
-                Detail = errored,
-                Status = 500,
-                Title = "Error",
-            };
-            return TypedResults.Problem(problemDetails);
-        }
+            Detail = errored,
+            Status = 500,
+            Title = "Error",
+        };
+        return TypedResults.Problem(problemDetails);
     }
 
     public static IEndpointRouteBuilder AddUpdateEndpoint(this IEndpointRouteBuilder builder)
@@ -167,18 +164,15 @@ public static class ShoppingCartLineEndpoint
         {
             return TypedResults.NoContent();
         }
-        else
-        {
-            ProblemDetails problemDetails = new ProblemDetails
-            {
-                Detail = errored,
-                Status = 500,
-                Title = "Error",
-            };
-            return TypedResults.Problem(problemDetails);
-        }
-    }
 
+        var problemDetails = new ProblemDetails
+        {
+            Detail = errored,
+            Status = 500,
+            Title = "Error",
+        };
+        return TypedResults.Problem(problemDetails);
+    }
 
     public static IEndpointRouteBuilder AddRemoveLineEndpoint(this IEndpointRouteBuilder builder)
     {
@@ -207,23 +201,16 @@ public static class ShoppingCartLineEndpoint
         {
             return TypedResults.NoContent();
         }
-        else
+
+        var problemDetails = new ProblemDetails
         {
-            ProblemDetails problemDetails = new ProblemDetails
-            {
-                Detail = errored,
-                Status = 500,
-                Title = "Error",
-            };
-            return TypedResults.Problem(problemDetails);
-        }
+            Detail = errored,
+            Status = 500,
+            Title = "Error",
+        };
+        return TypedResults.Problem(problemDetails);
     }
 
-    /// <summary>
-    /// Need user info.
-    /// </summary>
-    /// <param name="builder"></param>
-    /// <returns></returns>
     public static IEndpointRouteBuilder AddRetrieveAsyncEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("api/ShoppingCart/RetrieveCart/{shoppingCartId?}", RetrieveAsync)

@@ -11,5 +11,4 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IShoppingCartService, ShoppingCartService>();
         return services;
     }
-    
 }

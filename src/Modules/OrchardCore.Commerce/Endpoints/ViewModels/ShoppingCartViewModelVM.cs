@@ -8,19 +8,21 @@ public class ShoppingCartViewModelVM
 {
     public ShoppingCartViewModelVM(ShoppingCartViewModel model)
     {
-        this.Id = model.Id;
-        this.Totals = model.Totals;
-        this.Lines = model.Lines;
-        this.TableShapes = model.TableShapes;
+        Id = model.Id;
+        Totals = model.Totals;
+        Lines = model.Lines;
+        TableShapes = model.TableShapes;
         foreach (var e in model.InvalidReasons)
         {
-            this.InvalidReasons.Add(e.Value);
+            InvalidReasons.Add(e.Value);
         }
+
         foreach (var e in model.Headers)
         {
-            this.Headers.Add(e.Name);
+            Headers.Add(e.Name);
         }
     }
+
     public string Id { get; set; }
     public IList<string> InvalidReasons { get; } = new List<string>();
     public IList<string> Headers { get; } = new List<string>();

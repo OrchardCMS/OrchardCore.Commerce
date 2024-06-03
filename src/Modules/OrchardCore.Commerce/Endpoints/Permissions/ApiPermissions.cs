@@ -7,47 +7,44 @@ namespace OrchardCore.Commerce.Endpoints.Permissions;
 
 public class ApiPermissions : IPermissionProvider
 {
-    public static readonly Permission CommerceApi = new Permission("CommerceApi", "Manage Commerce Items Api");
+    public static readonly Permission CommerceApi = new("CommerceApi", "Manage Commerce Items Api");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[]
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(new[]
        {
-                CommerceApi
-
-            }
+                CommerceApi,
+       }
        .AsEnumerable());
-    }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[]
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => new[]
         {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-
                 },
-
-                 new PermissionStereotype {
-                    Name = "Editor"
+                new PermissionStereotype
+                {
+                    Name = "Editor",
                 },
-                new PermissionStereotype {
-                    Name = "Moderator"
+                new PermissionStereotype
+                {
+                    Name = "Moderator",
                 },
-                new PermissionStereotype {
-                    Name = "Author"
+                new PermissionStereotype
+                {
+                    Name = "Author",
                 },
-                new PermissionStereotype {
-                    Name = "Contributor"
+                new PermissionStereotype
+                {
+                    Name = "Contributor",
                 },
-                new PermissionStereotype {
-                    Name = "Authenticated"
+                new PermissionStereotype
+                {
+                    Name = "Authenticated",
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Anonymous",
-                    Permissions = new[] { CommerceApi }
-                }
-            };
-    }
+                    Permissions = new[] { CommerceApi },
+                },
+        };
 }

@@ -20,7 +20,6 @@ public static class HttpContextExtensions
     public static IResult ChallengeOrForbid(this HttpContext httpContext, params string[] authenticationSchemes)
     {
         return httpContext.User?.Identity?.IsAuthenticated == true
-            ? TypedResults.Forbid(properties: null, authenticationSchemes)
-            : TypedResults.Challenge(properties: null, authenticationSchemes);
+            ? TypedResults.Forbid(authenticationSchemes: authenticationSchemes) : TypedResults.Challenge(properties: null, authenticationSchemes);
     }
 }
