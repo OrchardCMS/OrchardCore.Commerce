@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -9,7 +10,11 @@ namespace OrchardCore.Commerce.Settings;
 public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<AddressField>
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model) =>
-        Initialize("AddressFieldSettings_Edit", model.CopySettingsTo)
+        Initialize<AddressPartFieldSettings>("AddressFieldSettings_Edit", viewModel =>
+            {
+                var settings = model.Settings.ToObject<AddressPartFieldSettings>();
+                viewModel.Hint = settings.Hint;
+            })
             .PlaceInContent();
 
     public override async Task<IDisplayResult> UpdateAsync(

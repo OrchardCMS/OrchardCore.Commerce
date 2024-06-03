@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata.Builders;
 
 namespace OrchardCore.Commerce.Settings;
 
@@ -15,7 +16,7 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
     where TSettings : ProductAttributeFieldSettings, new()
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model) =>
-        Initialize(typeof(TSettings).Name + "_Edit", model.CopySettingsTo)
+        Initialize<TSettings>(typeof(TSettings).Name + "_Edit", model.CopySettingsTo)
             .PlaceInContent();
 
     public override async Task<IDisplayResult> UpdateAsync(
