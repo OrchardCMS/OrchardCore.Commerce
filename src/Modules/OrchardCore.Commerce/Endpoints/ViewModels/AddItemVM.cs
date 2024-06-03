@@ -1,0 +1,9 @@
+using OrchardCore.Commerce.ViewModels;
+
+namespace OrchardCore.Commerce.Endpoints.ViewModels;
+public class AddItemVM
+{
+    public string Token { get; set; }
+    public string ShoppingCartId { get; set; }
+    public ShoppingCartLineUpdateModel Line { get; set; }
+}
