@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Html;
@@ -22,10 +26,6 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Payment.Services;
@@ -267,7 +267,7 @@ public class PaymentService : IPaymentService
     public async Task UpdateOrderToOrderedAsync(
         ContentItem order,
         string? shoppingCartId,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null)
     {
         ArgumentNullException.ThrowIfNull(order);
 

@@ -238,7 +238,7 @@ public class OrderMigrations : DataMigration
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var orders = await session.QueryContentItem(PublicationStatus.Any, Order).ListAsync();
             var expectedType = JToken.FromObject(
-                new Payment.Models.Payment(
+                new Abstractions.Models.Payment(
                     string.Empty,
                     string.Empty,
                     string.Empty,

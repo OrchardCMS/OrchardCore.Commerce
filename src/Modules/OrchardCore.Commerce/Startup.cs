@@ -1,3 +1,4 @@
+using System;
 using Fluid;
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
@@ -51,7 +52,6 @@ using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
-using System;
 using YesSql.Indexes;
 using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
 
@@ -184,6 +184,7 @@ public class Startup : StartupBase
                 option.MemberAccessStrategy.Register<OrderPart>();
                 option.MemberAccessStrategy.Register<AddressField>();
                 option.MemberAccessStrategy.Register<IPayment>();
+                option.MemberAccessStrategy.Register<Abstractions.Models.Payment>();
                 option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
                 option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
             })

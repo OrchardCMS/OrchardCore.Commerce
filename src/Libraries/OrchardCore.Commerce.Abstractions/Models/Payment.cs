@@ -1,8 +1,8 @@
+using System;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.MoneyDataType;
-using System;
 
-namespace OrchardCore.Commerce.Payment.Models;
+namespace OrchardCore.Commerce.Abstractions.Models;
 
 public record Payment(
     string Kind,

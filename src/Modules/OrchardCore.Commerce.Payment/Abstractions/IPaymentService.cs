@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
@@ -10,9 +13,6 @@ using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Mvc.Core.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Abstractions;
 
@@ -61,7 +61,7 @@ public interface IPaymentService
     Task UpdateOrderToOrderedAsync(
         ContentItem order,
         string? shoppingCartId,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null);
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null);
 
     /// <summary>
     /// Tries to get the order identified by <paramref name="orderId"/>, or creates a new one if it's not there. Then
@@ -97,7 +97,7 @@ public static class PaymentServiceExtensions
         ContentItem order,
         string? shoppingCartId,
         string? paymentProviderName = null,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null)
     {
         await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
         await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
