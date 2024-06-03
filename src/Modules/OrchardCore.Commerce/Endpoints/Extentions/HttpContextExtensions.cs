@@ -3,9 +3,6 @@ using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules;
 
-/// <summary>
-/// Copy from orchardcore code, will be deleted after merge to OC 2.0
-/// </summary>
 public static class HttpContextExtensions
 {
     /// <summary>
@@ -17,9 +14,8 @@ public static class HttpContextExtensions
         return httpContext;
     }
 
-    public static IResult ChallengeOrForbid(this HttpContext httpContext, params string[] authenticationSchemes)
-    {
-        return httpContext.User?.Identity?.IsAuthenticated == true
-            ? TypedResults.Forbid(authenticationSchemes: authenticationSchemes) : TypedResults.Challenge(properties: null, authenticationSchemes);
-    }
+    public static IResult ChallengeOrForbid(this HttpContext httpContext, params string[] authenticationSchemes) =>
+        httpContext.User?.Identity?.IsAuthenticated == true
+            ? TypedResults.Forbid(authenticationSchemes: authenticationSchemes)
+            : TypedResults.Challenge(authenticationSchemes: authenticationSchemes);
 }

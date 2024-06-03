@@ -26,7 +26,7 @@ public class ShoppingCartViewModelVM
     public string Id { get; set; }
     public IList<string> InvalidReasons { get; } = new List<string>();
     public IList<string> Headers { get; } = new List<string>();
-    public IList<List<IShape>> TableShapes { get; set; } = new List<List<IShape>>();
-    public IList<ShoppingCartLineViewModel> Lines { get; set; } = new List<ShoppingCartLineViewModel>();
-    public IList<Amount> Totals { get; set; } = new List<Amount>();
+    public IList<List<IShape>> TableShapes { get; }
+    public IList<ShoppingCartLineViewModel> Lines { get; }
+    public IList<Amount> Totals { get; }
 }

@@ -1,16 +1,13 @@
-using OrchardCore.Commerce.Endpoints.Extensions;
 using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Activities;
-using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Workflows.Services;
 using System;
 using System.Collections.Generic;
@@ -20,36 +17,26 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Endpoints;
 public class ShoppingCartService : IShoppingCartService
 {
-    private readonly IShapeFactory _shapeFactory;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
-    private readonly IHtmlLocalizer<ShoppingCartController> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IProductService _productService;
-
-    // These are needed.
-#pragma warning disable S107 // Methods should not have too many parameters
     public ShoppingCartService(
-        IShapeFactory shapeFactory,
         IShoppingCartHelpers shoppingCartHelpers,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IProductService productService)
-#pragma warning restore S107 // Methods should not have too many parameters
     {
-        _shapeFactory = shapeFactory;
         _shoppingCartHelpers = shoppingCartHelpers;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
         _workflowManagers = workflowManagers;
         _shoppingCartEvents = shoppingCartEvents;
         _productService = productService;
-        H = htmlLocalizer;
     }
 
     public async Task<string> RemoveLineAsync(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
@@ -78,24 +65,22 @@ public class ShoppingCartService : IShoppingCartService
             errored = "Not Found";
             return errored;
         }
-        else
-        {
-            try
-            {
-                var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
-                                  shoppingCartId,
-                                  shoppingCartItem,
-                                  storeIfOk: true);
 
-                await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
-                new { LineItem = parsedLine },
-                $"ShoppingCart-{token}-{shoppingCartId}");
-            }
-            catch (FrontendException ex)
-            {
-                var errors = ex.HtmlMessages;
-                errored = errors.ConvertLocalizedHtmlStringList();
-            }
+        try
+        {
+            var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
+                              shoppingCartId,
+                              shoppingCartItem,
+                              storeIfOk: true);
+
+            await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
+            new { LineItem = parsedLine },
+            $"ShoppingCart-{token}-{shoppingCartId}");
+        }
+        catch (FrontendException ex)
+        {
+            var errors = ex.HtmlMessages;
+            errored = errors.ConvertLocalizedHtmlStringList();
         }
 
         return errored;
@@ -131,7 +116,9 @@ public class ShoppingCartService : IShoppingCartService
             {
                 if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
                 {
+#pragma warning disable S1643 // Strings should not be concatenated using '+' in a loop
                     errored += errorMessage.Value;
+#pragma warning restore S1643 // Strings should not be concatenated using '+' in a loop
                     isValid = false;
                 }
             }

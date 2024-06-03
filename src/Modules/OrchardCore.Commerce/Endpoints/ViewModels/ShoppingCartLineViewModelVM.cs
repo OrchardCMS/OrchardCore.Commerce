@@ -18,6 +18,8 @@ public class ShoppingCartLineViewModelVM : ShoppingCartLineViewModel
         AdditionalData = shoppingCartLineViewModel.AdditionalData;
     }
 
+#pragma warning disable CA2227 // 集合属性应为只读
     public new IDictionary<string, Newtonsoft.Json.Linq.JToken> AdditionalData { get; set; }
+#pragma warning restore CA2227 // 集合属性应为只读
     public string Errors { get; set; }
 }
