@@ -19,7 +19,7 @@ public static class ShoppingCartLineEndpoint
 {
     public static IEndpointRouteBuilder AddEstimateProductAsyncEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/ShoppingCart/EstimateProduct/{guid}", EstimateProductAsync)
+        builder.MapGet("api/ShoppingCart/EstimateProduct/{shoppingCartId}", EstimateProductAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -28,7 +28,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> EstimateProductAsync(
-        string guid,
+        string shoppingCartId,
         [FromBody] EstimateProductViewModel estimateProductVM,
         IAuthorizationService authorizationService,
         HttpContext httpContext,
@@ -44,8 +44,8 @@ public static class ShoppingCartLineEndpoint
         var shoppingCartLineViewModelVM = new ShoppingCartLineApiViewModel(shoppingCartLineViewModel);
         try
         {
-            shoppingCartLineViewModel = await shoppingCartHelpers.EstimateProductAsync(
-                estimateProductVM.ShoppingCartId, estimateProductVM.Sku, estimateProductVM.Shipping, estimateProductVM.Billing);
+            shoppingCartLineViewModel = await shoppingCartHelpers
+                .EstimateProductAsync(shoppingCartId, estimateProductVM.Sku, estimateProductVM.Shipping, estimateProductVM.Billing);
         }
         catch (FrontendException ex)
         {
@@ -221,7 +221,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> RetrieveAsync(
-        string? shoppingCartId,
+        string shoppingCartId,
         IAuthorizationService authorizationService,
         HttpContext httpContext,
         IShoppingCartPersistence shoppingCartPersistence
