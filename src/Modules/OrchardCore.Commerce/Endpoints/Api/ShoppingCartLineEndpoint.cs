@@ -96,8 +96,7 @@ public static class ShoppingCartLineEndpoint
         if (shoppingCartViewModel == null)
             return TypedResults.NotFound();
 
-        var shoppingCartViewModelVM = new ShoppingCartApiViewModel(shoppingCartViewModel);
-        return TypedResults.Created("api/ShoppingCart/CreateShoppingCartViewModel", shoppingCartViewModelVM);
+        return TypedResults.Created("api/ShoppingCart/CreateShoppingCartViewModel", shoppingCartViewModel);
     }
 
     public static IEndpointRouteBuilder AddAddItemEndpoint(this IEndpointRouteBuilder builder)
