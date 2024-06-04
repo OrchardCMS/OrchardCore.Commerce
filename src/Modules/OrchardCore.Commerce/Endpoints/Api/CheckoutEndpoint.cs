@@ -33,12 +33,8 @@ public static class CheckoutEndpoint
             return httpContext.ChallengeOrForbid("Api");
         }
 
-        if (await paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel)
-        {
-            return TypedResults.NotFound();
-        }
-
-        if (checkoutViewModel.IsInvalid)
+        if (await paymentService.CreateCheckoutViewModelAsync(shoppingCartId) is not { } checkoutViewModel ||
+            checkoutViewModel.IsInvalid)
         {
             return TypedResults.NotFound();
         }
