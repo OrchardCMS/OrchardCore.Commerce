@@ -383,7 +383,7 @@ public class ContentLocalizationStartup : StartupBase
     {
         services.AddScoped<IDuplicateSkuResolver, LocalizationDuplicateSkuResolver>();
 
-        services.RemoveImplementations<IProductService>();
+        services.RemoveImplementationsOf<IProductService>();
         services.AddScoped<IProductService, ContentLocalizationProductService>();
     }
 
