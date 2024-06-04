@@ -4,9 +4,9 @@ using OrchardCore.DisplayManagement;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Endpoints.ViewModels;
-public class ShoppingCartViewModelVM
+public class ShoppingCartApiViewModel
 {
-    public ShoppingCartViewModelVM(ShoppingCartViewModel model)
+    public ShoppingCartApiViewModel(ShoppingCartViewModel model)
     {
         Id = model.Id;
         Totals = model.Totals;

@@ -1,7 +1,7 @@
 using OrchardCore.Commerce.AddressDataType;
 
 namespace OrchardCore.Commerce.Endpoints.ViewModels;
-public class EstimateProductVM
+public class EstimateProductViewModel
 {
     public string Sku { get; set; }
     public string ShoppingCartId { get; set; }

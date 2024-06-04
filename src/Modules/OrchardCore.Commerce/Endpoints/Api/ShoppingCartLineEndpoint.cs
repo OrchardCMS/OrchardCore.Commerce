@@ -29,7 +29,7 @@ public static class ShoppingCartLineEndpoint
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> EstimateProductAsync(
         string guid,
-        [FromBody] EstimateProductVM estimateProductVM,
+        [FromBody] EstimateProductViewModel estimateProductVM,
         IAuthorizationService authorizationService,
         HttpContext httpContext,
         IShoppingCartHelpers shoppingCartHelpers
@@ -41,7 +41,7 @@ public static class ShoppingCartLineEndpoint
         }
 
         var shoppingCartLineViewModel = new ShoppingCartLineViewModel();
-        var shoppingCartLineViewModelVM = new ShoppingCartLineViewModelVM(shoppingCartLineViewModel);
+        var shoppingCartLineViewModelVM = new ShoppingCartLineApiViewModel(shoppingCartLineViewModel);
         try
         {
             shoppingCartLineViewModel = await shoppingCartHelpers.EstimateProductAsync(
@@ -70,7 +70,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> CreateShoppingCartViewModelAsync(
-         [FromBody] CreateShoppingCartVM createShoppingCartVM,
+         [FromBody] CreateShoppingCartViewModel createShoppingCartVM,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
          IShoppingCartHelpers shoppingCartHelpers
@@ -96,7 +96,7 @@ public static class ShoppingCartLineEndpoint
         if (shoppingCartViewModel == null)
             return TypedResults.NotFound();
 
-        var shoppingCartViewModelVM = new ShoppingCartViewModelVM(shoppingCartViewModel);
+        var shoppingCartViewModelVM = new ShoppingCartApiViewModel(shoppingCartViewModel);
         return TypedResults.Created("api/ShoppingCart/CreateShoppingCartViewModel", shoppingCartViewModelVM);
     }
 
@@ -111,7 +111,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> AddItemAsync(
-         [FromBody] AddItemVM addItemVM,
+         [FromBody] AddItemViewModel addItemVM,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
          IShoppingCartService shoppingCartService
@@ -148,7 +148,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> UpdateAsync(
-         [FromBody] UpdateVM updateVM,
+         [FromBody] UpdateViewModel updateVM,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
          IShoppingCartService shoppingCartService
@@ -185,7 +185,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> RemoveLineAsync(
-         [FromBody] RemoveLineVM removeLineVM,
+         [FromBody] RemoveLineViewModel removeLineVM,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
          IShoppingCartService shoppingCartService

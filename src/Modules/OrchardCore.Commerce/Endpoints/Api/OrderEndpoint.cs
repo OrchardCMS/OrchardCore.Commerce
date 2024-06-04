@@ -23,7 +23,7 @@ public static class OrderEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> CreateOrderLineItemViewModelsAndTotalAsync(
-        [FromBody] CreateOrderLineItemVM createOrderLineItemVM,
+        [FromBody] CreateOrderLineItemViewModel createOrderLineItemVM,
         IOrderLineItemService orderLineItemService,
         IAuthorizationService authorizationService,
         HttpContext httpContext

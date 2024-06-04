@@ -1,9 +1,9 @@
 using OrchardCore.Commerce.Models;
 
 namespace OrchardCore.Commerce.Endpoints.ViewModels;
-public class ProductListVM : ProductList
+public class ProductListViewModel : ProductList
 {
-    public ProductListVM(ProductList list)
+    public ProductListViewModel(ProductList list)
     {
         Products = list.Products;
         TotalItemCount = list.TotalItemCount;
