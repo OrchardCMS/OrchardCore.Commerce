@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Commerce.Endpoints.Permissions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Modules;
 using System.Threading.Tasks;
