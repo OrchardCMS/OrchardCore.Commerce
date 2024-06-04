@@ -1,17 +1,19 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Activities;
+using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Endpoints;
@@ -21,6 +23,7 @@ public class ShoppingCartService : IShoppingCartService
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
+    private readonly IHtmlLocalizer<ShoppingCartController> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IProductService _productService;
     public ShoppingCartService(
@@ -28,6 +31,7 @@ public class ShoppingCartService : IShoppingCartService
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IEnumerable<IWorkflowManager> workflowManagers,
+        IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IProductService productService)
     {
@@ -37,6 +41,7 @@ public class ShoppingCartService : IShoppingCartService
         _workflowManagers = workflowManagers;
         _shoppingCartEvents = shoppingCartEvents;
         _productService = productService;
+        H = htmlLocalizer;
     }
 
     public async Task<string> RemoveLineAsync(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
@@ -49,9 +54,9 @@ public class ShoppingCartService : IShoppingCartService
             cart.RemoveItem(parsedLine);
             await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
         }
-        catch (Exception ex)
+        catch
         {
-            errored = ex.Message;
+            errored = H["An error has occurred."].Value;
         }
 
         return errored;
@@ -62,7 +67,7 @@ public class ShoppingCartService : IShoppingCartService
         string errored = string.Empty;
         if (await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem)
         {
-            errored = "Not Found";
+            errored = H["Not Found"].Value;
             return errored;
         }
 
@@ -100,7 +105,7 @@ public class ShoppingCartService : IShoppingCartService
         if (lines.Any(line => line.Item == null))
         {
             await _shoppingCartPersistence.StoreAsync(new ShoppingCart(), shoppingCartId);
-            errored = "Empty. Your shopping cart is broken and had to be replaced. We apologize for the inconvenience.";
+            errored = H["Empty. Your shopping cart is broken and had to be replaced. We apologize for the inconvenience."].Value;
             return errored;
         }
 
@@ -116,9 +121,9 @@ public class ShoppingCartService : IShoppingCartService
             {
                 if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
                 {
-#pragma warning disable S1643 // Strings should not be concatenated using '+' in a loop
-                    errored += errorMessage.Value;
-#pragma warning restore S1643 // Strings should not be concatenated using '+' in a loop
+                    var sb = new StringBuilder();
+                    sb.AppendLine(errorMessage.Value);
+                    errored = sb.ToString();
                     isValid = false;
                 }
             }
