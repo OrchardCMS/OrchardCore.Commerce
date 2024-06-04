@@ -28,7 +28,8 @@ public static class CheckoutEndpoint
         IPaymentService paymentService
         )
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Payment.Permissions.Checkout))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi) ||
+            !await authorizationService.AuthorizeAsync(httpContext.User, Payment.Permissions.Checkout))
         {
             return httpContext.ChallengeOrForbid("Api");
         }
