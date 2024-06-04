@@ -17,7 +17,7 @@ public class ShoppingCartLineViewModel : ILineItem
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
 
-    public IDictionary<string, JToken> AdditionalData { get; init; } = new Dictionary<string, JToken>();
+    public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
 
     [BindNever]
     public ISkuHolderContent Product { get; set; }
