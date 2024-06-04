@@ -80,8 +80,6 @@ public class PaymentController : Controller
 
         foreach (dynamic shape in checkoutViewModel.CheckoutShapes) shape.ViewModel = checkoutViewModel;
 
-        checkoutViewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
-
         return View(checkoutViewModel);
     }
 
