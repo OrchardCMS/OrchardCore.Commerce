@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
@@ -12,6 +13,7 @@ using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Endpoints.Permissions;
 using OrchardCore.Commerce.Endpoints.ViewModels;
 using OrchardCore.Modules;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -114,13 +116,16 @@ public static class ShoppingCartLineEndpoint
          [FromBody] AddItemViewModel addItemVM,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
-         IShoppingCartService shoppingCartService
+         IShoppingCartService shoppingCartService,
+         IHtmlLocalizer<AddItemViewModel> htmlLocalizer
        )
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
         {
             return httpContext.ChallengeOrForbid("Api");
         }
+
+        if (string.IsNullOrEmpty(addItemVM.ShoppingCartId)) { addItemVM.ShoppingCartId = Guid.NewGuid().ToString("n"); }
 
         var errored = await shoppingCartService.AddItemAsync(addItemVM.Line, addItemVM.Token, addItemVM.ShoppingCartId);
         if (string.IsNullOrEmpty(errored))
@@ -132,7 +137,7 @@ public static class ShoppingCartLineEndpoint
         {
             Detail = errored,
             Status = 500,
-            Title = "Error",
+            Title = htmlLocalizer["Error"].Value,
         };
         return TypedResults.Problem(problemDetails);
     }
@@ -151,7 +156,8 @@ public static class ShoppingCartLineEndpoint
          [FromBody] UpdateViewModel updateVM,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
-         IShoppingCartService shoppingCartService
+         IShoppingCartService shoppingCartService,
+         IHtmlLocalizer<UpdateViewModel> htmlLocalizer
        )
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
@@ -169,7 +175,7 @@ public static class ShoppingCartLineEndpoint
         {
             Detail = errored,
             Status = 500,
-            Title = "Error",
+            Title = htmlLocalizer["Error"].Value,
         };
         return TypedResults.Problem(problemDetails);
     }
@@ -188,7 +194,8 @@ public static class ShoppingCartLineEndpoint
          [FromBody] RemoveLineViewModel removeLineVM,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
-         IShoppingCartService shoppingCartService
+         IShoppingCartService shoppingCartService,
+         IHtmlLocalizer<RemoveLineViewModel> htmlLocalizer
        )
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
@@ -206,8 +213,9 @@ public static class ShoppingCartLineEndpoint
         {
             Detail = errored,
             Status = 500,
-            Title = "Error",
+            Title = htmlLocalizer["Error"].Value,
         };
+
         return TypedResults.Problem(problemDetails);
     }
 
