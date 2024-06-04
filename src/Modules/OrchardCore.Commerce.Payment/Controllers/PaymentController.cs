@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -37,15 +36,12 @@ public class PaymentController : Controller
     private readonly INotifier _notifier;
     private readonly IEnumerable<IPaymentProvider> _paymentProviders;
     private readonly IPaymentService _paymentService;
-    private readonly IRegionService _regionService;
-
     public PaymentController(
         IOrchardServices<PaymentController> services,
         IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IEnumerable<IPaymentProvider> paymentProviders,
-        IPaymentService paymentService,
-        IRegionService regionService)
+        IPaymentService paymentService)
     {
         _authorizationService = services.AuthorizationService.Value;
         _logger = services.Logger.Value;
@@ -56,7 +52,6 @@ public class PaymentController : Controller
         _notifier = notifier;
         _paymentProviders = paymentProviders;
         _paymentService = paymentService;
-        _regionService = regionService;
     }
 
     [HttpGet("checkout")]
