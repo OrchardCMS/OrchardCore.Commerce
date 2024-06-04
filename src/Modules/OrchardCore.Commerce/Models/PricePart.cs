@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using OrchardCore.Commerce.ContentFields.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
@@ -11,8 +10,7 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class PricePart : ContentPart
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Amount Price
     {
         get => PriceField.Amount;

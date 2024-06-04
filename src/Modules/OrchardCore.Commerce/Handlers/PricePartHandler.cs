@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Commerce.ContentFields.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
@@ -28,7 +28,7 @@ public class PricePartHandler : ContentPartHandler<PricePart>
         if (part.Content.Price is { } price && part.Content.PriceField?.Amount.ToString() != price.ToString())
         {
             part.Content.PriceField = JObject.FromObject(new PriceField { Amount = amount });
-            ((JObject)part.Content).Remove(nameof(PricePart.Price));
+            ((JsonObject)part.Content).Remove(nameof(PricePart.Price));
 
             await _session.SaveAsync(part.ContentItem);
         }

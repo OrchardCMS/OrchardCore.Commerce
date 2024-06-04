@@ -1,6 +1,6 @@
+using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Liquid;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ public class AmountConverterFilter : ILiquidFilter
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
         if (input.Type == FluidValues.Nil ||
-            input.ToObjectValue() is not JToken newInput)
+            input.ToObjectValue() is not JsonNode newInput)
         {
             return new ValueTask<FluidValue>(input);
         }

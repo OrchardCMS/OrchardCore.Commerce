@@ -1,14 +1,13 @@
+using System.Linq;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Liquid;
 
@@ -26,7 +25,7 @@ public class OrderLineItemViewModelsAndTaxRatesConverterFilter : ILiquidFilter
             return await new ValueTask<FluidValue>(input);
         }
 
-        var orderPart = ((JObject)objectOrderPart).ToObject<OrderPart>();
+        var orderPart = ((JsonObject)objectOrderPart).ToObject<OrderPart>();
 
         var viewModels = (await _orderLineItemService
             .CreateOrderLineItemViewModelsAndTotalAsync(orderPart.LineItems, orderPart))
