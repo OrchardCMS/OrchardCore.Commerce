@@ -1,19 +1,18 @@
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using OrchardCore.Commerce.Abstractions.Serialization;
 using OrchardCore.Mvc.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Commerce.Abstractions.Models;
 
 /// <summary>
 /// A shopping cart item.
 /// </summary>
-[JsonConverter(typeof(LegacyShoppingCartItemConverter))]
-[System.Text.Json.Serialization.JsonConverter(typeof(ShoppingCartItemConverter))]
+[JsonConverter(typeof(ShoppingCartItemConverter))]
 public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
 {
     /// <summary>

@@ -1,5 +1,7 @@
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static OrchardCore.Commerce.MoneyDataType.Currency;
@@ -61,7 +63,7 @@ internal sealed class AmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (reader.TokenType == JsonTokenType.String) return LegacyAmountConverter.ReadString(reader.GetString());
+        if (reader.TokenType == JsonTokenType.String) return ReadString(reader.GetString());
 
         currency = HandleUnknownCurrency(currency, nativeName, englishName, symbol, iso, decimalDigits);
 
@@ -119,5 +121,16 @@ internal sealed class AmountConverter : JsonConverter<Amount>
         if (currency != null) return currency;
 
         throw new InvalidOperationException($"Invalid amount format. Must include a {nameof(currency)}.");
+    }
+
+    private static Amount ReadString(string text)
+    {
+        var parts = text.Split();
+        if (parts.Length < 2) throw new InvalidOperationException($"Unable to parse string amount \"{text}\".");
+
+        var currency = FromIsoCode(parts[0]);
+        var value = decimal.Parse(string.Join(string.Empty, parts.Skip(1)), CultureInfo.InvariantCulture);
+
+        return new Amount(value, currency);
     }
 }
