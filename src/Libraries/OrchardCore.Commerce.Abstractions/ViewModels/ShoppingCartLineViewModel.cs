@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.MoneyDataType;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Commerce.Abstractions.ViewModels;
 
@@ -17,7 +17,7 @@ public class ShoppingCartLineViewModel : ILineItem
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
 
-    public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
+    public IDictionary<string, JsonNode> AdditionalData { get; } = new Dictionary<string, JsonNode>();
 
     [BindNever]
     public ISkuHolderContent Product { get; set; }

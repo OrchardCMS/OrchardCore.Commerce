@@ -1,11 +1,11 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Models;
 
@@ -40,7 +40,7 @@ public class OrderPart : ContentPart
     public BooleanField BillingAndShippingAddressesMatch { get; set; } = new();
     public BooleanField IsCorporation { get; set; } = new();
 
-    public IDictionary<string, JToken> AdditionalData { get; } = new Dictionary<string, JToken>();
+    public IDictionary<string, JsonNode> AdditionalData { get; } = new Dictionary<string, JsonNode>();
 
     [JsonIgnore]
     public bool IsPending => string.IsNullOrWhiteSpace(Status?.Text) || Status.Text.EqualsOrdinalIgnoreCase(OrderStatusCodes.Pending);
