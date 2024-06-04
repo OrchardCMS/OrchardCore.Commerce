@@ -1,3 +1,4 @@
+#nullable enable
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +22,7 @@ public static class CheckoutEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> CheckoutAsync(
-        string shoppingCartId,
+        string? shoppingCartId,
         IAuthorizationService authorizationService,
         HttpContext httpContext,
         IPaymentService paymentService

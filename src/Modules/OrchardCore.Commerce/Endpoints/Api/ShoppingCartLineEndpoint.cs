@@ -1,3 +1,4 @@
+#nullable enable
 using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -19,7 +20,7 @@ public static class ShoppingCartLineEndpoint
 {
     public static IEndpointRouteBuilder AddEstimateProductAsyncEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/ShoppingCart/EstimateProduct/{shoppingCartId}", EstimateProductAsync)
+        builder.MapGet("api/ShoppingCart/EstimateProduct/{shoppingCartId?}", EstimateProductAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -28,7 +29,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> EstimateProductAsync(
-        string shoppingCartId,
+        string? shoppingCartId,
         [FromBody] EstimateProductViewModel estimateProductVM,
         IAuthorizationService authorizationService,
         HttpContext httpContext,
@@ -40,8 +41,8 @@ public static class ShoppingCartLineEndpoint
             return httpContext.ChallengeOrForbid("Api");
         }
 
-        var shoppingCartLineViewModel = new ShoppingCartLineViewModel();
-        var shoppingCartLineViewModelVM = new ShoppingCartLineApiViewModel(shoppingCartLineViewModel);
+        ShoppingCartLineViewModel shoppingCartLineViewModel;
+
         try
         {
             shoppingCartLineViewModel = await shoppingCartHelpers
@@ -50,13 +51,13 @@ public static class ShoppingCartLineEndpoint
         catch (FrontendException ex)
         {
             var errors = ex.HtmlMessages;
-            shoppingCartLineViewModelVM.Errors = errors.ConvertLocalizedHtmlStringList();
+            return TypedResults.Problem(errors.ConvertLocalizedHtmlStringList());
         }
 
         if (shoppingCartLineViewModel == null)
             return TypedResults.NotFound();
 
-        return TypedResults.Ok(shoppingCartLineViewModelVM);
+        return TypedResults.Ok(shoppingCartLineViewModel);
     }
 
     public static IEndpointRouteBuilder AddCreateShoppingCartViewModelEndpoint(this IEndpointRouteBuilder builder)
@@ -221,7 +222,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> RetrieveAsync(
-        string shoppingCartId,
+        string? shoppingCartId,
         IAuthorizationService authorizationService,
         HttpContext httpContext,
         IShoppingCartPersistence shoppingCartPersistence
