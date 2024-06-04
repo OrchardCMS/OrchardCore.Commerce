@@ -215,8 +215,8 @@ public class Startup : StartupBase
         services.AddCommerceAPIs();
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-           => routes
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
+           routes
             .AddCreateShoppingCartViewModelEndpoint()
             .AddRetrieveAsyncEndpoint()
             .AddEstimateProductAsyncEndpoint()
