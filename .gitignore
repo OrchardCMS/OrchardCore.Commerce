@@ -16,3 +16,4 @@ node_modules/
 /.editorconfig
 .ps1-analyzer-stamp
 *.orig
+.prettierrc.js
