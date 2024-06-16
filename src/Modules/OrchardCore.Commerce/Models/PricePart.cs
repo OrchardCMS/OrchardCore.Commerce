@@ -10,7 +10,7 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class PricePart : ContentPart
 {
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore]
     public Amount Price
     {
         get => PriceField.Amount;
