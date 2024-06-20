@@ -16,7 +16,7 @@ public class MoneyService : IMoneyService
 {
     private readonly IEnumerable<ICurrencyProvider> _currencyProviders;
     private readonly CurrencySettings _options;
-    private readonly ICurrencySelector _currencySelector;
+    private readonly IEnumerable<ICurrencySelector> _currencySelectors;
 
     public IEnumerable<ICurrency> Currencies =>
         _currencyProviders
@@ -34,16 +34,16 @@ public class MoneyService : IMoneyService
         }
     }
 
-    public ICurrency CurrentDisplayCurrency => _currencySelector.CurrentDisplayCurrency ?? DefaultCurrency;
+    public ICurrency CurrentDisplayCurrency => _currencySelectors.First().CurrentDisplayCurrency ?? DefaultCurrency;
 
     public MoneyService(
         IEnumerable<ICurrencyProvider> currencyProviders,
         IOptions<CurrencySettings> options,
-        ICurrencySelector currencySelector)
+        IEnumerable<ICurrencySelector> currencySelectors)
     {
         _currencyProviders = currencyProviders ?? Array.Empty<ICurrencyProvider>();
         _options = options?.Value;
-        _currencySelector = currencySelector;
+        _currencySelectors = currencySelectors;
     }
 
     public Amount Create(decimal value, string currencyIsoCode = null) =>
