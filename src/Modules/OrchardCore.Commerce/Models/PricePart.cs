@@ -1,7 +1,7 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Commerce.ContentFields.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
-using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Models;
 
