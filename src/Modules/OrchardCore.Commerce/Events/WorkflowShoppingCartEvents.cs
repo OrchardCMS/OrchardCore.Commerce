@@ -39,14 +39,16 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 
         if (!results.Any()) return (eventContext.Headers, eventContext.Lines);
 
-        var headers = GetOutput<IList<LocalizedHtmlString>>(results, nameof(eventContext.Headers)) ?? eventContext.Headers;
+        var headers = GetOutput<IList<SerializableLocalizedHtmlString>>(results, nameof(eventContext.Headers))?
+            .Select(item => (LocalizedHtmlString)item)
+            .ToList() ?? eventContext.Headers;
         var lines = GetOutput<IList<ShoppingCartLineViewModel>>(results, nameof(eventContext.Lines)) ?? eventContext.Lines;
 
         return (headers, lines);
     }
 
     public async Task<LocalizedHtmlString> VerifyingItemAsync(ShoppingCartItem item) =>
-        GetOutput<LocalizedHtmlString>(
+        GetOutput<SerializableLocalizedHtmlString>(
             await TriggerEventAsync<CartVerifyingItemEvent>(item),
             "Error");
 
@@ -86,11 +88,17 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 
         return output switch
         {
-            string outputLocalizedHtmlString when typeof(T) == typeof(LocalizedHtmlString) =>
-                new LocalizedHtmlString(outputLocalizedHtmlString, outputLocalizedHtmlString) as T,
+            string outputLocalizedHtmlString when typeof(T) == typeof(SerializableLocalizedHtmlString) =>
+                new SerializableLocalizedHtmlString(outputLocalizedHtmlString, outputLocalizedHtmlString) as T,
             string outputString => JsonSerializer.Deserialize<T>(outputString, JOptions.Default),
             not null => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(output, JOptions.Default), JOptions.Default),
             _ => default,
         };
+    }
+
+    public sealed record SerializableLocalizedHtmlString(string Name, string Value)
+    {
+        public static implicit operator LocalizedHtmlString(SerializableLocalizedHtmlString item) =>
+            item is null ? null : new LocalizedHtmlString(item.Name ?? item.Value, item.Value ?? item.Name);
     }
 }
