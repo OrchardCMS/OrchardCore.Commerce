@@ -15,10 +15,7 @@ public abstract class ProductAttributeFieldSettings : ICopier<ProductAttributeFi
     /// </summary>
     public string Hint { get; set; }
 
-    public void CopyTo(ProductAttributeFieldSettings target)
-    {
-        target.Hint = Hint;
-    }
+    public void CopyTo(ProductAttributeFieldSettings target) => target.Hint = Hint;
 }
 
 /// <summary>

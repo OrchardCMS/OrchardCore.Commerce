@@ -76,7 +76,7 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
         return contexts;
     }
 
-    private T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName)
+    private static T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName)
         where T : class
     {
         var output = contexts

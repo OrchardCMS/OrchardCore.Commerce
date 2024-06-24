@@ -219,18 +219,15 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The VAT number of the buyer, in case it's a corporation."))
             );
 
-        return 6;
-    }
-
-    public int UpdateFrom6()
-    {
-        // Previously this migration step updated the type indicator property in serialized order payment instances.
-        // This is no longer supported due to the intentionally reduced polymorphic deserialization capabilities of
-        // System.Text.Json. It's also no longer necessary because OrchardCore.Commerce.Abstractions.Models.Payment is
-        // the only accepted item type for OrderPart.Charges.
-
         return 7;
     }
+
+    // Previously this migration step updated the type indicator property in serialized order payment instances.
+    // This is no longer supported due to the intentionally reduced polymorphic deserialization capabilities of
+    // System.Text.Json. It's also no longer necessary because OrchardCore.Commerce.Abstractions.Models.Payment is
+    // the only accepted item type for OrderPart.Charges.
+    [SuppressMessage("Minor Code Smell", "S3400:Methods should not return constants", Justification = "That's not how migrations work.")]
+    public int UpdateFrom6() => 7;
 
     public async Task<int> UpdateFrom7Async()
     {

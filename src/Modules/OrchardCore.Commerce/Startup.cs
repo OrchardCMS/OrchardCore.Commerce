@@ -215,11 +215,9 @@ public class FallBackPriceStartup : StartupBase
 {
     public override int Order => int.MaxValue;
 
-    public override void ConfigureServices(IServiceCollection services)
-    {
+    public override void ConfigureServices(IServiceCollection services) =>
         // No display currency selected. Fall back to default currency logic in MoneyService.
         services.AddScoped<ICurrencySelector, NullCurrencySelector>();
-    }
 }
 
 [RequireFeatures("OrchardCore.Workflows")]

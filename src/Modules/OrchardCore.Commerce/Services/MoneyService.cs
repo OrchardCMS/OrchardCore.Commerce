@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Settings;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,9 +40,9 @@ public class MoneyService : IMoneyService
         IOptions<CurrencySettings> options,
         IEnumerable<ICurrencySelector> currencySelectors)
     {
-        _currencyProviders = currencyProviders ?? Array.Empty<ICurrencyProvider>();
+        _currencyProviders = currencyProviders ?? [];
         _options = options?.Value;
-        _currencySelectors = currencySelectors;
+        _currencySelectors = currencySelectors ?? [];
     }
 
     public Amount Create(decimal value, string currencyIsoCode = null) =>
