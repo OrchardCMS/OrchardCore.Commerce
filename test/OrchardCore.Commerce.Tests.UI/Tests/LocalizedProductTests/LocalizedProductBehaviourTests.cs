@@ -46,7 +46,7 @@ public class LocalizedProductBehaviourTests : UITestBase
                 await context.ClickReliablyOnAsync(By.ClassName("save"));
 
                 await context.GoToAdminRelativeUrlAsync("/Settings/commerce");
-                await context.SetDropdownByValueAsync(By.Id("ISite_CurrentDisplayCurrency"), _localizedCurrency);
+                await context.SetDropdownByValueAsync(By.Id("ISite_CurrencySettings_CurrentDisplayCurrency"), _localizedCurrency);
                 await context.ClickReliablyOnAsync(By.ClassName("save"));
 
                 await GoToLocalizedProductAsync(context);
