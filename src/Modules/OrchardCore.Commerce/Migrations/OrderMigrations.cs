@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -11,6 +9,8 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 using static OrchardCore.Commerce.Abstractions.Constants.OrderStatuses;
 

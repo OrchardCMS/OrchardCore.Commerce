@@ -1,6 +1,6 @@
+using OrchardCore.Commerce.Promotion.Models;
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
-using OrchardCore.Commerce.Promotion.Models;
 
 namespace OrchardCore.Commerce.Promotion.Extensions;
 

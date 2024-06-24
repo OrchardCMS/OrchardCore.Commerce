@@ -15,7 +15,6 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
-
 using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
 
 namespace OrchardCore.Commerce.ContentFields;

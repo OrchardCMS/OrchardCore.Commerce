@@ -1,9 +1,9 @@
+using Lombiq.HelpfulLibraries.Common.Utilities;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Diagnostics.CodeAnalysis;
-using Lombiq.HelpfulLibraries.Common.Utilities;
-using OrchardCore.ContentManagement.Metadata.Builders;
 
 namespace OrchardCore.Commerce.Fields;
 

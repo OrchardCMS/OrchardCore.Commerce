@@ -1,9 +1,9 @@
-@using OrchardCore.Commerce.Models;
-@using OrchardCore.Commerce.Tax.Extensions
 @using OrchardCore.Commerce.Abstractions.ViewModels
+@using OrchardCore.Commerce.Models
 @using OrchardCore.Commerce.Promotion.Extensions
-
-@inject OrchardCore.Settings.ISiteService SiteService
+@using OrchardCore.Commerce.Tax.Extensions
+@using OrchardCore.Settings
+@inject ISiteService SiteService
 
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;

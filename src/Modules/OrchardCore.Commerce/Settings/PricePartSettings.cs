@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Commerce.ContentFields.Settings;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Settings;
 

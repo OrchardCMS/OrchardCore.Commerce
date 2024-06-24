@@ -1,12 +1,12 @@
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata.Builders;
 
 namespace OrchardCore.Commerce.Settings;
 
