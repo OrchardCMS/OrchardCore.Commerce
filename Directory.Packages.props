@@ -19,7 +19,6 @@
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="10.0.2-preview.0.occ-245" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="10.0.2-preview.0.occ-245" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentManagement" Version="$(OrchardCoreVersion)" />
