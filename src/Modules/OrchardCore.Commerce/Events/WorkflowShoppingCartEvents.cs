@@ -1,4 +1,7 @@
-﻿using Lombiq.HelpfulLibraries.AspNetCore.Localization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -7,11 +10,6 @@ using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Events;
 
@@ -20,12 +18,8 @@ namespace OrchardCore.Commerce.Events;
 /// </summary>
 public class WorkflowShoppingCartEvents : IShoppingCartEvents
 {
-    private static readonly LocalizedHtmlStringConverter _converter = new();
-
     private readonly IWorkflowManager _workflowManager;
     private readonly IWorkflowTypeStore _workflowTypeStore;
-
-    private readonly JsonSerializerOptions _options;
 
     // After all the default events, but it should be still possible to add different ordered event handlers after it.
     public int Order => int.MaxValue / 2;
@@ -36,9 +30,6 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
     {
         _workflowManager = workflowManager;
         _workflowTypeStore = workflowTypeStore;
-
-        if (!JOptions.Default.Converters.Contains(_converter)) JOptions.Default.Converters.Add(_converter);
-        _options = JOptions.Default;
     }
 
     public async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
@@ -70,7 +61,7 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
         var values = new Dictionary<string, object>
         {
             ["Context"] = input,
-            ["JSON"] = JsonSerializer.Serialize(input, _options),
+            ["JSON"] = JsonSerializer.Serialize(input, JOptions.Default),
         };
 
         // Start new workflows whose types have a corresponding starting activity.
@@ -97,8 +88,8 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
         {
             string outputLocalizedHtmlString when typeof(T) == typeof(LocalizedHtmlString) =>
                 new LocalizedHtmlString(outputLocalizedHtmlString, outputLocalizedHtmlString) as T,
-            string outputString => JsonSerializer.Deserialize<T>(outputString, _options),
-            not null => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(output, _options), _options),
+            string outputString => JsonSerializer.Deserialize<T>(outputString, JOptions.Default),
+            not null => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(output, JOptions.Default), JOptions.Default),
             _ => default,
         };
     }

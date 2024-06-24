@@ -132,8 +132,6 @@ public class Startup : StartupBase
         // Currency
         services.AddScoped<ICurrencyProvider, CurrencyProvider>();
         services.AddScoped<IMoneyService, MoneyService>();
-        // No display currency selected. Fall back to default currency logic in MoneyService.
-        services.AddScoped<ICurrencySelector, NullCurrencySelector>();
 
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
@@ -213,6 +211,17 @@ public class Startup : StartupBase
     }
 }
 
+public class FallBackPriceStartup : StartupBase
+{
+    public override int Order => int.MaxValue;
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // No display currency selected. Fall back to default currency logic in MoneyService.
+        services.AddScoped<ICurrencySelector, NullCurrencySelector>();
+    }
+}
+
 [RequireFeatures("OrchardCore.Workflows")]
 public class WorkflowStartup : StartupBase
 {
@@ -275,7 +284,6 @@ public class SessionCartStorageStartup : StartupBase
 }
 
 [Feature(CommerceConstants.Features.CurrencySettingsSelector)]
-[RequireFeatures(CommerceConstants.Features.Core)]
 public class CurrencySettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
