@@ -6,18 +6,18 @@
     <!-- The Orchard Core version should always be x.y.0 of the latest minor version for maximum compatibility when
          distributed as NuGet packages. On the other hand, the consuming projects (including OrchardCore.Commerce.Web)
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
-    <OrchardCoreVersion>2.0.0-preview-18222</OrchardCoreVersion>
+    <OrchardCoreVersion>2.0.0-preview-18250</OrchardCoreVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.0.0" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="10.0.0" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="10.0.0" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="10.0.1-preview.0.occ-245" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="10.0.1-preview.0.occ-245" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
     <PackageVersion Include="Lombiq.Tests" Version="3.0.0" />
-    <PackageVersion Include="Lombiq.Tests.UI" Version="10.0.1" />
-    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="10.0.1" />
-    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="10.0.1" />
+    <PackageVersion Include="Lombiq.Tests.UI" Version="10.0.2-preview.0.occ-245" />
+    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="10.0.2-preview.0.occ-245" />
+    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="10.0.2-preview.0.occ-245" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
