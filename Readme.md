@@ -1,10 +1,12 @@
 # Orchard Core Commerce
 
-[![Join the chat at https://gitter.im/OrchardCore-Commerce/Lobby](https://badges.gitter.im/OrchardCore-Commerce/Lobby.svg)](https://gitter.im/OrchardCore-Commerce/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Documentation](https://readthedocs.org/projects/orchardcorecommerce/badge/)](https://commerce.orchardcore.net/) [![OrchardCore.Commerce NuGet](https://img.shields.io/nuget/v/OrchardCore.Commerce?label=OrchardCore.Commerce)](https://www.nuget.org/packages/OrchardCore.Commerce/) [![Cloudsmith](https://api-prd.cloudsmith.io/badges/version/orchardcore/commerce/nuget/OrchardCore.Commerce/latest/x/?render=true&badge_token=gAAAAABey9hKFD_C-ZIpLvayS3HDsIjIorQluDs53KjIdlxoDz6Ntt1TzvMNJp7a_UWvQbsfN5nS7_0IbxCyqHZsjhmZP6cBkKforo-NqwrH5-E6QCrJ3D8%3D)](https://cloudsmith.io/~orchardcore/repos/commerce/packages/detail/nuget/OrchardCore.Commerce/latest/)
+[![Join the chat at https://discord.gg/PtaYnX63](https://img.shields.io/badge/chat_on-Discord-7289d9?color=7289d9)](https://discord.gg/PtaYnX63) [![Documentation](https://readthedocs.org/projects/orchardcorecommerce/badge/)](https://commerce.orchardcore.net/) [![OrchardCore.Commerce NuGet](https://img.shields.io/nuget/v/OrchardCore.Commerce?label=OrchardCore.Commerce)](https://www.nuget.org/packages/OrchardCore.Commerce/) [![Cloudsmith](https://api-prd.cloudsmith.io/badges/version/orchardcore/commerce/nuget/OrchardCore.Commerce/latest/x/?render=true&badge_token=gAAAAABey9hKFD_C-ZIpLvayS3HDsIjIorQluDs53KjIdlxoDz6Ntt1TzvMNJp7a_UWvQbsfN5nS7_0IbxCyqHZsjhmZP6cBkKforo-NqwrH5-E6QCrJ3D8%3D)](https://cloudsmith.io/~orchardcore/repos/commerce/packages/detail/nuget/OrchardCore.Commerce/latest/)
 
 The commerce module for [Orchard Core](https://github.com/OrchardCMS/OrchardCore).
 
 It's also available on all sites of [DotNest, the Orchard SaaS](https://dotnest.com/).
+
+Do you want to chat with other community members? [Check out our channel on the Orchard discord server.](https://discord.gg/PtaYnX63)
 
 ## History, status, and planning
 
