@@ -24,12 +24,8 @@ public abstract class ProductAttributeField : ContentField
 public abstract class ProductAttributeField<TSettings> : ProductAttributeField
     where TSettings : ProductAttributeFieldSettings, ICopier<TSettings>, new()
 {
-    public TSettings GetSettings(ContentPartFieldDefinition partFieldDefinition)
-    {
-        var settings = new TSettings();
-        partFieldDefinition.CopySettingsTo(settings);
-        return settings;
-    }
+    public TSettings GetSettings(ContentPartFieldDefinition partFieldDefinition) =>
+        partFieldDefinition.GetSettings<TSettings>();
 }
 
 /// <summary>

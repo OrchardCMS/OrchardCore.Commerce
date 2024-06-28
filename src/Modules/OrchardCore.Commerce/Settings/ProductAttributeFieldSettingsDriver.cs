@@ -50,8 +50,7 @@ public class TextProductAttributeFieldSettingsDriver
             nameof(TextProductAttributeFieldSettings) + "_Edit",
             viewModel =>
             {
-                var settings = new TextProductAttributeFieldSettings();
-                model.CopySettingsTo(settings);
+                var settings = model.GetSettings<TextProductAttributeFieldSettings>();
                 viewModel.Hint = settings.Hint;
                 viewModel.DefaultValue = settings.DefaultValue;
                 viewModel.Required = settings.Required;
