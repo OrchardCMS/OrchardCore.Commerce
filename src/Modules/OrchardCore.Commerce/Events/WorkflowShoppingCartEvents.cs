@@ -21,7 +21,7 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 {
     private readonly IWorkflowManager _workflowManager;
     private readonly IWorkflowTypeStore _workflowTypeStore;
-    private readonly IHtmlLocalizer<WorkflowShoppingCartEvents>  H;
+    private readonly IHtmlLocalizer<WorkflowShoppingCartEvents> H;
 
     // After all the default events, but it should be still possible to add different ordered event handlers after it.
     public int Order => int.MaxValue / 2;
