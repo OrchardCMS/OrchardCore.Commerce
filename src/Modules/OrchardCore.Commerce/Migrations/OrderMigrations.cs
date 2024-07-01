@@ -46,7 +46,7 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The title of the order"))
                 .WithPart(nameof(HtmlBodyPart), part => part
                     .WithDisplayName("Annotations")
-                    .WithSettings(new ContentTypePartSettings { Editor = "Wysiwyg", })
+                    .WithSettings(new ContentTypePartSettings { Editor = "Trumbowyg", })
                 )
                 .WithPart(nameof(OrderPart)));
 
@@ -104,7 +104,7 @@ public class OrderMigrations : DataMigration
                     .WithDisplayName("Buyer is a corporation"))
             );
 
-        return 8;
+        return 9;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -254,5 +254,15 @@ public class OrderMigrations : DataMigration
             );
 
         return 8;
+    }
+
+    public async Task<int> UpdateFrom8Async()
+    {
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(Order, type => type
+            .WithPart(nameof(HtmlBodyPart), part => part
+                .WithSettings(new ContentTypePartSettings { Editor = "Trumbowyg", })
+            ));
+
+        return 9;
     }
 }
