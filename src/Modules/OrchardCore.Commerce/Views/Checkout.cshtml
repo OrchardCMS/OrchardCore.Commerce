@@ -100,7 +100,7 @@
                 {
                     @await DisplayAsync(shape)
                 }
-                catch (Exception exception) when (exception.Message.RegexIsMatch(@"Shape type '[^']*' not found"))
+                catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
                 {
                     // It's fine, we only want to display the shape if a template exists.
                 }
