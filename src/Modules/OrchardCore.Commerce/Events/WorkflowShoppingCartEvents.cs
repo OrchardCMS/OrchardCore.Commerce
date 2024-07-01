@@ -9,6 +9,7 @@ using OrchardCore.Workflows.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Events;
@@ -20,16 +21,19 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
 {
     private readonly IWorkflowManager _workflowManager;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IHtmlLocalizer<WorkflowShoppingCartEvents>  H;
 
     // After all the default events, but it should be still possible to add different ordered event handlers after it.
     public int Order => int.MaxValue / 2;
 
     public WorkflowShoppingCartEvents(
         IWorkflowManager workflowManager,
-        IWorkflowTypeStore workflowTypeStore)
+        IWorkflowTypeStore workflowTypeStore,
+        IHtmlLocalizer<WorkflowShoppingCartEvents> localizer)
     {
         _workflowManager = workflowManager;
         _workflowTypeStore = workflowTypeStore;
+        H = localizer;
     }
 
     public async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
@@ -78,7 +82,7 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
         return contexts;
     }
 
-    private static T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName)
+    private T GetOutput<T>(IEnumerable<WorkflowExecutionContext> contexts, string outputName)
         where T : class
     {
         var output = contexts
@@ -86,17 +90,40 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
             .SelectWhere(context => context.Output.GetMaybe(outputName))
             .FirstOrDefault();
 
-        return output switch
+        if (output is string text && typeof(T) == typeof(SerializableLocalizedHtmlString))
         {
-            string outputLocalizedHtmlString when typeof(T) == typeof(SerializableLocalizedHtmlString) =>
-                new SerializableLocalizedHtmlString(outputLocalizedHtmlString, outputLocalizedHtmlString) as T,
-            string outputString => JsonSerializer.Deserialize<T>(outputString, JOptions.Default),
-            not null => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(output, JOptions.Default), JOptions.Default),
-            _ => default,
+            return Localize(text) as T;
+        }
+
+        var node = output switch
+        {
+            string json => JNode.Parse(json),
+            not null => JNode.FromObject(output),
+            _ => null,
         };
+
+        if (node is null) return default;
+
+        if (typeof(T) == typeof(IList<SerializableLocalizedHtmlString>))
+        {
+            return node
+                .AsArray()
+                .Select(item => item.GetValueKind() == JsonValueKind.String
+                    ? Localize(item.GetValue<string>())
+                    : item.ToObject<SerializableLocalizedHtmlString>(JOptions.Default))
+                .ToList() as T;
+        }
+
+        return node.ToObject<T>(JOptions.Default);
     }
 
-    public sealed record SerializableLocalizedHtmlString(string Name, string Value)
+    private SerializableLocalizedHtmlString Localize(string text)
+    {
+        var localized = H[text];
+        return new SerializableLocalizedHtmlString(localized.Name, localized.Value);
+    }
+
+    internal sealed record SerializableLocalizedHtmlString(string Name, string Value)
     {
         public static implicit operator LocalizedHtmlString(SerializableLocalizedHtmlString item) =>
             item is null ? null : new LocalizedHtmlString(item.Name ?? item.Value, item.Value ?? item.Name);
