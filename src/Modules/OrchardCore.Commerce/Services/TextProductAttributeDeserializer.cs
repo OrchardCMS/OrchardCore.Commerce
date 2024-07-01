@@ -10,7 +10,7 @@ public class TextProductAttributeDeserializer : IProductAttributeDeserializer
     public string AttributeTypeName => nameof(TextProductAttributeValue);
 
     public IProductAttributeValue Deserialize(string attributeName, JsonObject attribute) =>
-        new TextProductAttributeValue(attributeName, attribute["value"].GetValue<IEnumerable<string>>());
+        new TextProductAttributeValue(attributeName, attribute["value"].ToObject<IEnumerable<string>>());
 }
 
 public class BooleanProductAttributeDeserializer : IProductAttributeDeserializer
