@@ -70,30 +70,30 @@ public sealed class AmountConverter : JsonConverter<Amount>
         return new(value, currency);
     }
 
-    public override void Write(Utf8JsonWriter writer, Amount amount, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, Amount value, JsonSerializerOptions options)
     {
-        if (amount.Currency is null)
+        if (value.Currency is null)
         {
             throw new InvalidOperationException("Amount must have a currency applied to allow serialization.");
         }
 
         writer.WriteStartObject();
-        writer.WriteNumber(ValueName, amount.Value);
+        writer.WriteNumber(ValueName, value.Value);
 
-        if (IsKnownCurrency(amount.Currency.CurrencyIsoCode))
+        if (IsKnownCurrency(value.Currency.CurrencyIsoCode))
         {
-            writer.WriteString(CurrencyName, amount.Currency.CurrencyIsoCode);
+            writer.WriteString(CurrencyName, value.Currency.CurrencyIsoCode);
         }
         else
         {
-            writer.WriteString(NativeName, amount.Currency.NativeName);
-            writer.WriteString(EnglishName, amount.Currency.EnglishName);
-            writer.WriteString(Symbol, amount.Currency.Symbol);
-            writer.WriteString(Iso, amount.Currency.CurrencyIsoCode);
+            writer.WriteString(NativeName, value.Currency.NativeName);
+            writer.WriteString(EnglishName, value.Currency.EnglishName);
+            writer.WriteString(Symbol, value.Currency.Symbol);
+            writer.WriteString(Iso, value.Currency.CurrencyIsoCode);
 
-            if (amount.Currency.DecimalPlaces != DefaultDecimalDigits)
+            if (value.Currency.DecimalPlaces != DefaultDecimalDigits)
             {
-                writer.WriteNumber(DecimalDigits, amount.Currency.DecimalPlaces);
+                writer.WriteNumber(DecimalDigits, value.Currency.DecimalPlaces);
             }
         }
 
