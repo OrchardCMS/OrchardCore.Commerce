@@ -8,7 +8,7 @@ using static OrchardCore.Commerce.MoneyDataType.Currency;
 
 namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
-internal sealed class AmountConverter : JsonConverter<Amount>
+public sealed class AmountConverter : JsonConverter<Amount>
 {
     public const string ValueName = "value";
     public const string CurrencyName = "currency";
@@ -28,6 +28,8 @@ internal sealed class AmountConverter : JsonConverter<Amount>
         string symbol = null;
         string iso = null;
         int? decimalDigits = null;
+
+        if (reader.TokenType == JsonTokenType.String) return ReadString(reader.GetString());
 
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
@@ -63,11 +65,9 @@ internal sealed class AmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (reader.TokenType == JsonTokenType.String) return ReadString(reader.GetString());
-
         currency = HandleUnknownCurrency(currency, nativeName, englishName, symbol, iso, decimalDigits);
 
-        return new Amount(value, currency);
+        return new(value, currency);
     }
 
     public override void Write(Utf8JsonWriter writer, Amount amount, JsonSerializerOptions options)
@@ -123,7 +123,7 @@ internal sealed class AmountConverter : JsonConverter<Amount>
         throw new InvalidOperationException($"Invalid amount format. Must include a {nameof(currency)}.");
     }
 
-    private static Amount ReadString(string text)
+    public static Amount ReadString(string text)
     {
         var parts = text.Split();
         if (parts.Length < 2) throw new InvalidOperationException($"Unable to parse string amount \"{text}\".");
@@ -131,6 +131,6 @@ internal sealed class AmountConverter : JsonConverter<Amount>
         var currency = FromIsoCode(parts[0]);
         var value = decimal.Parse(string.Join(string.Empty, parts.Skip(1)), CultureInfo.InvariantCulture);
 
-        return new Amount(value, currency);
+        return new(value, currency);
     }
 }
