@@ -385,6 +385,9 @@ public class InventoryStartup : StartupBase
 [RequireFeatures("OrchardCore.ContentLocalization")]
 public class ContentLocalizationStartup : StartupBase
 {
+    // Make sure it's higher than OrchardCore.Commerce.Startup's Order so this loads afterward.
+    public override int Order { get; } = new Startup().Order + 1;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDuplicateSkuResolver, LocalizationDuplicateSkuResolver>();
