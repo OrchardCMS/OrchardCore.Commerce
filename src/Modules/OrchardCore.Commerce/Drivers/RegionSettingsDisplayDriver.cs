@@ -64,7 +64,7 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
             .OnGroup(GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RegionSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(RegionSettings section, UpdateEditorContext context)
     {
         var user = _hca.HttpContext?.User;
 
@@ -79,7 +79,7 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                var allowedRegions = model.AllowedRegions.AsList() ?? [];
+                var allowedRegions = model.AllowedRegions?.AsList() ?? [];
                 var allRegionTwoLetterIsoRegionNames = _regionService
                     .GetAllRegions()
                     .Select(region => region.TwoLetterISORegionName);

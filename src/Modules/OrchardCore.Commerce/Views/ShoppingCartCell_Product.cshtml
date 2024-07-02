@@ -1,7 +1,6 @@
 @using OrchardCore
 @using OrchardCore.Commerce.Abstractions.Abstractions
 @using OrchardCore.Commerce.Abstractions.ViewModels
-
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
     var attributes = (IList<(IProductAttributeValue Value, string Type, int Index)>)Model.ProductAttributes;

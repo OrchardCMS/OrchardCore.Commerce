@@ -17,9 +17,10 @@
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
 
     <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
-         Directory.Packages.props file for more details. -->
-    <PackageReference Include="OrchardCore.Application.Cms.Targets" VersionOverride="1.8.3" />
-    <PackageReference Include="OrchardCore.Logging.NLog" VersionOverride="1.8.3" />
+         Directory.Packages.props file for more details. In branches using OC preview, the value should be
+         "$(OrchardCoreVersion)" instead, which is the same as removing the VersionOverride but more maintainable. -->
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" VersionOverride="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.Logging.NLog" VersionOverride="$(OrchardCoreVersion)" />
   </ItemGroup>
 
   <ItemGroup>

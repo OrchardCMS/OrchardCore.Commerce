@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
@@ -22,11 +21,6 @@ public interface IProductAttributeDeserializer
     /// Gets the attribute name used to identify this deserializer.
     /// </summary>
     string AttributeTypeName { get; }
-
-    /// <summary>
-    /// Deserializes using <c>Newtonsoft.Json</c>.
-    /// </summary>
-    IProductAttributeValue Deserialize(string attributeName, JObject attribute);
 
     /// <summary>
     /// Deserializes using <c>System.Text.Json</c>.

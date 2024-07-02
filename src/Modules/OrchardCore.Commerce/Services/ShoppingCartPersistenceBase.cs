@@ -1,9 +1,8 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -12,7 +11,7 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
 {
     private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart";
 
-    private readonly Dictionary<string, JObject> _scopeCache = [];
+    private readonly Dictionary<string, JsonObject> _scopeCache = [];
 
     protected readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 
@@ -35,7 +34,7 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
             cart = await shoppingCartEvent.LoadedAsync(cart) ?? cart;
         }
 
-        _scopeCache[key] = JObject.FromObject(cart, new JsonSerializer());
+        _scopeCache[key] = JObject.FromObject(cart);
         return cart;
     }
 

@@ -6,6 +6,7 @@ using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.Tax.Permissions;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 using System;
@@ -44,7 +45,7 @@ public class TaxRateSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxRateS
                 .OnGroup(nameof(TaxRateSettings))
             : null;
 
-    public override async Task<IDisplayResult> UpdateAsync(TaxRateSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TaxRateSettings section, IUpdateModel updater, UpdateEditorContext context)
     {
         var user = _hca.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, TaxRatePermissions.ManageCustomTaxRates)) return null;

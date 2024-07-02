@@ -132,8 +132,6 @@ public class Startup : StartupBase
         // Currency
         services.AddScoped<ICurrencyProvider, CurrencyProvider>();
         services.AddScoped<IMoneyService, MoneyService>();
-        // No display currency selected. Fall back to default currency logic in MoneyService.
-        services.AddScoped<ICurrencySelector, NullCurrencySelector>();
 
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
@@ -184,6 +182,7 @@ public class Startup : StartupBase
                 option.MemberAccessStrategy.Register<OrderPart>();
                 option.MemberAccessStrategy.Register<AddressField>();
                 option.MemberAccessStrategy.Register<IPayment>();
+                option.MemberAccessStrategy.Register<Abstractions.Models.Payment>();
                 option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
                 option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
             })
@@ -210,6 +209,15 @@ public class Startup : StartupBase
             new BooleanProductAttributeDeserializer(),
             new NumericProductAttributeDeserializer());
     }
+}
+
+public class FallBackPriceStartup : StartupBase
+{
+    public override int Order => int.MaxValue;
+
+    public override void ConfigureServices(IServiceCollection services) =>
+        // No display currency selected. Fall back to default currency logic in MoneyService.
+        services.AddScoped<ICurrencySelector, NullCurrencySelector>();
 }
 
 [RequireFeatures("OrchardCore.Workflows")]
@@ -274,7 +282,6 @@ public class SessionCartStorageStartup : StartupBase
 }
 
 [Feature(CommerceConstants.Features.CurrencySettingsSelector)]
-[RequireFeatures(CommerceConstants.Features.Core)]
 public class CurrencySettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
@@ -378,11 +385,14 @@ public class InventoryStartup : StartupBase
 [RequireFeatures("OrchardCore.ContentLocalization")]
 public class ContentLocalizationStartup : StartupBase
 {
+    // Make sure it's higher than OrchardCore.Commerce.Startup's Order so this loads afterward.
+    public override int Order { get; } = new Startup().Order + 1;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDuplicateSkuResolver, LocalizationDuplicateSkuResolver>();
 
-        services.RemoveImplementations<IProductService>();
+        services.RemoveImplementationsOf<IProductService>();
         services.AddScoped<IProductService, ContentLocalizationProductService>();
     }
 

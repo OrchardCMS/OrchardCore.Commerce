@@ -13,7 +13,6 @@ namespace OrchardCore.Commerce.MoneyDataType;
 /// A money amount, which is represented by a decimal number and a currency.
 /// </summary>
 [JsonConverter(typeof(AmountConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {

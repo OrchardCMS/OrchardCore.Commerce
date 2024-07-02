@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Entities;
 using OrchardCore.Localization.Models;
 using OrchardCore.Settings;
 using System;

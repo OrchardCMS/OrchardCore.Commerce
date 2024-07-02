@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.MoneyDataType;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Models;
 
@@ -13,9 +14,14 @@ public class OrderLineItem
     public Amount UnitPrice { get; set; }
     public Amount LinePrice { get; set; }
     public string ContentItemVersion { get; set; }
-    public ISet<IProductAttributeValue> Attributes { get; }
-    public IDictionary<string, IDictionary<string, string>> SelectedAttributes { get; } =
+    public ISet<IProductAttributeValue> Attributes { get; init; }
+    public IDictionary<string, IDictionary<string, string>> SelectedAttributes { get; init; } =
         new Dictionary<string, IDictionary<string, string>>();
+
+    [JsonConstructor]
+    private OrderLineItem()
+    {
+    }
 
     // These are necessary.
 #pragma warning disable S107 // Methods should not have too many parameters

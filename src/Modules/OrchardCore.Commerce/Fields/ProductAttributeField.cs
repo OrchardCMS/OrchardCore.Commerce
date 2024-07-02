@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.Common.Utilities;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -20,14 +21,10 @@ public abstract class ProductAttributeField : ContentField
 /// <para>Examples of attributes can be shirt sizes (S, M, L, XL), dimensions, etc.</para>
 /// </remarks>
 public abstract class ProductAttributeField<TSettings> : ProductAttributeField
-    where TSettings : ProductAttributeFieldSettings, new()
+    where TSettings : ProductAttributeFieldSettings, ICopier<TSettings>, new()
 {
-    public TSettings GetSettings(ContentPartFieldDefinition partFieldDefinition)
-    {
-        var settings = new TSettings();
-        partFieldDefinition.PopulateSettings(settings);
-        return settings;
-    }
+    public TSettings GetSettings(ContentPartFieldDefinition partFieldDefinition) =>
+        partFieldDefinition.GetSettings<TSettings>();
 }
 
 /// <summary>

@@ -77,7 +77,7 @@ public class ProductAttributeService : IProductAttributeService
             .GetMethod(
                 nameof(ProductAttributeField<TextProductAttributeFieldSettings>.GetSettings),
                 BindingFlags.Instance | BindingFlags.Public)
-            ?.Invoke(field, new object[] { partFieldDefinition }) as ProductAttributeFieldSettings;
+            ?.Invoke(field, [partFieldDefinition]) as ProductAttributeFieldSettings;
 
     private static Dictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
         product.OfType<ContentPart>()

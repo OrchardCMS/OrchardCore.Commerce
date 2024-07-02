@@ -205,9 +205,11 @@
             }
           },
           "PricePart": {
-            "Price": {
-              "value": 5.0,
-              "currency": "USD"
+            "PriceField": {
+              "Amount": {
+                "value": 5.0,
+                "currency": "USD"
+              }
             }
           },
           "InventoryPart": {
@@ -273,9 +275,11 @@
             }
           },
           "PricePart": {
-            "Price": {
-              "value": 0.0,
-              "currency": "USD"
+            "PriceField": {
+              "Amount": {
+                "value": 0.0,
+                "currency": "USD"
+              }
             }
           },
           "InventoryPart": {
@@ -341,9 +345,11 @@
             }
           },
           "PricePart": {
-            "Price": {
-              "value": 5.0,
-              "currency": "USD"
+            "PriceField": {
+              "Amount": {
+                "value": 5.0,
+                "currency": "USD"
+              }
             }
           },
           "InventoryPart": {

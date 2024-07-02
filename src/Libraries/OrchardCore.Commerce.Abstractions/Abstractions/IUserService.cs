@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Users.Models;
 using System;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions.Abstractions;
@@ -22,7 +22,7 @@ public interface IUserService
     /// Alters the JSON of a custom user setting content item and saves the result. If the setting doesn't exist for the
     /// user then also creates it.
     /// </summary>
-    Task AlterUserSettingAsync(User user, string contentType, Func<JObject, JObject> updateContentItemJson);
+    Task AlterUserSettingAsync(User user, string contentType, Func<JsonObject, JsonObject> updateContentItemJson);
 
     /// <summary>
     /// Retrieves a <see cref="ContentItem"/> that belongs to the custom user setting.
@@ -33,8 +33,7 @@ public interface IUserService
 public static class UserServiceExtensions
 {
     public static Task<User> GetCurrentFullUserAsync(this IUserService service, IHttpContextAccessor hca) =>
-        hca.HttpContext?.User is { } user &&
-        hca.HttpContext.User.Identity?.IsAuthenticated == true
+        hca.HttpContext?.User is { Identity.IsAuthenticated: true } user
             ? service.GetFullUserAsync(user)
             : Task.FromResult<User>(null);
 

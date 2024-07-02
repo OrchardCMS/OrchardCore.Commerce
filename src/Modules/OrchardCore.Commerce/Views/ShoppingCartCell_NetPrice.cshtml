@@ -1,6 +1,5 @@
-@using OrchardCore.Commerce.Tax.Extensions
 @using OrchardCore.Commerce.Abstractions.ViewModels
-
+@using OrchardCore.Commerce.Tax.Extensions
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
     var price = line.AdditionalData.GetNetPrice();

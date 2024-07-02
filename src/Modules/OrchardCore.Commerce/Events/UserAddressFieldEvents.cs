@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.ContentFields.Events;
@@ -7,7 +6,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
-using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
@@ -38,20 +37,14 @@ public class UserAddressFieldEvents : IAddressFieldEvents
 
         await _userService.AlterUserSettingAsync(user, UserAddresses, contentItem =>
         {
-            var part = contentItem.GetJObject(nameof(UserAddressesPart));
+            var part = contentItem[nameof(UserAddressesPart)].AsObject();
 
-            if (part[viewModel.UserAddressToSave] is not JObject)
+            if (part[viewModel.UserAddressToSave] is not JsonObject)
             {
                 part[viewModel.UserAddressToSave] = JObject.FromObject(new AddressField());
             }
 
-            if (part.GetJObject(viewModel.UserAddressToSave) is not { } userAddressToSave)
-            {
-                throw new InvalidOperationException(
-                    $"The property {viewModel.UserAddressToSave} is missing from {nameof(UserAddressesPart)}.");
-            }
-
-            userAddressToSave[nameof(AddressField.Address)] = JToken.FromObject(viewModel.Address);
+            part[viewModel.UserAddressToSave]![nameof(AddressField.Address)] = JObject.FromObject(viewModel.Address);
             return contentItem;
         });
     }

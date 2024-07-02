@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Commerce.Tax.Constants;
 using OrchardCore.Commerce.Tax.Drivers;
 using OrchardCore.Commerce.Tax.Migrations;
 using OrchardCore.Commerce.Tax.Models;
@@ -22,7 +23,7 @@ public class Startup : StartupBase
             .WithMigration<TaxPartMigrations>();
 }
 
-[Feature(Constants.FeatureIds.CustomTaxRates)]
+[Feature(FeatureIds.CustomTaxRates)]
 public class CustomTaxRatesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

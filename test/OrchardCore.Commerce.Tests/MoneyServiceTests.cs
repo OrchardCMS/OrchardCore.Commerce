@@ -12,7 +12,7 @@ public class MoneyServiceTests
     public void DefaultCurrencyWithoutSettingsOrProvidersIsDollar() =>
         Assert.Equal(
             "USD",
-            new MoneyService(currencyProviders: null, options: null, currencySelector: null)
+            new MoneyService(currencyProviders: null, options: null, currencySelectors: [])
                 .DefaultCurrency
                 .CurrencyIsoCode);
 
@@ -23,7 +23,7 @@ public class MoneyServiceTests
             new MoneyService(
                     currencyProviders: null,
                     new TestOptions<CurrencySettings>(new CurrencySettings()),
-                    currencySelector: null)
+                    currencySelectors: [])
                 .DefaultCurrency
                 .CurrencyIsoCode);
 
@@ -38,7 +38,7 @@ public class MoneyServiceTests
             new MoneyService(
                     currencyProviders: null,
                     new TestOptions<CurrencySettings>(new CurrencySettings { DefaultCurrency = "WTF" }),
-                    currencySelector: null)
+                    currencySelectors: [])
                 .DefaultCurrency
                 .CurrencyIsoCode);
 

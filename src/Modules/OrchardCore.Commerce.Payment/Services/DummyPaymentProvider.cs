@@ -45,7 +45,7 @@ public class DummyPaymentProvider : IPaymentProvider
         var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
         var totals = cart
             .GetTotalsOrThrowIfEmpty()
-            .Select((total, index) => new Payment.Models.Payment(
+            .Select((total, index) => new Commerce.Abstractions.Models.Payment(
                 Kind: "Dummy Payment",
                 TransactionId: $"{order.ContentItemId}:{index.ToTechnicalString()}",
                 ChargeText: $"Dummy transaction of {total.Currency.EnglishName}.",

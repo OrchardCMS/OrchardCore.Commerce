@@ -60,7 +60,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2",
-                  "Editor": "Wysiwyg"
+                  "Editor": "Trumbowyg"
                 },
                 "HtmlBodyPartSettings": {}
               }

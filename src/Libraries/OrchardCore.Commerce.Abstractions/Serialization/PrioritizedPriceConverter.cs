@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -15,6 +16,11 @@ internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice
     {
         var priority = int.MinValue;
         var amount = Amount.Unspecified;
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            return new(priority, AmountConverter.ReadString(reader.GetString()));
+        }
 
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
@@ -36,7 +42,7 @@ internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice
 
         if (priority > int.MinValue && !amount.Currency.Equals(Currency.UnspecifiedCurrency))
         {
-            return new PrioritizedPrice(priority, amount);
+            return new(priority, amount);
         }
 
         return null;

@@ -1,12 +1,13 @@
 ﻿using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Liquid;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Liquid;
@@ -31,8 +32,8 @@ public class ProductFilter : ILiquidFilter
                 ShoppingCartItem shoppingCartItem => shoppingCartItem.ProductSku,
                 ShoppingCartLineUpdateModel shoppingCartLineUpdateModel => shoppingCartLineUpdateModel.ProductSku,
                 ShoppingCartLineViewModel shoppingCartLineViewModel => shoppingCartLineViewModel.ProductSku,
-                JToken { Type: JTokenType.String } stringToken => stringToken.Value<string>(),
-                JObject jObject => GetSkuFromJsonObject(jObject),
+                JsonNode jsonString when jsonString.GetValueKind() == JsonValueKind.String => jsonString.Value<string>(),
+                JsonObject jsonObject => GetSkuFromJsonObject(jsonObject),
                 { } value => value.ToString(),
             };
 
@@ -41,9 +42,9 @@ public class ProductFilter : ILiquidFilter
             : new ObjectValue((await _productService.GetProductAsync(sku))?.ContentItem);
     }
 
-    private static string GetSkuFromJsonObject(JObject jObject)
+    private static string GetSkuFromJsonObject(JsonObject jObject)
     {
-        var dictionary = jObject.ToObject<Dictionary<string, JToken>>().ToDictionaryIgnoreCase();
+        var dictionary = jObject.ToObject<Dictionary<string, JsonNode>>().ToDictionaryIgnoreCase();
         if (dictionary.TryGetValue("ProductSku", out var productSku)) return productSku.Value<string>();
         if (dictionary.TryGetValue("Sku", out var sku)) return sku.Value<string>();
         return null;

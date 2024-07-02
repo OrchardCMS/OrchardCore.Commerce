@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Settings;
@@ -12,6 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Lombiq.HelpfulLibraries.OrchardCore.Contents.CommonContentDisplayTypes;
 

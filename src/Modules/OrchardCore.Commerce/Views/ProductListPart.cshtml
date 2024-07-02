@@ -1,7 +1,8 @@
 @using Lombiq.HelpfulLibraries.OrchardCore.Contents
+@using OrchardCore.ContentManagement.Display
 @model ProductListPartViewModel
 
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IContentItemDisplayManager ContentItemDisplayManager
 
 @if (Model.Products.Any())
 {

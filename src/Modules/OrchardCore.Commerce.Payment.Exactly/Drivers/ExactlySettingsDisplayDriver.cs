@@ -53,7 +53,7 @@ public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlyS
             .OnGroup(EditorGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ExactlySettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ExactlySettings section, UpdateEditorContext context)
     {
         var viewModel = new ExactlySettings();
 

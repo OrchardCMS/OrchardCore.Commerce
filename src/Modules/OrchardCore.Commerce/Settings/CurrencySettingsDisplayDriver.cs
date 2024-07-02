@@ -75,7 +75,7 @@ public class CurrencySettingsDisplayDriver : SectionDisplayDriver<ISite, Currenc
         return Combine(shapes);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(CurrencySettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(CurrencySettings section, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 

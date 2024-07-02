@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions.Serialization;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Abstractions;
 

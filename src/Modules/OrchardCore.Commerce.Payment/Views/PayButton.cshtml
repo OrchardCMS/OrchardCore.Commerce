@@ -1,8 +1,7 @@
-﻿@model OrchardCore.DisplayManagement.IShape
-
-@using Microsoft.AspNetCore.Html
+﻿@using Microsoft.AspNetCore.Html
 @using OrchardCore.Commerce.MoneyDataType
 @using OrchardCore.DisplayManagement
+@model IShape
 
 @{
     var className = Model.GetProperty("PayButtonClass")?.ToString() ??

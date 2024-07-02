@@ -1,5 +1,4 @@
 @using OrchardCore.Commerce.ProductAttributeValues
-
 @{
     var attribute = Model.Attribute as TextProductAttributeValue;
     var values = attribute?.Value?.WhereNot(string.IsNullOrEmpty).ToList() ?? new List<string>();
