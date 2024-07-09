@@ -14,7 +14,8 @@ jobs:
     with:
       machine-types: '["ubuntu-latest"]'
       timeout-minutes: 60
-      build-verbosity: normal # For test-verbosity in Lombiq/GitHub-Actions/.github/actions/test-dotnet@dev.
+      build-create-binary-log: 'true'
+      dotnet-test-process-timeout: 600000
 
   build-and-test-windows:
     name: Build and Test (Windows)
