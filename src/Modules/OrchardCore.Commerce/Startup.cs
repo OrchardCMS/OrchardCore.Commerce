@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Fields;
@@ -61,6 +62,9 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSwaggerGen(swaggerGenOptions =>
+                swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Orchard Core API", Version = "v1" }));
+
         // Infrastructure
         services.AddOrchardServices();
         services.AddScoped<IDataMigration, MvcTitleMigrations>();
@@ -209,6 +213,9 @@ public class Startup : StartupBase
             new BooleanProductAttributeDeserializer(),
             new NumericProductAttributeDeserializer());
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
+        app.UseSwagger();
 }
 
 public class FallBackPriceStartup : StartupBase
