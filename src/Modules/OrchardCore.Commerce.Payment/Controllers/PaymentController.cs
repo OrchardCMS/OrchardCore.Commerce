@@ -250,6 +250,7 @@ public class PaymentController : Controller
     }
 
     [Route("checkout/wait")]
+    [HttpGet]
     public IActionResult Wait(string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
 
     public static IActionResult RedirectToWait(Controller controller, string? returnUrl = null) =>
