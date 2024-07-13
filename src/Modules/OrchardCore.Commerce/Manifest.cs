@@ -21,6 +21,7 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Templates",
         "OrchardCore.Commerce.ContentFields",
         "OrchardCore.Commerce.Payment",
+        "OrchardCore.Tenants",
     ]
 )]
 
