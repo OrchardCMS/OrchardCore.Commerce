@@ -186,15 +186,17 @@ public class Startup : StartupBase
                 option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
                 option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
             })
-            // Liquid filter to convert JToken value to Amount struct in liquid.
+            // Liquid filter to convert JsonNode value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
             // Liquid filter to convert string, JToken or various models with "ProductSku" properties int an SKU and
             // then retrieve the corresponding content item.
             .AddLiquidFilter<ProductFilter>("product")
             // Liquid filter to create AddressFieldEditorViewModel.
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
-            // Liquid filter to create OrderLineItemViewModels.
-            .AddLiquidFilter<OrderLineItemViewModelsAndTaxRatesConverterFilter>("order_line_item_view_models_and_tax_rates");
+            // Liquid filter to create OrderLineItemViewModels and additional data.
+            .AddLiquidFilter<OrderPartToOrderSummaryLiquidFilter>("order_part_to_order_summary")
+            // Liquid filter to convert Amount, its JSON representation, or a number into Amount.ToString() including correct formatting and currency.
+            .AddLiquidFilter<AmountToStringLiquidFilter>("amount_to_string");
 
         // Product List
         services.AddScoped<IProductListService, ProductListService>();
