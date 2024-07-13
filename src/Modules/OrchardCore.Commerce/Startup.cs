@@ -194,7 +194,9 @@ public class Startup : StartupBase
             // Liquid filter to create AddressFieldEditorViewModel.
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
             // Liquid filter to create OrderLineItemViewModels and additional data.
-            .AddLiquidFilter<OrderPartToOrderSummaryLiquidFilter>("order_part_to_order_summary");
+            .AddLiquidFilter<OrderPartToOrderSummaryLiquidFilter>("order_part_to_order_summary")
+            // Liquid filter to convert Amount, its JSON representation, or a number into Amount.ToString() including correct formatting and currency.
+            .AddLiquidFilter<AmountToStringLiquidFilter>("amount_to_string");
 
         // Product List
         services.AddScoped<IProductListService, ProductListService>();
