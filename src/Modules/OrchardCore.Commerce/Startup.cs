@@ -15,6 +15,7 @@ using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.ContentFields.Events;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
@@ -59,6 +60,8 @@ namespace OrchardCore.Commerce;
 
 public class Startup : StartupBase
 {
+    public override int Order => OrchardCoreCommerceConfigureOrder.Default;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         // Infrastructure
@@ -387,8 +390,7 @@ public class InventoryStartup : StartupBase
 [RequireFeatures("OrchardCore.ContentLocalization")]
 public class ContentLocalizationStartup : StartupBase
 {
-    // Make sure it's higher than OrchardCore.Commerce.Startup's Order so this loads afterward.
-    public override int Order { get; } = new Startup().Order + 1;
+    public override int Order => OrchardCoreCommerceConfigureOrder.AfterDefault;
 
     public override void ConfigureServices(IServiceCollection services)
     {
