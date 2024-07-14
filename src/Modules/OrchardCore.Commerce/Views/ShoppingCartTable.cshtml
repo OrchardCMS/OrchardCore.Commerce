@@ -8,9 +8,9 @@
 @{
     var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
     var lines = viewModel.Lines;
-    var priceDisplaySettings = (await SiteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
+    var priceDisplaySettings = await SiteService.GetSettingsAsync<PriceDisplaySettings>();
 
-    var currency = viewModel.Totals.Any() ? viewModel.Totals.First().Currency : lines.FirstOrDefault().LinePrice.Currency;
+    var currency = viewModel.Totals.Any() ? viewModel.Totals.First().Currency : lines.FirstOrDefault()?.LinePrice.Currency;
     var netTotal = new Amount(0, currency);
     var grossTotal = new Amount(0, currency);
 
@@ -20,7 +20,7 @@
         var grossAmount = additionalData.GetGrossPrice();
         if (grossAmount.Value > 0)
         {
-            grossTotal += grossAmount * line.Quantity;            
+            grossTotal += grossAmount * line.Quantity;
         }
 
         var netAmount = additionalData.GetNetPrice();
@@ -63,14 +63,14 @@
                 @foreach (var total in viewModel.Totals)
                 {
                     <div>@total</div>
-                }                    
+                }
             }
             else
             {
                 <p>
                     @if (priceDisplaySettings.UseNetPriceDisplay)
                     {
-                        @T["Net Price: {0}", netTotal];
+                        @T["Net Price: {0}", netTotal]
                     }
                     @if (priceDisplaySettings.UseNetPriceDisplay && priceDisplaySettings.UseGrossPriceDisplay)
                     {
@@ -78,7 +78,7 @@
                     }
                     @if (priceDisplaySettings.UseGrossPriceDisplay)
                     {
-                        @T["Gross Price: {0}", grossTotal];
+                        @T["Gross Price: {0}", grossTotal]
                     }
                 </p>
             }

@@ -8,7 +8,7 @@
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
     var (oldNetPrice, oldGrossPrice) = line.AdditionalData.GetOldPrices();
-    var priceDisplaySettings = (await SiteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
+    var priceDisplaySettings = await SiteService.GetSettingsAsync<PriceDisplaySettings>();
 
     // Determine which price format to use based on corresponding site setting.
     var oldPrice = priceDisplaySettings.UseNetPriceDisplay ? oldNetPrice : oldGrossPrice;
