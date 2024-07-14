@@ -110,7 +110,7 @@
 <script at="Foot" depends-on="@ResourceNames.CommerceRegions">
     @if (Context.Items["commerce-regions-initialized"] == null)
     {
-        <text>commerceRegionsInitialize(@Json.Serialize(Model.Provinces));</text>
+        <text>commerceRegionsInitialize(@JConvert.SerializeObject(Model.Provinces));</text>
         Context.Items["commerce-regions-initialized"] = true;
     }
 

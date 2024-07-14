@@ -79,7 +79,7 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
 
         if (context.GroupId != GroupId)
         {
-            return await EditAsync(section, context);
+            return null;
         }
 
         var model = new StripeApiSettingsViewModel();
