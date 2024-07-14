@@ -43,10 +43,7 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
 
     public override async Task<IDisplayResult> EditAsync(RegionSettings section, BuildEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
-            !await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings))
+        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || !await AuthorizeAsync())
         {
             return null;
         }
@@ -66,33 +63,24 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
 
     public override async Task<IDisplayResult> UpdateAsync(RegionSettings section, UpdateEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings))
+        if (await context.CreateModelMaybeAsync<RegionSettingsViewModel>(Prefix, GroupId, AuthorizeAsync) is { } model)
         {
-            return null;
-        }
+            var allowedRegions = model.AllowedRegions?.AsList() ?? [];
+            var allRegionTwoLetterIsoRegionNames = _regionService
+                .GetAllRegions()
+                .Select(region => region.TwoLetterISORegionName);
 
-        if (context.GroupId == GroupId)
-        {
-            var model = new RegionSettingsViewModel();
+            section.AllowedRegions = allowedRegions.Count != 0
+                ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
+                : allRegionTwoLetterIsoRegionNames;
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                var allowedRegions = model.AllowedRegions?.AsList() ?? [];
-                var allRegionTwoLetterIsoRegionNames = _regionService
-                    .GetAllRegions()
-                    .Select(region => region.TwoLetterISORegionName);
-
-                section.AllowedRegions = allowedRegions.Count != 0
-                    ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
-                    : allRegionTwoLetterIsoRegionNames;
-
-                // Release the tenant to apply settings.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+            // Release the tenant to apply settings.
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
         return await EditAsync(section, context);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, Permissions.ManageRegionSettings);
 }
