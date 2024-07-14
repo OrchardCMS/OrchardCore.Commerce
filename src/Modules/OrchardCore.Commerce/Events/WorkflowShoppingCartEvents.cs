@@ -90,6 +90,8 @@ public class WorkflowShoppingCartEvents : IShoppingCartEvents
             .SelectWhere(context => context.Output.GetMaybe(outputName))
             .FirstOrDefault();
 
+        if (output is T correctTypeOutput) return correctTypeOutput;
+
         if (output is string text && typeof(T) == typeof(SerializableLocalizedHtmlString))
         {
             return Localize(text) as T;
