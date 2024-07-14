@@ -129,7 +129,10 @@ public sealed class AmountConverter : JsonConverter<Amount>
     public static Amount ReadString(string text)
     {
         var parts = text.Split();
-        if (parts.Length < 2) throw new InvalidOperationException($"Unable to parse string amount \"{text}\".");
+        if (parts.Length < 2)
+        {
+            throw new InvalidOperationException($"Unable to parse string amount \"{text}\".");
+        }
 
         var currency = FromIsoCode(parts[0]);
         var value = decimal.Parse(string.Join(string.Empty, parts.Skip(1)), CultureInfo.InvariantCulture);
