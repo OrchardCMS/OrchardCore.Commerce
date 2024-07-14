@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Commerce.Abstractions;
@@ -12,6 +8,10 @@ using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
+using System;
+using System.Linq;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Liquid;
 
