@@ -29,7 +29,10 @@ public sealed class AmountConverter : JsonConverter<Amount>
         string iso = null;
         int? decimalDigits = null;
 
-        if (reader.TokenType == JsonTokenType.String) return ReadString(reader.GetString());
+        if (reader.TokenType == JsonTokenType.String) 
+        {
+            return ReadString(reader.GetString());
+        }
 
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
