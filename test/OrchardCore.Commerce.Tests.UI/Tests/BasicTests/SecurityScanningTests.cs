@@ -16,7 +16,8 @@ public class SecurityScanningTests : UITestBase
     [Fact]
     public Task FullSecurityScanShouldPass() =>
         Task.WhenAny(
-            Task.Delay(TimeSpan.FromMinutes(1)).ContinueWith(_ => throw new TimeoutException("The security test timeout has elapsed."), TaskScheduler.Default),
+            Task.Delay(TimeSpan.FromMinutes(1))
+                .ContinueWith(_ => throw new TimeoutException("The security test timeout has elapsed."), TaskScheduler.Default),
             ExecuteTestAfterSetupAsync(
                     context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
                         configuration =>
