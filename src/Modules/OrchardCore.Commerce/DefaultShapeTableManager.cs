@@ -24,11 +24,9 @@ public class DefaultShapeTableManager : IShapeTableManager
 {
     private const string DefaultThemeIdKey = "_ShapeTable";
 
-    // FeatureShapeDescriptors are identical across tenants so they can be reused statically. Each shape table will
+    // FeatureShapeDescriptors are identical across tenants, so they can be reused statically. Each shape table will
     // create a unique list of these per tenant.
     private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
-
-    private static readonly object _syncLock = new();
 
     private static readonly SemaphoreSlim _semaphoreLock = new(initialCount: 1, maxCount: 1);
 
@@ -72,14 +70,7 @@ public class DefaultShapeTableManager : IShapeTableManager
             var shellFeaturesManager = _serviceProvider.GetRequiredService<IShellFeaturesManager>();
             var extensionManager = _serviceProvider.GetRequiredService<IExtensionManager>();
             var typeFeatureProvider = _serviceProvider.GetRequiredService<ITypeFeatureProvider>();
-
-            HashSet<string> excludedFeatures;
-
-            // Here we don't use a lock for thread safety but for atomicity.
-            lock (_syncLock)
-            {
-                excludedFeatures = _shapeDescriptors.Select(kv => kv.Value.Feature.Id).ToHashSet();
-            }
+            var excludedFeatures = _shapeDescriptors.Select(kv => kv.Value.Feature.Id).ToHashSet();
 
             var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
 
@@ -94,13 +85,9 @@ public class DefaultShapeTableManager : IShapeTableManager
                 BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
             }
 
-            // Here we don't use a lock for thread safety but for atomicity.
-            lock (_syncLock)
+            foreach (var kv in shapeDescriptors)
             {
-                foreach (var kv in shapeDescriptors)
-                {
-                    _shapeDescriptors[kv.Key] = kv.Value;
-                }
+                _shapeDescriptors[kv.Key] = kv.Value;
             }
 
             var enabledAndOrderedFeatureIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
