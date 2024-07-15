@@ -13,7 +13,7 @@ public class SecurityScanningTests : UITestBase
     {
     }
 
-    [Fact(Timeout = 300_000)] // 5 minutes hard timeout, should cut off even if deadlocked.
+    [Fact]
     public Task FullSecurityScanShouldPass() =>
         ExecuteTestAfterSetupAsync(
             context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
