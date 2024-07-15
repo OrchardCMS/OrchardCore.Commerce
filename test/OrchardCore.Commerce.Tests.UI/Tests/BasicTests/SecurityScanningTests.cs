@@ -51,7 +51,8 @@ public class SecurityScanningTests : UITestBase
                                 !message.ContainsOrdinalIgnoreCase("System.IO.DirectoryNotFoundException: Could not find a part of the path") &&
                                 !message.ContainsOrdinalIgnoreCase(
                                     "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect") &&
-                                !message.ContainsOrdinalIgnoreCase("System.InvalidOperationException: This action intentionally causes an exception!"));
+                                !message.ContainsOrdinalIgnoreCase(
+                                    "System.InvalidOperationException: This action intentionally causes an exception!"));
 
                         logsWithoutUnwantedExceptionMessages.ShouldNotContain(item => item.Contains("|ERROR|"));
                     }));
