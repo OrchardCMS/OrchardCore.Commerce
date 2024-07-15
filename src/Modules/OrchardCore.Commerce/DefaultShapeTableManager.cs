@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce;
@@ -29,6 +30,8 @@ public class DefaultShapeTableManager : IShapeTableManager
 
     private static readonly object _syncLock = new();
 
+    private static readonly SemaphoreSlim _semaphoreLock = new(initialCount: 1);
+
     // Singleton cache to hold a tenant's theme ShapeTable
     private readonly IDictionary<string, ShapeTable> _shapeTableCache;
 
@@ -46,100 +49,96 @@ public class DefaultShapeTableManager : IShapeTableManager
         _logger = logger;
     }
 
-    public Task<ShapeTable> GetShapeTableAsync(string themeId)
-    {
-        if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable))
-        {
-            return Task.FromResult(shapeTable);
-        }
-
-        lock (_shapeTableCache)
-        {
-            if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out shapeTable))
-            {
-                return Task.FromResult(shapeTable);
-            }
-
-            return BuildShapeTableAsync(themeId);
-        }
-    }
+    public Task<ShapeTable> GetShapeTableAsync(string themeId) =>
+        _shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var shapeTable)
+            ? Task.FromResult(shapeTable)
+            : BuildShapeTableAsync(themeId);
 
     private async Task<ShapeTable> BuildShapeTableAsync(string themeId)
     {
-        _logger.LogInformation("Start building shape table for {Theme}", themeId);
+        await _semaphoreLock.WaitAsync();
 
-        // These services are resolved lazily since they are only required when initializing the shape tables
-        // during the first request. And binding strategies would be expensive to build since this service is called many times
-        // per request.
-
-        var hostingEnvironment = _serviceProvider.GetRequiredService<IHostEnvironment>();
-        var bindingStrategies = _serviceProvider.GetRequiredService<IEnumerable<IShapeTableProvider>>();
-        var shellFeaturesManager = _serviceProvider.GetRequiredService<IShellFeaturesManager>();
-        var extensionManager = _serviceProvider.GetRequiredService<IExtensionManager>();
-        var typeFeatureProvider = _serviceProvider.GetRequiredService<ITypeFeatureProvider>();
-
-        HashSet<string> excludedFeatures;
-
-        // Here we don't use a lock for thread safety but for atomicity.
-        lock (_syncLock)
+        try
         {
-            excludedFeatures = [.. _shapeDescriptors.Select(kv => kv.Value.Feature.Id)];
-        }
+            _logger.LogInformation("Start building shape table for {Theme}", themeId);
 
-        var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
+            // These services are resolved lazily since they are only required when initializing the shape tables
+            // during the first request. And binding strategies would be expensive to build since this service is called many times
+            // per request.
 
-        foreach (var bindingStrategy in bindingStrategies)
-        {
-            var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+            var hostingEnvironment = _serviceProvider.GetRequiredService<IHostEnvironment>();
+            var bindingStrategies = _serviceProvider.GetRequiredService<IEnumerable<IShapeTableProvider>>();
+            var shellFeaturesManager = _serviceProvider.GetRequiredService<IShellFeaturesManager>();
+            var extensionManager = _serviceProvider.GetRequiredService<IExtensionManager>();
+            var typeFeatureProvider = _serviceProvider.GetRequiredService<ITypeFeatureProvider>();
 
-            var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-            await bindingStrategy.DiscoverAsync(builder);
-            var builtAlterations = builder.BuildAlterations();
+            HashSet<string> excludedFeatures;
 
-            BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
-        }
-
-        // Here we don't use a lock for thread safety but for atomicity.
-        lock (_syncLock)
-        {
-            foreach (var kv in shapeDescriptors)
+            // Here we don't use a lock for thread safety but for atomicity.
+            lock (_syncLock)
             {
-                _shapeDescriptors[kv.Key] = kv.Value;
+                excludedFeatures = [.. _shapeDescriptors.Select(kv => kv.Value.Feature.Id)];
             }
+
+            var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
+
+            foreach (var bindingStrategy in bindingStrategies)
+            {
+                var strategyFeature = typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+
+                var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
+                await bindingStrategy.DiscoverAsync(builder);
+                var builtAlterations = builder.BuildAlterations();
+
+                BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
+            }
+
+            // Here we don't use a lock for thread safety but for atomicity.
+            lock (_syncLock)
+            {
+                foreach (var kv in shapeDescriptors)
+                {
+                    _shapeDescriptors[kv.Key] = kv.Value;
+                }
+            }
+
+            var enabledAndOrderedFeatureIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
+                .Select(f => f.Id)
+                .ToList();
+
+            // let the application acting as a super theme for shapes rendering.
+            if (enabledAndOrderedFeatureIds.Remove(hostingEnvironment.ApplicationName))
+            {
+                enabledAndOrderedFeatureIds.Add(hostingEnvironment.ApplicationName);
+            }
+
+            var descriptors = _shapeDescriptors
+                .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
+                .Where(sd => IsModuleOrRequestedTheme(extensionManager, sd.Value.Feature, themeId))
+                .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
+                .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
+                .Select(group => new ShapeDescriptorIndex(
+                    shapeType: group.Key,
+                    alterationKeys: group.Select(kv => kv.Key),
+                    descriptors: _shapeDescriptors
+                ))
+                .ToList();
+
+            var shapeTable = new ShapeTable(
+                descriptors: descriptors.ToFrozenDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
+                bindings: descriptors.SelectMany(sd => sd.Bindings).ToFrozenDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
+            );
+
+            _logger.LogInformation("Done building shape table for {Theme}", themeId);
+
+            _shapeTableCache[themeId ?? DefaultThemeIdKey] = shapeTable;
+
+            return shapeTable;
         }
-
-        var enabledAndOrderedFeatureIds = (await shellFeaturesManager.GetEnabledFeaturesAsync())
-            .Select(f => f.Id)
-            .ToList();
-
-        // let the application acting as a super theme for shapes rendering.
-        if (enabledAndOrderedFeatureIds.Remove(hostingEnvironment.ApplicationName))
+        finally
         {
-            enabledAndOrderedFeatureIds.Add(hostingEnvironment.ApplicationName);
+            _semaphoreLock.Release();
         }
-
-        var descriptors = _shapeDescriptors
-            .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
-            .Where(sd => IsModuleOrRequestedTheme(extensionManager, sd.Value.Feature, themeId))
-            .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
-            .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
-            .Select(group => new ShapeDescriptorIndex(
-                shapeType: group.Key,
-                alterationKeys: group.Select(kv => kv.Key),
-                descriptors: _shapeDescriptors
-            ))
-            .ToList();
-
-        var shapeTable = new ShapeTable(
-            descriptors: descriptors.ToFrozenDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
-            bindings: descriptors.SelectMany(sd => sd.Bindings).ToFrozenDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
-        );
-
-        _logger.LogInformation("Done building shape table for {Theme}", themeId);
-
-        _shapeTableCache[themeId ?? DefaultThemeIdKey] = shapeTable;
-
-        return shapeTable;
     }
 
     private static void BuildDescriptors(
