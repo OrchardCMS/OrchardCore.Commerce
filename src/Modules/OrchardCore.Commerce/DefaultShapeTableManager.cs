@@ -30,7 +30,7 @@ public class DefaultShapeTableManager : IShapeTableManager
 
     private static readonly object _syncLock = new();
 
-    private static readonly SemaphoreSlim _semaphoreLock = new(initialCount: 1);
+    private static readonly SemaphoreSlim _semaphoreLock = new(initialCount: 1, maxCount: 1);
 
     // Singleton cache to hold a tenant's theme ShapeTable
     private readonly IDictionary<string, ShapeTable> _shapeTableCache;
