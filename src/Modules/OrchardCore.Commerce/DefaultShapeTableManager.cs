@@ -57,6 +57,7 @@ public class DefaultShapeTableManager : IShapeTableManager
     private async Task<ShapeTable> BuildShapeTableAsync(string themeId)
     {
         await _semaphoreLock.WaitAsync();
+        if (_shapeTableCache.TryGetValue(themeId ?? DefaultThemeIdKey, out var existingShapeTable)) return existingShapeTable;
 
         try
         {
@@ -77,7 +78,7 @@ public class DefaultShapeTableManager : IShapeTableManager
             // Here we don't use a lock for thread safety but for atomicity.
             lock (_syncLock)
             {
-                excludedFeatures = [.. _shapeDescriptors.Select(kv => kv.Value.Feature.Id)];
+                excludedFeatures = _shapeDescriptors.Select(kv => kv.Value.Feature.Id).ToHashSet();
             }
 
             var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
