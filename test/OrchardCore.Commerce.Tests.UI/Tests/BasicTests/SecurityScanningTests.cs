@@ -1,5 +1,7 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.SecurityScanning;
+using OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,30 +18,36 @@ public class SecurityScanningTests : UITestBase
     [Fact]
     public Task FullSecurityScanShouldPass() =>
         ExecuteTestAfterSetupAsync(
-            context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
-                configuration =>
-                {
-                    configuration.DisableActiveScanRule(
-                        6,
-                        "Path Traversal (all paths are virtual so it's not a real concern, also creates too many errors)");
+            async context =>
+            {
+                await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
+                await context.GoToAsync<OrderController>(controller => controller.Prepare());
 
-                    configuration.DisableActiveScanRule(
-                        40024,
-                        "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
+                await context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
+                    configuration =>
+                    {
+                        configuration.DisableActiveScanRule(
+                            6,
+                            "Path Traversal (all paths are virtual so it's not a real concern, also creates too many errors)");
 
-                    configuration.DisableActiveScanRule(
-                        40027,
-                        "The query time is controllable using parameter value [some SQL injection]");
+                        configuration.DisableActiveScanRule(
+                            40024,
+                            "SQL Injection - SQLite (everything goes through YesSql so these are false positive)");
 
-                    FalsePositive(
-                        configuration,
-                        10202,
-                        "Absence of Anti-CSRF Tokens",
-                        "The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
-                        @"https://[^/]+/",
-                        @".*/\?.*pagenum=.*",
-                        @".*/\?.*products\..*");
-                }),
+                        configuration.DisableActiveScanRule(
+                            40027,
+                            "The query time is controllable using parameter value [some SQL injection]");
+
+                        FalsePositive(
+                            configuration,
+                            10202,
+                            "Absence of Anti-CSRF Tokens",
+                            "The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
+                            @"https://[^/]+/",
+                            @".*/\?.*pagenum=.*",
+                            @".*/\?.*products\..*");
+                    });
+            },
             changeConfiguration: configuration => configuration.AssertAppLogsAsync = async webApplicationInstance =>
             {
                 var logsWithoutUnwantedExceptionMessages = (await webApplicationInstance.GetLogOutputAsync())

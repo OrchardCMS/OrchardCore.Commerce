@@ -1,6 +1,7 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Fields;
@@ -8,6 +9,8 @@ using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Theming;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -85,5 +88,18 @@ public class OrderController : Controller
                     Amount: checkoutViewModel.SingleCurrencyTotal,
                     CreatedUtc: testTime),
             });
+    }
+
+    [AllowAnonymous]
+    public async Task<IActionResult> Prepare()
+    {
+        var themeManager = HttpContext.RequestServices.GetRequiredService<IThemeManager>();
+        var shapeTableManager = HttpContext.RequestServices.GetRequiredService<IShapeTableManager>();
+
+        await shapeTableManager.GetShapeTableAsync(themeId: null);
+        await shapeTableManager.GetShapeTableAsync(themeId: "TheAdmin");
+        await shapeTableManager.GetShapeTableAsync((await themeManager.GetThemeAsync()).Id);
+
+        return Redirect("~/");
     }
 }

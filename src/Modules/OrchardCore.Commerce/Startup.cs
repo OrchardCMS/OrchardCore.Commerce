@@ -41,7 +41,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -214,9 +213,6 @@ public class Startup : StartupBase
             new TextProductAttributeDeserializer(),
             new BooleanProductAttributeDeserializer(),
             new NumericProductAttributeDeserializer());
-
-        services.RemoveImplementationsOf<IShapeTableManager>();
-        services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
     }
 }
 
