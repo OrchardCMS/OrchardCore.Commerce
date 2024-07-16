@@ -217,15 +217,10 @@ public class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
            routes
-            .AddCreateShoppingCartViewModelEndpoint()
             .AddRetrieveAsyncEndpoint()
-            .AddEstimateProductAsyncEndpoint()
             .AddUpdateEndpoint()
             .AddRemoveLineEndpoint()
             .AddAddItemEndpoint()
-            .AddUserAddressEndpoint()
-            .AddOrderLineItemEndpoint()
-            .AddCheckoutAsyncEndpoint()
             ;
 }
 
