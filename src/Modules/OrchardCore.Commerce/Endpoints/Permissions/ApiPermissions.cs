@@ -1,50 +1,16 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Users;
 using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Endpoints.Permissions;
 
-public class ApiPermissions : IPermissionProvider
+public class ApiPermissions : AdminPermissionBase
 {
-    public static readonly Permission CommerceApi = new("CommerceApi", "Manage Commerce Items Api");
+    public static readonly Permission CommerceApi = new("CommerceApi", "Manage Commerce APIs");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(new[]
-       {
-                CommerceApi,
-       }
-       .AsEnumerable());
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => new[]
-        {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                },
-                new PermissionStereotype
-                {
-                    Name = "Moderator",
-                },
-                new PermissionStereotype
-                {
-                    Name = "Author",
-                },
-                new PermissionStereotype
-                {
-                    Name = "Contributor",
-                },
-                new PermissionStereotype
-                {
-                    Name = "Authenticated",
-                },
-                new PermissionStereotype
-                {
-                    Name = "Anonymous",
-                    Permissions = new[] { CommerceApi },
-                },
-        };
+    private static readonly IReadOnlyList<Permission> _adminPermissions = new[]
+    {
+        CommerceApi,
+    };
+    protected override IEnumerable<Permission> AdminPermissions => _adminPermissions;
 }
