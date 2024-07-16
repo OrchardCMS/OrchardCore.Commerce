@@ -1,4 +1,3 @@
-using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,6 @@ var configuration = builder.Configuration;
 
 builder.Services
     .AddSingleton(configuration)
-    .PrepareShapeTable()
     .AddOrchardCms(orchardCoreBuilder => orchardCoreBuilder
         // Enabling allowInlineStyle is necessary because style attributes are used in the Blog theme. Re-evaluate if
         // this is still true during the review of https://github.com/OrchardCMS/OrchardCore.Commerce/issues/300.
