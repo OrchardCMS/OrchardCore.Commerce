@@ -14,8 +14,6 @@ jobs:
     with:
       machine-types: '["ubuntu-latest"]'
       timeout-minutes: 60
-      build-create-binary-log: 'true'
-      dotnet-test-process-timeout: 600000
 
   build-and-test-windows:
     name: Build and Test (Windows)
