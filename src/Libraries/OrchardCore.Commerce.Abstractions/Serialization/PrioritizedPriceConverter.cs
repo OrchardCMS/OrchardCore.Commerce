@@ -42,12 +42,12 @@ public sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
         return null;
     }
 
-    public override void Write(Utf8JsonWriter writer, PrioritizedPrice prioritizedPrice, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, PrioritizedPrice value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
-        writer.WriteNumber(PriorityName, prioritizedPrice.Priority);
+        writer.WriteNumber(PriorityName, value.Priority);
         writer.WritePropertyName(AmountName);
-        JsonSerializer.Serialize(writer, prioritizedPrice.Price, options);
+        JsonSerializer.Serialize(writer, value.Price, options);
         writer.WriteEndObject();
     }
 }
