@@ -36,14 +36,15 @@ public class AmountToStringLiquidFilter : ILiquidFilter
             case FluidValues.Object:
                 amount = JObject.FromObject(input.ToObjectValue()).ToObject<Amount>();
                 break;
-            case FluidValues.Nil:
-            case FluidValues.Empty:
-            case FluidValues.Blank:
             case FluidValues.Array:
+            case FluidValues.Blank:
             case FluidValues.Boolean:
-            case FluidValues.Dictionary:
-            case FluidValues.String:
             case FluidValues.DateTime:
+            case FluidValues.Dictionary:
+            case FluidValues.Empty:
+            case FluidValues.Function:
+            case FluidValues.Nil:
+            case FluidValues.String:
             default:
                 return input;
         }
