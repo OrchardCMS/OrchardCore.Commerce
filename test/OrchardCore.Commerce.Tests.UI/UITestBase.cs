@@ -53,16 +53,6 @@ public class UITestBase : OrchardCoreUITestBase<Program>
                     AccessibilityCheckingConfiguration
                         .ConfigureWcag21aa(axeBuilder)
                         .DisableRules("color-contrast");
-                configuration.AssertBrowserLog = logEntries =>
-                {
-                    // This is to not fail on a browser error caused by jQuery missing. Can be removed after this issue is
-                    // resolved and released: https://github.com/OrchardCMS/OrchardCore/issues/15181.
-                    var messageWithoutJqueryError = logEntries.Where(logEntry =>
-                        !logEntry.Message.ContainsOrdinalIgnoreCase(
-                            "Uncaught ReferenceError: $ is not defined"));
-
-                    OrchardCoreUITestExecutorConfiguration.AssertBrowserLogIsEmpty(messageWithoutJqueryError);
-                };
 
                 if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
             });
