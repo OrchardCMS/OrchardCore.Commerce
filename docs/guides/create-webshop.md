@@ -91,7 +91,7 @@ Navigate to _Design > Settings > Zones_ and define the zone where you want the S
 _Header, Content, Footer, any zone can be created here. Except for Ozone, that's illegal._
 
 - **Layers**:
-A Layer is also going to be necessary for the Widget, so if you don't have one set up yet, see the [relevant documentation page](https://github.com/OrchardCMS/OrchardCore/tree/main/src/docs/reference/modules/Layers/).
+A Layer is also going to be necessary for the Widget, so if you don't have one set up yet, see the [relevant documentation page](https://docs.orchardcore.net/en/latest/reference/modules/Layers/).
 
 - **Widget**:
 Widgets are content items that have their stereotype set to Widget. The Commerce module creates a simple Shopping Cart Widget when it's enabled, so we'll just use that. For more extensive documentation about Widgets, see the [usual place](https://docs.orchardcore.net/en/main/docs/reference/modules/Widgets/).
