@@ -11,10 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		License.md = License.md
 		mkdocs.yml = mkdocs.yml
-		Nuget.config = Nuget.config
 		Readme.md = Readme.md
 		Reset-Local.ps1 = Reset-Local.ps1
 		Directory.Packages.props = Directory.Packages.props
+		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2D057AA-E3F7-404D-A713-C3C59F9DE562}"
