@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.LocalizedProductTests;
 
-public class LocalizedProductBehaviourTests : UITestBase
+public class LocalizedProductBehaviorTests : UITestBase
 {
     private const string LocalizedTitle = "Honosított Termék"; // #spell-check-ignore-line
 
@@ -17,7 +17,7 @@ public class LocalizedProductBehaviourTests : UITestBase
         "//li[contains(@class, 'list-group-item') and .//a[contains(., 'Test Localized Product')]]//div[@title = 'Localizations']//button");
     private static readonly string _localizedCurrency = Currency.HungarianForint.CurrencyIsoCode;
 
-    public LocalizedProductBehaviourTests(ITestOutputHelper testOutputHelper)
+    public LocalizedProductBehaviorTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
     }

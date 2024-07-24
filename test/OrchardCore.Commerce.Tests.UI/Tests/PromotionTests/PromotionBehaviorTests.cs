@@ -9,11 +9,11 @@ using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.PromotionTests;
 
-public class PromotionBehaviourTests : UITestBase
+public class PromotionBehaviorTests : UITestBase
 {
     public const string PriceFieldCssSelector = ".price-part-price-field-value";
 
-    public PromotionBehaviourTests(ITestOutputHelper testOutputHelper)
+    public PromotionBehaviorTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
     }
