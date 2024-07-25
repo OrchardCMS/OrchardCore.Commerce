@@ -184,7 +184,6 @@ public class Startup : StartupBase
                 option.MemberAccessStrategy.Register<AddressFieldEditorViewModel>();
                 option.MemberAccessStrategy.Register<OrderPart>();
                 option.MemberAccessStrategy.Register<AddressField>();
-                option.MemberAccessStrategy.Register<IPayment>();
                 option.MemberAccessStrategy.Register<Abstractions.Models.Payment>();
                 option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
                 option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);

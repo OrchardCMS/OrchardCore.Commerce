@@ -27,8 +27,6 @@ public class OrderPart : ContentPart
     /// <summary>
     /// Gets the amounts charged for this order. Typically, a single credit card charge.
     /// </summary>
-    // Due to the significant intentional limitations of polymorphic deserialization in System.Text.Json this type now
-    // only supports Payment instead of any arbitrary IPayment implementation.
     public IList<Payment> Charges { get; } = new List<Payment>();
 
     public TextField Email { get; set; } = new();

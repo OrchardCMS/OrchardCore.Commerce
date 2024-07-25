@@ -1,4 +1,3 @@
-using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.MoneyDataType;
 using System;
 
@@ -9,5 +8,4 @@ public record Payment(
     string TransactionId,
     string ChargeText,
     Amount Amount,
-    DateTime CreatedUtc)
-    : IPayment;
+    DateTime CreatedUtc);
