@@ -14,8 +14,6 @@ jobs:
     with:
       machine-types: '["ubuntu-latest"]'
       timeout-minutes: 60
-      build-create-binary-log: 'true'
-      dotnet-test-process-timeout: 600000
 
   build-and-test-windows:
     name: Build and Test (Windows)
@@ -23,8 +21,6 @@ jobs:
     with:
       machine-types: '["windows-latest"]'
       timeout-minutes: 60
-      build-create-binary-log: 'true'
-      dotnet-test-process-timeout: 600000
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
