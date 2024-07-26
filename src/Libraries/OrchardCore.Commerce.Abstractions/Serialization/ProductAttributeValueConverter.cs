@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Serialization;
 
-internal sealed class ProductAttributeValueConverter : JsonConverter<IProductAttributeValue>
+public sealed class ProductAttributeValueConverter : JsonConverter<IProductAttributeValue>
 {
     private const string TypePropertyName = "type";
     private const string ValuePropertyName = "value";
