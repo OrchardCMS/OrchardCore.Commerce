@@ -259,7 +259,7 @@ public class OrderMigrations : DataMigration
     public async Task<int> UpdateFrom8Async()
     {
         await _contentDefinitionManager.AlterTypeDefinitionAsync(Order, type => type
-            .WithPart(nameof(HtmlBodyPart), part => part
+            .WithPart<HtmlBodyPart>(part => part
                 .WithSettings(new ContentTypePartSettings { Editor = "Trumbowyg", })
             ));
 

@@ -215,7 +215,7 @@ public class Startup : StartupBase
     }
 }
 
-public class FallbackPriceStartup : StartupBase
+public sealed class FallbackPriceStartup : StartupBase
 {
     public override int Order => int.MaxValue;
 
