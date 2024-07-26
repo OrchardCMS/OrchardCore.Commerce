@@ -31,19 +31,19 @@ public sealed class ProductAttributeValueConverter : JsonConverter<IProductAttri
         return deserializer.Deserialize(attributeName, attribute);
     }
 
-    public override void Write(Utf8JsonWriter writer, IProductAttributeValue productAttributeValue, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IProductAttributeValue value, JsonSerializerOptions options)
     {
-        if (productAttributeValue is null) return;
+        if (value is null) return;
 
         writer.WriteStartObject();
 
-        writer.WriteString(TypePropertyName, productAttributeValue.GetType().Name);
-        writer.WriteString(AttributeNamePropertyName, productAttributeValue.AttributeName);
+        writer.WriteString(TypePropertyName, value.GetType().Name);
+        writer.WriteString(AttributeNamePropertyName, value.AttributeName);
 
         writer.WritePropertyName(ValuePropertyName);
-        var valueNode = productAttributeValue.UntypedValue is IEnumerable<object> values
+        var valueNode = value.UntypedValue is IEnumerable<object> values
             ? JArray.FromObject(values, options)
-            : JNode.FromObject(productAttributeValue.UntypedValue, options);
+            : JNode.FromObject(value.UntypedValue, options);
         valueNode?.WriteTo(writer, options);
 
         writer.WriteEndObject();
