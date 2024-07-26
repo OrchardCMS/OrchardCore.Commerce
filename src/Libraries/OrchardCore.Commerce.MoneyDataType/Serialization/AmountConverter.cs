@@ -128,8 +128,8 @@ public sealed class AmountConverter : JsonConverter<Amount>
 
     public static Amount ReadString(string text)
     {
-       ArgumentException.ThrowIfNullOrEmpty(text);
-       
+        ArgumentException.ThrowIfNullOrEmpty(text);
+
         var parts = text.Split();
         if (parts.Length < 2)
         {

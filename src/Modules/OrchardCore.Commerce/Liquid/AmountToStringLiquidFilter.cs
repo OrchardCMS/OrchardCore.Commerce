@@ -29,7 +29,7 @@ public class AmountToStringLiquidFilter : ILiquidFilter
         {
             case FluidValues.Number:
                 var currencyCode = arguments["currency"].Or(arguments.At(1))?.ToStringValue() ??
-                                   ((await _siteService.GetSettingsAsync<CurrencySettings>()).CurrentDisplayCurrency;
+                                   (await _siteService.GetSettingsAsync<CurrencySettings>()).CurrentDisplayCurrency;
                 var currency = _currencyProvider.GetCurrency(currencyCode);
                 amount = new(input.ToNumberValue(), currency);
                 break;
