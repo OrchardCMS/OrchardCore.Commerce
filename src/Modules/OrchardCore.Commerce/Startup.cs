@@ -60,8 +60,6 @@ namespace OrchardCore.Commerce;
 
 public class Startup : StartupBase
 {
-    public override int Order => OrchardCoreCommerceConfigureOrder.Default;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         // Infrastructure
