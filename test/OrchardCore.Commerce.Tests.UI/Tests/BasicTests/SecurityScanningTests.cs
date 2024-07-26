@@ -39,9 +39,10 @@ public class SecurityScanningTests : UITestBase
                         @"https://[^/]+/",
                         @".*/\?.*pagenum=.*",
                         @".*/\?.*products\..*");
-                },
-                maxActiveScanDurationInMinutes: 5,
-                maxRuleDurationInMinutes: 1),
+
+                    // Make active scan single threaded to prevent deadlocks.
+                    configuration.ModifyZapPlan(yaml => yaml.SetActiveScanParameter("threadPerHost", "1"));
+                }),
             changeConfiguration: configuration => configuration.AssertAppLogsAsync = async webApplicationInstance =>
             {
                 var logsWithoutUnwantedExceptionMessages = (await webApplicationInstance.GetLogOutputAsync())
