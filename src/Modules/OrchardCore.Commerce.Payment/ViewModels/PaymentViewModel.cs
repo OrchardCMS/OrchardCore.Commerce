@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
@@ -27,11 +27,11 @@ public class PaymentViewModel : ShapeViewModel, IPaymentViewModel
         NetTotal = netTotal;
     }
 
-    public async Task WithProviderDataAsync(IEnumerable<IPaymentProvider> paymentProviders)
+    public async Task WithProviderDataAsync(IEnumerable<IPaymentProvider> paymentProviders, bool isPaymentRequest = false)
     {
         foreach (var provider in paymentProviders)
         {
-            if (await provider.CreatePaymentProviderDataAsync(this) is { } data)
+            if (await provider.CreatePaymentProviderDataAsync(this, isPaymentRequest) is { } data)
             {
                 PaymentProviderData[provider.Name] = data;
             }
