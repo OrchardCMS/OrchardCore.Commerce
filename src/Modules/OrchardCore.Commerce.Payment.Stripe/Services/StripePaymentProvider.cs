@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
-using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.ContentManagement;
@@ -20,7 +17,6 @@ public class StripePaymentProvider : IPaymentProvider
 {
     public const string ProviderName = "Stripe";
 
-    private readonly IHttpContextAccessor _hca;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly ISession _session;
     private readonly ISiteService _siteService;
@@ -29,20 +25,18 @@ public class StripePaymentProvider : IPaymentProvider
     public string Name => ProviderName;
 
     public StripePaymentProvider(
-        IHttpContextAccessor hca,
         IPaymentIntentPersistence paymentIntentPersistence,
         ISession session,
         ISiteService siteService,
         IStripePaymentService stripePaymentService)
     {
-        _hca = hca;
         _paymentIntentPersistence = paymentIntentPersistence;
         _session = session;
         _siteService = siteService;
         _stripePaymentService = stripePaymentService;
     }
 
-    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model)
+    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false)
     {
         PaymentIntent paymentIntent;
 
@@ -55,7 +49,7 @@ public class StripePaymentProvider : IPaymentProvider
             return null;
         }
 
-        if (_hca.HttpContext?.GetRouteValue("action")?.ToString() == nameof(PaymentController.PaymentRequest))
+        if (isPaymentRequest)
         {
             await _session.SaveAsync(new OrderPayment
             {

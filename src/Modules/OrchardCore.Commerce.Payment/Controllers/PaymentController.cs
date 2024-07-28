@@ -174,7 +174,7 @@ public class PaymentController : Controller
         }
 
         var viewModel = new PaymentViewModel(orderPart, singleCurrencyTotal, singleCurrencyTotal);
-        await viewModel.WithProviderDataAsync(_paymentProviders);
+        await viewModel.WithProviderDataAsync(_paymentProviders, isPaymentRequest: true);
 
         if (!viewModel.PaymentProviderData.Any())
         {
