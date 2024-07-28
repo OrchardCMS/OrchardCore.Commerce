@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
@@ -11,6 +10,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using Stripe;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
 
@@ -135,7 +136,7 @@ public class StripeController : Controller
             },
         };
 
-        return Json(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        return Json(model, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
     }
 
     private async Task<IActionResult> PaymentFailedAsync()

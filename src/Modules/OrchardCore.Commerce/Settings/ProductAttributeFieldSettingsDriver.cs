@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
@@ -15,7 +16,7 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
     where TSettings : ProductAttributeFieldSettings, new()
 {
     public override IDisplayResult Edit(ContentPartFieldDefinition model) =>
-        Initialize(typeof(TSettings).Name + "_Edit", (Action<TSettings>)model.PopulateSettings)
+        Initialize<TSettings>(typeof(TSettings).Name + "_Edit", model.CopySettingsTo)
             .PlaceInContent();
 
     public override async Task<IDisplayResult> UpdateAsync(
@@ -49,8 +50,7 @@ public class TextProductAttributeFieldSettingsDriver
             nameof(TextProductAttributeFieldSettings) + "_Edit",
             viewModel =>
             {
-                var settings = new TextProductAttributeFieldSettings();
-                model.PopulateSettings(settings);
+                var settings = model.GetSettings<TextProductAttributeFieldSettings>();
                 viewModel.Hint = settings.Hint;
                 viewModel.DefaultValue = settings.DefaultValue;
                 viewModel.Required = settings.Required;

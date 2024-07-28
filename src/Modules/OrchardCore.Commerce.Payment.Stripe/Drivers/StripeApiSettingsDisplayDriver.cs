@@ -45,10 +45,7 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
 
     public override async Task<IDisplayResult> EditAsync(StripeApiSettings section, BuildEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
-            !await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
+        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || !await AuthorizeAsync())
         {
             return null;
         }
@@ -68,52 +65,43 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
             .OnGroup(GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(StripeApiSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(StripeApiSettings section, UpdateEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageStripeApiSettings))
+        if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, GroupId, AuthorizeAsync) is { } model)
         {
-            return null;
-        }
-
-        if (context.GroupId == GroupId)
-        {
-            var model = new StripeApiSettingsViewModel();
             var previousSecretKey = section.SecretKey;
             var previousWebhookKey = section.WebhookSigningSecret;
+            section.PublishableKey = model.PublishableKey?.Trim();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            // Restore secret key if the input is empty, meaning that it has not been reset.
+            if (string.IsNullOrWhiteSpace(model.SecretKey))
             {
-                section.PublishableKey = model.PublishableKey?.Trim();
-
-                // Restore secret key if the input is empty, meaning that it has not been reset.
-                if (string.IsNullOrWhiteSpace(model.SecretKey))
-                {
-                    section.SecretKey = previousSecretKey;
-                }
-                else
-                {
-                    // Encrypt secret key.
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
-                    section.SecretKey = protector.Protect(model.SecretKey?.Trim());
-                }
-
-                if (string.IsNullOrWhiteSpace(model.WebhookSigningSecret))
-                {
-                    section.WebhookSigningSecret = previousWebhookKey;
-                }
-                else
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
-                    section.WebhookSigningSecret = protector.Protect(model.WebhookSigningSecret?.Trim());
-                }
-
-                // Release the tenant to apply settings.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                section.SecretKey = previousSecretKey;
             }
+            else
+            {
+                // Encrypt secret key.
+                var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
+                section.SecretKey = protector.Protect(model.SecretKey?.Trim());
+            }
+
+            if (string.IsNullOrWhiteSpace(model.WebhookSigningSecret))
+            {
+                section.WebhookSigningSecret = previousWebhookKey;
+            }
+            else
+            {
+                var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
+                section.WebhookSigningSecret = protector.Protect(model.WebhookSigningSecret?.Trim());
+            }
+
+            // Release the tenant to apply settings.
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
         return await EditAsync(section, context);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, Permissions.ManageStripeApiSettings);
 }

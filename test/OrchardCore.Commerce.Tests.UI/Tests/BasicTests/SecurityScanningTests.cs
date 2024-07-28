@@ -39,7 +39,9 @@ public class SecurityScanningTests : UITestBase
                         @"https://[^/]+/",
                         @".*/\?.*pagenum=.*",
                         @".*/\?.*products\..*");
-                }),
+                },
+                maxActiveScanDurationInMinutes: 5,
+                maxRuleDurationInMinutes: 1),
             changeConfiguration: configuration => configuration.AssertAppLogsAsync = async webApplicationInstance =>
             {
                 var logsWithoutUnwantedExceptionMessages = (await webApplicationInstance.GetLogOutputAsync())

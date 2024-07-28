@@ -11,13 +11,13 @@ using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.TaxTests;
 
-public class TaxBehaviourTests : UITestBase
+public class TaxBehaviorTests : UITestBase
 {
     public const string NetPriceId = "PricePart_PriceField_Value";
     public const string GrossPriceId = "TaxPart_GrossPrice_Value";
     public const string TaxRateId = "TaxPart_TaxRate_Value";
 
-    public TaxBehaviourTests(ITestOutputHelper testOutputHelper)
+    public TaxBehaviorTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
     }

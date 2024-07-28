@@ -1,9 +1,9 @@
-@using static OrchardCore.Commerce.Constants.ResourceNames
-@using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 @using OrchardCore
 @using OrchardCore.Commerce.Abstractions.Models
-@using OrchardCore.Mvc.Utilities
 @using OrchardCore.Commerce.Payment.Controllers
+@using OrchardCore.Mvc.Utilities
+@using static OrchardCore.Commerce.Constants.ResourceNames
+@using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
 @model OrchardCore.Commerce.Payment.ViewModels.CheckoutViewModel
 
@@ -100,7 +100,7 @@
                 {
                     @await DisplayAsync(shape)
                 }
-                catch (Exception exception) when (exception.Message.RegexIsMatch(@"Shape type '[^']*' not found"))
+                catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
                 {
                     // It's fine, we only want to display the shape if a template exists.
                 }

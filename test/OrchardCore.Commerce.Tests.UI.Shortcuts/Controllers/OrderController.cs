@@ -78,7 +78,7 @@ public class OrderController : Controller
             shoppingCartId,
             getCharges: _ => new[]
             {
-                new Payment.Models.Payment(
+                new Abstractions.Models.Payment(
                     Kind: "Card",
                     ChargeText: "Test charge text",
                     TransactionId: "Test transaction ID",

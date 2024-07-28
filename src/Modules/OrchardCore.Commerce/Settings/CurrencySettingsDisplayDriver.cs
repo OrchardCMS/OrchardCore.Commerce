@@ -45,10 +45,7 @@ public class CurrencySettingsDisplayDriver : SectionDisplayDriver<ISite, Currenc
 
     public override async Task<IDisplayResult> EditAsync(CurrencySettings section, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
-            !await _authorizationService.AuthorizeAsync(user, Permissions.ManageCurrencySettings))
+        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || !await AuthorizeAsync())
         {
             return null;
         }
@@ -75,24 +72,12 @@ public class CurrencySettingsDisplayDriver : SectionDisplayDriver<ISite, Currenc
         return Combine(shapes);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(CurrencySettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(CurrencySettings section, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCurrencySettings))
+        if (await context.CreateModelMaybeAsync<CurrencySettingsViewModel>(Prefix, GroupId, AuthorizeAsync) is { } model)
         {
-            return null;
-        }
-
-        if (context.GroupId == GroupId)
-        {
-            var model = new CurrencySettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                section.DefaultCurrency = model.DefaultCurrency;
-                section.CurrentDisplayCurrency = model.CurrentDisplayCurrency;
-            }
+            section.DefaultCurrency = model.DefaultCurrency;
+            section.CurrentDisplayCurrency = model.CurrentDisplayCurrency;
 
             // Reload the tenant to apply the settings.
             await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
@@ -100,4 +85,7 @@ public class CurrencySettingsDisplayDriver : SectionDisplayDriver<ISite, Currenc
 
         return await EditAsync(section, context);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageCurrencySettings);
 }

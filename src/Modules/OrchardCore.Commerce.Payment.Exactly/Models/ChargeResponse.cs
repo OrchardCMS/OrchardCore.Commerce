@@ -69,7 +69,7 @@ public class ChargeResponse : IExactlyResponseData
             ["contact_issuer"] = T["the transaction was declined, the customer should contact issuer"],
         };
 
-    public Payment.Models.Payment ToPayment(IMoneyService moneyService)
+    public Commerce.Abstractions.Models.Payment ToPayment(IMoneyService moneyService)
     {
         var type = Attributes.Processing.PaymentMethod.Type;
         var amount = Attributes.Processing.GetAmount(moneyService);

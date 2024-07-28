@@ -1,28 +1,29 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Serialization;
 
-internal sealed class ProductAttributeValueConverter : JsonConverter<IProductAttributeValue>
+public sealed class ProductAttributeValueConverter : JsonConverter<IProductAttributeValue>
 {
-    private const string Type = "type";
-    private const string Value = "value";
-    private const string AttributeName = "attributeName";
+    private const string TypePropertyName = "type";
+    private const string ValuePropertyName = "value";
+    private const string AttributeNamePropertyName = "attributeName";
 
-    public override IProductAttributeValue ReadJson(
-        JsonReader reader,
-        Type objectType,
-        IProductAttributeValue existingValue,
-        bool hasExistingValue,
-        JsonSerializer serializer)
+    public override IProductAttributeValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var attribute = (JObject)JToken.Load(reader);
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new InvalidOperationException(
+                $"Expected object when deserializing {typeToConvert.Name}, got {reader.TokenType}");
+        }
 
-        var attributeName = attribute.Get<string>(AttributeName);
-        var typeName = attribute.Get<string>(Type);
+        var attribute = JsonNode.Parse(ref reader)!.AsObject();
+        var attributeName = attribute[AttributeNamePropertyName]?.GetValue<string>();
+        var typeName = attribute[TypePropertyName]?.GetValue<string>();
 
         var deserializer = IProductAttributeDeserializer.Deserializers.GetMaybe(typeName) ??
             throw new InvalidOperationException($"Unknown or unsupported type \"{typeName}\".");
@@ -30,36 +31,20 @@ internal sealed class ProductAttributeValueConverter : JsonConverter<IProductAtt
         return deserializer.Deserialize(attributeName, attribute);
     }
 
-    public override void WriteJson(JsonWriter writer, IProductAttributeValue productAttributeValue, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, IProductAttributeValue value, JsonSerializerOptions options)
     {
-        if (productAttributeValue is null) return;
+        if (value is null) return;
 
         writer.WriteStartObject();
-        writer.WritePropertyName(Type);
-        writer.WriteValue(productAttributeValue.GetType().Name);
 
-        var untypedValue = productAttributeValue.UntypedValue;
+        writer.WriteString(TypePropertyName, value.GetType().Name);
+        writer.WriteString(AttributeNamePropertyName, value.AttributeName);
 
-        writer.WritePropertyName(Value);
-
-        if (untypedValue is IEnumerable<object> values)
-        {
-            writer.WriteStartArray();
-
-            foreach (var value in values)
-            {
-                writer.WriteValue(value);
-            }
-
-            writer.WriteEndArray();
-        }
-        else
-        {
-            writer.WriteValue(untypedValue);
-        }
-
-        writer.WritePropertyName(AttributeName);
-        writer.WriteValue(productAttributeValue.AttributeName);
+        writer.WritePropertyName(ValuePropertyName);
+        var valueNode = value.UntypedValue is IEnumerable<object> values
+            ? JArray.FromObject(values, options)
+            : JNode.FromObject(value.UntypedValue, options);
+        valueNode?.WriteTo(writer, options);
 
         writer.WriteEndObject();
     }

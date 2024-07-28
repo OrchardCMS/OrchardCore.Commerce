@@ -13,7 +13,6 @@ namespace OrchardCore.Commerce.MoneyDataType;
 /// A money amount, which is represented by a decimal number and a currency.
 /// </summary>
 [JsonConverter(typeof(AmountConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
@@ -98,14 +97,18 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     public static Amount operator +(Amount first, Amount second)
     {
         first.ThrowIfCurrencyDoesntMatch(second, operation: "add");
-        return new Amount(first.Value + second.Value, first.Currency);
+        return new(first.Value + second.Value, first.Currency);
     }
+
+    public static Amount operator +(Amount first, decimal second) => new(first.Value + second, first.Currency);
 
     public static Amount operator -(Amount first, Amount second)
     {
         first.ThrowIfCurrencyDoesntMatch(second, operation: "subtract");
-        return new Amount(first.Value - second.Value, first.Currency);
+        return new(first.Value - second.Value, first.Currency);
     }
+
+    public static Amount operator -(Amount first, decimal second) => new(first.Value - second, first.Currency);
 
     public static Amount operator -(Amount amount) =>
         new(-amount.Value, amount.Currency);
