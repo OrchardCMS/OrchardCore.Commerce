@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -54,7 +54,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
         H = services.HtmlLocalizer.Value;
     }
 
-    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model)
+    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false)
     {
         var settings = (await _siteService.GetSiteSettingsAsync())?.As<ExactlySettings>();
         return string.IsNullOrEmpty(settings?.ApiKey) || string.IsNullOrEmpty(settings.ProjectId) ? null : new object();
