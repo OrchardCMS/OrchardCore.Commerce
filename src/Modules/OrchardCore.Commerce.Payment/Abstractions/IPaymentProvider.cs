@@ -34,7 +34,7 @@ public interface IPaymentProvider
     /// <summary>
     /// Validates the data POSTed to the <see cref="PaymentController.Validate"/> action.
     /// </summary>
-    Task ValidateAsync(IUpdateModelAccessor updateModelAccessor) => Task.CompletedTask;
+    Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string? shoppingCartId) => Task.CompletedTask;
 
     /// <summary>
     /// Invoked at the end of <see cref="IPaymentService.FinalModificationOfOrderAsync"/>.

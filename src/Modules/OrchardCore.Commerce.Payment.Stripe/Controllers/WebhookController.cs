@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Settings;
@@ -34,7 +35,7 @@ public class WebhookController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string shoppingCartId = null)
     {
         using var streamReader = new StreamReader(HttpContext.Request.Body);
         var json = await streamReader.ReadToEndAsync(HttpContext.RequestAborted);
@@ -59,7 +60,7 @@ public class WebhookController : Controller
                 }
 
                 var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
-                await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
+                await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, shoppingCartId);
             }
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {

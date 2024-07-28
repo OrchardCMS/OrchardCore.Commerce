@@ -93,20 +93,21 @@ public class StripePaymentService : IStripePaymentService
             await _requestOptionsService.SetIdempotencyKeyAsync());
     }
 
-    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent) =>
+    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, string shoppingCartId) =>
         await _paymentService.UpdateOrderToOrderedAsync(
             await GetOrderByPaymentIntentIdAsync(paymentIntent.Id),
-            shoppingCartId: null,
+            shoppingCartId,
             CreateChargesProvider(paymentIntent));
 
     public Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
         Controller controller,
         ContentItem order,
-        PaymentIntent paymentIntent) =>
+        PaymentIntent paymentIntent,
+        string shoppingCartId) =>
         _paymentService.UpdateAndRedirectToFinishedOrderAsync(
             controller,
             order,
-            shoppingCartId: null,
+            shoppingCartId,
             StripePaymentProvider.ProviderName,
             CreateChargesProvider(paymentIntent));
 
@@ -127,7 +128,7 @@ public class StripePaymentService : IStripePaymentService
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
             .FirstOrDefaultAsync();
 
-    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor)
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId)
     {
         var paymentIntent = await GetPaymentIntentAsync(_paymentIntentPersistence.Retrieve());
 
@@ -135,7 +136,7 @@ public class StripePaymentService : IStripePaymentService
         var (order, isNew) = await _paymentService.CreateOrUpdateOrderFromShoppingCartAsync(
             updateModelAccessor,
             (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId,
-            shoppingCartId: null,
+            shoppingCartId,
             (order, _, total, cartViewModel, lineItems) =>
             {
                 order.Alter<OrderPart>(orderPart =>

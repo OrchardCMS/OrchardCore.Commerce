@@ -109,7 +109,7 @@ public class PaymentController : Controller
     [Route("checkout/validate/{providerName}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Validate(string providerName)
+    public async Task<IActionResult> Validate(string providerName, string? shoppingCartId = null)
     {
         if (string.IsNullOrEmpty(providerName)) return NotFound();
 
@@ -117,7 +117,7 @@ public class PaymentController : Controller
         {
             await _paymentProviders
                 .WhereName(providerName)
-                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor));
+                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId));
 
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
             return Json(new { Errors = errors });
