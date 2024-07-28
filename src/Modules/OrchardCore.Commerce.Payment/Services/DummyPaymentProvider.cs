@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
@@ -33,7 +33,7 @@ public class DummyPaymentProvider : IPaymentProvider
         _shoppingCartHelpers = shoppingCartHelpers;
     }
 
-    public Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model) =>
+    public Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false) =>
         // This provider doesn't have any special data, and it should only be displayed during development even if the
         // feature is enabled. So if the condition is met a blank object is returned, otherwise null which will cause
         // the provider to be skipped when used through the viewModel.WithProviderDataAsync(providers) method.
