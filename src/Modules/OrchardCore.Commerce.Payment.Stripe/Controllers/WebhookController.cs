@@ -34,7 +34,7 @@ public class WebhookController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(string shoppingCartId = null)
+    public async Task<IActionResult> Index()
     {
         using var streamReader = new StreamReader(HttpContext.Request.Body);
         var json = await streamReader.ReadToEndAsync(HttpContext.RequestAborted);
@@ -59,7 +59,7 @@ public class WebhookController : Controller
                 }
 
                 var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
-                await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, shoppingCartId);
+                await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, shoppingCartId: null);
             }
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
