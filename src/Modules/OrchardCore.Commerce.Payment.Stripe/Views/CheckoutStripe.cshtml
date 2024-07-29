@@ -52,6 +52,20 @@
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
             @T["There was an error during confirming the payment, please try again."].Json(),
             @T["A value is required for %LABEL%."].Json(),
-            @(Orchard.Action<StripeController>(controller => controller.UpdatePaymentIntent("PAYMENT_INTENT")).JsonHtmlContent()));
+            @(Orchard.Action<StripeController>(controller => controller.UpdatePaymentIntent("PAYMENT_INTENT")).JsonHtmlContent()),
+            'checkout/validate/Stripe',
+            'checkout/params/Stripe',
+            'checkout/price',
+            '.message-error',
+            '.stripe-field-error,
+            '.payment-form',
+            '.pay-button-stripe',
+            '.pay-text',
+            '.payment-processing-container',
+            '#payment-form_payment',
+            '.pay-button-value',
+            '*[id^="OrderPart_ShippingAddress_"], *[id^="OrderPart_BillingAddress_"]',
+            '.address',
+            '.address__title');
     </script>
 }
