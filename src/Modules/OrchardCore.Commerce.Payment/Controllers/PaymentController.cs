@@ -128,15 +128,15 @@ public class PaymentController : Controller
         }
         catch (Exception exception)
         {
-            string error = shoppingCartId == null ?
-                   $"An exception has occurred during checkout form validation."
-                 : $"An exception has occurred during checkout form validation at {shoppingCartId}.";
-#pragma warning disable CA2254
-            _logger.LogError(exception, message: error);
-#pragma warning restore CA2254
+            var shoppingCartIdForDisplay = shoppingCartId == null ? "(null)" : $"\"{shoppingCartId}\"";
+
+            _logger.LogError(
+                exception,
+                "An exception has occurred during checkout form validation for shopping cart ID {ShoppingCartId}.",
+                shoppingCartIdForDisplay);
             var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
                 ? exception.ToString()
-                : T[error].Value;
+                : T["An exception has occurred during checkout form validation for shopping cart ID {0}.", shoppingCartIdForDisplay].Value;
 
             return Json(new { Errors = new[] { errorMessage } });
         }
