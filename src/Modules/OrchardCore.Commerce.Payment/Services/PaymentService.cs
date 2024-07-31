@@ -149,6 +149,8 @@ public class PaymentService : IPaymentService
 
         await _checkoutEvents.AwaitEachAsync(checkoutEvents => checkoutEvents.ViewModelCreatedAsync(lines, viewModel));
 
+        viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
+
         return viewModel;
     }
 
