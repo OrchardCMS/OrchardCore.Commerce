@@ -55,6 +55,7 @@ using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using YesSql.Indexes;
 using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
 
@@ -260,6 +261,7 @@ public class DeploymentStartup : StartupBase
         services.AddScoped(ImplementationFactory);
     }
 
+    [SuppressMessage("Naming Rules", "SA1312:Variable names should begin with lower-case letter", Justification = "It's the IStringLocalizer.")]
     private IDisplayDriver<DeploymentStep> ImplementationFactory(IServiceProvider serviceProvider)
     {
         var T = serviceProvider.GetService<IStringLocalizer<DeploymentStartup>>();
