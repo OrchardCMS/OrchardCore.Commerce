@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Exactly.Models;
@@ -8,39 +8,38 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Exactly.Drivers;
 
-public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlySettings>
+public class ExactlySettingsDisplayDriver : SiteDisplayDriver<ExactlySettings>
 {
     public const string EditorGroupId = "Exactly";
     public const string SignUpLink = "https://application.exactly.com/?utm_source=partner&utm_medium=kirill&utm_campaign=LOMBIQ";
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _hca;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly ExactlySettings _ssoSettings;
 
     public ExactlySettingsDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor hca,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
+        IShellReleaseManager shellReleaseManager,
         IOptionsSnapshot<ExactlySettings> ssoSettings)
     {
         _authorizationService = authorizationService;
         _hca = hca;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
+        _shellReleaseManager = shellReleaseManager;
         _ssoSettings = ssoSettings.Value;
     }
 
-    public override async Task<IDisplayResult> EditAsync(ExactlySettings section, BuildEditorContext context)
+    protected override string SettingsGroupId
+        => EditorGroupId;
+
+    public override async Task<IDisplayResult> EditAsync(ISite model, ExactlySettings section, BuildEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EditorGroupId) || !await AuthorizeAsync()) return null;
+        if (!await AuthorizeAsync()) return null;
 
         context.Shape.AddTenantReloadWarning();
 
@@ -50,24 +49,26 @@ public class ExactlySettingsDisplayDriver : SectionDisplayDriver<ISite, ExactlyS
                 settings.ApiKey = string.Empty;
             })
             .PlaceInContent()
-            .OnGroup(EditorGroupId);
+            .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ExactlySettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite model, ExactlySettings section, UpdateEditorContext context)
     {
         var viewModel = new ExactlySettings();
 
-        if (context.GroupId == EditorGroupId &&
-            await AuthorizeAsync() &&
-            await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (!await AuthorizeAsync())
         {
-            viewModel.CopyTo(section);
-
-            // Release the tenant to apply settings.
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            return null;
         }
 
-        return await EditAsync(section, context);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+
+        viewModel.CopyTo(section);
+
+        // Release the tenant to apply settings.
+        _shellReleaseManager.RequestRelease();
+
+        return await EditAsync(model, section, context);
     }
 
     private Task<bool> AuthorizeAsync() =>
