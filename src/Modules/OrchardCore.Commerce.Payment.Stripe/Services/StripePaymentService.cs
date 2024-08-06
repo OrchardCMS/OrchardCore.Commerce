@@ -29,7 +29,7 @@ using Address = OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
-public class StripePaymentService : Abstractions.IStripePaymentService
+public class StripePaymentService : IStripePaymentService
 {
     private readonly PaymentIntentService _paymentIntentService = new();
 
@@ -39,7 +39,7 @@ public class StripePaymentService : Abstractions.IStripePaymentService
     private readonly IStringLocalizer T;
     private readonly ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
-    private readonly Payment.Abstractions.IStripePaymentService _paymentService;
+    private readonly IPaymentService _paymentService;
 
     public StripePaymentService(
         IContentManager contentManager,
@@ -48,7 +48,7 @@ public class StripePaymentService : Abstractions.IStripePaymentService
         IStringLocalizer<StripePaymentService> stringLocalizer,
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
-        Payment.Abstractions.IStripePaymentService paymentService)
+        IPaymentService paymentService)
     {
         _contentManager = contentManager;
         _siteService = siteService;
