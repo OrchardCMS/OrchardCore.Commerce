@@ -61,4 +61,10 @@ public interface IStripePaymentService
         Controller controller,
         ContentItem order,
         PaymentIntent paymentIntent);
+
+    /// <summary>
+    /// Get the confirmation parameters for Stripe.
+    /// </summary>
+    /// <param name="middlewareAbsoluteUrl">The url for the middleware of Stripe.</param>
+    Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl);
 }

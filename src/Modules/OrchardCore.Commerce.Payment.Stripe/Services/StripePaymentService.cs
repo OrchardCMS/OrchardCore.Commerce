@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
+using Address = OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
@@ -215,6 +216,48 @@ public class StripePaymentService : IStripePaymentService
         return paymentIntent;
     }
 
+    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl)
+    {
+        var order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
+        await _paymentService.UpdateOrderWithDriversAsync(order);
+
+        var part = order.As<OrderPart>();
+        var billing = part.BillingAddress.Address ?? new Address();
+        var shipping = part.ShippingAddress.Address ?? new Address();
+
+        var model = new PaymentIntentConfirmOptions
+        {
+            ReturnUrl = middlewareAbsoluteUrl,
+            PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
+            {
+                BillingDetails = new PaymentIntentPaymentMethodDataBillingDetailsOptions
+                {
+                    Email = part.Email?.Text,
+                    Name = billing.Name,
+                    Phone = part.Phone?.Text,
+                    Address = CreateAddressOptions(billing),
+                },
+            },
+            Shipping = new ChargeShippingOptions
+            {
+                Name = shipping.Name,
+                Phone = part.Phone?.Text,
+                Address = CreateAddressOptions(shipping),
+            },
+        };
+        return model;
+    }
+
+    private static AddressOptions CreateAddressOptions(Address address) =>
+        new()
+        {
+            City = address.City ?? string.Empty,
+            Country = address.Region ?? string.Empty,
+            Line1 = address.StreetAddress1 ?? string.Empty,
+            Line2 = address.StreetAddress2 ?? string.Empty,
+            PostalCode = address.PostalCode ?? string.Empty,
+            State = address.Province ?? string.Empty,
+        };
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
         string paymentIntentId,
         Amount defaultTotal)
