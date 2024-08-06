@@ -24,8 +24,8 @@ public class PriceFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<
         _moneyService = moneyService;
     }
 
-    public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context)
-        => Initialize($"{nameof(PriceFieldSettings)}_Edit", (Action<PriceFieldSettingsEditViewModel>)(viewModel =>
+    public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context) =>
+        Initialize($"{nameof(PriceFieldSettings)}_Edit", (Action<PriceFieldSettingsEditViewModel>)(viewModel =>
             {
                 var settings = model.GetSettings<PriceFieldSettings>();
 
