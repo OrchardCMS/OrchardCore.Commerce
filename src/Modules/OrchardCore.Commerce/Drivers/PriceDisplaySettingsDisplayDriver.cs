@@ -53,7 +53,7 @@ public class PriceDisplaySettingsDisplayDriver : SiteDisplayDriver<PriceDisplayS
             model.UseGrossPriceDisplay = section.UseGrossPriceDisplay;
         })
             .PlaceInContent()
-            .OnGroup(GroupId);
+            .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, PriceDisplaySettings section, UpdateEditorContext context)
