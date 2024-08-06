@@ -59,7 +59,7 @@ public class WebhookController : Controller
                 }
 
                 var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
-                await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent);
+                await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, shoppingCartId: null);
             }
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {

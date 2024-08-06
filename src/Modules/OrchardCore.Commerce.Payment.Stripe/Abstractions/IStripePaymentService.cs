@@ -35,13 +35,13 @@ public interface IStripePaymentService
     /// Creates an order content item in the database, based on the stored <see cref="PaymentIntent"/> and on the
     /// current <see cref="ShoppingCart"/> content.
     /// </summary>
-    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor);
+    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId);
 
     /// <summary>
     /// Updates the corresponding order status to <see cref="OrderStatuses.Ordered"/> for the given
     /// <paramref name="paymentIntent"/>.
     /// </summary>
-    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent);
+    Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, string shoppingCartId);
 
     /// <summary>
     /// Updates the corresponding order status to failed payment for the given <paramref name="paymentIntent"/>.
@@ -60,7 +60,8 @@ public interface IStripePaymentService
     Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
         Controller controller,
         ContentItem order,
-        PaymentIntent paymentIntent);
+        PaymentIntent paymentIntent,
+        string shoppingCartId);
 
     /// <summary>
     /// Get the confirmation parameters for Stripe.

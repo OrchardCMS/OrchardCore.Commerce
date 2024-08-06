@@ -102,7 +102,7 @@ public class PaymentController : Controller
     [Route("checkout/validate/{providerName}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Validate(string providerName)
+    public async Task<IActionResult> Validate(string providerName, string? shoppingCartId = null)
     {
         if (string.IsNullOrEmpty(providerName)) return NotFound();
 
@@ -110,7 +110,7 @@ public class PaymentController : Controller
         {
             await _paymentProviders
                 .WhereName(providerName)
-                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor));
+                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId));
 
             var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
             return Json(new { Errors = errors });
@@ -121,11 +121,15 @@ public class PaymentController : Controller
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "An exception has occurred during checkout form validation.");
+            var shoppingCartIdForDisplay = shoppingCartId == null ? "(null)" : $"\"{shoppingCartId}\"";
 
+            _logger.LogError(
+                exception,
+                "An exception has occurred during checkout form validation for shopping cart ID {ShoppingCartId}.",
+                shoppingCartIdForDisplay);
             var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
                 ? exception.ToString()
-                : T["An exception has occurred during checkout form validation."].Value;
+                : T["An exception has occurred during checkout form validation for shopping cart ID {0}.", shoppingCartIdForDisplay].Value;
 
             return Json(new { Errors = new[] { errorMessage } });
         }
