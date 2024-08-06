@@ -42,8 +42,7 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
         _logger = logger;
     }
 
-    protected override string SettingsGroupId
-        => GroupId;
+    protected override string SettingsGroupId => GroupId;
 
     public override async Task<IDisplayResult> EditAsync(ISite model, StripeApiSettings section, BuildEditorContext context)
     {
