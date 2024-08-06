@@ -62,6 +62,7 @@ public interface IStripePaymentService
         ContentItem order,
         PaymentIntent paymentIntent,
         string shoppingCartId);
+
     /// <summary>
     /// Get the confirmation parameters for Stripe.
     /// </summary>
