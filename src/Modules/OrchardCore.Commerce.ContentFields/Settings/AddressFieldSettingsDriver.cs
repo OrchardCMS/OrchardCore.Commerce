@@ -10,8 +10,8 @@ namespace OrchardCore.Commerce.Settings;
 
 public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<AddressField>
 {
-    public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context)
-        => Initialize<AddressPartFieldSettings>("AddressFieldSettings_Edit", viewModel =>
+    public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context) =>
+        Initialize<AddressPartFieldSettings>("AddressFieldSettings_Edit", viewModel =>
         {
             var settings = model.Settings.ToObject<AddressPartFieldSettings>();
             viewModel.Hint = settings.Hint;
