@@ -65,6 +65,6 @@ public interface IStripePaymentService
     /// <summary>
     /// Get the confirmation parameters for Stripe.
     /// </summary>
-    /// <param name="middlewareUrl">The url for the middleware of Stripe.</param>
-    Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareUrl);
+    /// <param name="middlewareAbsoluteUrl">The url for the middleware of Stripe.</param>
+    Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl);
 }

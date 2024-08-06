@@ -216,7 +216,7 @@ public class StripePaymentService : IStripePaymentService
         return paymentIntent;
     }
 
-    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareUrl)
+    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl)
     {
         var order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
         await _paymentService.UpdateOrderWithDriversAsync(order);
@@ -227,7 +227,7 @@ public class StripePaymentService : IStripePaymentService
 
         var model = new PaymentIntentConfirmOptions
         {
-            ReturnUrl = middlewareUrl,
+            ReturnUrl = middlewareAbsoluteUrl,
             PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
             {
                 BillingDetails = new PaymentIntentPaymentMethodDataBillingDetailsOptions
