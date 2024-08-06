@@ -259,8 +259,8 @@ public class StripePaymentService : IStripePaymentService
             State = address.Province ?? string.Empty,
         };
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
-    string paymentIntentId,
-    Amount defaultTotal)
+        string paymentIntentId,
+        Amount defaultTotal)
     {
         var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
 
