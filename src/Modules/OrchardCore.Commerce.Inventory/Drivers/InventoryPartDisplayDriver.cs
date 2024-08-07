@@ -4,7 +4,6 @@ using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Inventory.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +11,13 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Inventory.Drivers;
 
-public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
+public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
 {
     public const string NewProductKey = "DEFAULT";
 
     private readonly IHttpContextAccessor _hca;
-    private readonly IStringLocalizer<InventoryPartDisplayDriver> T;
+
+    internal readonly IStringLocalizer T;
 
     public InventoryPartDisplayDriver(IHttpContextAccessor hca, IStringLocalizer<InventoryPartDisplayDriver> localizer)
     {
@@ -33,18 +33,15 @@ public class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart
     public override IDisplayResult Edit(InventoryPart part, BuildPartEditorContext context) =>
         Initialize<InventoryPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part));
 
-    public override async Task<IDisplayResult> UpdateAsync(
-        InventoryPart part,
-        IUpdateModel updater,
-        UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(InventoryPart part, UpdatePartEditorContext context)
     {
         var viewModel = new InventoryPartViewModel();
 
         if (_hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant() is not { } currentSku)
         {
-            updater.ModelState.AddModelError("ProductPart.Sku", T["The Product SKU is missing."].Value);
+            context.Updater.ModelState.AddModelError("ProductPart.Sku", T["The Product SKU is missing."].Value);
         }
-        else if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        else if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             // Workaround for accepting inventory values during content item creation where the SKU is not yet known.
             if (viewModel.Inventory.TryGetValue(NewProductKey, out var defaultCount))

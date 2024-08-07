@@ -6,7 +6,6 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Collections.Generic;
@@ -47,11 +46,10 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
 
     public override async Task<IDisplayResult> UpdateAsync(
         TieredPricePart part,
-        IUpdateModel updater,
         UpdatePartEditorContext context)
     {
         var viewModel = new TieredPricePartViewModel();
-        if (await updater.TryUpdateModelAsync(
+        if (await context.Updater.TryUpdateModelAsync(
             viewModel,
             Prefix,
             viewModel => viewModel.DefaultPrice,
@@ -65,7 +63,7 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
             }
             catch (JsonException)
             {
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
                     T["The given tiered prices are not valid."]);
             }
@@ -75,14 +73,14 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
 
             if (priceTiers.Exists(tier => tier.UnitPrice is null))
             {
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
                     T["You need to set a price for every tier."]);
             }
 
             if (viewModel.DefaultPrice == null || viewModel.DefaultPrice.Value <= 0)
             {
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.DefaultPrice),
                     T["You need to set a default price greater than 0."]);
             }
@@ -93,14 +91,14 @@ public class TieredPricePartDisplayDriver : ContentPartDisplayDriver<TieredPrice
                 .Select(group => group.Key)
                 .Any())
             {
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
                     T["There are duplicate tiers."]);
             }
 
             if (priceTiers.Exists(tier => tier.UnitPrice < 0))
             {
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(TieredPricePartViewModel.TieredValuesSerialized),
                     T["You need to set a unit price greater or equal to 0 for every tier."]);
             }

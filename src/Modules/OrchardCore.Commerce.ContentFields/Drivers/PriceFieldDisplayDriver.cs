@@ -8,7 +8,6 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Threading.Tasks;
@@ -18,7 +17,8 @@ namespace OrchardCore.Commerce.ContentFields.Drivers;
 public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
 {
     private readonly IMoneyService _moneyService;
-    private readonly IStringLocalizer<PriceFieldDisplayDriver> T;
+
+    internal readonly IStringLocalizer T;
 
     public PriceFieldDisplayDriver(IMoneyService moneyService, IStringLocalizer<PriceFieldDisplayDriver> localizer)
     {
@@ -77,12 +77,11 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
 
     public override async Task<IDisplayResult> UpdateAsync(
         PriceField field,
-        IUpdateModel updater,
         UpdateFieldEditorContext context)
     {
         var viewModel = new PriceFieldEditViewModel();
 
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             var settings = context.PartFieldDefinition.GetSettings<PriceFieldSettings>();
             var isInvalid = IsCurrencyInvalid(viewModel.Currency);
@@ -92,7 +91,7 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
                 var label = string.IsNullOrEmpty(settings.Label)
                     ? context.PartFieldDefinition.DisplayName()
                     : settings.Label;
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(viewModel.Currency),
                     T["The field {0} is invalid.", label].Value);
             }
