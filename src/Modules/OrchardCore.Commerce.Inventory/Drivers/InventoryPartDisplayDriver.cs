@@ -38,7 +38,7 @@ public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<Invent
     {
         if (_hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant() is not { } currentSku)
         {
-            context.Updater.ModelState.AddModelError("ProductPart.Sku", T["The Product SKU is missing."].Value);
+            context.AddModelError("ProductPart.Sku", T["The Product SKU is missing."]);
             return await EditAsync(part, context);
         }
 

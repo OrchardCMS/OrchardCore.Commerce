@@ -110,7 +110,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
         foreach (var key in missingFields)
         {
             // This doesn't need to be too complex as it's just a fallback from the client-side validation.
-            context.Updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
+            context.AddModelError(key, T["A value is required for {0}.", key]);
         }
 
         return missingFields.Count != 0 ? null : viewModel;

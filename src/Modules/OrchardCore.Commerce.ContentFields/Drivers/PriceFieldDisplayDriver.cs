@@ -90,7 +90,7 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
             var label = string.IsNullOrEmpty(settings.Label)
                 ? context.PartFieldDefinition.DisplayName()
                 : settings.Label;
-            context.Updater.ModelState.AddModelError(
+            context.AddModelError(
                 nameof(viewModel.Currency),
                 T["The field {0} is invalid.", label]);
         }

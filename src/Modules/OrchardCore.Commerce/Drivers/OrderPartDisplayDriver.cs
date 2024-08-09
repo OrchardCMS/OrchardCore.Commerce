@@ -75,9 +75,7 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
         var currenciesMatch = distinctCurrencies.Count() == 1;
         if (!currenciesMatch && viewModelLineItems.Count != 0)
         {
-            context.Updater.ModelState.AddModelError(
-                nameof(viewModel.LineItems),
-                T["Selected currencies must match."]);
+            context.AddModelError(nameof(viewModel.LineItems), T["Selected currencies must match."]);
         }
 
         var orderLineItems = await GetOrderLineItemsAsync(context.Updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);

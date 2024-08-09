@@ -7,6 +7,7 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.Sku.Contains('-'))
         {
-            context.Updater.ModelState.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
+            context.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
             return await EditAsync(part, context);
         }
 
