@@ -7,11 +7,9 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -51,7 +49,7 @@ public class RegionSettingsDisplayDriver : SiteDisplayDriver<RegionSettings>
             return null;
         }
 
-        context.Shape.AddTenantReloadWarning();
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
             {
@@ -66,7 +64,7 @@ public class RegionSettingsDisplayDriver : SiteDisplayDriver<RegionSettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, RegionSettings section, UpdateEditorContext context)
     {
-        if (await context.CreateModelMaybeAsync<RegionSettingsViewModel>(Prefix, GroupId, AuthorizeAsync) is { } viewModel)
+        if (await context.CreateModelMaybeAsync<RegionSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
             var allowedRegions = viewModel.AllowedRegions?.AsList() ?? [];
             var allRegionTwoLetterIsoRegionNames = _regionService
