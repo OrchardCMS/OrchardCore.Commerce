@@ -9,7 +9,6 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.Utilities;
 using System.Collections.Generic;
@@ -48,11 +47,10 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 
     public override async Task<IDisplayResult> UpdateAsync(
         PriceVariantsPart part,
-        IUpdateModel updater,
         UpdatePartEditorContext context)
     {
         var viewModel = new PriceVariantsPartViewModel();
-        if (await updater.TryUpdateModelAsync(
+        if (await context.Updater.TryUpdateModelAsync(
                 viewModel,
                 Prefix,
                 viewModel => viewModel.VariantsValues,

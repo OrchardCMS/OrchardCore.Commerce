@@ -3,6 +3,7 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Linq;
@@ -15,7 +16,7 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
     where TField : ProductAttributeField
     where TSettings : ProductAttributeFieldSettings, new()
 {
-    public override IDisplayResult Edit(ContentPartFieldDefinition model) =>
+    public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context) =>
         Initialize<TSettings>(typeof(TSettings).Name + "_Edit", model.CopySettingsTo)
             .PlaceInContent();
 
@@ -28,7 +29,7 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
         context.Builder.WithSettings(viewModel);
 
-        return Edit(model);
+        return await EditAsync(model, context);
     }
 }
 
@@ -45,7 +46,7 @@ public class NumericProductAttributeFieldSettingsDriver
 public class TextProductAttributeFieldSettingsDriver
     : ProductAttributeFieldSettingsDriver<TextProductAttributeField, TextProductAttributeFieldSettings>
 {
-    public override IDisplayResult Edit(ContentPartFieldDefinition model) =>
+    public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context) =>
         Initialize<TextProductAttributeSettingsViewModel>(
             nameof(TextProductAttributeFieldSettings) + "_Edit",
             viewModel =>
@@ -85,6 +86,7 @@ public class TextProductAttributeFieldSettingsDriver
                     .Where(line => !string.IsNullOrWhiteSpace(line))
                     .ToList(),
             });
-        return Edit(model);
+
+        return await EditAsync(model, context);
     }
 }

@@ -6,7 +6,7 @@ using OrchardCore.Commerce.ContentFields.ViewModels;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ public class PriceFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<
         _moneyService = moneyService;
     }
 
-    public override IDisplayResult Edit(ContentPartFieldDefinition model, IUpdateModel updater) =>
+    public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context) =>
         Initialize($"{nameof(PriceFieldSettings)}_Edit", (Action<PriceFieldSettingsEditViewModel>)(viewModel =>
             {
                 var settings = model.GetSettings<PriceFieldSettings>();
@@ -71,7 +71,7 @@ public class PriceFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<
             });
         }
 
-        return await EditAsync(model, context.Updater);
+        return await EditAsync(model, context);
     }
 
     private sealed record CurrencySelectionModeItem(int Value, string Text)

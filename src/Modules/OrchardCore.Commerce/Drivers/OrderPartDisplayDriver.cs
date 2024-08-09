@@ -49,10 +49,10 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
     public override IDisplayResult Edit(OrderPart part, BuildPartEditorContext context) =>
         Initialize<OrderPartViewModel>(GetEditorShapeType(context), viewModel => PopulateViewModelAsync(viewModel, part));
 
-    public override async Task<IDisplayResult> UpdateAsync(OrderPart part, IUpdateModel updater, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(OrderPart part, UpdatePartEditorContext context)
     {
         var viewModel = new OrderPartViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             var viewModelLineItems = viewModel.LineItems
                 .Where(lineItem => lineItem != null)
@@ -75,12 +75,12 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
             var currenciesMatch = distinctCurrencies.Count() == 1;
             if (!currenciesMatch && viewModelLineItems.Count != 0)
             {
-                updater.ModelState.AddModelError(
+                context.Updater.ModelState.AddModelError(
                     nameof(viewModel.LineItems),
                     T["Selected currencies must match."]);
             }
 
-            var orderLineItems = await GetOrderLineItemsAsync(updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);
+            var orderLineItems = await GetOrderLineItemsAsync(context.Updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);
             part.LineItems.SetItems(orderLineItems);
         }
 

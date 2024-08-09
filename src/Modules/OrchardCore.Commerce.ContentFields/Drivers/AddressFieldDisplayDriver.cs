@@ -80,12 +80,12 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
                 PopulateViewModel(field, viewModel, context.PartFieldDefinition);
             });
 
-    public override async Task<IDisplayResult> UpdateAsync(AddressField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AddressField field, UpdateFieldEditorContext context)
     {
-        if (await TryUpdateModelAsync(updater, Prefix) is { } viewModel)
+        if (await TryUpdateModelAsync(context.Updater, Prefix) is { } viewModel)
         {
             field.Address = viewModel.Address;
-            await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, updater, context));
+            await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, context.Updater, context));
         }
 
         return await EditAsync(field, context);

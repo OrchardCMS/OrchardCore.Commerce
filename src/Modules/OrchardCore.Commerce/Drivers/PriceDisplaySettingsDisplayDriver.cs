@@ -8,12 +8,11 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
-public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, PriceDisplaySettings>
+public class PriceDisplaySettingsDisplayDriver : SiteDisplayDriver<PriceDisplaySettings>
 {
     public const string GroupId = "PriceDisplay";
 
@@ -34,12 +33,14 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
         _authorizationService = authorizationService;
     }
 
-    public override async Task<IDisplayResult> EditAsync(PriceDisplaySettings section, BuildEditorContext context)
+    protected override string SettingsGroupId
+        => GroupId;
+
+    public override async Task<IDisplayResult> EditAsync(ISite model, PriceDisplaySettings section, BuildEditorContext context)
     {
         var user = _hca.HttpContext?.User;
 
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
-            !await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
         {
             return null;
         }
@@ -52,10 +53,10 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
             model.UseGrossPriceDisplay = section.UseGrossPriceDisplay;
         })
             .PlaceInContent()
-            .OnGroup(GroupId);
+            .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(PriceDisplaySettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite model, PriceDisplaySettings section, UpdateEditorContext context)
     {
         var user = _hca.HttpContext?.User;
 
@@ -64,16 +65,16 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
             return null;
         }
 
-        var model = new PriceDisplaySettingsViewModel();
-        if (context.GroupId == GroupId && await context.Updater.TryUpdateModelAsync(model, Prefix))
+        var viewModel = new PriceDisplaySettingsViewModel();
+        if (context.GroupId == GroupId && await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            section.UseNetPriceDisplay = model.UseNetPriceDisplay;
-            section.UseGrossPriceDisplay = model.UseGrossPriceDisplay;
+            section.UseNetPriceDisplay = viewModel.UseNetPriceDisplay;
+            section.UseGrossPriceDisplay = viewModel.UseGrossPriceDisplay;
 
             // Release the tenant to apply settings.
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
-        return await EditAsync(section, context);
+        return await EditAsync(model, section, context);
     }
 }
