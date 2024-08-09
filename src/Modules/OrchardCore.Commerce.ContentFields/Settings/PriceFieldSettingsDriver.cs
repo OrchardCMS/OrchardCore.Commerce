@@ -55,21 +55,18 @@ public class PriceFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
-        var viewModel = new PriceFieldSettingsEditViewModel();
+        var viewModel = await context.CreateModelAsync<PriceFieldSettingsEditViewModel>(Prefix);
 
-        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
+        context.Builder.WithSettings(new PriceFieldSettings
         {
-            context.Builder.WithSettings(new PriceFieldSettings
-            {
-                Hint = viewModel.Hint,
-                Label = viewModel.Label,
-                Required = viewModel.Required,
-                CurrencySelectionMode = viewModel.CurrencySelectionMode,
-                SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionMode.SpecificCurrency
-                    ? viewModel.SpecificCurrencyIsoCode
-                    : null,
-            });
-        }
+            Hint = viewModel.Hint,
+            Label = viewModel.Label,
+            Required = viewModel.Required,
+            CurrencySelectionMode = viewModel.CurrencySelectionMode,
+            SpecificCurrencyIsoCode = viewModel.CurrencySelectionMode == CurrencySelectionMode.SpecificCurrency
+                ? viewModel.SpecificCurrencyIsoCode
+                : null,
+        });
 
         return await EditAsync(model, context);
     }

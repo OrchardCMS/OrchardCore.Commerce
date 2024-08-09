@@ -19,10 +19,7 @@ public class AddressFieldSettingsDriver : ContentPartFieldDefinitionDisplayDrive
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
     {
-        var viewModel = new AddressPartFieldSettings();
-
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
-        context.Builder.WithSettings(viewModel);
+        context.Builder.WithSettings(await context.CreateModelAsync<AddressPartFieldSettings>(Prefix));
 
         return await EditAsync(model, context);
     }

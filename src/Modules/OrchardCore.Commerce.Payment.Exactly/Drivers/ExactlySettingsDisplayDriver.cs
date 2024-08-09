@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -22,6 +21,8 @@ public class ExactlySettingsDisplayDriver : SiteDisplayDriver<ExactlySettings>
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly ExactlySettings _ssoSettings;
 
+    protected override string SettingsGroupId => EditorGroupId;
+
     public ExactlySettingsDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor hca,
@@ -34,14 +35,11 @@ public class ExactlySettingsDisplayDriver : SiteDisplayDriver<ExactlySettings>
         _ssoSettings = ssoSettings.Value;
     }
 
-    protected override string SettingsGroupId
-        => EditorGroupId;
-
     public override async Task<IDisplayResult> EditAsync(ISite model, ExactlySettings section, BuildEditorContext context)
     {
         if (!await AuthorizeAsync()) return null;
 
-        context.Shape.AddTenantReloadWarning();
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<ExactlySettings>($"{nameof(ExactlySettings)}_Edit", settings =>
             {
@@ -54,14 +52,10 @@ public class ExactlySettingsDisplayDriver : SiteDisplayDriver<ExactlySettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, ExactlySettings section, UpdateEditorContext context)
     {
-        var viewModel = new ExactlySettings();
-
-        if (!await AuthorizeAsync())
+        if (await context.CreateModelMaybeAsync<ExactlySettings>(Prefix, AuthorizeAsync) is not { } viewModel)
         {
             return null;
         }
-
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
         viewModel.CopyTo(section);
 

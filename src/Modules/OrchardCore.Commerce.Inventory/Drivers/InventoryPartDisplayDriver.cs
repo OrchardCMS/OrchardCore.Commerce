@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Inventory.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,43 +36,43 @@ public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<Invent
 
     public override async Task<IDisplayResult> UpdateAsync(InventoryPart part, UpdatePartEditorContext context)
     {
-        var viewModel = new InventoryPartViewModel();
-
         if (_hca.HttpContext?.Request.Form["ProductPart.Sku"].ToString().ToUpperInvariant() is not { } currentSku)
         {
             context.Updater.ModelState.AddModelError("ProductPart.Sku", T["The Product SKU is missing."].Value);
+            return await EditAsync(part, context);
         }
-        else if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
+
+        var viewModel = await context.CreateModelAsync<InventoryPartViewModel>(Prefix);
+        var inventory = viewModel.Inventory;
+
+        // Workaround for accepting inventory values during content item creation where the SKU is not yet known.
+        if (inventory.TryGetValue(NewProductKey, out var defaultCount))
         {
-            // Workaround for accepting inventory values during content item creation where the SKU is not yet known.
-            if (viewModel.Inventory.TryGetValue(NewProductKey, out var defaultCount))
-            {
-                viewModel.Inventory.Remove(NewProductKey);
-                viewModel.Inventory.Add(currentSku, defaultCount);
-            }
-
-            var skuBefore = viewModel.Inventory.FirstOrDefault().Key.Split('-')[0];
-
-            part.Inventory.SetItems(viewModel.Inventory);
-
-            var skuChanged = !string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore);
-            if (skuChanged && part.Inventory.Count == 1 && !part.Inventory.Keys.Single().Contains('-'))
-            {
-                part.Inventory.SetItems([new KeyValuePair<string, int>(currentSku, part.Inventory.Values.Single())]);
-                part.InventoryKeys.SetItems([currentSku]);
-            }
-            else if (skuChanged)
-            {
-                var newInventory = part.Inventory.ToDictionary(
-                    item => $"{currentSku}-{item.Key.Split('-', 2)[^1]}",
-                    item => item.Value);
-
-                part.Inventory.SetItems(newInventory);
-                part.InventoryKeys.SetItems(newInventory.Keys);
-            }
-
-            part.ProductSku = currentSku;
+            inventory.Remove(NewProductKey);
+            inventory.Add(currentSku, defaultCount);
         }
+
+        var skuBefore = inventory.FirstOrDefault().Key.Split('-')[0];
+
+        part.Inventory.SetItems(inventory);
+
+        var skuChanged = !string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore);
+        if (skuChanged && part.Inventory.Count == 1 && !part.Inventory.Keys.Single().Contains('-'))
+        {
+            part.Inventory.SetItems([new(currentSku, part.Inventory.Values.Single())]);
+            part.InventoryKeys.SetItems([currentSku]);
+        }
+        else if (skuChanged)
+        {
+            var newInventory = part.Inventory.ToDictionary(
+                item => $"{currentSku}-{item.Key.Split('-', 2)[^1]}",
+                item => item.Value);
+
+            part.Inventory.SetItems(newInventory);
+            part.InventoryKeys.SetItems(newInventory.Keys);
+        }
+
+        part.ProductSku = currentSku;
 
         return await EditAsync(part, context);
     }

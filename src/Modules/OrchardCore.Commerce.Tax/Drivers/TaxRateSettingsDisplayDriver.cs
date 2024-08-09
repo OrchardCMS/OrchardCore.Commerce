@@ -36,8 +36,7 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
         => nameof(TaxRateSettings);
 
     public override async Task<IDisplayResult> EditAsync(ISite model, TaxRateSettings section, BuildEditorContext context) =>
-        _hca.HttpContext?.User is { } user &&
-        await _authorizationService.AuthorizeAsync(user, TaxRatePermissions.ManageCustomTaxRates)
+        await AuthorizeAsync()
             ? Initialize<TaxRateSettings>($"{nameof(TaxRateSettings)}_Edit", model =>
                 {
                     model.CopyFrom(section);
@@ -49,12 +48,10 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, TaxRateSettings section, UpdateEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, TaxRatePermissions.ManageCustomTaxRates)) return null;
-
-        var settings = new TaxRateSettings();
-
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        if (await context.CreateModelMaybeAsync<TaxRateSettings>(Prefix, AuthorizeAsync) is not { } settings)
+        {
+            return null;
+        }
 
         foreach (var rate in settings.Rates)
         {
@@ -97,6 +94,9 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
             name,
             T["The \"{0}\" must be empty or a valid regular expression.", name]);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, TaxRatePermissions.ManageCustomTaxRates);
 
     private static bool IsValidRegex(string pattern)
     {

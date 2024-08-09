@@ -7,6 +7,7 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Helpers;
@@ -51,38 +52,36 @@ public class OrderPartDisplayDriver : ContentPartDisplayDriver<OrderPart>
 
     public override async Task<IDisplayResult> UpdateAsync(OrderPart part, UpdatePartEditorContext context)
     {
-        var viewModel = new OrderPartViewModel();
-        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            var viewModelLineItems = viewModel.LineItems
-                .Where(lineItem => lineItem != null)
-                .Take(viewModel.LineItems.Count) // Ensures safe indexing in the Select below.
-                .Select((lineItem, _) =>
-                {
-                    var lineItemCurrency = _currencyProvider.GetCurrency(lineItem.UnitPriceCurrencyIsoCode);
+        var viewModel = await context.CreateModelAsync<OrderPartViewModel>(Prefix);
 
-                    lineItem.UnitPrice = new Amount(lineItem.UnitPriceValue, lineItemCurrency);
-                    lineItem.LinePrice = lineItem.UnitPrice * lineItem.Quantity;
-
-                    return lineItem;
-                })
-                .Where(lineItem => lineItem.Quantity != 0)
-                .ToList();
-
-            var distinctCurrencies = viewModelLineItems.Select(lineItem => lineItem.UnitPriceCurrencyIsoCode).Distinct();
-
-            // If selected currencies don't match, add model error and set prices to 0.
-            var currenciesMatch = distinctCurrencies.Count() == 1;
-            if (!currenciesMatch && viewModelLineItems.Count != 0)
+        var viewModelLineItems = viewModel.LineItems
+            .Where(lineItem => lineItem != null)
+            .Take(viewModel.LineItems.Count) // Ensures safe indexing in the Select below.
+            .Select((lineItem, _) =>
             {
-                context.Updater.ModelState.AddModelError(
-                    nameof(viewModel.LineItems),
-                    T["Selected currencies must match."]);
-            }
+                var lineItemCurrency = _currencyProvider.GetCurrency(lineItem.UnitPriceCurrencyIsoCode);
 
-            var orderLineItems = await GetOrderLineItemsAsync(context.Updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);
-            part.LineItems.SetItems(orderLineItems);
+                lineItem.UnitPrice = new Amount(lineItem.UnitPriceValue, lineItemCurrency);
+                lineItem.LinePrice = lineItem.UnitPrice * lineItem.Quantity;
+
+                return lineItem;
+            })
+            .Where(lineItem => lineItem.Quantity != 0)
+            .ToList();
+
+        var distinctCurrencies = viewModelLineItems.Select(lineItem => lineItem.UnitPriceCurrencyIsoCode).Distinct();
+
+        // If selected currencies don't match, add model error and set prices to 0.
+        var currenciesMatch = distinctCurrencies.Count() == 1;
+        if (!currenciesMatch && viewModelLineItems.Count != 0)
+        {
+            context.Updater.ModelState.AddModelError(
+                nameof(viewModel.LineItems),
+                T["Selected currencies must match."]);
         }
+
+        var orderLineItems = await GetOrderLineItemsAsync(context.Updater, nameof(viewModel.LineItems), viewModelLineItems, currenciesMatch);
+        part.LineItems.SetItems(orderLineItems);
 
         return await EditAsync(part, context);
     }

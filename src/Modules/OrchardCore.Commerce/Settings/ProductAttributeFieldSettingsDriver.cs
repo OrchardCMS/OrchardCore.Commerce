@@ -24,9 +24,7 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
         ContentPartFieldDefinition model,
         UpdatePartFieldEditorContext context)
     {
-        var viewModel = new TSettings();
-
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        var viewModel = await context.CreateModelAsync<TSettings>(Prefix);
         context.Builder.WithSettings(viewModel);
 
         return await EditAsync(model, context);
@@ -69,8 +67,7 @@ public class TextProductAttributeFieldSettingsDriver
         ContentPartFieldDefinition model,
         UpdatePartFieldEditorContext context)
     {
-        var viewModel = new TextProductAttributeSettingsViewModel();
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        var viewModel = await context.CreateModelAsync<TextProductAttributeSettingsViewModel>(Prefix);
         context.Builder
             .WithSettings(new TextProductAttributeFieldSettings
             {
