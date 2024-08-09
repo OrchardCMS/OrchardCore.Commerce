@@ -8,7 +8,6 @@ using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -51,7 +50,7 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
             return null;
         }
 
-        context.Shape.AddTenantReloadWarning();
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<StripeApiSettingsViewModel>("StripeApiSettings_Edit", model =>
             {
@@ -68,7 +67,7 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, StripeApiSettings section, UpdateEditorContext context)
     {
-        if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, GroupId, AuthorizeAsync) is { } viewModel)
+        if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
             var previousSecretKey = section.SecretKey;
             var previousWebhookKey = section.WebhookSigningSecret;

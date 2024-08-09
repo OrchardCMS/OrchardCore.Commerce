@@ -8,6 +8,7 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Threading.Tasks;
@@ -79,27 +80,24 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
         PriceField field,
         UpdateFieldEditorContext context)
     {
-        var viewModel = new PriceFieldEditViewModel();
+        var viewModel = await context.CreateModelAsync<PriceFieldEditViewModel>(Prefix);
 
-        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
+        var settings = context.PartFieldDefinition.GetSettings<PriceFieldSettings>();
+        var isInvalid = IsCurrencyInvalid(viewModel.Currency);
+
+        if (isInvalid && settings.Required)
         {
-            var settings = context.PartFieldDefinition.GetSettings<PriceFieldSettings>();
-            var isInvalid = IsCurrencyInvalid(viewModel.Currency);
+            var label = string.IsNullOrEmpty(settings.Label)
+                ? context.PartFieldDefinition.DisplayName()
+                : settings.Label;
+            context.AddModelError(
+                nameof(viewModel.Currency),
+                T["The field {0} is invalid.", label]);
+        }
 
-            if (isInvalid && settings.Required)
-            {
-                var label = string.IsNullOrEmpty(settings.Label)
-                    ? context.PartFieldDefinition.DisplayName()
-                    : settings.Label;
-                context.Updater.ModelState.AddModelError(
-                    nameof(viewModel.Currency),
-                    T["The field {0} is invalid.", label].Value);
-            }
-
-            field.Amount = isInvalid
+        field.Amount = isInvalid
                 ? Amount.Unspecified
                 : _moneyService.Create(viewModel.Value, viewModel.Currency);
-        }
 
         return await EditAsync(field, context);
     }

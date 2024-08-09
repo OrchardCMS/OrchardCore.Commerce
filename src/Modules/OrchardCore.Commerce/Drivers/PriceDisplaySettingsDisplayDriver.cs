@@ -4,7 +4,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -38,14 +37,12 @@ public class PriceDisplaySettingsDisplayDriver : SiteDisplayDriver<PriceDisplayS
 
     public override async Task<IDisplayResult> EditAsync(ISite model, PriceDisplaySettings section, BuildEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
+        if (!await AuthorizeAsync())
         {
             return null;
         }
 
-        context.Shape.AddTenantReloadWarning();
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<PriceDisplaySettingsViewModel>("PriceDisplaySettings_Edit", model =>
         {
@@ -58,15 +55,7 @@ public class PriceDisplaySettingsDisplayDriver : SiteDisplayDriver<PriceDisplayS
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, PriceDisplaySettings section, UpdateEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
-        {
-            return null;
-        }
-
-        var viewModel = new PriceDisplaySettingsViewModel();
-        if (context.GroupId == GroupId && await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (await context.CreateModelMaybeAsync<PriceDisplaySettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
             section.UseNetPriceDisplay = viewModel.UseNetPriceDisplay;
             section.UseGrossPriceDisplay = viewModel.UseGrossPriceDisplay;
@@ -77,4 +66,7 @@ public class PriceDisplaySettingsDisplayDriver : SiteDisplayDriver<PriceDisplayS
 
         return await EditAsync(model, section, context);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, Permissions.ManagePriceDisplaySettings);
 }

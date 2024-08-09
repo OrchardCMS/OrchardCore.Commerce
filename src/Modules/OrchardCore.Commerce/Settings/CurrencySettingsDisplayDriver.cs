@@ -6,7 +6,6 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -48,7 +47,7 @@ public class CurrencySettingsDisplayDriver : SiteDisplayDriver<CurrencySettings>
             return null;
         }
 
-        context.Shape.AddTenantReloadWarning();
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<CurrencySettingsViewModel>("CurrencySettings_Edit", model =>
         {
@@ -66,7 +65,7 @@ public class CurrencySettingsDisplayDriver : SiteDisplayDriver<CurrencySettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, CurrencySettings section, UpdateEditorContext context)
     {
-        if (await context.CreateModelMaybeAsync<CurrencySettingsViewModel>(Prefix, GroupId, AuthorizeAsync) is { } viewModel)
+        if (await context.CreateModelMaybeAsync<CurrencySettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
             section.DefaultCurrency = viewModel.DefaultCurrency;
             section.CurrentDisplayCurrency = viewModel.CurrentDisplayCurrency;
