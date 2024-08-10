@@ -239,7 +239,7 @@ public class StripePaymentService : IStripePaymentService
             return new PaidStatusViewModel
             {
                 Status = PaidStatus.Failed,
-                ShowMessage = htmlLocalizer["The payment has failed, please try again."],                
+                ShowMessage = htmlLocalizer["The payment has failed, please try again."],
             };
         }
 
@@ -259,7 +259,7 @@ public class StripePaymentService : IStripePaymentService
         return new PaidStatusViewModel
         {
             Status = PaidStatus.Failed,
-            ShowMessage = htmlLocalizer["The payment has failed, please try again."],            
+            ShowMessage = htmlLocalizer["The payment has failed, please try again."],
         };
     }
 
