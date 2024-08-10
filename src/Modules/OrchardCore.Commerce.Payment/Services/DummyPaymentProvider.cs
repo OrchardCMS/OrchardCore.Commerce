@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 using System;
@@ -39,13 +40,16 @@ public class DummyPaymentProvider : IPaymentProvider
         // the provider to be skipped when used through the viewModel.WithProviderDataAsync(providers) method.
         Task.FromResult(_hca.HttpContext.IsDevelopmentAndLocalhost() ? new object() : null);
 
-    public async Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(Controller controller, ContentItem order, string? shoppingCartId)
+    public async Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+        ContentItem order,
+        string? shoppingCartId,
+        IHtmlLocalizer htmlLocalizer)
     {
         var createdUtc = order.CreatedUtc ?? _clock.UtcNow;
         var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
         var totals = cart
             .GetTotalsOrThrowIfEmpty()
-            .Select((total, index) => new Payment.Models.Payment(
+            .Select((total, index) => new Models.Payment(
                 Kind: "Dummy Payment",
                 TransactionId: $"{order.ContentItemId}:{index.ToTechnicalString()}",
                 ChargeText: $"Dummy transaction of {total.Currency.EnglishName}.",
@@ -55,9 +59,9 @@ public class DummyPaymentProvider : IPaymentProvider
         return await _paymentServiceLazy
             .Value
             .UpdateAndRedirectToFinishedOrderAsync(
-                controller,
                 order,
                 shoppingCartId,
+                htmlLocalizer,
                 ProviderName,
                 _ => totals);
     }

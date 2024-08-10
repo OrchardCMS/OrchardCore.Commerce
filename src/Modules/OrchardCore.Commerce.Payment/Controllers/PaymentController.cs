@@ -25,7 +25,7 @@ using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.Frontend
 
 namespace OrchardCore.Commerce.Payment.Controllers;
 
-public class PaymentController : Controller
+public class PaymentController : BaseController
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<PaymentController> _logger;
@@ -42,6 +42,7 @@ public class PaymentController : Controller
         INotifier notifier,
         IEnumerable<IPaymentProvider> paymentProviders,
         IPaymentService paymentService)
+        : base(notifier)
     {
         _authorizationService = services.AuthorizationService.Value;
         _logger = services.Logger.Value;
@@ -204,10 +205,16 @@ public class PaymentController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
-    public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId) =>
-        await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order
-            ? await _paymentService.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId)
-            : NotFound();
+    public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId)
+    {
+        if (await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order)
+        {
+            var result = await _paymentService.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H);
+            return await ProduceResultAsync(result);
+        }
+
+        return NotFound();
+    }
 
     [HttpGet]
     [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
@@ -236,9 +243,9 @@ public class PaymentController : Controller
 
         foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
         {
-            if (await provider.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId) is { } result)
+            if (await provider.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H) is { } result)
             {
-                return result;
+                return await ProduceResultAsync(result);
             }
         }
 

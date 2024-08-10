@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Settings;
@@ -76,10 +77,10 @@ public class StripePaymentProvider : IPaymentProvider
         return Task.CompletedTask;
     }
 
-    public Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    public Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
-        string shoppingCartId) =>
+        string shoppingCartId,
+        IHtmlLocalizer htmlLocalizer) =>
         throw new NotSupportedException(
             "This code should never be reached, because Stripe payment uses ~/checkout/middleware/Stripe, not ~/checkout/callback/Stripe.");
 }

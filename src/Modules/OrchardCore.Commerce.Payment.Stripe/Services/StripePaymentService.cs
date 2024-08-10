@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
@@ -12,6 +12,7 @@ using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -100,15 +101,15 @@ public class StripePaymentService : IStripePaymentService
             shoppingCartId,
             CreateChargesProvider(paymentIntent));
 
-    public Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    public Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         PaymentIntent paymentIntent,
-        string shoppingCartId) =>
+        string shoppingCartId,
+        IHtmlLocalizer htmlLocalizer) =>
         _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-            controller,
             order,
             shoppingCartId,
+            htmlLocalizer,
             StripePaymentProvider.ProviderName,
             CreateChargesProvider(paymentIntent));
 
@@ -183,6 +184,83 @@ public class StripePaymentService : IStripePaymentService
         }
 
         return order;
+    }
+
+    public async Task<PaidStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, IHtmlLocalizer htmlLocalizer)
+    {
+        // If it is null it means the session was not loaded yet and a redirect is needed.
+        if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
+        {
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.WaitingStripe,
+            };
+        }
+
+        // If we can't find a valid payment intent based on ID or if we can't find the associated order, then something
+        // went wrong and continuing from here would only cause a crash anyway.
+        if (await GetPaymentIntentAsync(paymentIntent) is not { PaymentMethod: not null } fetchedPaymentIntent ||
+            (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId is not { } orderId ||
+            await _contentManager.GetAsync(orderId) is not { } order)
+        {
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.NotFound,
+                ShowMessage = htmlLocalizer[
+                    "Couldn't find the payment intent \"{0}\" or the order associated with it.",
+                    paymentIntent ?? string.Empty],
+            };
+        }
+
+        var part = order.As<OrderPart>() ?? new OrderPart();
+        var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
+
+        // Looks like there is nothing to do here.
+        if (succeeded && part.IsOrdered)
+        {
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.NotThingToDo,
+                Content = order,
+            };
+        }
+
+        if (succeeded && part.IsPending)
+        {
+            return await UpdateAndRedirectToFinishedOrderAsync(
+                order,
+                fetchedPaymentIntent,
+                shoppingCartId,
+                htmlLocalizer);
+        }
+
+        if (part.IsFailed)
+        {
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.Failed,
+                ShowMessage = htmlLocalizer["The payment has failed, please try again."],                
+            };
+        }
+
+        order.Alter<StripePaymentPart>(part => part.RetryCounter++);
+        await _contentManager.UpdateAsync(order);
+
+        if (order.As<StripePaymentPart>().RetryCounter <= 10)
+        {
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.WaitingStripe,
+            };
+        }
+
+        // Delete payment intent from session, to create a new one.
+        _paymentIntentPersistence.Remove();
+        return new PaidStatusViewModel
+        {
+            Status = PaidStatus.Failed,
+            ShowMessage = htmlLocalizer["The payment has failed, please try again."],            
+        };
     }
 
     private static long GetPaymentAmount(Amount total)

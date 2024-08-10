@@ -1,14 +1,13 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
-using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Settings;
@@ -60,10 +59,10 @@ public class ExactlyPaymentProvider : IPaymentProvider
         return string.IsNullOrEmpty(settings?.ApiKey) || string.IsNullOrEmpty(settings.ProjectId) ? null : new object();
     }
 
-    public async Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    public async Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
-        string shoppingCartId)
+        string shoppingCartId,
+        IHtmlLocalizer htmlLocalizer)
     {
         var context = _hca.HttpContext!;
         var transactionId = context.Request.Query["transactionId"];
@@ -73,32 +72,42 @@ public class ExactlyPaymentProvider : IPaymentProvider
         switch (data.Processing.ResultCode, data.Status)
         {
             case (_, ChargeResponse.ChargeResponseStatus.Processing):
-                return PaymentController.RedirectToWait(controller);
+                return new PaidStatusViewModel
+                {
+                    Status = PaidStatus.WaitingPayment,
+                };
             case (_, ChargeResponse.ChargeResponseStatus.Processed):
             case ("success", _):
                 return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-                    controller, order, shoppingCartId, ProviderName, _ => [response.ToPayment(_moneyService)]);
+                    order, shoppingCartId, H, ProviderName, _ => [response.ToPayment(_moneyService)]);
             case (_, ChargeResponse.ChargeResponseStatus.ActionRequired)
                 when data.Actions?.FirstOrDefault(action => action.Attributes.IsGet) is { } action:
-                return PaymentController.RedirectToWait(controller, action.Attributes.Url.AbsoluteUri);
+                return new PaidStatusViewModel
+                {
+                    Status = PaidStatus.WaitingPayment,
+                    Url = action.Attributes.Url.AbsoluteUri,
+                };
             case ({ } resultCode, _) when !string.IsNullOrEmpty(resultCode):
                 var resultCodes = ChargeResponse.GetResultCodes(_chargeResponseStringLocalizer);
                 var resultMessage = resultCodes.GetMaybe(resultCode) ?? resultCodes["transaction_failed"];
-                return await FailAsync(controller, order, H["Your transaction has failed: {0}.", resultMessage]);
+                return await FailAsync(order, H["Your transaction has failed: {0}.", resultMessage]);
             case (_, ChargeResponse.ChargeResponseStatus.Failed):
             case (_, ChargeResponse.ChargeResponseStatus.ActionRequired):
-                return await FailAsync(controller, order, H["Your transaction has failed."]);
+                return await FailAsync(order, H["Your transaction has failed."]);
             default:
                 throw new ArgumentOutOfRangeException(response.Attributes.Status.ToString());
         }
     }
 
-    private async Task<IActionResult> FailAsync(Controller controller, ContentItem order, LocalizedHtmlString message)
+    private async Task<PaidStatusViewModel> FailAsync(ContentItem order, LocalizedHtmlString message)
     {
         order.Alter<OrderPart>(part => part.FailPayment());
         await _contentManager.UpdateAsync(order);
 
-        await _notifier.ErrorAsync(message);
-        return PaymentController.RedirectToWait(controller, controller.Url.Content("~/checkout"));
+        return new PaidStatusViewModel
+        {
+            Status = PaidStatus.Failed,
+            ShowMessage = message,
+        };
     }
 }

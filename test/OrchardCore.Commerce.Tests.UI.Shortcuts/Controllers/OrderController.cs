@@ -1,13 +1,16 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.Notify;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,23 +19,27 @@ using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 namespace OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 
 [DevelopmentAndLocalhostOnly]
-public class OrderController : Controller
+public class OrderController : BaseController
 {
     private readonly IPaymentService _paymentService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
-
+    private readonly IHtmlLocalizer _htmlLocalizer;
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
-        IShoppingCartHelpers shoppingCartHelpers)
+        IShoppingCartHelpers shoppingCartHelpers,
+        IHtmlLocalizer htmlLocalizer,
+        INotifier notifier)
+        : base(notifier)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
         _shoppingCartHelpers = shoppingCartHelpers;
+        _htmlLocalizer = htmlLocalizer;
     }
 
     [AllowAnonymous]
@@ -72,10 +79,10 @@ public class OrderController : Controller
 
         await _contentManager.CreateAsync(order);
 
-        return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-            this,
+        var result = await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
             order,
             shoppingCartId,
+            _htmlLocalizer,
             getCharges: _ => new[]
             {
                 new Payment.Models.Payment(
@@ -85,5 +92,6 @@ public class OrderController : Controller
                     Amount: checkoutViewModel.SingleCurrencyTotal,
                     CreatedUtc: testTime),
             });
+        return await ProduceResultAsync(result);
     }
 }

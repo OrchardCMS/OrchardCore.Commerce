@@ -1,15 +1,13 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Payment.Constants;
-using OrchardCore.Commerce.Payment.Controllers;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Mvc.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -91,20 +89,33 @@ public delegate Task AlterOrderAsyncDelegate(
 
 public static class PaymentServiceExtensions
 {
-    public static async Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
+    public static async Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         this IPaymentService service,
-        Controller controller,
         ContentItem order,
         string? shoppingCartId,
+        IHtmlLocalizer htmlLocalizer,
         string? paymentProviderName = null,
         Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
     {
-        await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
-        await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
-
-        return controller.RedirectToAction(
-            nameof(PaymentController.Success),
-            typeof(PaymentController).ControllerName(),
-            new { area = FeatureIds.Area, orderId = order.ContentItemId, });
+        try
+        {
+            await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
+            await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.Suceeded,
+                Content = order,
+            };
+        }
+        catch (Exception ex)
+        {
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.Failed,
+                ShowMessage = htmlLocalizer["You have paid the bill, but this system did not record it. Please contact the administrators."],
+                HideMessage = ex.Message,
+                Content = order,
+            };
+        }
     }
 }
