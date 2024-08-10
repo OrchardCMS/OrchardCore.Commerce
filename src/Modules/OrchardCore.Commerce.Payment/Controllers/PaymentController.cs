@@ -56,7 +56,7 @@ public class PaymentController : PaymentBaseController
     }
 
     [HttpGet("checkout")]
-    public async Task<IActionResult> Index(string? shoppingCartId)
+    public async Task<IActionResult> Index([FromQuery] string? shoppingCartId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
@@ -82,7 +82,7 @@ public class PaymentController : PaymentBaseController
     [Route("checkout/price")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Price(string? shoppingCartId) =>
+    public async Task<IActionResult> Price([FromQuery] string? shoppingCartId) =>
         await this.SafeJsonAsync(async () =>
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -103,7 +103,7 @@ public class PaymentController : PaymentBaseController
     [Route("checkout/validate/{providerName}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Validate(string providerName, string? shoppingCartId = null)
+    public async Task<IActionResult> Validate(string providerName, [FromQuery] string? shoppingCartId = null)
     {
         if (string.IsNullOrEmpty(providerName)) return NotFound();
 
@@ -205,7 +205,7 @@ public class PaymentController : PaymentBaseController
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
-    public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId)
+    public async Task<IActionResult> CheckoutWithoutPayment([FromQuery] string? shoppingCartId)
     {
         if (await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order)
         {
@@ -218,14 +218,14 @@ public class PaymentController : PaymentBaseController
 
     [HttpGet]
     [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
-    public Task<IActionResult> CallbackGet(string paymentProviderName, string? orderId, string? shoppingCartId) =>
+    public Task<IActionResult> CallbackGet(string paymentProviderName, string? orderId, [FromQuery] string? shoppingCartId) =>
         Callback(paymentProviderName, orderId, shoppingCartId);
 
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
-    public async Task<IActionResult> Callback(string paymentProviderName, string? orderId, string? shoppingCartId)
+    public async Task<IActionResult> Callback(string paymentProviderName, string? orderId, [FromQuery] string? shoppingCartId)
     {
         if (string.IsNullOrWhiteSpace(paymentProviderName)) return NotFound();
 
@@ -255,7 +255,7 @@ public class PaymentController : PaymentBaseController
 
     [HttpGet]
     [Route("checkout/wait")]
-    public IActionResult Wait(string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
+    public IActionResult Wait([FromQuery] string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
 
     public static IActionResult RedirectToWait(Controller controller, string? returnUrl = null) =>
         controller.RedirectToAction(
