@@ -4,81 +4,69 @@ using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Controllers;
-public abstract class BaseController : Controller
+public abstract class PaymentBaseController : Controller
 {
     private readonly INotifier _notifier;
-    protected BaseController(INotifier notifier) => _notifier = notifier;
-
+    protected PaymentBaseController(INotifier notifier) => _notifier = notifier;
 
     public async Task<IActionResult> ProduceResultAsync(PaidStatusViewModel paidStatusViewModel)
     {
-        if (paidStatusViewModel.Status == PaidStatus.Suceeded)
+        if (paidStatusViewModel.ShowMessage != null)
         {
-            if (paidStatusViewModel.ShowMessage != null)
+            switch (paidStatusViewModel.Status)
             {
-                await _notifier.SuccessAsync(paidStatusViewModel.ShowMessage);
+                case PaidStatus.Succeeded:
+                    await _notifier.SuccessAsync(paidStatusViewModel.ShowMessage);
+                    break;
+                case PaidStatus.Failed:
+                    await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
+                    break;
+                case PaidStatus.NotFound:
+                    await _notifier.WarningAsync(paidStatusViewModel.ShowMessage);
+                    break;
+                case PaidStatus.NotThingToDo:
+                case PaidStatus.WaitingStripe:
+                case PaidStatus.WaitingPayment:
+                    await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
+                    break;
+                default:
+                    await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
+                    break;
             }
+        }
 
-            return RedirectToActionWithParams<PaymentController>(
+        return paidStatusViewModel.Status switch
+        {
+            PaidStatus.Succeeded => RedirectToActionWithParams<PaymentController>(
                 nameof(PaymentController.Success),
                 FeatureIds.Area,
                 string.Empty,
-                orderId: paidStatusViewModel.Content?.ContentItemId);
-        }
-        else if (paidStatusViewModel.Status == PaidStatus.Failed)
-        {
-            if (paidStatusViewModel.ShowMessage != null)
-            {
-                await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
-            }
+                orderId: paidStatusViewModel.Content?.ContentItemId),
 
-            return RedirectToActionWithParams<PaymentController>(nameof(PaymentController.Index), FeatureIds.Payment);
-        }
-        else if (paidStatusViewModel.Status == PaidStatus.NotFound)
-        {
-            if (paidStatusViewModel.ShowMessage != null)
-            {
-                await _notifier.WarningAsync(paidStatusViewModel.ShowMessage);
-            }
+            PaidStatus.Failed => RedirectToActionWithParams<PaymentController>(
+                nameof(PaymentController.Index),
+                FeatureIds.Payment),
 
-            return NotFound();
-        }
-        else if (paidStatusViewModel.Status == PaidStatus.NotThingToDo)
-        {
-            if (paidStatusViewModel.ShowMessage != null)
-            {
-                await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
-            }
+            PaidStatus.NotFound => NotFound(),
 
-            return this.RedirectToContentDisplay(paidStatusViewModel.Content);
-        }
-        else if (paidStatusViewModel.Status == PaidStatus.WaitingStripe)
-        {
+            PaidStatus.NotThingToDo => this.RedirectToContentDisplay(paidStatusViewModel.Content),
 
-            if (paidStatusViewModel.ShowMessage != null)
-            {
-                await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
-            }
+            PaidStatus.WaitingStripe => RedirectToActionWithNames(
+                "PaymentConfirmationMiddleware",
+                "OrchardCore.Commerce.Payment.Stripe",
+                "Stripe"),
 
-            return RedirectToActionWithNames("PaymentConfirmationMiddleware", "OrchardCore.Commerce.Payment.Stripe", "Stripe");
-        }
-        else if (paidStatusViewModel.Status == PaidStatus.WaitingPayment)
-        {
-            if (paidStatusViewModel.ShowMessage != null)
-            {
-                await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
-            }
+            PaidStatus.WaitingPayment => RedirectToActionWithParams<PaymentController>(
+                nameof(PaymentController.Wait),
+                FeatureIds.Payment,
+                paidStatusViewModel.Url),
 
-            return RedirectToActionWithParams<PaymentController>(nameof(PaymentController.Wait), FeatureIds.Payment, paidStatusViewModel.Url);
-        }
-
-        else
-        {
-            return NotFound();
-        }
+            _ => throw new ArgumentOutOfRangeException(paidStatusViewModel.ToString()),
+        };
     }
 
     private RedirectToActionResult RedirectToActionWithParams<TController>(

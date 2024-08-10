@@ -25,7 +25,7 @@ using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.Frontend
 
 namespace OrchardCore.Commerce.Payment.Controllers;
 
-public class PaymentController : BaseController
+public class PaymentController : PaymentBaseController
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<PaymentController> _logger;
@@ -253,6 +253,7 @@ public class PaymentController : BaseController
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpGet]
     [Route("checkout/wait")]
     public IActionResult Wait(string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
 

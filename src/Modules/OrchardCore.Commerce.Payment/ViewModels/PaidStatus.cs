@@ -5,7 +5,7 @@ namespace OrchardCore.Commerce.Payment.ViewModels;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PaidStatus
 {
-    Suceeded = 0,
+    Succeeded = 0,
     WaitingPayment = 1,
     WaitingStripe = 2,
     NotFound = 3,

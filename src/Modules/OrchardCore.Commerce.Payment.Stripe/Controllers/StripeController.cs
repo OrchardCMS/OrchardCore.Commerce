@@ -2,19 +2,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json;
-using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
-using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
 
-public class StripeController : BaseController
+public class StripeController : PaymentBaseController
 {
-    private readonly INotifier _notifier;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IStripePaymentService _stripePaymentService;
     private readonly IHtmlLocalizer<StripeController> H;
@@ -26,7 +23,6 @@ public class StripeController : BaseController
         IHtmlLocalizer<StripeController> htmlLocalizer)
         : base(notifier)
     {
-        _notifier = notifier;
         _paymentIntentPersistence = paymentIntentPersistence;
         _stripePaymentService = stripePaymentService;
         H = htmlLocalizer;
@@ -55,11 +51,5 @@ public class StripeController : BaseController
         var middlewareUrl = Url.ToAbsoluteUrl("~/checkout/middleware/Stripe");
         var model = await _stripePaymentService.GetStripeConfirmParametersAsync(middlewareUrl);
         return Json(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-    }
-
-    private async Task<IActionResult> PaymentFailedAsync()
-    {
-        await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
-        return Redirect("~/checkout");
     }
 }

@@ -103,7 +103,7 @@ public static class PaymentServiceExtensions
             await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
             return new PaidStatusViewModel
             {
-                Status = PaidStatus.Suceeded,
+                Status = PaidStatus.Succeeded,
                 Content = order,
             };
         }

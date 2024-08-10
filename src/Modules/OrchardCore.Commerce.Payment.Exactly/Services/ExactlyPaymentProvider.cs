@@ -27,7 +27,6 @@ public class ExactlyPaymentProvider : IPaymentProvider
     private readonly IExactlyService _exactlyService;
     private readonly IHttpContextAccessor _hca;
     private readonly IMoneyService _moneyService;
-    private readonly INotifier _notifier;
     private readonly IPaymentService _paymentService;
     private readonly ISiteService _siteService;
     private readonly IHtmlLocalizer<ExactlyPaymentProvider> H;
@@ -47,7 +46,6 @@ public class ExactlyPaymentProvider : IPaymentProvider
         _exactlyService = exactlyService;
         _hca = services.HttpContextAccessor.Value;
         _moneyService = moneyService;
-        _notifier = notifier;
         _paymentService = paymentService;
         _siteService = services.SiteService.Value;
         H = services.HtmlLocalizer.Value;

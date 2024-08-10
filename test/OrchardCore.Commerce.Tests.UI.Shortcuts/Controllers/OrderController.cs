@@ -19,7 +19,7 @@ using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 namespace OrchardCore.Commerce.Tests.UI.Shortcuts.Controllers;
 
 [DevelopmentAndLocalhostOnly]
-public class OrderController : BaseController
+public class OrderController : PaymentBaseController
 {
     private readonly IPaymentService _paymentService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
