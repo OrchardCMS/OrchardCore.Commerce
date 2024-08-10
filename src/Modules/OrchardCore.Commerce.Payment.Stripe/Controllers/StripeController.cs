@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -17,15 +18,15 @@ public class StripeController : PaymentBaseController
     private readonly IHtmlLocalizer<StripeController> H;
 
     public StripeController(
+        IOrchardServices<StripeController> services,
         INotifier notifier,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IStripePaymentService stripePaymentService,
-        IHtmlLocalizer<StripeController> htmlLocalizer)
-        : base(notifier)
+        IStripePaymentService stripePaymentService)
+        : base(notifier, services.Logger.Value)
     {
         _paymentIntentPersistence = paymentIntentPersistence;
         _stripePaymentService = stripePaymentService;
-        H = htmlLocalizer;
+        H = services.HtmlLocalizer.Value;
     }
 
     public IActionResult UpdatePaymentIntent(string paymentIntent)
@@ -41,7 +42,7 @@ public class StripeController : PaymentBaseController
         [FromQuery] string shoppingCartId = null)
     {
         var result = await _stripePaymentService.PaymentConfirmationAsync(paymentIntent, shoppingCartId, H);
-        return await ProduceResultAsync(result);
+        return await ProduceActionResultAsync(result);
     }
 
     [HttpPost("checkout/params/Stripe")]

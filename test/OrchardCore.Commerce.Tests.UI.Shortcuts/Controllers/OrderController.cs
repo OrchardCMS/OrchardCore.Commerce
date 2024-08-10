@@ -2,6 +2,7 @@ using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Fields;
@@ -32,8 +33,9 @@ public class OrderController : PaymentBaseController
         IContentManager contentManager,
         IShoppingCartHelpers shoppingCartHelpers,
         IHtmlLocalizer htmlLocalizer,
-        INotifier notifier)
-        : base(notifier)
+        INotifier notifier,
+        ILogger<OrderController> logger)
+        : base(notifier, logger)
     {
         _paymentService = paymentService;
         _shoppingCartPersistence = shoppingCartPersistence;
@@ -92,6 +94,6 @@ public class OrderController : PaymentBaseController
                     Amount: checkoutViewModel.SingleCurrencyTotal,
                     CreatedUtc: testTime),
             });
-        return await ProduceResultAsync(result);
+        return await ProduceActionResultAsync(result);
     }
 }

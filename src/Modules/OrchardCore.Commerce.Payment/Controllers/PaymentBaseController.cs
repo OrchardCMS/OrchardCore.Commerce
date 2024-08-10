@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
@@ -11,9 +12,14 @@ namespace OrchardCore.Commerce.Payment.Controllers;
 public abstract class PaymentBaseController : Controller
 {
     private readonly INotifier _notifier;
-    protected PaymentBaseController(INotifier notifier) => _notifier = notifier;
+    private readonly ILogger _logger;
+    protected PaymentBaseController(INotifier notifier, ILogger logger)
+    {
+        _notifier = notifier;
+        _logger = logger;
+    }
 
-    public async Task<IActionResult> ProduceResultAsync(PaidStatusViewModel paidStatusViewModel)
+    public async Task<IActionResult> ProduceActionResultAsync(PaidStatusViewModel paidStatusViewModel)
     {
         if (paidStatusViewModel.ShowMessage != null)
         {
@@ -23,18 +29,18 @@ public abstract class PaymentBaseController : Controller
                     await _notifier.SuccessAsync(paidStatusViewModel.ShowMessage);
                     break;
                 case PaidStatus.Failed:
-                    await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
+                    await LogAndNotifyFailedAsync(paidStatusViewModel);
                     break;
                 case PaidStatus.NotFound:
-                    await _notifier.WarningAsync(paidStatusViewModel.ShowMessage);
+                    await LogAndNotifyWarningAsync(paidStatusViewModel);
                     break;
                 case PaidStatus.NotThingToDo:
                 case PaidStatus.WaitingStripe:
                 case PaidStatus.WaitingPayment:
-                    await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
+                    await LogAndNotifyInformationAsync(paidStatusViewModel);
                     break;
                 default:
-                    await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
+                    await LogAndNotifyFailedAsync(paidStatusViewModel);
                     break;
             }
         }
@@ -125,5 +131,29 @@ public abstract class PaymentBaseController : Controller
             controllerName,
             routeValues
         );
+    }
+
+    private async Task LogAndNotifyFailedAsync(PaidStatusViewModel paidStatusViewModel)
+    {
+        await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
+#pragma warning disable CA2254
+        _logger.LogCritical(paidStatusViewModel.HideMessage);
+#pragma warning restore CA2254
+    }
+
+    private async Task LogAndNotifyWarningAsync(PaidStatusViewModel paidStatusViewModel)
+    {
+        await _notifier.WarningAsync(paidStatusViewModel.ShowMessage);
+#pragma warning disable CA2254
+        _logger.LogWarning(paidStatusViewModel.HideMessage);
+#pragma warning restore CA2254
+    }
+
+    private async Task LogAndNotifyInformationAsync(PaidStatusViewModel paidStatusViewModel)
+    {
+        await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
+#pragma warning disable CA2254
+        _logger.LogInformation(paidStatusViewModel.HideMessage);
+#pragma warning restore CA2254
     }
 }

@@ -42,7 +42,7 @@ public class PaymentController : PaymentBaseController
         INotifier notifier,
         IEnumerable<IPaymentProvider> paymentProviders,
         IPaymentService paymentService)
-        : base(notifier)
+        : base(notifier, services.Logger.Value)
     {
         _authorizationService = services.AuthorizationService.Value;
         _logger = services.Logger.Value;
@@ -210,7 +210,7 @@ public class PaymentController : PaymentBaseController
         if (await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order)
         {
             var result = await _paymentService.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H);
-            return await ProduceResultAsync(result);
+            return await ProduceActionResultAsync(result);
         }
 
         return NotFound();
@@ -245,7 +245,7 @@ public class PaymentController : PaymentBaseController
         {
             if (await provider.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H) is { } result)
             {
-                return await ProduceResultAsync(result);
+                return await ProduceActionResultAsync(result);
             }
         }
 
