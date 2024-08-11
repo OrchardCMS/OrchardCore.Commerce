@@ -44,4 +44,36 @@ public static class PaymentEndpoint
 
         return TypedResults.NotFound();
     }
+
+    public static IEndpointRouteBuilder AddCallbackEndpoint(this IEndpointRouteBuilder builder)
+    {
+        builder.MapPost("api/checkout/callback/{paymentProviderName}/{orderId?}", AddCallbackAsync)
+            .AllowAnonymous()
+            .DisableAntiforgery();
+
+        return builder;
+    }
+
+    [Authorize(AuthenticationSchemes = "Api")]
+    private static async Task<IResult> AddCallbackAsync(
+         string paymentProviderName,
+         string? orderId,
+         [FromQuery] string? shoppingCartId,
+         IAuthorizationService authorizationService,
+         HttpContext httpContext,
+         IPaymentService paymentService
+       )
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
+        {
+            return httpContext.ChallengeOrForbid("Api");
+        }
+
+        if (await paymentService.CallBackAsync(paymentProviderName, orderId, shoppingCartId) is { } result)
+        {
+            return TypedResults.Ok(result);
+        }
+
+        return TypedResults.NotFound();
+    }
 }
