@@ -3,7 +3,6 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
@@ -239,6 +238,19 @@ public class PaymentService : IPaymentService
         await _contentManager.CreateAsync(order);
 
         return order;
+    }
+
+    public async Task<PaidStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true)
+    {
+        if (await CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree) is { } order)
+        {
+            return await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId, H);
+        }
+
+        return new PaidStatusViewModel
+        {
+            Status = PaidStatus.NotFound,
+        };
     }
 
     public async Task<PaidStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId)

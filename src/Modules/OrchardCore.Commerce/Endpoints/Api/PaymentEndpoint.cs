@@ -27,7 +27,6 @@ public static class PaymentEndpoint
          string? shoppingCartId,
          IAuthorizationService authorizationService,
          HttpContext httpContext,
-         IHtmlLocalizer<IPaymentService> htmlLocalizer,
          IPaymentService paymentService
        )
     {
@@ -36,13 +35,8 @@ public static class PaymentEndpoint
             return httpContext.ChallengeOrForbid("Api");
         }
 
-        if (await paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order)
-        {
-            var result = await paymentService.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, htmlLocalizer);
-            return TypedResults.Ok(result);
-        }
-
-        return TypedResults.NotFound();
+        var result = await paymentService.CheckoutWithoutPaymentAsync(shoppingCartId);
+        return TypedResults.Ok(result);
     }
 
     public static IEndpointRouteBuilder AddCallbackEndpoint(this IEndpointRouteBuilder builder)

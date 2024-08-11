@@ -205,13 +205,8 @@ public class PaymentController : PaymentBaseController
     [Route("checkout/free")]
     public async Task<IActionResult> CheckoutWithoutPayment([FromQuery] string? shoppingCartId)
     {
-        if (await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order)
-        {
-            var result = await _paymentService.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H);
-            return await ProduceActionResultAsync(result);
-        }
-
-        return NotFound();
+        var result = await _paymentService.CheckoutWithoutPaymentAsync(shoppingCartId);
+        return await ProduceActionResultAsync(result);
     }
 
     [HttpGet]

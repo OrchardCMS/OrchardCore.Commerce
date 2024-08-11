@@ -83,6 +83,11 @@ public interface IPaymentService
     /// Call back for payment.
     /// </summary>
     Task<PaidStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
+
+    /// <summary>
+    /// Free checkout.
+    /// </summary>
+    Task<PaidStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
 }
 
 public delegate Task AlterOrderAsyncDelegate(
