@@ -12,7 +12,7 @@ public static class StripeEndpoint
 {
     public static IEndpointRouteBuilder AddStripeMiddlewareEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/checkout/middleware/Stripe", AddStripeMiddlewareAsync)
+        builder.MapGet("api/checkout/middleware/Stripe/{shoppingCartId?}", AddStripeMiddlewareAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -20,10 +20,10 @@ public static class StripeEndpoint
     }
 
     private static async Task<IResult> AddStripeMiddlewareAsync(
+         string? shoppingCartId,
          IHtmlLocalizer<IStripePaymentService> htmlLocalizer,
          IStripePaymentService stripePaymentService,
-         [FromQuery(Name = "payment_intent")] string? paymentIntent = null,
-         [FromQuery] string? shoppingCartId = null
+         [FromQuery(Name = "payment_intent")] string? paymentIntent = null
        )
     {
         var result = await stripePaymentService.PaymentConfirmationAsync(paymentIntent, shoppingCartId, htmlLocalizer);
