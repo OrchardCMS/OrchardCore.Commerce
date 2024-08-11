@@ -3,6 +3,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
@@ -238,6 +239,50 @@ public class PaymentService : IPaymentService
         await _contentManager.CreateAsync(order);
 
         return order;
+    }
+
+    public async Task<PaidStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId)
+    {
+        if (string.IsNullOrWhiteSpace(paymentProviderName))
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.NotFound,
+            };
+
+        var order = string.IsNullOrEmpty(orderId)
+            ? await CreatePendingOrderFromShoppingCartAsync(shoppingCartId)
+            : await _contentManager.GetAsync(orderId);
+        if (order is null)
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.NotFound,
+            };
+
+        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
+
+        if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
+        {
+            return new PaidStatusViewModel
+            {
+                Status = PaidStatus.NotThingToDo,
+                Content = order,
+            };
+        }
+
+        foreach (var provider in _paymentProvidersLazy.Value.WhereName(paymentProviderName))
+        {
+            if (await provider.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H) is { } result)
+            {
+                return result;
+            }
+        }
+
+        return new PaidStatusViewModel
+        {
+            Status = PaidStatus.Failed,
+            ShowMessage = H["The payment has failed, please try again."],
+            Content = order,
+        };
     }
 
     private async Task<bool> HandleErrorsAsync(IList<string> errors, bool notifyOnError, bool throwOnError)

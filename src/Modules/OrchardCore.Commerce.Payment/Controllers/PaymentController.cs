@@ -2,6 +2,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -224,30 +225,8 @@ public class PaymentController : PaymentBaseController
     [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
     public async Task<IActionResult> Callback(string paymentProviderName, string? orderId, [FromQuery] string? shoppingCartId)
     {
-        if (string.IsNullOrWhiteSpace(paymentProviderName)) return NotFound();
-
-        var order = string.IsNullOrEmpty(orderId)
-            ? await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId)
-            : await _contentManager.GetAsync(orderId);
-        if (order is null) return NotFound();
-
-        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
-
-        if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
-        {
-            return this.RedirectToContentDisplay(order);
-        }
-
-        foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
-        {
-            if (await provider.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H) is { } result)
-            {
-                return await ProduceActionResultAsync(result);
-            }
-        }
-
-        await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
-        return RedirectToAction(nameof(Index));
+        var result = await _paymentService.CallBackAsync(paymentProviderName, orderId, shoppingCartId);
+        return await ProduceActionResultAsync(result);
     }
 
     [HttpGet]

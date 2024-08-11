@@ -78,6 +78,11 @@ public interface IPaymentService
     /// Updates the provided Order content item from the update model as if it was just edited.
     /// </summary>
     Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order);
+
+    /// <summary>
+    /// Call back for payment.
+    /// </summary>
+    Task<PaidStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
 }
 
 public delegate Task AlterOrderAsyncDelegate(
