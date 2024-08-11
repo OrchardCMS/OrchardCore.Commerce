@@ -2,7 +2,6 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -11,12 +10,10 @@ using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
-using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -256,16 +253,4 @@ public class PaymentController : PaymentBaseController
     [HttpGet]
     [Route("checkout/wait")]
     public IActionResult Wait([FromQuery] string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
-
-    public static IActionResult RedirectToWait(Controller controller, string? returnUrl = null) =>
-        controller.RedirectToAction(
-            nameof(Wait),
-            typeof(PaymentController).ControllerName(),
-            new
-            {
-                area = FeatureIds.Payment,
-                returnUrl = string.IsNullOrEmpty(returnUrl)
-                    ? controller.HttpContext.Request.GetDisplayUrl()
-                    : returnUrl,
-            });
 }
