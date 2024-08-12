@@ -50,7 +50,6 @@ public abstract class PaymentBaseController : Controller
             PaidStatus.Succeeded => RedirectToActionWithParams<PaymentController>(
                 nameof(PaymentController.Success),
                 FeatureIds.Area,
-                string.Empty,
                 orderId: paidStatusViewModel.Content?.ContentItemId),
 
             PaidStatus.Failed => RedirectToActionWithParams<PaymentController>(
