@@ -134,25 +134,19 @@ public abstract class PaymentBaseController : Controller
 
     private async Task LogAndNotifyFailedAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
+        _logger.LogCritical("The payment provider encountered the following error: {Message}", paidStatusViewModel.HideMessage);
         await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
-#pragma warning disable CA2254
-        _logger.LogCritical(paidStatusViewModel.HideMessage);
-#pragma warning restore CA2254
     }
 
     private async Task LogAndNotifyWarningAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
+        _logger.LogWarning("The payment provider encountered the following warning: {Message}", paidStatusViewModel.HideMessage);
         await _notifier.WarningAsync(paidStatusViewModel.ShowMessage);
-#pragma warning disable CA2254
-        _logger.LogWarning(paidStatusViewModel.HideMessage);
-#pragma warning restore CA2254
     }
 
     private async Task LogAndNotifyInformationAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
+        _logger.LogInformation("The payment provider encountered the following information: {Message}", paidStatusViewModel.HideMessage);
         await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
-#pragma warning disable CA2254
-        _logger.LogInformation(paidStatusViewModel.HideMessage);
-#pragma warning restore CA2254
     }
 }
