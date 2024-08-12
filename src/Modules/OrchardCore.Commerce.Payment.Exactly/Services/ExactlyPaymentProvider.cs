@@ -72,7 +72,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
             case (_, ChargeResponse.ChargeResponseStatus.Processing):
                 return new PaymentStatusViewModel
                 {
-                    Status = PaymentStatus.WaitingPayment,
+                    Status = PaymentStatus.WaitingForPayment,
                 };
             case (_, ChargeResponse.ChargeResponseStatus.Processed):
             case ("success", _):
@@ -82,7 +82,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
                 when data.Actions?.FirstOrDefault(action => action.Attributes.IsGet) is { } action:
                 return new PaymentStatusViewModel
                 {
-                    Status = PaymentStatus.WaitingPayment,
+                    Status = PaymentStatus.WaitingForPayment,
                     Url = action.Attributes.Url.AbsoluteUri,
                 };
             case ({ } resultCode, _) when !string.IsNullOrEmpty(resultCode):

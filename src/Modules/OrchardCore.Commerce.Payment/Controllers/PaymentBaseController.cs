@@ -35,8 +35,8 @@ public abstract class PaymentBaseController : Controller
                     await LogAndNotifyWarningAsync(paidStatusViewModel);
                     break;
                 case PaymentStatus.NotThingToDo:
-                case PaymentStatus.WaitingStripe:
-                case PaymentStatus.WaitingPayment:
+                case PaymentStatus.WaitingForStripe:
+                case PaymentStatus.WaitingForPayment:
                     await LogAndNotifyInformationAsync(paidStatusViewModel);
                     break;
                 default:
@@ -60,12 +60,12 @@ public abstract class PaymentBaseController : Controller
 
             PaymentStatus.NotThingToDo => this.RedirectToContentDisplay(paidStatusViewModel.Content),
 
-            PaymentStatus.WaitingStripe => RedirectToActionWithNames(
+            PaymentStatus.WaitingForStripe => RedirectToActionWithNames(
                 "PaymentConfirmationMiddleware",
                 "OrchardCore.Commerce.Payment.Stripe",
                 "Stripe"),
 
-            PaymentStatus.WaitingPayment => RedirectToActionWithParams<PaymentController>(
+            PaymentStatus.WaitingForPayment => RedirectToActionWithParams<PaymentController>(
                 nameof(PaymentController.Wait),
                 FeatureIds.Payment,
                 paidStatusViewModel.Url),

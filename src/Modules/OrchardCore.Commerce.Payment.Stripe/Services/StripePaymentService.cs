@@ -193,7 +193,7 @@ public class StripePaymentService : IStripePaymentService
         {
             return new PaymentStatusViewModel
             {
-                Status = PaymentStatus.WaitingStripe,
+                Status = PaymentStatus.WaitingForStripe,
             };
         }
 
@@ -250,7 +250,7 @@ public class StripePaymentService : IStripePaymentService
         {
             return new PaymentStatusViewModel
             {
-                Status = PaymentStatus.WaitingStripe,
+                Status = PaymentStatus.WaitingForStripe,
             };
         }
 
