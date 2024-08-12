@@ -47,7 +47,7 @@ public interface IPaymentProvider
     /// If the provider thinks it can be resolved, best approach is to return <see
     /// cref="PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync"/>.
     /// </summary>
-    Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         string? shoppingCartId,
         IHtmlLocalizer htmlLocalizer);

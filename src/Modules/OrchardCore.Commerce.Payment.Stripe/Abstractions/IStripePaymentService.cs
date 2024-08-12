@@ -58,7 +58,7 @@ public interface IStripePaymentService
     /// A shortcut method for updating the <paramref name="order"/> status to <see cref="OrderStatuses.Ordered"/>, doing
     /// final modifications and then redirecting to the success page.
     /// </summary>
-    Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         PaymentIntent paymentIntent,
         string shoppingCartId,
@@ -73,5 +73,5 @@ public interface IStripePaymentService
     /// <summary>
     /// Confirm the result of Stripe payment.
     /// </summary>
-    Task<PaidStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, IHtmlLocalizer htmlLocalizer);
+    Task<PaymentStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, IHtmlLocalizer htmlLocalizer);
 }

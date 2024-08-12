@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Payment.ViewModels;
-public class PaidStatusViewModel
+public class PaymentStatusViewModel
 {
     private string? _hideMessage;
     public string? HideMessage
@@ -11,7 +11,7 @@ public class PaidStatusViewModel
         set => _hideMessage = value;
     }
 
-    public PaidStatus Status { get; set; }
+    public PaymentStatus Status { get; set; }
     public LocalizedHtmlString? ShowMessage { get; set; }
     public string? Url { get; set; }
     public ContentItem? Content { get; set; }

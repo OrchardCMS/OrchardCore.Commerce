@@ -82,12 +82,12 @@ public interface IPaymentService
     /// <summary>
     /// Call back for payment.
     /// </summary>
-    Task<PaidStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
+    Task<PaymentStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
 
     /// <summary>
     /// Free checkout.
     /// </summary>
-    Task<PaidStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
+    Task<PaymentStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
 }
 
 public delegate Task AlterOrderAsyncDelegate(
@@ -99,7 +99,7 @@ public delegate Task AlterOrderAsyncDelegate(
 
 public static class PaymentServiceExtensions
 {
-    public static async Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    public static async Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         this IPaymentService service,
         ContentItem order,
         string? shoppingCartId,
@@ -111,17 +111,17 @@ public static class PaymentServiceExtensions
         {
             await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
             await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
-            return new PaidStatusViewModel
+            return new PaymentStatusViewModel
             {
-                Status = PaidStatus.Succeeded,
+                Status = PaymentStatus.Succeeded,
                 Content = order,
             };
         }
         catch (Exception ex)
         {
-            return new PaidStatusViewModel
+            return new PaymentStatusViewModel
             {
-                Status = PaidStatus.Failed,
+                Status = PaymentStatus.Failed,
                 ShowMessage = htmlLocalizer["You have paid the bill, but this system did not record it. Please contact the administrators."],
                 HideMessage = ex.Message,
                 Content = order,

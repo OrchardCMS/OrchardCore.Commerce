@@ -57,7 +57,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
         return string.IsNullOrEmpty(settings?.ApiKey) || string.IsNullOrEmpty(settings.ProjectId) ? null : new object();
     }
 
-    public async Task<PaidStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    public async Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         string shoppingCartId,
         IHtmlLocalizer htmlLocalizer)
@@ -70,9 +70,9 @@ public class ExactlyPaymentProvider : IPaymentProvider
         switch (data.Processing.ResultCode, data.Status)
         {
             case (_, ChargeResponse.ChargeResponseStatus.Processing):
-                return new PaidStatusViewModel
+                return new PaymentStatusViewModel
                 {
-                    Status = PaidStatus.WaitingPayment,
+                    Status = PaymentStatus.WaitingPayment,
                 };
             case (_, ChargeResponse.ChargeResponseStatus.Processed):
             case ("success", _):
@@ -80,9 +80,9 @@ public class ExactlyPaymentProvider : IPaymentProvider
                     order, shoppingCartId, H, ProviderName, _ => [response.ToPayment(_moneyService)]);
             case (_, ChargeResponse.ChargeResponseStatus.ActionRequired)
                 when data.Actions?.FirstOrDefault(action => action.Attributes.IsGet) is { } action:
-                return new PaidStatusViewModel
+                return new PaymentStatusViewModel
                 {
-                    Status = PaidStatus.WaitingPayment,
+                    Status = PaymentStatus.WaitingPayment,
                     Url = action.Attributes.Url.AbsoluteUri,
                 };
             case ({ } resultCode, _) when !string.IsNullOrEmpty(resultCode):
@@ -97,14 +97,14 @@ public class ExactlyPaymentProvider : IPaymentProvider
         }
     }
 
-    private async Task<PaidStatusViewModel> FailAsync(ContentItem order, LocalizedHtmlString message)
+    private async Task<PaymentStatusViewModel> FailAsync(ContentItem order, LocalizedHtmlString message)
     {
         order.Alter<OrderPart>(part => part.FailPayment());
         await _contentManager.UpdateAsync(order);
 
-        return new PaidStatusViewModel
+        return new PaymentStatusViewModel
         {
-            Status = PaidStatus.Failed,
+            Status = PaymentStatus.Failed,
             ShowMessage = message,
         };
     }
