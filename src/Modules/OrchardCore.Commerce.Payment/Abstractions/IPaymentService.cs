@@ -82,12 +82,12 @@ public interface IPaymentService
     /// <summary>
     /// Call back for payment.
     /// </summary>
-    Task<PaymentStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
+    Task<PaymentOperationStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
 
     /// <summary>
     /// Free checkout.
     /// </summary>
-    Task<PaymentStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
+    Task<PaymentOperationStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
 }
 
 public delegate Task AlterOrderAsyncDelegate(
@@ -99,7 +99,7 @@ public delegate Task AlterOrderAsyncDelegate(
 
 public static class PaymentServiceExtensions
 {
-    public static async Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    public static async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         this IPaymentService service,
         ContentItem order,
         string? shoppingCartId,
@@ -111,17 +111,17 @@ public static class PaymentServiceExtensions
         {
             await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
             await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.Succeeded,
+                Status = PaymentOperationStatus.Succeeded,
                 Content = order,
             };
         }
         catch (Exception ex)
         {
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.Failed,
+                Status = PaymentOperationStatus.Failed,
                 ShowMessage = htmlLocalizer["You have paid the bill, but this system did not record it. Please contact the administrators."],
                 HideMessage = ex.Message,
                 Content = order,

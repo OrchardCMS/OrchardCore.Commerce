@@ -240,43 +240,43 @@ public class PaymentService : IPaymentService
         return order;
     }
 
-    public async Task<PaymentStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true)
+    public async Task<PaymentOperationStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true)
     {
         if (await CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree) is { } order)
         {
             return await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId, H);
         }
 
-        return new PaymentStatusViewModel
+        return new PaymentOperationStatusViewModel
         {
-            Status = PaymentStatus.NotFound,
+            Status = PaymentOperationStatus.NotFound,
         };
     }
 
-    public async Task<PaymentStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId)
+    public async Task<PaymentOperationStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId)
     {
         if (string.IsNullOrWhiteSpace(paymentProviderName))
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.NotFound,
+                Status = PaymentOperationStatus.NotFound,
             };
 
         var order = string.IsNullOrEmpty(orderId)
             ? await CreatePendingOrderFromShoppingCartAsync(shoppingCartId)
             : await _contentManager.GetAsync(orderId);
         if (order is null)
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.NotFound,
+                Status = PaymentOperationStatus.NotFound,
             };
 
         var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
 
         if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
         {
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.NotThingToDo,
+                Status = PaymentOperationStatus.NotThingToDo,
                 Content = order,
             };
         }
@@ -289,9 +289,9 @@ public class PaymentService : IPaymentService
             }
         }
 
-        return new PaymentStatusViewModel
+        return new PaymentOperationStatusViewModel
         {
-            Status = PaymentStatus.Failed,
+            Status = PaymentOperationStatus.Failed,
             ShowMessage = H["The payment has failed, please try again."],
             Content = order,
         };

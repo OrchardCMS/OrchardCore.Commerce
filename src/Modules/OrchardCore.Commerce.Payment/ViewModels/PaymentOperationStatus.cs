@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace OrchardCore.Commerce.Payment.ViewModels;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum PaymentStatus
+public enum PaymentOperationStatus
 {
     Succeeded = 0,
     WaitingForPayment = 1,

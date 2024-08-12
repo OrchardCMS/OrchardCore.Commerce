@@ -19,24 +19,24 @@ public abstract class PaymentBaseController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> ProduceActionResultAsync(PaymentStatusViewModel paidStatusViewModel)
+    public async Task<IActionResult> ProduceActionResultAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
         if (paidStatusViewModel.ShowMessage != null)
         {
             switch (paidStatusViewModel.Status)
             {
-                case PaymentStatus.Succeeded:
+                case PaymentOperationStatus.Succeeded:
                     await _notifier.SuccessAsync(paidStatusViewModel.ShowMessage);
                     break;
-                case PaymentStatus.Failed:
+                case PaymentOperationStatus.Failed:
                     await LogAndNotifyFailedAsync(paidStatusViewModel);
                     break;
-                case PaymentStatus.NotFound:
+                case PaymentOperationStatus.NotFound:
                     await LogAndNotifyWarningAsync(paidStatusViewModel);
                     break;
-                case PaymentStatus.NotThingToDo:
-                case PaymentStatus.WaitingForStripe:
-                case PaymentStatus.WaitingForPayment:
+                case PaymentOperationStatus.NotThingToDo:
+                case PaymentOperationStatus.WaitingForStripe:
+                case PaymentOperationStatus.WaitingForPayment:
                     await LogAndNotifyInformationAsync(paidStatusViewModel);
                     break;
                 default:
@@ -47,25 +47,25 @@ public abstract class PaymentBaseController : Controller
 
         return paidStatusViewModel.Status switch
         {
-            PaymentStatus.Succeeded => RedirectToActionWithParams<PaymentController>(
+            PaymentOperationStatus.Succeeded => RedirectToActionWithParams<PaymentController>(
                 nameof(PaymentController.Success),
                 FeatureIds.Area,
                 orderId: paidStatusViewModel.Content?.ContentItemId),
 
-            PaymentStatus.Failed => RedirectToActionWithParams<PaymentController>(
+            PaymentOperationStatus.Failed => RedirectToActionWithParams<PaymentController>(
                 nameof(PaymentController.Index),
                 FeatureIds.Payment),
 
-            PaymentStatus.NotFound => NotFound(),
+            PaymentOperationStatus.NotFound => NotFound(),
 
-            PaymentStatus.NotThingToDo => this.RedirectToContentDisplay(paidStatusViewModel.Content),
+            PaymentOperationStatus.NotThingToDo => this.RedirectToContentDisplay(paidStatusViewModel.Content),
 
-            PaymentStatus.WaitingForStripe => RedirectToActionWithNames(
+            PaymentOperationStatus.WaitingForStripe => RedirectToActionWithNames(
                 "PaymentConfirmationMiddleware",
                 "OrchardCore.Commerce.Payment.Stripe",
                 "Stripe"),
 
-            PaymentStatus.WaitingForPayment => RedirectToActionWithParams<PaymentController>(
+            PaymentOperationStatus.WaitingForPayment => RedirectToActionWithParams<PaymentController>(
                 nameof(PaymentController.Wait),
                 FeatureIds.Payment,
                 paidStatusViewModel.Url),
@@ -132,7 +132,7 @@ public abstract class PaymentBaseController : Controller
         );
     }
 
-    private async Task LogAndNotifyFailedAsync(PaymentStatusViewModel paidStatusViewModel)
+    private async Task LogAndNotifyFailedAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
         await _notifier.ErrorAsync(paidStatusViewModel.ShowMessage);
 #pragma warning disable CA2254
@@ -140,7 +140,7 @@ public abstract class PaymentBaseController : Controller
 #pragma warning restore CA2254
     }
 
-    private async Task LogAndNotifyWarningAsync(PaymentStatusViewModel paidStatusViewModel)
+    private async Task LogAndNotifyWarningAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
         await _notifier.WarningAsync(paidStatusViewModel.ShowMessage);
 #pragma warning disable CA2254
@@ -148,7 +148,7 @@ public abstract class PaymentBaseController : Controller
 #pragma warning restore CA2254
     }
 
-    private async Task LogAndNotifyInformationAsync(PaymentStatusViewModel paidStatusViewModel)
+    private async Task LogAndNotifyInformationAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
         await _notifier.InformationAsync(paidStatusViewModel.ShowMessage);
 #pragma warning disable CA2254

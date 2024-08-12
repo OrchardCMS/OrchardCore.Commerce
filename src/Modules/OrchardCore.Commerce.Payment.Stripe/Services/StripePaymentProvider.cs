@@ -77,7 +77,7 @@ public class StripePaymentProvider : IPaymentProvider
         return Task.CompletedTask;
     }
 
-    public Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         string shoppingCartId,
         IHtmlLocalizer htmlLocalizer) =>

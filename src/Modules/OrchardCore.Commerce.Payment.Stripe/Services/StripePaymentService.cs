@@ -101,7 +101,7 @@ public class StripePaymentService : IStripePaymentService
             shoppingCartId,
             CreateChargesProvider(paymentIntent));
 
-    public Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         PaymentIntent paymentIntent,
         string shoppingCartId,
@@ -186,14 +186,14 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public async Task<PaymentStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, IHtmlLocalizer htmlLocalizer)
+    public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, IHtmlLocalizer htmlLocalizer)
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
         if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
         {
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.WaitingForStripe,
+                Status = PaymentOperationStatus.WaitingForStripe,
             };
         }
 
@@ -203,9 +203,9 @@ public class StripePaymentService : IStripePaymentService
             (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId is not { } orderId ||
             await _contentManager.GetAsync(orderId) is not { } order)
         {
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.NotFound,
+                Status = PaymentOperationStatus.NotFound,
                 ShowMessage = htmlLocalizer[
                     "Couldn't find the payment intent \"{0}\" or the order associated with it.",
                     paymentIntent ?? string.Empty],
@@ -218,9 +218,9 @@ public class StripePaymentService : IStripePaymentService
         // Looks like there is nothing to do here.
         if (succeeded && part.IsOrdered)
         {
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.NotThingToDo,
+                Status = PaymentOperationStatus.NotThingToDo,
                 Content = order,
             };
         }
@@ -236,9 +236,9 @@ public class StripePaymentService : IStripePaymentService
 
         if (part.IsFailed)
         {
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.Failed,
+                Status = PaymentOperationStatus.Failed,
                 ShowMessage = htmlLocalizer["The payment has failed, please try again."],
             };
         }
@@ -248,17 +248,17 @@ public class StripePaymentService : IStripePaymentService
 
         if (order.As<StripePaymentPart>().RetryCounter <= 10)
         {
-            return new PaymentStatusViewModel
+            return new PaymentOperationStatusViewModel
             {
-                Status = PaymentStatus.WaitingForStripe,
+                Status = PaymentOperationStatus.WaitingForStripe,
             };
         }
 
         // Delete payment intent from session, to create a new one.
         _paymentIntentPersistence.Remove();
-        return new PaymentStatusViewModel
+        return new PaymentOperationStatusViewModel
         {
-            Status = PaymentStatus.Failed,
+            Status = PaymentOperationStatus.Failed,
             ShowMessage = htmlLocalizer["The payment has failed, please try again."],
         };
     }

@@ -40,7 +40,7 @@ public class DummyPaymentProvider : IPaymentProvider
         // the provider to be skipped when used through the viewModel.WithProviderDataAsync(providers) method.
         Task.FromResult(_hca.HttpContext.IsDevelopmentAndLocalhost() ? new object() : null);
 
-    public async Task<PaymentStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
+    public async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         string? shoppingCartId,
         IHtmlLocalizer htmlLocalizer)
