@@ -186,7 +186,10 @@ public class StripePaymentService : IStripePaymentService
         return order;
     }
 
-    public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, IHtmlLocalizer htmlLocalizer)
+    public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
+        string paymentIntent,
+        string shoppingCartId,
+        IHtmlLocalizer htmlLocalizer)
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
         if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
