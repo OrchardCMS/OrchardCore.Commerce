@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
+using Address = OrchardCore.Commerce.AddressDataType.Address;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
@@ -90,20 +91,21 @@ public class StripePaymentService : IStripePaymentService
             await _requestOptionsService.SetIdempotencyKeyAsync());
     }
 
-    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent) =>
+    public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, string shoppingCartId) =>
         await _paymentService.UpdateOrderToOrderedAsync(
             await GetOrderByPaymentIntentIdAsync(paymentIntent.Id),
-            shoppingCartId: null,
+            shoppingCartId,
             CreateChargesProvider(paymentIntent));
 
     public Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
         Controller controller,
         ContentItem order,
-        PaymentIntent paymentIntent) =>
+        PaymentIntent paymentIntent,
+        string shoppingCartId) =>
         _paymentService.UpdateAndRedirectToFinishedOrderAsync(
             controller,
             order,
-            shoppingCartId: null,
+            shoppingCartId,
             StripePaymentProvider.ProviderName,
             CreateChargesProvider(paymentIntent));
 
@@ -124,7 +126,7 @@ public class StripePaymentService : IStripePaymentService
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
             .FirstOrDefaultAsync();
 
-    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor)
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId)
     {
         var paymentIntent = await GetPaymentIntentAsync(_paymentIntentPersistence.Retrieve());
 
@@ -132,7 +134,7 @@ public class StripePaymentService : IStripePaymentService
         var (order, isNew) = await _paymentService.CreateOrUpdateOrderFromShoppingCartAsync(
             updateModelAccessor,
             (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent.Id))?.OrderId,
-            shoppingCartId: null,
+            shoppingCartId,
             (order, _, total, cartViewModel, lineItems) =>
             {
                 order.Alter<OrderPart>(orderPart =>
@@ -212,6 +214,48 @@ public class StripePaymentService : IStripePaymentService
         return paymentIntent;
     }
 
+    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl)
+    {
+        var order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
+        await _paymentService.UpdateOrderWithDriversAsync(order);
+
+        var part = order.As<OrderPart>();
+        var billing = part.BillingAddress.Address ?? new Address();
+        var shipping = part.ShippingAddress.Address ?? new Address();
+
+        var model = new PaymentIntentConfirmOptions
+        {
+            ReturnUrl = middlewareAbsoluteUrl,
+            PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
+            {
+                BillingDetails = new PaymentIntentPaymentMethodDataBillingDetailsOptions
+                {
+                    Email = part.Email?.Text,
+                    Name = billing.Name,
+                    Phone = part.Phone?.Text,
+                    Address = CreateAddressOptions(billing),
+                },
+            },
+            Shipping = new ChargeShippingOptions
+            {
+                Name = shipping.Name,
+                Phone = part.Phone?.Text,
+                Address = CreateAddressOptions(shipping),
+            },
+        };
+        return model;
+    }
+
+    private static AddressOptions CreateAddressOptions(Address address) =>
+        new()
+        {
+            City = address.City ?? string.Empty,
+            Country = address.Region ?? string.Empty,
+            Line1 = address.StreetAddress1 ?? string.Empty,
+            Line2 = address.StreetAddress2 ?? string.Empty,
+            PostalCode = address.PostalCode ?? string.Empty,
+            State = address.Province ?? string.Empty,
+        };
     private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
         string paymentIntentId,
         Amount defaultTotal)
