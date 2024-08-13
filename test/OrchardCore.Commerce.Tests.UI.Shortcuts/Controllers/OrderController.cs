@@ -1,7 +1,6 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
@@ -26,13 +25,11 @@ public class OrderController : PaymentBaseController
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
-    private readonly IHtmlLocalizer _htmlLocalizer;
     public OrderController(
         IPaymentService paymentService,
         IShoppingCartPersistence shoppingCartPersistence,
         IContentManager contentManager,
         IShoppingCartHelpers shoppingCartHelpers,
-        IHtmlLocalizer htmlLocalizer,
         INotifier notifier,
         ILogger<OrderController> logger)
         : base(notifier, logger)
@@ -41,7 +38,6 @@ public class OrderController : PaymentBaseController
         _shoppingCartPersistence = shoppingCartPersistence;
         _contentManager = contentManager;
         _shoppingCartHelpers = shoppingCartHelpers;
-        _htmlLocalizer = htmlLocalizer;
     }
 
     [AllowAnonymous]
@@ -84,7 +80,6 @@ public class OrderController : PaymentBaseController
         var result = await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
             order,
             shoppingCartId,
-            _htmlLocalizer,
             getCharges: _ => new[]
             {
                 new Payment.Models.Payment(

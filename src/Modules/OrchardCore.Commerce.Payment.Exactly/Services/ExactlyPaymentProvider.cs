@@ -59,8 +59,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
 
     public async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
-        string shoppingCartId,
-        IHtmlLocalizer htmlLocalizer)
+        string shoppingCartId)
     {
         var context = _hca.HttpContext!;
         var transactionId = context.Request.Query["transactionId"];
@@ -76,8 +75,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
                 };
             case (_, ChargeResponse.ChargeResponseStatus.Processed):
             case ("success", _):
-                return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-                    order, shoppingCartId, H, ProviderName, _ => [response.ToPayment(_moneyService)]);
+                return await SuccessAsync(order, shoppingCartId, response, H);
             case (_, ChargeResponse.ChargeResponseStatus.ActionRequired)
                 when data.Actions?.FirstOrDefault(action => action.Attributes.IsGet) is { } action:
                 return new PaymentOperationStatusViewModel
@@ -107,5 +105,28 @@ public class ExactlyPaymentProvider : IPaymentProvider
             Status = PaymentOperationStatus.Failed,
             ShowMessage = message,
         };
+    }
+
+    private async Task<PaymentOperationStatusViewModel> SuccessAsync(
+        ContentItem order,
+        string shoppingCartId,
+        ChargeResponse response,
+        IHtmlLocalizer<ExactlyPaymentProvider> htmlLocalizer)
+    {
+        try
+        {
+            return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
+                    order, shoppingCartId, ProviderName, _ => [response.ToPayment(_moneyService)]);
+        }
+        catch (Exception ex)
+        {
+            return new PaymentOperationStatusViewModel
+            {
+                Status = PaymentOperationStatus.Failed,
+                ShowMessage = htmlLocalizer["You have paid the bill, but this system did not record it. Please contact the administrators."],
+                HideMessage = ex.Message,
+                Content = order,
+            };
+        }
     }
 }

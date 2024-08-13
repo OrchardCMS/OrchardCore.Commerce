@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
@@ -103,29 +102,15 @@ public static class PaymentServiceExtensions
         this IPaymentService service,
         ContentItem order,
         string? shoppingCartId,
-        IHtmlLocalizer htmlLocalizer,
         string? paymentProviderName = null,
         Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
     {
-        try
+        await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
+        await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
+        return new PaymentOperationStatusViewModel
         {
-            await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
-            await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
-            return new PaymentOperationStatusViewModel
-            {
-                Status = PaymentOperationStatus.Succeeded,
-                Content = order,
-            };
-        }
-        catch (Exception ex)
-        {
-            return new PaymentOperationStatusViewModel
-            {
-                Status = PaymentOperationStatus.Failed,
-                ShowMessage = htmlLocalizer["You have paid the bill, but this system did not record it. Please contact the administrators."],
-                HideMessage = ex.Message,
-                Content = order,
-            };
-        }
+            Status = PaymentOperationStatus.Succeeded,
+            Content = order,
+        };
     }
 }

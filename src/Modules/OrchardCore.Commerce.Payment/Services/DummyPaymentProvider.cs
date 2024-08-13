@@ -19,19 +19,21 @@ public class DummyPaymentProvider : IPaymentProvider
     private readonly IHttpContextAccessor _hca;
     private readonly Lazy<IPaymentService> _paymentServiceLazy;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
-
+    private readonly IHtmlLocalizer H;
     public string Name => ProviderName;
 
     public DummyPaymentProvider(
         IClock clock,
         IHttpContextAccessor hca,
         Lazy<IPaymentService> paymentServiceLazy,
-        IShoppingCartHelpers shoppingCartHelpers)
+        IShoppingCartHelpers shoppingCartHelpers,
+        IHtmlLocalizer htmlLocalizer)
     {
         _clock = clock;
         _hca = hca;
         _paymentServiceLazy = paymentServiceLazy;
         _shoppingCartHelpers = shoppingCartHelpers;
+        H = htmlLocalizer;
     }
 
     public Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false) =>
@@ -42,8 +44,8 @@ public class DummyPaymentProvider : IPaymentProvider
 
     public async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
-        string? shoppingCartId,
-        IHtmlLocalizer htmlLocalizer)
+        string? shoppingCartId
+        )
     {
         var createdUtc = order.CreatedUtc ?? _clock.UtcNow;
         var cart = await _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId, order);
@@ -56,13 +58,25 @@ public class DummyPaymentProvider : IPaymentProvider
                 total,
                 createdUtc));
 
-        return await _paymentServiceLazy
+        try
+        {
+            return await _paymentServiceLazy
             .Value
             .UpdateAndRedirectToFinishedOrderAsync(
                 order,
                 shoppingCartId,
-                htmlLocalizer,
                 ProviderName,
                 _ => totals);
+        }
+        catch (Exception ex)
+        {
+            return new PaymentOperationStatusViewModel
+            {
+                Status = PaymentOperationStatus.Failed,
+                ShowMessage = H["You have paid the bill, but this system did not record it. Please contact the administrators."],
+                HideMessage = ex.Message,
+                Content = order,
+            };
+        }
     }
 }

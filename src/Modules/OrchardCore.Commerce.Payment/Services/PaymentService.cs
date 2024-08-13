@@ -244,7 +244,20 @@ public class PaymentService : IPaymentService
     {
         if (await CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree) is { } order)
         {
-            return await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId, H);
+            try
+            {
+                return await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId);
+            }
+            catch (Exception ex)
+            {
+                return new PaymentOperationStatusViewModel
+                {
+                    Status = PaymentOperationStatus.Failed,
+                    ShowMessage = H["You have paid the bill, but this system did not record it. Please contact the administrators."],
+                    HideMessage = ex.Message,
+                    Content = order,
+                };
+            }
         }
 
         return new PaymentOperationStatusViewModel
@@ -283,7 +296,7 @@ public class PaymentService : IPaymentService
 
         foreach (var provider in _paymentProvidersLazy.Value.WhereName(paymentProviderName))
         {
-            if (await provider.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId, H) is { } result)
+            if (await provider.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId) is { } result)
             {
                 return result;
             }

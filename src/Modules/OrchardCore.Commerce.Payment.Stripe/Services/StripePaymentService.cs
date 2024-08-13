@@ -41,7 +41,9 @@ public class StripePaymentService : IStripePaymentService
     private readonly ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IPaymentService _paymentService;
+    private readonly IHtmlLocalizer<StripePaymentService> H;
 
+#pragma warning disable S107 // Methods should not have too many parameters
     public StripePaymentService(
         IContentManager contentManager,
         ISiteService siteService,
@@ -49,7 +51,9 @@ public class StripePaymentService : IStripePaymentService
         IStringLocalizer<StripePaymentService> stringLocalizer,
         ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
-        IPaymentService paymentService)
+        IPaymentService paymentService,
+        IHtmlLocalizer<StripePaymentService> htmlLocalizer)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _contentManager = contentManager;
         _siteService = siteService;
@@ -58,6 +62,7 @@ public class StripePaymentService : IStripePaymentService
         _paymentIntentPersistence = paymentIntentPersistence;
         T = stringLocalizer;
         _paymentService = paymentService;
+        H = htmlLocalizer;
     }
 
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
@@ -104,14 +109,28 @@ public class StripePaymentService : IStripePaymentService
     public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         PaymentIntent paymentIntent,
-        string shoppingCartId,
-        IHtmlLocalizer htmlLocalizer) =>
-        _paymentService.UpdateAndRedirectToFinishedOrderAsync(
+        string shoppingCartId
+        )
+    {
+        try
+        {
+            return _paymentService.UpdateAndRedirectToFinishedOrderAsync(
             order,
             shoppingCartId,
-            htmlLocalizer,
             StripePaymentProvider.ProviderName,
             CreateChargesProvider(paymentIntent));
+        }
+        catch (Exception ex)
+        {
+            return Task.FromResult(new PaymentOperationStatusViewModel
+            {
+                Status = PaymentOperationStatus.Failed,
+                ShowMessage = H["You have paid the bill, but this system did not record it. Please contact the administrators."],
+                HideMessage = ex.Message,
+                Content = order,
+            });
+        }
+    }
 
     private static Func<OrderPart, IEnumerable<IPayment>> CreateChargesProvider(PaymentIntent paymentIntent) =>
         orderPart => orderPart.Charges.Select(charge => paymentIntent.CreatePayment(charge.Amount));
@@ -188,8 +207,8 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
         string paymentIntent,
-        string shoppingCartId,
-        IHtmlLocalizer htmlLocalizer)
+        string shoppingCartId
+        )
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
         if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
@@ -209,7 +228,7 @@ public class StripePaymentService : IStripePaymentService
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.NotFound,
-                ShowMessage = htmlLocalizer[
+                ShowMessage = H[
                     "Couldn't find the payment intent \"{0}\" or the order associated with it.",
                     paymentIntent ?? string.Empty],
             };
@@ -233,8 +252,8 @@ public class StripePaymentService : IStripePaymentService
             return await UpdateAndRedirectToFinishedOrderAsync(
                 order,
                 fetchedPaymentIntent,
-                shoppingCartId,
-                htmlLocalizer);
+                shoppingCartId
+                );
         }
 
         if (part.IsFailed)
@@ -242,7 +261,7 @@ public class StripePaymentService : IStripePaymentService
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.Failed,
-                ShowMessage = htmlLocalizer["The payment has failed, please try again."],
+                ShowMessage = H["The payment has failed, please try again."],
             };
         }
 
@@ -262,7 +281,7 @@ public class StripePaymentService : IStripePaymentService
         return new PaymentOperationStatusViewModel
         {
             Status = PaymentOperationStatus.Failed,
-            ShowMessage = htmlLocalizer["The payment has failed, please try again."],
+            ShowMessage = H["The payment has failed, please try again."],
         };
     }
 

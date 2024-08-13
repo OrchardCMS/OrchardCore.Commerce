@@ -15,7 +15,6 @@ public class StripeController : PaymentBaseController
 {
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IStripePaymentService _stripePaymentService;
-    private readonly IHtmlLocalizer<StripeController> H;
 
     public StripeController(
         IOrchardServices<StripeController> services,
@@ -26,7 +25,6 @@ public class StripeController : PaymentBaseController
     {
         _paymentIntentPersistence = paymentIntentPersistence;
         _stripePaymentService = stripePaymentService;
-        H = services.HtmlLocalizer.Value;
     }
 
     public IActionResult UpdatePaymentIntent(string paymentIntent)
@@ -41,7 +39,7 @@ public class StripeController : PaymentBaseController
         [FromQuery(Name = "payment_intent")] string paymentIntent = null,
         [FromQuery] string shoppingCartId = null)
     {
-        var result = await _stripePaymentService.PaymentConfirmationAsync(paymentIntent, shoppingCartId, H);
+        var result = await _stripePaymentService.PaymentConfirmationAsync(paymentIntent, shoppingCartId);
         return await ProduceActionResultAsync(result);
     }
 

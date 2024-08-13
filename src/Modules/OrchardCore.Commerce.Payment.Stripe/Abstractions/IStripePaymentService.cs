@@ -61,8 +61,8 @@ public interface IStripePaymentService
     Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         PaymentIntent paymentIntent,
-        string shoppingCartId,
-        IHtmlLocalizer htmlLocalizer);
+        string shoppingCartId
+        );
 
     /// <summary>
     /// Get the confirmation parameters for Stripe.
@@ -73,5 +73,5 @@ public interface IStripePaymentService
     /// <summary>
     /// Confirm the result of Stripe payment.
     /// </summary>
-    Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, IHtmlLocalizer htmlLocalizer);
+    Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId);
 }

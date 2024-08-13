@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Payment.Controllers;
@@ -49,8 +48,8 @@ public interface IPaymentProvider
     /// </summary>
     Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
-        string? shoppingCartId,
-        IHtmlLocalizer htmlLocalizer);
+        string? shoppingCartId
+        );
 }
 
 public static class PaymentProviderExtensions
