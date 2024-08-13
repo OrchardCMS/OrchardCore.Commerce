@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using System.Threading.Tasks;
@@ -21,12 +20,11 @@ public static class StripeEndpoint
 
     private static async Task<IResult> AddStripeMiddlewareAsync(
          string? shoppingCartId,
-         IHtmlLocalizer<IStripePaymentService> htmlLocalizer,
          IStripePaymentService stripePaymentService,
          [FromQuery(Name = "payment_intent")] string? paymentIntent = null
        )
     {
-        var result = await stripePaymentService.PaymentConfirmationAsync(paymentIntent, shoppingCartId, htmlLocalizer);
+        var result = await stripePaymentService.PaymentConfirmationAsync(paymentIntent, shoppingCartId);
         return TypedResults.Ok(result);
     }
 }
