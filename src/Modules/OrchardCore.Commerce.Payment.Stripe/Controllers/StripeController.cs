@@ -1,7 +1,6 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json;
 using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;

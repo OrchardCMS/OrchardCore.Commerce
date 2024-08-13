@@ -19,7 +19,7 @@ public class DummyPaymentProvider : IPaymentProvider
     private readonly IHttpContextAccessor _hca;
     private readonly Lazy<IPaymentService> _paymentServiceLazy;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
-    private readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer<DummyPaymentProvider> H;
     public string Name => ProviderName;
 
     public DummyPaymentProvider(
@@ -27,7 +27,7 @@ public class DummyPaymentProvider : IPaymentProvider
         IHttpContextAccessor hca,
         Lazy<IPaymentService> paymentServiceLazy,
         IShoppingCartHelpers shoppingCartHelpers,
-        IHtmlLocalizer htmlLocalizer)
+        IHtmlLocalizer<DummyPaymentProvider> htmlLocalizer)
     {
         _clock = clock;
         _hca = hca;

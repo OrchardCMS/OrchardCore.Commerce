@@ -45,7 +45,7 @@ public class PaymentService : IPaymentService
     private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
-    private readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer<PaymentService> H;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters

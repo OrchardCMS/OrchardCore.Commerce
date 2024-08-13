@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
