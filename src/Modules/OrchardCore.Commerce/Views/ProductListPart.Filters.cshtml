@@ -16,7 +16,7 @@
 
 <h3>@T["Filter Products"]</h3>
 
-<form method="get" action="@Context.Request.Path">
+<form method="get" action="@Href("~" + Context.Request.Path)">
     @foreach (var filterId in Model.FilterIds)
     {
         var shapeType = "ProductList__Filter__" + filterId;
