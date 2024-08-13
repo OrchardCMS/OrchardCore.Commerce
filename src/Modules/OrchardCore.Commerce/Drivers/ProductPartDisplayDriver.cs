@@ -7,7 +7,7 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -37,16 +37,15 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
     public override async Task<IDisplayResult> UpdateAsync(
         ProductPart part,
-        IUpdateModel updater,
         UpdatePartEditorContext context)
     {
         var skuBefore = part.Sku;
 
-        await updater.TryUpdateModelAsync(part, Prefix);
+        await context.Updater.TryUpdateModelAsync(part, Prefix);
 
         if (part.Sku.Contains('-'))
         {
-            updater.ModelState.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
+            context.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
             return await EditAsync(part, context);
         }
 

@@ -12,7 +12,7 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Collections.Generic;
@@ -80,24 +80,21 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
                 PopulateViewModel(field, viewModel, context.PartFieldDefinition);
             });
 
-    public override async Task<IDisplayResult> UpdateAsync(AddressField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AddressField field, UpdateFieldEditorContext context)
     {
-        if (await TryUpdateModelAsync(updater, Prefix) is { } viewModel)
+        if (await TryUpdateModelAsync(context) is { } viewModel)
         {
             field.Address = viewModel.Address;
-            await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, updater, context));
+            await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, context.Updater, context));
         }
 
         return await EditAsync(field, context);
     }
 
-    private async Task<AddressFieldViewModel> TryUpdateModelAsync(IUpdateModel updater, string prefix)
+    private async Task<AddressFieldViewModel> TryUpdateModelAsync(UpdateFieldEditorContext context)
     {
-        var viewModel = new AddressFieldViewModel();
-        if (!await updater.TryUpdateModelAsync(viewModel, prefix) || viewModel.Address is not { } address)
-        {
-            return null;
-        }
+        var viewModel = await context.CreateModelAsync<AddressFieldViewModel>(Prefix);
+        if (viewModel.Address is not { } address) return null;
 
         await _addressUpdaters.AwaitEachAsync(addressUpdater => addressUpdater.UpdateAsync(address));
 
@@ -113,7 +110,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
         foreach (var key in missingFields)
         {
             // This doesn't need to be too complex as it's just a fallback from the client-side validation.
-            updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
+            context.AddModelError(key, T["A value is required for {0}.", key]);
         }
 
         return missingFields.Count != 0 ? null : viewModel;

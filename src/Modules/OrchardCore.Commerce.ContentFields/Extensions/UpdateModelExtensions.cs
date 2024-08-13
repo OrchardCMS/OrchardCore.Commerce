@@ -8,13 +8,16 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public static class UpdateModelExtensions
 {
+    private const string ShippingPrefix = $"{nameof(OrderPart)}.{nameof(OrderPart.ShippingAddress)}";
+    private const string BillingPrefix = $"{nameof(OrderPart)}.{nameof(OrderPart.BillingAddress)}";
+
     public static async Task<(AddressFieldViewModel Shipping, AddressFieldViewModel Billing)> CreateOrderPartAddressViewModelsAsync(
         this IUpdateModel updater)
     {
         var shippingViewModel = new AddressFieldViewModel();
         var billingViewModel = new AddressFieldViewModel();
-        if (!await updater.TryUpdateModelAsync(shippingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.ShippingAddress)}") ||
-            !await updater.TryUpdateModelAsync(billingViewModel, $"{nameof(OrderPart)}.{nameof(OrderPart.BillingAddress)}"))
+        if (!await updater.TryUpdateModelAsync(shippingViewModel, ShippingPrefix) ||
+            !await updater.TryUpdateModelAsync(billingViewModel, BillingPrefix))
         {
             throw new InvalidOperationException(updater.GetModelErrorMessages().JoinNotNullOrEmpty());
         }

@@ -6,7 +6,7 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
         _moneyService = moneyService;
     }
 
-    public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
+    public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
     {
         if (model.PartDefinition.Name != nameof(PricePart)) return null;
 
@@ -72,6 +72,6 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
                     : null,
         });
 
-        return await EditAsync(model, context.Updater);
+        return await EditAsync(model, context);
     }
 }
