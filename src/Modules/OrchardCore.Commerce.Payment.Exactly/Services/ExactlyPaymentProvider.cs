@@ -1,15 +1,26 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.Constants;
+using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;
@@ -30,16 +41,22 @@ public class ExactlyPaymentProvider : IPaymentProvider
     private readonly IPaymentService _paymentService;
     private readonly ISiteService _siteService;
     private readonly IHtmlLocalizer<ExactlyPaymentProvider> H;
+    private readonly IActionContextAccessor _actionContextAccessor;
+    private readonly IUrlHelperFactory _urlHelperFactory;
 
     public string Name => ProviderName;
 
+#pragma warning disable S107 // Methods should not have too many parameters
     public ExactlyPaymentProvider(
         IStringLocalizer<ChargeResponse> chargeResponseStringLocalizer,
         IExactlyService exactlyService,
         IMoneyService moneyService,
         INotifier notifier,
         IPaymentService paymentService,
-        IOrchardServices<ExactlyPaymentProvider> services)
+        IOrchardServices<ExactlyPaymentProvider> services,
+        IActionContextAccessor actionContextAccessor,
+        IUrlHelperFactory urlHelperFactory)
+#pragma warning restore S107 // Methods should not have too many parameters
     {
         _chargeResponseStringLocalizer = chargeResponseStringLocalizer;
         _contentManager = services.ContentManager.Value;
@@ -49,6 +66,8 @@ public class ExactlyPaymentProvider : IPaymentProvider
         _paymentService = paymentService;
         _siteService = services.SiteService.Value;
         H = services.HtmlLocalizer.Value;
+        _actionContextAccessor = actionContextAccessor;
+        _urlHelperFactory = urlHelperFactory;
     }
 
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false)
@@ -71,7 +90,8 @@ public class ExactlyPaymentProvider : IPaymentProvider
             case (_, ChargeResponse.ChargeResponseStatus.Processing):
                 return new PaymentOperationStatusViewModel
                 {
-                    Status = PaymentOperationStatus.WaitingForPayment,
+                    Status = PaymentOperationStatus.WaitingForRedirect,
+                    Url = await BuildAbsoluteUrlAsync(nameof(PaymentController.Wait), typeof(PaymentController).ControllerName()),
                 };
             case (_, ChargeResponse.ChargeResponseStatus.Processed):
             case ("success", _):
@@ -80,7 +100,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
                 when data.Actions?.FirstOrDefault(action => action.Attributes.IsGet) is { } action:
                 return new PaymentOperationStatusViewModel
                 {
-                    Status = PaymentOperationStatus.WaitingForPayment,
+                    Status = PaymentOperationStatus.WaitingForRedirect,
                     Url = action.Attributes.Url.AbsoluteUri,
                 };
             case ({ } resultCode, _) when !string.IsNullOrEmpty(resultCode):
@@ -128,5 +148,42 @@ public class ExactlyPaymentProvider : IPaymentProvider
                 Content = order,
             };
         }
+    }
+
+    private async Task<string> BuildAbsoluteUrlAsync(
+        string actionName,
+        string controllerName,
+        string areaName = FeatureIds.Payment,
+        string returnUrl = null)
+    {
+        string url;
+        var actionContext = _actionContextAccessor.ActionContext;
+        actionContext ??= await GetActionContextAsync(_hca.HttpContext);
+        var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
+        var relativeUrl = urlHelper.Action(actionName, controllerName, new
+        {
+            area = areaName,
+            returnUrl = string.IsNullOrEmpty(returnUrl)
+                    ? _hca.HttpContext.Request.GetDisplayUrl()
+                    : returnUrl,
+        });
+        url = urlHelper.ToAbsoluteUrl(relativeUrl);
+        return url;
+    }
+
+    internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
+    {
+        var routeData = new RouteData();
+        routeData.Routers.Add(new RouteCollection());
+
+        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+        var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
+
+        foreach (var filter in filters)
+        {
+            await filter.OnActionExecutionAsync(actionContext);
+        }
+
+        return actionContext;
     }
 }

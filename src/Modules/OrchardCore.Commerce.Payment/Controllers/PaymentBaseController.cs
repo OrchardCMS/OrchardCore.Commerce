@@ -35,8 +35,7 @@ public abstract class PaymentBaseController : Controller
                     await LogAndNotifyWarningAsync(paidStatusViewModel);
                     break;
                 case PaymentOperationStatus.NotThingToDo:
-                case PaymentOperationStatus.WaitingForStripe:
-                case PaymentOperationStatus.WaitingForPayment:
+                case PaymentOperationStatus.WaitingForRedirect:
                     await LogAndNotifyInformationAsync(paidStatusViewModel);
                     break;
                 default:
@@ -45,6 +44,7 @@ public abstract class PaymentBaseController : Controller
             }
         }
 
+#pragma warning disable SCS0027
         return paidStatusViewModel.Status switch
         {
             PaymentOperationStatus.Succeeded => RedirectToActionWithParams<PaymentController>(
@@ -60,18 +60,11 @@ public abstract class PaymentBaseController : Controller
 
             PaymentOperationStatus.NotThingToDo => this.RedirectToContentDisplay(paidStatusViewModel.Content),
 
-            PaymentOperationStatus.WaitingForStripe => RedirectToActionWithNames(
-                "PaymentConfirmationMiddleware",
-                "OrchardCore.Commerce.Payment.Stripe",
-                "Stripe"),
-
-            PaymentOperationStatus.WaitingForPayment => RedirectToActionWithParams<PaymentController>(
-                nameof(PaymentController.Wait),
-                FeatureIds.Payment,
-                paidStatusViewModel.Url),
+            PaymentOperationStatus.WaitingForRedirect => Redirect(url: paidStatusViewModel.Url),
 
             _ => throw new ArgumentOutOfRangeException(paidStatusViewModel.ToString()),
         };
+#pragma warning restore SCS0027
     }
 
     private RedirectToActionResult RedirectToActionWithParams<TController>(
@@ -99,35 +92,6 @@ public abstract class PaymentBaseController : Controller
         return RedirectToAction(
             actionName,
             typeof(TController).ControllerName(),
-            routeValues
-        );
-    }
-
-    private RedirectToActionResult RedirectToActionWithNames(
-        string actionName,
-        string area,
-        string controllerName,
-        string? returnUrl = null,
-        string? orderId = null)
-    {
-        string localReturnUrl = string.Empty;
-        if (!string.IsNullOrEmpty(returnUrl))
-        {
-            localReturnUrl = string.IsNullOrEmpty(returnUrl)
-                    ? HttpContext.Request.GetDisplayUrl()
-                    : returnUrl;
-        }
-
-        object? routeValues = new { area, returnUrl = localReturnUrl };
-
-        if (!string.IsNullOrEmpty(orderId))
-        {
-            routeValues = new { area, orderId, returnUrl = localReturnUrl };
-        }
-
-        return RedirectToAction(
-            actionName,
-            controllerName,
             routeValues
         );
     }

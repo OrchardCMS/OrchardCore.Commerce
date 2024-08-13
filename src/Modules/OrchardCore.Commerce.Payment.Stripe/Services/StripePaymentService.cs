@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
@@ -33,12 +35,12 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 public class StripePaymentService : IStripePaymentService
 {
     private readonly PaymentIntentService _paymentIntentService = new();
-
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
     private readonly IRequestOptionsService _requestOptionsService;
     private readonly IStringLocalizer T;
-    private readonly ISession _session;
+    private readonly YesSql.ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IPaymentService _paymentService;
     private readonly IHtmlLocalizer<StripePaymentService> H;
@@ -49,10 +51,11 @@ public class StripePaymentService : IStripePaymentService
         ISiteService siteService,
         IRequestOptionsService requestOptionsService,
         IStringLocalizer<StripePaymentService> stringLocalizer,
-        ISession session,
+        YesSql.ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
         IPaymentService paymentService,
-        IHtmlLocalizer<StripePaymentService> htmlLocalizer)
+        IHtmlLocalizer<StripePaymentService> htmlLocalizer,
+        IHttpContextAccessor httpContextAccessor)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _contentManager = contentManager;
@@ -63,6 +66,7 @@ public class StripePaymentService : IStripePaymentService
         T = stringLocalizer;
         _paymentService = paymentService;
         H = htmlLocalizer;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
@@ -97,7 +101,8 @@ public class StripePaymentService : IStripePaymentService
         return await _paymentIntentService.GetAsync(
             paymentIntentId,
             paymentIntentGetOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync());
+            await _requestOptionsService.SetIdempotencyKeyAsync(),
+            _httpContextAccessor.HttpContext.RequestAborted);
     }
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, string shoppingCartId) =>
@@ -215,7 +220,8 @@ public class StripePaymentService : IStripePaymentService
         {
             return new PaymentOperationStatusViewModel
             {
-                Status = PaymentOperationStatus.WaitingForStripe,
+                Status = PaymentOperationStatus.WaitingForRedirect,
+                Url = _httpContextAccessor.HttpContext.Request.GetDisplayUrl(),
             };
         }
 
@@ -272,7 +278,8 @@ public class StripePaymentService : IStripePaymentService
         {
             return new PaymentOperationStatusViewModel
             {
-                Status = PaymentOperationStatus.WaitingForStripe,
+                Status = PaymentOperationStatus.WaitingForRedirect,
+                Url = _httpContextAccessor.HttpContext.Request.GetDisplayUrl(),
             };
         }
 
@@ -310,7 +317,8 @@ public class StripePaymentService : IStripePaymentService
 
         var paymentIntent = await _paymentIntentService.CreateAsync(
             paymentIntentOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync());
+            await _requestOptionsService.SetIdempotencyKeyAsync(),
+            _httpContextAccessor.HttpContext.RequestAborted);
 
         _paymentIntentPersistence.Store(paymentIntent.Id);
 
@@ -380,7 +388,8 @@ public class StripePaymentService : IStripePaymentService
         return await _paymentIntentService.UpdateAsync(
             paymentIntentId,
             updateOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync());
+            await _requestOptionsService.SetIdempotencyKeyAsync(),
+            _httpContextAccessor.HttpContext.RequestAborted);
     }
 
     private async Task<ContentItem> GetOrderByPaymentIntentIdAsync(string paymentIntentId)

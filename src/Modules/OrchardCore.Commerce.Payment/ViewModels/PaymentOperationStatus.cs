@@ -6,9 +6,8 @@ namespace OrchardCore.Commerce.Payment.ViewModels;
 public enum PaymentOperationStatus
 {
     Succeeded = 0,
-    WaitingForPayment = 1,
-    WaitingForStripe = 2,
-    NotFound = 3,
-    Failed = 4,
-    NotThingToDo = 5,
+    WaitingForRedirect = 1,
+    NotFound = 2,
+    Failed = 3,
+    NotThingToDo = 4,
 }
