@@ -8,16 +8,14 @@ using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Drivers;
 
-public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, StripeApiSettings>
+public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSettings>
 {
     public const string GroupId = "StripeApi";
     private readonly ILogger _logger;
@@ -43,14 +41,16 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
         _logger = logger;
     }
 
-    public override async Task<IDisplayResult> EditAsync(StripeApiSettings section, BuildEditorContext context)
+    protected override string SettingsGroupId => GroupId;
+
+    public override async Task<IDisplayResult> EditAsync(ISite model, StripeApiSettings section, BuildEditorContext context)
     {
-        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || !await AuthorizeAsync())
+        if (!await AuthorizeAsync())
         {
             return null;
         }
 
-        context.Shape.AddTenantReloadWarning();
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<StripeApiSettingsViewModel>("StripeApiSettings_Edit", model =>
             {
@@ -62,19 +62,19 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
                 model.WebhookSigningSecret = section.WebhookSigningSecret.DecryptStripeApiKey(_dataProtectionProvider, _logger);
             })
             .PlaceInContent()
-            .OnGroup(GroupId);
+            .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(StripeApiSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite model, StripeApiSettings section, UpdateEditorContext context)
     {
-        if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, GroupId, AuthorizeAsync) is { } model)
+        if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
             var previousSecretKey = section.SecretKey;
             var previousWebhookKey = section.WebhookSigningSecret;
-            section.PublishableKey = model.PublishableKey?.Trim();
+            section.PublishableKey = viewModel.PublishableKey?.Trim();
 
             // Restore secret key if the input is empty, meaning that it has not been reset.
-            if (string.IsNullOrWhiteSpace(model.SecretKey))
+            if (string.IsNullOrWhiteSpace(viewModel.SecretKey))
             {
                 section.SecretKey = previousSecretKey;
             }
@@ -82,24 +82,24 @@ public class StripeApiSettingsDisplayDriver : SectionDisplayDriver<ISite, Stripe
             {
                 // Encrypt secret key.
                 var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
-                section.SecretKey = protector.Protect(model.SecretKey?.Trim());
+                section.SecretKey = protector.Protect(viewModel.SecretKey?.Trim());
             }
 
-            if (string.IsNullOrWhiteSpace(model.WebhookSigningSecret))
+            if (string.IsNullOrWhiteSpace(viewModel.WebhookSigningSecret))
             {
                 section.WebhookSigningSecret = previousWebhookKey;
             }
             else
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
-                section.WebhookSigningSecret = protector.Protect(model.WebhookSigningSecret?.Trim());
+                section.WebhookSigningSecret = protector.Protect(viewModel.WebhookSigningSecret?.Trim());
             }
 
             // Release the tenant to apply settings.
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
-        return await EditAsync(section, context);
+        return await EditAsync(model, section, context);
     }
 
     private Task<bool> AuthorizeAsync() =>

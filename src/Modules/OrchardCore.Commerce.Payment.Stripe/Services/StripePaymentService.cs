@@ -167,7 +167,7 @@ public class StripePaymentService : IStripePaymentService
         {
             updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(OrderPart.LineItems),
-                T["The order is empty."].Value);
+                T["The order is empty."]);
         }
 
         if (isNew)
