@@ -160,14 +160,13 @@ public class ExactlyPaymentProvider : IPaymentProvider
         var actionContext = _actionContextAccessor.ActionContext;
         actionContext ??= await GetActionContextAsync(_hca.HttpContext);
         var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
-        var relativeUrl = urlHelper.Action(actionName, controllerName, new
+        url = urlHelper.ToAbsoluteAction(actionName, controllerName, new
         {
             area = areaName,
             returnUrl = string.IsNullOrEmpty(returnUrl)
                     ? _hca.HttpContext.Request.GetDisplayUrl()
                     : returnUrl,
         });
-        url = urlHelper.ToAbsoluteUrl(relativeUrl);
         return url;
     }
 
