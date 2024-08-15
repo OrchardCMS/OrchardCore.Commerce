@@ -221,6 +221,8 @@ public class Startup : StartupBase
             .AddUpdateEndpoint()
             .AddRemoveLineEndpoint()
             .AddAddItemEndpoint()
+            .AddFreeEndpoint()
+            .AddCallbackEndpoint()
             ;
 }
 

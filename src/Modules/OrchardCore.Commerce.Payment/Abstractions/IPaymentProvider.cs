@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Payment.Controllers;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using System;
@@ -46,10 +46,10 @@ public interface IPaymentProvider
     /// If the provider thinks it can be resolved, best approach is to return <see
     /// cref="PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync"/>.
     /// </summary>
-    Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
-        string? shoppingCartId);
+        string? shoppingCartId
+        );
 }
 
 public static class PaymentProviderExtensions

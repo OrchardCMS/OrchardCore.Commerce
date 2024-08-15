@@ -2,7 +2,6 @@ using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -11,12 +10,10 @@ using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
-using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +22,7 @@ using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.Frontend
 
 namespace OrchardCore.Commerce.Payment.Controllers;
 
-public class PaymentController : Controller
+public class PaymentController : PaymentBaseController
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ILogger<PaymentController> _logger;
@@ -42,6 +39,7 @@ public class PaymentController : Controller
         INotifier notifier,
         IEnumerable<IPaymentProvider> paymentProviders,
         IPaymentService paymentService)
+        : base(notifier, services.Logger.Value)
     {
         _authorizationService = services.AuthorizationService.Value;
         _logger = services.Logger.Value;
@@ -55,7 +53,7 @@ public class PaymentController : Controller
     }
 
     [HttpGet("checkout")]
-    public async Task<IActionResult> Index(string? shoppingCartId)
+    public async Task<IActionResult> Index([FromQuery] string? shoppingCartId)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
         {
@@ -81,7 +79,7 @@ public class PaymentController : Controller
     [Route("checkout/price")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Price(string? shoppingCartId) =>
+    public async Task<IActionResult> Price([FromQuery] string? shoppingCartId) =>
         await this.SafeJsonAsync(async () =>
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Checkout))
@@ -102,7 +100,7 @@ public class PaymentController : Controller
     [Route("checkout/validate/{providerName}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Validate(string providerName, string? shoppingCartId = null)
+    public async Task<IActionResult> Validate(string providerName, [FromQuery] string? shoppingCartId = null)
     {
         if (string.IsNullOrEmpty(providerName)) return NotFound();
 
@@ -204,60 +202,28 @@ public class PaymentController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
-    public async Task<IActionResult> CheckoutWithoutPayment(string? shoppingCartId) =>
-        await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree: true) is { } order
-            ? await _paymentService.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId)
-            : NotFound();
+    public async Task<IActionResult> CheckoutWithoutPayment([FromQuery] string? shoppingCartId)
+    {
+        var result = await _paymentService.CheckoutWithoutPaymentAsync(shoppingCartId);
+        return await ProduceActionResultAsync(result);
+    }
 
     [HttpGet]
     [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
-    public Task<IActionResult> CallbackGet(string paymentProviderName, string? orderId, string? shoppingCartId) =>
+    public Task<IActionResult> CallbackGet(string paymentProviderName, string? orderId, [FromQuery] string? shoppingCartId) =>
         Callback(paymentProviderName, orderId, shoppingCartId);
 
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/callback/{paymentProviderName}/{orderId?}")]
-    public async Task<IActionResult> Callback(string paymentProviderName, string? orderId, string? shoppingCartId)
+    public async Task<IActionResult> Callback(string paymentProviderName, string? orderId, [FromQuery] string? shoppingCartId)
     {
-        if (string.IsNullOrWhiteSpace(paymentProviderName)) return NotFound();
-
-        var order = string.IsNullOrEmpty(orderId)
-            ? await _paymentService.CreatePendingOrderFromShoppingCartAsync(shoppingCartId)
-            : await _contentManager.GetAsync(orderId);
-        if (order is null) return NotFound();
-
-        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
-
-        if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
-        {
-            return this.RedirectToContentDisplay(order);
-        }
-
-        foreach (var provider in _paymentProviders.WhereName(paymentProviderName))
-        {
-            if (await provider.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId) is { } result)
-            {
-                return result;
-            }
-        }
-
-        await _notifier.ErrorAsync(H["The payment has failed, please try again."]);
-        return RedirectToAction(nameof(Index));
+        var result = await _paymentService.CallBackAsync(paymentProviderName, orderId, shoppingCartId);
+        return await ProduceActionResultAsync(result);
     }
 
+    [HttpGet]
     [Route("checkout/wait")]
-    public IActionResult Wait(string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
-
-    public static IActionResult RedirectToWait(Controller controller, string? returnUrl = null) =>
-        controller.RedirectToAction(
-            nameof(Wait),
-            typeof(PaymentController).ControllerName(),
-            new
-            {
-                area = FeatureIds.Payment,
-                returnUrl = string.IsNullOrEmpty(returnUrl)
-                    ? controller.HttpContext.Request.GetDisplayUrl()
-                    : returnUrl,
-            });
+    public IActionResult Wait([FromQuery] string returnUrl) => View(new CheckoutWaitViewModel(returnUrl));
 }
