@@ -23,10 +23,10 @@ public static class PaymentEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> AddFreeAsync(
-         string? shoppingCartId,
-         IAuthorizationService authorizationService,
-         HttpContext httpContext,
-         IPaymentService paymentService
+         [FromRoute] string? shoppingCartId,
+         [FromServices] IAuthorizationService authorizationService,
+         [FromServices] HttpContext httpContext,
+         [FromServices] IPaymentService paymentService
        )
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
@@ -49,12 +49,12 @@ public static class PaymentEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> AddCallbackAsync(
-         string paymentProviderName,
-         string? orderId,
+         [FromRoute] string paymentProviderName,
+         [FromRoute] string? orderId,
          [FromQuery] string? shoppingCartId,
-         IAuthorizationService authorizationService,
-         HttpContext httpContext,
-         IPaymentService paymentService
+         [FromServices] IAuthorizationService authorizationService,
+         [FromServices] HttpContext httpContext,
+         [FromServices] IPaymentService paymentService
        )
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))

@@ -19,8 +19,8 @@ public static class StripeEndpoint
     }
 
     private static async Task<IResult> AddStripeMiddlewareAsync(
-         string? shoppingCartId,
-         IStripePaymentService stripePaymentService,
+         [FromRoute] string? shoppingCartId,
+         [FromServices] IStripePaymentService stripePaymentService,
          [FromQuery(Name = "payment_intent")] string? paymentIntent = null
        )
     {
