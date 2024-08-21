@@ -6,7 +6,7 @@
     <!-- The Orchard Core version should always be x.y.0 of the latest minor version for maximum compatibility when
          distributed as NuGet packages. On the other hand, the consuming projects (including OrchardCore.Commerce.Web)
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
-    <OrchardCoreVersion>2.0.0-preview-18312</OrchardCoreVersion>
+    <OrchardCoreVersion>2.0.0-preview-18313</OrchardCoreVersion>
 
     <LombiqHelpfulLibrariesVersion>10.0.1-alpha.6.occ-280</LombiqHelpfulLibrariesVersion>
     <LombiqTestsUIVersion>10.0.2-alpha.3.occ-280</LombiqTestsUIVersion>
