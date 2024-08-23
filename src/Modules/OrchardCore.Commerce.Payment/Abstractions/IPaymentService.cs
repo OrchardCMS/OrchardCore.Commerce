@@ -1,15 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Payment.Constants;
-using OrchardCore.Commerce.Payment.Controllers;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Mvc.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -80,6 +77,16 @@ public interface IPaymentService
     /// Updates the provided Order content item from the update model as if it was just edited.
     /// </summary>
     Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order);
+
+    /// <summary>
+    /// Call back for payment.
+    /// </summary>
+    Task<PaymentOperationStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
+
+    /// <summary>
+    /// Free checkout.
+    /// </summary>
+    Task<PaymentOperationStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
 }
 
 public delegate Task AlterOrderAsyncDelegate(
@@ -91,9 +98,8 @@ public delegate Task AlterOrderAsyncDelegate(
 
 public static class PaymentServiceExtensions
 {
-    public static async Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
+    public static async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         this IPaymentService service,
-        Controller controller,
         ContentItem order,
         string? shoppingCartId,
         string? paymentProviderName = null,
@@ -101,10 +107,10 @@ public static class PaymentServiceExtensions
     {
         await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
         await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
-
-        return controller.RedirectToAction(
-            nameof(PaymentController.Success),
-            typeof(PaymentController).ControllerName(),
-            new { area = FeatureIds.Area, orderId = order.ContentItemId, });
+        return new PaymentOperationStatusViewModel
+        {
+            Status = PaymentOperationStatus.Succeeded,
+            Content = order,
+        };
     }
 }
