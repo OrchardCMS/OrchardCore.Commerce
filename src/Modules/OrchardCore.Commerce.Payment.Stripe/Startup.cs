@@ -1,9 +1,12 @@
 using Fluid;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Drivers;
+using OrchardCore.Commerce.Payment.Stripe.EndPoints.Api;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Migrations;
 using OrchardCore.Commerce.Payment.Stripe.Models;
@@ -15,6 +18,7 @@ using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using System;
 
 namespace OrchardCore.Commerce.Payment.Stripe;
 
@@ -41,4 +45,7 @@ public class Startup : StartupBase
 
         services.AddContentSecurityPolicyProvider<StripeContentSecurityPolicyProvider>();
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
+           routes.AddStripeMiddlewareEndpoint();
 }

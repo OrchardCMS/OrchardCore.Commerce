@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using Stripe;
@@ -57,15 +57,20 @@ public interface IStripePaymentService
     /// A shortcut method for updating the <paramref name="order"/> status to <see cref="OrderStatuses.Ordered"/>, doing
     /// final modifications and then redirecting to the success page.
     /// </summary>
-    Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         PaymentIntent paymentIntent,
-        string shoppingCartId);
+        string shoppingCartId
+        );
 
     /// <summary>
     /// Get the confirmation parameters for Stripe.
     /// </summary>
     /// <param name="middlewareAbsoluteUrl">The url for the middleware of Stripe.</param>
     Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl);
+
+    /// <summary>
+    /// Confirm the result of Stripe payment.
+    /// </summary>
+    Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId);
 }

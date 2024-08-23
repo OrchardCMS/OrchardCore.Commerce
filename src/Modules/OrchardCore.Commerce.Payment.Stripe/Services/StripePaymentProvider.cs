@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Settings;
@@ -76,8 +76,7 @@ public class StripePaymentProvider : IPaymentProvider
         return Task.CompletedTask;
     }
 
-    public Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         string shoppingCartId) =>
         throw new NotSupportedException(

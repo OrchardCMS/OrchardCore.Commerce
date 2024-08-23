@@ -45,7 +45,7 @@ public class PaymentService : IPaymentService
     private readonly IEnumerable<ICheckoutEvents> _checkoutEvents;
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
-    private readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer<PaymentService> H;
 
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -238,6 +238,76 @@ public class PaymentService : IPaymentService
         await _contentManager.CreateAsync(order);
 
         return order;
+    }
+
+    public async Task<PaymentOperationStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true)
+    {
+        if (await CreatePendingOrderFromShoppingCartAsync(shoppingCartId, mustBeFree) is { } order)
+        {
+            try
+            {
+                return await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId);
+            }
+            catch (Exception ex)
+            {
+                return new PaymentOperationStatusViewModel
+                {
+                    Status = PaymentOperationStatus.Failed,
+                    ShowMessage = H["You have paid the bill, but this system did not record it. Please contact the administrators."],
+                    HideMessage = ex.Message,
+                    Content = order,
+                };
+            }
+        }
+
+        return new PaymentOperationStatusViewModel
+        {
+            Status = PaymentOperationStatus.NotFound,
+        };
+    }
+
+    public async Task<PaymentOperationStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId)
+    {
+        if (string.IsNullOrWhiteSpace(paymentProviderName))
+            return new PaymentOperationStatusViewModel
+            {
+                Status = PaymentOperationStatus.NotFound,
+            };
+
+        var order = string.IsNullOrEmpty(orderId)
+            ? await CreatePendingOrderFromShoppingCartAsync(shoppingCartId)
+            : await _contentManager.GetAsync(orderId);
+        if (order is null)
+            return new PaymentOperationStatusViewModel
+            {
+                Status = PaymentOperationStatus.NotFound,
+            };
+
+        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
+
+        if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
+        {
+            return new PaymentOperationStatusViewModel
+            {
+                Status = PaymentOperationStatus.NotThingToDo,
+                Content = order,
+            };
+        }
+
+        foreach (var provider in _paymentProvidersLazy.Value.WhereName(paymentProviderName))
+        {
+            if (await provider.UpdateAndRedirectToFinishedOrderAsync(order, shoppingCartId) is { } result)
+            {
+                return result;
+            }
+        }
+
+        return new PaymentOperationStatusViewModel
+        {
+            Status = PaymentOperationStatus.Failed,
+            ShowMessage = H["The payment has failed, please try again."],
+            Content = order,
+        };
     }
 
     private async Task<bool> HandleErrorsAsync(IList<string> errors, bool notifyOnError, bool throwOnError)
