@@ -258,18 +258,17 @@ public class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegionSettings>>();
-        services.AddScoped<IDisplayDriver<DeploymentStep>>(serviceProvider =>
-            {
-                // It's the IStringLocalizer.
-#pragma warning disable SA1312 // Variable names should begin with lower-case letter
-                var T = serviceProvider.GetService<IStringLocalizer<DeploymentStartup>>();
-#pragma warning restore SA1312 // Variable names should begin with lower-case letter
-                return new SiteSettingsPropertyDeploymentStepDriver<RegionSettings>(
-                    T["Region settings"],
-                    T["Exports the region settings."]);
-            });
-        services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<RegionSettings>());
+        services.AddDeployment<SiteSettingsPropertyDeploymentSource<RegionSettings>, SiteSettingsPropertyDeploymentStep<RegionSettings>>();
+        services.AddScoped(ImplementationFactory);
+    }
+
+    private IDisplayDriver<DeploymentStep> ImplementationFactory(IServiceProvider serviceProvider)
+    {
+        var localizer = serviceProvider.GetService<IStringLocalizer<DeploymentStartup>>();
+
+        return new SiteSettingsPropertyDeploymentStepDriver<RegionSettings>(
+            localizer["Region settings"],
+            localizer["Exports the region settings."]);
     }
 }
 
