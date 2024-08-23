@@ -265,6 +265,7 @@ public class DeploymentStartup : StartupBase
     private IDisplayDriver<DeploymentStep> ImplementationFactory(IServiceProvider serviceProvider)
     {
         var localizer = serviceProvider.GetService<IStringLocalizer<DeploymentStartup>>();
+
         return new SiteSettingsPropertyDeploymentStepDriver<RegionSettings>(
             localizer["Region settings"],
             localizer["Exports the region settings."]);
