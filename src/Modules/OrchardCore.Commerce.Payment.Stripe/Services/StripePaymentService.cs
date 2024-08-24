@@ -271,7 +271,11 @@ public class StripePaymentService : IStripePaymentService
             };
         }
 
-        order.Alter<StripePaymentPart>(part => part.RetryCounter++);
+        order.Alter<StripePaymentPart>(part =>
+        {
+            part.PaymentIntentId.Text = fetchedPaymentIntent.Id;
+            part.RetryCounter++;
+        });
         await _contentManager.UpdateAsync(order);
 
         if (order.As<StripePaymentPart>().RetryCounter <= 10)
