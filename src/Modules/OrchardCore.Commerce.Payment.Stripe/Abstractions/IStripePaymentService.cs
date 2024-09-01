@@ -72,5 +72,5 @@ public interface IStripePaymentService
     /// <summary>
     /// Confirm the result of Stripe payment.
     /// </summary>
-    Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId);
+    Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId, bool needToJudgeIntentStorage = true);
 }

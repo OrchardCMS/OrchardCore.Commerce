@@ -212,11 +212,12 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
         string paymentIntent,
-        string shoppingCartId
+        string shoppingCartId,
+        bool needToJudgeIntentStorage = true
         )
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
-        if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
+        if (needToJudgeIntentStorage && string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
         {
             return new PaymentOperationStatusViewModel
             {
