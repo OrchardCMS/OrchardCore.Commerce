@@ -10,7 +10,9 @@ namespace OrchardCore.Commerce.Models;
 /// The product part describes the most basic product attribute: a SKU. It also identifies any content item as a product,
 /// by its mere presence.
 /// </summary>
-public class ProductPart : ContentPart, ISkuHolderContent
+#pragma warning disable S2333 // Redundant modifiers should not be used
+public partial class ProductPart : ContentPart, ISkuHolderContent
+#pragma warning restore S2333 // Redundant modifiers should not be used
 {
     /// <inheritdoc cref="ISkuHolder.Sku"/>
     public string Sku { get; set; }

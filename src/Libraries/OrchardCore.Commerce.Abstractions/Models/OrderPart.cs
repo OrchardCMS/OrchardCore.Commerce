@@ -10,7 +10,9 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Abstractions.Models;
 
-public class OrderPart : ContentPart
+#pragma warning disable S2333 // Redundant modifiers should not be used
+public partial class OrderPart : ContentPart
+#pragma warning restore S2333 // Redundant modifiers should not be used
 {
     public TextField OrderId { get; set; } = new();
     public TextField Status { get; set; } = new();
