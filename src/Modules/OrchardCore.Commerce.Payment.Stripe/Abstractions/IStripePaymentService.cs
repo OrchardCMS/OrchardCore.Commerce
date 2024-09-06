@@ -74,9 +74,9 @@ public interface IStripePaymentService
     /// Confirm the result of Stripe payment.
     /// </summary>
     /// <param name="paymentIntentId">The Payment Intent Id from Stripe.</param>
-    /// <param name="shoppingCartId">The Shopping Cart Id of this apllication.</param>
+    /// <param name="shoppingCartId">The Shopping Cart Id of this application.</param>
     /// <param name="needToJudgeIntentStorage">To judge if this method should use the storage of <see cref="PaymentIntentPersistence"/>.</param>
-    /// <returns>The status of payment opration.</returns>
+    /// <returns>The status of payment operation.</returns>
     Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
         string paymentIntentId,
         string shoppingCartId,
