@@ -117,14 +117,17 @@ public class ShoppingCartService : IShoppingCartService
                 new { LineItem = item },
                 $"ShoppingCart-{token}-{shoppingCartId}");
 
+            var sb = new StringBuilder();
             foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
             {
                 if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
                 {
-                    var sb = new StringBuilder();
                     sb.AppendLine(errorMessage.Value);
                     errored = sb.ToString();
                     isValid = false;
+#pragma warning disable S1227 // break statements should not be used except for switch cases
+                    break;
+#pragma warning restore S1227 // break statements should not be used except for switch cases
                 }
             }
 
