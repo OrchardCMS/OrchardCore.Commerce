@@ -111,8 +111,6 @@ public class ShoppingCartService : IShoppingCartService
 
         foreach (var (line, item) in lines)
         {
-            var isValid = true;
-
             await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
                 new { LineItem = item },
                 $"ShoppingCart-{token}-{shoppingCartId}");
@@ -123,16 +121,12 @@ public class ShoppingCartService : IShoppingCartService
                 if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
                 {
                     sb.AppendLine(errorMessage.Value);
-                    errored = sb.ToString();
-                    isValid = false;
-#pragma warning disable S1227 // break statements should not be used except for switch cases
-                    break;
-#pragma warning restore S1227 // break statements should not be used except for switch cases
                 }
             }
 
+            errored = sb.ToString();
             // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
-            if (!isValid)
+            if (!string.IsNullOrEmpty(errored))
             {
                 var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
                     .As<InventoryPart>().MinimumOrderQuantity.Value;
