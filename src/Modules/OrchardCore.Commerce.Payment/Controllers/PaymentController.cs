@@ -104,33 +104,8 @@ public class PaymentController : PaymentBaseController
     {
         if (string.IsNullOrEmpty(providerName)) return NotFound();
 
-        try
-        {
-            await _paymentProviders
-                .WhereName(providerName)
-                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId));
-
-            var errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
-            return Json(new { Errors = errors });
-        }
-        catch (FrontendException exception)
-        {
-            return Json(new { Errors = exception.HtmlMessages });
-        }
-        catch (Exception exception)
-        {
-            var shoppingCartIdForDisplay = shoppingCartId == null ? "(null)" : $"\"{shoppingCartId}\"";
-
-            _logger.LogError(
-                exception,
-                "An exception has occurred during checkout form validation for shopping cart ID {ShoppingCartId}.",
-                shoppingCartIdForDisplay);
-            var errorMessage = HttpContext.IsDevelopmentAndLocalhost()
-                ? exception.ToString()
-                : T["An exception has occurred during checkout form validation for shopping cart ID {0}.", shoppingCartIdForDisplay].Value;
-
-            return Json(new { Errors = new[] { errorMessage } });
-        }
+        var errors = await _paymentService.ValidateErrorsAsync(providerName, shoppingCartId);
+        return Json(new { Errors = errors });
     }
 
     [HttpGet("checkout/paymentrequest/{orderId}")]

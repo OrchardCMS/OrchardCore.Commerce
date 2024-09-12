@@ -87,6 +87,14 @@ public interface IPaymentService
     /// Free checkout.
     /// </summary>
     Task<PaymentOperationStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
+
+    /// <summary>
+    /// Validate the checkout.
+    /// </summary>
+    /// <param name="providerName">The name of provider.</param>
+    /// <param name="shoppingCartId">Shopping Cart.</param>
+    /// <returns>The list of the errors.</returns>
+    Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId);
 }
 
 public delegate Task AlterOrderAsyncDelegate(
