@@ -1,33 +1,27 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Payment.Controllers;
 
 public class PaymentController : PaymentBaseController
 {
     private readonly IAuthorizationService _authorizationService;
-    private readonly ILogger<PaymentController> _logger;
     private readonly IContentManager _contentManager;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IStringLocalizer T;
     private readonly IHtmlLocalizer<PaymentController> H;
     private readonly INotifier _notifier;
@@ -35,16 +29,13 @@ public class PaymentController : PaymentBaseController
     private readonly IPaymentService _paymentService;
     public PaymentController(
         IOrchardServices<PaymentController> services,
-        IUpdateModelAccessor updateModelAccessor,
         INotifier notifier,
         IEnumerable<IPaymentProvider> paymentProviders,
         IPaymentService paymentService)
         : base(notifier, services.Logger.Value)
     {
         _authorizationService = services.AuthorizationService.Value;
-        _logger = services.Logger.Value;
         _contentManager = services.ContentManager.Value;
-        _updateModelAccessor = updateModelAccessor;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _notifier = notifier;
