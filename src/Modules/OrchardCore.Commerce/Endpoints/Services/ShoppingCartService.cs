@@ -111,25 +111,22 @@ public class ShoppingCartService : IShoppingCartService
 
         foreach (var (line, item) in lines)
         {
-            var isValid = true;
-
             await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
                 new { LineItem = item },
                 $"ShoppingCart-{token}-{shoppingCartId}");
 
+            var sb = new StringBuilder();
             foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
             {
                 if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
                 {
-                    var sb = new StringBuilder();
                     sb.AppendLine(errorMessage.Value);
-                    errored = sb.ToString();
-                    isValid = false;
                 }
             }
 
+            errored = sb.ToString();
             // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
-            if (!isValid)
+            if (!string.IsNullOrEmpty(errored))
             {
                 var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
                     .As<InventoryPart>().MinimumOrderQuantity.Value;

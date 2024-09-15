@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -46,7 +47,7 @@ public class PaymentService : IPaymentService
     private readonly INotifier _notifier;
     private readonly IMoneyService _moneyService;
     private readonly IHtmlLocalizer<PaymentService> H;
-
+    private readonly ILogger<PaymentService> _logger;
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentService(
@@ -77,6 +78,7 @@ public class PaymentService : IPaymentService
         _moneyService = moneyService;
         _hca = services.HttpContextAccessor.Value;
         H = services.HtmlLocalizer.Value;
+        _logger = services.Logger.Value;
     }
 
     public async Task<ICheckoutViewModel?> CreateCheckoutViewModelAsync(
@@ -400,5 +402,39 @@ public class PaymentService : IPaymentService
         }
 
         return (order, isNew);
+    }
+
+    public async Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId)
+    {
+        var errors = new List<string>();
+        try
+        {
+            await _paymentProvidersLazy
+                .Value
+                .WhereName(providerName)
+                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId));
+
+            errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
+        }
+        catch (FrontendException exception)
+        {
+            errors = exception.HtmlMessages.Select(m => m.Value).ToList();
+        }
+        catch (Exception exception)
+        {
+            var shoppingCartIdForDisplay = shoppingCartId == null ? "(null)" : $"\"{shoppingCartId}\"";
+
+            _logger.LogError(
+                exception,
+                "An exception has occurred during checkout form validation for shopping cart ID {ShoppingCartId}.",
+                shoppingCartIdForDisplay);
+            var errorMessage = _hca.HttpContext.IsDevelopmentAndLocalhost()
+                ? exception.ToString()
+                : H["An exception has occurred during checkout form validation for shopping cart ID {0}.", shoppingCartIdForDisplay].Value;
+
+            errors.Add(errorMessage);
+        }
+
+        return errors;
     }
 }
