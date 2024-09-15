@@ -211,12 +211,13 @@ public class StripePaymentService : IStripePaymentService
     }
 
     public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
-        string paymentIntent,
-        string shoppingCartId
+        string paymentIntentId,
+        string shoppingCartId,
+        bool needToJudgeIntentStorage = true
         )
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
-        if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
+        if (needToJudgeIntentStorage && string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
         {
             return new PaymentOperationStatusViewModel
             {
@@ -227,8 +228,8 @@ public class StripePaymentService : IStripePaymentService
 
         // If we can't find a valid payment intent based on ID or if we can't find the associated order, then something
         // went wrong and continuing from here would only cause a crash anyway.
-        if (await GetPaymentIntentAsync(paymentIntent) is not { PaymentMethod: not null } fetchedPaymentIntent ||
-            (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId is not { } orderId ||
+        if (await GetPaymentIntentAsync(paymentIntentId) is not { PaymentMethod: not null } fetchedPaymentIntent ||
+            (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntentId))?.OrderId is not { } orderId ||
             await _contentManager.GetAsync(orderId) is not { } order)
         {
             return new PaymentOperationStatusViewModel
@@ -236,7 +237,7 @@ public class StripePaymentService : IStripePaymentService
                 Status = PaymentOperationStatus.NotFound,
                 ShowMessage = H[
                     "Couldn't find the payment intent \"{0}\" or the order associated with it.",
-                    paymentIntent ?? string.Empty],
+                    paymentIntentId ?? string.Empty],
             };
         }
 

@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -72,5 +73,12 @@ public interface IStripePaymentService
     /// <summary>
     /// Confirm the result of Stripe payment.
     /// </summary>
-    Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(string paymentIntent, string shoppingCartId);
+    /// <param name="paymentIntentId">The Payment Intent Id from Stripe.</param>
+    /// <param name="shoppingCartId">The Shopping Cart Id of this application.</param>
+    /// <param name="needToJudgeIntentStorage">To judge if this method should use the storage of <see cref="PaymentIntentPersistence"/>.</param>
+    /// <returns>The status of payment operation.</returns>
+    Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
+        string paymentIntentId,
+        string shoppingCartId,
+        bool needToJudgeIntentStorage = true);
 }
