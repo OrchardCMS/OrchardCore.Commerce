@@ -88,14 +88,14 @@ public class PaymentController : PaymentBaseController
             };
         });
 
-    [Route("checkout/validate/{providerName}")]
+    [Route("checkout/validate/{providerName}/{paymentIntentId}")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Validate(string providerName, [FromQuery] string? shoppingCartId = null)
+    public async Task<IActionResult> Validate(string providerName, string paymentIntentId, [FromQuery] string? shoppingCartId = null)
     {
         if (string.IsNullOrEmpty(providerName)) return NotFound();
 
-        var errors = await _paymentService.ValidateErrorsAsync(providerName, shoppingCartId);
+        var errors = await _paymentService.ValidateErrorsAsync(providerName, shoppingCartId, paymentIntentId);
         return Json(new { Errors = errors });
     }
 

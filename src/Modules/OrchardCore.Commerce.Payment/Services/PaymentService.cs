@@ -404,7 +404,7 @@ public class PaymentService : IPaymentService
         return (order, isNew);
     }
 
-    public async Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId)
+    public async Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId, string? paymentIntentId)
     {
         var errors = new List<string>();
         try

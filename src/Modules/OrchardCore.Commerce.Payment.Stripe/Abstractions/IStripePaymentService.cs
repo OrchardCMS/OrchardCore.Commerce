@@ -36,7 +36,10 @@ public interface IStripePaymentService
     /// Creates an order content item in the database, based on the stored <see cref="PaymentIntent"/> and on the
     /// current <see cref="ShoppingCart"/> content.
     /// </summary>
-    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId);
+    Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
+        IUpdateModelAccessor updateModelAccessor,
+        string shoppingCartId,
+        string paymentIntentId);
 
     /// <summary>
     /// Updates the corresponding order status to <see cref="OrderStatuses.Ordered"/> for the given

@@ -94,7 +94,7 @@ public interface IPaymentService
     /// <param name="providerName">The name of provider.</param>
     /// <param name="shoppingCartId">Shopping Cart.</param>
     /// <returns>The list of the errors.</returns>
-    Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId);
+    Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId, string? paymentIntentId);
 }
 
 public delegate Task AlterOrderAsyncDelegate(

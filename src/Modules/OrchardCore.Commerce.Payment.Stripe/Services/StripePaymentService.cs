@@ -154,9 +154,13 @@ public class StripePaymentService : IStripePaymentService
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
             .FirstOrDefaultAsync();
 
-    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId)
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
+        IUpdateModelAccessor updateModelAccessor,
+        string shoppingCartId,
+        string paymentIntentId)
     {
-        var paymentIntent = await GetPaymentIntentAsync(_paymentIntentPersistence.Retrieve());
+        var innerPaymentIntentId = paymentIntentId ?? _paymentIntentPersistence.Retrieve();
+        var paymentIntent = await GetPaymentIntentAsync(innerPaymentIntentId);
 
         // Stripe doesn't support multiple shopping cart IDs because we can't send that info to the middleware anyway.
         var (order, isNew) = await _paymentService.CreateOrUpdateOrderFromShoppingCartAsync(
