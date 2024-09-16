@@ -412,7 +412,7 @@ public class PaymentService : IPaymentService
             await _paymentProvidersLazy
                 .Value
                 .WhereName(providerName)
-                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId));
+                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId, paymentIntentId));
 
             errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
         }
