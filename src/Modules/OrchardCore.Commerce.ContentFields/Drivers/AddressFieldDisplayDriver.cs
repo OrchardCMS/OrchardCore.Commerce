@@ -28,6 +28,7 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
         [nameof(Address.Name)] = address => address.Name,
         [nameof(Address.StreetAddress1)] = address => address.StreetAddress1,
         [nameof(Address.City)] = address => address.City,
+        [nameof(Address.Province)] = address => address.Province,
     };
 
     private readonly IEnumerable<IAddressUpdater> _addressUpdaters;
