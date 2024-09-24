@@ -140,9 +140,9 @@ public class StripePaymentService : IStripePaymentService
     private static Func<OrderPart, IEnumerable<IPayment>> CreateChargesProvider(PaymentIntent paymentIntent) =>
         orderPart => orderPart.Charges.Select(charge => paymentIntent.CreatePayment(charge.Amount));
 
-    public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
+    public async Task UpdateOrderToPaymentFailedAsync(string paymentIntentId)
     {
-        var order = await GetOrderByPaymentIntentIdAsync(paymentIntent.Id);
+        var order = await GetOrderByPaymentIntentIdAsync(paymentIntentId);
         order.Alter<OrderPart>(orderPart =>
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatusCodes.PaymentFailed });
 
