@@ -104,7 +104,7 @@ window.stripePaymentForm = function stripePaymentForm(
                         });
                 }
 
-                const validationJson = await fetchPost(validateUrl + '/' + paymentIntentId);
+                const validationJson = await fetchPost(`${validateUrl}/${paymentIntentId}`);
                 if (validationJson?.errors?.length) {
                     toggleInputs(true);
                     throw validationJson.errors;
