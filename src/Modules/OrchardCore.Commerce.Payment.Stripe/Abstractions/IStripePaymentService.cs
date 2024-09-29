@@ -39,7 +39,7 @@ public interface IStripePaymentService
     Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
         IUpdateModelAccessor updateModelAccessor,
         string shoppingCartId,
-        string paymentIntentId);
+        string paymentIntentId = null);
 
     /// <summary>
     /// Updates the corresponding order status to <see cref="OrderStatuses.Ordered"/> for the given
