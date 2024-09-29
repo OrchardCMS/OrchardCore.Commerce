@@ -157,7 +157,7 @@ public class StripePaymentService : IStripePaymentService
     public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
         IUpdateModelAccessor updateModelAccessor,
         string shoppingCartId,
-        string paymentIntentId)
+        string paymentIntentId = null)
     {
         var innerPaymentIntentId = paymentIntentId ?? _paymentIntentPersistence.Retrieve();
         var paymentIntent = await GetPaymentIntentAsync(innerPaymentIntentId);

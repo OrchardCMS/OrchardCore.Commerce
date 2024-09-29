@@ -66,8 +66,8 @@ public class StripePaymentProvider : IPaymentProvider
         };
     }
 
-    public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId, string paymentIntentId = null) =>
-        _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor, shoppingCartId, paymentIntentId);
+    public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId, string paymentId = null) =>
+        _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor, shoppingCartId, paymentId);
 
     public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
     {
