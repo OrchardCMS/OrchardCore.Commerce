@@ -1,11 +1,12 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
@@ -48,6 +49,6 @@ public class StripeController : PaymentBaseController
     {
         var middlewareUrl = Url.ToAbsoluteUrl("~/checkout/middleware/Stripe");
         var model = await _stripePaymentService.GetStripeConfirmParametersAsync(middlewareUrl);
-        return Json(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        return Json(model, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
     }
 }
