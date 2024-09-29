@@ -64,7 +64,7 @@ public class WebhookController : Controller
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
                 var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                await _stripePaymentService.UpdateOrderToPaymentFailedAsync(paymentIntent);
+                await _stripePaymentService.UpdateOrderToPaymentFailedAsync(paymentIntent.Id);
             }
 
             return Ok();

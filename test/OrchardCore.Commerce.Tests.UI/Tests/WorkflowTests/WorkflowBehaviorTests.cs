@@ -9,9 +9,9 @@ using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.WorkflowTests;
 
-public class WorkflowBehaviourTests : UITestBase
+public class WorkflowBehaviorTests : UITestBase
 {
-    public WorkflowBehaviourTests(ITestOutputHelper testOutputHelper)
+    public WorkflowBehaviorTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
     }

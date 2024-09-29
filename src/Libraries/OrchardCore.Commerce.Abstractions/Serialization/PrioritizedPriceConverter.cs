@@ -1,12 +1,13 @@
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Serialization;
 
-internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
+public sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice>
 {
     public const string PriorityName = "priority";
     public const string AmountName = "amount";
@@ -15,6 +16,11 @@ internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice
     {
         var priority = int.MinValue;
         var amount = Amount.Unspecified;
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            return new(priority, AmountConverter.ReadString(reader.GetString()));
+        }
 
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
@@ -36,18 +42,18 @@ internal sealed class PrioritizedPriceConverter : JsonConverter<PrioritizedPrice
 
         if (priority > int.MinValue && !amount.Currency.Equals(Currency.UnspecifiedCurrency))
         {
-            return new PrioritizedPrice(priority, amount);
+            return new(priority, amount);
         }
 
         return null;
     }
 
-    public override void Write(Utf8JsonWriter writer, PrioritizedPrice prioritizedPrice, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, PrioritizedPrice value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
-        writer.WriteNumber(PriorityName, prioritizedPrice.Priority);
+        writer.WriteNumber(PriorityName, value.Priority);
         writer.WritePropertyName(AmountName);
-        JsonSerializer.Serialize(writer, prioritizedPrice.Price, options);
+        JsonSerializer.Serialize(writer, value.Price, options);
         writer.WriteEndObject();
     }
 }

@@ -48,9 +48,9 @@ public interface IStripePaymentService
     Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, string shoppingCartId);
 
     /// <summary>
-    /// Updates the corresponding order status to failed payment for the given <paramref name="paymentIntent"/>.
+    /// Updates the corresponding order status to failed payment for the given paymentIntentId.
     /// </summary>
-    Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent);
+    Task UpdateOrderToPaymentFailedAsync(string paymentIntentId);
 
     /// <summary>
     /// Return the saved <see cref="OrderPayment"/> for the given <paramref name="paymentIntentId"/>.

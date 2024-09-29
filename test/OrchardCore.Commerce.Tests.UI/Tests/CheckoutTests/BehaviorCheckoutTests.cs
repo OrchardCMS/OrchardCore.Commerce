@@ -9,7 +9,6 @@ using OrchardCore.ContentFields.Fields;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
-
 using static OrchardCore.Commerce.ContentFields.Constants.FeatureIds;
 using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 

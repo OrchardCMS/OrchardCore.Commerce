@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore
 @using OrchardCore.Commerce.Payment.Exactly.Controllers
-
 @{
     var actionUrl = Orchard.Action<ExactlyController>(controller => controller.CreateTransaction(null));
     var statusUrl = Orchard.Action<ExactlyController>(controller => controller.GetRedirectUrl("TRANSACTION_ID"));

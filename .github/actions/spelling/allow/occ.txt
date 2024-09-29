@@ -17,6 +17,7 @@ foobool
 footext
 GST
 htmlfield
+JConvert
 LCID
 markdownlint
 Mastercard

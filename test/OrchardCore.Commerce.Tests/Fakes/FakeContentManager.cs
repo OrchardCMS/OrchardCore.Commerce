@@ -10,28 +10,24 @@ public class FakeContentManager : IContentManager
 {
     public Task<ContentItem> CloneAsync(ContentItem contentItem) => throw new NotSupportedException();
 
-    public Task CreateAsync(ContentItem contentItem, VersionOptions options, bool invokeUpdateCallbacks) =>
+    public Task CreateAsync(ContentItem contentItem, VersionOptions options = null) =>
         throw new NotSupportedException();
-
-    public Task CreateAsync(ContentItem contentItem, VersionOptions options) =>
-        CreateAsync(contentItem, options, invokeUpdateCallbacks: false);
 
     public Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem) =>
         throw new NotSupportedException();
 
     public Task DiscardDraftAsync(ContentItem contentItem) => throw new NotSupportedException();
 
-    public Task<ContentItem> GetAsync(string id) => throw new NotSupportedException();
-
-    public Task<ContentItem> GetAsync(string id, VersionOptions options) => throw new NotSupportedException();
+    public Task<ContentItem> GetAsync(string contentItemId, VersionOptions options = null) => throw new NotSupportedException();
 
     public Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false) =>
         throw new NotSupportedException();
 
-    public Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options) =>
+    public Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options = null) =>
         throw new NotSupportedException();
 
     public Task<ContentItem> GetVersionAsync(string contentItemVersionId) => throw new NotSupportedException();
+    public Task<IEnumerable<ContentItem>> GetAllVersionsAsync(string contentItemId) => throw new NotSupportedException();
 
     public Task ImportAsync(IEnumerable<ContentItem> contentItems) => throw new NotSupportedException();
 

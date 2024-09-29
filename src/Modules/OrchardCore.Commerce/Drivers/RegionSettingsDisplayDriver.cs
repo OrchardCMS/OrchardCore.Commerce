@@ -7,17 +7,15 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
-public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSettings>
+public class RegionSettingsDisplayDriver : SiteDisplayDriver<RegionSettings>
 {
     public const string GroupId = "Region";
 
@@ -41,17 +39,17 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
         _regionService = regionService;
     }
 
-    public override async Task<IDisplayResult> EditAsync(RegionSettings section, BuildEditorContext context)
-    {
-        var user = _hca.HttpContext?.User;
+    protected override string SettingsGroupId
+        => GroupId;
 
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId) ||
-            !await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings))
+    public override async Task<IDisplayResult> EditAsync(ISite model, RegionSettings section, BuildEditorContext context)
+    {
+        if (!await AuthorizeAsync())
         {
             return null;
         }
 
-        context.Shape.AddTenantReloadWarning();
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
             {
@@ -61,38 +59,29 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
                     .CreateSelectListOptions();
             })
             .PlaceInContent()
-            .OnGroup(GroupId);
+            .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RegionSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite model, RegionSettings section, UpdateEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings))
+        if (await context.CreateModelMaybeAsync<RegionSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
-            return null;
+            var allowedRegions = viewModel.AllowedRegions?.AsList() ?? [];
+            var allRegionTwoLetterIsoRegionNames = _regionService
+                .GetAllRegions()
+                .Select(region => region.TwoLetterISORegionName);
+
+            section.AllowedRegions = allowedRegions.Count != 0
+                ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
+                : allRegionTwoLetterIsoRegionNames;
+
+            // Release the tenant to apply settings.
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
-        if (context.GroupId == GroupId)
-        {
-            var model = new RegionSettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                var allowedRegions = model.AllowedRegions.AsList() ?? [];
-                var allRegionTwoLetterIsoRegionNames = _regionService
-                    .GetAllRegions()
-                    .Select(region => region.TwoLetterISORegionName);
-
-                section.AllowedRegions = allowedRegions.Count != 0
-                    ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
-                    : allRegionTwoLetterIsoRegionNames;
-
-                // Release the tenant to apply settings.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
-        }
-
-        return await EditAsync(section, context);
+        return await EditAsync(model, section, context);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, Permissions.ManageRegionSettings);
 }

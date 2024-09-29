@@ -100,4 +100,6 @@ nav:
       - NumericProductAttributeField: features/numeric-product-attribute-field.md
   - Resources:
     - Libraries: resources/libraries/README.md
-  - Releases: https://github.com/OrchardCMS/OrchardCore.Commerce/releases
+  - Releases and Notes:
+    - GitHub: https://github.com/OrchardCMS/OrchardCore.Commerce/releases
+    - 3.0.0: docs/releases/3.0.0.md

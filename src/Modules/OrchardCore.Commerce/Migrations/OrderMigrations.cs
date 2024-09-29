@@ -1,27 +1,18 @@
-using Lombiq.HelpfulLibraries.OrchardCore.Contents;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Html.Models;
 using OrchardCore.Title.Models;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using YesSql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 using static OrchardCore.Commerce.Abstractions.Constants.OrderStatuses;
-using JArray = Newtonsoft.Json.Linq.JArray;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -55,7 +46,7 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The title of the order"))
                 .WithPart(nameof(HtmlBodyPart), part => part
                     .WithDisplayName("Annotations")
-                    .WithSettings(new ContentTypePartSettings { Editor = "Wysiwyg", })
+                    .WithSettings(new ContentTypePartSettings { Editor = "Trumbowyg", })
                 )
                 .WithPart(nameof(OrderPart)));
 
@@ -113,7 +104,7 @@ public class OrderMigrations : DataMigration
                     .WithDisplayName("Buyer is a corporation"))
             );
 
-        return 8;
+        return 9;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -228,59 +219,15 @@ public class OrderMigrations : DataMigration
                     .WithDescription("The VAT number of the buyer, in case it's a corporation."))
             );
 
-        return 6;
-    }
-
-    public int UpdateFrom6()
-    {
-        ShellScope.AddDeferredTask(async scope =>
-        {
-            var session = scope.ServiceProvider.GetRequiredService<ISession>();
-            var orders = await session.QueryContentItem(PublicationStatus.Any, Order).ListAsync();
-            var expectedType = JToken.FromObject(
-                new Payment.Models.Payment(
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    Amount.Unspecified,
-                    DateTime.UtcNow),
-                new JsonSerializer
-                {
-                    // Same as for <see cref="OrderPart.Charges"/>. We need to use different type name handling other
-                    // than none, otherwise we won't have the $type property in the serialized JSON.
-#pragma warning disable CA2326 // Do not use TypeNameHandling values other than None
-                    TypeNameHandling = TypeNameHandling.Objects,
-#pragma warning restore CA2326 // Do not use TypeNameHandling values other than None
-                })["$type"]?.ToString();
-
-            foreach (var order in orders)
-            {
-                if (order.Content.OrderPart["Charges"] is not JArray charges)
-                {
-                    continue;
-                }
-
-                foreach (var payment in charges)
-                {
-                    var paymentType = payment["$type"]?.ToString();
-
-                    // We should modify only if the old Payment type or wrongly saved Payment type is present before
-                    // this migration was written. There might be other serialized types in the Charges JArray that
-                    // implements IPayment which shouldn't be modified. Otherwise continue with the next one.
-                    if (paymentType is not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce" and
-                        not "OrchardCore.Commerce.Models.Payment, OrchardCore.Commerce.Payment")
-                    {
-                        continue;
-                    }
-
-                    payment["$type"] = expectedType;
-                    await session.SaveAsync(order);
-                }
-            }
-        });
-
         return 7;
     }
+
+    // Previously this migration step updated the type indicator property in serialized order payment instances.
+    // This is no longer supported due to the intentionally reduced polymorphic deserialization capabilities of
+    // System.Text.Json. It's also no longer necessary because OrchardCore.Commerce.Abstractions.Models.Payment is
+    // the only accepted item type for OrderPart.Charges.
+    [SuppressMessage("Minor Code Smell", "S3400:Methods should not return constants", Justification = "That's not how migrations work.")]
+    public int UpdateFrom6() => 7;
 
     public async Task<int> UpdateFrom7Async()
     {
@@ -307,5 +254,15 @@ public class OrderMigrations : DataMigration
             );
 
         return 8;
+    }
+
+    public async Task<int> UpdateFrom8Async()
+    {
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(Order, type => type
+            .WithPart<HtmlBodyPart>(part => part
+                .WithSettings(new ContentTypePartSettings { Editor = "Trumbowyg", })
+            ));
+
+        return 9;
     }
 }
