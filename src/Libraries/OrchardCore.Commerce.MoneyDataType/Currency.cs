@@ -9,7 +9,6 @@ using System.Text.Json.Serialization;
 namespace OrchardCore.Commerce.MoneyDataType;
 
 [JsonConverter(typeof(CurrencyConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(LegacyCurrencyConverter))]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly partial struct Currency : ICurrency, IEquatable<Currency>
 {

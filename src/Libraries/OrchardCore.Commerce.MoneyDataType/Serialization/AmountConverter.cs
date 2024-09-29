@@ -1,12 +1,14 @@
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
+using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static OrchardCore.Commerce.MoneyDataType.Currency;
 
 namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
-internal sealed class AmountConverter : JsonConverter<Amount>
+public sealed class AmountConverter : JsonConverter<Amount>
 {
     public const string ValueName = "value";
     public const string CurrencyName = "currency";
@@ -26,6 +28,11 @@ internal sealed class AmountConverter : JsonConverter<Amount>
         string symbol = null;
         string iso = null;
         int? decimalDigits = null;
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            return ReadString(reader.GetString());
+        }
 
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
@@ -61,37 +68,35 @@ internal sealed class AmountConverter : JsonConverter<Amount>
             }
         }
 
-        if (reader.TokenType == JsonTokenType.String) return LegacyAmountConverter.ReadString(reader.GetString());
-
         currency = HandleUnknownCurrency(currency, nativeName, englishName, symbol, iso, decimalDigits);
 
-        return new Amount(value, currency);
+        return new(value, currency);
     }
 
-    public override void Write(Utf8JsonWriter writer, Amount amount, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, Amount value, JsonSerializerOptions options)
     {
-        if (amount.Currency is null)
+        if (value.Currency is null)
         {
             throw new InvalidOperationException("Amount must have a currency applied to allow serialization.");
         }
 
         writer.WriteStartObject();
-        writer.WriteNumber(ValueName, amount.Value);
+        writer.WriteNumber(ValueName, value.Value);
 
-        if (IsKnownCurrency(amount.Currency.CurrencyIsoCode))
+        if (IsKnownCurrency(value.Currency.CurrencyIsoCode))
         {
-            writer.WriteString(CurrencyName, amount.Currency.CurrencyIsoCode);
+            writer.WriteString(CurrencyName, value.Currency.CurrencyIsoCode);
         }
         else
         {
-            writer.WriteString(NativeName, amount.Currency.NativeName);
-            writer.WriteString(EnglishName, amount.Currency.EnglishName);
-            writer.WriteString(Symbol, amount.Currency.Symbol);
-            writer.WriteString(Iso, amount.Currency.CurrencyIsoCode);
+            writer.WriteString(NativeName, value.Currency.NativeName);
+            writer.WriteString(EnglishName, value.Currency.EnglishName);
+            writer.WriteString(Symbol, value.Currency.Symbol);
+            writer.WriteString(Iso, value.Currency.CurrencyIsoCode);
 
-            if (amount.Currency.DecimalPlaces != DefaultDecimalDigits)
+            if (value.Currency.DecimalPlaces != DefaultDecimalDigits)
             {
-                writer.WriteNumber(DecimalDigits, amount.Currency.DecimalPlaces);
+                writer.WriteNumber(DecimalDigits, value.Currency.DecimalPlaces);
             }
         }
 
@@ -119,5 +124,21 @@ internal sealed class AmountConverter : JsonConverter<Amount>
         if (currency != null) return currency;
 
         throw new InvalidOperationException($"Invalid amount format. Must include a {nameof(currency)}.");
+    }
+
+    public static Amount ReadString(string text)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(text);
+
+        var parts = text.Split();
+        if (parts.Length < 2)
+        {
+            throw new InvalidOperationException($"Unable to parse string amount \"{text}\".");
+        }
+
+        var currency = FromIsoCode(parts[0]);
+        var value = decimal.Parse(string.Join(string.Empty, parts.Skip(1)), CultureInfo.InvariantCulture);
+
+        return new(value, currency);
     }
 }

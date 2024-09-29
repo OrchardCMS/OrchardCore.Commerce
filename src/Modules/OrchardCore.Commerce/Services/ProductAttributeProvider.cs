@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Fields;
@@ -10,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -35,7 +34,7 @@ public class ProductAttributeProvider : IProductAttributeProvider
         var element = value switch
         {
             JsonElement jsonElement => jsonElement,
-            JToken jToken => JsonDocument.Parse(JsonConvert.SerializeObject(jToken)).RootElement,
+            JsonNode jsonNode => JsonDocument.Parse(jsonNode.ToJsonString()).RootElement,
             _ => default,
         };
 

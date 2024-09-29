@@ -80,7 +80,7 @@ public class FieldsOnlyDisplayManager : IFieldsOnlyDisplayManager
         var returnUrl = context.Request.PathBase + context.Request.Path + context.Request.QueryString;
 
         var editAction = context.ActionTask<TemplateController>(controller => controller.Edit(null, false, returnUrl));
-        var createAction = context.ActionTask<TemplateController>(controller => controller.Create(false, returnUrl));
+        var createAction = context.ActionTask<TemplateController>(controller => controller.Create(null, false, returnUrl));
 
         return (await GetFieldShapeTypesAsync(contentItem, displayType))
             .Select(name =>

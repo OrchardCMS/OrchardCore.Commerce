@@ -341,7 +341,7 @@ public class PaymentService : IPaymentService
     public async Task UpdateOrderToOrderedAsync(
         ContentItem order,
         string? shoppingCartId,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null)
     {
         ArgumentNullException.ThrowIfNull(order);
 

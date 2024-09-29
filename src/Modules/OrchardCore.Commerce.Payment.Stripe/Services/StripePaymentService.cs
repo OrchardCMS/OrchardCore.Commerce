@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
@@ -19,8 +18,6 @@ using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Entities;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 using Stripe;
 using System;
@@ -137,7 +134,7 @@ public class StripePaymentService : IStripePaymentService
         }
     }
 
-    private static Func<OrderPart, IEnumerable<IPayment>> CreateChargesProvider(PaymentIntent paymentIntent) =>
+    private static Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>> CreateChargesProvider(PaymentIntent paymentIntent) =>
         orderPart => orderPart.Charges.Select(charge => paymentIntent.CreatePayment(charge.Amount));
 
     public async Task UpdateOrderToPaymentFailedAsync(string paymentIntentId)
@@ -195,7 +192,7 @@ public class StripePaymentService : IStripePaymentService
         {
             updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(OrderPart.LineItems),
-                T["The order is empty."].Value);
+                T["The order is empty."]);
         }
 
         if (isNew)

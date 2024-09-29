@@ -2,10 +2,10 @@ using Atata;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
-using Newtonsoft.Json;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.AddressDataType;
 using Shouldly;
+using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -78,7 +78,7 @@ public class UserPersistenceTests : UITestBase
                 const string getInputsScript = @"return JSON.stringify(
                     Array.from(document.querySelectorAll(`form[action='/user/addresses'] input, form[action='/user/addresses'] select`))
                         .map((element) => element.value))";
-                var inputs = JsonConvert.DeserializeObject<string[]>(
+                var inputs = JsonSerializer.Deserialize<string[]>(
                         context.ExecuteScript(getInputsScript).ToString()!);
                 inputs.ShouldNotBeNull();
                 inputs
@@ -130,7 +130,7 @@ public class UserPersistenceTests : UITestBase
                 const string getInputsScript = @"return JSON.stringify(
                     Array.from(document.querySelectorAll(`form[action='/user/details'] input, form[action='/user/details'] select`))
                         .map((element) => element.value))";
-                var inputs = JsonConvert.DeserializeObject<string[]>(
+                var inputs = JsonSerializer.Deserialize<string[]>(
                         context.ExecuteScript(getInputsScript).ToString()!);
                 inputs.ShouldNotBeNull();
                 inputs

@@ -10,9 +10,9 @@ using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.ProductTests;
 
-public class ProductBehaviourTests : UITestBase
+public class ProductBehaviorTests : UITestBase
 {
-    public ProductBehaviourTests(ITestOutputHelper testOutputHelper)
+    public ProductBehaviorTests(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
     }

@@ -58,7 +58,7 @@ public interface IPaymentService
     Task UpdateOrderToOrderedAsync(
         ContentItem order,
         string? shoppingCartId,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null);
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null);
 
     /// <summary>
     /// Tries to get the order identified by <paramref name="orderId"/>, or creates a new one if it's not there. Then
@@ -111,7 +111,7 @@ public static class PaymentServiceExtensions
         ContentItem order,
         string? shoppingCartId,
         string? paymentProviderName = null,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null)
     {
         await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
         await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);

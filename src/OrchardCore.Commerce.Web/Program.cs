@@ -21,7 +21,7 @@ builder.Services
 
 var app = builder.Build();
 app.UseOrchardCore();
-app.Run();
+await app.RunAsync();
 
 [SuppressMessage(
     "Design",

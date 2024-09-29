@@ -8,7 +8,7 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System;
 using System.Threading.Tasks;
@@ -18,7 +18,8 @@ namespace OrchardCore.Commerce.ContentFields.Drivers;
 public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
 {
     private readonly IMoneyService _moneyService;
-    private readonly IStringLocalizer<PriceFieldDisplayDriver> T;
+
+    internal readonly IStringLocalizer T;
 
     public PriceFieldDisplayDriver(IMoneyService moneyService, IStringLocalizer<PriceFieldDisplayDriver> localizer)
     {
@@ -77,30 +78,26 @@ public class PriceFieldDisplayDriver : ContentFieldDisplayDriver<PriceField>
 
     public override async Task<IDisplayResult> UpdateAsync(
         PriceField field,
-        IUpdateModel updater,
         UpdateFieldEditorContext context)
     {
-        var viewModel = new PriceFieldEditViewModel();
+        var viewModel = await context.CreateModelAsync<PriceFieldEditViewModel>(Prefix);
 
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        var settings = context.PartFieldDefinition.GetSettings<PriceFieldSettings>();
+        var isInvalid = IsCurrencyInvalid(viewModel.Currency);
+
+        if (isInvalid && settings.Required)
         {
-            var settings = context.PartFieldDefinition.GetSettings<PriceFieldSettings>();
-            var isInvalid = IsCurrencyInvalid(viewModel.Currency);
+            var label = string.IsNullOrEmpty(settings.Label)
+                ? context.PartFieldDefinition.DisplayName()
+                : settings.Label;
+            context.AddModelError(
+                nameof(viewModel.Currency),
+                T["The field {0} is invalid.", label]);
+        }
 
-            if (isInvalid && settings.Required)
-            {
-                var label = string.IsNullOrEmpty(settings.Label)
-                    ? context.PartFieldDefinition.DisplayName()
-                    : settings.Label;
-                updater.ModelState.AddModelError(
-                    nameof(viewModel.Currency),
-                    T["The field {0} is invalid.", label].Value);
-            }
-
-            field.Amount = isInvalid
+        field.Amount = isInvalid
                 ? Amount.Unspecified
                 : _moneyService.Create(viewModel.Value, viewModel.Currency);
-        }
 
         return await EditAsync(field, context);
     }
