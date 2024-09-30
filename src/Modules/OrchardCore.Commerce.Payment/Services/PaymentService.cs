@@ -404,7 +404,7 @@ public class PaymentService : IPaymentService
         return (order, isNew);
     }
 
-    public async Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId)
+    public async Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId, string? paymentId)
     {
         var errors = new List<string>();
         try
@@ -412,7 +412,7 @@ public class PaymentService : IPaymentService
             await _paymentProvidersLazy
                 .Value
                 .WhereName(providerName)
-                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId));
+                .AwaitEachAsync(provider => provider.ValidateAsync(_updateModelAccessor, shoppingCartId, paymentId));
 
             errors = _updateModelAccessor.ModelUpdater.GetModelErrorMessages().ToList();
         }

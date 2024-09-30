@@ -1,7 +1,7 @@
 window.stripePaymentForm = function stripePaymentForm(
     stripe,
     clientSecret,
-    baseUrl,
+    paymentIntentId,
     antiForgeryToken,
     urlPrefix,
     errorText,
@@ -83,10 +83,7 @@ window.stripePaymentForm = function stripePaymentForm(
         submitButton.addEventListener('click', async (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-            toggleInputs(false);
-
-            const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-            await fetch(updatePaymentIntentUrl.replace('PAYMENT_INTENT', paymentIntent.id));
+            toggleInputs(false);         
 
             let result;
             try {
@@ -107,7 +104,7 @@ window.stripePaymentForm = function stripePaymentForm(
                         });
                 }
 
-                const validationJson = await fetchPost(validateUrl);
+                const validationJson = await fetchPost(`${validateUrl}/${paymentIntentId}`);
                 if (validationJson?.errors?.length) {
                     toggleInputs(true);
                     throw validationJson.errors;
