@@ -1,5 +1,8 @@
 using OrchardCore.Commerce.AddressDataType;
 using Shouldly;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests;
@@ -54,5 +57,12 @@ public class AddressTests
                 Region = "Northern",
                 Name = "This is not used here so whatever.",
             });
+    }
+
+    [Fact]
+    public void RegionShouldSerializeCorrectly()
+    {
+        var json = JsonSerializer.Serialize(Regions.All);
+        var regions = JsonSerializer.Deserialize<IEnumerable<Region>>(json).ToList();
     }
 }
