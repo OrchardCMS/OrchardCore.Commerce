@@ -22,13 +22,16 @@ public record PromotionAndTaxProviderContext(
     bool Stored = false,
     bool IsCorporation = false)
 {
-    public PromotionAndTaxProviderContext(
+    // This used to be a constructor, but has been turned into a factory method to avoid causing JSON serialization
+    // exceptions. Seehttps://github.com/dotnet/runtime/issues/45373#issuecomment-812091894 for more info on the
+    // problem in general.
+    public static PromotionAndTaxProviderContext FromShoppingCartLineViewModels(
         IEnumerable<ShoppingCartLineViewModel> lines,
         IEnumerable<Amount> totalsByCurrency,
         Address shippingAddress,
         Address billingAddress,
-        DateTime? purchaseDateTime = null)
-        : this(
+        DateTime? purchaseDateTime = null) =>
+        new(
             lines.Select(line => new PromotionAndTaxProviderContextLineItem(
                 line.Product,
                 line.UnitPrice,
@@ -37,9 +40,7 @@ public record PromotionAndTaxProviderContext(
             totalsByCurrency,
             shippingAddress,
             billingAddress,
-            purchaseDateTime)
-    {
-    }
+            purchaseDateTime);
 
     public async Task<PromotionAndTaxProviderContext> UpdateAsync(
         Func<PromotionAndTaxProviderContextLineItem, DateTime?, Task<PromotionAndTaxProviderContextLineItem>> updater)
@@ -66,9 +67,4 @@ public record PromotionAndTaxProviderContext(
 public record PromotionAndTaxProviderContextLineItem(IContent Content, Amount UnitPrice, int Quantity, IEnumerable<DiscountInformation> Discounts)
 {
     public Amount Subtotal => UnitPrice * Quantity;
-
-    public PromotionAndTaxProviderContextLineItem(ShoppingCartLineViewModel viewModel)
-        : this(viewModel.Product, viewModel.UnitPrice, viewModel.Quantity, viewModel.AdditionalData.GetDiscounts())
-    {
-    }
 }

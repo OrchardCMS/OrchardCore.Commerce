@@ -33,7 +33,7 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
     {
         var headers = eventContext.Headers;
         var lines = eventContext.Lines;
-        var context = new PromotionAndTaxProviderContext(
+        var context = PromotionAndTaxProviderContext.FromShoppingCartLineViewModels(
             lines,
             eventContext.Totals,
             eventContext.ShippingAddress,
