@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.ViewModels;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ namespace OrchardCore.Commerce.Endpoints;
 /// </summary>
 public interface IShoppingCartService
 {
+    Task<ShoppingCartViewModel> GetAsync(string shoppingCartId = null);
     /// <summary>
     /// Update shopping cart.
     /// </summary>

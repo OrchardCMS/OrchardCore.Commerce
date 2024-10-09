@@ -66,6 +66,12 @@ public class StripePaymentService : IStripePaymentService
         _httpContextAccessor = httpContextAccessor;
     }
 
+    public async Task<string> GetPublicKeyAsync()
+    {
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        return stripeApiSettings.PublishableKey;
+    }
+
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
     {
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();

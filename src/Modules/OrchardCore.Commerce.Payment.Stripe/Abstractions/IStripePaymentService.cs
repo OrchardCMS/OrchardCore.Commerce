@@ -18,6 +18,11 @@ namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 public interface IStripePaymentService
 {
     /// <summary>
+    /// Returns the public key of the Stripe account.
+    /// </summary>
+    Task<string> GetPublicKeyAsync();
+
+    /// <summary>
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
     Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart);

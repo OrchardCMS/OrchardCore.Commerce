@@ -221,9 +221,11 @@ public class Startup : StartupBase
             .AddRetrieveAsyncEndpoint()
             .AddUpdateEndpoint()
             .AddRemoveLineEndpoint()
+            .AddGetCartEndpoint()
             .AddAddItemEndpoint()
             .AddFreeEndpoint()
             .AddCallbackEndpoint()
+            .AddPaymentRequestEndpoint()
             ;
 }
 

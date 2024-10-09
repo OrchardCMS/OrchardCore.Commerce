@@ -15,6 +15,34 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Endpoints.Api;
 public static class ShoppingCartLineEndpoint
 {
+    public static IEndpointRouteBuilder AddGetCartEndpoint(this IEndpointRouteBuilder builder)
+    {
+        builder.MapGet("api/shoppingcart/get-cart/{shoppingCartId}", GetCartAsync)
+            .DisableAntiforgery();
+
+        return builder;
+    }
+
+    [Authorize(AuthenticationSchemes = "Api")]
+    private static async Task<IResult> GetCartAsync(
+        [FromRoute] string shoppingCartId,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        HttpContext httpContext)
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
+        {
+            return httpContext.ChallengeOrForbid("Api");
+        }
+
+        var cart = await shoppingCartService.GetAsync(shoppingCartId);
+
+        if (cart == null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(cart);
+    }
+
     public static IEndpointRouteBuilder AddAddItemEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapPost("api/shoppingcart/add-item", AddItemAsync)
@@ -26,12 +54,11 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> AddItemAsync(
-         [FromBody] AddItemViewModel addItemVM,
-         [FromServices] IAuthorizationService authorizationService,
-         [FromServices] HttpContext httpContext,
-         [FromServices] IShoppingCartService shoppingCartService,
-         [FromServices] IHtmlLocalizer<AddItemViewModel> htmlLocalizer
-       )
+        [FromBody] AddItemViewModel addItemVM,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IHtmlLocalizer<AddItemViewModel> htmlLocalizer,
+        HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
         {
@@ -66,12 +93,11 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> UpdateAsync(
-         [FromBody] UpdateViewModel updateVM,
-         [FromServices] IAuthorizationService authorizationService,
-         [FromServices] HttpContext httpContext,
-         [FromServices] IShoppingCartService shoppingCartService,
-         [FromServices] IHtmlLocalizer<UpdateViewModel> htmlLocalizer
-       )
+        [FromBody] UpdateViewModel updateVM,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IHtmlLocalizer<UpdateViewModel> htmlLocalizer,
+        HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
         {
@@ -104,12 +130,11 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> RemoveLineAsync(
-         [FromBody] RemoveLineViewModel removeLineVM,
-         [FromServices] IAuthorizationService authorizationService,
-         [FromServices] HttpContext httpContext,
-         [FromServices] IShoppingCartService shoppingCartService,
-         [FromServices] IHtmlLocalizer<RemoveLineViewModel> htmlLocalizer
-       )
+        [FromBody] RemoveLineViewModel removeLineVM,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IHtmlLocalizer<RemoveLineViewModel> htmlLocalizer,
+        HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
         {
@@ -145,9 +170,8 @@ public static class ShoppingCartLineEndpoint
     private static async Task<IResult> RetrieveAsync(
         [FromRoute] string? shoppingCartId,
         [FromServices] IAuthorizationService authorizationService,
-        [FromServices] HttpContext httpContext,
-        [FromServices] IShoppingCartPersistence shoppingCartPersistence
-        )
+        [FromServices] IShoppingCartPersistence shoppingCartPersistence,
+        HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
         {
