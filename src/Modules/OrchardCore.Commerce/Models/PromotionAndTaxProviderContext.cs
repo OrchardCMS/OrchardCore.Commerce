@@ -23,7 +23,7 @@ public record PromotionAndTaxProviderContext(
     bool IsCorporation = false)
 {
     // This used to be a constructor, but has been turned into a factory method to avoid causing JSON serialization
-    // exceptions. Seehttps://github.com/dotnet/runtime/issues/45373#issuecomment-812091894 for more info on the
+    // exceptions. See https://github.com/dotnet/runtime/issues/45373#issuecomment-812091894 for more info on the
     // problem in general.
     public static PromotionAndTaxProviderContext FromShoppingCartLineViewModels(
         IEnumerable<ShoppingCartLineViewModel> lines,
