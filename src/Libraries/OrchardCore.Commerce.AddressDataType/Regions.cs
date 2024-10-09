@@ -31,7 +31,7 @@ public static class Regions
                 region is { TwoLetterISORegionName.Length: 2 } && // Filter out world and other 3-digit regions.
                 !string.IsNullOrEmpty(region.EnglishName))
             .Distinct()
-            .Select(region => new Region(region))
+            .Select(Region.FromRegionInfo)
             .ToList();
 
     /// <summary>

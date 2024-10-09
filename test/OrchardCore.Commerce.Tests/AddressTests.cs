@@ -1,5 +1,8 @@
 using OrchardCore.Commerce.AddressDataType;
 using Shouldly;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests;
@@ -54,5 +57,20 @@ public class AddressTests
                 Region = "Northern",
                 Name = "This is not used here so whatever.",
             });
+    }
+
+    [Fact]
+    public void RegionShouldSerializeCorrectly()
+    {
+        static Region FindUs(IEnumerable<Region> regions) =>
+            regions.Single(region => region.TwoLetterISORegionName == "US");
+
+        var json = JsonSerializer.Serialize(Regions.All);
+        var regionsDeserialized = JsonSerializer.Deserialize<IEnumerable<Region>>(json).ToList();
+
+        var original = FindUs(Regions.All);
+        JsonSerializer.Serialize(original).ShouldBe(
+            "{\"EnglishName\":\"United States\",\"TwoLetterISORegionName\":\"US\",\"DisplayName\":\"United States\"}");
+        FindUs(regionsDeserialized).ShouldBe(original);
     }
 }
