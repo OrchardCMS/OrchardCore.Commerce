@@ -38,6 +38,11 @@ public static class StripeEndpoint
         )
     {
         var shoppingCartViewModel = await shoppingCartService.GetAsync(shoppingCartId);
+        if (shoppingCartViewModel == null)
+        {
+            return TypedResults.Ok();
+        }
+
         var total = shoppingCartViewModel.Totals.Single();
         return TypedResults.Ok(new
         {
