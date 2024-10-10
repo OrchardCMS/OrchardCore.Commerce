@@ -4,19 +4,51 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Commerce.Endpoints;
 using OrchardCore.Commerce.Endpoints.Permissions;
+using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.EndPoints.Models;
+using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Modules;
-using Stripe;
+using OrchardCore.Settings;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.EndPoints.Api;
 public static class StripeEndpoint
 {
+    // Get total amount
+    public static IEndpointRouteBuilder AddStripeTotalEndpoint(this IEndpointRouteBuilder builder)
+    {
+        builder.MapGet("api/checkout/stripe/total/{shoppingCartId?}", GetStripeTotalAsync)
+            .AllowAnonymous()
+            .DisableAntiforgery();
+
+        return builder;
+    }
+
+    private static async Task<IResult> GetStripeTotalAsync(
+        [FromRoute] string? shoppingCartId,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IStripePaymentService stripePaymentService
+        )
+    {
+        var shoppingCartViewModel = await shoppingCartService.GetAsync(shoppingCartId);
+        var total = shoppingCartViewModel.Totals.Single();
+        return TypedResults.Ok(new
+        {
+            Amount = stripePaymentService.GetPaymentAmount(total),
+            total.Currency,
+        });
+    }
+
     public static IEndpointRouteBuilder AddStripePublicKeyEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("api/checkout/stripe/public-key", GetStripePublicKeyAsync)
-            .RequireAuthorization("Api")
             .DisableAntiforgery();
 
         return builder;
@@ -41,7 +73,6 @@ public static class StripeEndpoint
     public static IEndpointRouteBuilder AddStripePaymentIntentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapPost("api/checkout/stripe/payment-intent", CreatePaymentIntentAsync)
-            .RequireAuthorization("Api")
             .DisableAntiforgery();
 
         return builder;
@@ -49,22 +80,20 @@ public static class StripeEndpoint
 
     [HttpPost]
     public static async Task<IResult> CreatePaymentIntentAsync(
-        [FromBody] string amount,
-        [FromServices] PaymentIntentService paymentIntentService
+        [FromBody] CreatePaymentIntentViewModel viewModel,
+        [FromServices] ISiteService siteService,
+        [FromServices] IStripePaymentService stripePaymentService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IEnumerable<IPaymentProvider> paymentProviders
         )
     {
-        var paymentIntent = await paymentIntentService.CreateAsync(new PaymentIntentCreateOptions
-        {
-            Amount = long.Parse(amount),
-            Currency = "eur",
-            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
-        });
+        var shoppingCartViewModel = await shoppingCartService.GetAsync(viewModel.ShoppingCartId);
+        var total = shoppingCartViewModel.Totals.Single();
+        var paymentIntent = await stripePaymentService.CreatePaymentIntentAsync(total);
 
         return TypedResults.Ok(new
         {
             clientSecret = paymentIntent.ClientSecret,
-            // [DEV]: For demo purposes only, you should avoid exposing the PaymentIntent ID in the client-side code.
-            dpmCheckerLink = $"https://dashboard.stripe.com/settings/payment_methods/review?transaction_id={paymentIntent.Id}",
         });
     }
 

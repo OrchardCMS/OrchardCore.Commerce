@@ -49,5 +49,7 @@ public class Startup : StartupBase
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
            routes.AddStripeMiddlewareEndpoint()
                .AddStripePublicKeyEndpoint()
-               .AddStripePaymentIntentEndpoint();
+               .AddStripePaymentIntentEndpoint()
+               .AddStripeTotalEndpoint()
+           ;
 }

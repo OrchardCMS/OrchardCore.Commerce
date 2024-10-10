@@ -48,8 +48,5 @@
   <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
     <PackageReference Include="Lombiq.NodeJs.Extensions" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EndPoints\Models\" />
-  </ItemGroup>
 
 </Project>

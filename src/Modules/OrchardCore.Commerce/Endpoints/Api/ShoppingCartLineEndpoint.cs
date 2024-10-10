@@ -9,7 +9,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Endpoints.Permissions;
 using OrchardCore.Commerce.Endpoints.ViewModels;
 using OrchardCore.Modules;
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Endpoints.Api;
@@ -17,7 +16,7 @@ public static class ShoppingCartLineEndpoint
 {
     public static IEndpointRouteBuilder AddGetCartEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/shoppingcart/get-cart/{shoppingCartId}", GetCartAsync)
+        builder.MapGet("api/shoppingcart/get-cart/{shoppingCartId?}", GetCartAsync)
             .DisableAntiforgery();
 
         return builder;
@@ -25,7 +24,7 @@ public static class ShoppingCartLineEndpoint
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> GetCartAsync(
-        [FromRoute] string shoppingCartId,
+        [FromRoute] string? shoppingCartId,
         [FromServices] IAuthorizationService authorizationService,
         [FromServices] IShoppingCartService shoppingCartService,
         HttpContext httpContext)
@@ -64,8 +63,6 @@ public static class ShoppingCartLineEndpoint
         {
             return httpContext.ChallengeOrForbid("Api");
         }
-
-        if (string.IsNullOrEmpty(addItemVM.ShoppingCartId)) { addItemVM.ShoppingCartId = Guid.NewGuid().ToString("n"); }
 
         var errored = await shoppingCartService.AddItemAsync(addItemVM.Line, addItemVM.Token, addItemVM.ShoppingCartId);
         if (string.IsNullOrEmpty(errored))

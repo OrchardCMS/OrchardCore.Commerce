@@ -17,6 +17,8 @@ namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 /// </summary>
 public interface IStripePaymentService
 {
+    long GetPaymentAmount(Amount total);
+
     /// <summary>
     /// Returns the public key of the Stripe account.
     /// </summary>

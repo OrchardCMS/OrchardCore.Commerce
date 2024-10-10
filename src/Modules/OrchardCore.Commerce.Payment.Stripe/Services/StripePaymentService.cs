@@ -304,7 +304,7 @@ public class StripePaymentService : IStripePaymentService
         };
     }
 
-    private static long GetPaymentAmount(Amount total)
+    public long GetPaymentAmount(Amount total)
     {
         if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(total.Currency.CurrencyIsoCode))
         {
