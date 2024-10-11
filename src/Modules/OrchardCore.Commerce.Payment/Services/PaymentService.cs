@@ -363,14 +363,15 @@ public class PaymentService : IPaymentService
         IUpdateModelAccessor updateModelAccessor,
         string? orderId,
         string? shoppingCartId,
-        AlterOrderAsyncDelegate? alterOrderAsync = null)
+        AlterOrderAsyncDelegate? alterOrderAsync = null,
+        bool updateFromDriver = true)
     {
         var order = await _contentManager.GetAsync(orderId) ?? await _contentManager.NewAsync(Order);
         var isNew = order.IsNew();
         var part = order.As<OrderPart>();
 
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
-        if (cart.Items.Any() && !order.As<OrderPart>().LineItems.Any())
+        if (cart.Items.Any() && !order.As<OrderPart>().LineItems.Any() && updateFromDriver)
         {
             await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
 

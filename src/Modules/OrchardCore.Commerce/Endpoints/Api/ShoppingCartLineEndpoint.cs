@@ -1,4 +1,5 @@
 #nullable enable
+using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,12 +20,12 @@ public static class ShoppingCartLineEndpoint
     public static IEndpointRouteBuilder AddGetCartEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet(ApiPath, GetCartAsync)
-            .DisableAntiforgery();
+            .DisableAntiforgery()
+            .RequireAuthorization(policy => policy.RequireAuthenticatedUser().AddAuthenticationSchemes("Api"));
 
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> GetCartAsync(
         [FromRoute] string? shoppingCartId,
         [FromServices] IAuthorizationService authorizationService,
@@ -33,7 +34,7 @@ public static class ShoppingCartLineEndpoint
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceShoppingCartApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
         var cart = await shoppingCartService.GetAsync(shoppingCartId);
@@ -63,7 +64,7 @@ public static class ShoppingCartLineEndpoint
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceShoppingCartApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
         var errored = await shoppingCartService.AddItemAsync(viewModel.Line, viewModel.Token, shoppingCartId);
@@ -100,7 +101,7 @@ public static class ShoppingCartLineEndpoint
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceShoppingCartApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
         var errored = await shoppingCartService.UpdateAsync(viewModel.Cart, viewModel.Token, shoppingCartId);
@@ -138,7 +139,7 @@ public static class ShoppingCartLineEndpoint
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
         var errored = await shoppingCartService.RemoveLineAsync(viewModel.Line, shoppingCartId);

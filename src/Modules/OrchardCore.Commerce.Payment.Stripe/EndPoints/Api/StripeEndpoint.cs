@@ -1,18 +1,15 @@
 #nullable enable
+using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Endpoints;
-using OrchardCore.Commerce.Endpoints.Permissions;
-using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.EndPoints.Models;
-using OrchardCore.Commerce.Payment.Stripe.Models;
-using OrchardCore.Commerce.Payment.Stripe.Services;
-using OrchardCore.Modules;
+using OrchardCore.Commerce.Payment.Stripe.EndPoints.Permissions;
 using OrchardCore.Settings;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +31,16 @@ public static class StripeEndpoint
     private static async Task<IResult> GetStripeTotalAsync(
         [FromRoute] string? shoppingCartId,
         [FromServices] IShoppingCartService shoppingCartService,
-        [FromServices] IStripePaymentService stripePaymentService
+        [FromServices] IStripePaymentService stripePaymentService,
+        [FromServices] IAuthorizationService authorizationService,
+        HttpContext httpContext
         )
     {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApiStripePayment))
+        {
+            return httpContext.ChallengeOrForbidApi();
+        }
+
         var shoppingCartViewModel = await shoppingCartService.GetAsync(shoppingCartId);
         if (shoppingCartViewModel == null)
         {
@@ -65,9 +69,9 @@ public static class StripeEndpoint
         HttpContext httpContext
         )
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApiStripePayment))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
         var publicKey = await stripePaymentService.GetPublicKeyAsync();
@@ -89,9 +93,16 @@ public static class StripeEndpoint
         [FromServices] ISiteService siteService,
         [FromServices] IStripePaymentService stripePaymentService,
         [FromServices] IShoppingCartService shoppingCartService,
-        [FromServices] IEnumerable<IPaymentProvider> paymentProviders
+        [FromServices] IEnumerable<IPaymentProvider> paymentProviders,
+        [FromServices] IAuthorizationService authorizationService,
+        HttpContext httpContext
         )
     {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApiStripePayment))
+        {
+            return httpContext.ChallengeOrForbidApi();
+        }
+
         var shoppingCartViewModel = await shoppingCartService.GetAsync(viewModel.ShoppingCartId);
         var total = shoppingCartViewModel.Totals.Single();
         var paymentIntent = await stripePaymentService.CreatePaymentIntentAsync(total);
@@ -104,7 +115,7 @@ public static class StripeEndpoint
 
     public static IEndpointRouteBuilder AddStripeMiddlewareEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/checkout/middleware/Stripe/{shoppingCartId?}", AddStripeMiddlewareAsync)
+        builder.MapGet("api/checkout/middleware/stripe/{shoppingCartId?}", AddStripeMiddlewareAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -114,10 +125,20 @@ public static class StripeEndpoint
     private static async Task<IResult> AddStripeMiddlewareAsync(
          [FromRoute] string? shoppingCartId,
          [FromServices] IStripePaymentService stripePaymentService,
-         [FromQuery(Name = "payment_intent")] string? paymentIntent = null
+         [FromServices] IAuthorizationService authorizationService,
+         HttpContext httpContext,
+         [FromQuery(Name = "payment_intent")] string? paymentIntentId = null
        )
     {
-        var result = await stripePaymentService.PaymentConfirmationAsync(paymentIntent, shoppingCartId);
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApiStripePayment))
+        {
+            return httpContext.ChallengeOrForbidApi();
+        }
+
+        var result = await stripePaymentService.PaymentConfirmationAsync(
+            paymentIntentId,
+            shoppingCartId,
+            paymentIntentId == null);
         return TypedResults.Ok(result);
     }
 }

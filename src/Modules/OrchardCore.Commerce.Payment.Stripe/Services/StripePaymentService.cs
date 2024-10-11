@@ -157,6 +157,13 @@ public class StripePaymentService : IStripePaymentService
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
             .FirstOrDefaultAsync();
 
+    public Task SaveOrderPaymentAsync(string orderContentItemId, string paymentIntentId) =>
+        _session.SaveAsync(new OrderPayment
+        {
+            OrderId = orderContentItemId,
+            PaymentIntentId = paymentIntentId,
+        });
+
     public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
         IUpdateModelAccessor updateModelAccessor,
         string shoppingCartId,
@@ -207,11 +214,7 @@ public class StripePaymentService : IStripePaymentService
 
         if (isNew)
         {
-            await _session.SaveAsync(new OrderPayment
-            {
-                OrderId = order.ContentItemId,
-                PaymentIntentId = paymentIntent.Id,
-            });
+            await SaveOrderPaymentAsync(order.ContentItemId, paymentIntent.Id);
         }
 
         return order;
@@ -340,6 +343,7 @@ public class StripePaymentService : IStripePaymentService
     public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl)
     {
         var order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
+        // There is no point to update the driver here as this is only used by minimal api
         await _paymentService.UpdateOrderWithDriversAsync(order);
 
         var part = order.As<OrderPart>();

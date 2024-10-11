@@ -64,6 +64,8 @@ public interface IStripePaymentService
     /// </summary>
     Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId);
 
+    Task SaveOrderPaymentAsync(string orderContentItemId, string paymentIntentId);
+
     /// <summary>
     /// A shortcut method for updating the <paramref name="order"/> status to <see cref="OrderStatuses.Ordered"/>, doing
     /// final modifications and then redirecting to the success page.
