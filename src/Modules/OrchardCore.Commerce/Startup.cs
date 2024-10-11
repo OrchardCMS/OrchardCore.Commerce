@@ -19,8 +19,7 @@ using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.ContentFields.Events;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
-using OrchardCore.Commerce.Endpoints.Api;
-using OrchardCore.Commerce.Endpoints.Extentions;
+using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
@@ -213,20 +212,11 @@ public class Startup : StartupBase
             new BooleanProductAttributeDeserializer(),
             new NumericProductAttributeDeserializer());
 
-        services.AddCommerceAPIs();
+        services.AddCommerceApiServices();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
-           routes
-            .AddRetrieveAsyncEndpoint()
-            .AddUpdateEndpoint()
-            .AddRemoveLineEndpoint()
-            .AddGetCartEndpoint()
-            .AddAddItemEndpoint()
-            .AddFreeEndpoint()
-            .AddCallbackEndpoint()
-            .AddPaymentRequestEndpoint()
-            ;
+           routes.AddShoppingCartApiEndpoints();
 }
 
 public sealed class FallbackPriceStartup : StartupBase
