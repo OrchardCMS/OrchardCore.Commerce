@@ -123,10 +123,10 @@ public class StripePaymentService : IStripePaymentService
         try
         {
             return _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-            order,
-            shoppingCartId,
-            StripePaymentProvider.ProviderName,
-            CreateChargesProvider(paymentIntent));
+                order,
+                shoppingCartId,
+                StripePaymentProvider.ProviderName,
+                CreateChargesProvider(paymentIntent));
         }
         catch (Exception ex)
         {
@@ -167,7 +167,8 @@ public class StripePaymentService : IStripePaymentService
     public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
         IUpdateModelAccessor updateModelAccessor,
         string shoppingCartId,
-        string paymentIntentId = null)
+        string paymentIntentId = null,
+        OrderPart orderPart = null)
     {
         var innerPaymentIntentId = paymentIntentId ?? _paymentIntentPersistence.Retrieve();
         var paymentIntent = await GetPaymentIntentAsync(innerPaymentIntentId);
@@ -203,9 +204,10 @@ public class StripePaymentService : IStripePaymentService
                     part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
 
                 return Task.CompletedTask;
-            });
+            },
+            orderPart);
 
-        if (!order.As<OrderPart>().LineItems.Any())
+        if (!order.As<OrderPart>().LineItems.Any() && updateModelAccessor != null)
         {
             updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(OrderPart.LineItems),
@@ -223,8 +225,7 @@ public class StripePaymentService : IStripePaymentService
     public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
         string paymentIntentId,
         string shoppingCartId,
-        bool needToJudgeIntentStorage = true
-        )
+        bool needToJudgeIntentStorage = true)
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
         if (needToJudgeIntentStorage && string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
@@ -340,11 +341,15 @@ public class StripePaymentService : IStripePaymentService
         return paymentIntent;
     }
 
-    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl)
+    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(
+        string returnUrl,
+        ContentItem order = null)
     {
-        var order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
-        // There is no point to update the driver here as this is only used by minimal api
-        await _paymentService.UpdateOrderWithDriversAsync(order);
+        if (order == null)
+        {
+            order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
+            await _paymentService.UpdateOrderWithDriversAsync(order);
+        }
 
         var part = order.As<OrderPart>();
         var billing = part.BillingAddress.Address ?? new Address();
@@ -352,7 +357,7 @@ public class StripePaymentService : IStripePaymentService
 
         var model = new PaymentIntentConfirmOptions
         {
-            ReturnUrl = middlewareAbsoluteUrl,
+            ReturnUrl = returnUrl,
             PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
             {
                 BillingDetails = new PaymentIntentPaymentMethodDataBillingDetailsOptions

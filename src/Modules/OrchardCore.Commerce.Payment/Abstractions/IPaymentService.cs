@@ -68,10 +68,11 @@ public interface IPaymentService
     /// </summary>
     /// <exception cref="FrontendException">Thrown if the order validation failed.</exception>
     Task<(ContentItem Order, bool IsNew)> CreateOrUpdateOrderFromShoppingCartAsync(
-        IUpdateModelAccessor updateModelAccessor,
+        IUpdateModelAccessor? updateModelAccessor,
         string? orderId,
         string? shoppingCartId,
-        AlterOrderAsyncDelegate? alterOrderAsync = null);
+        AlterOrderAsyncDelegate? alterOrderAsync = null,
+        OrderPart? orderPart = null);
 
     /// <summary>
     /// Updates the provided Order content item from the update model as if it was just edited.

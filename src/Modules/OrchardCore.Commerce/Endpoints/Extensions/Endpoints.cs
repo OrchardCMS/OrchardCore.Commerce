@@ -8,6 +8,7 @@ public static class Endpoints
     public static IEndpointRouteBuilder AddShoppingCartApiEndpoints(this IEndpointRouteBuilder router)
     {
         router
+            .AddNewOrderEndpoint()
             .AddUpdateEndpoint()
             .AddRemoveLineEndpoint()
             .AddGetCartEndpoint()

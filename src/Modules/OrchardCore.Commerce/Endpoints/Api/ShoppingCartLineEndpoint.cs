@@ -1,14 +1,13 @@
 #nullable enable
+using Lombiq.HelpfulLibraries.AspNetCore.Extensions;
 using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Endpoints.Permissions;
 using OrchardCore.Commerce.Endpoints.ViewModels;
-using OrchardCore.Modules;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Endpoints.Api;
@@ -19,9 +18,7 @@ public static class ShoppingCartLineEndpoint
 
     public static IEndpointRouteBuilder AddGetCartEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet(ApiPath, GetCartAsync)
-            .DisableAntiforgery()
-            .RequireAuthorization(policy => policy.RequireAuthenticatedUser().AddAuthenticationSchemes("Api"));
+        builder.MapGetWithDefaultSettings(ApiPath, GetCartAsync);
 
         return builder;
     }
@@ -47,13 +44,11 @@ public static class ShoppingCartLineEndpoint
 
     public static IEndpointRouteBuilder AddAddItemEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost(ApiPath, AddItemAsync)
-            .DisableAntiforgery();
+        builder.MapPostWithDefaultSettings(ApiPath, AddItemAsync);
 
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> AddItemAsync(
         [FromRoute] string? shoppingCartId,
         [FromBody] AddItemViewModel viewModel,
@@ -84,8 +79,7 @@ public static class ShoppingCartLineEndpoint
 
     public static IEndpointRouteBuilder AddUpdateEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPut(ApiPath, UpdateAsync)
-            .DisableAntiforgery();
+        builder.MapPutWithDefaultSettings(ApiPath, UpdateAsync);
 
         return builder;
     }
@@ -121,9 +115,7 @@ public static class ShoppingCartLineEndpoint
 
     public static IEndpointRouteBuilder AddRemoveLineEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapDelete(ApiPath, RemoveLineAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
+        builder.MapDeleteWithDefaultSettings(ApiPath, RemoveLineAsync);
 
         return builder;
     }

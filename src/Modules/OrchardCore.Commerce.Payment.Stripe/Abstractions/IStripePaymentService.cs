@@ -46,7 +46,8 @@ public interface IStripePaymentService
     Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
         IUpdateModelAccessor updateModelAccessor,
         string shoppingCartId,
-        string paymentIntentId = null);
+        string paymentIntentId = null,
+        OrderPart orderPart = null);
 
     /// <summary>
     /// Updates the corresponding order status to <see cref="OrderStatuses.Ordered"/> for the given
@@ -79,8 +80,10 @@ public interface IStripePaymentService
     /// <summary>
     /// Get the confirmation parameters for Stripe.
     /// </summary>
-    /// <param name="middlewareAbsoluteUrl">The url for the middleware of Stripe.</param>
-    Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl);
+    /// <param name="returnUrl">The url for the middleware of Stripe.</param>
+    Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(
+        string returnUrl,
+        ContentItem order = null);
 
     /// <summary>
     /// Confirm the result of Stripe payment.

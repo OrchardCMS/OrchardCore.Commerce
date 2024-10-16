@@ -1,6 +1,6 @@
+using Lombiq.HelpfulLibraries.AspNetCore.Extensions;
 using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.Endpoints.Models;
 using OrchardCore.Commerce.Payment.Endpoints.Permissions;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
@@ -21,14 +22,10 @@ public static class PaymentEndpoint
 {
     public static IEndpointRouteBuilder AddFreeEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/checkout/free/{shoppingCartId?}", AddFreeAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
-
+        builder.MapPostWithDefaultSettings("api/checkout/free/{shoppingCartId?}", AddFreeAsync);
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> AddFreeAsync(
          [FromRoute] string? shoppingCartId,
          [FromServices] IAuthorizationService authorizationService,
@@ -47,18 +44,12 @@ public static class PaymentEndpoint
 
     public static IEndpointRouteBuilder AddCallbackEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/checkout/callback/{paymentProviderName}/{orderId?}", AddCallbackAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
-
+        builder.MapPostWithDefaultSettings("api/checkout/callback", AddCallbackAsync);
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> AddCallbackAsync(
-         [FromRoute] string paymentProviderName,
-         [FromRoute] string? orderId,
-         [FromQuery] string? shoppingCartId,
+         [FromBody] AddCallbackViewModel viewModel,
          [FromServices] IAuthorizationService authorizationService,
          HttpContext httpContext,
          [FromServices] IPaymentService paymentService
@@ -69,17 +60,20 @@ public static class PaymentEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        if (paymentProviderName.EqualsOrdinalIgnoreCase("Stripe"))
+        if (viewModel.PaymentProviderName.EqualsOrdinalIgnoreCase("Stripe"))
         {
             return TypedResults.BadRequest("Stripe payment uses ~/checkout/middleware/Stripe, not ~/checkout/callback/Stripe.");
         }
 
-        if (string.IsNullOrWhiteSpace(orderId))
+        if (string.IsNullOrWhiteSpace(viewModel.OrderId))
         {
-            orderId = null;
+            viewModel.OrderId = null;
         }
 
-        if (await paymentService.CallBackAsync(paymentProviderName, orderId, shoppingCartId) is { } result)
+        if (await paymentService.CallBackAsync(
+                viewModel.PaymentProviderName,
+                viewModel.OrderId,
+                viewModel.ShoppingCartId) is { } result)
         {
             return TypedResults.Ok(result);
         }
@@ -87,16 +81,12 @@ public static class PaymentEndpoint
         return TypedResults.NotFound();
     }
 
-    // Might not be needed.
     public static IEndpointRouteBuilder AddPaymentRequestEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/checkout/checkout/paymentrequest/{orderId}", PaymentRequestAsync)
-            .DisableAntiforgery();
-
+        builder.MapGetWithDefaultSettings("api/checkout/payment-request/{orderId}", PaymentRequestAsync);
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> PaymentRequestAsync(
         [FromRoute] string orderId,
         [FromServices] IContentManager contentManager,
