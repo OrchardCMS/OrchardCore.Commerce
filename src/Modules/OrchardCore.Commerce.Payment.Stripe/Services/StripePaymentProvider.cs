@@ -15,7 +15,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentProvider : IPaymentProvider
 {
-    public const string ProviderName = "Stripe";
+    public const string ProviderName = "stripe";
 
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly ISession _session;
@@ -81,5 +81,5 @@ public class StripePaymentProvider : IPaymentProvider
         ContentItem order,
         string shoppingCartId) =>
         throw new NotSupportedException(
-            "This code should never be reached, because Stripe payment uses ~/checkout/middleware/Stripe, not ~/checkout/callback/Stripe.");
+            "This code should never be reached, because Stripe payment uses ~/checkout/stripe/middleware, not ~/checkout/callback/Stripe.");
 }

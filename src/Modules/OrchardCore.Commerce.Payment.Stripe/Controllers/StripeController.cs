@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -35,7 +36,19 @@ public class StripeController : PaymentBaseController
 
     [AllowAnonymous]
     [HttpGet("checkout/middleware/Stripe")]
-    public async Task<IActionResult> PaymentConfirmationMiddleware(
+    [Obsolete("This endpoint is obsolete and will be removed in a future version. Use checkout/stripe/middleware instead.")]
+    public Task<IActionResult> PaymentConfirmationMiddleware(
+        [FromQuery(Name = "payment_intent")] string paymentIntent = null,
+        [FromQuery] string shoppingCartId = null) => PaymentConfirmation(paymentIntent, shoppingCartId);
+
+    [HttpPost("checkout/params/Stripe")]
+    [ValidateAntiForgeryToken]
+    [Obsolete("This endpoint is obsolete and will be removed in a future version. Use checkout/stripe/params instead.")]
+    public Task<IActionResult> GetConfirmPaymentParameters() => ConfirmPaymentParameters();
+
+    [AllowAnonymous]
+    [HttpGet("checkout/stripe/middleware")]
+    public async Task<IActionResult> PaymentConfirmation(
         [FromQuery(Name = "payment_intent")] string paymentIntent = null,
         [FromQuery] string shoppingCartId = null)
     {
@@ -43,11 +56,11 @@ public class StripeController : PaymentBaseController
         return await ProduceActionResultAsync(result);
     }
 
-    [HttpPost("checkout/params/Stripe")]
+    [HttpPost("checkout/stripe/params")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> GetConfirmPaymentParameters()
+    public async Task<IActionResult> ConfirmPaymentParameters()
     {
-        var middlewareUrl = Url.ToAbsoluteUrl("~/checkout/middleware/Stripe");
+        var middlewareUrl = Url.ToAbsoluteUrl("~/checkout/stripe/params");
         var model = await _stripePaymentService.GetStripeConfirmParametersAsync(middlewareUrl);
         return Json(model, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
     }

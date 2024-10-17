@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Drivers;
-using OrchardCore.Commerce.Payment.Stripe.Endpoints.Api;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Migrations;
@@ -48,7 +47,5 @@ public class Startup : StartupBase
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
-           routes
-               .AddStripeMiddlewareEndpoint()
-               .AddStripePaymentApiEndpoints();
+        routes.AddStripePaymentApiEndpoints();
 }

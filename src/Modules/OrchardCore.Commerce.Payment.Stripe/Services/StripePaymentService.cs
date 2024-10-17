@@ -13,6 +13,7 @@ using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.ContentFields.Fields;
@@ -32,6 +33,9 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 public class StripePaymentService : IStripePaymentService
 {
     private readonly PaymentIntentService _paymentIntentService = new();
+    private readonly ConfirmationTokenService _confirmationTokenService = new();
+    private readonly CustomerService _customerService = new();
+    private readonly SubscriptionService _subscriptionService = new();
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
@@ -65,6 +69,62 @@ public class StripePaymentService : IStripePaymentService
         H = htmlLocalizer;
         _httpContextAccessor = httpContextAccessor;
     }
+
+    public async Task<SubscriptionCreateResponse> CreateSubscriptionAsync(StripeCreateSubscriptionViewModel stripeCreateSubscriptionViewModel)
+    {
+        // Automatically save the payment method to the subscription
+        // when the first payment is successful.
+        var paymentSettings = new SubscriptionPaymentSettingsOptions
+        {
+            SaveDefaultPaymentMethod = "on_subscription",
+        };
+
+        var subscriptionOptions = new SubscriptionCreateOptions
+        {
+            Customer = stripeCreateSubscriptionViewModel.CustomerId,
+            PaymentSettings = paymentSettings,
+            PaymentBehavior = "default_incomplete",
+        };
+
+        foreach (var priceId in stripeCreateSubscriptionViewModel.PriceIds)
+        {
+            subscriptionOptions.Items.Add(new SubscriptionItemOptions { Price = priceId });
+        }
+
+        subscriptionOptions.AddExpand("latest_invoice.payment_intent");
+        subscriptionOptions.AddExpand("pending_setup_intent");
+
+        var subscription = await _subscriptionService.CreateAsync(
+            subscriptionOptions,
+            await _requestOptionsService.SetIdempotencyKeyAsync(),
+            _httpContextAccessor.HttpContext.RequestAborted);
+        if (subscription.PendingSetupIntent != null)
+        {
+            return new SubscriptionCreateResponse
+            {
+                Type = "setup",
+                ClientSecret = subscription.PendingSetupIntent.ClientSecret,
+            };
+        }
+
+        return new SubscriptionCreateResponse
+        {
+            Type = "payment",
+            ClientSecret = subscription.LatestInvoice.PaymentIntent.ClientSecret,
+        };
+    }
+
+    public async Task<Customer> GetCustomerAsync(string customerId) =>
+        await _customerService.GetAsync(
+            customerId,
+            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
+            cancellationToken: _httpContextAccessor.HttpContext.RequestAborted);
+
+    public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions customerCreateOptions) =>
+        await _customerService.CreateAsync(
+            customerCreateOptions,
+            await _requestOptionsService.SetIdempotencyKeyAsync(),
+            _httpContextAccessor.HttpContext.RequestAborted);
 
     public async Task<string> GetPublicKeyAsync()
     {
@@ -368,15 +428,23 @@ public class StripePaymentService : IStripePaymentService
                     Address = CreateAddressOptions(billing),
                 },
             },
-            Shipping = new ChargeShippingOptions
-            {
-                Name = shipping.Name,
-                Phone = part.Phone?.Text,
-                Address = CreateAddressOptions(shipping),
-            },
+            Shipping = string.IsNullOrEmpty(shipping.Name)
+                ? null
+                : new ChargeShippingOptions
+                {
+                    Name = shipping.Name,
+                    Phone = part.Phone?.Text,
+                    Address = CreateAddressOptions(shipping),
+                },
         };
         return model;
     }
+
+    public async Task<ConfirmationToken> GetConfirmationTokenAsync(string confirmationTokenId) =>
+        await _confirmationTokenService.GetAsync(
+            confirmationTokenId,
+            cancellationToken: _httpContextAccessor.HttpContext.RequestAborted,
+            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync());
 
     private static AddressOptions CreateAddressOptions(Address address) =>
         new()

@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Payment.Stripe.Services;
+using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -17,6 +18,14 @@ namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 /// </summary>
 public interface IStripePaymentService
 {
+    Task<SubscriptionCreateResponse> CreateSubscriptionAsync(StripeCreateSubscriptionViewModel stripeCreateSubscriptionViewModel);
+
+    Task<Customer> GetCustomerAsync(string customerId);
+
+    Task<Customer> CreateCustomerAsync(CustomerCreateOptions customerCreateOptions);
+
+    Task<ConfirmationToken> GetConfirmationTokenAsync(string confirmationTokenId);
+
     long GetPaymentAmount(Amount total);
 
     /// <summary>

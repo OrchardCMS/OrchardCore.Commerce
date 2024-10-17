@@ -8,11 +8,16 @@ public static class Endpoints
     public static IEndpointRouteBuilder AddStripePaymentApiEndpoints(this IEndpointRouteBuilder router)
     {
         router
+            .AddStripeConfirmationTokenEndpoint()
             .AddStripePublicKeyEndpoint()
             .AddStripePaymentIntentPostEndpoint()
             .AddStripePaymentIntentGetEndpoint()
             .AddStripeTotalEndpoint()
-            .AddStripeConfirmParametersEndpoint();
+            .AddStripeConfirmParametersEndpoint()
+            .AddStripePaymentOrderConfirmationEndpoint()
+            .AddStripeGetCustomerEndpoint()
+            .AddStripeCreateCustomerEndpoint()
+            .AddStripeCreateSubscriptionEndpoint();
 
         return router;
     }

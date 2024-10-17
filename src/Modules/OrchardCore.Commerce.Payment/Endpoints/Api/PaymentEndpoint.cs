@@ -62,7 +62,7 @@ public static class PaymentEndpoint
 
         if (viewModel.PaymentProviderName.EqualsOrdinalIgnoreCase("Stripe"))
         {
-            return TypedResults.BadRequest("Stripe payment uses ~/checkout/middleware/Stripe, not ~/checkout/callback/Stripe.");
+            return TypedResults.BadRequest("Stripe payment uses ~/checkout/stripe/middleware, not ~/checkout/callback/Stripe.");
         }
 
         if (string.IsNullOrWhiteSpace(viewModel.OrderId))

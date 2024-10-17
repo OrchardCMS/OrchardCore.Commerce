@@ -7,8 +7,8 @@ window.stripePaymentForm = function stripePaymentForm(
     errorText,
     missingText,
     updatePaymentIntentUrl,
-    validateUrl = 'checkout/validate/Stripe',
-    paramsUrl = 'checkout/params/Stripe',
+    validateUrl = 'checkout/validate/stripe',
+    paramsUrl = 'checkout/stripe/params',
     priceUrl = 'checkout/price',
     errorContainerSelector = '.message-error',
     stripeFieldErrorSelector = '.stripe-field-error',
@@ -83,7 +83,7 @@ window.stripePaymentForm = function stripePaymentForm(
         submitButton.addEventListener('click', async (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-            toggleInputs(false);         
+            toggleInputs(false);
 
             let result;
             try {
@@ -110,7 +110,7 @@ window.stripePaymentForm = function stripePaymentForm(
                     throw validationJson.errors;
                 }
 
-                
+
                 result = await stripe.confirmPayment({
                     elements: stripeElements,
                     confirmParams: await fetchPost(paramsUrl),
