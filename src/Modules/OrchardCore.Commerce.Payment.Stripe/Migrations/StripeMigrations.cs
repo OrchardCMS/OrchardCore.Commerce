@@ -54,6 +54,21 @@ public class StripeMigrations : DataMigration
                 .Column<string>(nameof(OrderPaymentIndex.OrderId), column => column.WithCommonUniqueIdLength())
                 .Column<string>(nameof(OrderPaymentIndex.PaymentIntentId)));
 
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<StripeProductPart>(builder => builder
+                .Configure(part => part.Attachable())
+                .WithField(part => part.StripeProductId, field => field.WithDisplayName("Stripe Product ID")));
+
         return 1;
+    }
+
+    public async Task<int> UpdateFrom1Async()
+    {
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<StripeProductPart>(builder => builder
+                .Configure(part => part.Attachable())
+                .WithField(part => part.StripeProductId, field => field.WithDisplayName("Stripe Product ID")));
+
+        return 2;
     }
 }

@@ -70,7 +70,7 @@ public class StripePaymentService : IStripePaymentService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<SubscriptionCreateResponse> CreateSubscriptionAsync(StripeCreateSubscriptionViewModel stripeCreateSubscriptionViewModel)
+    public async Task<SubscriptionCreateResponse> CreateSubscriptionAsync(StripeCreateSubscriptionViewModel viewModel)
     {
         // Automatically save the payment method to the subscription
         // when the first payment is successful.
@@ -81,12 +81,12 @@ public class StripePaymentService : IStripePaymentService
 
         var subscriptionOptions = new SubscriptionCreateOptions
         {
-            Customer = stripeCreateSubscriptionViewModel.CustomerId,
+            Customer = viewModel.CustomerId,
             PaymentSettings = paymentSettings,
             PaymentBehavior = "default_incomplete",
         };
 
-        foreach (var priceId in stripeCreateSubscriptionViewModel.PriceIds)
+        foreach (var priceId in viewModel.PriceIds)
         {
             subscriptionOptions.Items.Add(new SubscriptionItemOptions { Price = priceId });
         }

@@ -18,7 +18,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 /// </summary>
 public interface IStripePaymentService
 {
-    Task<SubscriptionCreateResponse> CreateSubscriptionAsync(StripeCreateSubscriptionViewModel stripeCreateSubscriptionViewModel);
+    Task<SubscriptionCreateResponse> CreateSubscriptionAsync(StripeCreateSubscriptionViewModel viewModel);
 
     Task<Customer> GetCustomerAsync(string customerId);
 

@@ -37,6 +37,8 @@ public class Startup : StartupBase
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
 
         services.AddContentPart<StripePaymentPart>().WithMigration<StripeMigrations>().WithIndex<OrderPaymentIndexProvider>();
+        services.AddContentPart<StripeProductPart>();
+
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
 
         services.AddScoped<IOrderContentTypeDefinitionExclusionProvider, StripeOrderContentTypeDefinitionExclusionProvider>();
