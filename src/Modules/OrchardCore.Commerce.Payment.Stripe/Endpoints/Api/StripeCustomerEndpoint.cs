@@ -37,7 +37,7 @@ public static class StripeCustomerEndpoint
 
     public static IEndpointRouteBuilder AddStripeCreateCustomerEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGetWithDefaultSettings($"{StripePaymentApiPath}/customer", GetStripeCreateCustomerAsync);
+        builder.MapPostWithDefaultSettings($"{StripePaymentApiPath}/customer", GetStripeCreateCustomerAsync);
         return builder;
     }
 

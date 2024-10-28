@@ -405,3 +405,14 @@ public class ContentLocalizationStartup : StartupBase
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
         app.UseMiddleware<LocalizationCurrencyRedirectMiddleware>();
 }
+
+[RequireFeatures(CommerceConstants.Features.Core, CommerceConstants.Features.Subscription)]
+public class SubscriptionStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddContentPart<SubscriptionPart>()
+            .WithMigration<SubscriptionMigrations>();
+    }
+}

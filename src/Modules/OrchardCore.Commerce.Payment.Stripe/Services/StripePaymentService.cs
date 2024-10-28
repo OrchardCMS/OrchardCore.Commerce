@@ -21,6 +21,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Settings;
 using Stripe;
+using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly ConfirmationTokenService _confirmationTokenService = new();
     private readonly CustomerService _customerService = new();
     private readonly SubscriptionService _subscriptionService = new();
+    private readonly SessionService _sessionService = new();
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
@@ -113,6 +115,12 @@ public class StripePaymentService : IStripePaymentService
             ClientSecret = subscription.LatestInvoice.PaymentIntent.ClientSecret,
         };
     }
+
+    public async Task<Customer> CreateSessionAsync(string customerId) =>
+        await _customerService.GetAsync(
+            customerId,
+            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
+            cancellationToken: _httpContextAccessor.HttpContext.RequestAborted);
 
     public async Task<Customer> GetCustomerAsync(string customerId) =>
         await _customerService.GetAsync(

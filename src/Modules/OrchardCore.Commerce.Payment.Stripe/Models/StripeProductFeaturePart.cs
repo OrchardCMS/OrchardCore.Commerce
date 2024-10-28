@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Models;
 
-public class StripeProductPart : ContentPart
+public class StripeProductFeaturePart : ContentPart
 {
-    public TextField StripeProductId { get; set; } = new();
+    public TextField FeatureName { get; set; } = new();
 }

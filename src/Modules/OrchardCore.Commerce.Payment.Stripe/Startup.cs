@@ -12,6 +12,7 @@ using OrchardCore.Commerce.Payment.Stripe.Migrations;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.ContentManagement;
+using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -38,6 +39,11 @@ public class Startup : StartupBase
 
         services.AddContentPart<StripePaymentPart>().WithMigration<StripeMigrations>().WithIndex<OrderPaymentIndexProvider>();
         services.AddContentPart<StripeProductPart>();
+        services.AddContentPart<StripePricePart>();
+        services.AddContentPart<StripeProductFeaturePart>();
+        services.AddContentPart<FeatureCollectionPart>();
+        services.AddContentPart<PriceCollectionPart>();
+        services.AddDataMigration<StripeProductMigrations>();
 
         services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
 
