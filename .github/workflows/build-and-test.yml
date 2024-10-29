@@ -10,16 +10,16 @@ on:
 jobs:
   build-and-test-linux:
     name: Build and Test (Linux)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/INFRA-164
     with:
-      machine-types: '["ubuntu-latest"]'
+      machine-types: '["ubuntu-24.04"]'
       timeout-minutes: 60
 
   build-and-test-windows:
     name: Build and Test (Windows)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/INFRA-164
     with:
-      machine-types: '["windows-latest"]'
+      machine-types: '["windows-2022"]'
       timeout-minutes: 60
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
@@ -27,7 +27,7 @@ jobs:
 
   spelling:
     name: Spelling
-    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@issue/INFRA-164
     with:
       additional-dictionaries: |
         cspell:csharp/csharp.txt
