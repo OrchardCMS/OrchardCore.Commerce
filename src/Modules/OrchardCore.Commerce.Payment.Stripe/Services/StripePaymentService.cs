@@ -21,7 +21,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Settings;
 using Stripe;
-using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +34,6 @@ public class StripePaymentService : IStripePaymentService
 {
     private readonly PaymentIntentService _paymentIntentService = new();
     private readonly ConfirmationTokenService _confirmationTokenService = new();
-    private readonly CustomerService _customerService = new();
-    private readonly SubscriptionService _subscriptionService = new();
-    private readonly SessionService _sessionService = new();
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
@@ -71,68 +67,6 @@ public class StripePaymentService : IStripePaymentService
         H = htmlLocalizer;
         _httpContextAccessor = httpContextAccessor;
     }
-
-    public async Task<SubscriptionCreateResponse> CreateSubscriptionAsync(StripeCreateSubscriptionViewModel viewModel)
-    {
-        // Automatically save the payment method to the subscription
-        // when the first payment is successful.
-        var paymentSettings = new SubscriptionPaymentSettingsOptions
-        {
-            SaveDefaultPaymentMethod = "on_subscription",
-        };
-
-        var subscriptionOptions = new SubscriptionCreateOptions
-        {
-            Customer = viewModel.CustomerId,
-            PaymentSettings = paymentSettings,
-            PaymentBehavior = "default_incomplete",
-        };
-
-        foreach (var priceId in viewModel.PriceIds)
-        {
-            subscriptionOptions.Items.Add(new SubscriptionItemOptions { Price = priceId });
-        }
-
-        subscriptionOptions.AddExpand("latest_invoice.payment_intent");
-        subscriptionOptions.AddExpand("pending_setup_intent");
-
-        var subscription = await _subscriptionService.CreateAsync(
-            subscriptionOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
-        if (subscription.PendingSetupIntent != null)
-        {
-            return new SubscriptionCreateResponse
-            {
-                Type = "setup",
-                ClientSecret = subscription.PendingSetupIntent.ClientSecret,
-            };
-        }
-
-        return new SubscriptionCreateResponse
-        {
-            Type = "payment",
-            ClientSecret = subscription.LatestInvoice.PaymentIntent.ClientSecret,
-        };
-    }
-
-    public async Task<Customer> CreateSessionAsync(string customerId) =>
-        await _customerService.GetAsync(
-            customerId,
-            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-            cancellationToken: _httpContextAccessor.HttpContext.RequestAborted);
-
-    public async Task<Customer> GetCustomerAsync(string customerId) =>
-        await _customerService.GetAsync(
-            customerId,
-            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-            cancellationToken: _httpContextAccessor.HttpContext.RequestAborted);
-
-    public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions customerCreateOptions) =>
-        await _customerService.CreateAsync(
-            customerCreateOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
 
     public async Task<string> GetPublicKeyAsync()
     {

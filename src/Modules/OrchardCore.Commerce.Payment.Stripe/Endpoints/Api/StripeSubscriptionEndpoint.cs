@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Endpoints;
-using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using Stripe;
 using System.Collections.Generic;
@@ -27,7 +27,8 @@ public static class StripeSubscriptionEndpoint
 
     private static async Task<IResult> GetStripeCreateSubscriptionAsync(
         [FromBody] StripeCreateSubscriptionViewModel viewModel,
-        [FromServices] IStripePaymentService stripePaymentService,
+        [FromServices] IStripeCustomerService stripeCustomerService,
+        [FromServices] IStripeSubscriptionService stripeSubscriptionService,
         [FromServices] IShoppingCartService shoppingCartService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
@@ -77,12 +78,12 @@ public static class StripeSubscriptionEndpoint
                     State = billingAddress.Province,
                 },
             };
-            var customer = await stripePaymentService.CreateCustomerAsync(options);
+            var customer = await stripeCustomerService.CreateCustomerAsync(options);
             viewModel.CustomerId = customer.Id;
         }
 
         // Create the subscription.
-        var subscription = await stripePaymentService.CreateSubscriptionAsync(viewModel);
-        return TypedResults.Ok(subscription);
+        var response = await stripeSubscriptionService.CreateSubscriptionAsync(viewModel);
+        return TypedResults.Ok(response);
     }
 }

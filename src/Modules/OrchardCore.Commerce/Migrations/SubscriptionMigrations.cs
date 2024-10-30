@@ -49,6 +49,10 @@ public class SubscriptionMigrations : DataMigration
                 .WithDisplayName("User Id")
                 .WithDescription("The user ID of the subscriber."))
             .WithField(part => part.SerializedMetadata, field => field
+                .WithSettings(new TextFieldSettings
+                {
+                    Hint = "Additional data about the subscription in Dictionary<string,string> JSON serialized form.",
+                })
                 .WithDisplayName("Additional data")
                 .WithDescription("Additional data about the subscription in JSON serialized form."))
             .WithField(part => part.StartDateUtc, field => field

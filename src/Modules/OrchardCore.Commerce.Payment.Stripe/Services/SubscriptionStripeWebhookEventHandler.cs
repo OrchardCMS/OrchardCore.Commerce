@@ -49,13 +49,15 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                     return;
                 }
 
-                // Get session data for the invoice Id
+                // Get current subscription if exists, if exists do not override start date
+                // Handle case when subscription isn't active, or someone else payed for the tenant.
+                // Might be a good idea to do it in an officefreund own handler
                 var subscriptionPart = new SubscriptionPart();
                 subscriptionPart.UserId.Text = user.UserId;
                 subscriptionPart.Status.Text = SubscriptionStatuses.Active;
                 subscriptionPart.StartDateUtc.Value = _clock.UtcNow;
                 subscriptionPart.EndDateUtc.Value = invoice.PeriodEnd;
-                subscriptionPart.PaymentProviderName.Text = "Stripe";
+                subscriptionPart.PaymentProviderName.Text = StripePaymentProvider.ProviderName;
                 subscriptionPart.IdInPaymentProvider.Text = invoice.SubscriptionId;
 
                 var stripeSubscription = await _stripeSubscriptionService.GetSubscriptionAsync(invoice.SubscriptionId, options: null);

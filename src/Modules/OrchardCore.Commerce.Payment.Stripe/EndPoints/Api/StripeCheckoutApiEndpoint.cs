@@ -7,10 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Models;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
 using OrchardCore.Commerce.Payment.Stripe.Services;
-using OrchardCore.Environment.Shell;
 using Stripe.Checkout;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using static OrchardCore.Commerce.Payment.Stripe.Endpoints.Constants.Endpoints;
@@ -30,7 +27,6 @@ public static class StripeCheckoutApiEndpoint
         [FromServices] IAuthorizationService authorizationService,
         [FromServices] IStripeCustomerService stripeCustomerService,
         [FromServices] IStripeSessionService stripeSessionService,
-        [FromServices] ShellSettings shellSettings,
         HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApiStripePayment))
@@ -38,8 +34,7 @@ public static class StripeCheckoutApiEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        //TODO: We need update also
-        var customer = await stripeCustomerService.GetOrCreateCustomerAsync(
+        var customer = await stripeCustomerService.GetAndUpdateOrCreateCustomerAsync(
             viewModel.BillingAddress,
             viewModel.ShippingAddress,
             viewModel.Email,
@@ -53,29 +48,9 @@ public static class StripeCheckoutApiEndpoint
             SuccessUrl = viewModel.SuccessUrl,
             CancelUrl = viewModel.CancelUrl,
             Customer = customer.Id,
-            SubscriptionData = new SessionSubscriptionDataOptions
-            {
-                Metadata = new Dictionary<string, string>
-                {
-                    { "tenantName", shellSettings.Name },
-                },
-            },
         };
 
-        foreach (var lineItem in options.LineItems)
-        {
-            //TODO: Change this to use the actual tax rate
-            lineItem.TaxRates = ["txr_1F3586L1SJaDnrcsvfTTvknD"];
-        }
-
         var session = await stripeSessionService.CreateSessionAsync(options);
-
-        //Save session id to DB, with current User data and other necessary data
-        var result = await stripeSessionService.SaveSessionDataAsync(customer, session);
-        if (result.Errors?.Any() == true)
-        {
-            return TypedResults.BadRequest(result.Errors);
-        }
 
         return TypedResults.Ok(session.Url);
     }

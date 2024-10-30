@@ -57,12 +57,11 @@ public class StripeCustomerService : IStripeCustomerService
         }
         catch (StripeException stripeException)
         {
-
             return null;
         }
     }
 
-    public async Task<Customer> GetOrCreateCustomerAsync(
+    public async Task<Customer> GetAndUpdateOrCreateCustomerAsync(
         Address billingAddress,
         Address shippingAddress,
         string email,
@@ -77,44 +76,20 @@ public class StripeCustomerService : IStripeCustomerService
 
         if (customer?.Id != null)
         {
+            customer = await UpdateCustomerAsync(customer.Id, billingAddress, shippingAddress, email, phone);
             return customer;
         }
 
         return await CreateCustomerAsync(billingAddress, shippingAddress, email, phone);
     }
 
-    private async Task<Customer> CreateCustomerAsync(Address billingAddress, Address shippingAddress, string email, string phone)
+    public async Task<Customer> CreateCustomerAsync(
+        Address billingAddress,
+        Address shippingAddress,
+        string email,
+        string phone)
     {
-        var customerCreateOptions = new CustomerCreateOptions
-        {
-            Name = billingAddress.Name,
-            Email = email,
-            Phone = phone,
-            Address = new AddressOptions
-            {
-                City = billingAddress.City,
-                Country = billingAddress.Region,
-                Line1 = billingAddress.StreetAddress1,
-                Line2 = billingAddress.StreetAddress2,
-                PostalCode = billingAddress.PostalCode,
-                State = billingAddress.Province,
-            },
-            Shipping = shippingAddress?.Name != null
-                ? new ShippingOptions
-                    {
-                        Name = shippingAddress.Name,
-                        Address = new AddressOptions
-                        {
-                            City = shippingAddress.City,
-                            Country = shippingAddress.Region,
-                            Line1 = shippingAddress.StreetAddress1,
-                            Line2 = shippingAddress.StreetAddress2,
-                            PostalCode = shippingAddress.PostalCode,
-                            State = shippingAddress.Province,
-                        },
-                    }
-                : null,
-        };
+        var customerCreateOptions = PopulateCustomerCreateOptions(billingAddress, shippingAddress, email, phone);
 
         var customer = await _customerService.CreateAsync(
             customerCreateOptions,
@@ -123,4 +98,79 @@ public class StripeCustomerService : IStripeCustomerService
 
         return customer;
     }
+
+    public async Task<Customer> CreateCustomerAsync(CustomerCreateOptions customerCreateOptions)
+    {
+        var customer = await _customerService.CreateAsync(
+            customerCreateOptions,
+            await _requestOptionsService.SetIdempotencyKeyAsync(),
+            cancellationToken: _hca.HttpContext.RequestAborted);
+
+        return customer;
+    }
+
+    public async Task<Customer> UpdateCustomerAsync(
+        string customerId,
+        Address billingAddress,
+        Address shippingAddress,
+        string email,
+        string phone)
+    {
+        var customerUpdateOptions = PopulateCustomerUpdateOptions(billingAddress, shippingAddress, email, phone);
+
+        var customer = await _customerService.UpdateAsync(
+            customerId,
+            customerUpdateOptions,
+            await _requestOptionsService.SetIdempotencyKeyAsync(),
+            cancellationToken: _hca.HttpContext.RequestAborted);
+
+        return customer;
+    }
+
+    private static CustomerUpdateOptions PopulateCustomerUpdateOptions(
+        Address billingAddress,
+        Address shippingAddress,
+        string email,
+        string phone) =>
+        new()
+        {
+            Name = billingAddress.Name,
+            Email = email,
+            Phone = phone,
+            Address = CreateAddressOptions(billingAddress),
+            Shipping = CreateShippingOptions(shippingAddress),
+        };
+
+    private static CustomerCreateOptions PopulateCustomerCreateOptions(
+        Address billingAddress,
+        Address shippingAddress,
+        string email,
+        string phone) =>
+        new()
+        {
+            Name = billingAddress.Name,
+            Email = email,
+            Phone = phone,
+            Address = CreateAddressOptions(billingAddress),
+            Shipping = CreateShippingOptions(shippingAddress),
+        };
+
+    private static AddressOptions CreateAddressOptions(Address address) => new()
+    {
+        City = address.City,
+        Country = address.Region,
+        Line1 = address.StreetAddress1,
+        Line2 = address.StreetAddress2,
+        PostalCode = address.PostalCode,
+        State = address.Province,
+    };
+
+    private static ShippingOptions CreateShippingOptions(Address shippingAddress) =>
+        shippingAddress?.Name != null
+            ? new ShippingOptions
+            {
+                Name = shippingAddress.Name,
+                Address = CreateAddressOptions(shippingAddress),
+            }
+            : null;
 }

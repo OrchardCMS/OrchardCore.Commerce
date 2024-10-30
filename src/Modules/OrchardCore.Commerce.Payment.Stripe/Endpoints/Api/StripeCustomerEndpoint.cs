@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using Stripe;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Payment.Stripe.Endpoints.Constants.Endpoints;
@@ -22,7 +22,7 @@ public static class StripeCustomerEndpoint
 
     private static async Task<IResult> GetStripeCustomerAsync(
         [FromQuery] string? customerId,
-        [FromServices] IStripePaymentService stripePaymentService,
+        [FromServices] IStripeCustomerService stripeCustomerService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -31,7 +31,7 @@ public static class StripeCustomerEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        var customer = await stripePaymentService.GetCustomerAsync(customerId);
+        var customer = await stripeCustomerService.GetCustomerByIdAsync(customerId);
         return TypedResults.Ok(customer);
     }
 
@@ -43,7 +43,7 @@ public static class StripeCustomerEndpoint
 
     private static async Task<IResult> GetStripeCreateCustomerAsync(
         [FromBody] CustomerCreateOptions customerCreateOptions,
-        [FromServices] IStripePaymentService stripePaymentService,
+        [FromServices] IStripeCustomerService stripeCustomerService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -52,7 +52,7 @@ public static class StripeCustomerEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        var customer = await stripePaymentService.CreateCustomerAsync(customerCreateOptions);
+        var customer = await stripeCustomerService.CreateCustomerFromOptionsAsync(customerCreateOptions);
         return TypedResults.Ok(customer);
     }
 }
