@@ -38,7 +38,7 @@ window.stripePaymentForm = function stripePaymentForm(
             element.readOnly = !enable;
         });
 
-        payment.update({ disabled: !enable });
+        payment.update({ readOnly: !enable });
         submitButton.disabled = !enable;
         paymentProcessingContainer.hidden = enable;
         payText.hidden = !enable;
@@ -83,7 +83,7 @@ window.stripePaymentForm = function stripePaymentForm(
         submitButton.addEventListener('click', async (event) => {
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
-            toggleInputs(false);         
+            toggleInputs(false);
 
             let result;
             try {
@@ -110,7 +110,7 @@ window.stripePaymentForm = function stripePaymentForm(
                     throw validationJson.errors;
                 }
 
-                
+
                 result = await stripe.confirmPayment({
                     elements: stripeElements,
                     confirmParams: await fetchPost(paramsUrl),
