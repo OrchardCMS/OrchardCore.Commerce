@@ -12,6 +12,7 @@ using OrchardCore.Commerce.Payment.Stripe.Migrations;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.ContentManagement;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -52,6 +53,15 @@ public class Startup : StartupBase
         services.Configure<TemplateOptions>(option => option.MemberAccessStrategy.Register<StripePaymentProviderData>());
 
         services.AddContentSecurityPolicyProvider<StripeContentSecurityPolicyProvider>();
+
+        services.AddDataMigration<StripeSessionMigrations>();
+        services.AddScoped<IStripeCustomerService, StripeCustomerService>();
+        services.AddScoped<IStripeSessionService, StripeSessionService>();
+        services.AddScoped<IStripeSubscriptionService, StripeSubscriptionService>();
+        services.AddScoped<IStripeWebhookEventHandler, DefaultStripeWebhookEventHandler>();
+        services.AddScoped<IStripeWebhookEventHandler, SubscriptionStripeWebhookEventHandler>();
+
+        services.AddIndexProvider<StripeSessionDataIndexProvider>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>

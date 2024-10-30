@@ -413,6 +413,9 @@ public class SubscriptionStartup : StartupBase
     {
         services
             .AddContentPart<SubscriptionPart>()
-            .WithMigration<SubscriptionMigrations>();
+            .WithMigration<SubscriptionMigrations>()
+            .WithIndex<SubscriptionPartIndexProvider>();
+
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
     }
 }
