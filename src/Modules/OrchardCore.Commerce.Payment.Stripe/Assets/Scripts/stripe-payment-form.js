@@ -110,11 +110,11 @@ window.stripePaymentForm = function stripePaymentForm(
                     throw validationJson.errors;
                 }
 
-
-                result = await stripe.confirmPayment({
+                const confirmPaymentOptions = {
                     elements: stripeElements,
                     confirmParams: await fetchPost(paramsUrl),
-                });
+                };
+                result = await stripe.confirmPayment(confirmPaymentOptions);
 
                 displayError(result.error);
             } catch (error) {
