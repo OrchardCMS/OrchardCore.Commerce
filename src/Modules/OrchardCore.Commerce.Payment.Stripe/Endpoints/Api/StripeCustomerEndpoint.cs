@@ -52,7 +52,7 @@ public static class StripeCustomerEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        var customer = await stripeCustomerService.CreateCustomerFromOptionsAsync(customerCreateOptions);
+        var customer = await stripeCustomerService.CreateCustomerAsync(customerCreateOptions);
         return TypedResults.Ok(customer);
     }
 }
