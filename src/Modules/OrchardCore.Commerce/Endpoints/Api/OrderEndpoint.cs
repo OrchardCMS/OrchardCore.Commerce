@@ -3,12 +3,9 @@ using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Endpoints.Permissions;
 using OrchardCore.ContentManagement;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 

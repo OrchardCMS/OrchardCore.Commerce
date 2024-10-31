@@ -4,7 +4,6 @@ using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Payment.Stripe.Services;
-using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -18,10 +17,6 @@ namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 /// </summary>
 public interface IStripePaymentService
 {
-    Task<ConfirmationToken> GetConfirmationTokenAsync(string confirmationTokenId);
-
-    long GetPaymentAmount(Amount total);
-
     /// <summary>
     /// Returns the public key of the Stripe account.
     /// </summary>
@@ -31,16 +26,6 @@ public interface IStripePaymentService
     /// Handles the payment and authentication, sends back the necessary data to the client./>.
     /// </summary>
     Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart);
-
-    /// <summary>
-    /// Returns a <see cref="PaymentIntent"/> object for the given <paramref name="paymentIntentId"/>.
-    /// </summary>
-    Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId);
-
-    /// <summary>
-    /// Returns a <see cref="PaymentIntent"/> object based on the given <paramref name="total"/>.
-    /// </summary>
-    Task<PaymentIntent> CreatePaymentIntentAsync(Amount total);
 
     /// <summary>
     /// Creates an order content item in the database, based on the stored <see cref="PaymentIntent"/> and on the

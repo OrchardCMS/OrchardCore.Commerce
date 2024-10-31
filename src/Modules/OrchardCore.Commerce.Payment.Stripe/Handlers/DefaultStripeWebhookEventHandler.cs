@@ -3,14 +3,20 @@ using Stripe;
 using System.Threading.Tasks;
 using static Stripe.Events;
 
-namespace OrchardCore.Commerce.Payment.Stripe.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Handlers;
 
 public class DefaultStripeWebhookEventHandler : IStripeWebhookEventHandler
 {
+    private readonly IStripePaymentIntentService _stripePaymentIntentService;
     private readonly IStripePaymentService _stripePaymentService;
 
-    public DefaultStripeWebhookEventHandler(IStripePaymentService stripePaymentService) =>
+    public DefaultStripeWebhookEventHandler(
+        IStripePaymentIntentService stripePaymentIntentService,
+        IStripePaymentService stripePaymentService)
+    {
+        _stripePaymentIntentService = stripePaymentIntentService;
         _stripePaymentService = stripePaymentService;
+    }
 
     public async Task ReceivedStripeEventAsync(Event stripeEvent)
     {
@@ -28,7 +34,7 @@ public class DefaultStripeWebhookEventHandler : IStripeWebhookEventHandler
                 return;
             }
 
-            var paymentIntent = await _stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
+            var paymentIntent = await _stripePaymentIntentService.GetPaymentIntentAsync(paymentIntentId);
             await _stripePaymentService.UpdateOrderToOrderedAsync(paymentIntent, shoppingCartId: null);
         }
         else if (stripeEvent.Type == PaymentIntentPaymentFailed)

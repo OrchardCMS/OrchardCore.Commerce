@@ -3,8 +3,10 @@
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.MoneyDataType;
@@ -81,6 +83,18 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 
     public Amount GetRounded() =>
         new(Math.Round(Value, Currency.DecimalPlaces), Currency);
+
+    public long GetPaymentAmount(IEnumerable<string> zeroDecimalCurrencies, IEnumerable<string> specialCases)
+    {
+        if (zeroDecimalCurrencies.Contains(Currency.CurrencyIsoCode))
+        {
+            return (long)Math.Round(Value);
+        }
+
+        return specialCases.Contains(Currency.CurrencyIsoCode)
+            ? (long)Math.Round(Value / 100m) * 10000
+            : (long)Math.Round(Value * 100);
+    }
 
     private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")
     {

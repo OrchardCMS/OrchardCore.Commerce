@@ -1,12 +1,11 @@
-#nullable enable
 using Lombiq.HelpfulLibraries.AspNetCore.Extensions;
 using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
-using OrchardCore.Commerce.Payment.Stripe.Services;
 using Stripe;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Payment.Stripe.Endpoints.Constants.Endpoints;
@@ -21,7 +20,7 @@ public static class StripeCustomerEndpoint
     }
 
     private static async Task<IResult> GetStripeCustomerAsync(
-        [FromQuery] string? customerId,
+        [FromQuery] string customerId,
         [FromServices] IStripeCustomerService stripeCustomerService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)

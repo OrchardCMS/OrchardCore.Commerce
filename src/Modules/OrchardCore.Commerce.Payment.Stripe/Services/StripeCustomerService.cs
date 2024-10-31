@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using Stripe;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
@@ -35,7 +34,8 @@ public class StripeCustomerService : IStripeCustomerService
                 requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
                 cancellationToken: _hca.HttpContext.RequestAborted);
         }
-        catch (StripeException stripeException)
+        // TODO: Actually check the exception and only throw if it's not a user not found error.
+        catch (StripeException exception)
         {
             return null;
         }
@@ -55,6 +55,7 @@ public class StripeCustomerService : IStripeCustomerService
                 cancellationToken: _hca.HttpContext.RequestAborted);
             return list.Data.FirstOrDefault();
         }
+        // TODO: Actually check the exception and only throw if it's not a user not found error.
         catch (StripeException stripeException)
         {
             return null;

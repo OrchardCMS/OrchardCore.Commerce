@@ -1,6 +1,8 @@
 ﻿using Lombiq.HelpfulLibraries.OrchardCore.Users;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Modules;
 using Stripe;
@@ -8,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using static Stripe.Events;
 
-namespace OrchardCore.Commerce.Payment.Stripe.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Handlers;
 
 public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
 {
@@ -63,7 +65,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 var stripeSubscription = await _stripeSubscriptionService.GetSubscriptionAsync(invoice.SubscriptionId, options: null);
                 subscriptionPart.Metadata = stripeSubscription.Metadata;
 
-                await _subscriptionService.CreateOrUpdateActiveSubscriptionAsync(invoice.SubscriptionId, subscriptionPart);
+                await _subscriptionService.CreateOrUpdateSubscriptionAsync(invoice.SubscriptionId, subscriptionPart);
             }
         }
     }

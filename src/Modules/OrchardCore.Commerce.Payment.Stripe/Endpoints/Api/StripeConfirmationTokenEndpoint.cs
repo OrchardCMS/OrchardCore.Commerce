@@ -21,7 +21,7 @@ public static class StripeConfirmationTokenEndpoint
 
     private static async Task<IResult> GetStripeConfirmationTokenAsync(
         [FromQuery] string? confirmationTokenId,
-        [FromServices] IStripePaymentService stripePaymentService,
+        [FromServices] IStripeConfirmationTokenService stripeConfirmationTokenService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -30,7 +30,7 @@ public static class StripeConfirmationTokenEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        var confirmationToken = await stripePaymentService.GetConfirmationTokenAsync(confirmationTokenId);
+        var confirmationToken = await stripeConfirmationTokenService.GetConfirmationTokenAsync(confirmationTokenId);
         return TypedResults.Ok(confirmationToken);
     }
 }

@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Models;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
-using OrchardCore.Commerce.Payment.Stripe.Services;
 using Stripe.Checkout;
 using System.Threading.Tasks;
 

@@ -7,13 +7,11 @@ using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
-using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Models;
-using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.ContentFields.Fields;
@@ -32,40 +30,38 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentService : IStripePaymentService
 {
-    private readonly PaymentIntentService _paymentIntentService = new();
-    private readonly ConfirmationTokenService _confirmationTokenService = new();
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _hca;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
-    private readonly IRequestOptionsService _requestOptionsService;
     private readonly IStringLocalizer T;
     private readonly YesSql.ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IPaymentService _paymentService;
     private readonly IHtmlLocalizer<StripePaymentService> H;
+    private readonly IStripePaymentIntentService _stripePaymentIntentService;
 
 #pragma warning disable S107 // Methods should not have too many parameters
     public StripePaymentService(
         IContentManager contentManager,
         ISiteService siteService,
-        IRequestOptionsService requestOptionsService,
         IStringLocalizer<StripePaymentService> stringLocalizer,
         YesSql.ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
         IPaymentService paymentService,
         IHtmlLocalizer<StripePaymentService> htmlLocalizer,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor hca,
+        IStripePaymentIntentService stripePaymentIntentService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _contentManager = contentManager;
         _siteService = siteService;
-        _requestOptionsService = requestOptionsService;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
         T = stringLocalizer;
         _paymentService = paymentService;
         H = htmlLocalizer;
-        _httpContextAccessor = httpContextAccessor;
+        _hca = hca;
+        _stripePaymentIntentService = stripePaymentIntentService;
     }
 
     public async Task<string> GetPublicKeyAsync()
@@ -93,21 +89,10 @@ public class StripePaymentService : IStripePaymentService
         var defaultTotal = totals.SingleOrDefault();
 
         var initPaymentIntent = string.IsNullOrEmpty(paymentIntentId)
-            ? await CreatePaymentIntentAsync(defaultTotal)
-            : await GetOrUpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
+            ? await _stripePaymentIntentService.CreatePaymentIntentAsync(defaultTotal)
+            : await _stripePaymentIntentService.GetOrUpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
 
         return initPaymentIntent.ClientSecret;
-    }
-
-    public async Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
-    {
-        var paymentIntentGetOptions = new PaymentIntentGetOptions();
-        paymentIntentGetOptions.AddExpansions();
-        return await _paymentIntentService.GetAsync(
-            paymentIntentId,
-            paymentIntentGetOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
     }
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, string shoppingCartId) =>
@@ -173,7 +158,7 @@ public class StripePaymentService : IStripePaymentService
         OrderPart orderPart = null)
     {
         var innerPaymentIntentId = paymentIntentId ?? _paymentIntentPersistence.Retrieve();
-        var paymentIntent = await GetPaymentIntentAsync(innerPaymentIntentId);
+        var paymentIntent = await _stripePaymentIntentService.GetPaymentIntentAsync(innerPaymentIntentId);
 
         // Stripe doesn't support multiple shopping cart IDs because we can't send that info to the middleware anyway.
         var (order, isNew) = await _paymentService.CreateOrUpdateOrderFromShoppingCartAsync(
@@ -235,13 +220,13 @@ public class StripePaymentService : IStripePaymentService
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.WaitingForRedirect,
-                Url = _httpContextAccessor.HttpContext.Request.GetDisplayUrl(),
+                Url = _hca.HttpContext.Request.GetDisplayUrl(),
             };
         }
 
         // If we can't find a valid payment intent based on ID or if we can't find the associated order, then something
         // went wrong and continuing from here would only cause a crash anyway.
-        if (await GetPaymentIntentAsync(paymentIntentId) is not { PaymentMethod: not null } fetchedPaymentIntent ||
+        if (await _stripePaymentIntentService.GetPaymentIntentAsync(paymentIntentId) is not { PaymentMethod: not null } fetchedPaymentIntent ||
             (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntentId))?.OrderId is not { } orderId ||
             await _contentManager.GetAsync(orderId) is not { } order)
         {
@@ -297,7 +282,7 @@ public class StripePaymentService : IStripePaymentService
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.WaitingForRedirect,
-                Url = _httpContextAccessor.HttpContext.Request.GetDisplayUrl(),
+                Url = _hca.HttpContext.Request.GetDisplayUrl(),
             };
         }
 
@@ -308,39 +293,6 @@ public class StripePaymentService : IStripePaymentService
             Status = PaymentOperationStatus.Failed,
             ShowMessage = H["The payment has failed, please try again."],
         };
-    }
-
-    public long GetPaymentAmount(Amount total)
-    {
-        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(total.Currency.CurrencyIsoCode))
-        {
-            return (long)Math.Round(total.Value);
-        }
-
-        return CurrencyCollectionConstants.SpecialCases.Contains(total.Currency.CurrencyIsoCode)
-            ? (long)Math.Round(total.Value / 100m) * 10000
-            : (long)Math.Round(total.Value * 100);
-    }
-
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total)
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var paymentIntentOptions = new PaymentIntentCreateOptions
-        {
-            Amount = GetPaymentAmount(total),
-            Currency = total.Currency.CurrencyIsoCode,
-            Description = T["User checkout on {0}", siteSettings.SiteName].Value,
-            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
-        };
-
-        var paymentIntent = await _paymentIntentService.CreateAsync(
-            paymentIntentOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
-
-        _paymentIntentPersistence.Store(paymentIntent.Id);
-
-        return paymentIntent;
     }
 
     public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(
@@ -382,12 +334,6 @@ public class StripePaymentService : IStripePaymentService
         return model;
     }
 
-    public async Task<ConfirmationToken> GetConfirmationTokenAsync(string confirmationTokenId) =>
-        await _confirmationTokenService.GetAsync(
-            confirmationTokenId,
-            cancellationToken: _httpContextAccessor.HttpContext.RequestAborted,
-            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync());
-
     private static AddressOptions CreateAddressOptions(Address address) =>
         new()
         {
@@ -398,30 +344,6 @@ public class StripePaymentService : IStripePaymentService
             PostalCode = address.PostalCode ?? string.Empty,
             State = address.Province ?? string.Empty,
         };
-    private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
-        string paymentIntentId,
-        Amount defaultTotal)
-    {
-        var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
-
-        if (paymentIntent?.Status is PaymentIntentStatuses.Succeeded or PaymentIntentStatuses.Processing)
-        {
-            return paymentIntent;
-        }
-
-        var updateOptions = new PaymentIntentUpdateOptions
-        {
-            Amount = GetPaymentAmount(defaultTotal),
-            Currency = defaultTotal.Currency.CurrencyIsoCode,
-        };
-
-        updateOptions.AddExpansions();
-        return await _paymentIntentService.UpdateAsync(
-            paymentIntentId,
-            updateOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
-    }
 
     private async Task<ContentItem> GetOrderByPaymentIntentIdAsync(string paymentIntentId)
     {

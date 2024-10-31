@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using static OrchardCore.Commerce.Payment.Constants.CurrencyCollectionConstants;
 using static OrchardCore.Commerce.Payment.Stripe.Endpoints.Constants.Endpoints;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Endpoints.Api;
@@ -65,7 +66,6 @@ public static class StripeParametersEndpoint
     private static async Task<IResult> GetStripeTotalAsync(
         [FromQuery] string? shoppingCartId,
         [FromServices] IShoppingCartService shoppingCartService,
-        [FromServices] IStripePaymentService stripePaymentService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -83,7 +83,7 @@ public static class StripeParametersEndpoint
         var total = shoppingCartViewModel.Totals.Single();
         return TypedResults.Ok(new
         {
-            Amount = stripePaymentService.GetPaymentAmount(total),
+            Amount = total.GetPaymentAmount(ZeroDecimalCurrencies, SpecialCases),
             total.Currency,
         });
     }
