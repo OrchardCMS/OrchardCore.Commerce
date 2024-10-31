@@ -60,14 +60,14 @@ public static class PaymentEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        if (viewModel.PaymentProviderName == null)
+        {
+            return TypedResults.BadRequest($"${nameof(AddCallbackViewModel.PaymentProviderName)} is required.");
+        }
+
         if (viewModel.PaymentProviderName.EqualsOrdinalIgnoreCase("Stripe"))
         {
             return TypedResults.BadRequest("Stripe payment uses ~/checkout/stripe/middleware, not ~/checkout/callback/Stripe.");
-        }
-
-        if (string.IsNullOrWhiteSpace(viewModel.OrderId))
-        {
-            viewModel.OrderId = null;
         }
 
         if (await paymentService.CallBackAsync(
