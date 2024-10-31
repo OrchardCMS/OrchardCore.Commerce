@@ -1,5 +1,4 @@
-﻿#nullable enable
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using Stripe.Checkout;
 using System.Collections.Generic;
@@ -32,7 +31,7 @@ public class StripeSessionService : IStripeSessionService
         var session = await _sessionService.CreateAsync(
             options,
             await _requestOptionsService.SetIdempotencyKeyAsync(),
-            cancellationToken: _hca.HttpContext.RequestAborted);
+            cancellationToken: _hca.HttpContext!.RequestAborted);
 
         await _stripeSessionEventHandlers.AwaitEachAsync(handler => handler.StripeSessionCreatedAsync(session, options));
         return session;

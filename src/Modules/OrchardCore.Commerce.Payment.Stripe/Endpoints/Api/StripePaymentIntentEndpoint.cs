@@ -24,7 +24,7 @@ public static class StripePaymentIntentEndpoint
 
     private static async Task<IResult> GetPaymentIntentAsync(
         [FromQuery] string paymentIntentId,
-        [FromServices] IStripePaymentService stripePaymentService,
+        [FromServices] IStripePaymentIntentService stripePaymentIntentService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext
         )
@@ -34,7 +34,7 @@ public static class StripePaymentIntentEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        var paymentIntent = await stripePaymentService.GetPaymentIntentAsync(paymentIntentId);
+        var paymentIntent = await stripePaymentIntentService.GetPaymentIntentAsync(paymentIntentId);
         return TypedResults.Ok(paymentIntent);
     }
 
@@ -46,6 +46,7 @@ public static class StripePaymentIntentEndpoint
 
     private static async Task<IResult> CreatePaymentIntentAsync(
         [FromBody] CreatePaymentIntentWithOrderViewModel viewModel,
+        [FromServices] IStripePaymentIntentService stripePaymentIntentService,
         [FromServices] IStripePaymentService stripePaymentService,
         [FromServices] IShoppingCartService shoppingCartService,
         [FromServices] IAuthorizationService authorizationService,
@@ -58,7 +59,7 @@ public static class StripePaymentIntentEndpoint
 
         var shoppingCartViewModel = await shoppingCartService.GetAsync(viewModel.ShoppingCartId);
         var total = shoppingCartViewModel.Totals.Single();
-        var paymentIntent = await stripePaymentService.CreatePaymentIntentAsync(total);
+        var paymentIntent = await stripePaymentIntentService.CreatePaymentIntentAsync(total);
 
         var order = await stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(
             updateModelAccessor: null,

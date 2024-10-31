@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
-using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Settings;
 using Stripe;
 using System.Collections.Generic;

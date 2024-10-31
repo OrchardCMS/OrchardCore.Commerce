@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Drivers;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Handlers;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Migrations;
 using OrchardCore.Commerce.Payment.Stripe.Models;
@@ -55,9 +56,13 @@ public class Startup : StartupBase
         services.AddContentSecurityPolicyProvider<StripeContentSecurityPolicyProvider>();
 
         services.AddDataMigration<StripeSessionMigrations>();
-        services.AddScoped<IStripeCustomerService, StripeCustomerService>();
+
         services.AddScoped<IStripeSessionService, StripeSessionService>();
+        services.AddScoped<IStripeCustomerService, StripeCustomerService>();
         services.AddScoped<IStripeSubscriptionService, StripeSubscriptionService>();
+        services.AddScoped<IStripePaymentIntentService, StripePaymentIntentService>();
+        services.AddScoped<IStripeConfirmationTokenService, StripeConfirmationTokenService>();
+
         services.AddScoped<IStripeWebhookEventHandler, DefaultStripeWebhookEventHandler>();
         services.AddScoped<IStripeWebhookEventHandler, SubscriptionStripeWebhookEventHandler>();
 

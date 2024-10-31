@@ -1,5 +1,4 @@
-﻿using OrchardCore.Commerce.Constants;
-using OrchardCore.Commerce.Indexes;
+﻿using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Threading.Tasks;
@@ -19,10 +18,10 @@ public class SubscriptionService : ISubscriptionService
         _session = session;
     }
 
-    public async Task CreateOrUpdateActiveSubscriptionAsync(string subscriptionId, SubscriptionPart subscriptionPart)
+    public async Task CreateOrUpdateSubscriptionAsync(string idInPaymentProvider, SubscriptionPart subscriptionPart)
     {
         var subscription = await _session.Query<ContentItem, SubscriptionPartIndex>(
-                item => item.IdInPaymentProvider == subscriptionId)
+                item => item.IdInPaymentProvider == idInPaymentProvider)
             .FirstOrDefaultAsync();
 
         subscription ??= await _contentManager.NewAsync(Subscription);

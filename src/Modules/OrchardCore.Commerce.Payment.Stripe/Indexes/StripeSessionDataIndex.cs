@@ -25,6 +25,5 @@ public class StripeSessionDataIndexProvider : IndexProvider<StripeSessionData>
                 StripeSessionUrl = sessionData.StripeSessionUrl,
                 StripeInvoiceId = sessionData.StripeInvoiceId,
                 SerializedAdditionalData = sessionData.SerializedAdditionalData,
-
             });
 }
