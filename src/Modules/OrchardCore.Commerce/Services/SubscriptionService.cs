@@ -22,6 +22,11 @@ public class SubscriptionService : ISubscriptionService
         _clock = clock;
     }
 
+    public Task<ContentItem> GetSubscriptionAsync(string idInPaymentProvider) =>
+        _session.Query<ContentItem, SubscriptionPartIndex>(
+                item => item.IdInPaymentProvider == idInPaymentProvider)
+            .FirstOrDefaultAsync();
+
     public async Task CreateOrUpdateSubscriptionAsync(string idInPaymentProvider, SubscriptionPart subscriptionPart)
     {
         var subscription = await _session.Query<ContentItem, SubscriptionPartIndex>(
@@ -29,7 +34,7 @@ public class SubscriptionService : ISubscriptionService
             .FirstOrDefaultAsync();
 
         // Get current subscription if exists, if exists do not override start date
-        var startDate = subscription.As<SubscriptionPart>().StartDateUtc.Value;
+        var startDate = subscription?.As<SubscriptionPart>()?.StartDateUtc?.Value;
         subscriptionPart.StartDateUtc.Value = startDate ?? _clock.UtcNow;
 
         subscription ??= await _contentManager.NewAsync(Subscription);

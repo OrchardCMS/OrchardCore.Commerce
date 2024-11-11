@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Services;
+using OrchardCore.ContentManagement;
 using Stripe;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,16 +18,19 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
     private readonly ISubscriptionService _subscriptionService;
     private readonly ILogger<SubscriptionStripeWebhookEventHandler> _logger;
     private readonly IStripeSubscriptionService _stripeSubscriptionService;
+    private readonly IContentManager _contentManager;
 
     public SubscriptionStripeWebhookEventHandler(
         ICachingUserManager cachingUserManager,
         ISubscriptionService subscriptionService,
         IStripeSubscriptionService stripeSubscriptionService,
+        IContentManager contentManager,
         ILogger<SubscriptionStripeWebhookEventHandler> logger)
     {
         _cachingUserManager = cachingUserManager;
         _subscriptionService = subscriptionService;
         _stripeSubscriptionService = stripeSubscriptionService;
+        _contentManager = contentManager;
         _logger = logger;
     }
 
@@ -59,8 +63,20 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
 
                 var stripeSubscription = await _stripeSubscriptionService.GetSubscriptionAsync(invoice.SubscriptionId, options: null);
                 subscriptionPart.Metadata = stripeSubscription.Metadata;
-
+                //TODO: Use start date of stripe subscription
                 await _subscriptionService.CreateOrUpdateSubscriptionAsync(invoice.SubscriptionId, subscriptionPart);
+            }
+        }
+        else if (stripeEvent.Type == CustomerSubscriptionUpdated)
+        {
+            var stripeSubscription = stripeEvent.Data.Object as Subscription;
+            // Get the subscription content item for this subscription and set its status to the new status.
+            var subscription = await _subscriptionService.GetSubscriptionAsync(stripeSubscription!.Id);
+            if (subscription != null)
+            {
+                var subscriptionPart = subscription.As<SubscriptionPart>();
+                subscriptionPart.Status.Text = stripeSubscription.Status;
+                await _contentManager.UpdateAsync(subscription);
             }
         }
     }

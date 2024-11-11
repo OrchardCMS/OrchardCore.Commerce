@@ -1,4 +1,5 @@
 ﻿using OrchardCore.Commerce.Models;
+using OrchardCore.ContentManagement;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
@@ -13,4 +14,9 @@ public interface ISubscriptionService
     /// with the provided <see cref="SubscriptionPart"/>.
     /// </summary>
     Task CreateOrUpdateSubscriptionAsync(string idInPaymentProvider, SubscriptionPart subscriptionPart);
+
+    /// <summary>
+    /// Returns the subscription content item with the given <paramref name="idInPaymentProvider"/>.
+    /// </summary>
+    Task<ContentItem> GetSubscriptionAsync(string idInPaymentProvider);
 }
