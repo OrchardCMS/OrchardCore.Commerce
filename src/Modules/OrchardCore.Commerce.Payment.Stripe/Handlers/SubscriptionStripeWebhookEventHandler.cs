@@ -4,7 +4,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Services;
-using OrchardCore.Modules;
 using Stripe;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -15,20 +14,17 @@ namespace OrchardCore.Commerce.Payment.Stripe.Handlers;
 public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
 {
     private readonly ICachingUserManager _cachingUserManager;
-    private readonly IClock _clock;
     private readonly ISubscriptionService _subscriptionService;
     private readonly ILogger<SubscriptionStripeWebhookEventHandler> _logger;
     private readonly IStripeSubscriptionService _stripeSubscriptionService;
 
     public SubscriptionStripeWebhookEventHandler(
         ICachingUserManager cachingUserManager,
-        IClock clock,
         ISubscriptionService subscriptionService,
         IStripeSubscriptionService stripeSubscriptionService,
         ILogger<SubscriptionStripeWebhookEventHandler> logger)
     {
         _cachingUserManager = cachingUserManager;
-        _clock = clock;
         _subscriptionService = subscriptionService;
         _stripeSubscriptionService = stripeSubscriptionService;
         _logger = logger;
@@ -57,7 +53,6 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 var subscriptionPart = new SubscriptionPart();
                 subscriptionPart.UserId.Text = user.UserId;
                 subscriptionPart.Status.Text = SubscriptionStatuses.Active;
-                subscriptionPart.StartDateUtc.Value = _clock.UtcNow;
                 subscriptionPart.EndDateUtc.Value = invoice.PeriodEnd;
                 subscriptionPart.PaymentProviderName.Text = StripePaymentProvider.ProviderName;
                 subscriptionPart.IdInPaymentProvider.Text = invoice.SubscriptionId;
