@@ -12,8 +12,8 @@ public class SubscriptionPart : ContentPart
     public TextField IdInPaymentProvider { get; set; } = new();
     public TextField PaymentProviderName { get; set; } = new();
     public TextField UserId { get; set; } = new();
-    public DateField StartDateUtc { get; set; } = new();
-    public DateField EndDateUtc { get; set; } = new();
+    public DateTimeField StartDateUtc { get; set; } = new();
+    public DateTimeField EndDateUtc { get; set; } = new();
 
     public TextField SerializedMetadata { get; set; } = new();
 
