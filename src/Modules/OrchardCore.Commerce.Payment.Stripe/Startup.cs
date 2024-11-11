@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Drivers;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
 using OrchardCore.Commerce.Payment.Stripe.Handlers;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Migrations;
@@ -32,6 +33,7 @@ public class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddScoped<IPermissionProvider, ApiPermissions>();
 
         services.AddScoped<IRequestOptionsService, RequestOptionsService>();
         services.AddScoped<IStripePaymentService, StripePaymentService>();
