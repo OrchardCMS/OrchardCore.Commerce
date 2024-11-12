@@ -63,7 +63,8 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
 
                 var stripeSubscription = await _stripeSubscriptionService.GetSubscriptionAsync(invoice.SubscriptionId, options: null);
                 subscriptionPart.Metadata = stripeSubscription.Metadata;
-                //TODO: Use start date of stripe subscription
+                subscriptionPart.StartDateUtc.Value = stripeSubscription.StartDate;
+
                 await _subscriptionService.CreateOrUpdateSubscriptionAsync(invoice.SubscriptionId, subscriptionPart);
             }
         }
