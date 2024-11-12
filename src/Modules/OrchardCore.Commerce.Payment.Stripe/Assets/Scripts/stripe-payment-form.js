@@ -38,7 +38,7 @@ window.stripePaymentForm = function stripePaymentForm(
             element.readOnly = !enable;
         });
 
-        payment.update({ disabled: !enable });
+        payment.update({ readOnly: !enable });
         submitButton.disabled = !enable;
         paymentProcessingContainer.hidden = enable;
         payText.hidden = !enable;
@@ -110,11 +110,11 @@ window.stripePaymentForm = function stripePaymentForm(
                     throw validationJson.errors;
                 }
 
-
-                result = await stripe.confirmPayment({
+                const confirmPaymentOptions = {
                     elements: stripeElements,
                     confirmParams: await fetchPost(paramsUrl),
-                });
+                };
+                result = await stripe.confirmPayment(confirmPaymentOptions);
 
                 displayError(result.error);
             } catch (error) {
