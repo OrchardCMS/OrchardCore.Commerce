@@ -1,4 +1,5 @@
 ﻿using Stripe;
+using System;
 using System.Threading.Tasks;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
 
@@ -52,6 +53,15 @@ public interface IStripeCustomerService
     /// <returns>The updated Stripe <see cref="Customer"/>.</returns>
     Task<Customer> UpdateCustomerAsync(
         string customerId,
+        Address billingAddress,
+        Address shippingAddress,
+        string email,
+        string phone);
+
+    /// <summary>
+    /// Populate the returned <see cref="CustomerCreateOptions"/> with the given details.
+    /// </summary>
+    CustomerCreateOptions PopulateCustomerCreateOptions(
         Address billingAddress,
         Address shippingAddress,
         string email,

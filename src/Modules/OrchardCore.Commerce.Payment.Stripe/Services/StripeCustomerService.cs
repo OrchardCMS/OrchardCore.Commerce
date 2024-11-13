@@ -142,7 +142,7 @@ public class StripeCustomerService : IStripeCustomerService
             Shipping = CreateShippingOptions(shippingAddress),
         };
 
-    private static CustomerCreateOptions PopulateCustomerCreateOptions(
+    public CustomerCreateOptions PopulateCustomerCreateOptions(
         Address billingAddress,
         Address shippingAddress,
         string email,
