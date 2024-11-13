@@ -58,7 +58,7 @@ public class SubscriptionMigrations : DataMigration
             .WithField(part => part.StartDateUtc, field => field
                 .WithSettings(new DateTimeFieldSettings { Required = true })
                 .WithDisplayName("Start date")
-                .WithDescription("The date when the subscription started."))
+                .WithDescription("The date when the subscription first started."))
             .WithField(part => part.EndDateUtc, field => field
                 .WithSettings(new DateTimeFieldSettings { Required = true })
                 .WithDisplayName("End date")
@@ -75,20 +75,6 @@ public class SubscriptionMigrations : DataMigration
             .Column<DateTime>(nameof(SubscriptionPartIndex.EndDateUtc))
         );
 
-        return 2;
-    }
-
-    public async Task<int> UpdateFrom1Async()
-    {
-        await SchemaBuilder.CreateMapIndexTableAsync<SubscriptionPartIndex>(table => table
-            .Column<string>(nameof(SubscriptionPartIndex.Status))
-            .Column<string>(nameof(SubscriptionPartIndex.IdInPaymentProvider))
-            .Column<string>(nameof(SubscriptionPartIndex.PaymentProviderName))
-            .Column<string>(nameof(SubscriptionPartIndex.UserId))
-            .Column<DateTime>(nameof(SubscriptionPartIndex.StartDateUtc))
-            .Column<DateTime>(nameof(SubscriptionPartIndex.EndDateUtc))
-        );
-
-        return 2;
+        return 1;
     }
 }
