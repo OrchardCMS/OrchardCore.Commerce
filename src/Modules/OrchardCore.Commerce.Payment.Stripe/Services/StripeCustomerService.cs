@@ -25,41 +25,32 @@ public class StripeCustomerService : IStripeCustomerService
         _cachingUserManager = cachingUserManager;
     }
 
-    public async Task<Customer> GetCustomerByIdAsync(string customerId)
+    public async Task<StripeSearchResult<Customer>> SearchCustomersAsync(CustomerSearchOptions options)
     {
-        try
-        {
-            return await _customerService.GetAsync(
-                customerId,
-                requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-                cancellationToken: _hca.HttpContext.RequestAborted);
-        }
-        // TODO: Actually check the exception and only throw if it's not a user not found error.
-        catch (StripeException exception)
-        {
-            return null;
-        }
+        var list = await _customerService.SearchAsync(
+            options,
+            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
+            cancellationToken: _hca.HttpContext.RequestAborted);
+        return list;
     }
+
+    public async Task<Customer> GetCustomerByIdAsync(string customerId) =>
+        await _customerService.GetAsync(
+            customerId,
+            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
+            cancellationToken: _hca.HttpContext.RequestAborted);
 
     public async Task<Customer> GetFirstCustomerByEmailAsync(string customerEmail)
     {
-        try
-        {
-            var list = await _customerService.ListAsync(
-                new CustomerListOptions
-                {
-                    Email = customerEmail,
-                    Limit = 1,
-                },
-                requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-                cancellationToken: _hca.HttpContext.RequestAborted);
-            return list.Data.FirstOrDefault();
-        }
-        // TODO: Actually check the exception and only throw if it's not a user not found error.
-        catch (StripeException stripeException)
-        {
-            return null;
-        }
+        var list = await _customerService.ListAsync(
+            new CustomerListOptions
+            {
+                Email = customerEmail,
+                Limit = 1,
+            },
+            requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
+            cancellationToken: _hca.HttpContext.RequestAborted);
+        return list.Data.FirstOrDefault();
     }
 
     public async Task<Customer> GetAndUpdateOrCreateCustomerAsync(
