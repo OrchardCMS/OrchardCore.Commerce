@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using YesSql.Sql;
 using static Lombiq.HelpfulLibraries.OrchardCore.Contents.ContentFieldEditorEnums.TextFieldEditors;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
-using static OrchardCore.Commerce.Constants.SubscriptionStatuses;
 
 namespace OrchardCore.Commerce.Migrations;
 
@@ -33,14 +32,6 @@ public class SubscriptionMigrations : DataMigration
                 .WithEditor(nameof(PredefinedList))
                 .WithSettings(new TextFieldPredefinedListEditorSettings
                 {
-                    Options =
-                    [
-                        new ListValueOption { Name = Active, Value = Active },
-                        new ListValueOption { Name = Canceled, Value = Canceled },
-                        new ListValueOption { Name = Expired, Value = Expired },
-                        new ListValueOption { Name = Pending, Value = Pending },
-                        new ListValueOption { Name = Deleted, Value = Deleted },
-                    ],
                     Editor = EditorOption.Dropdown,
                 }))
             .WithField(part => part.IdInPaymentProvider, field => field.WithDisplayName("Id in payment provider"))

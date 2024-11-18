@@ -1,5 +1,4 @@
 ﻿using Stripe;
-using System;
 using System.Threading.Tasks;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
 
@@ -10,6 +9,11 @@ namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 /// </summary>
 public interface IStripeCustomerService
 {
+    /// <summary>
+    /// Search for customers in Stripe with the given <paramref name="options"/>.
+    /// </summary>
+    Task<StripeSearchResult<Customer>> SearchCustomersAsync(CustomerSearchOptions options);
+
     /// <summary>
     /// Get the first customer with the given email in Stripe.
     /// </summary>

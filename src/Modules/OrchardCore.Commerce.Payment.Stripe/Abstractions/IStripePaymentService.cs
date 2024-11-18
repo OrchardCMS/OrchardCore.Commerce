@@ -53,6 +53,9 @@ public interface IStripePaymentService
     /// </summary>
     Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId);
 
+    /// <summary>
+    /// Save the order payment for the given <paramref name="orderContentItemId"/> and <paramref name="paymentIntentId"/>.
+    /// </summary>
     Task SaveOrderPaymentAsync(string orderContentItemId, string paymentIntentId);
 
     /// <summary>
