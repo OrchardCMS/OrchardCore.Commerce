@@ -28,12 +28,7 @@ public class SubscriptionMigrations : DataMigration
             .WithPart(nameof(SubscriptionPart)));
 
         await _contentDefinitionManager.AlterPartDefinitionAsync<SubscriptionPart>(builder => builder
-            .WithField(part => part.Status, field => field
-                .WithEditor(nameof(PredefinedList))
-                .WithSettings(new TextFieldPredefinedListEditorSettings
-                {
-                    Editor = EditorOption.Dropdown,
-                }))
+            .WithField(part => part.Status)
             .WithField(part => part.IdInPaymentProvider, field => field.WithDisplayName("Id in payment provider"))
             .WithField(part => part.PaymentProviderName, field => field.WithDisplayName("Payment provider name"))
             .WithField(part => part.UserId, field => field
