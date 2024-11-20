@@ -86,28 +86,22 @@ public class Startup : StartupBase
         routes.AddStripePaymentApiEndpoints();
 }
 
-[Feature(FeatureIds.StripeServices)]
-public class StripeStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddScoped<SessionService>();
-        services.AddScoped<CustomerService>();
-        services.AddScoped<SubscriptionService>();
-        services.AddScoped<PaymentIntentService>();
-        services.AddScoped<ConfirmationTokenService>();
-    }
-}
-
-[Feature(FeatureIds.TestStripeServices)]
+[Feature(FeatureIds.DummyStripeServices)]
+[RequireFeatures(FeatureIds.Area)]
 public class TestStripeStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
         services.RemoveByImplementation<SessionService>();
-        services.AddScoped<SessionService, TestSessionService>();
+        services.AddScoped<SessionService, DummySessionService>();
 
         services.RemoveByImplementation<CustomerService>();
-        services.AddScoped<CustomerService, TestCustomerService>();
+        services.AddScoped<CustomerService, DummyCustomerService>();
+
+        services.RemoveByImplementation<SubscriptionService>();
+        services.AddScoped<SubscriptionService, DummySubscriptionService>();
+
+        services.RemoveImplementationsOf<IStripeHelperService>();
+        services.AddScoped<IStripeHelperService, DummyStripeHelperService>();
     }
 }

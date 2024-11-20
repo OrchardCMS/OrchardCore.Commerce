@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
-public class TestSessionService : SessionService
+public class DummySessionService : SessionService
 {
     public const string TestSessionId = "cs_test_testsessionid000000000000000000000000000000000000000000000";
     public const string TestSessionUrl = "https://localhost";

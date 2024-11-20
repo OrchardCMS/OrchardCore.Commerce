@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
-public class TestCustomerService : CustomerService
+public class DummyCustomerService : CustomerService
 {
     public const string TestCustomerId = "cus_TESTID00000000";
 

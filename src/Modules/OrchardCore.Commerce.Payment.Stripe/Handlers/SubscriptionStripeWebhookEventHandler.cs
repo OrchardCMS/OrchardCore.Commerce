@@ -68,7 +68,10 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 await _subscriptionService.CreateOrUpdateSubscriptionAsync(invoice.SubscriptionId, subscriptionPart);
             }
         }
-        else if (stripeEvent.Type == CustomerSubscriptionUpdated)
+        else if (stripeEvent.Type is CustomerSubscriptionUpdated or
+                 CustomerSubscriptionDeleted or
+                 CustomerSubscriptionResumed or
+                 CustomerSubscriptionPaused)
         {
             var stripeSubscription = stripeEvent.Data.Object as Subscription;
             // Get the subscription content item for this subscription and set its status to the new status.
@@ -77,6 +80,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
             {
                 var subscriptionPart = subscription.As<SubscriptionPart>();
                 subscriptionPart.Status.Text = stripeSubscription.Status;
+                subscriptionPart.EndDateUtc.Value = stripeSubscription.CurrentPeriodEnd;
                 await _contentManager.UpdateAsync(subscription);
             }
         }

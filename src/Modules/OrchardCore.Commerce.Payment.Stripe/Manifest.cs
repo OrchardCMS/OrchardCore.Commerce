@@ -18,26 +18,19 @@ using static OrchardCore.Commerce.Promotion.Constants.FeatureIds;
 [assembly: Feature(
     Id = FeatureIds.Area,
     Name = "Orchard Core Commerce - Payment - Stripe",
-    Category = "Commerce",
     Description =
         "Stripe payment provider for Orchard Core Commerce. Note: you must configure it in Admin > Configuration > " +
         "Commerce > Stripe API or it won't appear in the front end.",
-    Dependencies = [Payment, Promotion, FeatureIds.StripeServices]
-)]
-
-[assembly: Feature(
-    Id = FeatureIds.StripeServices,
-    Name = "Orchard Core Commerce - Payment - Stripe - Stripe Services",
     Category = "Commerce",
-    Description =
-        "Stripe services that are used by Orchard Core Commerce - Payment - Stripe. Note: Added as a feature so it can be mocked in tests."
+    Dependencies = [Payment, Promotion]
 )]
 
 [assembly: Feature(
-    Id = FeatureIds.TestStripeServices,
-    Name = "Orchard Core Commerce - Payment - Stripe - Test Stripe Services",
+    Id = FeatureIds.DummyStripeServices,
+    Name = "Orchard Core Commerce - Payment - Stripe - Dummy Stripe Services",
     Category = "Commerce",
     Description =
         "WARNING: Only enable this feature in the UI testing environment." +
-        "Simulates Stripe services for testing purposes."
+        "Simulates Stripe services for testing purposes.",
+    Dependencies = [FeatureIds.Area]
 )]
