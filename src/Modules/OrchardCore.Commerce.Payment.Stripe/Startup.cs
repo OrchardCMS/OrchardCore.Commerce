@@ -22,7 +22,10 @@ using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using Stripe;
+using Stripe.Checkout;
 using System;
+using SubscriptionService = Stripe.SubscriptionService;
 
 namespace OrchardCore.Commerce.Payment.Stripe;
 
@@ -59,11 +62,18 @@ public class Startup : StartupBase
 
         services.AddDataMigration<StripeSessionMigrations>();
 
+        services.AddScoped<IStripeHelperService, StripeHelperService>();
         services.AddScoped<IStripeSessionService, StripeSessionService>();
         services.AddScoped<IStripeCustomerService, StripeCustomerService>();
         services.AddScoped<IStripeSubscriptionService, StripeSubscriptionService>();
         services.AddScoped<IStripePaymentIntentService, StripePaymentIntentService>();
         services.AddScoped<IStripeConfirmationTokenService, StripeConfirmationTokenService>();
+
+        services.AddScoped<SessionService>();
+        services.AddScoped<CustomerService>();
+        services.AddScoped<SubscriptionService>();
+        services.AddScoped<PaymentIntentService>();
+        services.AddScoped<ConfirmationTokenService>();
 
         services.AddScoped<IStripeWebhookEventHandler, DefaultStripeWebhookEventHandler>();
         services.AddScoped<IStripeWebhookEventHandler, SubscriptionStripeWebhookEventHandler>();

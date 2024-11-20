@@ -12,14 +12,16 @@ public class StripeCustomerService : IStripeCustomerService
 {
     private readonly IHttpContextAccessor _hca;
     private readonly IRequestOptionsService _requestOptionsService;
-    private readonly CustomerService _customerService = new();
+    private readonly CustomerService _customerService;
     private readonly ICachingUserManager _cachingUserManager;
 
     public StripeCustomerService(
+        CustomerService customerService,
         IHttpContextAccessor httpContextAccessor,
         IRequestOptionsService requestOptionsService,
         ICachingUserManager cachingUserManager)
     {
+        _customerService = customerService;
         _hca = httpContextAccessor;
         _requestOptionsService = requestOptionsService;
         _cachingUserManager = cachingUserManager;

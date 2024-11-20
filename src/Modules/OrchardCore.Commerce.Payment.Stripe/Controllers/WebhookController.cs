@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Settings;
 using Stripe;
 using System.Collections.Generic;
@@ -20,17 +21,20 @@ public class WebhookController : Controller
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<WebhookController> _logger;
+    private readonly IStripeHelperService _stripeHelperService;
     private readonly IEnumerable<IStripeWebhookEventHandler> _stripeWebhookEventHandlers;
 
     public WebhookController(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<WebhookController> logger,
+        IStripeHelperService stripeHelperService,
         IEnumerable<IStripeWebhookEventHandler> stripeWebhookEventHandlers)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
+        _stripeHelperService = stripeHelperService;
         _stripeWebhookEventHandlers = stripeWebhookEventHandlers;
     }
 
@@ -44,12 +48,13 @@ public class WebhookController : Controller
             var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
             var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
 
-            var stripeEvent = EventUtility.ConstructEvent(
+            var stripeEvent = _stripeHelperService.PrepareStripeEvent(
                 json,
                 Request.Headers["Stripe-Signature"],
                 webhookSigningKey,
                 // Let the logic handle version mismatch.
                 throwOnApiVersionMismatch: false);
+
             if (string.IsNullOrEmpty(stripeEvent.Id))
             {
                 throw new StripeException("Invalid event or event Id.");

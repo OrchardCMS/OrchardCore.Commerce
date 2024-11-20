@@ -7,12 +7,16 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripeConfirmationTokenService : IStripeConfirmationTokenService
 {
-    private readonly ConfirmationTokenService _confirmationTokenService = new();
+    private readonly ConfirmationTokenService _confirmationTokenService;
     private readonly IHttpContextAccessor _hca;
     private readonly IRequestOptionsService _requestOptionsService;
 
-    public StripeConfirmationTokenService(IHttpContextAccessor httpContextAccessor, IRequestOptionsService requestOptionsService)
+    public StripeConfirmationTokenService(
+        ConfirmationTokenService confirmationTokenService,
+        IHttpContextAccessor httpContextAccessor,
+        IRequestOptionsService requestOptionsService)
     {
+        _confirmationTokenService = confirmationTokenService;
         _hca = httpContextAccessor;
         _requestOptionsService = requestOptionsService;
     }

@@ -9,12 +9,16 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripeSubscriptionService : IStripeSubscriptionService
 {
-    private readonly SubscriptionService _subscriptionService = new();
+    private readonly SubscriptionService _subscriptionService;
     private readonly IRequestOptionsService _requestOptionsService;
     private readonly IHttpContextAccessor _hca;
 
-    public StripeSubscriptionService(IRequestOptionsService requestOptionsService, IHttpContextAccessor httpContextAccessor)
+    public StripeSubscriptionService(
+        SubscriptionService subscriptionService,
+        IRequestOptionsService requestOptionsService,
+        IHttpContextAccessor httpContextAccessor)
     {
+        _subscriptionService = subscriptionService;
         _requestOptionsService = requestOptionsService;
         _hca = httpContextAccessor;
     }

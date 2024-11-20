@@ -13,7 +13,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentIntentService : IStripePaymentIntentService
 {
-    private readonly PaymentIntentService _paymentIntentService = new();
+    private readonly PaymentIntentService _paymentIntentService;
     private readonly IHttpContextAccessor _hca;
     private readonly IRequestOptionsService _requestOptionsService;
     private readonly ISiteService _siteService;
@@ -21,12 +21,14 @@ public class StripePaymentIntentService : IStripePaymentIntentService
     private readonly IStringLocalizer<StripePaymentIntentService> T;
 
     public StripePaymentIntentService(
+        PaymentIntentService paymentIntentService,
         IHttpContextAccessor httpContextAccessor,
         IRequestOptionsService requestOptionsService,
         ISiteService siteService,
         IPaymentIntentPersistence paymentIntentPersistence,
         IStringLocalizer<StripePaymentIntentService> localizer)
     {
+        _paymentIntentService = paymentIntentService;
         _hca = httpContextAccessor;
         _requestOptionsService = requestOptionsService;
         _siteService = siteService;

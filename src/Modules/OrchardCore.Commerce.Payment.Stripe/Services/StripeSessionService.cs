@@ -9,16 +9,18 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripeSessionService : IStripeSessionService
 {
-    private readonly SessionService _sessionService = new();
+    private readonly SessionService _sessionService;
     private readonly IRequestOptionsService _requestOptionsService;
     private readonly IHttpContextAccessor _hca;
     private readonly IEnumerable<IStripeSessionEventHandler> _stripeSessionEventHandlers;
 
     public StripeSessionService(
+        SessionService sessionService,
         IRequestOptionsService requestOptionsService,
         IHttpContextAccessor httpContextAccessor,
         IEnumerable<IStripeSessionEventHandler> stripeSessionEventHandlers)
     {
+        _sessionService = sessionService;
         _requestOptionsService = requestOptionsService;
         _hca = httpContextAccessor;
         _stripeSessionEventHandlers = stripeSessionEventHandlers;
