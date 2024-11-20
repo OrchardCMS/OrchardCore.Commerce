@@ -85,4 +85,28 @@ public static class StripeSubscriptionEndpoint
         var response = await stripeSubscriptionService.CreateSubscriptionAsync(viewModel);
         return TypedResults.Ok(response);
     }
+
+    public static IEndpointRouteBuilder AddStripeGetSubscriptionEndpoint(this IEndpointRouteBuilder builder)
+    {
+        builder.MapGetWithDefaultSettings($"{StripePaymentApiPath}/subscription", GetStripeGetSubscriptionAsync);
+        return builder;
+    }
+
+    private static async Task<IResult> GetStripeGetSubscriptionAsync(
+        [FromQuery] string subscriptionId,
+        [FromServices] IStripeSubscriptionService stripeSubscriptionService,
+        [FromServices] IAuthorizationService authorizationService,
+        HttpContext httpContext)
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApiStripePayment))
+        {
+            return httpContext.ChallengeOrForbidApi();
+        }
+
+        // Get the subscription.
+        var response = await stripeSubscriptionService.GetSubscriptionAsync(
+            subscriptionId,
+            options: null);
+        return TypedResults.Ok(response);
+    }
 }

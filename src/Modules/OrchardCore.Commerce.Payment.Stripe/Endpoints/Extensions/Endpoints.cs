@@ -18,6 +18,7 @@ public static class Endpoints
             .AddStripeGetCustomerEndpoint()
             .AddStripeCreateCustomerEndpoint()
             .AddStripeCreateSubscriptionEndpoint()
+            .AddStripeGetSubscriptionEndpoint()
             .AddStripeCheckoutEndpoint();
 
         return router;
