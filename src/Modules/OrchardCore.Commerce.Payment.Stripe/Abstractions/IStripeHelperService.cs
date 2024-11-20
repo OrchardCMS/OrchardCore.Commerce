@@ -1,6 +1,6 @@
 ﻿using Stripe;
 
-namespace OrchardCore.Commerce.Payment.Stripe.Services;
+namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 
 /// <summary>
 /// Stripe helping services, needed so we can mock this part of Stripe also.

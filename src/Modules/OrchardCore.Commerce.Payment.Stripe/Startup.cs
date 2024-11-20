@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Drivers;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
@@ -83,4 +84,30 @@ public class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
         routes.AddStripePaymentApiEndpoints();
+}
+
+[Feature(FeatureIds.StripeServices)]
+public class StripeStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<SessionService>();
+        services.AddScoped<CustomerService>();
+        services.AddScoped<SubscriptionService>();
+        services.AddScoped<PaymentIntentService>();
+        services.AddScoped<ConfirmationTokenService>();
+    }
+}
+
+[Feature(FeatureIds.TestStripeServices)]
+public class TestStripeStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.RemoveByImplementation<SessionService>();
+        services.AddScoped<SessionService, TestSessionService>();
+
+        services.RemoveByImplementation<CustomerService>();
+        services.AddScoped<CustomerService, TestCustomerService>();
+    }
 }

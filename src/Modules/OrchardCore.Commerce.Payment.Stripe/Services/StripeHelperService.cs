@@ -1,4 +1,5 @@
-﻿using Stripe;
+﻿using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using Stripe;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
