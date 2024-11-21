@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 public interface IStripeSessionEventHandler
 {
     /// <summary>
-    /// Called before a Stripe session is created with a prepopulated <see cref="SessionCreateOptions"/>
+    /// Called before a Stripe session is created with a pre-populated <see cref="SessionCreateOptions"/>
     /// <paramref name="options"/>. Here you can modify the options before the session is created.
     /// </summary>
     Task StripeSessionCreatingAsync(SessionCreateOptions options) => Task.CompletedTask;

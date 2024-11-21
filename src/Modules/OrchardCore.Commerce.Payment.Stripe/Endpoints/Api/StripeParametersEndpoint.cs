@@ -20,7 +20,7 @@ using static OrchardCore.Commerce.Payment.Stripe.Endpoints.Constants.Endpoints;
 namespace OrchardCore.Commerce.Payment.Stripe.Endpoints.Api;
 public static class StripeParametersEndpoint
 {
-    // Create stripe confirmparameters endpoint
+    // Create stripe confirm parameters endpoint
     public static IEndpointRouteBuilder AddStripeConfirmParametersEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapPostWithDefaultSettings($"{StripePaymentApiPath}/confirm-parameters", GetStripeConfirmParametersAsync);

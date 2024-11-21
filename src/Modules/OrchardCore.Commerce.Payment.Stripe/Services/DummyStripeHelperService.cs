@@ -14,5 +14,5 @@ public class DummyStripeHelperService : IStripeHelperService
         string stripeSignatureHeader,
         string secret,
         bool throwOnApiVersionMismatch) =>
-        new() { Id = "evt_exampleEventId0000000000", Type = Type, Data = new EventData { Object = EventDataObject } };
+        new() { Id = "evt_exampleEventId0000000000", Type = Type, Data = new EventData { Object = EventDataObject } }; // #spell-check-ignore-line
 }

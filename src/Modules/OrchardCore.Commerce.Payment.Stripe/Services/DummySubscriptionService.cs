@@ -6,7 +6,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class DummySubscriptionService : SubscriptionService
 {
-    public const string TestSubscriptionId = "sub_exampleid000000000000000";
+    public const string TestSubscriptionId = "sub_exampleid000000000000000"; // #spell-check-ignore-line
     public static Subscription Subscription { get; set; } = new() { Id = TestSubscriptionId };
 
     public override Subscription Create(SubscriptionCreateOptions options, RequestOptions requestOptions = null) => new();
