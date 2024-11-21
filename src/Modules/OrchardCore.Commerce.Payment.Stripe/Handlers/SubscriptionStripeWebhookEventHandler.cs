@@ -78,9 +78,12 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
             var subscription = await _subscriptionService.GetSubscriptionAsync(stripeSubscription!.Id);
             if (subscription != null)
             {
-                var subscriptionPart = subscription.As<SubscriptionPart>();
-                subscriptionPart.Status.Text = stripeSubscription.Status;
-                subscriptionPart.EndDateUtc.Value = stripeSubscription.CurrentPeriodEnd;
+                subscription.Alter<SubscriptionPart>(part =>
+                {
+                    part.Status.Text = stripeSubscription.Status;
+                    part.EndDateUtc.Value = stripeSubscription.CurrentPeriodEnd;
+                });
+
                 await _contentManager.UpdateAsync(subscription);
             }
         }
