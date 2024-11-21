@@ -8,7 +8,7 @@
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
     <OrchardCoreVersion>2.0.0</OrchardCoreVersion>
 
-    <LombiqHelpfulLibrariesVersion>11.0.0</LombiqHelpfulLibrariesVersion>
+    <LombiqHelpfulLibrariesVersion>11.0.1-alpha.0.offi-126</LombiqHelpfulLibrariesVersion>
     <LombiqTestsUIVersion>11.0.0</LombiqTestsUIVersion>
   </PropertyGroup>
 
