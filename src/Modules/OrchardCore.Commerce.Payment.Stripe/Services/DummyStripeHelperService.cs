@@ -1,13 +1,12 @@
 ﻿using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using Stripe;
-using static Stripe.Events;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class DummyStripeHelperService : IStripeHelperService
 {
     // Set the event type to what you want to return.
-    public static string Type { get; set; } = InvoicePaid;
+    public static string Type { get; set; }
     public static IHasObject EventDataObject { get; set; }
 
     public Event PrepareStripeEvent(
