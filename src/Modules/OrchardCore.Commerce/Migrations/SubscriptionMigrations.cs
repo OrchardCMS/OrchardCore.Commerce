@@ -7,7 +7,6 @@ using OrchardCore.Data.Migration;
 using System;
 using System.Threading.Tasks;
 using YesSql.Sql;
-using static Lombiq.HelpfulLibraries.OrchardCore.Contents.ContentFieldEditorEnums.TextFieldEditors;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
