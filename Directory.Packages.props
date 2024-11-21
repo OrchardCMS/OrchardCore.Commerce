@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="$(LombiqHelpfulLibrariesVersion)" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
     <PackageVersion Include="Lombiq.Tests" Version="3.0.0" />
