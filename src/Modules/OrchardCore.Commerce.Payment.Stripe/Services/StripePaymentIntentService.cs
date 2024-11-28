@@ -7,9 +7,7 @@ using OrchardCore.Commerce.Payment.Stripe.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Helpers;
 using OrchardCore.Settings;
 using Stripe;
-using System.Linq;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Payment.Constants.CurrencyCollectionConstants;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 

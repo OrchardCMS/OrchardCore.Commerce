@@ -6,7 +6,6 @@ using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
-using System;
 using System.Net.Mime;
 using System.Threading.Tasks;
 
