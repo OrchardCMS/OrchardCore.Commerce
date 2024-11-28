@@ -4,8 +4,10 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
+using OrchardCore.Commerce.Payment.Stripe.Helpers;
 using OrchardCore.Settings;
 using Stripe;
+using System.Linq;
 using System.Threading.Tasks;
 using static OrchardCore.Commerce.Payment.Constants.CurrencyCollectionConstants;
 
@@ -52,7 +54,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
-            Amount = total.GetPaymentAmount(ZeroDecimalCurrencies, SpecialCases),
+            Amount = AmountHelpers.GetPaymentAmount(total),
             Currency = total.Currency.CurrencyIsoCode,
             Description = T["User checkout on {0}", siteSettings.SiteName].Value,
             AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
@@ -84,7 +86,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
 
         var updateOptions = new PaymentIntentUpdateOptions
         {
-            Amount = defaultTotal.GetPaymentAmount(ZeroDecimalCurrencies, SpecialCases),
+            Amount = AmountHelpers.GetPaymentAmount(defaultTotal),
             Currency = defaultTotal.Currency.CurrencyIsoCode,
         };
 

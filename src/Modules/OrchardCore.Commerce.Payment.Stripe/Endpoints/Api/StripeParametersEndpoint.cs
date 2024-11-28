@@ -9,12 +9,12 @@ using OrchardCore.Commerce.Endpoints;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Models;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
+using OrchardCore.Commerce.Payment.Stripe.Helpers;
 using OrchardCore.ContentManagement;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static OrchardCore.Commerce.Payment.Constants.CurrencyCollectionConstants;
 using static OrchardCore.Commerce.Payment.Stripe.Endpoints.Constants.Endpoints;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Endpoints.Api;
@@ -83,7 +83,7 @@ public static class StripeParametersEndpoint
         var total = shoppingCartViewModel.Totals.Single();
         return TypedResults.Ok(new
         {
-            Amount = total.GetPaymentAmount(ZeroDecimalCurrencies, SpecialCases),
+            Amount = AmountHelpers.GetPaymentAmount(total),
             total.Currency,
         });
     }

@@ -84,16 +84,33 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     public Amount GetRounded() =>
         new(Math.Round(Value, Currency.DecimalPlaces), Currency);
 
-    public long GetPaymentAmount(IEnumerable<string> zeroDecimalCurrencies, IEnumerable<string> specialCases)
+    /// <summary>
+    /// Converts the <see cref="Amount"/> to a fixed-point fractional value by keeping some digits based on the <see
+    /// cref="ICurrency.CurrencyIsoCode"/>.
+    /// </summary>
+    /// <param name="roundingByCurrencyCode">
+    /// Provides exceptional rounding rules for currencies that aren't converted according to the default. The key is
+    /// the <see cref="Currency"/>'s ISO code, the value pairs follow the same logic as the matching default parameters.
+    /// </param>
+    /// <param name="defaultKeepDigits">Indicates how many digits should be kept after the decimal point.</param>
+    /// <param name="defaultRoundTens">
+    /// If positive, the <see cref="Amount"/> is rounded to this many digits before converted to a fixed-point
+    /// fractional. Ignored otherwise.
+    /// </param>
+    public long GetFixedPointAmount(
+        IDictionary<string, (int KeepDigits, int RoundTens)> roundingByCurrencyCode,
+        int defaultKeepDigits = 2,
+        int defaultRoundTens = 0)
     {
-        if (zeroDecimalCurrencies.Contains(Currency.CurrencyIsoCode))
-        {
-            return (long)Math.Round(Value);
-        }
+        static int Tens(int zeroes) => (int)Math.Pow(10, zeroes);
 
-        return specialCases.Contains(Currency.CurrencyIsoCode)
-            ? (long)Math.Round(Value / 100m) * 10000
-            : (long)Math.Round(Value * 100);
+        var (keepDigits, roundTens) = roundingByCurrencyCode.TryGetValue(Currency.CurrencyIsoCode, out var pair)
+            ? pair
+            : (defaultKeepDigits, defaultRoundTens);
+
+        return roundTens > 0
+            ? (long)Math.Round(Value / Tens(roundTens)) * Tens(roundTens + keepDigits)
+            : (long)Math.Round(Value * Tens(keepDigits));
     }
 
     private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")
