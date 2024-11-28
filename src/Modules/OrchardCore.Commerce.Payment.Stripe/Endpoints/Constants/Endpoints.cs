@@ -2,5 +2,5 @@
 
 public static class Endpoints
 {
-    public const string StripePaymentApiPath = "api/checkout/stripe";
+    public const string StripePaymentApiPath = "api/stripe";
 }

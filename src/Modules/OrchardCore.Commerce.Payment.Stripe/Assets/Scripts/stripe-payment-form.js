@@ -8,7 +8,7 @@ window.stripePaymentForm = function stripePaymentForm(
     missingText,
     updatePaymentIntentUrl,
     validateUrl = 'checkout/validate/stripe',
-    paramsUrl = 'checkout/stripe/params',
+    paramsUrl = 'stripe/params',
     priceUrl = 'checkout/price',
     errorContainerSelector = '.message-error',
     stripeFieldErrorSelector = '.stripe-field-error',

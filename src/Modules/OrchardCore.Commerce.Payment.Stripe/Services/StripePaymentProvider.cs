@@ -84,5 +84,5 @@ public class StripePaymentProvider : IPaymentProvider
         ContentItem order,
         string shoppingCartId) =>
         throw new NotSupportedException(
-            "This code should never be reached, because Stripe payment uses ~/checkout/stripe/middleware, not ~/checkout/callback/Stripe.");
+            "This code should never be reached, because Stripe payment uses ~/stripe/middleware, not ~/checkout/callback/Stripe.");
 }

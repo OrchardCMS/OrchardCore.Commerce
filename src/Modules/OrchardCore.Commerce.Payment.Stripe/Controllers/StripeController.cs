@@ -35,19 +35,7 @@ public class StripeController : PaymentBaseController
     }
 
     [AllowAnonymous]
-    [HttpGet("checkout/middleware/Stripe")]
-    [Obsolete("This endpoint is obsolete and will be removed in a future version. Use checkout/stripe/middleware instead.")]
-    public Task<IActionResult> PaymentConfirmationMiddleware(
-        [FromQuery(Name = "payment_intent")] string paymentIntent = null,
-        [FromQuery] string shoppingCartId = null) => PaymentConfirmation(paymentIntent, shoppingCartId);
-
-    [HttpPost("checkout/params/Stripe")]
-    [ValidateAntiForgeryToken]
-    [Obsolete("This endpoint is obsolete and will be removed in a future version. Use checkout/stripe/params instead.")]
-    public Task<IActionResult> GetConfirmPaymentParameters() => ConfirmPaymentParameters();
-
-    [AllowAnonymous]
-    [HttpGet("checkout/stripe/middleware")]
+    [HttpGet("stripe/middleware")]
     public async Task<IActionResult> PaymentConfirmation(
         [FromQuery(Name = "payment_intent")] string paymentIntent = null,
         [FromQuery] string shoppingCartId = null)
@@ -56,11 +44,11 @@ public class StripeController : PaymentBaseController
         return await ProduceActionResultAsync(result);
     }
 
-    [HttpPost("checkout/stripe/params")]
+    [HttpPost("stripe/params")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmPaymentParameters()
     {
-        var middlewareUrl = Url.ToAbsoluteUrl("~/checkout/stripe/params");
+        var middlewareUrl = Url.ToAbsoluteUrl("~/stripe/params");
         var model = await _stripePaymentService.GetStripeConfirmParametersAsync(middlewareUrl);
 
         // Newtonsoft is used, because the external Stripe library that defined PaymentIntentConfirmOptions does not
