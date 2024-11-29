@@ -360,22 +360,27 @@ public class PaymentService : IPaymentService
     }
 
     public async Task<(ContentItem Order, bool IsNew)> CreateOrUpdateOrderFromShoppingCartAsync(
-        IUpdateModelAccessor updateModelAccessor,
+        IUpdateModelAccessor? updateModelAccessor,
         string? orderId,
         string? shoppingCartId,
-        AlterOrderAsyncDelegate? alterOrderAsync = null)
+        AlterOrderAsyncDelegate? alterOrderAsync = null,
+        OrderPart? orderPart = null)
     {
         var order = await _contentManager.GetAsync(orderId) ?? await _contentManager.NewAsync(Order);
         var isNew = order.IsNew();
         var part = order.As<OrderPart>();
 
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
-        if (cart.Items.Any() && !order.As<OrderPart>().LineItems.Any())
+        if (cart.Items.Any() && !order.As<OrderPart>().LineItems.Any() && updateModelAccessor != null)
         {
             await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
 
             var errors = updateModelAccessor.ModelUpdater.GetModelErrorMessages().AsList();
             FrontendException.ThrowIfAny(errors);
+        }
+        else if (orderPart != null)
+        {
+            order.Apply(orderPart);
         }
 
         // If there are line items in the Order, use data from Order instead of shopping cart.

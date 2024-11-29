@@ -34,8 +34,8 @@ public class StripeController : PaymentBaseController
     }
 
     [AllowAnonymous]
-    [HttpGet("checkout/middleware/Stripe")]
-    public async Task<IActionResult> PaymentConfirmationMiddleware(
+    [HttpGet("stripe/middleware")]
+    public async Task<IActionResult> PaymentConfirmation(
         [FromQuery(Name = "payment_intent")] string paymentIntent = null,
         [FromQuery] string shoppingCartId = null)
     {
@@ -43,11 +43,11 @@ public class StripeController : PaymentBaseController
         return await ProduceActionResultAsync(result);
     }
 
-    [HttpPost("checkout/params/Stripe")]
+    [HttpPost("stripe/params")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> GetConfirmPaymentParameters()
+    public async Task<IActionResult> ConfirmPaymentParameters()
     {
-        var middlewareUrl = Url.ToAbsoluteUrl("~/checkout/middleware/Stripe");
+        var middlewareUrl = Url.ToAbsoluteUrl("~/stripe/params");
         var model = await _stripePaymentService.GetStripeConfirmParametersAsync(middlewareUrl);
 
         // Newtonsoft is used, because the external Stripe library that defined PaymentIntentConfirmOptions does not

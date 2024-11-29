@@ -4,14 +4,21 @@ using OrchardCore.DisplayManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.ViewModels;
 
 public class ShoppingCartViewModel
 {
     public string Id { get; set; }
+
+    [JsonIgnore]
     public IList<LocalizedHtmlString> InvalidReasons { get; } = new List<LocalizedHtmlString>();
+
+    [JsonIgnore]
     public IList<LocalizedHtmlString> Headers { get; } = new List<LocalizedHtmlString>();
+
+    [JsonIgnore]
     public IList<List<IShape>> TableShapes { get; } = new List<List<IShape>>();
     public IList<ShoppingCartLineViewModel> Lines { get; } = new List<ShoppingCartLineViewModel>();
     public IList<Amount> Totals { get; } = new List<Amount>();

@@ -8,13 +8,14 @@
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
     <OrchardCoreVersion>2.0.0</OrchardCoreVersion>
 
-    <LombiqHelpfulLibrariesVersion>11.0.0</LombiqHelpfulLibrariesVersion>
+    <LombiqHelpfulLibrariesVersion>11.0.1-alpha.0.offi-126</LombiqHelpfulLibrariesVersion>
     <LombiqTestsUIVersion>11.0.0</LombiqTestsUIVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="$(LombiqHelpfulLibrariesVersion)" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
     <PackageVersion Include="Lombiq.Tests" Version="3.0.0" />
@@ -29,6 +30,7 @@
     <PackageVersion Include="OrchardCore.ContentManagement.Abstractions" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentTypes" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentTypes.Abstractions" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="OrchardCore.Flows" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.Html" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.Indexing.Abstractions" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.Localization" Version="$(OrchardCoreVersion)" />

@@ -47,3 +47,15 @@ using OrchardCore.Modules.Manifest;
         CommerceConstants.Features.Core,
     ]
 )]
+
+[assembly: Feature(
+    Id = CommerceConstants.Features.Subscription,
+    Name = "Orchard Core Commerce - Subscription",
+    Category = "Commerce",
+    Description = "Subscription management. Currently only supports Stripe.",
+    Dependencies =
+    [
+        "OrchardCore.Contents",
+        CommerceConstants.Features.Core,
+    ]
+)]
