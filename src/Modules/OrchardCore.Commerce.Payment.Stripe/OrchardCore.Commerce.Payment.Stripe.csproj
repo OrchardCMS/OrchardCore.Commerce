@@ -33,7 +33,7 @@
     <PackageReference Include="Stripe.net" />
   </ItemGroup>
 
-  <!-- Newtonsoft.Json is a dependency if Stripe.net. While OC does not use it directly any more, this is needed to pull
+  <!-- Newtonsoft.Json is a dependency of Stripe.net. While OC does not use it directly any more, this is needed to pull
        the package up to a more up-to-date and secure version. -->
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />

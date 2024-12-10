@@ -44,7 +44,7 @@ public class SecurityScanningTests : UITestBase
                 maxRuleDurationInMinutes: 1),
             changeConfiguration: configuration => configuration.AssertAppLogsAsync = async webApplicationInstance =>
             {
-                var logsWithoutUnwantedExceptionMessages = (await webApplicationInstance.GetLogOutputAsync())
+                var logsWithoutUnwantedExceptionMessages = (await webApplicationInstance.GetLogContentsAsync())
                     .SplitByNewLines()
                     .Where(message =>
                         !message.ContainsOrdinalIgnoreCase("System.IO.DirectoryNotFoundException: Could not find a part of the path") &&
