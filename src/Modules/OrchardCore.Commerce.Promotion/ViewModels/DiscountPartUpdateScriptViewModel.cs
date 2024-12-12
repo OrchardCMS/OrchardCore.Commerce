@@ -5,7 +5,7 @@ namespace OrchardCore.Commerce.Promotion.ViewModels;
 
 public class DiscountPartUpdateScriptViewModel
 {
-    public IList<DiscountPartUpdateScriptViewModelItem> Items { get; } = new List<DiscountPartUpdateScriptViewModelItem>();
+    public IList<DiscountPartUpdateScriptViewModelItem> Items { get; } = [];
 
     public void Add(string selector, Amount oldValue, Amount newValue) =>
         Items.Add(new DiscountPartUpdateScriptViewModelItem

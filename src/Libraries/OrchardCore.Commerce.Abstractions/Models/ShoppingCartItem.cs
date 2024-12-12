@@ -84,7 +84,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     /// <param name="price">The price to add.</param>
     /// <returns>The new shopping cart item.</returns>
     public ShoppingCartItem WithPrice(PrioritizedPrice price) =>
-        new(Quantity, ProductSku, Attributes, Prices.Concat(new[] { price }));
+        new(Quantity, ProductSku, Attributes, Prices.Concat([price]));
 
     /// <summary>
     /// Creates a new shopping cart item that is a clone of this, but with a different quantity.

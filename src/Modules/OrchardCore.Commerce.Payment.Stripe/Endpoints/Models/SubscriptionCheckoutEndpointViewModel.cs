@@ -1,4 +1,4 @@
-﻿using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.AddressDataType;
 using Stripe.Checkout;
 using System.Collections.Generic;
 
@@ -11,7 +11,7 @@ public class SubscriptionCheckoutEndpointViewModel
 
     // This is an API model so we don't need to make it read-only.
 #pragma warning disable CA2227 // CA2227: Change 'SessionLineItemOptions' to be read-only by removing the property setter
-    public IList<SessionLineItemOptions> SessionLineItemOptions { get; set; } = new List<SessionLineItemOptions>();
+    public IList<SessionLineItemOptions> SessionLineItemOptions { get; set; } = [];
 #pragma warning restore CA2227
     public PaymentMode PaymentMode { get; set; }
     public string Phone { get; set; }

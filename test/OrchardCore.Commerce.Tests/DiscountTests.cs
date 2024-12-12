@@ -42,8 +42,8 @@ public sealed class DiscountTests
                 Content: null,
                 item.UnitPrice,
                 item.Quantity,
-                Enumerable.Empty<DiscountInformation>())),
-            new[] { total },
+                [])),
+            [total],
             ShippingAddress: null,
             BillingAddress: null);
 

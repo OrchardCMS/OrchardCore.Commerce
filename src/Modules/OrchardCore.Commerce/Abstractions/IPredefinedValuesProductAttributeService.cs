@@ -37,12 +37,12 @@ public static class PredefinedValuesProductAttributeServiceExtensions
 
     private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
     {
-        IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };
+        IEnumerable<IEnumerable<T>> emptyProduct = [[]];
         return sequences.Aggregate(
             emptyProduct,
             (accumulator, sequence) =>
                 accumulator.SelectMany(
                     _ => sequence,
-                    (accumulatorSequence, item) => accumulatorSequence.Concat(new[] { item })));
+                    (accumulatorSequence, item) => accumulatorSequence.Concat([item])));
     }
 }

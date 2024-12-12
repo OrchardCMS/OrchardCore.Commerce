@@ -4,7 +4,6 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.DisplayManagement;
-using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Payment.ViewModels;
@@ -16,7 +15,7 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
     public Amount GrossTotal { get; init; }
 
     [BindNever]
-    public IEnumerable<SelectListItem> Regions { get; set; } = Array.Empty<SelectListItem>();
+    public IEnumerable<SelectListItem> Regions { get; set; } = [];
 
     [BindNever]
     public IDictionary<string, IDictionary<string, string>> Provinces { get; } =
@@ -26,7 +25,7 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
 
     public bool IsInvalid { get; set; }
 
-    public IEnumerable<IShape> CheckoutShapes { get; init; } = Array.Empty<IShape>();
+    public IEnumerable<IShape> CheckoutShapes { get; init; } = [];
 
     public CheckoutViewModel(OrderPart orderPart, Amount singleCurrencyTotal, Amount netTotal)
         : base(orderPart, singleCurrencyTotal, netTotal) =>

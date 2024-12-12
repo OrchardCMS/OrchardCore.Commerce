@@ -8,7 +8,7 @@ namespace OrchardCore.Commerce.Abstractions;
 public static class ProductServiceExtensions
 {
     public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku) =>
-        string.IsNullOrEmpty(sku) ? null : (await service.GetProductsAsync(new[] { sku })).SingleOrDefault();
+        string.IsNullOrEmpty(sku) ? null : (await service.GetProductsAsync([sku])).SingleOrDefault();
 
     public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(
         this IProductService service,

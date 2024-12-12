@@ -4,7 +4,7 @@ namespace OrchardCore.Commerce.Tax.Models;
 
 public class TaxRateSettings
 {
-    public IList<TaxRateSetting> Rates { get; } = new List<TaxRateSetting>();
+    public IList<TaxRateSetting> Rates { get; } = [];
 
     public void CopyFrom(TaxRateSettings other)
     {

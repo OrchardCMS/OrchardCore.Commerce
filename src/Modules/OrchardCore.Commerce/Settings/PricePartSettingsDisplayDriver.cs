@@ -35,12 +35,12 @@ public class PricePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDr
                 var settings = model.GetSettings<PricePartSettings>();
 
                 viewModel.CurrencySelectionMode = settings.CurrencySelectionMode;
-                viewModel.CurrencySelectionModes = new List<SelectListItem>
-                {
+                viewModel.CurrencySelectionModes =
+                [
                     new(CurrencySelectionMode.AllCurrencies.ToString(), T["All Currencies"]),
                     new(CurrencySelectionMode.DefaultCurrency.ToString(), T["Default Currency"]),
                     new(CurrencySelectionMode.SpecificCurrency.ToString(), T["Specific Currency"]),
-                };
+                ];
                 viewModel.SpecificCurrencyIsoCode = settings.SpecificCurrencyIsoCode;
                 viewModel.Currencies = _moneyService.Currencies
                     .Where(currency => !string.IsNullOrEmpty(currency.EnglishName))
