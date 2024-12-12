@@ -22,7 +22,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using Stripe;
 using Stripe.Checkout;
 using System;
@@ -53,7 +52,7 @@ public class Startup : StartupBase
         services.AddContentPart<PriceCollectionPart>();
         services.AddDataMigration<StripeProductMigrations>();
 
-        services.AddScoped<IDisplayDriver<ISite>, StripeApiSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<StripeApiSettingsDisplayDriver>();
 
         services.AddScoped<IOrderContentTypeDefinitionExclusionProvider, StripeOrderContentTypeDefinitionExclusionProvider>();
 

@@ -49,7 +49,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
@@ -161,11 +160,11 @@ public class Startup : StartupBase
 
         // Settings
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IDisplayDriver<ISite>, CurrencySettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<CurrencySettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CurrencySettings>, CurrencySettingsConfiguration>();
-        services.AddScoped<IDisplayDriver<ISite>, PriceDisplaySettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<PriceDisplaySettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<RegionSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegionSettings>, RegionSettingsConfiguration>();
 
         // Page
