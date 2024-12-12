@@ -228,15 +228,6 @@ public sealed class FallbackPriceStartup : StartupBase
         services.AddScoped<ICurrencySelector, NullCurrencySelector>();
 }
 
-public sealed class FallbackPriceStartup : StartupBase
-{
-    public override int Order => int.MaxValue;
-
-    public override void ConfigureServices(IServiceCollection services) =>
-        // No display currency selected. Fall back to default currency logic in MoneyService.
-        services.AddScoped<ICurrencySelector, NullCurrencySelector>();
-}
-
 [RequireFeatures("OrchardCore.Workflows")]
 public class WorkflowStartup : StartupBase
 {
