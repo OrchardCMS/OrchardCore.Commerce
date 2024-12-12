@@ -1,26 +1,35 @@
 window.stripePaymentForm = function stripePaymentForm(
     stripe,
     clientSecret,
-    baseUrl,
+    paymentIntentId,
     antiForgeryToken,
     urlPrefix,
     errorText,
     missingText,
-    updatePaymentIntentUrl) {
-    const allErrorContainers = [document.querySelector('.message-error')];
-    const form = document.querySelector('.payment-form');
-    const submitButton = form.querySelector('.pay-button-stripe');
-    const payText = submitButton.querySelector('.pay-text');
-    const paymentProcessingContainer = submitButton.querySelector('.payment-processing-container');
-    const stripeElements = stripe.elements({
-        clientSecret,
-    });
-    const payment = stripeElements.create('payment', {
-        fields: {
-            billingDetails: 'never',
-        },
-    });
-    const placeOfPayment = document.querySelector('#payment-form_payment');
+    updatePaymentIntentUrl,
+    validateUrl = 'checkout/validate/stripe',
+    paramsUrl = 'stripe/params',
+    priceUrl = 'checkout/price',
+    errorContainerSelector = '.message-error',
+    stripeFieldErrorSelector = '.stripe-field-error',
+    paymentFormSelector = '.payment-form',
+    payButtonSelector = '.pay-button-stripe',
+    payTextSelector = '.pay-text',
+    paymentProcessingContainerSelector = '.payment-processing-container',
+    placeOfPaymentSelector = '#payment-form_payment',
+    payButtonValueSelector = '.pay-button-value',
+    addressesSelector = '*[id^="OrderPart_ShippingAddress_"], *[id^="OrderPart_BillingAddress_"]',
+    addressSelector = '.address',
+    addressTitleSelector = '.address__title'
+) {
+    const allErrorContainers = [document.querySelector(errorContainerSelector)];
+    const form = document.querySelector(paymentFormSelector);
+    const submitButton = form.querySelector(payButtonSelector);
+    const payText = submitButton.querySelector(payTextSelector);
+    const paymentProcessingContainer = submitButton.querySelector(paymentProcessingContainerSelector);
+    const stripeElements = stripe.elements({ clientSecret });
+    const payment = stripeElements.create('payment', { fields: { billingDetails: 'never' } });
+    const placeOfPayment = document.querySelector(placeOfPaymentSelector);
 
     let formElements = Array.from(form.elements);
 
@@ -29,10 +38,8 @@ window.stripePaymentForm = function stripePaymentForm(
             element.readOnly = !enable;
         });
 
-        payment.update({ disabled: !enable });
-
+        payment.update({ readOnly: !enable });
         submitButton.disabled = !enable;
-
         paymentProcessingContainer.hidden = enable;
         payText.hidden = !enable;
     }
@@ -45,14 +52,13 @@ window.stripePaymentForm = function stripePaymentForm(
 
         container.innerHTML = '<ul></ul>';
         const ul = container.querySelector('ul');
-        for (let i = 0; i < err.length; i++) {
+        err.forEach((error) => {
             const li = document.createElement('li');
-            li.textContent = Object.prototype.hasOwnProperty.call(err[i], 'message') ? err[i].message : err[i];
+            li.textContent = error.message || error;
             ul.appendChild(li);
-        }
+        });
 
         toggleInputs(true);
-
         container.hidden = false;
         container.scrollIntoView({ block: 'center' });
     }
@@ -68,7 +74,7 @@ window.stripePaymentForm = function stripePaymentForm(
 
     function registerElements() {
         // Displaying payment input error.
-        const stripeFieldError = document.querySelector('.stripe-field-error');
+        const stripeFieldError = document.querySelector(stripeFieldErrorSelector);
         allErrorContainers.push(stripeFieldError);
         payment.on('change', (event) => {
             displayError(event?.error, stripeFieldError);
@@ -78,10 +84,6 @@ window.stripePaymentForm = function stripePaymentForm(
             // We don't want to let default form submission happen here, which would refresh the page.
             event.preventDefault();
             toggleInputs(false);
-
-            const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
-
-            await fetch(updatePaymentIntentUrl.replace('PAYMENT_INTENT', paymentIntent.id));
 
             let result;
             try {
@@ -94,29 +96,28 @@ window.stripePaymentForm = function stripePaymentForm(
                     throw emptyRequiredFields
                         .map((element) => document.querySelector(`label[for="${element.id}"]`))
                         .filter(getText)
-                        .filter((label) => !label.closest('.address')?.hidden)
+                        .filter((label) => !label.closest(addressSelector)?.hidden)
                         .map((label) => {
-                            const title = getText(label.closest('.address')?.querySelector('.address__title'));
+                            const title = getText(label.closest(addressSelector)?.querySelector(addressTitleSelector));
                             const name = title ? `${title} ${getText(label)}` : getText(label);
-
                             return missingText.replace('%LABEL%', name);
                         });
                 }
 
-                const validationJson = await fetchPost('checkout/validate/Stripe');
+                const validationJson = await fetchPost(`${validateUrl}/${paymentIntentId}`);
                 if (validationJson?.errors?.length) {
                     toggleInputs(true);
                     throw validationJson.errors;
                 }
 
-                result = await stripe.confirmPayment({
+                const confirmPaymentOptions = {
                     elements: stripeElements,
-                    confirmParams: await fetchPost('checkout/params/Stripe'),
-                });
+                    confirmParams: await fetchPost(paramsUrl),
+                };
+                result = await stripe.confirmPayment(confirmPaymentOptions);
 
                 displayError(result.error);
-            }
-            catch (error) {
+            } catch (error) {
                 result = { error };
                 displayError(result.error);
             }
@@ -125,18 +126,18 @@ window.stripePaymentForm = function stripePaymentForm(
 
     function registerPriceUpdater() {
         let debounce = false;
-        Array.from(document.querySelectorAll('*[id^="OrderPart_ShippingAddress_"], *[id^="OrderPart_BillingAddress_"]'))
+        Array.from(document.querySelectorAll(addressesSelector))
             .forEach((element) => element.addEventListener('change', () => {
                 if (debounce) return;
 
-                const payButtonValue = document.querySelector('.pay-button-value');
+                const payButtonValue = document.querySelector(payButtonValueSelector);
                 if (!payButtonValue) return;
 
                 debounce = true;
                 submitButton.disabled = true;
 
                 setTimeout(async () => {
-                    const priceJson = await fetchPost('checkout/price');
+                    const priceJson = await fetchPost(priceUrl);
                     debounce = false;
                     submitButton.disabled = false;
 
@@ -157,7 +158,6 @@ window.stripePaymentForm = function stripePaymentForm(
         // Refreshing form elements with the payment input.
         formElements = Array.from(form.elements);
         registerElements();
-
         registerPriceUpdater();
     }
 };

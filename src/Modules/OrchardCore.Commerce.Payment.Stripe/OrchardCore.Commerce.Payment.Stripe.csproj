@@ -28,13 +28,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OrchardCore.Flows" />
     <PackageReference Include="OrchardCore.Module.Targets" />
     <PackageReference Include="Stripe.net" />
+  </ItemGroup>
+
+  <!-- Newtonsoft.Json is a dependency if Stripe.net. While OC does not use it directly any more, this is needed to pull
+       the package up to a more up-to-date and secure version. -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">

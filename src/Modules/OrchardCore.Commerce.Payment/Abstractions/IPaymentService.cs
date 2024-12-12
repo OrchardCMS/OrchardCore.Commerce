@@ -68,10 +68,11 @@ public interface IPaymentService
     /// </summary>
     /// <exception cref="FrontendException">Thrown if the order validation failed.</exception>
     Task<(ContentItem Order, bool IsNew)> CreateOrUpdateOrderFromShoppingCartAsync(
-        IUpdateModelAccessor updateModelAccessor,
+        IUpdateModelAccessor? updateModelAccessor,
         string? orderId,
         string? shoppingCartId,
-        AlterOrderAsyncDelegate? alterOrderAsync = null);
+        AlterOrderAsyncDelegate? alterOrderAsync = null,
+        OrderPart? orderPart = null);
 
     /// <summary>
     /// Updates the provided Order content item from the update model as if it was just edited.
@@ -87,6 +88,15 @@ public interface IPaymentService
     /// Free checkout.
     /// </summary>
     Task<PaymentOperationStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
+
+    /// <summary>
+    /// Validate the checkout.
+    /// </summary>
+    /// <param name="providerName">The name of provider.</param>
+    /// <param name="shoppingCartId">Shopping Cart.</param>
+    /// <param name="paymentId">Payment Id, for Stripe,it is Payment Intent Id.</param>
+    /// <returns>The list of the errors.</returns>
+    Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId, string? paymentId);
 }
 
 public delegate Task AlterOrderAsyncDelegate(

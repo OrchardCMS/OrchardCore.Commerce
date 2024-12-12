@@ -4,6 +4,5 @@ namespace OrchardCore.Commerce.Endpoints.ViewModels;
 public class AddItemViewModel
 {
     public string Token { get; set; }
-    public string ShoppingCartId { get; set; }
     public ShoppingCartLineUpdateModel Line { get; set; }
 }

@@ -3,6 +3,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -51,8 +52,8 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
 
             return Initialize<TaxRateViewModel>("TaxPart_TaxRate_GrossPrice", viewModel =>
                 viewModel.Context = new PromotionAndTaxProviderContext(
-                    new[] { new PromotionAndTaxProviderContextLineItem(model) },
-                    new[] { model.LinePrice },
+                    [new(model.Product, model.UnitPrice, model.Quantity, model.AdditionalData.GetDiscounts())],
+                    [model.LinePrice],
                     addresses?.GetSafeShippingAddress(),
                     addresses?.GetSafeBillingAddress()))
                 .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content);

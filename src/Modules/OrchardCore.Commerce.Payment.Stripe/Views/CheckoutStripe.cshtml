@@ -11,6 +11,7 @@
 
     string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
     string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
+    string paymentIntentId = Model.PaymentProviderData?.PaymentIntentId ?? string.Empty;
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -46,7 +47,7 @@
         stripePaymentForm(
             Stripe(@publishableKey.JsonHtmlContent()),
             @clientSecret.JsonHtmlContent(),
-            @Url.GetBaseUrl().JsonHtmlContent(),
+            @paymentIntentId.JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
             @T["There was an error during confirming the payment, please try again."].Json(),

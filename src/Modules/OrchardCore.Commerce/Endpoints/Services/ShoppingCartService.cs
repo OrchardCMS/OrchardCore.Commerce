@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Endpoints.Extensions;
@@ -91,6 +92,9 @@ public class ShoppingCartService : IShoppingCartService
         return errored;
     }
 
+    public Task<ShoppingCartViewModel> GetAsync(string shoppingCartId = null) =>
+        _shoppingCartHelpers.CreateShoppingCartViewModelAsync(shoppingCartId);
+
     public async Task<string> UpdateAsync(ShoppingCartUpdateModel cart, string token, string shoppingCartId = null)
     {
         string errored = string.Empty;
@@ -111,25 +115,22 @@ public class ShoppingCartService : IShoppingCartService
 
         foreach (var (line, item) in lines)
         {
-            var isValid = true;
-
             await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
                 new { LineItem = item },
                 $"ShoppingCart-{token}-{shoppingCartId}");
 
+            var sb = new StringBuilder();
             foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
             {
                 if (await shoppingCartEvent.VerifyingItemAsync(item) is { } errorMessage)
                 {
-                    var sb = new StringBuilder();
                     sb.AppendLine(errorMessage.Value);
-                    errored = sb.ToString();
-                    isValid = false;
                 }
             }
 
+            errored = sb.ToString();
             // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
-            if (!isValid)
+            if (!string.IsNullOrEmpty(errored))
             {
                 var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
                     .As<InventoryPart>().MinimumOrderQuantity.Value;

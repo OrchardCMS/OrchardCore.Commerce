@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
+using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -34,8 +35,8 @@ public class StripeController : PaymentBaseController
     }
 
     [AllowAnonymous]
-    [HttpGet("checkout/middleware/Stripe")]
-    public async Task<IActionResult> PaymentConfirmationMiddleware(
+    [HttpGet("stripe/middleware")]
+    public async Task<IActionResult> PaymentConfirmation(
         [FromQuery(Name = "payment_intent")] string paymentIntent = null,
         [FromQuery] string shoppingCartId = null)
     {
@@ -43,12 +44,16 @@ public class StripeController : PaymentBaseController
         return await ProduceActionResultAsync(result);
     }
 
-    [HttpPost("checkout/params/Stripe")]
+    [HttpPost("stripe/params")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> GetConfirmPaymentParameters()
+    public async Task<IActionResult> ConfirmPaymentParameters()
     {
-        var middlewareUrl = Url.ToAbsoluteUrl("~/checkout/middleware/Stripe");
+        var middlewareUrl = Url.ToAbsoluteUrl("~/stripe/params");
         var model = await _stripePaymentService.GetStripeConfirmParametersAsync(middlewareUrl);
-        return Json(model, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+
+        // Newtonsoft is used, because the external Stripe library that defined PaymentIntentConfirmOptions does not
+        // support System.Text.Json.
+        var json = JsonConvert.SerializeObject(model, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        return Content(json, MediaTypeNames.Application.Json);
     }
 }

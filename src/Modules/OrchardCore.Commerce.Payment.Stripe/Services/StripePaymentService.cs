@@ -7,7 +7,6 @@ using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Abstractions;
-using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
@@ -31,39 +30,44 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentService : IStripePaymentService
 {
-    private readonly PaymentIntentService _paymentIntentService = new();
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _hca;
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
-    private readonly IRequestOptionsService _requestOptionsService;
     private readonly IStringLocalizer T;
     private readonly YesSql.ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IPaymentService _paymentService;
     private readonly IHtmlLocalizer<StripePaymentService> H;
+    private readonly IStripePaymentIntentService _stripePaymentIntentService;
 
 #pragma warning disable S107 // Methods should not have too many parameters
     public StripePaymentService(
         IContentManager contentManager,
         ISiteService siteService,
-        IRequestOptionsService requestOptionsService,
         IStringLocalizer<StripePaymentService> stringLocalizer,
         YesSql.ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
         IPaymentService paymentService,
         IHtmlLocalizer<StripePaymentService> htmlLocalizer,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor hca,
+        IStripePaymentIntentService stripePaymentIntentService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _contentManager = contentManager;
         _siteService = siteService;
-        _requestOptionsService = requestOptionsService;
         _session = session;
         _paymentIntentPersistence = paymentIntentPersistence;
         T = stringLocalizer;
         _paymentService = paymentService;
         H = htmlLocalizer;
-        _httpContextAccessor = httpContextAccessor;
+        _hca = hca;
+        _stripePaymentIntentService = stripePaymentIntentService;
+    }
+
+    public async Task<string> GetPublicKeyAsync()
+    {
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        return stripeApiSettings.PublishableKey;
     }
 
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
@@ -85,21 +89,10 @@ public class StripePaymentService : IStripePaymentService
         var defaultTotal = totals.SingleOrDefault();
 
         var initPaymentIntent = string.IsNullOrEmpty(paymentIntentId)
-            ? await CreatePaymentIntentAsync(defaultTotal)
-            : await GetOrUpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
+            ? await _stripePaymentIntentService.CreatePaymentIntentAsync(defaultTotal)
+            : await _stripePaymentIntentService.GetOrUpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
 
         return initPaymentIntent.ClientSecret;
-    }
-
-    public async Task<PaymentIntent> GetPaymentIntentAsync(string paymentIntentId)
-    {
-        var paymentIntentGetOptions = new PaymentIntentGetOptions();
-        paymentIntentGetOptions.AddExpansions();
-        return await _paymentIntentService.GetAsync(
-            paymentIntentId,
-            paymentIntentGetOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
     }
 
     public async Task UpdateOrderToOrderedAsync(PaymentIntent paymentIntent, string shoppingCartId) =>
@@ -117,10 +110,10 @@ public class StripePaymentService : IStripePaymentService
         try
         {
             return _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-            order,
-            shoppingCartId,
-            StripePaymentProvider.ProviderName,
-            CreateChargesProvider(paymentIntent));
+                order,
+                shoppingCartId,
+                StripePaymentProvider.ProviderName,
+                CreateChargesProvider(paymentIntent));
         }
         catch (Exception ex)
         {
@@ -137,9 +130,9 @@ public class StripePaymentService : IStripePaymentService
     private static Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>> CreateChargesProvider(PaymentIntent paymentIntent) =>
         orderPart => orderPart.Charges.Select(charge => paymentIntent.CreatePayment(charge.Amount));
 
-    public async Task UpdateOrderToPaymentFailedAsync(PaymentIntent paymentIntent)
+    public async Task UpdateOrderToPaymentFailedAsync(string paymentIntentId)
     {
-        var order = await GetOrderByPaymentIntentIdAsync(paymentIntent.Id);
+        var order = await GetOrderByPaymentIntentIdAsync(paymentIntentId);
         order.Alter<OrderPart>(orderPart =>
             orderPart.Status = new TextField { ContentItem = order, Text = OrderStatusCodes.PaymentFailed });
 
@@ -151,9 +144,21 @@ public class StripePaymentService : IStripePaymentService
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
             .FirstOrDefaultAsync();
 
-    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId)
+    public Task SaveOrderPaymentAsync(string orderContentItemId, string paymentIntentId) =>
+        _session.SaveAsync(new OrderPayment
+        {
+            OrderId = orderContentItemId,
+            PaymentIntentId = paymentIntentId,
+        });
+
+    public async Task<ContentItem> CreateOrUpdateOrderFromShoppingCartAsync(
+        IUpdateModelAccessor updateModelAccessor,
+        string shoppingCartId,
+        string paymentIntentId = null,
+        OrderPart orderPart = null)
     {
-        var paymentIntent = await GetPaymentIntentAsync(_paymentIntentPersistence.Retrieve());
+        var innerPaymentIntentId = paymentIntentId ?? _paymentIntentPersistence.Retrieve();
+        var paymentIntent = await _stripePaymentIntentService.GetPaymentIntentAsync(innerPaymentIntentId);
 
         // Stripe doesn't support multiple shopping cart IDs because we can't send that info to the middleware anyway.
         var (order, isNew) = await _paymentService.CreateOrUpdateOrderFromShoppingCartAsync(
@@ -186,9 +191,10 @@ public class StripePaymentService : IStripePaymentService
                     part.PaymentIntentId = new TextField { ContentItem = order, Text = paymentIntent.Id });
 
                 return Task.CompletedTask;
-            });
+            },
+            orderPart);
 
-        if (!order.As<OrderPart>().LineItems.Any())
+        if (!order.As<OrderPart>().LineItems.Any() && updateModelAccessor != null)
         {
             updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(OrderPart.LineItems),
@@ -197,35 +203,31 @@ public class StripePaymentService : IStripePaymentService
 
         if (isNew)
         {
-            await _session.SaveAsync(new OrderPayment
-            {
-                OrderId = order.ContentItemId,
-                PaymentIntentId = paymentIntent.Id,
-            });
+            await SaveOrderPaymentAsync(order.ContentItemId, paymentIntent.Id);
         }
 
         return order;
     }
 
     public async Task<PaymentOperationStatusViewModel> PaymentConfirmationAsync(
-        string paymentIntent,
-        string shoppingCartId
-        )
+        string paymentIntentId,
+        string shoppingCartId,
+        bool needToJudgeIntentStorage = true)
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
-        if (string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
+        if (needToJudgeIntentStorage && string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
         {
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.WaitingForRedirect,
-                Url = _httpContextAccessor.HttpContext.Request.GetDisplayUrl(),
+                Url = _hca.HttpContext.Request.GetDisplayUrl(),
             };
         }
 
         // If we can't find a valid payment intent based on ID or if we can't find the associated order, then something
         // went wrong and continuing from here would only cause a crash anyway.
-        if (await GetPaymentIntentAsync(paymentIntent) is not { PaymentMethod: not null } fetchedPaymentIntent ||
-            (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntent))?.OrderId is not { } orderId ||
+        if (await _stripePaymentIntentService.GetPaymentIntentAsync(paymentIntentId) is not { PaymentMethod: not null } fetchedPaymentIntent ||
+            (await GetOrderPaymentByPaymentIntentIdAsync(paymentIntentId))?.OrderId is not { } orderId ||
             await _contentManager.GetAsync(orderId) is not { } order)
         {
             return new PaymentOperationStatusViewModel
@@ -233,7 +235,7 @@ public class StripePaymentService : IStripePaymentService
                 Status = PaymentOperationStatus.NotFound,
                 ShowMessage = H[
                     "Couldn't find the payment intent \"{0}\" or the order associated with it.",
-                    paymentIntent ?? string.Empty],
+                    paymentIntentId ?? string.Empty],
             };
         }
 
@@ -268,7 +270,11 @@ public class StripePaymentService : IStripePaymentService
             };
         }
 
-        order.Alter<StripePaymentPart>(part => part.RetryCounter++);
+        order.Alter<StripePaymentPart>(part =>
+        {
+            part.PaymentIntentId.Text = fetchedPaymentIntent.Id;
+            part.RetryCounter++;
+        });
         await _contentManager.UpdateAsync(order);
 
         if (order.As<StripePaymentPart>().RetryCounter <= 10)
@@ -276,7 +282,7 @@ public class StripePaymentService : IStripePaymentService
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.WaitingForRedirect,
-                Url = _httpContextAccessor.HttpContext.Request.GetDisplayUrl(),
+                Url = _hca.HttpContext.Request.GetDisplayUrl(),
             };
         }
 
@@ -289,43 +295,15 @@ public class StripePaymentService : IStripePaymentService
         };
     }
 
-    private static long GetPaymentAmount(Amount total)
+    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(
+        string returnUrl,
+        ContentItem order = null)
     {
-        if (CurrencyCollectionConstants.ZeroDecimalCurrencies.Contains(total.Currency.CurrencyIsoCode))
+        if (order == null)
         {
-            return (long)Math.Round(total.Value);
+            order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
+            await _paymentService.UpdateOrderWithDriversAsync(order);
         }
-
-        return CurrencyCollectionConstants.SpecialCases.Contains(total.Currency.CurrencyIsoCode)
-            ? (long)Math.Round(total.Value / 100m) * 10000
-            : (long)Math.Round(total.Value * 100);
-    }
-
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total)
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var paymentIntentOptions = new PaymentIntentCreateOptions
-        {
-            Amount = GetPaymentAmount(total),
-            Currency = total.Currency.CurrencyIsoCode,
-            Description = T["User checkout on {0}", siteSettings.SiteName].Value,
-            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true, },
-        };
-
-        var paymentIntent = await _paymentIntentService.CreateAsync(
-            paymentIntentOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
-
-        _paymentIntentPersistence.Store(paymentIntent.Id);
-
-        return paymentIntent;
-    }
-
-    public async Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(string middlewareAbsoluteUrl)
-    {
-        var order = await _contentManager.NewAsync(Commerce.Abstractions.Constants.ContentTypes.Order);
-        await _paymentService.UpdateOrderWithDriversAsync(order);
 
         var part = order.As<OrderPart>();
         var billing = part.BillingAddress.Address ?? new Address();
@@ -333,7 +311,7 @@ public class StripePaymentService : IStripePaymentService
 
         var model = new PaymentIntentConfirmOptions
         {
-            ReturnUrl = middlewareAbsoluteUrl,
+            ReturnUrl = returnUrl,
             PaymentMethodData = new PaymentIntentPaymentMethodDataOptions
             {
                 BillingDetails = new PaymentIntentPaymentMethodDataBillingDetailsOptions
@@ -344,12 +322,14 @@ public class StripePaymentService : IStripePaymentService
                     Address = CreateAddressOptions(billing),
                 },
             },
-            Shipping = new ChargeShippingOptions
-            {
-                Name = shipping.Name,
-                Phone = part.Phone?.Text,
-                Address = CreateAddressOptions(shipping),
-            },
+            Shipping = string.IsNullOrEmpty(shipping.Name)
+                ? null
+                : new ChargeShippingOptions
+                {
+                    Name = shipping.Name,
+                    Phone = part.Phone?.Text,
+                    Address = CreateAddressOptions(shipping),
+                },
         };
         return model;
     }
@@ -364,30 +344,6 @@ public class StripePaymentService : IStripePaymentService
             PostalCode = address.PostalCode ?? string.Empty,
             State = address.Province ?? string.Empty,
         };
-    private async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
-        string paymentIntentId,
-        Amount defaultTotal)
-    {
-        var paymentIntent = await GetPaymentIntentAsync(paymentIntentId);
-
-        if (paymentIntent?.Status is PaymentIntentStatuses.Succeeded or PaymentIntentStatuses.Processing)
-        {
-            return paymentIntent;
-        }
-
-        var updateOptions = new PaymentIntentUpdateOptions
-        {
-            Amount = GetPaymentAmount(defaultTotal),
-            Currency = defaultTotal.Currency.CurrencyIsoCode,
-        };
-
-        updateOptions.AddExpansions();
-        return await _paymentIntentService.UpdateAsync(
-            paymentIntentId,
-            updateOptions,
-            await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _httpContextAccessor.HttpContext.RequestAborted);
-    }
 
     private async Task<ContentItem> GetOrderByPaymentIntentIdAsync(string paymentIntentId)
     {

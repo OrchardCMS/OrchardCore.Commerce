@@ -15,11 +15,12 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentProvider : IPaymentProvider
 {
-    public const string ProviderName = "Stripe";
+    public const string ProviderName = "stripe";
 
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly ISession _session;
     private readonly ISiteService _siteService;
+    private readonly IStripePaymentIntentService _stripePaymentIntentService;
     private readonly IStripePaymentService _stripePaymentService;
 
     public string Name => ProviderName;
@@ -28,12 +29,14 @@ public class StripePaymentProvider : IPaymentProvider
         IPaymentIntentPersistence paymentIntentPersistence,
         ISession session,
         ISiteService siteService,
-        IStripePaymentService stripePaymentService)
+        IStripePaymentService stripePaymentService,
+        IStripePaymentIntentService stripePaymentIntentService)
     {
         _paymentIntentPersistence = paymentIntentPersistence;
         _session = session;
         _siteService = siteService;
         _stripePaymentService = stripePaymentService;
+        _stripePaymentIntentService = stripePaymentIntentService;
     }
 
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false)
@@ -42,7 +45,7 @@ public class StripePaymentProvider : IPaymentProvider
 
         try
         {
-            paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal);
+            paymentIntent = await _stripePaymentIntentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal);
         }
         catch (StripeException exception) when (exception.Message.StartsWithOrdinal("No API key provided."))
         {
@@ -62,11 +65,12 @@ public class StripePaymentProvider : IPaymentProvider
         {
             PublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
             ClientSecret = paymentIntent.ClientSecret,
+            PaymentIntentId = paymentIntent.Id,
         };
     }
 
-    public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId) =>
-        _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor, shoppingCartId);
+    public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId, string paymentId = null) =>
+        _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor, shoppingCartId, paymentId);
 
     public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
     {
@@ -80,5 +84,5 @@ public class StripePaymentProvider : IPaymentProvider
         ContentItem order,
         string shoppingCartId) =>
         throw new NotSupportedException(
-            "This code should never be reached, because Stripe payment uses ~/checkout/middleware/Stripe, not ~/checkout/callback/Stripe.");
+            "This code should never be reached, because Stripe payment uses ~/stripe/middleware, not ~/checkout/callback/Stripe.");
 }

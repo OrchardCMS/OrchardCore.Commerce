@@ -9,7 +9,8 @@ namespace OrchardCore.Commerce.Services;
 
 public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
 {
-    private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart";
+    // Using _ as a separator to avoid separator character conflicts.
+    private const string ShoppingCartPrefix = "OrchardCore_Commerce_ShoppingCart";
 
     private readonly Dictionary<string, JsonObject> _scopeCache = [];
 
@@ -68,5 +69,5 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
     protected abstract Task<bool> StoreInnerAsync(string key, ShoppingCart items);
 
     protected string GetCacheId(string shoppingCartId) =>
-        string.IsNullOrEmpty(shoppingCartId) ? ShoppingCartPrefix : $"{ShoppingCartPrefix}:{shoppingCartId}";
+        string.IsNullOrEmpty(shoppingCartId) ? ShoppingCartPrefix : $"{ShoppingCartPrefix}_{shoppingCartId}";
 }

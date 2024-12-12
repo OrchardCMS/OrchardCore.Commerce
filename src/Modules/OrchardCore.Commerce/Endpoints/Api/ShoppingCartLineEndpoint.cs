@@ -1,46 +1,68 @@
 #nullable enable
+using Lombiq.HelpfulLibraries.AspNetCore.Extensions;
+using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Endpoints.Permissions;
 using OrchardCore.Commerce.Endpoints.ViewModels;
-using OrchardCore.Modules;
-using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Endpoints.Api;
+
 public static class ShoppingCartLineEndpoint
 {
-    public static IEndpointRouteBuilder AddAddItemEndpoint(this IEndpointRouteBuilder builder)
+    private const string ApiPath = "api/shoppingcart/{shoppingCartId?}";
+
+    public static IEndpointRouteBuilder AddGetCartEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/shoppingcart/add-item", AddItemAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
+        builder.MapGetWithDefaultSettings(ApiPath, GetCartAsync);
 
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> AddItemAsync(
-         [FromBody] AddItemViewModel addItemVM,
-         IAuthorizationService authorizationService,
-         HttpContext httpContext,
-         IShoppingCartService shoppingCartService,
-         IHtmlLocalizer<AddItemViewModel> htmlLocalizer
-       )
+    private static async Task<IResult> GetCartAsync(
+        [FromRoute] string? shoppingCartId,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        HttpContext httpContext)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceShoppingCartApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
-        if (string.IsNullOrEmpty(addItemVM.ShoppingCartId)) { addItemVM.ShoppingCartId = Guid.NewGuid().ToString("n"); }
+        var cart = await shoppingCartService.GetAsync(shoppingCartId);
 
-        var errored = await shoppingCartService.AddItemAsync(addItemVM.Line, addItemVM.Token, addItemVM.ShoppingCartId);
+        if (cart == null)
+            return TypedResults.NotFound();
+
+        return TypedResults.Ok(cart);
+    }
+
+    public static IEndpointRouteBuilder AddAddItemEndpoint(this IEndpointRouteBuilder builder)
+    {
+        builder.MapPostWithDefaultSettings(ApiPath, AddItemAsync);
+
+        return builder;
+    }
+
+    private static async Task<IResult> AddItemAsync(
+        [FromRoute] string? shoppingCartId,
+        [FromBody] AddItemViewModel viewModel,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IHtmlLocalizer<AddItemViewModel> htmlLocalizer,
+        HttpContext httpContext)
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceShoppingCartApi))
+        {
+            return httpContext.ChallengeOrForbidApi();
+        }
+
+        var errored = await shoppingCartService.AddItemAsync(viewModel.Line, viewModel.Token, shoppingCartId);
         if (string.IsNullOrEmpty(errored))
         {
             return TypedResults.Created();
@@ -57,28 +79,26 @@ public static class ShoppingCartLineEndpoint
 
     public static IEndpointRouteBuilder AddUpdateEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPut("api/shoppingcart/update", UpdateAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
+        builder.MapPutWithDefaultSettings(ApiPath, UpdateAsync);
 
         return builder;
     }
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> UpdateAsync(
-         [FromBody] UpdateViewModel updateVM,
-         IAuthorizationService authorizationService,
-         HttpContext httpContext,
-         IShoppingCartService shoppingCartService,
-         IHtmlLocalizer<UpdateViewModel> htmlLocalizer
-       )
+        [FromRoute] string? shoppingCartId,
+        [FromBody] UpdateViewModel viewModel,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IHtmlLocalizer<UpdateViewModel> htmlLocalizer,
+        HttpContext httpContext)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceShoppingCartApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
-        var errored = await shoppingCartService.UpdateAsync(updateVM.Cart, updateVM.Token, updateVM.ShoppingCartId);
+        var errored = await shoppingCartService.UpdateAsync(viewModel.Cart, viewModel.Token, shoppingCartId);
         if (string.IsNullOrEmpty(errored))
         {
             return TypedResults.NoContent();
@@ -95,28 +115,26 @@ public static class ShoppingCartLineEndpoint
 
     public static IEndpointRouteBuilder AddRemoveLineEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapDelete("api/shoppingcart/delete", RemoveLineAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
+        builder.MapDeleteWithDefaultSettings(ApiPath, RemoveLineAsync);
 
         return builder;
     }
 
     [Authorize(AuthenticationSchemes = "Api")]
     private static async Task<IResult> RemoveLineAsync(
-         [FromBody] RemoveLineViewModel removeLineVM,
-         IAuthorizationService authorizationService,
-         HttpContext httpContext,
-         IShoppingCartService shoppingCartService,
-         IHtmlLocalizer<RemoveLineViewModel> htmlLocalizer
-       )
+        [FromRoute] string? shoppingCartId,
+        [FromBody] RemoveLineViewModel viewModel,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IShoppingCartService shoppingCartService,
+        [FromServices] IHtmlLocalizer<RemoveLineViewModel> htmlLocalizer,
+        HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbidApi();
         }
 
-        var errored = await shoppingCartService.RemoveLineAsync(removeLineVM.Line, removeLineVM.ShoppingCartId);
+        var errored = await shoppingCartService.RemoveLineAsync(viewModel.Line, shoppingCartId);
         if (string.IsNullOrEmpty(errored))
         {
             return TypedResults.NoContent();
@@ -130,35 +148,5 @@ public static class ShoppingCartLineEndpoint
         };
 
         return TypedResults.Problem(problemDetails);
-    }
-
-    public static IEndpointRouteBuilder AddRetrieveAsyncEndpoint(this IEndpointRouteBuilder builder)
-    {
-        builder.MapGet("api/shoppingcart/retrieve-cart/{shoppingCartId?}", RetrieveAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
-
-        return builder;
-    }
-
-    [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> RetrieveAsync(
-        string? shoppingCartId,
-        IAuthorizationService authorizationService,
-        HttpContext httpContext,
-        IShoppingCartPersistence shoppingCartPersistence
-        )
-    {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApi))
-        {
-            return httpContext.ChallengeOrForbid("Api");
-        }
-
-        var cart = await shoppingCartPersistence.RetrieveAsync(shoppingCartId);
-
-        if (cart == null)
-            return TypedResults.NotFound();
-
-        return TypedResults.Ok(cart);
     }
 }

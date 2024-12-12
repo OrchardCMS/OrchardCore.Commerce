@@ -31,10 +31,12 @@ public class UITestBase : OrchardCoreUITestBase<Program>
 
         await Task.WhenAny(testTask, timeoutTask);
 
-        if (!testTask.IsCompleted)
+        if (timeoutTask.IsCompleted)
         {
             throw new TimeoutException($"The time allotted for the test ({timeoutValue}) was exceeded.");
         }
+
+        await testTask;
     }
 
     protected override Task ExecuteTestAsync(

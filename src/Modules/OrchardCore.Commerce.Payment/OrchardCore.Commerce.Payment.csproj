@@ -46,6 +46,13 @@
     <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
   </ItemGroup>
 
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.AspNetCore/Lombiq.HelpfulLibraries.AspNetCore.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.AspNetCore" />
+  </ItemGroup>
+
   <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
     <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
   </ItemGroup>
