@@ -19,10 +19,10 @@ public class ProductListTitleFilterProvider : IProductListFilterProvider
     public Task<bool> IsApplicableAsync(ProductListPart productList) => Task.FromResult(true);
 
     public Task<IEnumerable<string>> GetOrderByOptionIdsAsync(ProductListPart productList) =>
-        Task.FromResult<IEnumerable<string>>(new[] { TitleAscOrderById, TitleDescOrderById });
+        Task.FromResult<IEnumerable<string>>([TitleAscOrderById, TitleDescOrderById]);
 
     public Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productListPart) =>
-        Task.FromResult<IEnumerable<string>>(new[] { TitleFilterId });
+        Task.FromResult<IEnumerable<string>>([TitleFilterId]);
 
     public Task<IQuery<ContentItem>> BuildQueryAsync(ProductListFilterContext context)
     {

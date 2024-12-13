@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Commerce.Tax;
 
@@ -29,7 +28,7 @@ public class CustomTaxRatesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, TaxRatePermissions>();
-        services.AddScoped<IDisplayDriver<ISite>, TaxRateSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<TaxRateSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<TaxRateSettings>, TaxRateSettingsConfiguration>();
         services.AddScoped<INavigationProvider, TaxRateAdminMenu>();
     }

@@ -9,9 +9,6 @@ public class ApiPermissions : AdminPermissionBase
     public static readonly Permission CommerceApiPayment =
         new(nameof(CommerceApiPayment), "Access Commerce Payment APIs");
 
-    private static readonly IReadOnlyList<Permission> _adminPermissions = new[]
-    {
-        CommerceApiPayment,
-    };
+    private static readonly IReadOnlyList<Permission> _adminPermissions = [CommerceApiPayment];
     protected override IEnumerable<Permission> AdminPermissions => _adminPermissions;
 }

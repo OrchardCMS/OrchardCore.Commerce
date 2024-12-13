@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.Users;
+using Lombiq.HelpfulLibraries.OrchardCore.Users;
 using OrchardCore.Security.Permissions;
 using System.Collections.Generic;
 
@@ -9,8 +9,5 @@ public class Permissions : AdminPermissionBase
     public static readonly Permission ManageExactlySettings =
         new(nameof(ManageExactlySettings), "Manage Exactly settings.");
 
-    protected override IEnumerable<Permission> AdminPermissions => new[]
-    {
-        ManageExactlySettings,
-    };
+    protected override IEnumerable<Permission> AdminPermissions => [ManageExactlySettings];
 }

@@ -23,14 +23,12 @@ public class FakeContentDefinitionManager : IContentDefinitionManager
          Task.FromResult(new ContentTypeDefinition(
             name,
             name,
-            new[]
-            {
+            [
                 new ContentTypePartDefinition(
                     "ProductPart1",
                     new ContentPartDefinition(
                         "ProductPartType",
-                        new[]
-                        {
+                        [
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                                 "foobool",
@@ -39,15 +37,14 @@ public class FakeContentDefinitionManager : IContentDefinitionManager
                                 new ContentFieldDefinition(nameof(BooleanField)),
                                 "barbool",
                                 []),
-                        },
+                        ],
                         []),
                     []),
                 new ContentTypePartDefinition(
                     "ProductPart2",
                     new ContentPartDefinition(
                         "ProductPartType2",
-                        new[]
-                        {
+                        [
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
                                 "footext",
@@ -56,15 +53,14 @@ public class FakeContentDefinitionManager : IContentDefinitionManager
                                 new ContentFieldDefinition(nameof(TextField)),
                                 "bartext",
                                 []),
-                        },
+                        ],
                         []),
                     []),
                 new ContentTypePartDefinition(
                     "ProductPart3",
                     new ContentPartDefinition(
                         "product",
-                        new[]
-                        {
+                        [
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                                 "attr1",
@@ -77,10 +73,10 @@ public class FakeContentDefinitionManager : IContentDefinitionManager
                                 new ContentFieldDefinition(nameof(NumericProductAttributeField)),
                                 "attr3",
                                 []),
-                        },
+                        ],
                         []),
                     []),
-            },
+            ],
             []));
 
     public Task<int> GetTypesHashAsync() => throw new NotSupportedException();

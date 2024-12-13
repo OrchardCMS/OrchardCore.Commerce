@@ -117,7 +117,8 @@ window.stripePaymentForm = function stripePaymentForm(
                 result = await stripe.confirmPayment(confirmPaymentOptions);
 
                 displayError(result.error);
-            } catch (error) {
+            }
+            catch (error) {
                 result = { error };
                 displayError(result.error);
             }

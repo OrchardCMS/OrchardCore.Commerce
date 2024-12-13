@@ -3,9 +3,9 @@ using System.Collections.Generic;
 namespace OrchardCore.Commerce.Payment.Constants;
 public static class CurrencyCollectionConstants
 {
-    public static readonly IEnumerable<string> SpecialCases = new List<string> { "HUF", "TWD", "UGX" };
-    public static readonly IEnumerable<string> ZeroDecimalCurrencies = new List<string>
-    {
+    public static readonly IEnumerable<string> SpecialCases = ["HUF", "TWD", "UGX"];
+    public static readonly IEnumerable<string> ZeroDecimalCurrencies =
+    [
         "BIF",
         "CLP",
         "DJF",
@@ -22,5 +22,5 @@ public static class CurrencyCollectionConstants
         "XAF",
         "XOF",
         "XPF",
-    };
+    ];
 }

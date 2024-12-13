@@ -2,7 +2,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
-using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
 using System;
@@ -42,8 +41,8 @@ public sealed class DiscountTests
                 Content: null,
                 item.UnitPrice,
                 item.Quantity,
-                Enumerable.Empty<DiscountInformation>())),
-            new[] { total },
+                [])),
+            [total],
             ShippingAddress: null,
             BillingAddress: null);
 

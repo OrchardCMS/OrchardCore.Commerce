@@ -13,15 +13,15 @@ public class ShoppingCartViewModel
     public string Id { get; set; }
 
     [JsonIgnore]
-    public IList<LocalizedHtmlString> InvalidReasons { get; } = new List<LocalizedHtmlString>();
+    public IList<LocalizedHtmlString> InvalidReasons { get; } = [];
 
     [JsonIgnore]
-    public IList<LocalizedHtmlString> Headers { get; } = new List<LocalizedHtmlString>();
+    public IList<LocalizedHtmlString> Headers { get; } = [];
 
     [JsonIgnore]
-    public IList<List<IShape>> TableShapes { get; } = new List<List<IShape>>();
-    public IList<ShoppingCartLineViewModel> Lines { get; } = new List<ShoppingCartLineViewModel>();
-    public IList<Amount> Totals { get; } = new List<Amount>();
+    public IList<List<IShape>> TableShapes { get; } = [];
+    public IList<ShoppingCartLineViewModel> Lines { get; } = [];
+    public IList<Amount> Totals { get; } = [];
 
     public IList<Amount> GetTotalsOrThrowIfEmpty() =>
         Totals.Any()

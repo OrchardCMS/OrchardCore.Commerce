@@ -18,5 +18,5 @@ public static class PriceProviderExtensions
                 .ToDictionary(productPart => productPart.Sku);
 
     public static async Task<ShoppingCartItem> AddPriceAsync(this IPriceService priceService, ShoppingCartItem item) =>
-        (await priceService.AddPricesAsync(new[] { item })).Single();
+        (await priceService.AddPricesAsync([item])).Single();
 }

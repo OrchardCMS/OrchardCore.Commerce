@@ -90,8 +90,7 @@ public class ProductListService : IProductListService
     }
 
     private async Task<IList<IProductListFilterProvider>> GetOrderedApplicableProvidersAsync(ProductListPart productList) =>
-        (await _productListQueryProviders
-            .WhereAsync(async provider => await provider.IsApplicableAsync(productList)))
-        .OrderBy(provider => provider.Order)
-        .ToList();
+        [.. (await _productListQueryProviders
+                .WhereAsync(async provider => await provider.IsApplicableAsync(productList)))
+            .OrderBy(provider => provider.Order)];
 }

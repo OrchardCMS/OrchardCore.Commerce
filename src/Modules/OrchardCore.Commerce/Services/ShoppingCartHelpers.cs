@@ -99,14 +99,14 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (lines.Count == 0) return null;
 
-        IList<LocalizedHtmlString> headers = new[]
-        {
+        IList<LocalizedHtmlString> headers =
+        [
             H["Quantity"],
             H["Product"],
             H["Price"],
             H["Action"],
-        };
-        IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync(cart)).Values.ToList();
+        ];
+        IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 
         (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);
 
@@ -125,7 +125,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         }
 
         var model = new ShoppingCartViewModel { Id = cart.Id };
-        model.Totals.AddRange(totals.Any() ? totals.Round() : new List<Amount> { new(0, lines[0].LinePrice.Currency) });
+        model.Totals.AddRange(totals.Any() ? totals.Round() : [new(0, lines[0].LinePrice.Currency)]);
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
 
@@ -226,7 +226,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             return H["Product with SKU {0} not found.", sku];
         }
 
-        item = (await _priceService.AddPricesAsync(new[] { item })).Single();
+        item = (await _priceService.AddPricesAsync([item])).Single();
 
         return item.Prices.Any()
             ? null

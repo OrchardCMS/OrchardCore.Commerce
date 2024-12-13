@@ -43,7 +43,7 @@ public class PriceService : IPriceService
         // Take out subsets where items are individually applicable to the remaining providers.
         foreach (var provider in remainingProviders)
         {
-            var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync(new[] { pair.Item }));
+            var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync([pair.Item]));
             if (!applicable.Any()) continue;
 
             unhandled.RemoveAll(applicable.Contains);

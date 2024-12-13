@@ -9,8 +9,5 @@ public class TaxRatePermissions : AdminPermissionBase
     public static readonly Permission ManageCustomTaxRates =
         new(nameof(ManageCustomTaxRates), "Manage Custom Tax Rates");
 
-    protected override IEnumerable<Permission> AdminPermissions { get; } = new[]
-    {
-        ManageCustomTaxRates,
-    };
+    protected override IEnumerable<Permission> AdminPermissions { get; } = [ManageCustomTaxRates];
 }

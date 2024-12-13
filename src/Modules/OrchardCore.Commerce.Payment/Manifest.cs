@@ -17,7 +17,7 @@ using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
     Name = "Orchard Core Commerce - Payment",
     Category = "Commerce",
     Description = "Payment for Orchard Core Commerce.",
-    Dependencies = new[] { ContentFields, Tax }
+    Dependencies = [ContentFields, Tax]
 )]
 
 [assembly: Feature(
@@ -25,5 +25,5 @@ using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
     Name = "Orchard Core Commerce - Payment - Dummy Provider",
     Category = "Commerce",
     Description = "Dummy payment provider used for development and testing.",
-    Dependencies = new[] { Payment }
+    Dependencies = [Payment]
 )]

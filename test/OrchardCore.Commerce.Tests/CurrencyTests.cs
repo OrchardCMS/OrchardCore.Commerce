@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Tests;
 
 public class CurrencyTests
 {
-    private static readonly IEnumerable<ICurrencyProvider> _currencyProviders = new[] { new CurrencyProvider() };
+    private static readonly IEnumerable<ICurrencyProvider> _currencyProviders = [new CurrencyProvider()];
 
     public static CurrencyTheoryData TestData => new()
     {

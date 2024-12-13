@@ -1,4 +1,4 @@
-﻿using OrchardCore.Commerce.Indexes;
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System;
@@ -18,7 +18,7 @@ public class BasePriceFilterProvider : IProductListFilterProvider
     public Task<bool> IsApplicableAsync(ProductListPart productList) => Task.FromResult(true);
 
     public Task<IEnumerable<string>> GetOrderByOptionIdsAsync(ProductListPart productList) =>
-        Task.FromResult<IEnumerable<string>>(new[] { PriceAscOrderById, PriceDescOrderById });
+        Task.FromResult<IEnumerable<string>>([PriceAscOrderById, PriceDescOrderById]);
 
     public Task<IEnumerable<string>> GetFilterIdsAsync(ProductListPart productListPart) =>
         Task.FromResult(Enumerable.Empty<string>());

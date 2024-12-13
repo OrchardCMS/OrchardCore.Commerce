@@ -9,7 +9,7 @@ namespace OrchardCore.Commerce.Models;
 public class TieredPricePart : ContentPart
 {
     public Amount DefaultPrice { get; set; }
-    public IList<PriceTier> PriceTiers { get; } = new List<PriceTier>();
+    public IList<PriceTier> PriceTiers { get; } = [];
 
     public Amount GetPriceForQuantity(IMoneyService moneyService, int quantity)
     {
