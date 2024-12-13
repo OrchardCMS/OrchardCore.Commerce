@@ -10,7 +10,7 @@
     <LombiqTestsUIVersion>12.0.0</LombiqTestsUIVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.1.0" />
+    <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="$(LombiqHelpfulLibrariesVersion)" />
