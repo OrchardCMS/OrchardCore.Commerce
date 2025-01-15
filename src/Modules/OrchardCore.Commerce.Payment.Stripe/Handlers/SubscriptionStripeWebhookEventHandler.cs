@@ -54,7 +54,11 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 var subscriptionPart = new SubscriptionPart();
                 subscriptionPart.UserId.Text = user.UserId;
                 subscriptionPart.Status.Text = SubscriptionStatuses.Active;
-                subscriptionPart.EndDateUtc.Value = invoice.PeriodEnd;
+
+                // invoice.PeriodEnd doesn't show the current period, see Stripe docs:
+                // End of the usage period during which invoice items were added to this invoice. This looks back one
+                // period for a subscription invoice. Use the line item period to get the service period for each price.
+                subscriptionPart.EndDateUtc.Value = invoice.Lines.Data.Find(data => !data.Proration)?.Period.End;
                 subscriptionPart.PaymentProviderName.Text = StripePaymentProvider.ProviderName;
                 subscriptionPart.IdInPaymentProvider.Text = invoice.SubscriptionId;
 
