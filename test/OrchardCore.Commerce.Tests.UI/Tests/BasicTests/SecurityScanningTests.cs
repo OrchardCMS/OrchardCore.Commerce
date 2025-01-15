@@ -40,10 +40,7 @@ public class SecurityScanningTests : UITestBase
                 },
                 maxActiveScanDurationInMinutes: 5,
                 maxRuleDurationInMinutes: 1),
-            changeConfiguration: configuration => configuration.UseAssertAppLogsForSecurityScan(
-                "System.IO.DirectoryNotFoundException: Could not find a part of the path",
-                "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect",
-                "System.InvalidOperationException: This action intentionally causes an exception!"));
+            changeConfiguration: configuration => configuration.UseAssertAppLogsForSecurityScan());
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
