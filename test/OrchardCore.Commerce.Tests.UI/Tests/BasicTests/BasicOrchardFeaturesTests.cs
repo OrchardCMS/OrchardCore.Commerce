@@ -3,7 +3,6 @@ using Lombiq.Tests.UI.BasicOrchardFeaturesTesting;
 using Lombiq.Tests.UI.Services;
 using OrchardCore.Commerce.Tests.UI.Helpers;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.BasicTests;
 

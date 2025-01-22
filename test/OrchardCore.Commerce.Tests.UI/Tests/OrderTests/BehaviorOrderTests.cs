@@ -6,7 +6,7 @@ using OpenQA.Selenium;
 using Shouldly;
 using System.Globalization;
 using Xunit;
-using Xunit.Abstractions;
+
 using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.OrderTests;

@@ -25,6 +25,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
@@ -34,7 +35,7 @@ public class StripePaymentService : IStripePaymentService
     private readonly IContentManager _contentManager;
     private readonly ISiteService _siteService;
     private readonly IStringLocalizer T;
-    private readonly YesSql.ISession _session;
+    private readonly ISession _session;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IPaymentService _paymentService;
     private readonly IHtmlLocalizer<StripePaymentService> H;
@@ -45,7 +46,7 @@ public class StripePaymentService : IStripePaymentService
         IContentManager contentManager,
         ISiteService siteService,
         IStringLocalizer<StripePaymentService> stringLocalizer,
-        YesSql.ISession session,
+        ISession session,
         IPaymentIntentPersistence paymentIntentPersistence,
         IPaymentService paymentService,
         IHtmlLocalizer<StripePaymentService> htmlLocalizer,
