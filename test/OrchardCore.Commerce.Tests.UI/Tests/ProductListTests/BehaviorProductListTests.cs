@@ -4,6 +4,7 @@ using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.ProductListTests;
 

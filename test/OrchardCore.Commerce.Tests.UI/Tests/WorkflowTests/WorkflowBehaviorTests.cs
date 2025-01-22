@@ -5,6 +5,7 @@ using OpenQA.Selenium;
 using OrchardCore.Commerce.Tests.UI.Constants;
 using Shouldly;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.WorkflowTests;
 

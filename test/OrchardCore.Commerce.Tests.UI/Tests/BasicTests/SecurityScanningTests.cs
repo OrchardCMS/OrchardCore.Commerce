@@ -1,5 +1,8 @@
+using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.SecurityScanning;
+using Shouldly;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.BasicTests;
 

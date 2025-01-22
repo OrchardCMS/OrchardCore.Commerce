@@ -7,6 +7,7 @@ using OrchardCore.Commerce.AddressDataType;
 using Shouldly;
 using System.Text.Json;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.UserTests;
 
