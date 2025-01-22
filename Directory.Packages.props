@@ -9,7 +9,7 @@
     <OrchardCoreVersion>2.1.0</OrchardCoreVersion>
 
     <LombiqHelpfulLibrariesVersion>12.0.1-alpha.0.osoe-815</LombiqHelpfulLibrariesVersion>
-    <LombiqTestsUIVersion>12.0.1-alpha.5.osoe-935</LombiqTestsUIVersion>
+    <LombiqTestsUIVersion>12.0.1-alpha.6.offi-200</LombiqTestsUIVersion>
   </PropertyGroup>
 
   <ItemGroup>
