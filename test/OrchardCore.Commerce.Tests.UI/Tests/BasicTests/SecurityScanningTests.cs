@@ -1,4 +1,5 @@
 using Lombiq.Tests.UI.SecurityScanning;
+using Lombiq.Tests.UI.Shortcuts.Middlewares;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,6 +46,7 @@ public class SecurityScanningTests : UITestBase
                     "System.IO.DirectoryNotFoundException: Could not find a part of the path",
                     "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect",
                     "System.InvalidOperationException: This action intentionally causes an exception!",
+                    nameof(ExceptionContextLoggingMiddleware),
                 ]));
 
     private static void FalsePositive(
