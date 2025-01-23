@@ -17,9 +17,6 @@ public class SecurityScanningTests : UITestBase
             context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
                 configuration =>
                 {
-                    // Not relevant for OrchardCore.Commerce, sites using it should implement their own custom error pages.
-                    configuration.DontScanErrorPage = true;
-
                     configuration.DisableActiveScanRule(
                         6,
                         "Path Traversal (all paths are virtual so it's not a real concern, also creates too many errors)");
@@ -42,10 +39,13 @@ public class SecurityScanningTests : UITestBase
                         @".*/\?.*products\..*");
                 },
                 maxActiveScanDurationInMinutes: 5,
-                maxRuleDurationInMinutes: 1),
-            changeConfiguration: configuration => configuration.UseAssertAppLogsForSecurityScan(
-                "System.IO.DirectoryNotFoundException: Could not find a part of the path",
-                "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect"));
+                maxRuleDurationInMinutes: 1,
+                additionalPermittedErrorLinePatterns:
+                [
+                    "System.IO.DirectoryNotFoundException: Could not find a part of the path",
+                    "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect",
+                    "System.InvalidOperationException: This action intentionally causes an exception!",
+                ]));
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
