@@ -40,14 +40,7 @@ public class SecurityScanningTests : UITestBase
                         @".*/\?.*products\..*");
                 },
                 maxActiveScanDurationInMinutes: 5,
-                maxRuleDurationInMinutes: 1,
-                additionalPermittedErrorLinePatterns:
-                [
-                    "System.IO.DirectoryNotFoundException: Could not find a part of the path",
-                    "System.IO.IOException: The filename, directory name, or volume label syntax is incorrect",
-                    "System.InvalidOperationException: This action intentionally causes an exception!",
-                    nameof(ExceptionContextLoggingMiddleware),
-                ]));
+                maxRuleDurationInMinutes: 1));
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
