@@ -1,5 +1,4 @@
 using Lombiq.Tests.UI.SecurityScanning;
-using Lombiq.Tests.UI.Shortcuts.Middlewares;
 using Xunit;
 using Xunit.Abstractions;
 
