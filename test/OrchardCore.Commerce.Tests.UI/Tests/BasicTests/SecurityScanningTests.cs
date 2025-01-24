@@ -39,8 +39,7 @@ public class SecurityScanningTests : UITestBase
                         @".*/\?.*products\..*");
                 },
                 maxActiveScanDurationInMinutes: 5,
-                maxRuleDurationInMinutes: 1),
-            changeConfiguration: configuration => configuration.UseAssertAppLogsForSecurityScan());
+                maxRuleDurationInMinutes: 1));
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
