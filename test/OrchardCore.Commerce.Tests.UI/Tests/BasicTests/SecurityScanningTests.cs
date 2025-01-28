@@ -1,5 +1,4 @@
 using Lombiq.Tests.UI.SecurityScanning;
-using Lombiq.Tests.UI.Shortcuts.Middlewares;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,8 +39,7 @@ public class SecurityScanningTests : UITestBase
                         @".*/\?.*products\..*");
                 },
                 maxActiveScanDurationInMinutes: 5,
-                maxRuleDurationInMinutes: 1,
-                additionalPermittedErrorLinePatterns: [nameof(ExceptionContextLoggingMiddleware)]));
+                maxRuleDurationInMinutes: 1));
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,
