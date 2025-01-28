@@ -8,8 +8,8 @@
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
     <OrchardCoreVersion>2.1.0</OrchardCoreVersion>
 
-    <LombiqHelpfulLibrariesVersion>12.0.1-alpha.0.osoe-815</LombiqHelpfulLibrariesVersion>
-    <LombiqTestsUIVersion>12.0.1-alpha.7.offi-200</LombiqTestsUIVersion>
+    <LombiqHelpfulLibrariesVersion>12.1.0</LombiqHelpfulLibrariesVersion>
+    <LombiqTestsUIVersion>12.1.0</LombiqTestsUIVersion>
   </PropertyGroup>
 
   <ItemGroup>
