@@ -8,8 +8,8 @@
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
     <OrchardCoreVersion>2.1.0</OrchardCoreVersion>
 
-    <LombiqHelpfulLibrariesVersion>12.0.1-alpha.0.osoe-815</LombiqHelpfulLibrariesVersion>
-    <LombiqTestsUIVersion>12.0.1-alpha.7.offi-200</LombiqTestsUIVersion>
+    <LombiqHelpfulLibrariesVersion>12.1.0</LombiqHelpfulLibrariesVersion>
+    <LombiqTestsUIVersion>12.1.0</LombiqTestsUIVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +17,8 @@
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="$(LombiqHelpfulLibrariesVersion)" />
-    <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.0" />
-    <PackageVersion Include="Lombiq.Tests" Version="3.0.0" />
+    <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.1" />
+    <PackageVersion Include="Lombiq.Tests" Version="4.0.0" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="$(LombiqTestsUIVersion)" />

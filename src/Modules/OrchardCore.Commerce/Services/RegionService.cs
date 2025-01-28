@@ -26,7 +26,7 @@ public class RegionService : IRegionService
     public async Task<IEnumerable<Region>> GetAvailableRegionsAsync()
     {
         var settings = await _siteService.GetSiteSettingsAsync();
-        var allowedRegionCodes = (settings.As<RegionSettings>()?.AllowedRegions ?? Enumerable.Empty<string>()).AsList();
+        var allowedRegionCodes = (settings.As<RegionSettings>()?.AllowedRegions ?? []).AsList();
 
         var allRegions = GetAllRegions();
 

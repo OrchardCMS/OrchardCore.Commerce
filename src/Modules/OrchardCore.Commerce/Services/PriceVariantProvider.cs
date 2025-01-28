@@ -50,7 +50,7 @@ public class PriceVariantProvider : IPriceProvider
                 return item;
             }));
 
-        return updatedModel.ToList();
+        return [.. updatedModel];
     }
 
     private async Task<ShoppingCartItem> AddPriceToShoppingCartItemAsync(ShoppingCartItem item, ProductPart productPart)

@@ -12,9 +12,6 @@ public class ApiPermissions : AdminPermissionBase
     public static readonly Permission CommerceApiOrderStripe =
         new(nameof(CommerceApiStripePayment), "Access Commerce Stripe Order APIs");
 
-    private static readonly IReadOnlyList<Permission> _adminPermissions = new[]
-    {
-        CommerceApiStripePayment,
-    };
+    private static readonly IReadOnlyList<Permission> _adminPermissions = [CommerceApiStripePayment];
     protected override IEnumerable<Permission> AdminPermissions => _adminPermissions;
 }

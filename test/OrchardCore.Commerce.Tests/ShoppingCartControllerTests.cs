@@ -63,7 +63,7 @@ public class ShoppingCartControllerTests
         var cart = await StoreAndRetrieveItemAsync("foo");
 
         Assert.Equal(
-            new List<ShoppingCartItem> { new(10, "foo") },
+            [new(10, "foo")],
             cart.Items);
     }
 
@@ -73,11 +73,10 @@ public class ShoppingCartControllerTests
         var cart = await StoreAndRetrieveItemAsync("bar");
 
         Assert.Equal(
-            new List<ShoppingCartItem>
-            {
+            [
                 new(3, "foo"),
                 new(7, "bar"),
-            },
+            ],
             cart.Items);
     }
 
@@ -102,15 +101,14 @@ public class ShoppingCartControllerTests
         var cart = await controller.Get();
 
         Assert.Equal(
-            new List<ShoppingCartItem>
-            {
+            [
                 new(9, "foo"),
                 new(11, "foo", _attrSet1Parsed),
                 new(13, "foo", _attrSet2Parsed),
                 new(15, "foo", _attrSet3Parsed),
                 new(17, "bar", _attrSet3Parsed),
                 new(13, "baz", _attrSet3Parsed),
-            },
+            ],
             cart.Items);
     }
 
@@ -198,8 +196,8 @@ public class ShoppingCartControllerTests
 
         mocker.Use<IPriceService>(new FakePriceService());
         mocker.Use<IProductService>(new FakeProductService());
-        mocker.Use<IEnumerable<IShoppingCartEvents>>(new[] { new FakeShoppingCartEvents() });
-        mocker.Use<IEnumerable<IProductAttributeProvider>>(new[] { new ProductAttributeProvider() });
+        mocker.Use<IEnumerable<IShoppingCartEvents>>([new FakeShoppingCartEvents()]);
+        mocker.Use<IEnumerable<IProductAttributeProvider>>([new ProductAttributeProvider()]);
         mocker.Use<IContentDefinitionManager>(new FakeContentDefinitionManager());
         mocker.Use<IMoneyService>(new TestMoneyService());
         mocker.Use<IShoppingCartSerializer>(mocker.CreateInstance<ShoppingCartSerializer>());
@@ -208,7 +206,7 @@ public class ShoppingCartControllerTests
         mocker.Use<IHtmlLocalizer<ShoppingCartHelpers>>(new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
         mocker.Use<IShoppingCartHelpers>(mocker.CreateInstance<ShoppingCartHelpers>());
 
-        mocker.Use<IEnumerable<IWorkflowManager>>(Array.Empty<IWorkflowManager>());
+        mocker.Use<IEnumerable<IWorkflowManager>>([]);
         var controller = mocker.CreateInstance<ShoppingCartController>();
         controller.ControllerContext = mockContext;
         return controller;

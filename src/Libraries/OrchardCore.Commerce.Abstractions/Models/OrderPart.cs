@@ -17,17 +17,17 @@ public class OrderPart : ContentPart
     /// <summary>
     /// Gets the order's line items.
     /// </summary>
-    public IList<OrderLineItem> LineItems { get; } = new List<OrderLineItem>();
+    public IList<OrderLineItem> LineItems { get; } = [];
 
     /// <summary>
     /// Gets additional costs that don't belong to an <see cref="OrderLineItem"/>, such as taxes and shipping.
     /// </summary>
-    public IList<OrderAdditionalCost> AdditionalCosts { get; } = new List<OrderAdditionalCost>();
+    public IList<OrderAdditionalCost> AdditionalCosts { get; } = [];
 
     /// <summary>
     /// Gets the amounts charged for this order. Typically, a single credit card charge.
     /// </summary>
-    public IList<Payment> Charges { get; } = new List<Payment>();
+    public IList<Payment> Charges { get; } = [];
 
     public TextField Email { get; set; } = new();
     public TextField Phone { get; set; } = new();

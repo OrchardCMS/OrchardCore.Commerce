@@ -89,7 +89,7 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     public ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type) =>
         new HashSet<IProductAttributeValue>(
             line.Attributes is null
-                ? Enumerable.Empty<IProductAttributeValue>()
+                ? []
                 : line
                     .Attributes
                     .Where(attribute => attribute.Key?.Contains('.') == true)

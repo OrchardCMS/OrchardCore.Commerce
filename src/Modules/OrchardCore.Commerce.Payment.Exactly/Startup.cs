@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Abstractions;
@@ -10,7 +10,6 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using Refit;
 using System;
 
@@ -31,7 +30,7 @@ public class Startup : StartupBase
         // Configuration, permission, admin things
         services.Configure<ExactlySettings>(_shellConfiguration.GetSection("OrchardCoreCommerce_Payment_Exactly"));
         services.AddTransient<IConfigureOptions<ExactlySettings>, ExactlySettingsConfiguration>();
-        services.AddScoped<IDisplayDriver<ISite>, ExactlySettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ExactlySettingsDisplayDriver>();
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
 

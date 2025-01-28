@@ -44,13 +44,12 @@ public class PriceTests
     public async Task PriceServiceAddsPricesInOrder()
     {
         var priceService = new PriceService(
-            new List<IPriceProvider>
-            {
+            [
                 new DummyPriceProvider(4, 4.0m, isApplicable: false),
                 new DummyPriceProvider(2, 2.0m, isApplicable: true),
                 new DummyPriceProvider(1, 1.0m, isApplicable: false),
                 new DummyPriceProvider(3, 3.0m, isApplicable: true),
-            },
+            ],
             priceSelectionStrategy: null);
 
         var cart = new ShoppingCart(new ShoppingCartItem(1, "foo"));
@@ -69,12 +68,11 @@ public class PriceTests
             items => items.All(item => item.ProductSku.StartsWithOrdinal(skuStartsWith));
 
         var priceService = new PriceService(
-            new List<IPriceProvider>
-            {
+            [
                 new DummyPriceProvider(0, 4, isApplicable: false),
                 new DummyPriceProvider(1, 1, IsApplicableFor("A")),
                 new DummyPriceProvider(2, 3, IsApplicableFor("B")),
-            },
+            ],
             priceSelectionStrategy: null);
 
         var cart = new ShoppingCart(
@@ -94,12 +92,12 @@ public class PriceTests
     public void SimplePriceStrategySelectsLowestPriceForHighestStrategy()
     {
         var strategy = new SimplePriceStrategy();
-        var selected = strategy.SelectPrice(new List<PrioritizedPrice>
-        {
+        var selected = strategy.SelectPrice(
+        [
             new(0, new Amount(10, Currency.UsDollar)),
             new(1, new Amount(12, Currency.UsDollar)),
             new(1, new Amount(11, Currency.UsDollar)),
-        });
+        ]);
 
         Assert.Equal(11, selected.Value);
     }
