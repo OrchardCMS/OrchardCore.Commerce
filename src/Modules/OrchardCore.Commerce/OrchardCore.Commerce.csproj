@@ -16,6 +16,16 @@
     <PackageIcon>OrchardCoreIcon.png</PackageIcon>
   </PropertyGroup>
 
+  <!-- Ensure that NuGet dependencies that are modules get propagated so all modules get listed and loaded by OC. -->
+  <ItemGroup>
+    <ModulePackageNames Include="OrchardCore.Commerce.ContentFields" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Inventory" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Payment.Exactly" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Payment" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Promotion" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Tax" />
+  </ItemGroup>
+
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -40,11 +50,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Commerce.Inventory\OrchardCore.Commerce.Inventory.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Payment.Exactly\OrchardCore.Commerce.Payment.Exactly.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj" />
-    <ProjectReference Include="..\OrchardCore.Commerce.Inventory\OrchardCore.Commerce.Inventory.csproj" />
   </ItemGroup>
 
   <ItemGroup>
