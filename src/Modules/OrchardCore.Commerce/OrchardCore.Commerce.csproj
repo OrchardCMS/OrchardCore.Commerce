@@ -18,6 +18,7 @@
 
   <!-- Ensure that NuGet dependencies that are modules get propagated so all modules get listed and loaded by OC. -->
   <ItemGroup>
+    <ModulePackageNames Include="OrchardCore.Commerce" />
     <ModulePackageNames Include="OrchardCore.Commerce.ContentFields" />
     <ModulePackageNames Include="OrchardCore.Commerce.Inventory" />
     <ModulePackageNames Include="OrchardCore.Commerce.Payment.Exactly" />
