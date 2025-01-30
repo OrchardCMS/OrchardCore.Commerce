@@ -16,17 +16,6 @@
     <PackageIcon>OrchardCoreIcon.png</PackageIcon>
   </PropertyGroup>
 
-  <!-- Ensure that NuGet dependencies that are modules get propagated so all modules get listed and loaded by OC. -->
-  <ItemGroup>
-    <ModulePackageNames Include="OrchardCore.Commerce" />
-    <ModulePackageNames Include="OrchardCore.Commerce.ContentFields" />
-    <ModulePackageNames Include="OrchardCore.Commerce.Inventory" />
-    <ModulePackageNames Include="OrchardCore.Commerce.Payment.Exactly" />
-    <ModulePackageNames Include="OrchardCore.Commerce.Payment" />
-    <ModulePackageNames Include="OrchardCore.Commerce.Promotion" />
-    <ModulePackageNames Include="OrchardCore.Commerce.Tax" />
-  </ItemGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -44,7 +33,7 @@
     <PackageReference Include="OrchardCore.ContentTypes.Abstractions" />
     <PackageReference Include="OrchardCore.Html" />
     <PackageReference Include="OrchardCore.Localization" />
-    <PackageReference Include="OrchardCore.Module.Targets" />
+    <PackageReference Include="OrchardCore.Module.Targets" GeneratePathProperty="true" />
     <PackageReference Include="OrchardCore.Navigation.Core" />
     <PackageReference Include="OrchardCore.Title" />
     <PackageReference Include="OrchardCore.Workflows.Abstractions" />
@@ -73,6 +62,12 @@
   </ImportGroup>
   <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
     <PackageReference Include="Lombiq.NodeJs.Extensions" />
+  </ItemGroup>
+
+  <!-- Override NuGet props file from OrchardCore.Module.Targets with our custom version. -->
+  <ItemGroup>
+    <None Remove="$(PkgOrchardCore_Module_Targets)/build/Package.Build.props" />
+    <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
   </ItemGroup>
 
 </Project>
