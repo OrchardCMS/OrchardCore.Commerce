@@ -102,4 +102,4 @@ nav:
     - Libraries: resources/libraries/README.md
   - Releases and Notes:
     - GitHub: https://github.com/OrchardCMS/OrchardCore.Commerce/releases
-    - 3.0.0: docs/releases/3.0.0.md
+    - 3.0.0: releases/3.0.0.md
