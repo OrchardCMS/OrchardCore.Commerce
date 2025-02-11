@@ -1,0 +1,13 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Ensure that NuGet dependencies that are modules get propagated so all modules get listed and loaded by OC. This
+  doesn't happen by default, see https://github.com/OrchardCMS/OrchardCore/issues/17431. -->
+  <ItemGroup>
+    <ModulePackageNames Include="OrchardCore.Commerce" />
+    <ModulePackageNames Include="OrchardCore.Commerce.ContentFields" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Inventory" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Payment.Exactly" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Payment" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Promotion" />
+    <ModulePackageNames Include="OrchardCore.Commerce.Tax" />
+  </ItemGroup>
+</Project>
