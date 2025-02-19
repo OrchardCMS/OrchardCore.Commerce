@@ -144,7 +144,7 @@ public readonly partial struct Currency
     public static ICurrency SpecialDrawingRights => _defaultProvider.GetCurrency("XDR");
     public static ICurrency WestAfricanCfaFranc => _defaultProvider.GetCurrency("XOF");
     public static ICurrency YemeniRial => _defaultProvider.GetCurrency("YER");
-    public static ICurrency SouthAfricanRand => _defaultProvider.GetCurrency("ZAR"); // codespell:ignore ZAR
+    public static ICurrency SouthAfricanRand => _defaultProvider.GetCurrency("ZAR");
 
     public static ICurrency GetByIsoCode(string isoCode) => _defaultProvider.GetCurrency(isoCode);
 
