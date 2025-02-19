@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -37,8 +37,7 @@ public class ChargeResponse : IExactlyResponseData
             ["reversals_restricted_for_transaction"] = T["reversals not allowed for the original payment"],
             ["reversible_amount_exceeded"] = T["amount to reverse exceeds the amount of the original payment"],
             ["not_allowed_for_failed_transaction"] = T["the operation is not allowed for the failed transaction"],
-            ["sub_recurrings_restricted_for_transaction"] = // #spell-check-ignore-line
-                T["subsequent recurring payments are not allowed for the initial payment"],
+            ["sub_recurrings_restricted_for_transaction"] = T["subsequent recurring payments are not allowed for the initial payment"],
             ["already_captured"] = T["payment was already captured"],
             ["capture_amount_exceeded"] = T["capture amount exceeds the amount of the original authorize"],
             ["authentication_failed"] = T["customer failed 3DS or any other authentication"],

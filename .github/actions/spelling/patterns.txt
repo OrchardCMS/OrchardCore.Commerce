@@ -1,2 +1,0 @@
-# Stripe API key patterns.
-((pk_test)|(sk_test)|(whsec))_\w*

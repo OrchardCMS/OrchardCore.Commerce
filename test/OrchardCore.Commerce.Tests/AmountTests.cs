@@ -37,7 +37,7 @@ public class AmountTests
     }
 
     [Fact]
-    public void OneCanMultiplyAnAmountByANumber() // #spell-check-ignore-line
+    public void OneCanMultiplyAnAmountByANumber()
     {
         Assert.Equal(new Amount(42.34M, Euro), 2 * new Amount(21.17M, Euro));
         Assert.Equal(new Amount(42.34M, Euro), new Amount(21.17M, Euro) * 2);

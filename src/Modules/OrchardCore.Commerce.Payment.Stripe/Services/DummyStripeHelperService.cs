@@ -1,4 +1,4 @@
-﻿using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using Stripe;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
@@ -14,5 +14,5 @@ public class DummyStripeHelperService : IStripeHelperService
         string stripeSignatureHeader,
         string secret,
         bool throwOnApiVersionMismatch) =>
-        new() { Id = "evt_exampleEventId0000000000", Type = Type, Data = new EventData { Object = EventDataObject } }; // #spell-check-ignore-line
+        new() { Id = "evt_exampleEventId0000000000", Type = Type, Data = new EventData { Object = EventDataObject } };
 }
