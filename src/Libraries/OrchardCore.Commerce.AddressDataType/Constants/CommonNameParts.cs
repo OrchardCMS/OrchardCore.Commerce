@@ -1,8 +1,8 @@
-﻿namespace OrchardCore.Commerce.AddressDataType.Constants;
+namespace OrchardCore.Commerce.AddressDataType.Constants;
 
 /// <summary>
 /// Some name parts common across many cultures. None of these are guaranteed to be in every name, their order and
-/// applicability can be dependant on culture or local laws.
+/// applicability can depend on culture or local laws.
 /// </summary>
 /// <remarks>
 /// <para>Prefer using "given name" instead of "first name" or "forename", and prefer "family name" instead of "last

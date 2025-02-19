@@ -31,7 +31,7 @@ public interface IPaymentService
     public Task<Amount> GetTotalAsync(string? shoppingCartId);
 
     /// <summary>
-    /// When the order is payed this logic should be run to set <paramref name="order"/> properties that represents its state.
+    /// When the order is paid this logic should be run to set <paramref name="order"/> properties that represents its state.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId, string? paymentProviderName);
 

@@ -79,7 +79,7 @@ public static class Regions
                 ["NM"] = "New Mexico",
                 ["NY"] = "New York",
                 ["NC"] = "North Carolina",
-                ["ND"] = "North Dakota",
+                ["ND"] = "North Dakota", // codespell:ignore ND
                 ["OH"] = "Ohio",
                 ["OK"] = "Oklahoma",
                 ["OR"] = "Oregon",

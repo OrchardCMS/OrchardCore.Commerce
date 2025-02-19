@@ -43,7 +43,7 @@ public class ChargeResponse : IExactlyResponseData
             ["authentication_failed"] = T["customer failed 3DS or any other authentication"],
             ["authentication_expired"] = T["customer didn't complete 3DS or any other authentication in expected time"],
             ["invalid_card_data"] = T["invalid card details were provided"],
-            ["cancelled_by_customer"] = T["customer cancelled the transaction"],
+            ["cancelled_by_customer"] = T["customer canceled the transaction"],
             ["blocked_by_issuer"] = T["the transaction was blocked by the issuer"],
             ["declined_by_issuer"] = T["the transaction was declined by the issuer"],
             ["insufficient_funds"] = T["customer's account doesn't have enough funds for the payment"],
