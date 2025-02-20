@@ -18,8 +18,8 @@
 
     <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
          Directory.Packages.props file for more details. -->
-    <PackageReference Include="OrchardCore.Application.Cms.Targets" VersionOverride="2.1.5" />
-    <PackageReference Include="OrchardCore.Logging.NLog" VersionOverride="2.1.5" />
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" VersionOverride="2.1.6" />
+    <PackageReference Include="OrchardCore.Logging.NLog" VersionOverride="2.1.6" />
   </ItemGroup>
 
   <ItemGroup>
