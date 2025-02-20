@@ -26,7 +26,7 @@ public class RetrievalProductTests : UITestBase
 
                 await context.SignInDirectlyAndGoToHomepageAsync();
 
-                TextShouldBe(".site-heading h1", "My Shop");
+                TextShouldBe(".site-heading h1", "Shop");
                 TextShouldBe(".content-price-variants-product header h2 a", "Test Price Variant Product");
                 TextShouldBe(
                     ".content-price-variants-product > .field-name-product-" +
