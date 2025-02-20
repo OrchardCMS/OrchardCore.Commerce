@@ -73,7 +73,7 @@
           "ContentItemId": "mainproductlist00000000000",
           "ContentItemVersionId": "[js:uuid()]",
           "ContentType": "ProductList",
-          "DisplayText": "My Shop",
+          "DisplayText": "Shop",
           "Latest": true,
           "Published": true,
           "ModifiedUtc": "2023-09-15T17:10:18.3635912Z",
@@ -84,14 +84,14 @@
           "ProductList": {},
           "ProductListPart": {},
           "AutoroutePart": {
-            "Path": "my-shop",
+            "Path": "e-shop",
             "SetHomepage": true,
             "Disabled": false,
             "RouteContainedItems": false,
             "Absolute": false
           },
           "TitlePart": {
-            "Title": "My Shop"
+            "Title": "Shop"
           }
         },
         {
