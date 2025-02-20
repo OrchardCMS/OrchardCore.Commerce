@@ -16,7 +16,6 @@ public static class CurrencyCollectionConstants
         "MGA",
         "PYG",
         "RWF",
-        "UGX",
         "VND",
         "VUV",
         "XAF",
