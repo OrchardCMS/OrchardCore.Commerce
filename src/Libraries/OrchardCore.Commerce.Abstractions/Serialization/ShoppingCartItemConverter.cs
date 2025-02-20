@@ -66,7 +66,7 @@ public sealed class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
             foreach (var attribute in value.Attributes)
             {
                 writer.WritePropertyName(attribute.AttributeName);
-                // Re-using the raw attribute serialization logic
+                // Reusing the raw attribute serialization logic
                 JsonSerializer.Serialize(writer, new RawProductAttributeValue(attribute.UntypedValue), options);
             }
 

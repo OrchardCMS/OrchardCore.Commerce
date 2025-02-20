@@ -13,8 +13,8 @@ public sealed class AmountConverter : JsonConverter<Amount>
     public const string ValueName = "value";
     public const string CurrencyName = "currency";
     public const string Name = "name";
-    public const string NativeName = "nativename"; // #spell-check-ignore-line
-    public const string EnglishName = "englishname"; // #spell-check-ignore-line
+    public const string NativeName = "nativename";
+    public const string EnglishName = "englishname";
     public const string Symbol = "symbol";
     public const string Iso = "iso";
     public const string DecimalDigits = "dec";

@@ -11,7 +11,7 @@ namespace OrchardCore.Commerce.Tests.UI.Tests.LocalizedProductTests;
 
 public class LocalizedProductBehaviorTests : UITestBase
 {
-    private const string LocalizedTitle = "Honosított Termék"; // #spell-check-ignore-line
+    private const string LocalizedTitle = "Honosított Termék";
 
     private static readonly By _localizationsButtonPath = By.XPath(
         "//li[contains(@class, 'list-group-item') and .//a[contains(., 'Test Localized Product')]]//div[@title = 'Localizations']//button");
@@ -64,5 +64,5 @@ public class LocalizedProductBehaviorTests : UITestBase
             browser);
 
     private static Task GoToLocalizedProductAsync(UITestContext context) =>
-        context.GoToAdminRelativeUrlAsync("/Contents/ContentItems?q=Test%20Localized%20Product type%3ALocalizedProduct"); // #spell-check-ignore-line
+        context.GoToAdminRelativeUrlAsync("/Contents/ContentItems?q=Test%20Localized%20Product type%3ALocalizedProduct");
 }

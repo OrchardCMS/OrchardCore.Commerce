@@ -5,16 +5,17 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D15D472D-A6EF-441F-8278-6350D89E90D2}"
 	ProjectSection(SolutionItems) = preProject
+		.codespellrc = .codespellrc
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
 		License.md = License.md
 		mkdocs.yml = mkdocs.yml
+		NuGet.config = NuGet.config
 		Readme.md = Readme.md
 		Reset-Local.ps1 = Reset-Local.ps1
-		Directory.Packages.props = Directory.Packages.props
-		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2D057AA-E3F7-404D-A713-C3C59F9DE562}"
@@ -42,10 +43,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{A4CAB4D8-DD0C-4689-868E-DF45106E2DD1}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
+		.github\workflows\publish-cloudsmith-tag.yml = .github\workflows\publish-cloudsmith-tag.yml
 		.github\workflows\publish-cloudsmith.yml = .github\workflows\publish-cloudsmith.yml
 		.github\workflows\publish-nuget.yml = .github\workflows\publish-nuget.yml
 		.github\workflows\validate-pull-request.yml = .github\workflows\validate-pull-request.yml
-		.github\workflows\publish-cloudsmith-tag.yml = .github\workflows\publish-cloudsmith-tag.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.ContentFields", "src\Modules\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj", "{8027FB33-B110-48A2-9B71-89F1EA96EB67}"
@@ -65,9 +66,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B2DB1CD-2B4A-4823-9762-CF4E90661404}"
 	ProjectSection(SolutionItems) = preProject
 		docs\features\boolean-product-attribute-field.md = docs\features\boolean-product-attribute-field.md
+		docs\features\exactly-payment.md = docs\features\exactly-payment.md
 		docs\features\inventory-part.md = docs\features\inventory-part.md
 		docs\features\inventory.md = docs\features\inventory.md
 		docs\features\numeric-product-attribute-field.md = docs\features\numeric-product-attribute-field.md
+		docs\features\payment-providers.md = docs\features\payment-providers.md
 		docs\features\price-part.md = docs\features\price-part.md
 		docs\features\price-variants-part.md = docs\features\price-variants-part.md
 		docs\features\product-part.md = docs\features\product-part.md
@@ -79,22 +82,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "features", "features", "{9B
 		docs\features\tiered-price-part.md = docs\features\tiered-price-part.md
 		docs\features\user-features.md = docs\features\user-features.md
 		docs\features\workflows.md = docs\features\workflows.md
-		docs\features\payment-providers.md = docs\features\payment-providers.md
-		docs\features\exactly-payment.md = docs\features\exactly-payment.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{83C01924-6F58-4777-A9EC-07943F7A2E31}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "spelling", "spelling", "{E32B62B8-D737-4713-87C5-8220C9746643}"
-	ProjectSection(SolutionItems) = preProject
-		.github\actions\spelling\excludes.txt = .github\actions\spelling\excludes.txt
-		.github\actions\spelling\patterns.txt = .github\actions\spelling\patterns.txt
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "allow", "allow", "{7FB7940D-EEF4-4355-BCBF-C160080F257A}"
-	ProjectSection(SolutionItems) = preProject
-		.github\actions\spelling\allow\occ.txt = .github\actions\spelling\allow\occ.txt
-		.github\actions\spelling\allow\people.txt = .github\actions\spelling\allow\people.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.Tests.UI.Shortcuts", "test\OrchardCore.Commerce.Tests.UI.Shortcuts\OrchardCore.Commerce.Tests.UI.Shortcuts.csproj", "{3DB5D0DD-1509-40B8-AD1A-47D5672BF484}"
@@ -209,9 +196,6 @@ Global
 		{87C422CA-C6F2-408F-987B-C8418995A331} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{93871E12-0083-4323-BB7B-3CDA6E332D87} = {E6C02BDF-EEB0-4ABD-ADEC-9932F60923AE}
 		{9B2DB1CD-2B4A-4823-9762-CF4E90661404} = {BEBA1764-178A-4722-A193-4DEF26DCE8D1}
-		{83C01924-6F58-4777-A9EC-07943F7A2E31} = {4561F321-6E57-484B-950C-AC46798B1F40}
-		{E32B62B8-D737-4713-87C5-8220C9746643} = {83C01924-6F58-4777-A9EC-07943F7A2E31}
-		{7FB7940D-EEF4-4355-BCBF-C160080F257A} = {E32B62B8-D737-4713-87C5-8220C9746643}
 		{3DB5D0DD-1509-40B8-AD1A-47D5672BF484} = {772AFE42-DF1F-49B1-9F64-7C901E588C00}
 		{62DF9FF9-D2B3-4333-948D-2E405699B47B} = {BEBA1764-178A-4722-A193-4DEF26DCE8D1}
 		{C788AFFF-F440-4259-9102-5B4C1B91FAFA} = {62DF9FF9-D2B3-4333-948D-2E405699B47B}
