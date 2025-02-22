@@ -61,52 +61,52 @@
       ]
     },
     {
-      "label": "Web App: Dotnet Build Debug - net6.0",
+      "label": "Web App: Dotnet Build Debug - net8.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
-        "${workspaceRoot}/SampleWebApp",
+        "${workspaceRoot}/src/OrchardCore.Commerce.Web",
         "-c",
         "Debug",
         "-f",
-        "net6.0"
+        "net8.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Rebuild Debug - net6.0",
+      "label": "Web App: Dotnet Rebuild Debug - net8.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
-        "${workspaceRoot}/SampleWebApp",
+        "${workspaceRoot}/src/OrchardCore.Commerce.Web",
         "--no-incremental",
         "-c",
         "Debug",
         "-f",
-        "net6.0"
+        "net8.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Build Release - net6.0",
+      "label": "Web App: Dotnet Build Release - net8.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
-        "${workspaceRoot}/SampleWebApp",
+        "${workspaceRoot}/src/OrchardCore.Commerce.Web",
         "-c",
         "Release",
         "-f",
-        "net6.0"
+        "net8.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
       "label": "Web App: Dotnet Run",
       "args": [
-        "cd ${workspaceRoot}/SampleWebApp & dotnet run"
+        "cd ${workspaceRoot}/src/OrchardCore.Commerce.Web & dotnet run"
       ]
     },
     {
@@ -126,49 +126,49 @@
       ]
     },
     {
-      "label": "Dotnet Publish (self-contained) - net6.0",
+      "label": "Dotnet Publish (self-contained) - net8.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
         "command": "dotnet",
         "args": [
           "publish",
-          "${workspaceRoot}\\SampleWebApp",
+          "${workspaceRoot}\\src\\OrchardCore.Commerce.Web",
           "--configuration",
           "release",
           "--runtime",
           "win-x64",
           "--self-contained",
           "--framework",
-          "net6.0",
+          "net8.0",
           "--output",
           ".\\.build\\release"
         ]
       },
       "args": [
         "publish",
-        "${workspaceRoot}/SampleWebApp",
+        "${workspaceRoot}/src/OrchardCore.Commerce.Web",
         "--configuration",
         "release",
         "--runtime",
         "linux-x64",
         "--self-contained",
         "--framework",
-        "net6.0",
+        "net8.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Dotnet Publish (framework dependent) - net6.0",
+      "label": "Dotnet Publish (framework dependent) - net8.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
         "command": "dotnet",
         "args": [
           "publish",
-          "${workspaceRoot}\\SampleWebApp",
+          "${workspaceRoot}\\src\\OrchardCore.Commerce.Web",
           "--configuration",
           "release",
           "--runtime",
@@ -176,14 +176,14 @@
           "--self-contained",
           "false",
           "--framework",
-          "net6.0",
+          "net8.0",
           "--output",
           ".\\.build\\release"
         ]
       },
       "args": [
         "publish",
-        "${workspaceRoot}/SampleWebApp",
+        "${workspaceRoot}/src/OrchardCore.Commerce.Web",
         "--configuration",
         "release",
         "--runtime",
@@ -191,24 +191,24 @@
         "--self-contained",
         "false",
         "--framework",
-        "net6.0",
+        "net8.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Publish (self-contained) - net6.0",
+      "label": "Web App: Dotnet Publish (self-contained) - net8.0",
       "dependsOn": [
         "Cleanup build folder",
-        "Dotnet Publish (self-contained) - net6.0"
+        "Dotnet Publish (self-contained) - net8.0"
       ]
     },
     {
-      "label": "Web App: Dotnet Publish (framework dependent) - net6.0",
+      "label": "Web App: Dotnet Publish (framework dependent) - net8.0",
       "dependsOn": [
         "Cleanup build folder",
-        "Dotnet Publish (framework dependent) - net6.0"
+        "Dotnet Publish (framework dependent) - net8.0"
       ]
     },
     {
