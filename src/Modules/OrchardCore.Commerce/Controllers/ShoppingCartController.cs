@@ -128,7 +128,7 @@ public class ShoppingCartController : Controller
         // Check if there are any line items that failed to deserialize. This can only happen if the shopping cart
         // update model was manually altered or if a product from cart was removed in the backend. This is however
         // unlikely, because products should be made unavailable rather than deleted.
-        if (lines.Any(line => line.Item == null))
+        if (!ModelState.IsValid || lines.Any(line => line.Item == null))
         {
             await _shoppingCartPersistence.StoreAsync(new ShoppingCart(), shoppingCartId);
 
@@ -185,7 +185,10 @@ public class ShoppingCartController : Controller
     {
         try
         {
-            if (await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem) return NotFound();
+            if (!ModelState.IsValid || await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem)
+            {
+                return NotFound();
+            }
 
             var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
                 shoppingCartId,
@@ -208,10 +211,14 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
-        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
-        cart.RemoveItem(parsedLine);
-        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
+        if (ModelState.IsValid)
+        {
+            var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
+            var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+            cart.RemoveItem(parsedLine);
+            await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
+        }
+
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
 }
