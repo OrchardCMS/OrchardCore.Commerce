@@ -84,7 +84,7 @@
           "ProductList": {},
           "ProductListPart": {},
           "AutoroutePart": {
-            "Path": "e-shop",
+            "Path": "shop",
             "SetHomepage": true,
             "Disabled": false,
             "RouteContainedItems": false,
