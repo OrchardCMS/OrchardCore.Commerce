@@ -31,7 +31,7 @@ Executes after the shopping cart content is loaded from the store and before it'
 
 - Input: `ShoppingCart` object.
 - Outputs:
-  - ShoppingCart: `ShoppingCart` object. An altered version of the input. If no changes are necessary, the output can be skipped. Here it's the most important to only use `input('JSON')` as mentioned above, because `ShoppingCart` has custom JSON converters inside that will ony correctly serialize in .NET code.
+  - ShoppingCart: `ShoppingCart` object. An altered version of the input. If no changes are necessary, the output can be skipped. Here it's the most important to only use `input('JSON')` as mentioned above, because `ShoppingCart` has custom JSON converters inside that will only correctly serialize in .NET code.
 
 ## Other Workflow Events
 

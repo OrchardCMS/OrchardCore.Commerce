@@ -1,4 +1,4 @@
-﻿using Stripe;
+using Stripe;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,7 +6,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class DummyCustomerService : CustomerService
 {
-    public const string TestCustomerId = "cus_TESTID00000000"; // #spell-check-ignore-line
+    public const string TestCustomerId = "cus_TESTID00000000";
 
     public override Customer Create(CustomerCreateOptions options, RequestOptions requestOptions = null) => new();
 

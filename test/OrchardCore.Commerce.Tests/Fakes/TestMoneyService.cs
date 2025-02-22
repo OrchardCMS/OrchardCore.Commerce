@@ -10,7 +10,7 @@ public class TestMoneyService : MoneyService
         : base(
             [
                 new CurrencyProvider(),
-                new AnkhMorporkCurrencyProvider(), // #spell-check-ignore-line
+                new AnkhMorporkCurrencyProvider(),
             ],
             new TestOptions<CurrencySettings>(new() { DefaultCurrency = "EUR" }),
             [new NullCurrencySelector()])

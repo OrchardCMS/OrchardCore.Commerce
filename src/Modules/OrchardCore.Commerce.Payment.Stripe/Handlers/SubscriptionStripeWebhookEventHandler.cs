@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.Users;
+using Lombiq.HelpfulLibraries.OrchardCore.Users;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
@@ -45,7 +45,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 if (user == null)
                 {
                     _logger.LogError(
-                        "User not found for email {Email}, while invoice was payed. Invoice data: {InvoiceData}",
+                        "User not found for email {Email}, while invoice was paid. Invoice data: {InvoiceData}",
                         invoice.CustomerEmail,
                         JsonSerializer.Serialize(invoice));
                     return;

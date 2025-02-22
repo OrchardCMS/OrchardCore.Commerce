@@ -1,4 +1,4 @@
-﻿using Stripe;
+using Stripe;
 using Stripe.Checkout;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class DummySessionService : SessionService
 {
-    public const string TestSessionId = "cs_test_testsessionid000000000000000000000000000000000000000000000"; // #spell-check-ignore-line
+    public const string TestSessionId = "cs_test_testsessionid000000000000000000000000000000000000000000000";
     public const string TestSessionUrl = "https://localhost";
 
     public override Session Create(SessionCreateOptions options, RequestOptions requestOptions = null) => new();

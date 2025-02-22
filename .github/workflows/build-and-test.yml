@@ -25,19 +25,12 @@ jobs:
       # supported by GHA.
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
 
-  spelling:
-    name: Spelling
-    uses: Lombiq/GitHub-Actions/.github/workflows/spelling.yml@dev
-    with:
-      additional-dictionaries: |
-        cspell:csharp/csharp.txt
-        cspell:html/dict/html.txt
-        lombiq-lgha:dictionaries/Liquid.txt
-        lombiq-lgha:dictionaries/Lombiq.people.txt
-        lombiq-lgha:dictionaries/Security.txt
+  codespell:
+    name: Codespell
+    uses: Lombiq/GitHub-Actions/.github/workflows/codespell.yml@dev
 
   post-pull-request-checks-automation:
-    needs: [build-and-test-linux, build-and-test-windows, spelling]
+    needs: [build-and-test-linux, build-and-test-windows, codespell]
     if: github.event.pull_request != ''
     uses: Lombiq/GitHub-Actions/.github/workflows/post-pull-request-checks-automation.yml@dev
     secrets:

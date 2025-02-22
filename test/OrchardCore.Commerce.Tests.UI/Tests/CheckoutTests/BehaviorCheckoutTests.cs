@@ -69,7 +69,7 @@ public class BehaviorCheckoutTests : UITestBase
                 await context.ClickCheckoutAsync();
 
                 var noteBy = By.Name("OrderPart.ShippingAddress.Address.AdditionalFields.NoteForCourier");
-                var noteText = "Don't take the old passage to Ravenholm. We don't go there anymore."; // #spell-check-ignore-line
+                var noteText = "Don't take the old passage to Ravenholm. We don't go there anymore.";
                 await context.ClickAndFillInWithRetriesAsync(noteBy, noteText);
                 await context.ClickAndFillInWithRetriesAsync(AddressName("GivenName"), "Gordon");
                 await context.ClickAndFillInWithRetriesAsync(AddressName("FamilyName"), "Freeman");

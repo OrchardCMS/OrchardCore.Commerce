@@ -25,7 +25,7 @@ public class PersistencePriceVariantsTests : UITestBase
                 await context.SignInDirectlyAsync();
                 await context.CreateNewContentItemAsync("TestPriceVariantsProduct");
 
-                const string sku = "UITESTSKU"; // #spell-check-ignore-line
+                const string sku = "UITESTSKU";
                 const string price = "9999";
                 var currency = Currency.HungarianForint.CurrencyIsoCode;
 

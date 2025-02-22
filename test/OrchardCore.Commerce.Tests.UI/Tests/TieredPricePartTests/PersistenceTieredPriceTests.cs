@@ -25,7 +25,7 @@ public class PersistenceTieredPriceTests : UITestBase
                 await context.SignInDirectlyAsync();
                 await context.CreateNewContentItemAsync("TestTieredPriceProduct");
 
-                const string sku = "UITESTSKU"; // #spell-check-ignore-line
+                const string sku = "UITESTSKU";
                 const string price = "9999";
                 const string quantity1 = "2";
                 const string unitPrice1 = "8999";

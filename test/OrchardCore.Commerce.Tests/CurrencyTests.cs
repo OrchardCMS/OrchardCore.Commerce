@@ -19,7 +19,7 @@ public class CurrencyTests
         { BritishPound.CurrencyIsoCode, 1234.56m, "£1,234.56" },
         { AustralianDollar.CurrencyIsoCode, 1234.56m, "$1,234.56" },
         { CanadianDollar.CurrencyIsoCode, 1234.56m, "$1,234.56" },
-        { SwissFranc.CurrencyIsoCode, 1234.56m, "CHF 1’234.56" }, // #spell-check-ignore-line
+        { SwissFranc.CurrencyIsoCode, 1234.56m, "CHF 1’234.56" },
         { ChineseYuan.CurrencyIsoCode, 1234.56m, "¥1,234.56" },
     };
 
