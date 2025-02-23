@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace OrchardCore.Commerce.Payment.Constants;
 public static class CurrencyCollectionConstants
 {
-    public static readonly IEnumerable<string> SpecialCases = ["HUF", "TWD", "UGX"];
+    public static readonly IEnumerable<string> SpecialCases = ["ISK", "HUF", "TWD", "UGX"];
     public static readonly IEnumerable<string> ZeroDecimalCurrencies =
     [
         "BIF",
@@ -16,7 +16,6 @@ public static class CurrencyCollectionConstants
         "MGA",
         "PYG",
         "RWF",
-        "UGX",
         "VND",
         "VUV",
         "XAF",
