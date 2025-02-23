@@ -15,7 +15,7 @@ namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
 [Route("stripe-webhook")]
 [ApiController]
 [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
-public class WebhookController : Controller
+public class WebhookController : ControllerBase
 {
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -38,7 +38,7 @@ public class WebhookController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromHeader(Name = "Stripe-Signature")] string signature)
     {
         using var streamReader = new StreamReader(HttpContext.Request.Body);
         var json = await streamReader.ReadToEndAsync(HttpContext.RequestAborted);
@@ -49,7 +49,7 @@ public class WebhookController : Controller
 
             var stripeEvent = _stripeHelperService.PrepareStripeEvent(
                 json,
-                Request.Headers["Stripe-Signature"],
+                signature,
                 webhookSigningKey,
                 // Let the logic handle version mismatch.
                 throwOnApiVersionMismatch: false);

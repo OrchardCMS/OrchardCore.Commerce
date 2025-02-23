@@ -2,27 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (console) - net6.0",
+      "name": ".NET Core Launch (console) - net8.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "Web App: Dotnet Build Debug - net6.0",
-      "program": "${workspaceRoot}/SampleWebApp/bin/Debug/net6.0/SampleWebApp.dll",
+      "preLaunchTask": "Web App: Dotnet Build Debug - net8.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Commerce.Web/bin/Debug/net8.0/OrchardCore.Commerce.Web.dll",
       "args": [],
-      "cwd": "${workspaceRoot}/SampleWebApp",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Commerce.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "stopAtEntry": false
     },
     {
-      "name": ".NET Core Launch (web debug) - net6.0",
+      "name": ".NET Core Launch (web debug) - net8.0",
       "type": "coreclr",
       "request": "launch",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "Web App: Dotnet Build Debug - net6.0",
-      "program": "${workspaceRoot}/SampleWebApp/bin/Debug/net6.0/SampleWebApp.dll",
+      "preLaunchTask": "Web App: Dotnet Build Debug - net8.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Commerce.Web/bin/Debug/net8.0/OrchardCore.Commerce.Web.dll",
       "args": [],
-      "cwd": "${workspaceRoot}/SampleWebApp",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Commerce.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -33,13 +33,13 @@
       }
     },
     {
-      "name": ".NET Core Launch (web release) - net6.0",
+      "name": ".NET Core Launch (web release) - net8.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "Web App: Dotnet Build Release - net6.0",
-      "program": "${workspaceRoot}/SampleWebApp/bin/Release/net6.0/SampleWebApp.dll",
+      "preLaunchTask": "Web App: Dotnet Build Release - net8.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Commerce.Web/bin/Release/net8.0/OrchardCore.Commerce.Web.dll",
       "args": [],
-      "cwd": "${workspaceRoot}/SampleWebApp",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Commerce.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -56,12 +56,12 @@
       "processId": "${command:pickProcess}"
     },
     {
-      "name": ".NET Core Launch (publish framework dependent) - net6.0",
+      "name": ".NET Core Launch (publish framework dependent) - net8.0",
       "type": "coreclr",
       "request": "launch",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "Web App: Dotnet Publish (framework dependent) - net6.0",
-      "program": "${workspaceRoot}/.build/release/SampleWebApp.dll",
+      "preLaunchTask": "Web App: Dotnet Publish (framework dependent) - net8.0",
+      "program": "${workspaceRoot}/.build/release/OrchardCore.Commerce.Web.dll",
       "args": [],
       "cwd": "${workspaceRoot}/.build/release",
       "env": {
@@ -74,12 +74,12 @@
       }
     },
     {
-      "name": ".NET Core Launch (publish self-contained) - net6.0",
+      "name": ".NET Core Launch (publish self-contained) - net8.0",
       "type": "coreclr",
       "request": "launch",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "Web App: Dotnet Publish (self-contained) - net6.0",
-      "program": "${workspaceRoot}/.build/release/SampleWebApp.dll",
+      "preLaunchTask": "Web App: Dotnet Publish (self-contained) - net8.0",
+      "program": "${workspaceRoot}/.build/release/OrchardCore.Commerce.Web.dll",
       "args": [],
       "cwd": "${workspaceRoot}/.build/release",
       "env": {

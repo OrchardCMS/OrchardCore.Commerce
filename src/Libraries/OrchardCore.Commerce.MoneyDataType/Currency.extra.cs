@@ -133,6 +133,7 @@ public readonly partial struct Currency
     public static ICurrency TurkishLira => _defaultProvider.GetCurrency("TRY");
     public static ICurrency TrinidadAndTobagoDollar => _defaultProvider.GetCurrency("TTD");
     public static ICurrency NewTaiwanDollar => _defaultProvider.GetCurrency("TWD");
+    public static ICurrency UgandanShilling => _defaultProvider.GetCurrency("UGX");
     public static ICurrency UkrainianHryvnia => _defaultProvider.GetCurrency("UAH");
     public static ICurrency UsDollar => _defaultProvider.GetCurrency("USD");
     public static ICurrency UruguayanPeso => _defaultProvider.GetCurrency("UYU");

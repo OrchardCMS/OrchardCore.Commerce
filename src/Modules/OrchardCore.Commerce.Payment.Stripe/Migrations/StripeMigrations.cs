@@ -44,6 +44,7 @@ public class StripeMigrations : DataMigration
         {
             // This is fine, it just means that the table didn't exist.
             _logger.LogInformation(
+                exception,
                 "The table {TableName} didn't exist so it couldn't be dropped, full exception message: {ExceptionMessage}",
                 typeof(OrderPaymentIndex),
                 exception.Message);
