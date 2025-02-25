@@ -39,7 +39,12 @@ public class SecurityScanningTests : UITestBase
                         @".*/\?.*products\..*");
                 },
                 maxActiveScanDurationInMinutes: 5,
-                maxRuleDurationInMinutes: 1));
+                maxRuleDurationInMinutes: 1,
+                additionalPermittedErrorLinePatterns:
+                [
+                    // Happens occasionally when the active scan submits invalid data.
+                    "System.ArgumentNullException: Value cannot be null. (Parameter 'key')"
+                ]));
 
     private static void FalsePositive(
         SecurityScanConfiguration configuration,

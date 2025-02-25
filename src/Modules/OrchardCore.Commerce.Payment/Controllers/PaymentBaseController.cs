@@ -19,7 +19,7 @@ public abstract class PaymentBaseController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> ProduceActionResultAsync(PaymentOperationStatusViewModel paidStatusViewModel)
+    protected async Task<IActionResult> ProduceActionResultAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
         if (paidStatusViewModel.ShowMessage != null)
         {
@@ -82,7 +82,7 @@ public abstract class PaymentBaseController : Controller
                     : returnUrl;
         }
 
-        object? routeValues = new { area, returnUrl = localReturnUrl };
+        object routeValues = new { area, returnUrl = localReturnUrl };
 
         if (!string.IsNullOrEmpty(orderId))
         {
