@@ -6,7 +6,6 @@ using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Controllers;
@@ -20,11 +19,7 @@ public abstract class PaymentBaseController : Controller
         _logger = logger;
     }
 
-    [SuppressMessage(
-        "Critical Code Smell",
-        "S6967:ModelState.IsValid should be called in controller actions",
-        Justification = "This is not a controller action.")]
-    public async Task<IActionResult> ProduceActionResultAsync(PaymentOperationStatusViewModel paidStatusViewModel)
+    protected async Task<IActionResult> ProduceActionResultAsync(PaymentOperationStatusViewModel paidStatusViewModel)
     {
         if (paidStatusViewModel.ShowMessage != null)
         {
@@ -87,7 +82,7 @@ public abstract class PaymentBaseController : Controller
                     : returnUrl;
         }
 
-        object? routeValues = new { area, returnUrl = localReturnUrl };
+        object routeValues = new { area, returnUrl = localReturnUrl };
 
         if (!string.IsNullOrEmpty(orderId))
         {
