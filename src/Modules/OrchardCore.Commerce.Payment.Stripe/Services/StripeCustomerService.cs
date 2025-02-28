@@ -128,11 +128,11 @@ public class StripeCustomerService : IStripeCustomerService
         string phone) =>
         new()
         {
-            Name = billingAddress.Name,
+            Name = billingAddress?.Name,
             Email = email,
             Phone = phone,
-            Address = CreateAddressOptions(billingAddress),
-            Shipping = CreateShippingOptions(shippingAddress),
+            Address = billingAddress == null ? null : CreateAddressOptions(billingAddress),
+            Shipping = shippingAddress == null ? null : CreateShippingOptions(shippingAddress),
         };
 
     public CustomerCreateOptions PopulateCustomerCreateOptions(
