@@ -44,15 +44,14 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 var user = await _cachingUserManager.GetUserByEmailAsync(invoice.CustomerEmail);
                 if (user == null)
                 {
-                    _logger.LogError(
+                    _logger.LogWarning(
                         "User not found for email {Email}, while invoice was paid. Invoice data: {InvoiceData}",
                         invoice.CustomerEmail,
                         JsonSerializer.Serialize(invoice));
-                    return;
                 }
 
                 var subscriptionPart = new SubscriptionPart();
-                subscriptionPart.UserId.Text = user.UserId;
+                subscriptionPart.UserId.Text = user?.UserId;
                 subscriptionPart.Status.Text = SubscriptionStatuses.Active;
 
                 // invoice.PeriodEnd doesn't show the current period, see Stripe docs:
