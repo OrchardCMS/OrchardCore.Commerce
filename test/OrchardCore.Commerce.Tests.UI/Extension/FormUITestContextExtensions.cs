@@ -27,18 +27,20 @@ public static class FormUITestContextExtensions
                 return context.ClickAndFillInWithRetriesAsync(by, value);
             }
 
-            return ReliabilityHelper.DoWithRetriesOrFailAsync(async () =>
-            {
-                try
+            return ReliabilityHelper.DoWithRetriesOrFailAsync(
+                async () =>
                 {
-                    await context.SetDropdownByValueAsync(by, value);
-                    return true;
-                }
-                catch (WebDriverException)
-                {
-                    return false;
-                }
-            });
+                    try
+                    {
+                        await context.SetDropdownByValueAsync(by, value);
+                        return true;
+                    }
+                    catch (WebDriverException)
+                    {
+                        return false;
+                    }
+                },
+                cancellationToken: context.Configuration.TestCancellationToken);
         }
 
         await FillAsync(nameof(address.Name), address.Name);
