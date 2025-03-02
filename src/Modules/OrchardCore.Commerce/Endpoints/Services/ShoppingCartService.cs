@@ -6,7 +6,6 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
-using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.ViewModels;
