@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Activities;
+using OrchardCore.Commerce.Endpoints;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -33,6 +34,7 @@ public class ShoppingCartController : Controller
     private readonly IHtmlLocalizer<ShoppingCartController> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IProductService _productService;
+    private readonly IShoppingCartService _shoppingCartService;
 
     // These are needed.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -45,7 +47,8 @@ public class ShoppingCartController : Controller
         IEnumerable<IWorkflowManager> workflowManagers,
         IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
-        IProductService productService)
+        IProductService productService,
+        IShoppingCartService shoppingCartService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _notifier = notifier;
@@ -57,6 +60,7 @@ public class ShoppingCartController : Controller
         _shoppingCartEvents = shoppingCartEvents;
         _productService = productService;
         H = htmlLocalizer;
+        _shoppingCartService = shoppingCartService;
     }
 
     [HttpGet]
@@ -190,14 +194,7 @@ public class ShoppingCartController : Controller
                 return NotFound();
             }
 
-            var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
-                shoppingCartId,
-                shoppingCartItem,
-                storeIfOk: true);
-
-            await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
-                new { LineItem = parsedLine },
-                $"ShoppingCart-{HttpContext.Session.Id}-{shoppingCartId}");
+            await _shoppingCartService.AddItemToCartAsync(shoppingCartItem, HttpContext.Session.Id, shoppingCartId);
         }
         catch (FrontendException exception)
         {
