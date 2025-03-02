@@ -24,7 +24,7 @@ public class ShoppingCartService : IShoppingCartService
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
-    private readonly IHtmlLocalizer<ShoppingCartController> H;
+    private readonly IHtmlLocalizer<ShoppingCartService> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IProductService _productService;
     public ShoppingCartService(
@@ -32,7 +32,7 @@ public class ShoppingCartService : IShoppingCartService
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
+        IHtmlLocalizer<ShoppingCartService> htmlLocalizer,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IProductService productService)
     {
