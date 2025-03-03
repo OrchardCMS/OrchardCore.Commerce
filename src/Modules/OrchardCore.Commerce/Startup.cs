@@ -269,7 +269,12 @@ public class SessionCartStorageStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSession(_ => { });
+        services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(60);
+            options.Cookie.HttpOnly = true;    // Security: cookie inaccessible to Javascript
+            options.Cookie.IsEssential = true; // Required for GDPR compliance
+        });
 
         // Shopping Cart
         services.AddScoped<IShoppingCartPersistence, SessionShoppingCartPersistence>();
