@@ -272,8 +272,8 @@ public class SessionCartStorageStartup : StartupBase
         services.AddSession(options =>
         {
             options.IdleTimeout = TimeSpan.FromMinutes(60);
-            options.Cookie.HttpOnly = true;    // Security: cookie inaccessible to Javascript
-            options.Cookie.IsEssential = true; // Required for GDPR compliance
+            options.Cookie.HttpOnly = true; // Security: cookie inaccessible to JavaScript.
+            options.Cookie.IsEssential = true; // Required for GDPR compliance.
         });
 
         // Shopping Cart
