@@ -87,13 +87,13 @@ public class ShoppingCartService : IShoppingCartService
     public async Task AddItemToCartAsync(ShoppingCartItem shoppingCartItem, string token, string shoppingCartId)
     {
         var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
-                                      shoppingCartId,
-                                      shoppingCartItem,
-                                      storeIfOk: true);
+            shoppingCartId,
+            shoppingCartItem,
+            storeIfOk: true);
 
         await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
-        new { LineItem = parsedLine },
-        $"ShoppingCart-{token}-{shoppingCartId}");
+            new { LineItem = parsedLine },
+            $"ShoppingCart-{token}-{shoppingCartId}");
     }
 
     public Task<ShoppingCartViewModel> GetAsync(string shoppingCartId = null) =>
