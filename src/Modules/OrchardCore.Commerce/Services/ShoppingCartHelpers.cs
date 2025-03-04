@@ -188,7 +188,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             throw new FrontendException(error);
         }
 
-        return (cart, item);
+        return (cart, parsedLine);
     }
 
     public Task<ShoppingCartLineViewModel> EstimateProductAsync(

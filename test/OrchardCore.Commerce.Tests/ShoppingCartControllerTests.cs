@@ -7,6 +7,7 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Endpoints;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
@@ -207,6 +208,8 @@ public class ShoppingCartControllerTests
         mocker.Use<IShoppingCartHelpers>(mocker.CreateInstance<ShoppingCartHelpers>());
 
         mocker.Use<IEnumerable<IWorkflowManager>>([]);
+
+        mocker.Use<IShoppingCartService>(mocker.CreateInstance<ShoppingCartService>());
         var controller = mocker.CreateInstance<ShoppingCartController>();
         controller.ControllerContext = mockContext;
         return controller;

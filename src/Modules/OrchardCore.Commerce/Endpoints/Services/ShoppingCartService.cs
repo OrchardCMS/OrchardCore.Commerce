@@ -6,7 +6,6 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
-using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -24,7 +23,7 @@ public class ShoppingCartService : IShoppingCartService
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IEnumerable<IWorkflowManager> _workflowManagers;
-    private readonly IHtmlLocalizer<ShoppingCartController> H;
+    private readonly IHtmlLocalizer<ShoppingCartService> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IProductService _productService;
     public ShoppingCartService(
@@ -32,7 +31,7 @@ public class ShoppingCartService : IShoppingCartService
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IEnumerable<IWorkflowManager> workflowManagers,
-        IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
+        IHtmlLocalizer<ShoppingCartService> htmlLocalizer,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IProductService productService)
     {
@@ -74,14 +73,7 @@ public class ShoppingCartService : IShoppingCartService
 
         try
         {
-            var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
-                              shoppingCartId,
-                              shoppingCartItem,
-                              storeIfOk: true);
-
-            await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
-            new { LineItem = parsedLine },
-            $"ShoppingCart-{token}-{shoppingCartId}");
+            await AddItemToCartAsync(shoppingCartItem, token, shoppingCartId);
         }
         catch (FrontendException ex)
         {
@@ -90,6 +82,18 @@ public class ShoppingCartService : IShoppingCartService
         }
 
         return errored;
+    }
+
+    public async Task AddItemToCartAsync(ShoppingCartItem shoppingCartItem, string token, string shoppingCartId)
+    {
+        var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
+            shoppingCartId,
+            shoppingCartItem,
+            storeIfOk: true);
+
+        await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
+            new { LineItem = parsedLine },
+            $"ShoppingCart-{token}-{shoppingCartId}");
     }
 
     public Task<ShoppingCartViewModel> GetAsync(string shoppingCartId = null) =>

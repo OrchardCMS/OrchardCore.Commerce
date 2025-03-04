@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.ViewModels;
 using System.Threading.Tasks;
@@ -33,6 +34,14 @@ public interface IShoppingCartService
     /// <param name="shoppingCartId">Shopping cart Id.</param>
     /// <returns>The result.</returns>
     Task<string> AddItemAsync(ShoppingCartLineUpdateModel line, string token, string shoppingCartId = null);
+
+    /// <summary>
+    /// Add shopping cart item.
+    /// </summary>
+    /// <param name="shoppingCartItem">Shopping cart item to be added.</param>
+    /// <param name="token">Shopping cart token.</param>
+    /// <param name="shoppingCartId">Shopping cart Id.</param>
+    Task AddItemToCartAsync(ShoppingCartItem shoppingCartItem, string token, string shoppingCartId);
 
     /// <summary>
     /// Remove shopping cart line.
