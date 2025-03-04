@@ -1,4 +1,5 @@
 using Lombiq.Tests.UI.SecurityScanning;
+using Lombiq.Tests.UI.Services.GitHub;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.BasicTests;
@@ -12,7 +13,7 @@ public class SecurityScanningTests : UITestBase
 
     [Fact]
     public Task FullSecurityScanShouldPass() =>
-        OperatingSystem.IsWindows()
+        OperatingSystem.IsWindows() && GitHubHelper.IsGitHubEnvironment
             ? Task.CompletedTask
             : ExecuteTestAfterSetupAsync(
                 context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
