@@ -13,6 +13,9 @@ public class SecurityScanningTests : UITestBase
 
     [Fact]
     public Task FullSecurityScanShouldPass() =>
+        // Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is
+        // not supported by GHA. Also, using test-filter to disable the test sometimes causes the Windows run to hang
+        // indefinitely, so using the below condition in code is more reliable.
         OperatingSystem.IsWindows() && GitHubHelper.IsGitHubEnvironment
             ? Task.CompletedTask
             : ExecuteTestAfterSetupAsync(
