@@ -1,5 +1,4 @@
 using Lombiq.Tests.UI.SecurityScanning;
-using Lombiq.Tests.UI.Services.GitHub;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.BasicTests;
