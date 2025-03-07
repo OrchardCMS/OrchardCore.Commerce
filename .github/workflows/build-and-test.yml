@@ -23,7 +23,7 @@ jobs:
       timeout-minutes: 30
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
-      test-filter: FullyQualifiedName!~SecurityScanningTests&FullyQualifiedName!~CheckoutTests&FullyQualifiedName!~ExactlyTests&FullyQualifiedName!~LocalizedProductTests&FullyQualifiedName!~OrderTests&FullyQualifiedName!~PriceVariantsPartTests&FullyQualifiedName!~RegionTests&FullyQualifiedName!~TaxTests&FullyQualifiedName!~UserTests
+      test-filter: FullyQualifiedName!~SecurityScanningTests&FullyQualifiedName!~CheckoutTests&FullyQualifiedName!~LocalizedProductTests&FullyQualifiedName!~OrderTests&FullyQualifiedName!~PriceVariantsPartTests&FullyQualifiedName!~RegionTests&FullyQualifiedName!~TaxTests&FullyQualifiedName!~UserTests
 
   codespell:
     name: Codespell
