@@ -21,8 +21,8 @@ jobs:
     with:
       machine-types: '["windows-2022"]'
       timeout-minutes: 60
-      dotnet-test-process-timeout: 45000
-      enable-test-diagnostic-mode: true
+      # Disable test parallelism until we can figure out why it randomly hangs on certain commits.
+      xunit-max-parallel-threads: 1
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
       test-filter: FullyQualifiedName!~SecurityScanningTests
