@@ -21,7 +21,7 @@ jobs:
     with:
       machine-types: '["windows-2022"]'
       timeout-minutes: 60
-      dotnet-test-process-timeout: 1800000
+      blame-hang-timeout: 1800000
       enable-test-diagnostic-mode: 'true'
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
