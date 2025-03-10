@@ -2,13 +2,20 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace OrchardCore.Commerce.MoneyDataType;
 
 public readonly partial struct Currency
 {
-    private static readonly CurrencyProvider _defaultProvider = new();
+    private static readonly CurrencyProvider _defaultProvider;
+
+    [SuppressMessage(
+        "Usage",
+        "CA2207:Initialize value type static fields inline",
+        Justification = $"Necessary to ensure that the {nameof(_defaultProvider)} field is initialized first.")]
+    static Currency() => _defaultProvider = new();
 
     public static ICurrency UnspecifiedCurrency { get; } = new Currency("Unspecified", "Unspecified", "---", "---");
 
