@@ -11,7 +11,7 @@ public class CurrencyProvider : ICurrencyProvider
     public IEnumerable<ICurrency> Currencies =>
         KnownCurrencyTable.CurrencyTable.Values;
 
-    public CurrencyProvider() => KnownCurrencyTable.EnsureCurrencyTable();
+    static CurrencyProvider() => KnownCurrencyTable.EnsureCurrencyTable();
 
     public ICurrency GetCurrency(string isoCode)
     {

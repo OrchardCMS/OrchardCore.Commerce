@@ -1,7 +1,7 @@
 using Lombiq.Tests.UI;
 using Lombiq.Tests.UI.Services;
 using OrchardCore.Commerce.Tests.UI.Helpers;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace OrchardCore.Commerce.Tests.UI;
 
@@ -27,7 +27,7 @@ public class UITestBase : OrchardCoreUITestBase<Program>
         var timeoutValue = timeout ?? TimeSpan.FromMinutes(10);
 
         var testTask = ExecuteTestAsync(testAsync, browser, SetupHelpers.RunSetupAsync, changeConfigurationAsync);
-        var timeoutTask = Task.Delay(timeoutValue);
+        var timeoutTask = Task.Delay(timeoutValue, CancellationToken.None);
 
         await Task.WhenAny(testTask, timeoutTask);
 
