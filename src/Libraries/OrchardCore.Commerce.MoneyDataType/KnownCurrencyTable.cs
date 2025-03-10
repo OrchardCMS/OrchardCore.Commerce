@@ -48,6 +48,9 @@ internal static class KnownCurrencyTable
 
         lock (_lockObject)
         {
+            // Double check in case another thread has already initialized it.
+            if (CurrencyTable != null) return;
+
             var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(IsValid).ToList();
 
             CurrencyTable = cultures
