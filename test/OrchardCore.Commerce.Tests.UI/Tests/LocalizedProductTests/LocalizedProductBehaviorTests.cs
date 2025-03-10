@@ -5,7 +5,6 @@ using OpenQA.Selenium;
 using OrchardCore.Commerce.MoneyDataType;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.LocalizedProductTests;
 

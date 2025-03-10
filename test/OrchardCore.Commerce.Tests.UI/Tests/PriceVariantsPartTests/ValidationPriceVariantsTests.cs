@@ -3,7 +3,6 @@ using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.PriceVariantsPartTests;
 

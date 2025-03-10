@@ -9,7 +9,7 @@
     <OrchardCoreVersion>2.1.0</OrchardCoreVersion>
 
     <LombiqHelpfulLibrariesVersion>12.1.0</LombiqHelpfulLibrariesVersion>
-    <LombiqTestsUIVersion>12.1.0</LombiqTestsUIVersion>
+    <LombiqTestsUIVersion>12.1.1-alpha.7.occ-310</LombiqTestsUIVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
     <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.2" />
-    <PackageVersion Include="Lombiq.Tests" Version="4.0.0" />
+    <PackageVersion Include="Lombiq.Tests" Version="4.0.1-alpha.1.osoe-935" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="$(LombiqTestsUIVersion)" />
@@ -44,7 +44,7 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Stripe.net" Version="44.13.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.2" />
-    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.v3" Version="2.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
   </ItemGroup>
 </Project>
