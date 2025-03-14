@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Orchard Core Commerce</Title>
+    <Authors>Bertrand Le Roy</Authors>
+    <Copyright>Copyright © 2018 .NET Foundation</Copyright>
+    <Description>The commerce module for Orchard Core.</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce</PackageTags>
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</PackageProjectUrl>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+    <PackageIcon>OrchardCoreIcon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="License.md" Pack="true" PackagePath="" />
+    <None Include="..\..\..\Readme.md" />
+    <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentFields" />
+    <PackageReference Include="OrchardCore.ContentManagement" />
+    <PackageReference Include="OrchardCore.ContentTypes" />
+    <PackageReference Include="OrchardCore.ContentTypes.Abstractions" />
+    <PackageReference Include="OrchardCore.Html" />
+    <PackageReference Include="OrchardCore.Localization" />
+    <PackageReference Include="OrchardCore.Module.Targets" GeneratePathProperty="true" />
+    <PackageReference Include="OrchardCore.Navigation.Core" />
+    <PackageReference Include="OrchardCore.Title" />
+    <PackageReference Include="OrchardCore.Workflows.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Commerce.Inventory\OrchardCore.Commerce.Inventory.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Payment.Exactly\OrchardCore.Commerce.Payment.Exactly.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Tax\OrchardCore.Commerce.Tax.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Recipes\Media\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- Override NuGet props file from OrchardCore.Module.Targets with our custom version. -->
+  <ItemGroup>
+    <None Remove="$(PkgOrchardCore_Module_Targets)/build/Package.Build.props" />
+    <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
+  </ItemGroup>
+
+</Project>

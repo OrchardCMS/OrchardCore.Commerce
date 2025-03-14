@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Orchard Core Commerce - Payment - Stripe</Title>
+    <Authors>Bertrand Le Roy</Authors>
+    <Copyright>Copyright © 2018 .NET Foundation</Copyright>
+    <Description>Stripe payment provider for Orchard Core Commerce</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Payment;Stripe</PackageTags>
+    <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.Payment.Stripe/Readme.md</PackageProjectUrl>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+    <PackageIcon>OrchardCoreIcon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="License.md" Pack="true" PackagePath="" />
+    <None Include="Readme.md" />
+    <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.Flows" />
+    <PackageReference Include="OrchardCore.Module.Targets" />
+    <PackageReference Include="Stripe.net" />
+  </ItemGroup>
+
+  <!-- Newtonsoft.Json is a dependency of Stripe.net. While OC does not use it directly any more, this is needed to pull
+       the package up to a more up-to-date and secure version. -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
+  </ItemGroup>
+
+</Project>

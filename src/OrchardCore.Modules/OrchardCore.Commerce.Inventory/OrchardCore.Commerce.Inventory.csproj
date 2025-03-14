@@ -1,20 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <IsPublishable>false</IsPublishable>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <DefaultItemExcludes>$(DefaultItemExcludes);.git*;node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
 
-    <PropertyGroup>
-    <Title>Orchard Core Commerce - UI Tests - Shortcuts</Title>
+  <PropertyGroup>
+    <Title>Orchard Core Commerce - Inventory</Title>
     <Authors>Bertrand Le Roy</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
-    <Description>UI testing shortcuts for Orchard Core Commerce</Description>
-    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;UITesting</PackageTags>
+    <Description>Inventory management for Orchard Core Commerce</Description>
+    <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Inventory</PackageTags>
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore.Commerce</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/test/OrchardCore.Commerce.Tests.UI.Shortcuts/Readme.md</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/OrchardCMS/OrchardCore.Commerce/blob/main/src/Modules/OrchardCore.Commerce.Inventory/Readme.md</PackageProjectUrl>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageIcon>OrchardCoreIcon.png</PackageIcon>
   </PropertyGroup>
@@ -30,14 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Module.Targets" />
+    <PackageReference Include="OrchardCore.ContentFields" />
     <PackageReference Include="OrchardCore.ContentManagement" />
-    <PackageReference Include="OrchardCore.ContentManagement.Abstractions" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Modules\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
-    <ProjectReference Include="..\..\src\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
+    <PackageReference Include="OrchardCore.Module.Targets" />
   </ItemGroup>
 
   <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">

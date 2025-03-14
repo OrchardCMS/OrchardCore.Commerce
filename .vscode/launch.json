@@ -2,27 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (console) - net8.0",
+      "name": ".NET Core Launch (console debug) - net9.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "Web App: Dotnet Build Debug - net8.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Commerce.Web/bin/Debug/net8.0/OrchardCore.Commerce.Web.dll",
+      "preLaunchTask": "dotnet build (debug) - net9.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net9.0/OrchardCore.Cms.Web.dll",
       "args": [],
-      "cwd": "${workspaceRoot}/src/OrchardCore.Commerce.Web",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "stopAtEntry": false
     },
     {
-      "name": ".NET Core Launch (web debug) - net8.0",
+      "name": ".NET Core Launch (web debug) - net9.0",
       "type": "coreclr",
       "request": "launch",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "Web App: Dotnet Build Debug - net8.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Commerce.Web/bin/Debug/net8.0/OrchardCore.Commerce.Web.dll",
+      "preLaunchTask": "dotnet build (debug) - net9.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net9.0/OrchardCore.Cms.Web.dll",
       "args": [],
-      "cwd": "${workspaceRoot}/src/OrchardCore.Commerce.Web",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -33,16 +33,34 @@
       }
     },
     {
-      "name": ".NET Core Launch (web release) - net8.0",
+      "name": ".NET Core Launch (web release) - net9.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "Web App: Dotnet Build Release - net8.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Commerce.Web/bin/Release/net8.0/OrchardCore.Commerce.Web.dll",
+      "preLaunchTask": "dotnet build (release) - net9.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net9.0/OrchardCore.Cms.Web.dll",
       "args": [],
-      "cwd": "${workspaceRoot}/src/OrchardCore.Commerce.Web",
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    {
+      "name": ".NET Core Launch (web debug) - dotnet watch - net9.0",
+      "type": "dotnetwatchattach",
+      "request": "launch",
+      "task": "dotnet watch - net9.0",
+      "program": "OrchardCore.Cms.Web.exe",
+      "args": {
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      },
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
@@ -56,42 +74,6 @@
       "processId": "${command:pickProcess}"
     },
     {
-      "name": ".NET Core Launch (publish framework dependent) - net8.0",
-      "type": "coreclr",
-      "request": "launch",
-      "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "Web App: Dotnet Publish (framework dependent) - net8.0",
-      "program": "${workspaceRoot}/.build/release/OrchardCore.Commerce.Web.dll",
-      "args": [],
-      "cwd": "${workspaceRoot}/.build/release",
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "stopAtEntry": false,
-      "serverReadyAction": {
-        "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-      }
-    },
-    {
-      "name": ".NET Core Launch (publish self-contained) - net8.0",
-      "type": "coreclr",
-      "request": "launch",
-      "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "Web App: Dotnet Publish (self-contained) - net8.0",
-      "program": "${workspaceRoot}/.build/release/OrchardCore.Commerce.Web.dll",
-      "args": [],
-      "cwd": "${workspaceRoot}/.build/release",
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "stopAtEntry": false,
-      "serverReadyAction": {
-        "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-      }
-    },
-    {
       "name": "Gulp Debug",
       "type": "node",
       "request": "launch",
@@ -99,10 +81,15 @@
       "stopOnEntry": false,
       "args": [],
       "cwd": "${workspaceRoot}",
-      "runtimeArgs": [
-        "--nolazy"
-      ],
+      "runtimeArgs": ["--nolazy"],
       "console": "internalConsole"
+    },
+    {
+      "name": "Asset Bundler Tool Debug",
+      "program": "${workspaceFolder}/.scripts/assets-build-tool/build.mjs",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
     }
   ]
 }

@@ -1,0 +1,1 @@
+2025-02-26 21:04:59.8040|Default|00-a0c8b27c50b2c1ba395aed42de66083d-94eea5547ae9db25-00||YesSql|WARN|The default capacity of the BatchCommand StringBuilder 10240 might not be sufficient. It can be increased with BatchCommand.DefaultBuilderCapacity to at least 10248 

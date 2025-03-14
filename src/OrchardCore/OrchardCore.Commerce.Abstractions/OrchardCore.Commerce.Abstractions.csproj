@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <None Include="License.md" Pack="true" PackagePath="" />
+    <None Include="Readme.md" />
+    <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Commerce.AddressDataType\OrchardCore.Commerce.AddressDataType.csproj" />
+    <ProjectReference Include="..\OrchardCore.Commerce.MoneyDataType\OrchardCore.Commerce.MoneyDataType.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OrchardCore.ContentFields" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
+  </ItemGroup>
+
+</Project>
