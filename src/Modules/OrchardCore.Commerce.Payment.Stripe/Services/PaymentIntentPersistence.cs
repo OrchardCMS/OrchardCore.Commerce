@@ -13,7 +13,7 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
 
     public PaymentIntentPersistence(IHttpContextAccessor httpContextAccessor) => _httpContextAccessor = httpContextAccessor;
 
-    public string Retrieve()
+    public string Retrieve(string key = null)
     {
         var serialized = Session.GetString(PaymentIntentKey);
         if (serialized == null && _httpContextAccessor.HttpContext != null)
@@ -25,7 +25,7 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
         return serialized;
     }
 
-    public void Store(string paymentIntentId)
+    public void Store(string paymentIntentId, string key = null)
     {
         if (Session.GetString(PaymentIntentKey) == paymentIntentId) return;
 
@@ -33,7 +33,7 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
         _httpContextAccessor.SetCookieForever(PaymentIntentKey, paymentIntentId);
     }
 
-    public void Remove()
+    public void Remove(string key = null)
     {
         Session.Remove(PaymentIntentKey);
         _httpContextAccessor.HttpContext?.Response.Cookies.Delete(PaymentIntentKey);

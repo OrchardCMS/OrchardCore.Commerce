@@ -8,15 +8,15 @@ public interface IPaymentIntentPersistence
     /// <summary>
     /// Returns the payment intent Id stored in the current session.
     /// </summary>
-    string Retrieve();
+    string Retrieve(string key = null);
 
     /// <summary>
     /// Saves a payment intent Id to the session.
     /// </summary>
-    void Store(string paymentIntentId);
+    void Store(string paymentIntentId, string key = null);
 
     /// <summary>
     /// Removes the payment intent Id stored in the current session.
     /// </summary>
-    void Remove();
+    void Remove(string key = null);
 }
