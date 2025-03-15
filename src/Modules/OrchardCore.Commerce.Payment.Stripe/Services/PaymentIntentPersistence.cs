@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
@@ -13,29 +14,31 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
 
     public PaymentIntentPersistence(IHttpContextAccessor httpContextAccessor) => _httpContextAccessor = httpContextAccessor;
 
-    public string Retrieve(string key = null)
+    public Task<string> RetrieveAsync(string key = null)
     {
         var serialized = Session.GetString(PaymentIntentKey);
         if (serialized == null && _httpContextAccessor.HttpContext != null)
         {
             _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(PaymentIntentKey, out var serializedCart);
-            return serializedCart;
+            return Task.FromResult(serializedCart);
         }
 
-        return serialized;
+        return Task.FromResult(serialized);
     }
 
-    public void Store(string paymentIntentId, string key = null)
+    public Task StoreAsync(string paymentIntentId, string key = null)
     {
-        if (Session.GetString(PaymentIntentKey) == paymentIntentId) return;
+        if (Session.GetString(PaymentIntentKey) == paymentIntentId) return Task.CompletedTask;
 
         Session.SetString(PaymentIntentKey, paymentIntentId);
         _httpContextAccessor.SetCookieForever(PaymentIntentKey, paymentIntentId);
+        return Task.CompletedTask;
     }
 
-    public void Remove(string key = null)
+    public Task RemoveAsync(string key = null)
     {
         Session.Remove(PaymentIntentKey);
         _httpContextAccessor.HttpContext?.Response.Cookies.Delete(PaymentIntentKey);
+        return Task.CompletedTask;
     }
 }

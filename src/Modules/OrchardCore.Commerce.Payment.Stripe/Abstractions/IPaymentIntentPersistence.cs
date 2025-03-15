@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
 
 /// <summary>
@@ -8,15 +10,15 @@ public interface IPaymentIntentPersistence
     /// <summary>
     /// Returns the payment intent Id stored in the current session.
     /// </summary>
-    string Retrieve(string key = null);
+    Task<string> RetrieveAsync(string key = null);
 
     /// <summary>
     /// Saves a payment intent Id to the session.
     /// </summary>
-    void Store(string paymentIntentId, string key = null);
+    Task StoreAsync(string paymentIntentId, string key = null);
 
     /// <summary>
     /// Removes the payment intent Id stored in the current session.
     /// </summary>
-    void Remove(string key = null);
+    Task RemoveAsync(string key = null);
 }

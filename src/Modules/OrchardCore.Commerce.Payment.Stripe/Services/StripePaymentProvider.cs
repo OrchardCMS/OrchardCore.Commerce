@@ -72,13 +72,9 @@ public class StripePaymentProvider : IPaymentProvider
     public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId, string paymentId = null) =>
         _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor, shoppingCartId, paymentId);
 
-    public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
-    {
+    public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId) =>
         // A new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.Remove();
-
-        return Task.CompletedTask;
-    }
+        _paymentIntentPersistence.RemoveAsync();
 
     public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
