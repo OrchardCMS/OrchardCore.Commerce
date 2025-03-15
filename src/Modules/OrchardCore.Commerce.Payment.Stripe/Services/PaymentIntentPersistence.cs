@@ -32,6 +32,7 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
 
         Session.SetString(PaymentIntentKey, paymentIntentId);
         _httpContextAccessor.SetCookieForever(PaymentIntentKey, paymentIntentId);
+
         return Task.CompletedTask;
     }
 
@@ -39,6 +40,7 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
     {
         Session.Remove(PaymentIntentKey);
         _httpContextAccessor.HttpContext?.Response.Cookies.Delete(PaymentIntentKey);
+
         return Task.CompletedTask;
     }
 }
