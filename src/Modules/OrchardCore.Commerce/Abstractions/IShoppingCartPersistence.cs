@@ -25,12 +25,6 @@ public interface IShoppingCartPersistence
     /// Saves a shopping cart by a given ID.
     /// </summary>
     Task StoreAsync(ShoppingCart items);
-
-    /// <summary>
-    /// Removes a <see cref="ShoppingCart"/> identified by <paramref name="shoppingCartId"/>.
-    /// </summary>
-    /// <param name="shoppingCartId">Shopping Cart Id.</param>
-    Task RemoveAsync(string shoppingCartId);
 }
 
 public static class ShoppingCartPersistenceExtensions
