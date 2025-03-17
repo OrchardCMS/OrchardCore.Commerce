@@ -53,15 +53,4 @@
     <PackageReference Include="Lombiq.HelpfulLibraries.AspNetCore" />
   </ItemGroup>
 
-  <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
-  </ItemGroup>
-  <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.props" />
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
-  </ImportGroup>
-  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageReference Include="Lombiq.NodeJs.Extensions" />
-  </ItemGroup>
-
 </Project>
