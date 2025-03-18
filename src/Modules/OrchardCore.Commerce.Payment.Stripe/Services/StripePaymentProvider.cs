@@ -74,7 +74,7 @@ public class StripePaymentProvider : IPaymentProvider
 
     public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId) =>
         // A new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.RemoveAsync();
+        _paymentIntentPersistence.RemoveAsync(shoppingCartId);
 
     public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
