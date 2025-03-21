@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using Lombiq.HelpfulLibraries.AspNetCore.Extensions;
 using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -59,7 +59,7 @@ public static class StripePaymentIntentEndpoint
 
         var shoppingCartViewModel = await shoppingCartService.GetAsync(viewModel.ShoppingCartId);
         var total = shoppingCartViewModel.Totals.Single();
-        var paymentIntent = await stripePaymentIntentService.CreatePaymentIntentAsync(total);
+        var paymentIntent = await stripePaymentIntentService.CreatePaymentIntentAsync(total, viewModel.ShoppingCartId);
 
         var order = await stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(
             updateModelAccessor: null,

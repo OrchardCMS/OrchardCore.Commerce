@@ -27,9 +27,9 @@ public class StripeController : PaymentBaseController
         _stripePaymentService = stripePaymentService;
     }
 
-    public IActionResult UpdatePaymentIntent(string paymentIntent)
+    public async Task<IActionResult> UpdatePaymentIntent(string paymentIntent)
     {
-        _paymentIntentPersistence.Store(paymentIntent);
+        await _paymentIntentPersistence.StoreAsync(paymentIntent);
         return Ok();
     }
 
