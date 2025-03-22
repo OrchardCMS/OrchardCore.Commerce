@@ -64,11 +64,11 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<string> AddItemAsync(ShoppingCartLineUpdateModel line, string token, string shoppingCartId = null)
     {
-        string errored = string.Empty;
+        string strError = string.Empty;
         if (await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem)
         {
-            errored = H["Not Found"].Value;
-            return errored;
+            strError = H["Not Found"].Value;
+            return strError;
         }
 
         try
@@ -77,11 +77,11 @@ public class ShoppingCartService : IShoppingCartService
         }
         catch (FrontendException ex)
         {
-            var errors = ex.HtmlMessages;
-            errored = errors.ConvertLocalizedHtmlStringList();
+            var errors = ex.HtmlMessages.Select(error => error.Html());
+            strError = string.Join(System.Environment.NewLine, errors);
         }
 
-        return errored;
+        return strError;
     }
 
     public async Task AddItemToCartAsync(ShoppingCartItem shoppingCartItem, string token, string shoppingCartId)
