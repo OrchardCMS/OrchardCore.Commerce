@@ -1,4 +1,5 @@
 using Fluid;
+using Lombiq.HelpfulLibraries.OrchardCore.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,8 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddCachingUserServer();
+
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
