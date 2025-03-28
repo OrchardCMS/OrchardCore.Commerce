@@ -5,9 +5,9 @@
 
   <PropertyGroup>
     <LombiqHelpfulLibrariesVersion>12.1.0</LombiqHelpfulLibrariesVersion>
-    <LombiqTestsUIVersion>12.1.1-alpha.7.occ-310</LombiqTestsUIVersion>
+    <LombiqTestsUIVersion>12.1.1-alpha.14.osoe-1057</LombiqTestsUIVersion>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />

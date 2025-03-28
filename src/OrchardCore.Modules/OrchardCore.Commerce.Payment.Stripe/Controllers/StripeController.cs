@@ -47,7 +47,7 @@ public class StripeController : PaymentBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmPaymentParameters()
     {
-        var middlewareUrl = Url.ToAbsoluteUrl("~/stripe/params");
+        var middlewareUrl = Url.ToAbsoluteUrl("~/stripe/middleware");
         var model = await _stripePaymentService.GetStripeConfirmParametersAsync(middlewareUrl);
 
         // Newtonsoft is used, because the external Stripe library that defined PaymentIntentConfirmOptions does not
