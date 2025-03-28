@@ -76,7 +76,7 @@ public class ShoppingCartService : IShoppingCartService
         catch (FrontendException ex)
         {
             var errors = ex.HtmlMessages.Select(error => error.Html());
-            strError = string.Join(System.Environment.NewLine, errors);
+            return string.Join('\n', errors);
         }
 
         return strError;
