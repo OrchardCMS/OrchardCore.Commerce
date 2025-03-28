@@ -410,7 +410,7 @@ public class ContentLocalizationStartup : StartupBase
         app.UseMiddleware<LocalizationCurrencyRedirectMiddleware>();
 }
 
-[RequireFeatures(CommerceConstants.Features.Core, CommerceConstants.Features.Subscription)]
+[RequireFeatures(CommerceConstants.Features.Subscription)]
 public class SubscriptionStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
