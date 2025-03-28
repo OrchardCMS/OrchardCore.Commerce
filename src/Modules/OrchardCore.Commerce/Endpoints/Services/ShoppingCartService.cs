@@ -66,8 +66,7 @@ public class ShoppingCartService : IShoppingCartService
         string strError = string.Empty;
         if (await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem)
         {
-            strError = H["Not Found"].Value;
-            return strError;
+            return H["Not Found"].Value;
         }
 
         try
