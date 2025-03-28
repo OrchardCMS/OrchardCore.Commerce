@@ -31,7 +31,7 @@ public interface IStripePaymentIntentService
     /// the payment intent. Check the implementation for more details.
     /// </summary>
     /// <returns>Created Stripe <see cref="PaymentIntent"/>.</returns>
-    Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string key = null);
+    Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string shoppingCartId = null);
 
     /// <summary>
     /// Creates a PaymentIntent with the provided <paramref name="options"/>.

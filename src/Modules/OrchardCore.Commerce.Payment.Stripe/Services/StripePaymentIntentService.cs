@@ -47,7 +47,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
             _hca.HttpContext.RequestAborted);
     }
 
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string key = null)
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string shoppingCartId = null)
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var paymentIntentOptions = new PaymentIntentCreateOptions
@@ -60,7 +60,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
 
         var paymentIntent = await CreatePaymentIntentAsync(paymentIntentOptions);
 
-        await _paymentIntentPersistence.StoreAsync(paymentIntent.Id, key);
+        await _paymentIntentPersistence.StoreAsync(paymentIntent.Id, shoppingCartId);
 
         return paymentIntent;
     }
