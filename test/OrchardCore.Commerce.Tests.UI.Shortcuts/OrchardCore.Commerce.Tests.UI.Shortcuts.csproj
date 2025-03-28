@@ -36,15 +36,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Modules\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
-    <ProjectReference Include="..\..\src\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
-    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+  
   <ItemGroup>
     <None Include="License.md" Pack="true" PackagePath=""/>
     <None Include="Readme.md"/>

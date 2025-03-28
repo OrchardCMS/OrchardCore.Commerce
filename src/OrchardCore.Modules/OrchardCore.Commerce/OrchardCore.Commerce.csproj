@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -52,10 +56,6 @@
     </None>
   </ItemGroup>
 
-  <!-- Override NuGet props file from OrchardCore.Module.Targets with our custom version. -->
-  <ItemGroup>
-    <None Remove="$(PkgOrchardCore_Module_Targets)/build/Package.Build.props" />
-    <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
-  </ItemGroup>
+
 
 </Project>
