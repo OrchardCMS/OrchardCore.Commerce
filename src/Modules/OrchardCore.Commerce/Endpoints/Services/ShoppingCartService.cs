@@ -45,7 +45,7 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<string> RemoveLineAsync(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        string errored = string.Empty;
+        string strError = string.Empty;
         try
         {
             var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
@@ -55,10 +55,10 @@ public class ShoppingCartService : IShoppingCartService
         }
         catch
         {
-            errored = H["An error has occurred."].Value;
+            strError = H["An error has occurred."].Value;
         }
 
-        return errored;
+        return strError;
     }
 
     public async Task<string> AddItemAsync(ShoppingCartLineUpdateModel line, string token, string shoppingCartId = null)
@@ -99,7 +99,7 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<string> UpdateAsync(ShoppingCartUpdateModel cart, string token, string shoppingCartId = null)
     {
-        string errored = string.Empty;
+        string strError = string.Empty;
         var updatedLines = new List<ShoppingCartLineUpdateModel>();
 
         var lines = await cart.Lines.AwaitEachAsync(async line =>
@@ -111,8 +111,7 @@ public class ShoppingCartService : IShoppingCartService
         if (lines.Any(line => line.Item == null))
         {
             await _shoppingCartPersistence.StoreAsync(new ShoppingCart(), shoppingCartId);
-            errored = H["Empty. Your shopping cart is broken and had to be replaced. We apologize for the inconvenience."].Value;
-            return errored;
+            return H["Empty. Your shopping cart is broken and had to be replaced. We apologize for the inconvenience."].Value;
         }
 
         foreach (var (line, item) in lines)
@@ -130,9 +129,9 @@ public class ShoppingCartService : IShoppingCartService
                 }
             }
 
-            errored = sb.ToString();
+            strError = sb.ToString();
             // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
-            if (!string.IsNullOrEmpty(errored))
+            if (!string.IsNullOrEmpty(strError))
             {
                 var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
                     .As<InventoryPart>().MinimumOrderQuantity.Value;
@@ -148,6 +147,6 @@ public class ShoppingCartService : IShoppingCartService
         var parsedCart = await _shoppingCartSerializer.ParseCartAsync(cart);
         await _shoppingCartPersistence.StoreAsync(parsedCart, shoppingCartId);
 
-        return errored;
+        return strError;
     }
 }
