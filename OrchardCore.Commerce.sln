@@ -109,6 +109,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "releases", "releases", "{0A8AB166-9C4F-4161-BD69-362DBC73A11E}"
 	ProjectSection(SolutionItems) = preProject
 		docs\releases\3.0.0.md = docs\releases\3.0.0.md
+		4.0.0.md = 4.0.0.md
 	EndProjectSection
 EndProject
 Global

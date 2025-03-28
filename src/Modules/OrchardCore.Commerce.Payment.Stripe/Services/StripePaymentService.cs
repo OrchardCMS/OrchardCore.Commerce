@@ -81,7 +81,7 @@ public class StripePaymentService : IStripePaymentService
             return null;
         }
 
-        var paymentIntentId = _paymentIntentPersistence.Retrieve();
+        var paymentIntentId = await _paymentIntentPersistence.RetrieveAsync(cart.Id);
         var totals = cart.GetTotalsOrThrowIfEmpty();
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -157,7 +157,7 @@ public class StripePaymentService : IStripePaymentService
         string paymentIntentId = null,
         OrderPart orderPart = null)
     {
-        var innerPaymentIntentId = paymentIntentId ?? _paymentIntentPersistence.Retrieve();
+        var innerPaymentIntentId = paymentIntentId ?? await _paymentIntentPersistence.RetrieveAsync(shoppingCartId);
         var paymentIntent = await _stripePaymentIntentService.GetPaymentIntentAsync(innerPaymentIntentId);
 
         // Stripe doesn't support multiple shopping cart IDs because we can't send that info to the middleware anyway.
@@ -215,7 +215,7 @@ public class StripePaymentService : IStripePaymentService
         bool needToJudgeIntentStorage = true)
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
-        if (needToJudgeIntentStorage && string.IsNullOrEmpty(_paymentIntentPersistence.Retrieve()))
+        if (needToJudgeIntentStorage && string.IsNullOrEmpty(await _paymentIntentPersistence.RetrieveAsync(shoppingCartId)))
         {
             return new PaymentOperationStatusViewModel
             {
@@ -287,7 +287,7 @@ public class StripePaymentService : IStripePaymentService
         }
 
         // Delete payment intent from session, to create a new one.
-        _paymentIntentPersistence.Remove();
+        await _paymentIntentPersistence.RemoveAsync(shoppingCartId);
         return new PaymentOperationStatusViewModel
         {
             Status = PaymentOperationStatus.Failed,
