@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
@@ -47,7 +47,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
             _hca.HttpContext.RequestAborted);
     }
 
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total)
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string shoppingCartId = null)
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var paymentIntentOptions = new PaymentIntentCreateOptions
@@ -60,7 +60,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
 
         var paymentIntent = await CreatePaymentIntentAsync(paymentIntentOptions);
 
-        _paymentIntentPersistence.Store(paymentIntent.Id);
+        await _paymentIntentPersistence.StoreAsync(paymentIntent.Id, shoppingCartId);
 
         return paymentIntent;
     }
