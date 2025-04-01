@@ -33,13 +33,18 @@
   <ItemGroup>
     <PackageReference Include="OrchardCore.Module.Targets" />
     <PackageReference Include="OrchardCore.Settings" />
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
-    <PackageReference Include="Lombiq.HelpfulLibraries.Refit" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.Refit/Lombiq.HelpfulLibraries.Refit.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.Refit" />
   </ItemGroup>
 
 </Project>

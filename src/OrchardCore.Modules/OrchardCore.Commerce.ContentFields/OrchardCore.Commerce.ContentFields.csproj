@@ -51,5 +51,11 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Commerce.Abstractions\OrchardCore.Commerce.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
+  </ItemGroup>
 
 </Project>
