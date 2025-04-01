@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="OrchardCore.ContentFields" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
   </ItemGroup>
 
 

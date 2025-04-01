@@ -72,6 +72,7 @@ public interface IStripePaymentService
     /// Get the confirmation parameters for Stripe.
     /// </summary>
     /// <param name="returnUrl">The url for the middleware of Stripe.</param>
+    /// <param name="order">The order content item.</param>
     Task<PaymentIntentConfirmOptions> GetStripeConfirmParametersAsync(
         string returnUrl,
         ContentItem order = null);

@@ -34,6 +34,7 @@
     <PackageReference Include="OrchardCore.ContentFields" />
     <PackageReference Include="OrchardCore.ContentManagement" />
     <PackageReference Include="OrchardCore.Module.Targets" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
   </ItemGroup>
 
 </Project>

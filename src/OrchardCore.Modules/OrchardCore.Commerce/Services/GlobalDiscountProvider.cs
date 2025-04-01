@@ -8,11 +8,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Services;
-using OrchardCore.Modules;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using YesSql;
 using YesSql.Services;
 using static OrchardCore.Commerce.Services.DiscountProvider;
@@ -25,7 +21,7 @@ public class GlobalDiscountProvider : IPromotionProvider
     public const string StereotypeName = "GlobalDiscount";
 
     private readonly IAuthorizationService _authorizationService;
-    private readonly IClock _clock;
+    private readonly OrchardCore.Modules.IClock _clock;
     private readonly IContentDefinitionService _contentDefinitionService;
     private readonly IHttpContextAccessor _hca;
     private readonly ISession _session;
@@ -34,7 +30,7 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     public GlobalDiscountProvider(
         IAuthorizationService authorizationService,
-        IClock clock,
+        OrchardCore.Modules.IClock clock,
         IContentDefinitionService contentDefinitionService,
         IHttpContextAccessor hca,
         ISession session)

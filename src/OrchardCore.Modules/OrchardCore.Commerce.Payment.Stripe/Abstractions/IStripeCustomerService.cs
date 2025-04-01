@@ -1,4 +1,4 @@
-﻿using Stripe;
+using Stripe;
 using System.Threading.Tasks;
 using Address = OrchardCore.Commerce.AddressDataType.Address;
 
@@ -27,7 +27,10 @@ public interface IStripeCustomerService
     /// <summary>
     /// Returns <see cref="Customer"/> with the given email in Stripe. If not found, create a new customer.
     /// </summary>
+    /// <param name="billingAddress">The billing address of the customer.</param>
+    /// <param name="shippingAddress">The shipping address of the customer.</param>
     /// <param name="email">If not provided the current user's email will be used.</param>
+    /// <param name="phone">If not provided the current user's phone will be used.</param>
     Task<Customer> GetAndUpdateOrCreateCustomerAsync(
         Address billingAddress,
         Address shippingAddress,
