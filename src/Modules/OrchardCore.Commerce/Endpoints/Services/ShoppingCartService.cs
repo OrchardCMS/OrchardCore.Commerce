@@ -6,7 +6,6 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
-using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
@@ -64,24 +63,21 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<string> AddItemAsync(ShoppingCartLineUpdateModel line, string token, string shoppingCartId = null)
     {
-        string errored = string.Empty;
         if (await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem)
         {
-            errored = H["Not Found"].Value;
-            return errored;
+            return H["Not Found"].Value;
         }
 
         try
         {
             await AddItemToCartAsync(shoppingCartItem, token, shoppingCartId);
+            return null;
         }
         catch (FrontendException ex)
         {
-            var errors = ex.HtmlMessages;
-            errored = errors.ConvertLocalizedHtmlStringList();
+            var errors = ex.HtmlMessages.Select(error => error.Html());
+            return string.Join('\n', errors);
         }
-
-        return errored;
     }
 
     public async Task AddItemToCartAsync(ShoppingCartItem shoppingCartItem, string token, string shoppingCartId)
