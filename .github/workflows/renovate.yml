@@ -9,7 +9,6 @@ on:
   # Run on pushes to dev when the Renovate configuration changes.
   push:
     branches:
-      - dev
       - issue/OCC-315
     paths:
       - renovate.json5
