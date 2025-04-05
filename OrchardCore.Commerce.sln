@@ -48,6 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\publish-cloudsmith.yml = .github\workflows\publish-cloudsmith.yml
 		.github\workflows\publish-nuget.yml = .github\workflows\publish-nuget.yml
 		.github\workflows\validate-pull-request.yml = .github\workflows\validate-pull-request.yml
+		.github\workflows\renovate.yml = .github\workflows\renovate.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Commerce.ContentFields", "src\Modules\OrchardCore.Commerce.ContentFields\OrchardCore.Commerce.ContentFields.csproj", "{8027FB33-B110-48A2-9B71-89F1EA96EB67}"
