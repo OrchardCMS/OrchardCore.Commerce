@@ -1,0 +1,23 @@
+name: Renovate
+
+on:
+  # Run manually.
+  workflow_dispatch:
+  # Run every Sunday at 4:00 AM.
+  schedule:
+    - cron: 0 4 * * 0
+  # Run on pushes to dev when the Renovate configuration changes.
+  push:
+    branches:
+      - main
+    paths:
+      - renovate.json5
+
+jobs:
+  renovate:
+    name: Renovate
+    uses: Lombiq/GitHub-Actions/.github/workflows/renovate.yml@dev
+    secrets:
+      CHECKOUT_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
+    with:
+        additional-reviewers: sarahelsaig
