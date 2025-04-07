@@ -6,9 +6,10 @@ using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using Stripe;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static Stripe.Events;
+using static Stripe.EventTypes;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Handlers;
 
@@ -38,8 +39,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
     {
         if (stripeEvent.Type == InvoicePaid)
         {
-            var invoice = stripeEvent.Data.Object as Invoice;
-            if (invoice?.Status == "paid")
+            if (stripeEvent.Data.Object is Invoice { Status: "paid" } invoice)
             {
                 var user = await _cachingUserManager.GetUserByEmailAsync(invoice.CustomerEmail);
                 if (user == null)
@@ -50,23 +50,35 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                         JsonSerializer.Serialize(invoice));
                 }
 
-                var subscriptionPart = new SubscriptionPart();
-                subscriptionPart.UserId.Text = user?.UserId;
-                subscriptionPart.Status.Text = SubscriptionStatuses.Active;
+                var subscriptionId = invoice.Parent.SubscriptionDetails.SubscriptionId;
+                var stripeSubscription = await _stripeSubscriptionService.GetSubscriptionAsync(subscriptionId);
+                var subscriptionPart = new SubscriptionPart
+                {
+                    UserId = { Text = user?.UserId },
+                    Status = { Text = SubscriptionStatuses.Active },
 
-                // invoice.PeriodEnd doesn't show the current period, see Stripe docs:
-                // https://docs.stripe.com/api/invoices/object#invoice_object-period_end
-                // "End of the usage period during which invoice items were added to this invoice. This looks back one
-                // period for a subscription invoice. Use the line item period to get the service period for each price."
-                subscriptionPart.EndDateUtc.Value = invoice.Lines.Data.Find(data => !data.Proration)?.Period.End;
-                subscriptionPart.PaymentProviderName.Text = StripePaymentProvider.ProviderName;
-                subscriptionPart.IdInPaymentProvider.Text = invoice.SubscriptionId;
+                    // invoice.PeriodEnd doesn't show the current period, see Stripe docs:
+                    // https://docs.stripe.com/api/invoices/object#invoice_object-period_end
+                    // "End of the usage period during which invoice items were added to this invoice. This looks back
+                    // one period for a subscription invoice. Use the line item period to get the service period for
+                    // each price."
+                    EndDateUtc =
+                    {
+                        Value = invoice
+                            .Lines
+                            .Data
+                            .Find(data => data.Parent?.InvoiceItemDetails?.Proration != true)?
+                            .Period
+                            .End,
+                    },
+                    PaymentProviderName = { Text = StripePaymentProvider.ProviderName },
+                    IdInPaymentProvider = { Text = subscriptionId },
 
-                var stripeSubscription = await _stripeSubscriptionService.GetSubscriptionAsync(invoice.SubscriptionId, options: null);
-                subscriptionPart.Metadata = stripeSubscription.Metadata;
-                subscriptionPart.StartDateUtc.Value = stripeSubscription.StartDate;
+                    Metadata = stripeSubscription.Metadata,
+                    StartDateUtc = { Value = stripeSubscription.StartDate },
+                };
 
-                await _subscriptionService.CreateOrUpdateSubscriptionAsync(invoice.SubscriptionId, subscriptionPart);
+                await _subscriptionService.CreateOrUpdateSubscriptionAsync(subscriptionId, subscriptionPart);
             }
         }
         else if (stripeEvent.Type is CustomerSubscriptionUpdated or
@@ -74,7 +86,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                  CustomerSubscriptionResumed or
                  CustomerSubscriptionPaused)
         {
-            var stripeSubscription = stripeEvent.Data.Object as Subscription;
+            var stripeSubscription = (Subscription)stripeEvent.Data.Object;
             // Get the subscription content item for this subscription and set its status to the new status.
             var subscription = await _subscriptionService.GetSubscriptionAsync(stripeSubscription!.Id);
             if (subscription != null)
@@ -82,7 +94,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 subscription.Alter<SubscriptionPart>(part =>
                 {
                     part.Status.Text = stripeSubscription.Status;
-                    part.EndDateUtc.Value = stripeSubscription.CurrentPeriodEnd;
+                    part.EndDateUtc.Value = stripeSubscription.Items.Max(item => item.CurrentPeriodEnd);
                 });
 
                 await _contentManager.UpdateAsync(subscription);

@@ -104,9 +104,7 @@ public static class StripeSubscriptionEndpoint
         }
 
         // Get the subscription.
-        var response = await stripeSubscriptionService.GetSubscriptionAsync(
-            subscriptionId,
-            options: null);
+        var response = await stripeSubscriptionService.GetSubscriptionAsync(subscriptionId);
         return TypedResults.Ok(response);
     }
 }
