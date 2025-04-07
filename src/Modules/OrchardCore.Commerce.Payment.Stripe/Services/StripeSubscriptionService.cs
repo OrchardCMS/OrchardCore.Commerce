@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using Stripe;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -67,7 +68,14 @@ public class StripeSubscriptionService : IStripeSubscriptionService
         return new SubscriptionCreateResponse
         {
             Type = "payment",
-            ClientSecret = subscription.LatestInvoice.PaymentIntent.ClientSecret,
+            ClientSecret = subscription
+                .LatestInvoice
+                .Payments
+                .OrderByDescending(payment => payment.Created)
+                .First()
+                .Payment
+                .PaymentIntent
+                .ClientSecret,
         };
     }
 
