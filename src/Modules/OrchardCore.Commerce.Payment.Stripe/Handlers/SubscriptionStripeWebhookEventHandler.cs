@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement;
 using Stripe;
 using System.Text.Json;
 using System.Threading.Tasks;
-using static Stripe.Events;
+using static Stripe.EventTypes;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Handlers;
 
@@ -38,8 +38,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
     {
         if (stripeEvent.Type == InvoicePaid)
         {
-            var invoice = stripeEvent.Data.Object as Invoice;
-            if (invoice?.Status == "paid")
+            if (stripeEvent.Data.Object is Invoice { Status: "paid" } invoice)
             {
                 var user = await _cachingUserManager.GetUserByEmailAsync(invoice.CustomerEmail);
                 if (user == null)

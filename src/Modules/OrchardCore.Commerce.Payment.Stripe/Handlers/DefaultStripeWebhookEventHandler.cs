@@ -1,7 +1,7 @@
 ﻿using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using Stripe;
 using System.Threading.Tasks;
-using static Stripe.Events;
+using static Stripe.EventTypes;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Handlers;
 
@@ -39,7 +39,7 @@ public class DefaultStripeWebhookEventHandler : IStripeWebhookEventHandler
         }
         else if (stripeEvent.Type == PaymentIntentPaymentFailed)
         {
-            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            var paymentIntent = (PaymentIntent)stripeEvent.Data.Object;
             await _stripePaymentService.UpdateOrderToPaymentFailedAsync(paymentIntent.Id);
         }
     }
