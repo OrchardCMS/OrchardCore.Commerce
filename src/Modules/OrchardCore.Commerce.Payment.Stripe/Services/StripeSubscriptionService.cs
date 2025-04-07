@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Payment.Stripe.ViewModels;
 using Stripe;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
@@ -12,6 +13,8 @@ public class StripeSubscriptionService : IStripeSubscriptionService
     private readonly SubscriptionService _subscriptionService;
     private readonly IRequestOptionsService _requestOptionsService;
     private readonly IHttpContextAccessor _hca;
+
+    private CancellationToken Aborted => _hca?.HttpContext?.RequestAborted ?? CancellationToken.None;
 
     public StripeSubscriptionService(
         SubscriptionService subscriptionService,
@@ -50,7 +53,7 @@ public class StripeSubscriptionService : IStripeSubscriptionService
         var subscription = await _subscriptionService.CreateAsync(
             subscriptionOptions,
             requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-            cancellationToken: _hca.HttpContext.RequestAborted);
+            cancellationToken: Aborted);
 
         if (subscription.PendingSetupIntent != null)
         {
@@ -68,23 +71,23 @@ public class StripeSubscriptionService : IStripeSubscriptionService
         };
     }
 
-    public async Task<Subscription> CreateSubscriptionAsync(SubscriptionCreateOptions options) =>
+    public async Task<Subscription> CreateSubscriptionAsync(SubscriptionCreateOptions options = null) =>
         await _subscriptionService.CreateAsync(
             options,
             requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-            cancellationToken: _hca.HttpContext.RequestAborted);
+            cancellationToken: Aborted);
 
-    public async Task UpdateSubscriptionAsync(string subscriptionId, SubscriptionUpdateOptions options) =>
+    public async Task UpdateSubscriptionAsync(string subscriptionId, SubscriptionUpdateOptions options = null) =>
         await _subscriptionService.UpdateAsync(
             subscriptionId,
             options,
             requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-            cancellationToken: _hca.HttpContext.RequestAborted);
+            cancellationToken: Aborted);
 
-    public async Task<Subscription> GetSubscriptionAsync(string subscriptionId, SubscriptionGetOptions options) =>
+    public async Task<Subscription> GetSubscriptionAsync(string subscriptionId, SubscriptionGetOptions options = null) =>
         await _subscriptionService.GetAsync(
             subscriptionId,
             options: options,
             requestOptions: await _requestOptionsService.SetIdempotencyKeyAsync(),
-            cancellationToken: _hca.HttpContext.RequestAborted);
+            cancellationToken: Aborted);
 }

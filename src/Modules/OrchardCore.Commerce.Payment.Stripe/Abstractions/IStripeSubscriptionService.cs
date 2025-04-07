@@ -13,18 +13,18 @@ public interface IStripeSubscriptionService
     /// <summary>
     /// Updates a Stripe subscription.
     /// </summary>
-    Task UpdateSubscriptionAsync(string subscriptionId, SubscriptionUpdateOptions options);
+    Task UpdateSubscriptionAsync(string subscriptionId, SubscriptionUpdateOptions options = null);
 
     /// <summary>
     /// Gets a Stripe subscription.
     /// </summary>
-    Task<Subscription> GetSubscriptionAsync(string subscriptionId, SubscriptionGetOptions options);
+    Task<Subscription> GetSubscriptionAsync(string subscriptionId, SubscriptionGetOptions options = null);
 
     /// <summary>
     /// Creates a Stripe subscription using the given <paramref name="options"/>.
     /// </summary>
     /// <returns>The created Stripe <see cref="Subscription"/>.</returns>
-    Task<Subscription> CreateSubscriptionAsync(SubscriptionCreateOptions options);
+    Task<Subscription> CreateSubscriptionAsync(SubscriptionCreateOptions options = null);
 
     /// <summary>
     /// Creates a Stripe subscription using the given <paramref name="viewModel"/>.
