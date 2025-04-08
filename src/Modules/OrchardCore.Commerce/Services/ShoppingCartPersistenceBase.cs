@@ -49,6 +49,16 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
         }
     }
 
+    public async Task RemoveAsync(string shoppingCartId)
+    {
+        var key = GetCacheId(shoppingCartId);
+
+        if (await RemoveInnerAsync(key))
+        {
+            _scopeCache.Remove(key, out _);
+        }
+    }
+
     /// <summary>
     /// Retrieves the items using the <see cref="ShoppingCartPersistenceBase"/>-specific <paramref name="key"/>.
     /// </summary>
@@ -68,6 +78,12 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
     /// </returns>
     protected abstract Task<bool> StoreInnerAsync(string key, ShoppingCart items);
 
+    /// <summary>
+    /// Remove the items using the <see cref="ShoppingCartPersistenceBase"/>-specific <paramref name="key"/>.
+    /// </summary>
+    /// <param name="key">A prefix and (if set) the shopping cart ID combined.</param>
+    /// <returns>The removed <see cref="ShoppingCart"/> instance.</returns>
+    protected abstract Task<bool> RemoveInnerAsync(string key);
     protected string GetCacheId(string shoppingCartId) =>
         string.IsNullOrEmpty(shoppingCartId) ? ShoppingCartPrefix : $"{ShoppingCartPrefix}_{shoppingCartId}";
 }

@@ -45,4 +45,12 @@ public sealed class SessionShoppingCartPersistence : ShoppingCartPersistenceBase
 
         return true;
     }
+
+    protected override async Task<bool> RemoveInnerAsync(string key)
+    {
+        await Task.Run(Session.Clear, _httpContextAccessor.HttpContext.RequestAborted);
+        _httpContextAccessor.HttpContext?.Response.Cookies.Delete(key);
+
+        return true;
+    }
 }
