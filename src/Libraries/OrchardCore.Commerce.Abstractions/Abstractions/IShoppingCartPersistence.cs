@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Abstractions;
 /// Service that provides a way to retain shopping cart information.
 /// </summary>
 /// <remarks><para>
-/// When deriving a custom implementation, please inherit from <see cref="ShoppingCartPersistenceBase"/> to retain event
+/// When deriving a custom implementation, please inherit from ShoppingCartPersistenceBase to retain event
 /// handling and dependency injection scope level caching.
 /// </para></remarks>
 public interface IShoppingCartPersistence
