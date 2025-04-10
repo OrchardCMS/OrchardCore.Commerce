@@ -69,5 +69,8 @@
     <None Remove="$(PkgOrchardCore_Module_Targets)/build/Package.Build.props" />
     <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Fields\" />
+  </ItemGroup>
 
 </Project>
