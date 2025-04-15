@@ -21,7 +21,7 @@ public interface IShoppingCartPersistence
     Task<ShoppingCart> RetrieveAsync(string shoppingCartId);
 
     /// <summary>
-    /// Saves a shopping cart by a given <see cref="ShoppingCart"/>.
+    /// Saves the provided <see cref="ShoppingCart"/> <paramref name="items"/>.
     /// </summary>
     Task StoreAsync(ShoppingCart items);
 
