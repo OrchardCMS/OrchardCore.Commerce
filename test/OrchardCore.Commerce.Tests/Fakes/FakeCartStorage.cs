@@ -33,7 +33,7 @@ public class FakeCartStorage : IShoppingCartPersistence
 
     public Task RemoveAsync(string shoppingCartId)
     {
-        _carts.Remove(shoppingCartId ?? string.Empty);
+        _carts.Remove(shoppingCartId);
         return Task.CompletedTask;
     }
 }
