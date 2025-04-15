@@ -82,9 +82,7 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
     /// Remove the items using the <see cref="ShoppingCartPersistenceBase"/>-specific <paramref name="key"/>.
     /// </summary>
     /// <param name="key">A prefix and (if set) the shopping cart ID combined.</param>
-    /// <returns>
-    /// A value indicating whether the success of the removal.
-    /// </returns>
+    /// <returns>A value indicating whether the removal was successful.</returns>
     protected abstract Task<bool> RemoveInnerAsync(string key);
     protected string GetCacheId(string shoppingCartId) =>
         string.IsNullOrEmpty(shoppingCartId) ? ShoppingCartPrefix : $"{ShoppingCartPrefix}_{shoppingCartId}";
