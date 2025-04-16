@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OrchardCore.Commerce.Fields;
+namespace OrchardCore.Commerce.Abstractions.Fields;
 
 [SuppressMessage(
     "Minor Code Smell",
