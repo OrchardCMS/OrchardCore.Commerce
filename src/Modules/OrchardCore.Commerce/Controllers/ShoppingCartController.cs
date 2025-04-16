@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.Endpoints;
 using OrchardCore.Commerce.Inventory.Models;

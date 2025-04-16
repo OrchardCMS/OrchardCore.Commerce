@@ -1,3 +1,4 @@
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.ViewModels;
