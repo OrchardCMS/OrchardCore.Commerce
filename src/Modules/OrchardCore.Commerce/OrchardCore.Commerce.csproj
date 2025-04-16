@@ -17,6 +17,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Fields\**" />
+    <EmbeddedResource Remove="Fields\**" />
+    <None Remove="Fields\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -68,9 +74,6 @@
   <ItemGroup>
     <None Remove="$(PkgOrchardCore_Module_Targets)/build/Package.Build.props" />
     <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Fields\" />
   </ItemGroup>
 
 </Project>
