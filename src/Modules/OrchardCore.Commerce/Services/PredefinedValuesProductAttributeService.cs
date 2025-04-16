@@ -1,6 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;

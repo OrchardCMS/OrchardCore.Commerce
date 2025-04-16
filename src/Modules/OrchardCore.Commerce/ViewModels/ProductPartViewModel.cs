@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;

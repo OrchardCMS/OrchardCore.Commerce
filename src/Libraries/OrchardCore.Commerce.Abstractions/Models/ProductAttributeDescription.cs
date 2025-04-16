@@ -1,7 +1,7 @@
-using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Settings;
 
-namespace OrchardCore.Commerce.Models;
+namespace OrchardCore.Commerce.Abstractions.Models;
 
 public class ProductAttributeDescription
 {
