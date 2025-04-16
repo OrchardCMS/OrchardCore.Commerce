@@ -1,5 +1,5 @@
 using Lombiq.HelpfulLibraries.Common.Utilities;
-using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
 
