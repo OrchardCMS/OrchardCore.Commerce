@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.Settings;
 using OrchardCore.Commerce.Extensions;
-using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Promotion.Models;
-using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;

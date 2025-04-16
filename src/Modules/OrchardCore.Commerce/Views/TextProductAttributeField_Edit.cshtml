@@ -1,5 +1,5 @@
 @using OrchardCore.ContentManagement.Metadata.Models
-@model EditProductAttributeFieldViewModel<OrchardCore.Commerce.Fields.TextProductAttributeField, OrchardCore.Commerce.Settings.TextProductAttributeFieldSettings>
+@model EditProductAttributeFieldViewModel<OrchardCore.Commerce.Abstractions.Fields.TextProductAttributeField, OrchardCore.Commerce.Abstractions.Settings.TextProductAttributeFieldSettings>
 @{
     var settings = Model.Settings;
     var name = Model.PartFieldDefinition.DisplayName();

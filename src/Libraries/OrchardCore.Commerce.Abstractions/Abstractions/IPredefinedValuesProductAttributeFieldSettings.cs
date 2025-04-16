@@ -1,4 +1,4 @@
-using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Abstractions.Fields;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Abstractions.Abstractions;

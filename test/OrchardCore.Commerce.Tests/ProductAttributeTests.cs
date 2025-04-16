@@ -1,8 +1,8 @@
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Settings;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
-using OrchardCore.Commerce.Settings;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;

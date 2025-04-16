@@ -1,6 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.ContentManagement.Metadata;
