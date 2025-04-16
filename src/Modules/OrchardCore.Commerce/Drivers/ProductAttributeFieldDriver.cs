@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Localization;
-using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Settings;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Settings;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;

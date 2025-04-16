@@ -3,7 +3,7 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrchardCore.Commerce.Settings;
+namespace OrchardCore.Commerce.Abstractions.Settings;
 
 /// <summary>
 /// A base class for product attribute settings.
