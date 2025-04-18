@@ -21,7 +21,6 @@ using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Events;
-using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Liquid;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OrchardCore.Commerce.ViewModels;
+namespace OrchardCore.Commerce.Abstractions.ViewModels;
 
 public class ShoppingCartLineUpdateModel
 {

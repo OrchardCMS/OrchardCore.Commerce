@@ -1,10 +1,10 @@
 using Lombiq.HelpfulLibraries.Common.Utilities;
-using OrchardCore.Commerce.Settings;
+using OrchardCore.Commerce.Abstractions.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OrchardCore.Commerce.Fields;
+namespace OrchardCore.Commerce.Abstractions.Fields;
 
 [SuppressMessage(
     "Minor Code Smell",
