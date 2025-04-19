@@ -1,0 +1,25 @@
+:root {
+    --shopping-cart-widget-offset: 0.625rem;
+    --shopping-cart-widget-circle-size: 2.188rem;
+}
+
+.shopping-cart-widget {
+    position: absolute;
+    right: var(--shopping-cart-widget-offset);
+    top: var(--shopping-cart-widget-offset);
+}
+
+.shopping-cart-link {
+    position: relative;
+
+    /* Making sure widget is always visible. */
+    z-index: 9999;
+}
+
+.shopping-cart-item-count {
+    border-radius: 50%;
+    width: var(--shopping-cart-widget-circle-size);
+    height: var(--shopping-cart-widget-circle-size);
+    line-height: var(--shopping-cart-widget-circle-size);
+    font-size: calc(var(--shopping-cart-widget-circle-size) - var(--shopping-cart-widget-offset));
+}

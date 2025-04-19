@@ -16,24 +16,23 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     static ResourceManagementOptionsConfiguration()
     {
         _manifest
+            .DefineStyle(ErrorNotification)
+            .SetUrl("~/OrchardCore.Commerce/css/error.css")
+            .SetVersion("1.0.0");
+
+        _manifest
             .DefineStyle(ShoppingCart)
-            .SetUrl(
-                "~/OrchardCore.Commerce/css/shopping-cart.min.css",
-                "~/OrchardCore.Commerce/css/shopping-cart.css")
+            .SetUrl("~/OrchardCore.Commerce/css/shopping-cart.css")
             .SetVersion("1.0.0");
 
         _manifest
             .DefineStyle(ShoppingCartWidget)
-            .SetUrl(
-                "~/OrchardCore.Commerce/css/shopping-cart-widget.min.css",
-                "~/OrchardCore.Commerce/css/shopping-cart-widget.css")
+            .SetUrl("~/OrchardCore.Commerce/css/shopping-cart-widget.css")
             .SetVersion("1.0.0");
 
         _manifest
             .DefineScript(ToggleSecondAddress)
-            .SetUrl(
-                "~/OrchardCore.Commerce/js/toggle-second-address.min.js",
-                "~/OrchardCore.Commerce/js/toggle-second-address.js")
+            .SetUrl("~/OrchardCore.Commerce/js/toggle-second-address.js")
             .SetVersion("1.0.0");
     }
 

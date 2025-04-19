@@ -45,15 +45,12 @@
     <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
-  </ItemGroup>
-  <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.props" />
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
-  </ImportGroup>
-  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageReference Include="Lombiq.NodeJs.Extensions" />
-  </ItemGroup>
+  <Target Name="Copy JavaScript Assets"
+          AfterTargets="AfterResolveReferences">
+    <ItemGroup>
+      <JavaScriptAssets Include="Assets\Scripts\**\*.js"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

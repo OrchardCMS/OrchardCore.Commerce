@@ -24,6 +24,8 @@
     <None Include="License.md" Pack="true" PackagePath="" />
     <None Include="..\..\..\Readme.md" />
     <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+    <None Remove="Assets\Styles\general\error.css" />
+    <None Remove="Assets\Styles\_error.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,21 +55,20 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
-  </ItemGroup>
-  <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.props" />
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
-  </ImportGroup>
-  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageReference Include="Lombiq.NodeJs.Extensions" />
-  </ItemGroup>
-
   <!-- Override NuGet props file from OrchardCore.Module.Targets with our custom version. -->
   <ItemGroup>
     <None Remove="$(PkgOrchardCore_Module_Targets)/build/Package.Build.props" />
     <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
   </ItemGroup>
+
+  <Target Name="Copy Assets"
+          AfterTargets="AfterResolveReferences">
+    <ItemGroup>
+      <JavaScriptAssets Include="Assets\Scripts\**\*.js"/>
+      <CssAssets Include="Assets\Styles\**\*.css"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(CssAssets)" DestinationFolder="wwwroot\css\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

@@ -11,9 +11,7 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     static ResourceManagementOptionsConfiguration() =>
         _manifest
             .DefineScript(StripePaymentForm)
-            .SetUrl(
-                "~/OrchardCore.Commerce.Payment.Stripe/js/stripe-payment-form.min.js",
-                "~/OrchardCore.Commerce.Payment.Stripe/js/stripe-payment-form.js")
+            .SetUrl("~/OrchardCore.Commerce.Payment.Stripe/js/stripe-payment-form.js")
             .SetVersion("1.0.0");
 
     public void Configure(ResourceManagementOptions options) => options.ResourceManifests.Add(_manifest);
