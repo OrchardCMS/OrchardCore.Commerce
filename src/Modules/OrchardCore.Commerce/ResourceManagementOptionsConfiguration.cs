@@ -16,6 +16,11 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     static ResourceManagementOptionsConfiguration()
     {
         _manifest
+            .DefineStyle(ErrorNotification)
+            .SetUrl("~/OrchardCore.Commerce/css/error.css")
+            .SetVersion("1.0.0");
+
+        _manifest
             .DefineStyle(ShoppingCart)
             .SetUrl("~/OrchardCore.Commerce/css/shopping-cart.css")
             .SetVersion("1.0.0");
