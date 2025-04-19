@@ -53,4 +53,12 @@
     <PackageReference Include="Lombiq.HelpfulLibraries.AspNetCore" />
   </ItemGroup>
 
+  <Target Name="Copy CSS Assets"
+          AfterTargets="AfterResolveReferences">
+    <ItemGroup>
+      <CssAssets Include="Assets\Styles\**\*.css"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(CssAssets)" DestinationFolder="wwwroot\css" SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>
