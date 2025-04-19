@@ -17,16 +17,12 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     {
         _manifest
             .DefineStyle(ShoppingCart)
-            .SetUrl(
-                "~/OrchardCore.Commerce/css/shopping-cart.min.css",
-                "~/OrchardCore.Commerce/css/shopping-cart.css")
+            .SetUrl("~/OrchardCore.Commerce/css/shopping-cart.css")
             .SetVersion("1.0.0");
 
         _manifest
             .DefineStyle(ShoppingCartWidget)
-            .SetUrl(
-                "~/OrchardCore.Commerce/css/shopping-cart-widget.min.css",
-                "~/OrchardCore.Commerce/css/shopping-cart-widget.css")
+            .SetUrl("~/OrchardCore.Commerce/css/shopping-cart-widget.css")
             .SetVersion("1.0.0");
 
         _manifest
