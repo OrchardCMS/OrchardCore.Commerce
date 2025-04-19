@@ -44,4 +44,12 @@
     <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
   </ItemGroup>
 
+  <Target Name="Copy JavaScript Assets"
+          AfterTargets="AfterResolveReferences">
+    <ItemGroup>
+      <JavaScriptAssets Include="Assets\Scripts\**\*.js"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js" />
+  </Target>
+
 </Project>

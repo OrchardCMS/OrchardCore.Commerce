@@ -45,4 +45,12 @@
     <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
+  <Target Name="Copy JavaScript Assets"
+          AfterTargets="AfterResolveReferences">
+    <ItemGroup>
+      <JavaScriptAssets Include="Assets\Scripts\**\*.js"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js" />
+  </Target>
+
 </Project>

@@ -31,9 +31,7 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
 
         _manifest
             .DefineScript(ToggleSecondAddress)
-            .SetUrl(
-                "~/OrchardCore.Commerce/js/toggle-second-address.min.js",
-                "~/OrchardCore.Commerce/js/toggle-second-address.js")
+            .SetUrl("~/OrchardCore.Commerce/js/toggle-second-address.js")
             .SetVersion("1.0.0");
     }
 
