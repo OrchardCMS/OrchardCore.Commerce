@@ -58,7 +58,7 @@
     <ItemGroup>
       <CssAssets Include="Assets\Styles\**\*.css"/>
     </ItemGroup>
-    <Copy SourceFiles="@(CssAssets)" DestinationFolder="wwwroot\css" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(CssAssets)" DestinationFolder="wwwroot\css\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

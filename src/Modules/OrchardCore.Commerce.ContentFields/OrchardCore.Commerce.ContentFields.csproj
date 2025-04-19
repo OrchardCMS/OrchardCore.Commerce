@@ -49,7 +49,7 @@
     <ItemGroup>
       <JavaScriptAssets Include="Assets\Scripts\**\*.js"/>
     </ItemGroup>
-    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

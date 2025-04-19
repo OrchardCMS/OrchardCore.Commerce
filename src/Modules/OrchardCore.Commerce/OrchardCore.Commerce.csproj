@@ -24,6 +24,8 @@
     <None Include="License.md" Pack="true" PackagePath="" />
     <None Include="..\..\..\Readme.md" />
     <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+    <None Remove="Assets\Styles\general\error.css" />
+    <None Remove="Assets\Styles\_error.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,12 +61,14 @@
     <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
   </ItemGroup>
 
-  <Target Name="Copy JavaScript Assets"
+  <Target Name="Copy Assets"
           AfterTargets="AfterResolveReferences">
     <ItemGroup>
       <JavaScriptAssets Include="Assets\Scripts\**\*.js"/>
+      <CssAssets Include="Assets\Styles\**\*.css"/>
     </ItemGroup>
-    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(CssAssets)" DestinationFolder="wwwroot\css\%(RecursiveDir)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
