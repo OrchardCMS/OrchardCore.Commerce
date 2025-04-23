@@ -46,7 +46,7 @@ window.stripePaymentForm = function stripePaymentForm(
 
     function displayError(errors, container = allErrorContainers[0]) {
         allErrorContainers.forEach((element) => { element.hidden = true; });
-        if (!errors || errors.length == 0) return;
+        if (!errors || errors.length === 0) return;
 
         const err = Array.isArray(errors) ? errors.filter((error) => error) : [errors];
 
