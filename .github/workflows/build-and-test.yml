@@ -32,7 +32,7 @@ jobs:
     uses: Lombiq/GitHub-Actions/.github/workflows/codespell.yml@dev
 
   lint:
-    name: Lint Script and Style
+    name: Lint Scripts and Styles
     uses: Lombiq/NodeJs-Extensions/.github/workflows/lint.yml@issue/OCC-314
     with:
       script-paths: src/Modules/OrchardCore.Commerce,src/Modules/OrchardCore.Commerce.ContentFields,src/Modules/OrchardCore.Commerce.Payment.Stripe
