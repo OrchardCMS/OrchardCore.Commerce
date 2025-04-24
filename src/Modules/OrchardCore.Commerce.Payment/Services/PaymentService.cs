@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -33,6 +34,7 @@ namespace OrchardCore.Commerce.Payment.Services;
 
 public class PaymentService : IPaymentService
 {
+    private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly IContentManager _contentManager;
     private readonly IShoppingCartHelpers _shoppingCartHelpers;
@@ -51,6 +53,7 @@ public class PaymentService : IPaymentService
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentService(
+        IShoppingCartPersistence shoppingCartPersistence,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentService> services,
         IShoppingCartHelpers shoppingCartHelpers,
@@ -64,6 +67,7 @@ public class PaymentService : IPaymentService
         IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
+        _shoppingCartPersistence = shoppingCartPersistence;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _contentManager = services.ContentManager.Value;
         _shoppingCartHelpers = shoppingCartHelpers;
@@ -177,11 +181,7 @@ public class PaymentService : IPaymentService
         await _orderEvents.AwaitEachAsync(orderEvent =>
             orderEvent.FinalizeAsync(order, shoppingCartId, paymentProviderName));
 
-        await _shoppingCartHelpers.UpdateAsync(shoppingCartId, cart =>
-        {
-            cart.Items?.Clear();
-            return Task.CompletedTask;
-        });
+        await _shoppingCartPersistence.RemoveAsync(shoppingCartId);
 
         if (!string.IsNullOrEmpty(paymentProviderName))
         {
