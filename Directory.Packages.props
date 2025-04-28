@@ -22,8 +22,8 @@
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
+
+
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />
@@ -44,8 +44,63 @@
     <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Stripe.net" Version="48.0.2" />
-    <PackageVersion Include="System.Text.Json" Version="9.0.4" />
+
     <PackageVersion Include="xunit.v3" Version="2.0.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'" >
+    <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
+    <PackageVersion Include="System.Text.Json" Version="8.0.5" />
+    <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
+    <PackageVersion Include="System.Text.Json" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
+  </ItemGroup>
+
+  <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
+  <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.4" />
+
+    <!-- dotnet/extensions repository -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
+
+    <!-- Serilog.AspNetCore -->
+    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.15" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.15" />
+
+    <!-- dotnet/extensions repository -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
+
+    <!-- Serilog.AspNetCore -->
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>
 </Project>
