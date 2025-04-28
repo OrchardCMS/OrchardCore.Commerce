@@ -22,6 +22,8 @@
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />
