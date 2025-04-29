@@ -14,7 +14,7 @@ jobs:
     with:
       machine-types: '["ubuntu-24.04"]'
       timeout-minutes: 60
-      dotnet-version: 9.0.4
+      dotnet-version: 9.0.203
 
   build-and-test-windows:
     name: Build and Test (Windows)
@@ -27,7 +27,7 @@ jobs:
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
-      dotnet-version: 9.0.4
+      dotnet-version: 9.0.203
 
   codespell:
     name: Codespell
