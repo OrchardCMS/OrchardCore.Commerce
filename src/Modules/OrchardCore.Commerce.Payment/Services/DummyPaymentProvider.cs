@@ -1,3 +1,5 @@
+#pragma warning disable IDE0055
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
@@ -94,3 +96,5 @@ public class DummyPaymentProvider : IPaymentProvider
         }
     }
 }
+
+#pragma warning restore IDE0055
