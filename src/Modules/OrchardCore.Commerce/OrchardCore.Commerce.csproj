@@ -61,14 +61,4 @@
     <None Update="Package.Build.props" Pack="true" PackagePath="build\$(AssemblyName).props" />
   </ItemGroup>
 
-  <Target Name="Copy Assets"
-          AfterTargets="AfterResolveReferences">
-    <ItemGroup>
-      <JavaScriptAssets Include="Assets\Scripts\**\*.js"/>
-      <CssAssets Include="Assets\Styles\**\*.css"/>
-    </ItemGroup>
-    <Copy SourceFiles="@(JavaScriptAssets)" DestinationFolder="wwwroot\js\%(RecursiveDir)" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(CssAssets)" DestinationFolder="wwwroot\css\%(RecursiveDir)" SkipUnchangedFiles="true" />
-  </Target>
-
 </Project>
