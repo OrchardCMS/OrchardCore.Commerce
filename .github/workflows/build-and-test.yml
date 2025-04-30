@@ -35,8 +35,32 @@ jobs:
     name: Lint Scripts and Styles
     uses: Lombiq/NodeJs-Extensions/.github/workflows/lint.yml@issue/OCC-314
     with:
-      script-paths: src/Modules/OrchardCore.Commerce,src/Modules/OrchardCore.Commerce.ContentFields,src/Modules/OrchardCore.Commerce.Payment.Stripe
-      style-css-paths: src/Modules/OrchardCore.Commerce,src/Modules/OrchardCore.Commerce.Payment
+      script-paths: |
+        {
+          "src/Modules/OrchardCore.Commerce": {
+            "source": "wwwroot/js",
+            "target": "wwwroot/js"
+          },
+          "src/Modules/OrchardCore.Commerce.ContentFields": {
+            "source": "wwwroot/js",
+            "target": "wwwroot/js"
+          },
+          "src/Modules/OrchardCore.Commerce.Payment.Stripe": {
+            "source": "wwwroot/js",
+            "target": "wwwroot/js"
+          }
+        }
+      style-css-paths: |
+        {
+          "src/Modules/OrchardCore.Commerce": {
+            "target": "wwwroot/css",
+            "target": "wwwroot/css"
+          },
+          "src/Modules/OrchardCore.Commerce.Payment": {
+            "target": "wwwroot/css",
+            "target": "wwwroot/css"
+          }
+        }
 
   post-pull-request-checks-automation:
     needs: [build-and-test-linux, build-and-test-windows, codespell, lint]
