@@ -37,29 +37,14 @@ jobs:
     with:
       scripts: '
         {
-          "src/Modules/OrchardCore.Commerce": {
-            "source": "wwwroot/js",
-            "target": "wwwroot/js"
-          },
-          "src/Modules/OrchardCore.Commerce.ContentFields": {
-            "source": "wwwroot/js",
-            "target": "wwwroot/js"
-          },
-          "src/Modules/OrchardCore.Commerce.Payment.Stripe": {
-            "source": "wwwroot/js",
-            "target": "wwwroot/js"
-          }
+          "src/Modules/OrchardCore.Commerce": { "scripts": { "source": "wwwroot/js" } },
+          "src/Modules/OrchardCore.Commerce.ContentFields": { "scripts": { "source": "wwwroot/js" } },
+          "src/Modules/OrchardCore.Commerce.Payment.Stripe": { "scripts": { "source": "wwwroot/js" } }
         }'
       styles-css: '
         {
-          "src/Modules/OrchardCore.Commerce": {
-            "target": "wwwroot/css",
-            "target": "wwwroot/css"
-          },
-          "src/Modules/OrchardCore.Commerce.Payment": {
-            "target": "wwwroot/css",
-            "target": "wwwroot/css"
-          }
+          "src/Modules/OrchardCore.Commerce": { "styles": { "source": "wwwroot/css" } },
+          "src/Modules/OrchardCore.Commerce.Payment": { "styles": { "source": "wwwroot/css" } }
         }'
 
   post-pull-request-checks-automation:
