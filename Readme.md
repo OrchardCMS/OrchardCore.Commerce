@@ -18,14 +18,14 @@ Orchard Core represents a major evolution of the Orchard design principles, and 
 
 This work is in its initial design phases. There's a lot of work to do, and yes, we do welcome participation in any shape or form. The first stage of this was the [minimum viable feature set](https://github.com/OrchardCMS/OrchardCore.Commerce/milestone/1) which has now been released to NuGet [here](https://www.nuget.org/packages/OrchardCore.Commerce/1.0.0). [Here](https://youtu.be/Sw2jvE82UwE) you can watch a demo video about the MVP.
 
-See the [discussions page](https://github.com/OrchardCMS/OrchardCore.Commerce/discussions) for the latest news and announcements.
+See the [discussions page](https://github.com/OrchardCMS/OrchardCore.Commerce/discussions) for the latest news and announcements.  
 
 ## Setting up your dev environment
 
 ### Pre-requisites
 
 If you have [Lombiq Analyzers](https://github.com/Lombiq/.NET-Analyzers) included in your project as a submodule you should also add the following property to the _Directory.Build.props_ file:
-
+- intentional MD linting violation  
 ```xml
 <Project>
   <PropertyGroup>
