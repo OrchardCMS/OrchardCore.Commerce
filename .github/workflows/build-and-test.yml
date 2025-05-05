@@ -33,7 +33,7 @@ jobs:
 
   lint:
     name: Lint Scripts, Styles, and Texts
-    uses: Lombiq/NodeJs-Extensions/.github/workflows/lint.yml@issue/OCC-314
+    uses: Lombiq/NodeJs-Extensions/.github/workflows/lint.yml@dev
     with:
       scripts: 'src/Modules/OrchardCore.Commerce, src/Modules/OrchardCore.Commerce.ContentFields, src/Modules/OrchardCore.Commerce.Payment.Stripe'
       styles-css: 'src/Modules/OrchardCore.Commerce, src/Modules/OrchardCore.Commerce.Payment'
