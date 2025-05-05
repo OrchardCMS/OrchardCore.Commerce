@@ -32,7 +32,7 @@ jobs:
     uses: Lombiq/GitHub-Actions/.github/workflows/codespell.yml@dev
 
   lint:
-    name: Lint Scripts and Styles
+    name: Lint Scripts, Styles, and Texts
     uses: Lombiq/NodeJs-Extensions/.github/workflows/lint.yml@issue/OCC-314
     with:
       scripts: '
