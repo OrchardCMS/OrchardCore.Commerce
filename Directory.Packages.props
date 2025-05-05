@@ -17,7 +17,6 @@
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="$(LombiqHelpfulLibrariesVersion)" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="$(LombiqHelpfulLibrariesVersion)" />
-    <PackageVersion Include="Lombiq.NodeJs.Extensions" Version="2.1.3" />
     <PackageVersion Include="Lombiq.Tests" Version="4.0.1-alpha.1.osoe-935" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />

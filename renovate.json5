@@ -4,15 +4,4 @@
     addLabels: [
         'no-jira-community-activity-issue',
     ],
-    packageRules: [
-        {
-            // Not updating any of the node.js dependencies as they will be soon removed via
-            // https://github.com/OrchardCMS/OrchardCore.Commerce/issues/527.
-            matchPackageNames: [
-                'eslint*',
-                'pnpm',
-            ],
-            enabled: false,
-        },
-    ],
 }
