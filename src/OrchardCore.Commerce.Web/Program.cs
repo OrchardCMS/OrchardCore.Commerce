@@ -27,7 +27,9 @@ await app.RunAsync();
     "Design",
     "CA1050: Declare types in namespaces",
     Justification = "As described here: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0.")]
-internal partial class Program
+#pragma warning disable CA1515 // Consider making public types internal
+public partial class Program
+#pragma warning restore CA1515 // Consider making public types internal
 {
     protected Program()
     {
