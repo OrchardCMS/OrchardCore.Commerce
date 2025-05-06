@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-public class FakeContentDefinitionManager : IContentDefinitionManager
+internal class FakeContentDefinitionManager : IContentDefinitionManager
 {
     public IChangeToken ChangeToken => throw new NotSupportedException();
     public Task DeletePartDefinitionAsync(string name) => throw new NotSupportedException();

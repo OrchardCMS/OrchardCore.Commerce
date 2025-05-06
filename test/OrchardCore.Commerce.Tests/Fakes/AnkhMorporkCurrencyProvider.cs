@@ -5,19 +5,18 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-public class AnkhMorporkCurrencyProvider : ICurrencyProvider
+internal class AnkhMorporkCurrencyProvider : ICurrencyProvider
 {
-    public static readonly ICurrency AnkhMorporkDollar
-        = new Currency("Ankh-Morpork Dollar", "Ankh-Morpork Dollar", "$AM", "AMD");
+    public static readonly ICurrency AnkhMorporkDollar = new Currency(
+        "Ankh-Morpork Dollar",
+        "Ankh-Morpork Dollar",
+        "$AM",
+        "AMD"
+    );
 
-    public static readonly ICurrency SixPence
-        = new Currency("Sixpence", "Sixpence", "6p", "SXP");
+    public static readonly ICurrency SixPence = new Currency("Sixpence", "Sixpence", "6p", "SXP");
 
-    private readonly ICurrency[] _currencies =
-    [
-        AnkhMorporkDollar,
-        SixPence,
-    ];
+    private readonly ICurrency[] _currencies = [AnkhMorporkDollar, SixPence,];
 
     public IEnumerable<ICurrency> Currencies => _currencies;
 
@@ -25,5 +24,7 @@ public class AnkhMorporkCurrencyProvider : ICurrencyProvider
         _currencies.Find(currency => currency.CurrencyIsoCode == isoCode);
 
     public bool IsKnownCurrency(string isoCode) =>
-        _currencies.Exists(currency => string.Equals(currency.CurrencyIsoCode, isoCode, StringComparison.OrdinalIgnoreCase));
+        _currencies.Exists(currency =>
+            string.Equals(currency.CurrencyIsoCode, isoCode, StringComparison.OrdinalIgnoreCase)
+        );
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-public class FakeCartStorage : IShoppingCartPersistence
+internal class FakeCartStorage : IShoppingCartPersistence
 {
     private readonly Dictionary<string, ShoppingCart> _carts = [];
 
