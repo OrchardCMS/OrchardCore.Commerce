@@ -10,6 +10,7 @@
 
     <LombiqHelpfulLibrariesVersion>12.1.0</LombiqHelpfulLibrariesVersion>
     <LombiqTestsUIVersion>12.1.1-alpha.14.osoe-1057</LombiqTestsUIVersion>
+    <!-- This needs to be upgraded to 9.0. It's currently fixed to 8.0 for CI to build without issues.-->
     <AnalysisLevel>8.0</AnalysisLevel>
   </PropertyGroup>
 
