@@ -13,8 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0'" >
-      <LangVersion>13.0</LangVersion>
-      <AnalysisLevel>9.0</AnalysisLevel>
+      <AnalysisLevel>8.0</AnalysisLevel>
   </PropertyGroup>
 
   <ItemGroup>
