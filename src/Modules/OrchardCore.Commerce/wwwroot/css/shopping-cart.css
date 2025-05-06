@@ -1,5 +1,3 @@
-@import "general/error";
-
 .shopping-cart-table {
     th {
         text-align: center;
@@ -12,12 +10,12 @@
         }
     }
 
-    &-totals,
-    &-unit-price {
+    .shopping-cart-table-totals,
+    .shopping-cart-table-unit-price {
         text-align: right;
     }
 
-    &-quantity {
+    .shopping-cart-table-quantity {
         max-width: 5em;
     }
 }

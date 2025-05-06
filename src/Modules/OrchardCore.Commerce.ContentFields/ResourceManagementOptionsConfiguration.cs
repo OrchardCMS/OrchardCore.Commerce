@@ -12,9 +12,7 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
         _manifest
             .DefineScript(CommerceRegions)
             .SetDependencies(JQuery)
-            .SetUrl(
-                "~/OrchardCore.Commerce.ContentFields/js/commerce-regions.min.js",
-                "~/OrchardCore.Commerce.ContentFields/js/commerce-regions.js")
+            .SetUrl("~/OrchardCore.Commerce.ContentFields/js/commerce-regions.js")
             .SetVersion("1.0.0");
 
     public void Configure(ResourceManagementOptions options) => options.ResourceManifests.Add(_manifest);
