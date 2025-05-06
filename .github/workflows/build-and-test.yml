@@ -34,11 +34,11 @@ jobs:
     uses: Lombiq/GitHub-Actions/.github/workflows/codespell.yml@dev
 
   lint:
-    name: Lint Scripts and Styles
-    uses: Lombiq/NodeJs-Extensions/.github/workflows/lint.yml@issue/OCC-314
+    name: Lint Scripts, Styles, and Texts
+    uses: Lombiq/NodeJs-Extensions/.github/workflows/lint.yml@dev
     with:
-      script-paths: src/Modules/OrchardCore.Commerce,src/Modules/OrchardCore.Commerce.ContentFields,src/Modules/OrchardCore.Commerce.Payment.Stripe
-      style-css-paths: src/Modules/OrchardCore.Commerce,src/Modules/OrchardCore.Commerce.Payment
+      scripts: 'src/Modules/OrchardCore.Commerce, src/Modules/OrchardCore.Commerce.ContentFields, src/Modules/OrchardCore.Commerce.Payment.Stripe'
+      styles-css: 'src/Modules/OrchardCore.Commerce, src/Modules/OrchardCore.Commerce.Payment'
 
   post-pull-request-checks-automation:
     needs: [build-and-test-linux, build-and-test-windows, codespell, lint]

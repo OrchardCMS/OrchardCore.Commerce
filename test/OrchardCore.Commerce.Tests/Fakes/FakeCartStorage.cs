@@ -30,4 +30,10 @@ public class FakeCartStorage : IShoppingCartPersistence
         _carts[items.Id ?? string.Empty] = new ShoppingCart(items.Items);
         return Task.CompletedTask;
     }
+
+    public Task RemoveAsync(string shoppingCartId)
+    {
+        _carts.Remove(shoppingCartId);
+        return Task.CompletedTask;
+    }
 }

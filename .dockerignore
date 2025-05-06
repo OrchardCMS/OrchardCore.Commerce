@@ -1,0 +1,6 @@
+# Ignore any App_Data folder
+**/App_Data/
+
+# Ignore all built assets
+**/[b|B]in/
+**/[O|o]bj/
