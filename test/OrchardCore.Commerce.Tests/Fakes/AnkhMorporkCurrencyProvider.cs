@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-internal class AnkhMorporkCurrencyProvider : ICurrencyProvider
+internal sealed class AnkhMorporkCurrencyProvider : ICurrencyProvider
 {
     public static readonly ICurrency AnkhMorporkDollar = new Currency(
         "Ankh-Morpork Dollar",

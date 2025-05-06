@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-internal class FakeProductInventoryService : IProductInventoryService
+internal sealed class FakeProductInventoryService : IProductInventoryService
 {
     // IProductInventoryService's method needs to be created, but implementation is unnecessary as the tests do not use it.
     public Task<IList<ShoppingCartItem>> UpdateInventoriesAsync(IList<ShoppingCartItem> items) =>

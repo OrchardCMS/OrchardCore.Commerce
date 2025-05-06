@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-internal class FakeDiscountProvider : IPromotionProvider
+internal sealed class FakeDiscountProvider : IPromotionProvider
 {
     public int Order => 0;
 

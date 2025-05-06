@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-internal class FakeProductService : IProductService
+internal sealed class FakeProductService : IProductService
 {
     public Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
         Task.FromResult(skus.Select(sku => new ProductPart

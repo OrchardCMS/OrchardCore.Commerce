@@ -44,7 +44,7 @@ public class CurrencyTests
         Assert.Equal(expectedFormat.Replace(" ", string.Empty).Replace('￥', '¥'), result);
     }
 
-    public class CurrencyTheoryData : TheoryData<string, decimal, string>
+    internal sealed class CurrencyTheoryData : TheoryData<string, decimal, string>
     {
     }
 }

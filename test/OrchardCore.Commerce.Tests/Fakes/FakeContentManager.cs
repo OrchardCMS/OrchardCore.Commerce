@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-internal class FakeContentManager : IContentManager
+internal sealed class FakeContentManager : IContentManager
 {
     public Task<ContentItem> CloneAsync(ContentItem contentItem) => throw new NotSupportedException();
 

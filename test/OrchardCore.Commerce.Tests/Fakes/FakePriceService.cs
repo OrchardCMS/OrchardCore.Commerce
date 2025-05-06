@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-internal class FakePriceService : IPriceService
+internal sealed class FakePriceService : IPriceService
 {
     public Task<IList<ShoppingCartItem>> AddPricesAsync(IList<ShoppingCartItem> items) =>
         Task.FromResult<IList<ShoppingCartItem>>(

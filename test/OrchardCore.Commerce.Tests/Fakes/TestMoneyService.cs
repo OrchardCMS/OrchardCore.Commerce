@@ -4,7 +4,7 @@ using OrchardCore.Commerce.Settings;
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-internal class TestMoneyService : MoneyService
+internal sealed class TestMoneyService : MoneyService
 {
     public TestMoneyService()
         : base(
