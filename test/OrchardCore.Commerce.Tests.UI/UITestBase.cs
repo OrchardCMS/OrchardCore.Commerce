@@ -5,7 +5,7 @@ using Xunit;
 
 namespace OrchardCore.Commerce.Tests.UI;
 
-public class UITestBase : OrchardCoreUITestBase<Program>
+internal class UITestBase : OrchardCoreUITestBase<Program>
 {
     protected UITestBase(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)

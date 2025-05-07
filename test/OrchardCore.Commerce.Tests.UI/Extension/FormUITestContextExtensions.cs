@@ -8,7 +8,7 @@ using OrchardCore.ContentFields.Fields;
 
 namespace Lombiq.Tests.UI.Services;
 
-public static class FormUITestContextExtensions
+internal static class FormUITestContextExtensions
 {
     public static Task ClickCheckoutAsync(this UITestContext context) =>
         context.ClickReliablyOnAsync(By.ClassName("checkout"));
