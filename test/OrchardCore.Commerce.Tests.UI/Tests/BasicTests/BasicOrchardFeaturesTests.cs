@@ -9,13 +9,13 @@ namespace OrchardCore.Commerce.Tests.UI.Tests.BasicTests;
 public class BasicOrchardFeaturesTests : UITestBase
 {
     public BasicOrchardFeaturesTests(ITestOutputHelper testOutputHelper)
-        : base(testOutputHelper)
-    {
-    }
+        : base(testOutputHelper) { }
 
     [Theory, Chrome]
     public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
         ExecuteTestAsync(
-            context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
-            browser);
+            context =>
+                context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
+            browser
+        );
 }

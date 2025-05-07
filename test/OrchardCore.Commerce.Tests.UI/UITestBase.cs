@@ -5,9 +5,7 @@ using Xunit;
 
 namespace OrchardCore.Commerce.Tests.UI;
 
-#pragma warning disable CA1515 // Consider making public types internal
-public class UITestBase : OrchardCoreUITestBase<Program>
-#pragma warning restore CA1515 // Consider making public types internal
+internal class UITestBase : OrchardCoreUITestBase<Program>
 {
     protected UITestBase(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper) { }
