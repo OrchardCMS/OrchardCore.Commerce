@@ -31,7 +31,7 @@ extra:
     - icon: fontawesome/solid/leaf
       link: https://orchardcore.net
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/OrchardCMS/OrchardCore.Commerce    
+      link: https://github.com/OrchardCMS/OrchardCore.Commerce
     - icon: fontawesome/brands/discord
       link: https://orchardcore.net/discord
     - icon: fontawesome/brands/twitter
