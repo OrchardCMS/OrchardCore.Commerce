@@ -2,7 +2,7 @@ using Lombiq.Tests.UI.Extensions;
 
 namespace Lombiq.Tests.UI.Services;
 
-public static class NavigationUITestContextExtensions
+internal static class NavigationUITestContextExtensions
 {
     /// <summary>
     /// Navigates to the new field page for the given <paramref name="contentType"/>.

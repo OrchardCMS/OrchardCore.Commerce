@@ -2,7 +2,7 @@
 
 namespace OrchardCore.Commerce.Tests.Fakes;
 
-public class TestOptions<T> : IOptions<T>
+internal sealed class TestOptions<T> : IOptions<T>
     where T : class, new()
 {
     public T Value { get; }

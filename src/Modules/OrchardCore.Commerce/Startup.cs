@@ -67,7 +67,10 @@ public class Startup : StartupBase
         services.AddOrchardServices();
         services.AddScoped<IDataMigration, MvcTitleMigrations>();
         services.AddTagHelpers<MvcTitleTagHelper>();
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddTransient<
+            IConfigureOptions<ResourceManagementOptions>,
+            ResourceManagementOptionsConfiguration
+        >();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IResourceFilterProvider, ResourceFilters>();
 
@@ -78,37 +81,55 @@ public class Startup : StartupBase
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IProductInventoryProvider, LocalInventoryProvider>();
 
-        services.AddContentPart<ProductPart>()
+        services
+            .AddContentPart<ProductPart>()
             .UseDisplayDriver<ProductPartDisplayDriver>()
             .AddHandler<SkuValidationHandler>();
 
         // Attributes
-        services.AddContentField<BooleanProductAttributeField>()
+        services
+            .AddContentField<BooleanProductAttributeField>()
             .UseDisplayDriver<BooleanProductAttributeFieldDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanProductAttributeFieldSettingsDriver>();
+        services.AddScoped<
+            IContentPartFieldDefinitionDisplayDriver,
+            BooleanProductAttributeFieldSettingsDriver
+        >();
 
-        services.AddContentField<NumericProductAttributeField>()
+        services
+            .AddContentField<NumericProductAttributeField>()
             .UseDisplayDriver<NumericProductAttributeFieldDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericProductAttributeFieldSettingsDriver>();
+        services.AddScoped<
+            IContentPartFieldDefinitionDisplayDriver,
+            NumericProductAttributeFieldSettingsDriver
+        >();
 
-        services.AddContentField<TextProductAttributeField>()
+        services
+            .AddContentField<TextProductAttributeField>()
             .UseDisplayDriver<TextProductAttributeFieldDriver>();
-        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextProductAttributeFieldSettingsDriver>();
+        services.AddScoped<
+            IContentPartFieldDefinitionDisplayDriver,
+            TextProductAttributeFieldSettingsDriver
+        >();
 
         services.AddScoped<IProductAttributeProvider, ProductAttributeProvider>();
         services.AddScoped<IProductAttributeProvider, TextProductAttributeProvider>();
         services.AddScoped<IProductAttributeProvider, BooleanProductAttributeProvider>();
         services.AddScoped<IProductAttributeProvider, NumericProductAttributeProvider>();
         services.AddScoped<IProductAttributeService, ProductAttributeService>();
-        services.AddScoped<IPredefinedValuesProductAttributeService, PredefinedValuesProductAttributeService>();
+        services.AddScoped<
+            IPredefinedValuesProductAttributeService,
+            PredefinedValuesProductAttributeService
+        >();
 
         // Price
         services.AddScoped<IDataMigration, PriceMigrations>();
         services.AddSingleton<IIndexProvider, PriceIndexProvider>();
 
-        services.AddContentPart<PricePart>()
-            .AddHandler<PricePartHandler>();
-        services.AddScoped<IContentTypePartDefinitionDisplayDriver, PricePartSettingsDisplayDriver>();
+        services.AddContentPart<PricePart>().AddHandler<PricePartHandler>();
+        services.AddScoped<
+            IContentTypePartDefinitionDisplayDriver,
+            PricePartSettingsDisplayDriver
+        >();
 
         services.AddScoped<IPriceProvider, PriceProvider>();
         services.AddScoped<IPriceService, PriceService>();
@@ -117,7 +138,8 @@ public class Startup : StartupBase
         // Price Variants
         services.AddScoped<IDataMigration, PriceVariantsMigrations>();
 
-        services.AddContentPart<PriceVariantsPart>()
+        services
+            .AddContentPart<PriceVariantsPart>()
             .UseDisplayDriver<PriceVariantsPartDisplayDriver>()
             .AddHandler<PriceVariantsPartHandler>();
 
@@ -126,7 +148,8 @@ public class Startup : StartupBase
         // Tiered Prices
         services.AddScoped<IDataMigration, TieredPriceMigrations>();
 
-        services.AddContentPart<TieredPricePart>()
+        services
+            .AddContentPart<TieredPricePart>()
             .UseDisplayDriver<TieredPricePartDisplayDriver>()
             .AddHandler<TieredPricePartHandler>();
 
@@ -139,13 +162,15 @@ public class Startup : StartupBase
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
         services.AddScoped<IShoppingCartSerializer, ShoppingCartSerializer>();
-        services.AddContentPart<ShoppingCartWidgetPart>()
+        services
+            .AddContentPart<ShoppingCartWidgetPart>()
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
 
         // Orders
-        services.AddContentPart<OrderPart>()
+        services
+            .AddContentPart<OrderPart>()
             .UseDisplayDriver<OrderPartDisplayDriver>()
             .AddHandler<OrderPartHandler>();
 
@@ -155,7 +180,10 @@ public class Startup : StartupBase
         services.AddScoped<IAddressFormatterProvider, AddressFormatterProvider>();
         services.AddScoped<IOrderLineItemService, OrderLineItemService>();
 
-        services.AddScoped<IContentTypeDefinitionDisplayDriver, OrderContentTypeDefinitionDisplayDriver>();
+        services.AddScoped<
+            IContentTypeDefinitionDisplayDriver,
+            OrderContentTypeDefinitionDisplayDriver
+        >();
 
         // Region
         services.AddScoped<IRegionService, RegionService>();
@@ -173,7 +201,8 @@ public class Startup : StartupBase
         services.AddScoped<IDataMigration, PageMigrations>();
 
         // Exposing models to liquid templates
-        services.Configure<TemplateOptions>(option =>
+        services
+            .Configure<TemplateOptions>(option =>
             {
                 option.MemberAccessStrategy.Register<ShoppingCartViewModel>();
                 option.MemberAccessStrategy.Register<ShoppingCartCellViewModel>();
@@ -194,7 +223,9 @@ public class Startup : StartupBase
             // then retrieve the corresponding content item.
             .AddLiquidFilter<ProductFilter>("product")
             // Liquid filter to create AddressFieldEditorViewModel.
-            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
+            .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>(
+                "address_field_editor_view_model"
+            )
             // Liquid filter to create OrderLineItemViewModels and additional data.
             .AddLiquidFilter<OrderPartToOrderSummaryLiquidFilter>("order_part_to_order_summary")
             // Liquid filter to convert Amount, its JSON representation, or a number into Amount.ToString() including correct formatting and currency.
@@ -204,19 +235,26 @@ public class Startup : StartupBase
         services.AddScoped<IProductListService, ProductListService>();
         services.AddProductListFilterProvider<ProductListTitleFilterProvider>();
         services.AddProductListFilterProvider<BasePriceFilterProvider>();
-        services.AddScoped<IAppliedProductListFilterParametersProvider, QueryStringAppliedProductListFilterParametersProvider>();
+        services.AddScoped<
+            IAppliedProductListFilterParametersProvider,
+            QueryStringAppliedProductListFilterParametersProvider
+        >();
         services.AddScoped<IDataMigration, ProductListMigrations>();
-        services.AddContentPart<ProductListPart>()
-            .UseDisplayDriver<ProductListPartDisplayDriver>();
+        services.AddContentPart<ProductListPart>().UseDisplayDriver<ProductListPartDisplayDriver>();
         IProductAttributeDeserializer.AddSerializers(
             new TextProductAttributeDeserializer(),
             new BooleanProductAttributeDeserializer(),
-            new NumericProductAttributeDeserializer());
+            new NumericProductAttributeDeserializer()
+        );
 
         services.AddCommerceApiServices();
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider
+    )
     {
         app.UseResourceFilters();
         routes.AddShoppingCartApiEndpoints();
@@ -254,7 +292,10 @@ public class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<SiteSettingsPropertyDeploymentSource<RegionSettings>, SiteSettingsPropertyDeploymentStep<RegionSettings>>();
+        services.AddDeployment<
+            SiteSettingsPropertyDeploymentSource<RegionSettings>,
+            SiteSettingsPropertyDeploymentStep<RegionSettings>
+        >();
         services.AddScoped(ImplementationFactory);
     }
 
@@ -264,7 +305,8 @@ public class DeploymentStartup : StartupBase
 
         return new SiteSettingsPropertyDeploymentStepDriver<RegionSettings>(
             localizer["Region settings"],
-            localizer["Exports the region settings."]);
+            localizer["Exports the region settings."]
+        );
     }
 }
 
@@ -285,7 +327,11 @@ public class SessionCartStorageStartup : StartupBase
         services.AddScoped<IShoppingCartPersistence, SessionShoppingCartPersistence>();
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider
+    )
     {
         base.Configure(app, routes, serviceProvider);
         app.UseSession();
@@ -293,7 +339,8 @@ public class SessionCartStorageStartup : StartupBase
             name: "ShoppingCart",
             areaName: "OrchardCore.Commerce",
             pattern: "shoppingcart/{action}",
-            defaults: new { controller = "ShoppingCart", action = "Index" });
+            defaults: new { controller = "ShoppingCart", action = "Index" }
+        );
     }
 }
 
@@ -309,9 +356,7 @@ public class TaxStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services
-            .AddContentPart<PricePart>()
-            .AddHandler<TaxPartAndPricePartHandler>();
+        services.AddContentPart<PricePart>().AddHandler<TaxPartAndPricePartHandler>();
 
         services.AddScoped<ITaxProvider, LocalTaxProvider>();
     }
@@ -346,9 +391,7 @@ public class TaxRateStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services
-            .AddContentPart<TaxPart>()
-            .UseDisplayDriver<TaxRateTaxPartDisplayDriver>();
+        services.AddContentPart<TaxPart>().UseDisplayDriver<TaxRateTaxPartDisplayDriver>();
 
         services.AddScoped<ITaxProvider, TaxRateTaxProvider>();
         services.AddScoped<TaxRateTaxProvider>();
@@ -360,13 +403,9 @@ public class UserSettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services
-            .AddContentPart<UserAddressesPart>()
-            .WithMigration<UserAddressesMigrations>();
+        services.AddContentPart<UserAddressesPart>().WithMigration<UserAddressesMigrations>();
 
-        services
-            .AddContentPart<UserDetailsPart>()
-            .WithMigration<UserDetailsMigrations>();
+        services.AddContentPart<UserDetailsPart>().WithMigration<UserDetailsMigrations>();
 
         services.AddScoped<IAddressFieldEvents, UserAddressFieldEvents>();
         services.AddScoped<IDisplayDriver<User>, UserAddressesUserDisplayDriver>();
@@ -374,14 +413,19 @@ public class UserSettingsStartup : StartupBase
         services.AddScoped<ICheckoutEvents, UserSettingsCheckoutEvents>();
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider
+    )
     {
         base.Configure(app, routes, serviceProvider);
         routes.MapAreaControllerRoute(
             name: nameof(UserController),
             areaName: "OrchardCore.Commerce",
             pattern: "user/{action}",
-            defaults: new { controller = typeof(UserController).ControllerName(), action = "Index" });
+            defaults: new { controller = typeof(UserController).ControllerName(), action = "Index" }
+        );
     }
 }
 
@@ -390,7 +434,10 @@ public class InventoryStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IProductEstimationContextUpdater, InventoryProductEstimationContextUpdater>();
+        services.AddScoped<
+            IProductEstimationContextUpdater,
+            InventoryProductEstimationContextUpdater
+        >();
         services.AddScoped<IOrderEvents, InventoryOrderEvents>();
         services.AddScoped<IProductInventoryService, ProductInventoryService>();
         services.AddScoped<ICheckoutEvents, InventoryCheckoutEvents>();
@@ -411,8 +458,11 @@ public class ContentLocalizationStartup : StartupBase
         services.AddScoped<IProductService, ContentLocalizationProductService>();
     }
 
-    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
-        app.UseMiddleware<LocalizationCurrencyRedirectMiddleware>();
+    public override void Configure(
+        IApplicationBuilder app,
+        IEndpointRouteBuilder routes,
+        IServiceProvider serviceProvider
+    ) => app.UseMiddleware<LocalizationCurrencyRedirectMiddleware>();
 }
 
 [RequireFeatures(CommerceConstants.Features.Subscription)]

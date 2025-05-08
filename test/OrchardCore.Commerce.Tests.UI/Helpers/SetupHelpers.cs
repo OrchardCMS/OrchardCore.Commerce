@@ -5,7 +5,7 @@ using OpenQA.Selenium;
 
 namespace OrchardCore.Commerce.Tests.UI.Helpers;
 
-public static class SetupHelpers
+internal static class SetupHelpers
 {
     public const string RecipeId = "OrchardCore.Commerce.Development.Tests.Setup";
 

@@ -10,12 +10,12 @@ namespace OrchardCore.Commerce.Abstractions.Abstractions;
 public interface IProductAttributeDeserializer
 {
     // Not necessary to document as they are not externally accessible.
-#pragma warning disable SA1600 // Elements should be documented.
+#pragma warning disable SA1600,MA0158 // Elements should be documented.
     internal static readonly Dictionary<string, IProductAttributeDeserializer> Deserializers =
         new(StringComparer.OrdinalIgnoreCase);
 
     private static readonly object _lock = new();
-#pragma warning restore SA1600
+#pragma warning restore SA1600,MA0158
 
     /// <summary>
     /// Gets the attribute name used to identify this deserializer.

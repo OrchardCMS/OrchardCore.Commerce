@@ -15,11 +15,16 @@ public class UserAddressesPart : ContentPart
     [SuppressMessage(
         "Design",
         "CA1024:Use properties where appropriate",
-        Justification = "It's not appropriate for it's counterpart for billing so this should remain a method for parity")]
+        Justification = "It's not appropriate for it's counterpart for billing so this should remain a method for parity"
+    )]
     public Address GetSafeShippingAddress() =>
         // If BillingAndShippingAddressesMatch is ticked, we return the billing address for the shipping address as well.
-        BillingAndShippingAddressesMatch.Value ? BillingAddress.Address : ShippingAddress.Address;
+        BillingAndShippingAddressesMatch.Value
+            ? BillingAddress.Address
+            : ShippingAddress.Address;
 
     public Address GetSafeBillingAddress() =>
-        string.IsNullOrWhiteSpace(BillingAddress.Address.Name) ? ShippingAddress.Address : BillingAddress.Address;
+        string.IsNullOrWhiteSpace(BillingAddress.Address.Name)
+            ? ShippingAddress.Address
+            : BillingAddress.Address;
 }

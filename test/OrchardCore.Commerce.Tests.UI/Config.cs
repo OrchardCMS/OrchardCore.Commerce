@@ -1,6 +1,6 @@
 namespace OrchardCore.Commerce.Tests.UI;
 
-public static class Config
+internal static class Config
 {
     private static readonly string[] Separators = ["src", "test"];
 
