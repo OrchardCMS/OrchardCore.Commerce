@@ -39,13 +39,13 @@ public class StripePaymentProvider : IPaymentProvider
         _stripePaymentIntentService = stripePaymentIntentService;
     }
 
-    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false)
+    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string shoppingCartId = null)
     {
         PaymentIntent paymentIntent;
 
         try
         {
-            paymentIntent = await _stripePaymentIntentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal);
+            paymentIntent = await _stripePaymentIntentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal, shoppingCartId);
         }
         catch (StripeException exception) when (exception.Message.StartsWithOrdinal("No API key provided."))
         {

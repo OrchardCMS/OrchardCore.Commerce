@@ -27,11 +27,14 @@ public class PaymentViewModel : ShapeViewModel, IPaymentViewModel
         NetTotal = netTotal;
     }
 
-    public async Task WithProviderDataAsync(IEnumerable<IPaymentProvider> paymentProviders, bool isPaymentRequest = false)
+    public async Task WithProviderDataAsync(
+        IEnumerable<IPaymentProvider> paymentProviders,
+        bool isPaymentRequest = false,
+        string? shoppingCartId = null)
     {
         foreach (var provider in paymentProviders)
         {
-            if (await provider.CreatePaymentProviderDataAsync(this, isPaymentRequest) is { } data)
+            if (await provider.CreatePaymentProviderDataAsync(this, isPaymentRequest, shoppingCartId) is { } data)
             {
                 PaymentProviderData[provider.Name] = data;
             }

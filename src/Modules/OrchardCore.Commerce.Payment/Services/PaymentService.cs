@@ -143,7 +143,7 @@ public class PaymentService : IPaymentService
 
         if (viewModel.SingleCurrencyTotal.Value > 0)
         {
-            await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value);
+            await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value, shoppingCartId: shoppingCartId);
 
             if (!viewModel.PaymentProviderData.Any())
             {
