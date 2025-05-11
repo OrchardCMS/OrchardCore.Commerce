@@ -36,7 +36,7 @@ public class DummyPaymentProvider : IPaymentProvider
         H = htmlLocalizer;
     }
 
-    public Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false) =>
+    public Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string? shoppingCartId = null) =>
         // This provider doesn't have any special data, and it should only be displayed during development even if the
         // feature is enabled. So if the condition is met a blank object is returned, otherwise null which will cause
         // the provider to be skipped when used through the viewModel.WithProviderDataAsync(providers) method.
