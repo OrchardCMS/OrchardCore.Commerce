@@ -150,6 +150,11 @@ public class PaymentService : IPaymentService
                 await _notifier.WarningAsync(new HtmlString(" ").Join(
                     H["There are no applicable payment providers for this site."],
                     H["Please make sure there is at least one enabled and properly configured."]));
+
+                _logger.LogWarning(
+                    "There are no applicable payment providers for this site, " +
+                    "Please make sure there is at least one enabled and properly configured."
+                    );
             }
         }
 
