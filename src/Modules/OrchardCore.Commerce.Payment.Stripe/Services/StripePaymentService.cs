@@ -89,7 +89,7 @@ public class StripePaymentService : IStripePaymentService
         var defaultTotal = totals.SingleOrDefault();
 
         var initPaymentIntent = string.IsNullOrEmpty(paymentIntentId)
-            ? await _stripePaymentIntentService.CreatePaymentIntentAsync(defaultTotal)
+            ? await _stripePaymentIntentService.CreatePaymentIntentAsync(defaultTotal, cart.Id)
             : await _stripePaymentIntentService.GetOrUpdatePaymentIntentAsync(paymentIntentId, defaultTotal);
 
         return initPaymentIntent.ClientSecret;

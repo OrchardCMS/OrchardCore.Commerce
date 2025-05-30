@@ -143,13 +143,17 @@ public class PaymentService : IPaymentService
 
         if (viewModel.SingleCurrencyTotal.Value > 0)
         {
-            await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value);
+            await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value, shoppingCartId: shoppingCartId);
 
             if (!viewModel.PaymentProviderData.Any())
             {
                 await _notifier.WarningAsync(new HtmlString(" ").Join(
                     H["There are no applicable payment providers for this site."],
                     H["Please make sure there is at least one enabled and properly configured."]));
+
+                _logger.LogWarning(
+                    "There are no applicable payment providers for this site, " +
+                    "Please make sure there is at least one enabled and properly configured.");
             }
         }
 

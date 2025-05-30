@@ -83,12 +83,13 @@ public static class PaymentEndpoint
 
     public static IEndpointRouteBuilder AddPaymentRequestEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGetWithDefaultSettings("api/checkout/payment-request/{orderId}", PaymentRequestAsync);
+        builder.MapGetWithDefaultSettings("api/checkout/payment-request/{orderId}/{shoppingCartId?}", PaymentRequestAsync);
         return builder;
     }
 
     private static async Task<IResult> PaymentRequestAsync(
         [FromRoute] string orderId,
+        [FromRoute] string? shoppingCartId,
         [FromServices] IContentManager contentManager,
         [FromServices] IAuthorizationService authorizationService,
         [FromServices] IEnumerable<IPaymentProvider> paymentProviders,
@@ -124,7 +125,7 @@ public static class PaymentEndpoint
         }
 
         var viewModel = new PaymentViewModel(orderPart, singleCurrencyTotal, singleCurrencyTotal);
-        await viewModel.WithProviderDataAsync(paymentProviders, isPaymentRequest: true);
+        await viewModel.WithProviderDataAsync(paymentProviders, isPaymentRequest: true, shoppingCartId: shoppingCartId);
 
         return TypedResults.Ok(viewModel);
     }
