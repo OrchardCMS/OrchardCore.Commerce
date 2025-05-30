@@ -1,6 +1,6 @@
 ﻿using OrchardCore.Commerce.MoneyDataType;
 using System.Linq;
-using static OrchardCore.Commerce.Payment.Constants.CurrencyCollectionConstants;
+using static OrchardCore.Commerce.Payment.Stripe.Constants.CurrencyCollectionConstants;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Helpers;
 
