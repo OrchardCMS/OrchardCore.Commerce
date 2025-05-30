@@ -5,7 +5,6 @@ namespace OrchardCore.Commerce.Payment.Constants;
 
 public static class CurrencyCollectionConstants
 {
-
     [Obsolete("This is a Stripe-specific property, use the equivalent in the OrchardCore.Commerce.Payment.Stripe project.")]
     public static readonly IEnumerable<string> SpecialCases = ["ISK", "HUF", "TWD", "UGX"];
 

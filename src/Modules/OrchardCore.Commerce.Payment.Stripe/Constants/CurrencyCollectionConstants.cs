@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Constants;
+
 public static class CurrencyCollectionConstants
 {
     public static readonly IEnumerable<string> SpecialCases = ["ISK", "HUF", "TWD", "UGX"];
