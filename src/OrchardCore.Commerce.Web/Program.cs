@@ -16,7 +16,7 @@ builder.Services
     .AddOrchardCms(orchardCoreBuilder => orchardCoreBuilder
         // Enabling allowInlineStyle is necessary because style attributes are used in the Blog theme. Re-evaluate if
         // this is still true during the review of https://github.com/OrchardCMS/OrchardCore.Commerce/issues/300.
-        .ConfigureSecurityDefaultsWithStaticFiles(allowInlineStyle: true)
+        .ConfigureSecurityDefaultsWithStaticFiles(new() { AllowInlineStyle = true })
         .EnableAutoSetupIfNotUITesting(configuration));
 
 var app = builder.Build();
