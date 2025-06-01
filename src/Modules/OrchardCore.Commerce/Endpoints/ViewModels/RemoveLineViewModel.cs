@@ -1,4 +1,4 @@
-using OrchardCore.Commerce.ViewModels;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 
 namespace OrchardCore.Commerce.Endpoints.ViewModels;
 public class RemoveLineViewModel
