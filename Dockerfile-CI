@@ -1,6 +1,6 @@
 # This Docker file is intended for the CI
 # A prerequisite is a published application in the .build/release  
-FROM --platform=$BUILDPLATFORM golang:alpine@sha256:7772cb5322baa875edd74705556d08f0eeca7b9c4b5367754ce3f2f00041ccee AS build
+FROM --platform=$BUILDPLATFORM golang:alpine@sha256:b4f875e650466fa0fe62c6fd3f02517a392123eea85f1d7e69d85f780e4db1c1 AS build
 ARG TARGETOS
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809@sha256:3e02871ca45856ebfc43876a706952cdd755b795d0bc8790f317f192dd770843 AS build_windows
