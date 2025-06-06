@@ -237,8 +237,11 @@ public class PaymentService : IPaymentService
                 orderPart.ShippingAddress = orderPart.BillingAddress;
             }
 
-            await _orderEvents.AwaitEachAsync(orderEvents =>
+            if (mustBeFree)
+            {
+                await _orderEvents.AwaitEachAsync(orderEvents =>
                 orderEvents.CreatedFreeAsync(orderPart, cart, cartViewModel));
+            }
         });
 
         await _contentManager.CreateAsync(order);
