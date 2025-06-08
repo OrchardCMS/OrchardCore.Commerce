@@ -9,7 +9,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -135,11 +134,12 @@ public class PaymentService : IPaymentService
         var viewModel = new CheckoutViewModel(orderPart, total, netTotal)
         {
             ShoppingCartId = shoppingCartId,
-            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
+            Regions = await _regionService.GetAvailableRegionsAsync(),
             GrossTotal = grossTotal,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
         };
+        viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
 
         if (viewModel.SingleCurrencyTotal.Value > 0)
         {
@@ -158,8 +158,6 @@ public class PaymentService : IPaymentService
         }
 
         await _checkoutEvents.AwaitEachAsync(checkoutEvents => checkoutEvents.ViewModelCreatedAsync(lines, viewModel));
-
-        viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
 
         return viewModel;
     }

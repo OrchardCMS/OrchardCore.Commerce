@@ -2,6 +2,7 @@
 @using OrchardCore.Commerce.Abstractions.Models
 @using OrchardCore.Commerce.Payment.Controllers
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Commerce.Extensions
 @using static OrchardCore.Commerce.Constants.ResourceNames
 @using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
@@ -10,7 +11,7 @@
 @{
     var orderPart = Model.OrderPart;
 
-    var regions = Model.Regions.AsList();
+    var regions = Model.Regions.CreateSelectListOptions().AsList();
     var provinces = Model.Provinces;
 
     var actionUrl = Orchard.Action<PaymentController>(controller =>

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.DisplayManagement;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
     public Amount GrossTotal { get; init; }
 
     [BindNever]
-    public IEnumerable<SelectListItem> Regions { get; set; } = [];
+    public IEnumerable<Region> Regions { get; set; } = [];
 
     [BindNever]
     public IDictionary<string, IDictionary<string, string>> Provinces { get; } =
