@@ -25,6 +25,8 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
 
     public bool IsInvalid { get; set; }
 
+    public bool ShouldIgnoreAddress { get; set; }
+
     public IEnumerable<IShape> CheckoutShapes { get; init; } = [];
 
     public CheckoutViewModel(OrderPart orderPart, Amount singleCurrencyTotal, Amount netTotal)

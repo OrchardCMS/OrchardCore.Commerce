@@ -17,6 +17,7 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ICheckoutAddressService, CheckoutAddressService>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IPermissionProvider, Permissions>();

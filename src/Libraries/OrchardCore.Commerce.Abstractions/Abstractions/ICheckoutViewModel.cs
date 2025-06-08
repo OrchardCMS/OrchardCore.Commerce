@@ -18,5 +18,6 @@ public interface ICheckoutViewModel : IPaymentViewModel, IShape
     IDictionary<string, IDictionary<string, string>> Provinces { get; }
     string UserEmail { get; }
     bool IsInvalid { get; set; }
+    bool ShouldIgnoreAddress { get; set; }
     IEnumerable<IShape> CheckoutShapes { get; }
 }

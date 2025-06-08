@@ -33,6 +33,7 @@ namespace OrchardCore.Commerce.Payment.Services;
 
 public class PaymentService : IPaymentService
 {
+    private readonly ICheckoutAddressService _checkoutAddressService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly IContentManager _contentManager;
@@ -52,6 +53,7 @@ public class PaymentService : IPaymentService
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentService(
+        ICheckoutAddressService checkoutAddressService,
         IShoppingCartPersistence shoppingCartPersistence,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentService> services,
@@ -66,6 +68,7 @@ public class PaymentService : IPaymentService
         IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
+        _checkoutAddressService = checkoutAddressService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _contentManager = services.ContentManager.Value;
@@ -139,22 +142,20 @@ public class PaymentService : IPaymentService
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
         };
+
         viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
+        await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value, shoppingCartId: shoppingCartId);
+        viewModel.ShouldIgnoreAddress = await _checkoutAddressService.ShouldIgnoreAddressAsync(viewModel);
 
-        if (viewModel.SingleCurrencyTotal.Value > 0)
+        if (viewModel.SingleCurrencyTotal.Value > 0 && !viewModel.PaymentProviderData.Any())
         {
-            await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value, shoppingCartId: shoppingCartId);
+            await _notifier.WarningAsync(new HtmlString(" ").Join(
+                H["There are no applicable payment providers for this site."],
+                H["Please make sure there is at least one enabled and properly configured."]));
 
-            if (!viewModel.PaymentProviderData.Any())
-            {
-                await _notifier.WarningAsync(new HtmlString(" ").Join(
-                    H["There are no applicable payment providers for this site."],
-                    H["Please make sure there is at least one enabled and properly configured."]));
-
-                _logger.LogWarning(
-                    "There are no applicable payment providers for this site, " +
-                    "Please make sure there is at least one enabled and properly configured.");
-            }
+            _logger.LogWarning(
+                "There are no applicable payment providers for this site, " +
+                "Please make sure there is at least one enabled and properly configured.");
         }
 
         await _checkoutEvents.AwaitEachAsync(checkoutEvents => checkoutEvents.ViewModelCreatedAsync(lines, viewModel));
