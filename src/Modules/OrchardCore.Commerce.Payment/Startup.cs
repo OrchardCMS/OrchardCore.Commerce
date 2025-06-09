@@ -6,6 +6,8 @@ using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.Endpoints.Extensions;
 using OrchardCore.Commerce.Payment.Services;
+using OrchardCore.Commerce.Payment.Settings;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
@@ -21,6 +23,7 @@ public class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddSiteDisplayDriver<CheckoutAddressSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>

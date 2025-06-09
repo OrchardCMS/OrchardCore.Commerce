@@ -147,6 +147,12 @@ public class PaymentService : IPaymentService
         await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value, shoppingCartId: shoppingCartId);
         viewModel.ShouldIgnoreAddress = await _checkoutAddressService.ShouldIgnoreAddressAsync(viewModel);
 
+        if (viewModel.ShouldIgnoreAddress)
+        {
+            orderPart.ShippingAddress.UserAddressToSave = string.Empty;
+            orderPart.BillingAddress.UserAddressToSave = string.Empty;
+        }
+
         if (viewModel.SingleCurrencyTotal.Value > 0 && !viewModel.PaymentProviderData.Any())
         {
             await _notifier.WarningAsync(new HtmlString(" ").Join(
