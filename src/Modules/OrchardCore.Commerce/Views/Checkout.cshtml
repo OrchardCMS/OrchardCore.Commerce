@@ -54,18 +54,6 @@
                 </div>
             </div>
 
-                @foreach (var shape in Model.CheckoutShapes)
-                {
-                    try
-                    {
-                        @await DisplayAsync(shape)
-                    }
-                    catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
-                    {
-                        // It's fine, we only want to display the shape if a template exists.
-                    }
-                }
-
             @if (ignoreAddress)
             {
                 <div class="pay-button-container">
@@ -119,6 +107,18 @@
                     </div>
                 </div>
 
+                @foreach (var shape in Model.CheckoutShapes)
+                {
+                    try
+                    {
+                        @await DisplayAsync(shape)
+                    }
+                    catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
+                    {
+                        // It's fine, we only want to display the shape if a template exists.
+                    }
+                }
+
                 @* If totals are zero, there's no need for payment. *@
                 @if (Model.SingleCurrencyTotal.Value > 0)
                 {
@@ -145,8 +145,10 @@
                             </span>
                         </button>
                     </div>
-                }                
+                }
+                
             }           
+            
         </form>
     </div>
 </section>
