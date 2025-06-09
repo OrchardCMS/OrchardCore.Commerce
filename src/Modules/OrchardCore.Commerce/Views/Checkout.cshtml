@@ -56,6 +56,18 @@
 
             @if (ignoreAddress)
             {
+                @foreach (var shape in Model.CheckoutShapes)
+                {
+                    try
+                    {
+                        @await DisplayAsync(shape)
+                    }
+                    catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
+                    {
+                        // It's fine, we only want to display the shape if a template exists.
+                    }
+                }
+
                 <div class="pay-button-container">
                     <button class="pay-button btn btn-success justify-content-center" type="submit">
                         <span class="pay-text">
