@@ -1,4 +1,4 @@
-using OrchardCore.Commerce.Payment.Settins;
+using OrchardCore.Commerce.Payment.Settings;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Settings;
 using System.Threading.Tasks;
