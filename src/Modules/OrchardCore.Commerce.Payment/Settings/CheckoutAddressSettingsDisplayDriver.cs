@@ -36,7 +36,9 @@ public class CheckoutAddressSettingsDisplayDriver : SiteDisplayDriver<CheckoutAd
     {
         if (!await AuthorizeAsync())
         {
+#pragma warning disable CS8603
             return null;
+#pragma warning restore CS8603
         }
 
         context.AddTenantReloadWarningWrapper();
