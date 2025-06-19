@@ -1,5 +1,5 @@
-using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Settings;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 

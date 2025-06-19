@@ -1,5 +1,5 @@
-using OrchardCore.Commerce.Fields;
-using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Abstractions.Fields;
+using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;
