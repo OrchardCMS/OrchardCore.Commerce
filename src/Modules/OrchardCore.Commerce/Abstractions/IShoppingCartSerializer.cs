@@ -4,6 +4,7 @@ using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -35,9 +36,16 @@ public interface IShoppingCartSerializer
     ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type);
 
     /// <summary>
-    /// Returns a deserialized object from JSON string <paramref name="serializedCart"/>.
+    /// Returns a deserialized object from the JSON string <paramref name="serializedCart"/>.
     /// </summary>
+    [Obsolete($"Use {nameof(DeserializeAndVerifyAsync)} instead.")]
     Task<ShoppingCart> DeserializeAsync(string serializedCart);
+
+    /// <summary>
+    /// Returns a deserialized object from the JSON string <paramref name="serializedCart"/> and checks if it has
+    /// changed.
+    /// </summary>
+    Task<DeserializeResult> DeserializeAndVerifyAsync(string serializedCart);
 
     /// <summary>
     /// Process the products attributes for a cart line item, substitute temporary storage attributes such as <see
