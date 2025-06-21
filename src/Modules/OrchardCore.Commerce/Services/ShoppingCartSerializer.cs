@@ -48,15 +48,19 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
                 ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType]))));
     }
 
-    public async Task<ShoppingCart> DeserializeAsync(string serializedCart)
+    public async Task<ShoppingCart> DeserializeAsync(string serializedCart) =>
+        (await DeserializeAndVerifyAsync(serializedCart)).ShoppingCart;
+
+    public async Task<DeserializeResult> DeserializeAndVerifyAsync(string serializedCart)
     {
-        var cart = new ShoppingCart();
         if (string.IsNullOrEmpty(serializedCart))
         {
-            return cart;
+            return new(new ShoppingCart(), HasChanged: false, IsEmpty: true);
         }
 
+        var cart = new ShoppingCart();
         var cartItems = JsonDocument.Parse(serializedCart).RootElement.GetProperty("Items").EnumerateArray();
+        var hasChanged = false;
 
         // Update prices for all items in the shopping cart.
         foreach (var itemElement in cartItems)
@@ -64,26 +68,39 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
             var item = itemElement.ToObject<ShoppingCartItem>();
             cart.AddItem(item);
 
-            if (item?.Prices.Any() == true)
+            if (item?.Prices.Any() != true) continue;
+
+            var oldPrices = hasChanged ? null : item.GetPricesSimple();
+            cart.SetPrices(item, item.Prices.Select(price => new PrioritizedPrice(
+                price.Priority,
+                _moneyService.EnsureCurrency(price.Price))));
+
+            if (!hasChanged)
             {
-                cart.SetPrices(
-                    item,
-                    item.Prices.Select(price => new PrioritizedPrice(price.Priority, _moneyService.EnsureCurrency(price.Price))));
+                var newPrices = item.GetPricesSimple();
+                hasChanged = oldPrices != newPrices;
             }
         }
 
         // Post-process attributes for concrete types according to field definitions (deserialization being essentially
         // non-polymorphic and without access to our type definition contextual information).
+        // Also ensure, that there are no corrupted, missing or deleted products in the cart.
         var products = await GetProductsAsync(cart.Items.Select(item => item.ProductSku));
+        var cartLineCount = cart.Items.Count;
         var newCartItems = await Task.WhenAll(cart.Items
-            .Where(line => line.Attributes != null)
+            .Where(line =>
+                line.Attributes != null &&
+                !string.IsNullOrEmpty(line.ProductSku) &&
+                products.ContainsKey(line.ProductSku))
             .Select(async line => new ShoppingCartItem(
                 line.Quantity,
                 line.ProductSku,
                 await PostProcessAttributesAsync(line.Attributes, products[line.ProductSku]),
                 line.Prices)));
+        cart = cart.With(newCartItems);
 
-        return cart.With(newCartItems);
+        hasChanged = hasChanged || cart.Items.Count != cartLineCount;
+        return new(cart, hasChanged, cart.Items.Count == 0);
     }
 
     public ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type) =>

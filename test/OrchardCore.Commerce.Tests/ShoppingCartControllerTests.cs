@@ -8,12 +8,10 @@ using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Endpoints;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 using System;
@@ -195,14 +193,7 @@ public class ShoppingCartControllerTests
         var mockContextAccessor = mocker.GetMock<IHttpContextAccessor>();
         mockContextAccessor.Setup(hca => hca.HttpContext).Returns(mockContext.HttpContext);
 
-        mocker.Use<IPriceService>(new FakePriceService());
-        mocker.Use<IProductService>(new FakeProductService());
-        mocker.Use<IEnumerable<IShoppingCartEvents>>([new FakeShoppingCartEvents()]);
-        mocker.Use<IEnumerable<IProductAttributeProvider>>([new ProductAttributeProvider()]);
-        mocker.Use<IContentDefinitionManager>(new FakeContentDefinitionManager());
-        mocker.Use<IMoneyService>(new TestMoneyService());
-        mocker.Use<IShoppingCartSerializer>(mocker.CreateInstance<ShoppingCartSerializer>());
-
+        mocker.Use(mocker.CreateShoppingCartSerializerInstance());
         mocker.Use(_cartStorage);
         mocker.Use<IHtmlLocalizer<ShoppingCartHelpers>>(new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
         mocker.Use<IShoppingCartHelpers>(mocker.CreateInstance<ShoppingCartHelpers>());

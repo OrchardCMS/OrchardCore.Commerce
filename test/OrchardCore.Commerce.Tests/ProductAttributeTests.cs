@@ -1,9 +1,9 @@
+using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
-using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -171,7 +171,10 @@ public class ProductAttributeTests
     [Fact]
     public async Task ProductAttributeServiceCanFindAttributesOnProducts()
     {
-        var productAttributeService = new ProductAttributeService(new FakeContentDefinitionManager());
+        var mocker = new AutoMocker();
+        mocker.UseCommerceFakes();
+
+        var productAttributeService = mocker.CreateProductAttributeServiceInstance();
         var product = new ContentItem { ContentType = "Product" };
         var productPart1 = new ContentPart();
         var boolProductAttribute = new BooleanProductAttributeField();

@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.Common.Utilities;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
 using OrchardCore.Commerce.Abstractions.Serialization;
@@ -69,6 +70,19 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             .HtmlClassify()
             .ToUpperInvariant();
     }
+
+    /// <summary>
+    /// Returns a <see langword="string"/> describing the prices ordered by <see cref="PrioritizedPrice.Priority"/> in a
+    /// simplified format, that can be used for debugging or comparison.
+    /// </summary>
+    public string GetPricesSimple() =>
+        string.Join(
+            ", ",
+            Prices?
+                .OrderBy(price => price?.Priority)
+                .Select(price => price == null
+                    ? "null"
+                    : StringHelper.CreateInvariant($"{price.Price.Value} {price.Price.Currency?.CurrencyIsoCode}")));
 
     /// <summary>
     /// Creates a new shopping cart item that is a clone of this, but with prices replaced with new ones.
