@@ -1,8 +1,7 @@
+using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ProductAttributeValues;
-using OrchardCore.Commerce.Services;
-using OrchardCore.Commerce.Tests.Fakes;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,11 +26,7 @@ public class SerializationTests
                     new NumericProductAttributeValue("ProductPart3.attr3", 42.0M),
                 ],
                 [new PrioritizedPrice(0, new Amount(12, Currency.UsDollar))]));
-        var serializer = new ShoppingCartSerializer(
-            attributeProviders: [new ProductAttributeProvider()],
-            productService: new FakeProductService(),
-            moneyService: new TestMoneyService(),
-            contentDefinitionManager: new FakeContentDefinitionManager());
+        var serializer = new AutoMocker().CreateShoppingCartSerializerInstance();
         var serialized = await serializer.SerializeAsync(cart);
         var deserialized = await serializer.DeserializeAsync(serialized);
 
