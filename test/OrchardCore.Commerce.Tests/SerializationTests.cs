@@ -2,6 +2,7 @@ using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.ProductAttributeValues;
+using Shouldly;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,13 +27,18 @@ public class SerializationTests
                     new NumericProductAttributeValue("ProductPart3.attr3", 42.0M),
                 ],
                 [new PrioritizedPrice(0, new Amount(12, Currency.UsDollar))]));
+
         var serializer = new AutoMocker().CreateShoppingCartSerializerInstance();
         var serialized = await serializer.SerializeAsync(cart);
-        var deserialized = await serializer.DeserializeAsync(serialized);
+        var result = await serializer.DeserializeAndVerifyAsync(serialized);
+        var deserialized = result.ShoppingCart;
 
-        Assert.Equal(cart.Count, deserialized.Count);
-        Assert.Equal(cart.ItemCount, deserialized.ItemCount);
+        result.HasChanged.ShouldBeFalse();
+        result.IsEmpty.ShouldBeFalse();
 
-        Assert.Equal(cart.Items, deserialized.Items);
+        deserialized.Count.ShouldBe(cart.Count);
+        deserialized.ItemCount.ShouldBe(cart.ItemCount);
+
+        deserialized.Items.ShouldBe(cart.Items);
     }
 }

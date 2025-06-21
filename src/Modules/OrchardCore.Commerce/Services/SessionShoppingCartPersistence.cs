@@ -23,16 +23,19 @@ public sealed class SessionShoppingCartPersistence : ShoppingCartPersistenceBase
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
-    protected override Task<ShoppingCart> RetrieveInnerAsync(string key)
+    protected override async Task<ShoppingCart> RetrieveInnerAsync(string key)
     {
         var serialized = Session.GetString(key);
+
         if (serialized == null && _httpContextAccessor.HttpContext != null)
         {
-            _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(key, out var serializedCart);
-            return _shoppingCartSerializer.DeserializeAsync(serializedCart);
+            _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(key, out serialized);
         }
 
-        return _shoppingCartSerializer.DeserializeAsync(serialized);
+        var result = await _shoppingCartSerializer.DeserializeAndVerifyAsync(serialized);
+        if (result.HasChanged) await StoreAsync(result.ShoppingCart);
+
+        return result.ShoppingCart;
     }
 
     protected override async Task<bool> StoreInnerAsync(string key, ShoppingCart items)
