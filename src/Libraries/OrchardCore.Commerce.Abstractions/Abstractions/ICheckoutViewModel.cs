@@ -15,7 +15,7 @@ public interface ICheckoutViewModel : IPaymentViewModel, IShape
 {
     string ShoppingCartId { get; }
     Amount GrossTotal { get; }
-    IEnumerable<SelectListItem> Regions { get;}
+    IEnumerable<SelectListItem> Regions { get; }
     IEnumerable<Region> RegionData { get; set; }
     IDictionary<string, IDictionary<string, string>> Provinces { get; }
     string UserEmail { get; }
