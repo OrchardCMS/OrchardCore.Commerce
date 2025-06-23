@@ -17,6 +17,6 @@ public class CheckoutAddressService : ICheckoutAddressService
         var shouldIgnore = settings.ShouldIgnoreAddress;
         var total = checkoutViewModel.SingleCurrencyTotal.Value;
 
-        return shouldIgnore || total <= 0 || total > 10000;
+        return shouldIgnore || total <= 0;
     }
 }
