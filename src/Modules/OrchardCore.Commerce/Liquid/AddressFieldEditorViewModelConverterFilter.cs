@@ -1,7 +1,6 @@
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Commerce.Abstractions.Fields;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.Liquid;
