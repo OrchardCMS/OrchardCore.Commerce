@@ -137,7 +137,7 @@ public class PaymentService : IPaymentService
         var viewModel = new CheckoutViewModel(orderPart, total, netTotal)
         {
             ShoppingCartId = shoppingCartId,
-            Regions = await _regionService.GetAvailableRegionsAsync(),
+            RegionData = await _regionService.GetAvailableRegionsAsync(),
             GrossTotal = grossTotal,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,

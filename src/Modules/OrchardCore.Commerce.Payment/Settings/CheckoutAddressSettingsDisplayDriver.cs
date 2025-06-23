@@ -32,13 +32,11 @@ public class CheckoutAddressSettingsDisplayDriver : SiteDisplayDriver<CheckoutAd
 
     protected override string SettingsGroupId => GroupId;
 
-    public override async Task<IDisplayResult> EditAsync(ISite model, CheckoutAddressSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult?> EditAsync(ISite model, CheckoutAddressSettings section, BuildEditorContext context)
     {
         if (!await AuthorizeAsync())
         {
-#pragma warning disable CS8603
             return null;
-#pragma warning restore CS8603
         }
 
         context.AddTenantReloadWarningWrapper();
@@ -58,7 +56,9 @@ public class CheckoutAddressSettingsDisplayDriver : SiteDisplayDriver<CheckoutAd
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
+#pragma warning disable CS8603 // Possible return null reference.
         return await EditAsync(model, section, context);
+#pragma warning restore CS8603 // Possible return null reference.
     }
 
     private Task<bool> AuthorizeAsync() =>

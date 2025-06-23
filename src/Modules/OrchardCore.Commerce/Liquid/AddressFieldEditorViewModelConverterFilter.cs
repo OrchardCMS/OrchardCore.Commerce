@@ -24,7 +24,7 @@ public class AddressFieldEditorViewModelConverterFilter : ILiquidFilter
         {
             AddressField = addressField,
             CityName = cityName,
-            Regions = checkoutViewModel.Regions.CreateSelectListOptions(),
+            Regions = checkoutViewModel.Regions,
             Provinces = checkoutViewModel.Provinces,
         };
 
