@@ -41,7 +41,7 @@ public class CheckoutAddressSettingsDisplayDriver : SiteDisplayDriver<CheckoutAd
 
         context.AddTenantReloadWarningWrapper();
 
-        return Initialize<CheckoutAddressSettings>("CheckoutAddressSettings_Edit", model => model.ShouldIgnoreAddress = section.ShouldIgnoreAddress)
+        return Initialize<CheckoutAddressSettings>($"{nameof(CheckoutAddressSettings)}_Edit", model => model.ShouldIgnoreAddress = section.ShouldIgnoreAddress)
             .PlaceInContent()
             .OnGroup(SettingsGroupId);
     }
