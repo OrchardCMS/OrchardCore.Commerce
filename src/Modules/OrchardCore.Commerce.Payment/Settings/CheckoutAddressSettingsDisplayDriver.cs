@@ -48,7 +48,7 @@ public class CheckoutAddressSettingsDisplayDriver : SiteDisplayDriver<CheckoutAd
             .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite model, CheckoutAddressSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult?> UpdateAsync(ISite model, CheckoutAddressSettings section, UpdateEditorContext context)
     {
         if (await context.CreateModelMaybeAsync<CheckoutAddressSettings>(Prefix, AuthorizeAsync) is { } viewModel)
         {
@@ -58,9 +58,7 @@ public class CheckoutAddressSettingsDisplayDriver : SiteDisplayDriver<CheckoutAd
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
-#pragma warning disable CS8603 // Possible return null reference.
         return await EditAsync(model, section, context);
-#pragma warning restore CS8603 // Possible return null reference.
     }
 
     private Task<bool> AuthorizeAsync() =>
