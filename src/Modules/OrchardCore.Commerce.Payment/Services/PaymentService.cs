@@ -9,7 +9,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
-using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
@@ -34,6 +33,7 @@ namespace OrchardCore.Commerce.Payment.Services;
 
 public class PaymentService : IPaymentService
 {
+    private readonly ICheckoutAddressService _checkoutAddressService;
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
     private readonly IContentManager _contentManager;
@@ -53,6 +53,7 @@ public class PaymentService : IPaymentService
     // We need all of them.
 #pragma warning disable S107 // Methods should not have too many parameters
     public PaymentService(
+        ICheckoutAddressService checkoutAddressService,
         IShoppingCartPersistence shoppingCartPersistence,
         IFieldsOnlyDisplayManager fieldsOnlyDisplayManager,
         IOrchardServices<PaymentService> services,
@@ -67,6 +68,7 @@ public class PaymentService : IPaymentService
         IMoneyService moneyService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
+        _checkoutAddressService = checkoutAddressService;
         _shoppingCartPersistence = shoppingCartPersistence;
         _fieldsOnlyDisplayManager = fieldsOnlyDisplayManager;
         _contentManager = services.ContentManager.Value;
@@ -135,31 +137,34 @@ public class PaymentService : IPaymentService
         var viewModel = new CheckoutViewModel(orderPart, total, netTotal)
         {
             ShoppingCartId = shoppingCartId,
-            Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions(),
+            RegionData = await _regionService.GetAvailableRegionsAsync(),
             GrossTotal = grossTotal,
             UserEmail = email,
             CheckoutShapes = checkoutShapes,
         };
 
-        if (viewModel.SingleCurrencyTotal.Value > 0)
+        viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
+        await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value, shoppingCartId: shoppingCartId);
+        viewModel.ShouldIgnoreAddress = await _checkoutAddressService.ShouldIgnoreAddressAsync(viewModel);
+
+        if (viewModel.ShouldIgnoreAddress)
         {
-            await viewModel.WithProviderDataAsync(_paymentProvidersLazy.Value, shoppingCartId: shoppingCartId);
+            orderPart.ShippingAddress.UserAddressToSave = string.Empty;
+            orderPart.BillingAddress.UserAddressToSave = string.Empty;
+        }
 
-            if (!viewModel.PaymentProviderData.Any())
-            {
-                await _notifier.WarningAsync(new HtmlString(" ").Join(
-                    H["There are no applicable payment providers for this site."],
-                    H["Please make sure there is at least one enabled and properly configured."]));
+        if (viewModel.SingleCurrencyTotal.Value > 0 && !viewModel.PaymentProviderData.Any())
+        {
+            await _notifier.WarningAsync(new HtmlString(" ").Join(
+                H["There are no applicable payment providers for this site."],
+                H["Please make sure there is at least one enabled and properly configured."]));
 
-                _logger.LogWarning(
-                    "There are no applicable payment providers for this site, " +
-                    "Please make sure there is at least one enabled and properly configured.");
-            }
+            _logger.LogWarning(
+                "There are no applicable payment providers for this site, " +
+                "Please make sure there is at least one enabled and properly configured.");
         }
 
         await _checkoutEvents.AwaitEachAsync(checkoutEvents => checkoutEvents.ViewModelCreatedAsync(lines, viewModel));
-
-        viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
 
         return viewModel;
     }

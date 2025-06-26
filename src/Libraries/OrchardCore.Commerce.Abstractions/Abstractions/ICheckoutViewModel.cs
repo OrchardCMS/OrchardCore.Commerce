@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.DisplayManagement;
 using System.Collections.Generic;
@@ -14,9 +15,11 @@ public interface ICheckoutViewModel : IPaymentViewModel, IShape
 {
     string ShoppingCartId { get; }
     Amount GrossTotal { get; }
-    IEnumerable<SelectListItem> Regions { get; set; }
+    IEnumerable<SelectListItem> Regions { get; }
+    IEnumerable<Region> RegionData { get; set; }
     IDictionary<string, IDictionary<string, string>> Provinces { get; }
     string UserEmail { get; }
     bool IsInvalid { get; set; }
+    bool ShouldIgnoreAddress { get; set; }
     IEnumerable<IShape> CheckoutShapes { get; }
 }

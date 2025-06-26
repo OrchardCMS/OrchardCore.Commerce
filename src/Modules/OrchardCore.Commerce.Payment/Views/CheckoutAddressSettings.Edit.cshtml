@@ -1,0 +1,9 @@
+@model OrchardCore.Commerce.Payment.Settings.CheckoutAddressSettings
+
+<div class="mb-3" asp-validation-class-for="ShouldIgnoreAddress">
+    <div class="w-sm-75 w-md-50 w-lg-25 pe-md-3">
+        <input asp-for="ShouldIgnoreAddress" type="checkbox" class="form-check-input content-preview-select" checked="@Model.ShouldIgnoreAddress" />
+        <label asp-for="ShouldIgnoreAddress" class="form-check-label">@T["Ignore billing and shipping addresses"]</label>
+    </div>
+    <span class="hint">@T["If the site should ignore the billing and shipping addresses."]</span>
+</div>

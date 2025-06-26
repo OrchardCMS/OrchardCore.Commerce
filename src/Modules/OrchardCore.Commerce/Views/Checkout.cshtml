@@ -2,6 +2,7 @@
 @using OrchardCore.Commerce.Abstractions.Models
 @using OrchardCore.Commerce.Payment.Controllers
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Commerce.Extensions
 @using static OrchardCore.Commerce.Constants.ResourceNames
 @using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
@@ -9,7 +10,7 @@
 
 @{
     var orderPart = Model.OrderPart;
-
+    var ignoreAddress = Model.ShouldIgnoreAddress;
     var regions = Model.Regions.AsList();
     var provinces = Model.Provinces;
 
@@ -53,7 +54,31 @@
                 </div>
             </div>
 
-            <div class="address address_billing-address">
+            @if (ignoreAddress)
+            {
+                @foreach (var shape in Model.CheckoutShapes)
+                {
+                    try
+                    {
+                        @await DisplayAsync(shape)
+                    }
+                    catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
+                    {
+                        // It's fine, we only want to display the shape if a template exists.
+                    }
+                }
+
+                <div class="pay-button-container">
+                    <button class="pay-button btn btn-success justify-content-center" type="submit">
+                        <span class="pay-text">
+                            @T["Checkout Without Payment"]
+                        </span>
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="address address_billing-address">
                 <h3 class="address__title">@T["Billing Address"]</h3>
 
                 @await DisplayAsync(
@@ -65,74 +90,77 @@
                                Provinces = provinces,
                                Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{nameof(OrderPart.BillingAddress)}" },
                            })
-            </div>
-
-            <div class="address address_shipping-address">
-                <h3 class="address__title">@T["Shipping Address"]</h3>
-
-                @await DisplayAsync(
-                           new AddressFieldEditorViewModel
-                           {
-                               AddressField = orderPart.ShippingAddress,
-                               CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
-                               Regions = regions,
-                               Provinces = provinces,
-                               Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{nameof(OrderPart.ShippingAddress)}" },
-                           })
-            </div>
-
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox"
-                           asp-for="OrderPart.BillingAndShippingAddressesMatch.Value"
-                           class="form-check-input content-preview-select"
-                           data-val="true"
-                           value="true">
-                    <label asp-for="OrderPart.BillingAndShippingAddressesMatch.Value" class="form-check-label">
-                        @T["Shipping Address and Billing Address are the same"]
-                    </label>
                 </div>
-            </div>
 
-            @foreach (var shape in Model.CheckoutShapes)
-            {
-                try
-                {
-                    @await DisplayAsync(shape)
-                }
-                catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
-                {
-                    // It's fine, we only want to display the shape if a template exists.
-                }
-            }
+                <div class="address address_shipping-address">
+                    <h3 class="address__title">@T["Shipping Address"]</h3>
 
-            @* If totals are zero, there's no need for payment. *@
-            @if (Model.SingleCurrencyTotal.Value > 0)
-            {
-                <div class="payment-provider-list">
-                    @foreach (var (providerName, data) in Model.PaymentProviderData)
+                    @await DisplayAsync(
+                               new AddressFieldEditorViewModel
+                               {
+                                   AddressField = orderPart.ShippingAddress,
+                                   CityName = Html.NameFor(model => model.OrderPart.ShippingAddress.Address.City),
+                                   Regions = regions,
+                                   Provinces = provinces,
+                                   Metadata = { Differentiator = $"{AddressFieldEditorViewModel.ShapeType}-{nameof(OrderPart.ShippingAddress)}" },
+                               })
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox"
+                               asp-for="OrderPart.BillingAndShippingAddressesMatch.Value"
+                               class="form-check-input content-preview-select"
+                               data-val="true"
+                               value="true">
+                        <label asp-for="OrderPart.BillingAndShippingAddressesMatch.Value" class="form-check-label">
+                            @T["Shipping Address and Billing Address are the same"]
+                        </label>
+                    </div>
+                </div>
+
+                @foreach (var shape in Model.CheckoutShapes)
+                {
+                    try
                     {
-                        var shapeName = "Checkout" + providerName;
-                        <div class="payment-provider payment-provider-@shapeName.HtmlClassify()">
-                            <shape type="@shapeName"
-                                   prop-DefaultTotal="@Model.SingleCurrencyTotal"
-                                   prop-NetTotal="@Model.NetTotal"
-                                   prop-GrossTotal="@Model.GrossTotal"
-                                   prop-PaymentProviderData="@data" />
-                        </div>
+                        @await DisplayAsync(shape)
                     }
-                </div>
-            }
-            else
-            {
-                <div class="pay-button-container">
-                    <button class="pay-button btn btn-success justify-content-center" type="submit">
-                        <span class="pay-text">
-                            @T["Checkout Without Payment"]
-                        </span>
-                    </button>
-                </div>
-            }
+                    catch (Exception exception) when (exception.Message.Contains($"The shape type '{shape.Metadata.Type}' is not found"))
+                    {
+                        // It's fine, we only want to display the shape if a template exists.
+                    }
+                }
+
+                @* If totals are zero, there's no need for payment. *@
+                @if (Model.SingleCurrencyTotal.Value > 0)
+                {
+                    <div class="payment-provider-list">
+                        @foreach (var (providerName, data) in Model.PaymentProviderData)
+                        {
+                            var shapeName = "Checkout" + providerName;
+                            <div class="payment-provider payment-provider-@shapeName.HtmlClassify()">
+                                <shape type="@shapeName"
+                                       prop-DefaultTotal="@Model.SingleCurrencyTotal"
+                                       prop-NetTotal="@Model.NetTotal"
+                                       prop-GrossTotal="@Model.GrossTotal"
+                                       prop-PaymentProviderData="@data" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="pay-button-container">
+                        <button class="pay-button btn btn-success justify-content-center" type="submit">
+                            <span class="pay-text">
+                                @T["Checkout Without Payment"]
+                            </span>
+                        </button>
+                    </div>
+                }
+                
+            }           
+            
         </form>
     </div>
 </section>
