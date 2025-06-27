@@ -234,7 +234,7 @@ public class PaymentService : IPaymentService
                 // When billing and shipping addresses are set to match and an address field is null, fill out its data
                 // with the other field's data. This is to properly store it in the order and display it on the order
                 // confirmation page.
-                if (string.IsNullOrEmpty(orderPart.BillingAddress.Address.Name))
+                if (string.IsNullOrEmpty(orderPart.BillingAddress.Address.StreetAddress1))
                 {
                     orderPart.BillingAddress = orderPart.ShippingAddress;
                 }
