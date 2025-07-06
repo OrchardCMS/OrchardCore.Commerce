@@ -41,7 +41,7 @@
     <PackageVersion Include="OrchardCore.Title" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="Stripe.net" Version="48.2.0" />
+    <PackageVersion Include="Stripe.net" Version="48.3.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.6" />
     <PackageVersion Include="xunit.v3" Version="2.0.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1" />
