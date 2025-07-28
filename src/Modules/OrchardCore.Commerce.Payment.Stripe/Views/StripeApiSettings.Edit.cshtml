@@ -18,7 +18,7 @@
 
 <fieldset asp-for="AccountId"
           label="@T["Account Id"]"
-          hint="@(new HtmlString(" ").Join(T["Your Stripe Connect Account Id Secret key."], emptyAfterSaving))"></fieldset>
+          hint="@T["Your Stripe Connect Account Id. This is necessary when using a Stripe connected account."]"></fieldset>
 
 <fieldset asp-for="WebhookSigningSecret"
           label="@T["Webhook Signing Secret"]"
