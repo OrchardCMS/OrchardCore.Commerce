@@ -46,7 +46,7 @@
     <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
     <script at="Foot" depends-on="StripeJs,StripePaymentForm">
         stripePaymentForm(
-            @if (accountId != null)
+            @if (!string.IsNullOrWhiteSpace(accountId))
             {
                 <text>
                 Stripe(@publishableKey.JsonHtmlContent(), {
