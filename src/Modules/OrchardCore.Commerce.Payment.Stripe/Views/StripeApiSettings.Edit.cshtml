@@ -16,6 +16,10 @@
           hint="@(new HtmlString(" ").Join(T["Your Stripe Secret API key."], emptyAfterSaving))"
           type="password"></fieldset>
 
+<fieldset asp-for="AccountId"
+          label="@T["Account Id"]"
+          hint="@(new HtmlString(" ").Join(T["Your Stripe Connect Account Id Secret key."], emptyAfterSaving))"></fieldset>
+
 <fieldset asp-for="WebhookSigningSecret"
           label="@T["Webhook Signing Secret"]"
           hint="@(new HtmlString(" ").Join(T["Your Webhook Signing Secret key."], emptyAfterSaving))"

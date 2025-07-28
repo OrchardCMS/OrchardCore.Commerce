@@ -12,6 +12,7 @@
     string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
     string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
     string paymentIntentId = Model.PaymentProviderData?.PaymentIntentId ?? string.Empty;
+    string accountId = Model.PaymentProviderData?.AccountId ?? null;
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -45,7 +46,19 @@
     <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
     <script at="Foot" depends-on="StripeJs,StripePaymentForm">
         stripePaymentForm(
-            Stripe(@publishableKey.JsonHtmlContent()),
+            @if (accountId != null)
+            {
+                <text>
+                Stripe(@publishableKey.JsonHtmlContent(), {
+                    stripeAccount: '@accountId',
+                }),
+                </text>
+            }
+            else {
+                <text>
+                Stripe(@publishableKey.JsonHtmlContent()),
+                </text>
+            }
             @clientSecret.JsonHtmlContent(),
             @paymentIntentId.JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
