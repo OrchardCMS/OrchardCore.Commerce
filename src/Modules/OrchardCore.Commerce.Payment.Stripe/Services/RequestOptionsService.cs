@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
@@ -7,6 +5,8 @@ using OrchardCore.Commerce.Payment.Stripe.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Settings;
 using Stripe;
+using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
