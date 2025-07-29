@@ -26,6 +26,10 @@
     {
       "differentiator": "OrderPart-BillingAndShippingAddressesMatch",
       "place": "-"
+    },
+    {
+      "differentiator": "OrderPart-IsCorporation",
+      "place": "-"
     }
   ],
   "DateTimeField": [
