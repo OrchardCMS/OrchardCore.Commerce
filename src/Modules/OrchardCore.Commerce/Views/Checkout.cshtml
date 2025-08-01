@@ -15,7 +15,7 @@
     var provinces = Model.Provinces;
 
     var actionUrl = Orchard.Action<PaymentController>(controller =>
-        controller.CheckoutWithoutPayment(Model.ShoppingCartId));
+        controller.CheckoutWithoutPayment(Model.ShoppingCartId, !ignoreAddress));
 }
 
 <section id="checkout">
@@ -54,7 +54,7 @@
                 <div class="pay-button-container">
                     <button class="pay-button btn btn-success justify-content-center" type="submit">
                         <span class="pay-text">
-                            @T["Checkout Without Payment"]
+                            @T["Checkout"]
                         </span>
                     </button>
                 </div>
@@ -158,21 +158,19 @@
                         </button>
                     </div>
                 }
-                
-            }           
-            
+                <script asp-name="@ToggleSecondAddress" at="Foot"></script>
+                <script depends-on="@ToggleSecondAddress" at="Foot">
+                    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
+                    checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
+                    initializeToggleSecondAddress(
+                        checkbox,
+                        document.querySelector('.address_billing-address'),
+                        document.querySelector('.address_shipping-address'));
+                </script>
+            } 
         </form>
     </div>
 </section>
 
 <style asp-name="@PaymentForm"></style>
 
-<script asp-name="@ToggleSecondAddress" at="Foot"></script>
-<script depends-on="@ToggleSecondAddress" at="Foot">
-    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
-    checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
-    initializeToggleSecondAddress(
-        checkbox,
-        document.querySelector('.address_billing-address'),
-        document.querySelector('.address_shipping-address'));
-</script>

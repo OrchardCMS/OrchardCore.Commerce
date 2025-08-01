@@ -18,7 +18,7 @@ public class AdminMenu : AdminMenuNavigationProviderBase
                 .Add(T["Commerce"], commerce => commerce
                     .Add(T["Address Display"], T["Address Display"], entry => entry
                         .SiteSettings(CheckoutAddressSettingsDisplayDriver.GroupId)
-                        .Permission(Permissions.Checkout)
+                        .Permission(Permissions.ManageAddressSettings)
                         .LocalNav())
                 ));
 }
