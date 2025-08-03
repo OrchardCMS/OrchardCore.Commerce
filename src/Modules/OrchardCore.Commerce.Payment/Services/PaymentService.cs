@@ -257,13 +257,13 @@ public class PaymentService : IPaymentService
             try
             {
                 return mustBeFree ?
-                    await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(
+                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(
                         this,
                         order,
                         shoppingCartId,
-                        DummyPaymentProvider.ProviderName)
+                        "WithoutPayment")
                         :
-                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId, string.Empty);
+                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId, "IgnorePayment");
             }
             catch (Exception ex)
             {
