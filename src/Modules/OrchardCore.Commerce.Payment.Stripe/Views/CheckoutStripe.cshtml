@@ -49,9 +49,7 @@
             @if (!string.IsNullOrWhiteSpace(accountId))
             {
                 <text>
-                Stripe(@publishableKey.JsonHtmlContent(), {
-                    stripeAccount: '@accountId',
-                }),
+                Stripe(@publishableKey.JsonHtmlContent(), @Json.Serialize(new { StripeAccount = accountId })),
                 </text>
             }
             else {
