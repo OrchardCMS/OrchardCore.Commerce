@@ -28,7 +28,8 @@ public class RequestOptionsService : IRequestOptionsService
         _apiKeyAccessor = siteSettings =>
             siteSettings
                 .As<StripeApiSettings>()
-                .SecretKey.DecryptStripeApiKey(dataProtectionProvider, logger);
+                .SecretKey
+                .DecryptStripeApiKey(dataProtectionProvider, logger);
     }
 
     public Task<RequestOptions> GetOrCreateRequestOptionsAsync() =>
