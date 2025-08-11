@@ -84,13 +84,7 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
         UpdateEditorContext context
     )
     {
-        if (
-            await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(
-                Prefix,
-                AuthorizeAsync
-            ) is
-            { } viewModel
-        )
+        if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
             var previousSecretKey = section.SecretKey;
             var previousWebhookKey = section.WebhookSigningSecret;
