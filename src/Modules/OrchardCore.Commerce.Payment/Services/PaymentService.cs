@@ -152,8 +152,7 @@ public class PaymentService : IPaymentService
             orderPart.ShippingAddress.UserAddressToSave = string.Empty;
             orderPart.BillingAddress.UserAddressToSave = string.Empty;
         }
-
-        if (viewModel.SingleCurrencyTotal.Value > 0 && !viewModel.PaymentProviderData.Any())
+        else if (viewModel.SingleCurrencyTotal.Value > 0 && !viewModel.PaymentProviderData.Any())
         {
             await _notifier.WarningAsync(new HtmlString(" ").Join(
                 H["There are no applicable payment providers for this site."],
@@ -257,7 +256,14 @@ public class PaymentService : IPaymentService
         {
             try
             {
-                return await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId);
+                return mustBeFree ?
+                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(
+                        this,
+                        order,
+                        shoppingCartId,
+                        "WithoutPayment")
+                        :
+                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId, "IgnorePayment");
             }
             catch (Exception ex)
             {

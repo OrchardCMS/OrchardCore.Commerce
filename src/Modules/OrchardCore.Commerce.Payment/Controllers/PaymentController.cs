@@ -168,9 +168,14 @@ public class PaymentController : PaymentBaseController
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
-    public async Task<IActionResult> CheckoutWithoutPayment([FromQuery] string? shoppingCartId)
+    public async Task<IActionResult> CheckoutWithoutPayment([FromQuery] string? shoppingCartId, [FromQuery] bool mustBeFree)
     {
-        var result = await _paymentService.CheckoutWithoutPaymentAsync(shoppingCartId);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var result = await _paymentService.CheckoutWithoutPaymentAsync(shoppingCartId, mustBeFree);
         return await ProduceActionResultAsync(result);
     }
 
