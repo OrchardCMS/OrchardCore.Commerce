@@ -8,6 +8,7 @@ public class StripeApiSettings
 {
     public string PublishableKey { get; set; }
     public string SecretKey { get; set; }
+    public string AccountId { get; set; }
     public string WebhookSigningSecret { get; set; }
 
     public string DecryptWebhookSigningSecret(IDataProtectionProvider dataProtectionProvider, ILogger logger) =>
