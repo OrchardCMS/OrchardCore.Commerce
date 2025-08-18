@@ -31,7 +31,8 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
         IHttpContextAccessor hca,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
-        ILogger<StripeApiSettingsDisplayDriver> logger)
+        ILogger<StripeApiSettingsDisplayDriver> logger
+    )
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
@@ -43,7 +44,11 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
 
     protected override string SettingsGroupId => GroupId;
 
-    public override async Task<IDisplayResult> EditAsync(ISite model, StripeApiSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(
+        ISite model,
+        StripeApiSettings section,
+        BuildEditorContext context
+    )
     {
         if (!await AuthorizeAsync())
         {
@@ -52,20 +57,32 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
 
         context.AddTenantReloadWarningWrapper();
 
-        return Initialize<StripeApiSettingsViewModel>("StripeApiSettings_Edit", model =>
-            {
-                model.PublishableKey = section.PublishableKey;
+        return Initialize<StripeApiSettingsViewModel>(
+                "StripeApiSettings_Edit",
+                model =>
+                {
+                    model.PublishableKey = section.PublishableKey;
 
-                // Decrypting key.
-                model.SecretKey = section.DecryptSecretKey(_dataProtectionProvider, _logger);
+                    model.AccountId = section.AccountId;
 
-                model.WebhookSigningSecret = section.WebhookSigningSecret.DecryptStripeApiKey(_dataProtectionProvider, _logger);
-            })
+                    // Decrypting key.
+                    model.SecretKey = section.DecryptSecretKey(_dataProtectionProvider, _logger);
+
+                    model.WebhookSigningSecret = section.WebhookSigningSecret.DecryptStripeApiKey(
+                        _dataProtectionProvider,
+                        _logger
+                    );
+                }
+            )
             .PlaceInContent()
             .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite model, StripeApiSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(
+        ISite model,
+        StripeApiSettings section,
+        UpdateEditorContext context
+    )
     {
         if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
@@ -81,9 +98,15 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
             else
             {
                 // Encrypt secret key.
-                var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
+                var protector = _dataProtectionProvider.CreateProtector(
+                    nameof(StripeApiSettingsConfiguration)
+                );
                 section.SecretKey = protector.Protect(viewModel.SecretKey?.Trim());
             }
+
+            section.AccountId = string.IsNullOrWhiteSpace(viewModel.AccountId)
+                ? null
+                : viewModel.AccountId.Trim();
 
             if (string.IsNullOrWhiteSpace(viewModel.WebhookSigningSecret))
             {
@@ -91,8 +114,12 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
             }
             else
             {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
-                section.WebhookSigningSecret = protector.Protect(viewModel.WebhookSigningSecret?.Trim());
+                var protector = _dataProtectionProvider.CreateProtector(
+                    nameof(StripeApiSettingsConfiguration)
+                );
+                section.WebhookSigningSecret = protector.Protect(
+                    viewModel.WebhookSigningSecret?.Trim()
+                );
             }
 
             // Release the tenant to apply settings.
@@ -103,5 +130,8 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
     }
 
     private Task<bool> AuthorizeAsync() =>
-        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, Permissions.ManageStripeApiSettings);
+        _authorizationService.AuthorizeAsync(
+            _hca.HttpContext?.User,
+            Permissions.ManageStripeApiSettings
+        );
 }

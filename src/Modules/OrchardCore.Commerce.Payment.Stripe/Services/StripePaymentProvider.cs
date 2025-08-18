@@ -61,11 +61,14 @@ public class StripePaymentProvider : IPaymentProvider
             });
         }
 
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+
         return new StripePaymentProviderData
         {
-            PublishableKey = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
+            PublishableKey = stripeApiSettings.PublishableKey,
             ClientSecret = paymentIntent.ClientSecret,
             PaymentIntentId = paymentIntent.Id,
+            AccountId = stripeApiSettings.AccountId,
         };
     }
 

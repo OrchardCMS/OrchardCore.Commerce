@@ -20,14 +20,16 @@ public class RequestOptionsService : IRequestOptionsService
     public RequestOptionsService(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
-        ILogger<RequestOptionsService> logger)
+        ILogger<RequestOptionsService> logger
+    )
     {
         _siteService = siteService;
 
-        _apiKeyAccessor = siteSettings => siteSettings
-            .As<StripeApiSettings>()
-            .SecretKey
-            .DecryptStripeApiKey(dataProtectionProvider, logger);
+        _apiKeyAccessor = siteSettings =>
+            siteSettings
+                .As<StripeApiSettings>()
+                .SecretKey
+                .DecryptStripeApiKey(dataProtectionProvider, logger);
     }
 
     public Task<RequestOptions> GetOrCreateRequestOptionsAsync() =>
@@ -35,8 +37,14 @@ public class RequestOptionsService : IRequestOptionsService
 
     public async Task<RequestOptions> SetIdempotencyKeyAsync()
     {
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
         var requestOptions = await GetOrCreateRequestOptionsAsync();
         requestOptions.IdempotencyKey = Guid.NewGuid().ToString();
+
+        if (siteSettings.As<StripeApiSettings>().AccountId != null)
+        {
+            requestOptions.StripeAccount = siteSettings.As<StripeApiSettings>().AccountId;
+        }
 
         return requestOptions;
     }
@@ -45,8 +53,13 @@ public class RequestOptionsService : IRequestOptionsService
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var apiKey = _apiKeyAccessor(siteSettings);
+        var accountId = siteSettings.As<StripeApiSettings>().AccountId;
 
-        _requestOptions = new RequestOptions { ApiKey = apiKey };
+        _requestOptions =
+            accountId != null
+                ? new RequestOptions { ApiKey = apiKey, StripeAccount = accountId, }
+                : new RequestOptions { ApiKey = apiKey };
+
         return _requestOptions;
     }
 }
