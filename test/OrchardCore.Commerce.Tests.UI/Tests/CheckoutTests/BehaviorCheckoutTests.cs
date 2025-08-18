@@ -78,7 +78,7 @@ public class BehaviorCheckoutTests : UITestBase
                 await context.ClickReliablyOnAsync(By.ClassName("pay-button-dummy"));
                 context.Get(By.CssSelector("h4.text-success"));
 
-                await context.GoToContentItemsPageAsync();
+                await context.GoToContentItemListAsync();
                 await context.ClickReliablyOnAsync(By.ClassName("edit"));
                 context
                     .Get(By.Id("OrderPart_BillingAddress_Address_Name"))
