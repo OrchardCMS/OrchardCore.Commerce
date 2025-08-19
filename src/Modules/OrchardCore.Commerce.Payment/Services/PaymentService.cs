@@ -13,6 +13,7 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.Constants;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tax.Extensions;
@@ -267,9 +268,13 @@ public class PaymentService : IPaymentService
                         this,
                         order,
                         shoppingCartId,
-                        "WithoutPayment")
+                        FeatureIds.WithoutPaymentProvider)
                         :
-                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(this, order, shoppingCartId, "IgnorePayment");
+                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(
+                        this,
+                        order,
+                        shoppingCartId,
+                        FeatureIds.NoNecessaryPaymentProvider);
             }
             catch (Exception ex)
             {
