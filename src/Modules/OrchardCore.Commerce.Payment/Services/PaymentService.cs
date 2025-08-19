@@ -151,6 +151,12 @@ public class PaymentService : IPaymentService
         {
             orderPart.ShippingAddress.UserAddressToSave = string.Empty;
             orderPart.BillingAddress.UserAddressToSave = string.Empty;
+
+            await _notifier.InformationAsync(new HtmlString(" ").Join(
+               H["There is no payment required for this process. Please continue to follow the instructions provided on the site."]));
+
+            _logger.LogInformation(
+                "There is no payment required for this process. Please continue to follow the instructions provided on the site.");
         }
         else if (viewModel.SingleCurrencyTotal.Value > 0 && !viewModel.PaymentProviderData.Any())
         {
