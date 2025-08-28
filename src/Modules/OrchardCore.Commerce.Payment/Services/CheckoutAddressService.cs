@@ -15,8 +15,7 @@ public class CheckoutAddressService : ICheckoutAddressService
     {
         var settings = (await _siteService.GetSiteSettingsAsync()).As<CheckoutAddressSettings>();
         var shouldIgnore = settings.ShouldIgnoreAddress;
-        var total = checkoutViewModel.SingleCurrencyTotal.Value;
 
-        return shouldIgnore || total <= 0;
+        return shouldIgnore;
     }
 }
