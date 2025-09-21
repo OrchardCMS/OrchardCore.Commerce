@@ -10,17 +10,14 @@ on:
 jobs:
   build-and-test-linux:
     name: Build and Test (Linux)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/OSOE-1160
     with:
       machine-types: '["ubuntu-24.04"]'
       timeout-minutes: 60
-      # Necessary workaround for "Unable to locate executable file: pnpm" error.
-      # See https://github.com/actions/setup-node/issues/1357.
-      node-package-manager-cache: false
 
   build-and-test-windows:
     name: Build and Test (Windows)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/OSOE-1160
     with:
       machine-types: '["windows-2022"]'
       timeout-minutes: 60
@@ -29,9 +26,6 @@ jobs:
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
-      # Necessary workaround for "Unable to locate executable file: pnpm" error.
-      # See https://github.com/actions/setup-node/issues/1357.
-      node-package-manager-cache: false
 
   codespell:
     name: Codespell
