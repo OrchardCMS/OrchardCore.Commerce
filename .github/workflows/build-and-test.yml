@@ -10,14 +10,14 @@ on:
 jobs:
   build-and-test-linux:
     name: Build and Test (Linux)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/OSOE-1160
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
     with:
       machine-types: '["ubuntu-24.04"]'
       timeout-minutes: 60
 
   build-and-test-windows:
     name: Build and Test (Windows)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/OSOE-1160
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
     with:
       machine-types: '["windows-2022"]'
       timeout-minutes: 60
