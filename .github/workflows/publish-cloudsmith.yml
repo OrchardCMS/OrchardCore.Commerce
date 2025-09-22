@@ -2,10 +2,12 @@ name: Publish to CloudSmith
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
   publish-cloudsmith:
-    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@issue/OCC-387
+    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
     with:
       source: https://nuget.cloudsmith.io/orchardcore/commerce/v3/index.json
       publish-version: "USE_GITHUB_RUN_NUMBER"
