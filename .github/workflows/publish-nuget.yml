@@ -6,7 +6,7 @@ on:
       - v*
 
 jobs:
-  call-publish-workflow:
+  publish-nuget:
     if: contains(github.ref, 'preview') == false
     uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
     secrets:
