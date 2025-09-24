@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  call-publish-workflow:
+  publish-cloudsmith:
     uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
     with:
       source: https://nuget.cloudsmith.io/orchardcore/commerce/v3/index.json
