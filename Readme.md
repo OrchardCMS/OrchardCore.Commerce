@@ -1,4 +1,4 @@
-# Orchard Core Commerce
+# Orchard Core Commerce test
 
 [![Discord](https://img.shields.io/discord/551136772243980291?color=%237289DA&label=Discord&logo=discord&logoColor=white&style=flat)](https://discord.gg/rYHxgqU5) [![Read the Docs](https://img.shields.io/readthedocs/orchardcorecommerce?label=Documentation)](https://commerce.orchardcore.net/) [![Latest version of 'OrchardCore.Commerce' on NuGet](https://img.shields.io/nuget/v/OrchardCore.Commerce?style=flat&label=NuGet)](https://www.nuget.org/packages/OrchardCore.Commerce/) [![Latest version of 'OrchardCore.Commerce' on Cloudsmith](https://api-prd.cloudsmith.io/v1/badges/version/orchardcore/commerce/nuget/OrchardCore.Commerce/latest/xsp=True/?render=true&show_latest=true&style=flat&labelColor=gray&label=Cloudsmith)](https://cloudsmith.io/~orchardcore/repos/commerce/packages/detail/nuget/OrchardCore.Commerce/latest/xsp=True/)
 
