@@ -64,20 +64,11 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
                 key => key.Split("].")[1],
                 key => form[key].FirstOrDefault()?.Trim() ?? string.Empty));
 
-        settings.Rates.SetItems(rawRates.Select(rawRate => new TaxRateSetting(rawRate)));
-        settings.Rates
-            .Where(rate =>
-                string.IsNullOrEmpty(rate.DestinationStreetAddress1) &&
-                string.IsNullOrEmpty(rate.DestinationStreetAddress2) &&
-                string.IsNullOrEmpty(rate.DestinationCity) &&
-                string.IsNullOrEmpty(rate.DestinationProvince) &&
-                string.IsNullOrEmpty(rate.DestinationPostalCode) &&
-                string.IsNullOrEmpty(rate.DestinationRegion) &&
-                string.IsNullOrEmpty(rate.VatNumber) &&
-                string.IsNullOrEmpty(rate.TaxCode))
-            .ToList()
-            .ForEach(rate => section.Rates.Remove(rate));
+        settings.Rates.SetItems(rawRates
+            .Select(rawRate => new TaxRateSetting(rawRate))
+            .Where(rate => rate.IsValid));
 
+        // Show error if any string entries are invalid RegEx.
         foreach (var rate in settings.Rates)
         {
             Validate(context, rate.DestinationStreetAddress1);
