@@ -1,7 +1,7 @@
 @using OrchardCore.Commerce.Tax.Services
 @model TaxRateSettings
 
-@inject ITaxRateSettingsHeaderContainer TaxRateSettingsHeaderContainer
+@inject ITaxRateSettingsHeaderProvider TaxRateSettingsHeaderProvider
 
 @{
     const string regexDocsUrl = "https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions";
@@ -15,7 +15,7 @@
     var addButtonElementId = $"{addButtonElement}_{blockGuid}";
     var addressCheckboxElementId = $"{blockName}__hideAddressColumns_{blockGuid}";
 
-    var labels = TaxRateSettingsHeaderContainer.HeaderLabels;
+    var labels = TaxRateSettingsHeaderProvider.HeaderLabels;
 }
 
 <h2>@T["Recipients and Tax Codes"]</h2>

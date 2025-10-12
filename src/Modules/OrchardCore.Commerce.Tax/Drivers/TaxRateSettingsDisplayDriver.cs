@@ -13,13 +13,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tax.Drivers;
 
-public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>, ITaxRateSettingsHeaderContainer
+public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>, ITaxRateSettingsHeaderProvider
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _hca;
