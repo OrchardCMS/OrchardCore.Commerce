@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.Tax.Permissions;
+using OrchardCore.Commerce.Tax.Services;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -18,11 +19,15 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Tax.Drivers;
 
-public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
+public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>, ITaxRateSettingsHeaderContainer
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _hca;
     private readonly IStringLocalizer T;
+
+    public Lazy<IReadOnlyDictionary<string, string>> HeaderLabelsLazy { get; init; }
+
+    public IReadOnlyDictionary<string, string> HeaderLabels => HeaderLabelsLazy.Value;
 
     public TaxRateSettingsDisplayDriver(
         IAuthorizationService authorizationService,
@@ -32,6 +37,20 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
         _authorizationService = authorizationService;
         _hca = hca;
         T = stringLocalizer;
+
+        HeaderLabelsLazy = new(() => new Dictionary<string, string>
+        {
+            [nameof(TaxRateSetting.DestinationStreetAddress1)] = T["First street address"],
+            [nameof(TaxRateSetting.DestinationStreetAddress2)] = T["Second street address"],
+            [nameof(TaxRateSetting.DestinationCity)] = T["City"],
+            [nameof(TaxRateSetting.DestinationProvince)] = T["State or province code"],
+            [nameof(TaxRateSetting.DestinationPostalCode)] = T["Postal code"],
+            [nameof(TaxRateSetting.DestinationRegion)] = T["Country or region code"],
+            [nameof(TaxRateSetting.VatNumber)] = T["Tax code"],
+            [nameof(TaxRateSetting.TaxCode)] = T["VAT number"],
+            [nameof(TaxRateSetting.TaxRate)] = T["Tax rate (%)"],
+            [nameof(TaxRateSetting.IsCorporation)] = T["Is Corporation"],
+        });
     }
 
     protected override string SettingsGroupId
@@ -72,29 +91,31 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
             .Where(rate => rate.IsValid));
 
         // Show error if any string entries are invalid RegEx.
-        foreach (var rate in settings.Rates)
+        for (var i = 0; i < settings.Rates.Count; i++)
         {
-            Validate(context, rate.DestinationStreetAddress1);
-            Validate(context, rate.DestinationStreetAddress2);
-            Validate(context, rate.DestinationCity);
-            Validate(context, rate.DestinationProvince);
-            Validate(context, rate.DestinationPostalCode);
-            Validate(context, rate.DestinationRegion);
-            Validate(context, rate.VatNumber);
-            Validate(context, rate.TaxCode);
+            var rate = settings.Rates[i];
+            Validate(context, i, rate.DestinationStreetAddress1, nameof(TaxRateSetting.DestinationStreetAddress1));
+            Validate(context, i, rate.DestinationStreetAddress2, nameof(TaxRateSetting.DestinationStreetAddress2));
+            Validate(context, i, rate.DestinationCity, nameof(TaxRateSetting.DestinationCity));
+            Validate(context, i, rate.DestinationProvince, nameof(TaxRateSetting.DestinationProvince));
+            Validate(context, i, rate.DestinationPostalCode, nameof(TaxRateSetting.DestinationPostalCode));
+            Validate(context, i, rate.DestinationRegion, nameof(TaxRateSetting.DestinationRegion));
+            Validate(context, i, rate.VatNumber, nameof(TaxRateSetting.VatNumber));
+            Validate(context, i, rate.TaxCode, nameof(TaxRateSetting.TaxCode));
         }
 
         section.CopyFrom(settings);
         return await EditAsync(model, settings, context);
     }
 
-    private void Validate(BuildShapeContext context, string value, [CallerMemberName] string name = "")
+    private void Validate(BuildShapeContext context, int index, string value, string name)
     {
         if (string.IsNullOrWhiteSpace(value) || IsValidRegex(value)) return;
 
+        var label = HeaderLabels[name];
         context.Updater.ModelState.AddModelError(
             name,
-            T["The \"{0}\" must be empty or a valid regular expression.", name]);
+            T["The value in column \"{0}\" in row {1} must be empty or a valid regular expression.", label, index + 1]);
     }
 
     private Task<bool> AuthorizeAsync() =>

@@ -1,4 +1,7 @@
+@using OrchardCore.Commerce.Tax.Services
 @model TaxRateSettings
+
+@inject ITaxRateSettingsHeaderContainer TaxRateSettingsHeaderContainer
 
 @{
     const string regexDocsUrl = "https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions";
@@ -11,6 +14,8 @@
     var tableElementId = $"{tableElement}_{blockGuid}";
     var addButtonElementId = $"{addButtonElement}_{blockGuid}";
     var addressCheckboxElementId = $"{blockName}__hideAddressColumns_{blockGuid}";
+
+    var labels = TaxRateSettingsHeaderContainer.HeaderLabels;
 }
 
 <h2>@T["Recipients and Tax Codes"]</h2>
@@ -23,16 +28,16 @@
 <table id="@tableElementId" class="table @tableElement">
     <thead>
     <tr>
-        <th>@T["First street address"]</th>
-        <th>@T["Second street address"]</th>
-        <th>@T["City"]</th>
-        <th>@T["State or province code"]</th>
-        <th>@T["Postal code"]</th>
-        <th>@T["Country or region code"]</th>
-        <th>@T["Tax code"]</th>
-        <th>@T["VAT number"]</th>
-        <th>@T["Tax rate (%)"]</th>
-        <th>@T["Is Corporation"]</th>
+        <th>@labels[nameof(TaxRateSetting.DestinationStreetAddress1)]</th>
+        <th>@labels[nameof(TaxRateSetting.DestinationStreetAddress2)]</th>
+        <th>@labels[nameof(TaxRateSetting.DestinationCity)]</th>
+        <th>@labels[nameof(TaxRateSetting.DestinationProvince)]</th>
+        <th>@labels[nameof(TaxRateSetting.DestinationPostalCode)]</th>
+        <th>@labels[nameof(TaxRateSetting.DestinationRegion)]</th>
+        <th>@labels[nameof(TaxRateSetting.VatNumber)]</th>
+        <th>@labels[nameof(TaxRateSetting.TaxCode)]</th>
+        <th>@labels[nameof(TaxRateSetting.TaxRate)]</th>
+        <th>@labels[nameof(TaxRateSetting.IsCorporation)]</th>
         <th>@T["Actions"]</th>
     </tr>
     </thead>
