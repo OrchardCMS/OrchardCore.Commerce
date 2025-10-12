@@ -61,6 +61,7 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
         var rawRates = form.Keys
             .Where(key => key.StartsWithOrdinalIgnoreCase("ISite.Rates["))
             .GroupBy(key => int.Parse(key.Split('[')[1].Split(']')[0], CultureInfo.InvariantCulture))
+            .OrderBy(group => group.Key)
             .Select(group => group.ToDictionary(
                 key => key.Split("].")[1],
                 key => form[key].FirstOrDefault()?.Trim() ?? string.Empty));
