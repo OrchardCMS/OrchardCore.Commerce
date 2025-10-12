@@ -83,8 +83,7 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
             Validate(context, rate.TaxCode);
         }
 
-        if (context.Updater.ModelState.IsValid) section.CopyFrom(settings);
-
+        section.CopyFrom(settings);
         return await EditAsync(model, settings, context);
     }
 
