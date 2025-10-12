@@ -56,6 +56,7 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
             return null;
         }
 
+        // Parse tax rate entries from the request form.
         var form = _hca.HttpContext.Request.Form;
         var rawRates = form.Keys
             .Where(key => key.StartsWithOrdinalIgnoreCase("ISite.Rates["))
@@ -64,6 +65,7 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>
                 key => key.Split("].")[1],
                 key => form[key].FirstOrDefault()?.Trim() ?? string.Empty));
 
+        // Copy over the non-empty entries.
         settings.Rates.SetItems(rawRates
             .Select(rawRate => new TaxRateSetting(rawRate))
             .Where(rate => rate.IsValid));
