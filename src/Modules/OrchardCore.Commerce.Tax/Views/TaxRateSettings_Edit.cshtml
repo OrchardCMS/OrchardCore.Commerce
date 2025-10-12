@@ -28,8 +28,9 @@
 <table id="@tableElementId" class="table @tableElement">
     <thead>
     <tr>
-        <th>@labels[nameof(TaxRateSetting.DestinationStreetAddress1)]</th>
-        <th>@labels[nameof(TaxRateSetting.DestinationStreetAddress2)]</th>
+        <th>#</th>
+        <th class="address-column">@labels[nameof(TaxRateSetting.DestinationStreetAddress1)]</th>
+        <th class="address-column">@labels[nameof(TaxRateSetting.DestinationStreetAddress2)]</th>
         <th>@labels[nameof(TaxRateSetting.DestinationCity)]</th>
         <th>@labels[nameof(TaxRateSetting.DestinationProvince)]</th>
         <th>@labels[nameof(TaxRateSetting.DestinationPostalCode)]</th>
@@ -44,10 +45,13 @@
 
     <tbody>
     <tr v-for="(rate, index) in rates">
-        <td>
+        <td class="font-weight-bold">
+            {{ index + 1 }}
+        </td>
+        <td class="address-column">
             <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress1'" v-model="rate.destinationStreetAddress1">
         </td>
-        <td>
+        <td class="address-column">
             <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress2'" v-model="rate.destinationStreetAddress2">
         </td>
         <td>
@@ -109,7 +113,7 @@
 <button id="@addButtonElementId" class="@addButtonElement btn btn-secondary mb-3">@T["Add Row"]</button>
 
 <style at="Head">
-    .taxRateSettings__table tr > :nth-child(1), .taxRateSettings__table tr > :nth-child(2) {
+    .taxRateSettings__table .address-column {
         display: var(--tax-address-display);
     }
 </style>
