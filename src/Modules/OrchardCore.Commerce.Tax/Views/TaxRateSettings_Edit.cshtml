@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Commerce.Tax.Services
 @model TaxRateSettings
 
@@ -16,9 +18,20 @@
     var addressCheckboxElementId = $"{blockName}__hideAddressColumns_{blockGuid}";
 
     var labels = TaxRateSettingsHeaderProvider.HeaderLabels;
+    var noteForIsCorporation = new HtmlString("&#13;").Join(
+        T["Matches the value of the &quot;Buyer is a corporation&quot; checkbox during checkout."],
+        T["If set to &quot;Ignored&quot; then the value of the checkbox doesn't matter to match this rule."],
+        T["Otherwise the checkbox has to be either &quot;Checked&quot; or &quot;Unchecked&quot; to apply this rule."]);
 }
 
 <h2>@T["Recipients and Tax Codes"]</h2>
+
+<p>
+    @T["You can define custom tax rate rules in the table below."]
+    @T["Create a new rule by pressing the \"Add Row\" button."]
+    @T["Any columns you fill out (besides \"{0}\") will serve as a condition (checked against the buyer's invoice address and the product's VAT number) to apply that tax rate.", labels[nameof(TaxRateSetting.TaxRate)]]
+    @T["The first row that matches all of its listed patterns and conditions will provide the tax rate for a given product."]
+</p>
 
 <div class="mb-3">
     <input id="@addressCheckboxElementId" type="checkbox" class="form-check-input" checked>
@@ -37,8 +50,8 @@
         <th scope="col">@labels[nameof(TaxRateSetting.DestinationRegion)]</th>
         <th scope="col">@labels[nameof(TaxRateSetting.VatNumber)]</th>
         <th scope="col">@labels[nameof(TaxRateSetting.TaxCode)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.IsCorporation)] <i class="far fa-question-circle" title="@noteForIsCorporation"></i></th>
         <th scope="col">@labels[nameof(TaxRateSetting.TaxRate)]</th>
-        <th scope="col">@labels[nameof(TaxRateSetting.IsCorporation)]</th>
         <th scope="col">@T["Actions"]</th>
     </tr>
     </thead>
@@ -73,14 +86,14 @@
             <input :name="'ISite.Rates[' + index + '].VatNumber'" v-model="rate.vatNumber">
         </td>
         <td>
-            <input :name="'ISite.Rates[' + index + '].TaxRate'" v-model="rate.taxRate" type="number" min="0" max="100" step="0.001">
-        </td>
-        <td>
             <select :name="'ISite.Rates[' + index + '].IsCorporation'" v-model="rate.isCorporation">
                 <option value="@((int)MatchTaxRates.Ignored)">@T["Ignored"]</option>
                 <option value="@((int)MatchTaxRates.Checked)">@T["Checked"]</option>
                 <option value="@((int)MatchTaxRates.Unchecked)">@T["Unchecked"]</option>
             </select>
+        </td>
+        <td>
+            <input :name="'ISite.Rates[' + index + '].TaxRate'" v-model="rate.taxRate" type="number" min="0" max="100" step="0.001">
         </td>
         <td>
             <div class="d-flex flex-row">
