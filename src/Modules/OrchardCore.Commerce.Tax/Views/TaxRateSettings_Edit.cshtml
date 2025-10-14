@@ -1,5 +1,3 @@
-@using Microsoft.AspNetCore.Html
-@using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Commerce.Tax.Services
 @model TaxRateSettings
 
@@ -18,20 +16,13 @@
     var addressCheckboxElementId = $"{blockName}__hideAddressColumns_{blockGuid}";
 
     var labels = TaxRateSettingsHeaderProvider.HeaderLabels;
-    var noteForIsCorporation = new HtmlString("&#13;").Join(
-        T["Matches the value of the &quot;Buyer is a corporation&quot; checkbox during checkout."],
-        T["If set to &quot;Ignored&quot; then the value of the checkbox doesn't matter to match this rule."],
-        T["Otherwise the checkbox has to be either &quot;Checked&quot; or &quot;Unchecked&quot; to apply this rule."]);
+    var descriptionText = T["You can define custom tax rate rules in the table below. Create a new rule by pressing the \"Add Row\" button. Any columns you fill out (besides \"{0}\") will serve as a condition (checked against the buyer's invoice address and the product's VAT number) to apply that tax rate. The first row that matches all of its listed patterns and conditions will provide the tax rate for a given product.", labels[nameof(TaxRateSetting.TaxRate)]];
+    var noteForIsCorporation = T["Matches the value of the &quot;Buyer is a corporation&quot; checkbox during checkout.&#13;If set to &quot;Ignored&quot; then the value of the checkbox doesn't matter to match this rule.&#13;Otherwise the checkbox has to be either &quot;Checked&quot; or &quot;Unchecked&quot; to apply this rule."];
 }
 
 <h2>@T["Recipients and Tax Codes"]</h2>
 
-<p>
-    <span>@T["You can define custom tax rate rules in the table below."]</span>
-    <span>@T["Create a new rule by pressing the \"Add Row\" button."]</span>
-    <span>@T["Any columns you fill out (besides \"{0}\") will serve as a condition (checked against the buyer's invoice address and the product's VAT number) to apply that tax rate.", labels[nameof(TaxRateSetting.TaxRate)]]</span>
-    <span>@T["The first row that matches all of its listed patterns and conditions will provide the tax rate for a given product."]</span>
-</p>
+<p>@descriptionText</p>
 
 <div class="mb-3">
     <input id="@addressCheckboxElementId" type="checkbox" class="form-check-input" checked>
