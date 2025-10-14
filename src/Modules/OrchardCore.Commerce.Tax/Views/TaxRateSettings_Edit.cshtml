@@ -28,26 +28,26 @@
 <table id="@tableElementId" class="table @tableElement">
     <thead>
     <tr>
-        <th>#</th>
-        <th class="address-column">@labels[nameof(TaxRateSetting.DestinationStreetAddress1)]</th>
-        <th class="address-column">@labels[nameof(TaxRateSetting.DestinationStreetAddress2)]</th>
-        <th>@labels[nameof(TaxRateSetting.DestinationCity)]</th>
-        <th>@labels[nameof(TaxRateSetting.DestinationProvince)]</th>
-        <th>@labels[nameof(TaxRateSetting.DestinationPostalCode)]</th>
-        <th>@labels[nameof(TaxRateSetting.DestinationRegion)]</th>
-        <th>@labels[nameof(TaxRateSetting.VatNumber)]</th>
-        <th>@labels[nameof(TaxRateSetting.TaxCode)]</th>
-        <th>@labels[nameof(TaxRateSetting.TaxRate)]</th>
-        <th>@labels[nameof(TaxRateSetting.IsCorporation)]</th>
-        <th>@T["Actions"]</th>
+        <th scope="col">#</th>
+        <th scope="col" class="address-column">@labels[nameof(TaxRateSetting.DestinationStreetAddress1)]</th>
+        <th scope="col" class="address-column">@labels[nameof(TaxRateSetting.DestinationStreetAddress2)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.DestinationCity)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.DestinationProvince)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.DestinationPostalCode)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.DestinationRegion)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.VatNumber)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.TaxCode)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.TaxRate)]</th>
+        <th scope="col">@labels[nameof(TaxRateSetting.IsCorporation)]</th>
+        <th scope="col">@T["Actions"]</th>
     </tr>
     </thead>
 
     <tbody>
     <tr v-for="(rate, index) in rates">
-        <td class="font-weight-bold">
+        <th scope="row" class="font-weight-bold">
             {{ index + 1 }}
-        </td>
+        </th>
         <td class="address-column">
             <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress1'" v-model="rate.destinationStreetAddress1">
         </td>
@@ -80,7 +80,7 @@
                 <option value="@((int)MatchTaxRates.Ignored)">@T["Ignored"]</option>
                 <option value="@((int)MatchTaxRates.Checked)">@T["Checked"]</option>
                 <option value="@((int)MatchTaxRates.Unchecked)">@T["Unchecked"]</option>
-           </select>
+            </select>
         </td>
         <td>
             <div class="d-flex flex-row">
