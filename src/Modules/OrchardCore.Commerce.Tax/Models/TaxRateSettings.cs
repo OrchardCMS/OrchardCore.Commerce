@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Tax.Models;
@@ -31,8 +30,8 @@ public class TaxRateSetting
     public decimal TaxRate { get; set; }
 
     [JsonInclude]
-    public bool IsValid =>
-        TaxRate != 0 && !(
+    public bool IsEmpty =>
+        TaxRate == 0 || (
             string.IsNullOrEmpty(DestinationStreetAddress1) &&
             string.IsNullOrEmpty(DestinationStreetAddress2) &&
             string.IsNullOrEmpty(DestinationCity) &&
@@ -41,36 +40,6 @@ public class TaxRateSetting
             string.IsNullOrEmpty(DestinationRegion) &&
             string.IsNullOrEmpty(VatNumber) &&
             string.IsNullOrEmpty(TaxCode));
-
-    public TaxRateSetting() { }
-
-    public TaxRateSetting(IDictionary<string, string> rawRate)
-    {
-        DestinationStreetAddress1 = rawRate.GetMaybe(nameof(DestinationStreetAddress1));
-        DestinationStreetAddress2 = rawRate.GetMaybe(nameof(DestinationStreetAddress2));
-        DestinationCity = rawRate.GetMaybe(nameof(DestinationCity));
-        DestinationProvince = rawRate.GetMaybe(nameof(DestinationProvince));
-        DestinationPostalCode = rawRate.GetMaybe(nameof(DestinationPostalCode));
-        DestinationRegion = rawRate.GetMaybe(nameof(DestinationRegion));
-        VatNumber = rawRate.GetMaybe(nameof(VatNumber));
-        TaxCode = rawRate.GetMaybe(nameof(TaxCode));
-
-        IsCorporation = ParseMatchTaxRates(rawRate.GetMaybe(nameof(IsCorporation)));
-
-        TaxRate = decimal.TryParse(rawRate.GetMaybe(nameof(TaxRate)), CultureInfo.InvariantCulture, out var taxRate)
-            ? taxRate
-            : 0;
-    }
-
-    private static MatchTaxRates ParseMatchTaxRates(string value) =>
-        value switch
-        {
-            nameof(MatchTaxRates.Ignored) => MatchTaxRates.Ignored,
-            nameof(MatchTaxRates.Checked) => MatchTaxRates.Checked,
-            nameof(MatchTaxRates.Unchecked) => MatchTaxRates.Unchecked,
-            { } when int.TryParse(value, CultureInfo.InvariantCulture, out var number) => (MatchTaxRates)number,
-            _ => default,
-        };
 }
 
 public enum MatchTaxRates

@@ -68,26 +68,14 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>, 
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, TaxRateSettings section, UpdateEditorContext context)
     {
-        if (await context.CreateModelMaybeAsync<TaxRateSettings>(Prefix, AuthorizeAsync) is not { } settings ||
+        if (await context.CreateModelMaybeAsync<TaxRateSettings>(nameof(ISite), AuthorizeAsync) is not { } settings ||
             _hca.HttpContext?.Request.HasFormContentType != true)
         {
             return null;
         }
 
-        // Parse tax rate entries from the request form.
-        var form = _hca.HttpContext.Request.Form;
-        var rawRates = form.Keys
-            .Where(key => key.StartsWithOrdinalIgnoreCase("ISite.Rates["))
-            .GroupBy(key => int.Parse(key.Split('[')[1].Split(']')[0], CultureInfo.InvariantCulture))
-            .OrderBy(group => group.Key)
-            .Select(group => group.ToDictionary(
-                key => key.Split("].")[1],
-                key => form[key].FirstOrDefault()?.Trim() ?? string.Empty));
-
-        // Copy over the non-empty entries.
-        settings.Rates.SetItems(rawRates
-            .Select(rawRate => new TaxRateSetting(rawRate))
-            .Where(rate => rate.IsValid));
+        // Remove all empty entries.
+        settings.Rates.RemoveAll(rate => rate.IsEmpty);
 
         // Show error if any string entries are invalid RegEx.
         for (var i = 0; i < settings.Rates.Count; i++)
