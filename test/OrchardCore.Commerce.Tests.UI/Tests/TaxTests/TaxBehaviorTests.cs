@@ -131,7 +131,7 @@ public class TaxBehaviorTests : UITestBase
                 void ResetScroll() => context.ExecuteScript("window.scrollTo(0, 0);");
 
                 By ByCell(int index, string name) =>
-                    By.CssSelector($".taxRateSettings__row_{index.ToTechnicalString()}] .taxRateSettings__{name.ToCamelCase()}");
+                    By.CssSelector($".taxRateSettings__row_{index.ToTechnicalString()} .taxRateSettings__{name.ToCamelCase()}");
 
                 Task SetCellAsync(int index, string name, string value) =>
                     context.ClickAndFillInWithRetriesAsync(ByCell(index, name), value);
@@ -139,7 +139,15 @@ public class TaxBehaviorTests : UITestBase
                 Task SetCorporationAsync(int index, MatchTaxRates value) =>
                     context.SetDropdownByValueAsync(
                         ByCell(index, nameof(TaxRateSetting.IsCorporation)),
-                        ((int)value).ToTechnicalString());
+                        value.ToString());
+
+                void SetTaxRate(int index, decimal value)
+                {
+                    var element = context.Get(ByCell(index, nameof(TaxRateSetting.TaxRate)));
+                    element.Click();
+                    element.Clear();
+                    element.SendKeysWithLogging(value.ToTechnicalString());
+                }
 
                 // Enable feature.
                 await context.SignInDirectlyAsync();
@@ -161,7 +169,7 @@ public class TaxBehaviorTests : UITestBase
                 await SetCellAsync(0, nameof(TaxRateSetting.DestinationRegion), "CA[");
                 await SetCellAsync(0, nameof(TaxRateSetting.TaxCode), "TVQ");
                 await SetCellAsync(0, nameof(TaxRateSetting.VatNumber), "1");
-                await SetCellAsync(0, nameof(TaxRateSetting.TaxRate), "0.01");
+                SetTaxRate(0, 0.01m);
                 await SetCorporationAsync(0, MatchTaxRates.Checked);
                 ResetScroll();
 
@@ -170,7 +178,7 @@ public class TaxBehaviorTests : UITestBase
                 await SetCellAsync(1, nameof(TaxRateSetting.DestinationCity), "Budapest");
                 await SetCellAsync(1, nameof(TaxRateSetting.DestinationPostalCode), "][");
                 await SetCellAsync(1, nameof(TaxRateSetting.DestinationRegion), "HU");
-                await SetCellAsync(1, nameof(TaxRateSetting.TaxRate), "27");
+                SetTaxRate(1, 27);
                 ResetScroll();
 
                 // Click "Save", error message should be displayed after page load.
@@ -189,7 +197,7 @@ public class TaxBehaviorTests : UITestBase
                     ]);
 
                 // Fix incorrect cells and validate that the data is successfully retained.
-                var byAllInputs = By.CssSelector("input[name^='ISite.Rates[']");
+                var byAllInputs = By.CssSelector(".taxRateSettings__row input");
                 await SetCellAsync(0, nameof(TaxRateSetting.DestinationRegion), "CA");
                 await SetCellAsync(1, nameof(TaxRateSetting.DestinationPostalCode), "^1[0-9][0-9][0-9]");
                 await context.ClickReliablyOnAsync(By.ClassName("save"));

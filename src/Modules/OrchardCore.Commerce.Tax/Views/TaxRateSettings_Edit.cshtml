@@ -124,7 +124,10 @@
         </span>
     </div>
 
-    <button class="btn btn-secondary mb-3" @@click.stop.prevent="addRow">@T["Add Row"]</button>
+    <button class="btn btn-secondary mb-3 taxRateSettings__addButton"
+            @@click.stop.prevent="addRow">
+        @T["Add Row"]
+    </button>
 
     <input type="hidden" name="@Html.NameFor(model => model.RatesJson)" :value="json" />
 </div>
