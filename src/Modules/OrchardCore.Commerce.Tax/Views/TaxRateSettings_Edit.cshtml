@@ -1,144 +1,136 @@
-@model TaxRateSettings
+@using OrchardCore.Commerce.Tax.Services
+@using System.Text.Json
+@using System.Web
+@model OrchardCore.Commerce.Tax.ViewModels.TaxRateSettingsViewModel
+
+@inject ITaxRateSettingsHeaderProvider TaxRateSettingsHeaderProvider
 
 @{
     const string regexDocsUrl = "https://learn.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions";
 
     const string blockName = "taxRateSettings";
     const string tableElement = blockName + "__table";
-    const string addButtonElement = blockName + "__addButton";
+    const string addressCheckboxElement = blockName + "__hideAddressColumns";
 
     var blockGuid = Guid.NewGuid().ToString("N");
-    var tableElementId = $"{tableElement}_{blockGuid}";
-    var addButtonElementId = $"{addButtonElement}_{blockGuid}";
-    var addressCheckboxElementId = $"{blockName}__hideAddressColumns_{blockGuid}";
+    var addressCheckboxElementId = $"{addressCheckboxElement}_{blockGuid}";
+
+    var labels = TaxRateSettingsHeaderProvider.HeaderLabels;
+    var descriptionText = T["You can define custom tax rate rules in the table below. Create a new rule by pressing the \"Add Row\" button. Any columns you fill out (besides \"{0}\") will serve as a condition (checked against the buyer's invoice address and the product's VAT number) to apply that tax rate. The first row that matches all of its listed patterns and conditions will provide the tax rate for a given product.", labels[nameof(TaxRateSetting.TaxRate)]];
+    var noteForIsCorporation = T["Matches the value of the &quot;Buyer is a corporation&quot; checkbox during checkout.&#13;If set to &quot;Ignored&quot; then the value of the checkbox doesn't matter to match this rule.&#13;Otherwise the checkbox has to be either &quot;Checked&quot; or &quot;Unchecked&quot; to apply this rule."];
+
+    var newRowJson = JsonSerializer.Serialize(new TaxRateSetting(), JOptions.CamelCase);
 }
 
-<h2>@T["Recipients and Tax Codes"]</h2>
+<div class="@blockName"
+     data-rates="@Html.Raw(HttpUtility.HtmlAttributeEncode(Model.RatesJson))"
+     data-new-row="@Html.Raw(HttpUtility.HtmlAttributeEncode(newRowJson))">
+    <h2>@T["Recipients and Tax Codes"]</h2>
 
-<div class="mb-3">
-    <input id="@addressCheckboxElementId" type="checkbox" class="form-check-input" checked>
-    <label for="@addressCheckboxElementId">@T["Hide Address Columns"]</label>
+    <p>@descriptionText</p>
+
+    <div class="mb-3">
+        <input id="@addressCheckboxElementId" type="checkbox" class="form-check-input" v-model="hideAddressColumns">
+        <label for="@addressCheckboxElementId">@T["Hide Address Columns"]</label>
+    </div>
+
+    <table class="table @tableElement">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col" :class="{ 'd-none': hideAddressColumns }">@labels[nameof(TaxRateSetting.DestinationStreetAddress1)]</th>
+            <th scope="col" :class="{ 'd-none': hideAddressColumns }">@labels[nameof(TaxRateSetting.DestinationStreetAddress2)]</th>
+            <th scope="col">@labels[nameof(TaxRateSetting.DestinationCity)]</th>
+            <th scope="col">@labels[nameof(TaxRateSetting.DestinationProvince)]</th>
+            <th scope="col">@labels[nameof(TaxRateSetting.DestinationPostalCode)]</th>
+            <th scope="col">@labels[nameof(TaxRateSetting.DestinationRegion)]</th>
+            <th scope="col">@labels[nameof(TaxRateSetting.VatNumber)]</th>
+            <th scope="col">@labels[nameof(TaxRateSetting.TaxCode)]</th>
+            <th scope="col">@labels[nameof(TaxRateSetting.IsCorporation)] <i class="far fa-question-circle" title="@noteForIsCorporation"></i></th>
+            <th scope="col">@labels[nameof(TaxRateSetting.TaxRate)]</th>
+            <th scope="col">@T["Actions"]</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr v-for="(rate, index) in rates" :class="'@(blockName)__row @(blockName)__row_' + index">
+            <th scope="row" class="font-weight-bold">
+                {{ index + 1 }}
+            </th>
+            <td :class="{ 'd-none': hideAddressColumns }" class="@(blockName)__destinationStreetAddress1">
+                <input v-model="rate.destinationStreetAddress1">
+            </td>
+            <td :class="{ 'd-none': hideAddressColumns }" class="@(blockName)__destinationStreetAddress2">
+                <input v-model="rate.destinationStreetAddress2">
+            </td>
+            <td>
+                <input v-model="rate.destinationCity" class="@(blockName)__destinationCity">
+            </td>
+            <td>
+                <input v-model="rate.destinationProvince" class="@(blockName)__destinationProvince">
+            </td>
+            <td>
+                <input v-model="rate.destinationPostalCode" class="@(blockName)__destinationPostalCode">
+            </td>
+            <td>
+                <input v-model="rate.destinationRegion" class="@(blockName)__destinationRegion">
+            </td>
+            <td>
+                <input v-model="rate.taxCode" class="@(blockName)__taxCode">
+            </td>
+            <td>
+                <input v-model="rate.vatNumber" class="@(blockName)__vatNumber">
+            </td>
+            <td>
+                <select v-model="rate.isCorporation" class="@(blockName)__isCorporation">
+                    <option value="@MatchTaxRates.Ignored">@T["Ignored"]</option>
+                    <option value="@MatchTaxRates.Checked">@T["Checked"]</option>
+                    <option value="@MatchTaxRates.Unchecked">@T["Unchecked"]</option>
+                </select>
+            </td>
+            <td>
+                <input v-model.number="rate.taxRate"
+                       class="@(blockName)__taxRate"
+                       type="number"
+                       min="0"
+                       max="100"
+                       step="0.001">
+            </td>
+            <td>
+                <div class="d-flex flex-row">
+                    <button class="btn btn-danger" @@click.prevent="rates.splice(index, 1)">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                    <button class="btn btn-secondary mx-1"
+                            :disabled="index + 1 == rates.length"
+                            @@click.prevent="rates.splice(index, 2, rates[index + 1], rate)">
+                        <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                    </button>
+                    <button class="btn btn-secondary"
+                            :disabled="index == 0"
+                            @@click.prevent="rates.splice(index - 1, 2, rate, rates[index - 1])">
+                        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="mb-3">
+        <span class="hint">
+            @T["All text fields in the table have to be either empty or contain a valid regular expression."]
+            @T["Learn more about regular expressions in .NET <a href=\"{0}\">here</a>.", regexDocsUrl]
+        </span>
+    </div>
+
+    <button class="btn btn-secondary mb-3 taxRateSettings__addButton"
+            @@click.stop.prevent="addRow">
+        @T["Add Row"]
+    </button>
+
+    <input type="hidden" name="@Html.NameFor(model => model.RatesJson)" :value="json" />
 </div>
-
-<table id="@tableElementId" class="table @tableElement">
-    <thead>
-    <tr>
-        <th>@T["First street address"]</th>
-        <th>@T["Second street address"]</th>
-        <th>@T["City"]</th>
-        <th>@T["State or province code"]</th>
-        <th>@T["Postal code"]</th>
-        <th>@T["Country or region code"]</th>
-        <th>@T["Tax code"]</th>
-        <th>@T["VAT number"]</th>
-        <th>@T["Tax rate (%)"]</th>
-        <th>@T["Is Corporation"]</th>
-        <th>@T["Actions"]</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    <tr v-for="(rate, index) in rates">
-        <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress1'" v-model="rate.destinationStreetAddress1">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationStreetAddress2'" v-model="rate.destinationStreetAddress2">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationCity'" v-model="rate.destinationCity">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationProvince'" v-model="rate.destinationProvince">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationPostalCode'" v-model="rate.destinationPostalCode">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].DestinationRegion'" v-model="rate.destinationRegion">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].TaxCode'" v-model="rate.taxCode">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].VatNumber'" v-model="rate.vatNumber">
-        </td>
-        <td>
-            <input :name="'ISite.Rates[' + index + '].TaxRate'" v-model="rate.taxRate" type="number" min="0" max="100" step="0.001">
-        </td>
-        <td>
-            <select :name="'ISite.Rates[' + index + '].IsCorporation'" v-model="rate.isCorporation">
-                <option value="@((int)MatchTaxRates.Ignored)">@T["Ignored"]</option>
-                <option value="@((int)MatchTaxRates.Checked)">@T["Checked"]</option>
-                <option value="@((int)MatchTaxRates.Unchecked)">@T["Unchecked"]</option>
-           </select>
-        </td>
-        <td>
-            <div class="d-flex flex-row">
-                <button class="btn btn-danger" @@click.prevent="rates.splice(index, 1)">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
-                <button class="btn btn-secondary mx-1"
-                        :disabled="index + 1 == rates.length"
-                        @@click.prevent="rates.splice(index, 2, rates[index + 1], rate)">
-                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                </button>
-                <button class="btn btn-secondary"
-                        :disabled="index == 0"
-                        @@click.prevent="rates.splice(index - 1, 2, rate, rates[index - 1])">
-                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
-                </button>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-<div class="mb-3">
-    <span class="hint">
-        @T["All text fields in the table have to be either empty or contain a valid regular expression."]
-        @T["Learn more about regular expressions in .NET <a href=\"{0}\">here</a>.", regexDocsUrl]
-    </span>
-</div>
-
-<button id="@addButtonElementId" class="@addButtonElement btn btn-secondary mb-3">@T["Add Row"]</button>
-
-<style at="Head">
-    .taxRateSettings__table tr > :nth-child(1), .taxRateSettings__table tr > :nth-child(2) {
-        display: var(--tax-address-display);
-    }
-</style>
 
 <script at="Head" asp-name="vuejs"></script>
-<script at="Foot" depends-on="vuejs">
-    const vueQuery = '#@tableElementId tbody';
-    const rates = @Json.Serialize(Model.Rates);
-
-    var table = new Vue({
-        el: vueQuery,
-        data: { rates: rates },
-    });
-
-    document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
-        event.preventDefault();
-        table.rates.push({
-            "destinationStreetAddress1": null,
-            "destinationStreetAddress2": null,
-            "destinationCity": null,
-            "destinationProvince": null,
-            "destinationPostalCode": null,
-            "destinationRegion": null,
-            "taxCode": null,
-            "vatNumber": null,
-            "isCorporation": @((int)MatchTaxRates.Ignored),
-            "taxRate": 0,
-        });
-    });
-
-    const tableStyle = document.querySelector('.taxRateSettings__table').style;
-    const checkbox = document.getElementById(@addressCheckboxElementId.JsonHtmlContent());
-
-    function updateAddressVisibility() { tableStyle.setProperty('--tax-address-display', checkbox.checked ? 'none' : 'table-cell'); }
-    checkbox.addEventListener('change', updateAddressVisibility);
-    updateAddressVisibility();
-</script>
+<script at="Foot" asp-name="OrchardCore.Commerce.Tax.TaxRateEditor"></script>

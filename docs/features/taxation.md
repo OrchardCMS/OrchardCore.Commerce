@@ -1,6 +1,6 @@
 # Taxation
 
-Tax support is an ongoing process, check out the [Tax infrastructure](https://github.com/OrchardCMS/OrchardCore.Commerce/projects/2) project for current progress. See below what we have right now.
+Tax support is an ongoing process based on user feedback and contribution. See below what we have right now.
 
 ## Core tax support
 

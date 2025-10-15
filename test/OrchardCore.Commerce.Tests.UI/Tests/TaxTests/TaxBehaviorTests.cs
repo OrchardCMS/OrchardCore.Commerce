@@ -1,8 +1,12 @@
+using Atata;
+using GraphQL;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Tax.Constants;
+using OrchardCore.Commerce.Tax.Models;
 using Shouldly;
 using System.Globalization;
 using Xunit;
@@ -119,8 +123,114 @@ public class TaxBehaviorTests : UITestBase
             },
             browser);
 
+    [Theory, Chrome]
+    public Task CustomTaxRateEditorShouldWork(Browser browser) =>
+        ExecuteTestAfterSetupAsync(
+            async context =>
+            {
+                void ResetScroll() => context.ExecuteScript("window.scrollTo(0, 0);");
+
+                By ByCell(int index, string name) =>
+                    By.CssSelector($".taxRateSettings__row_{index.ToTechnicalString()} .taxRateSettings__{name.ToCamelCase()}");
+
+                Task SetCellAsync(int index, string name, string value) =>
+                    context.ClickAndFillInWithRetriesAsync(ByCell(index, name), value);
+
+                Task SetCorporationAsync(int index, MatchTaxRates value) =>
+                    context.SetDropdownByValueAsync(
+                        ByCell(index, nameof(TaxRateSetting.IsCorporation)),
+                        value.ToString());
+
+                void SetTaxRate(int index, decimal value)
+                {
+                    // This is a workaround for https://github.com/Lombiq/UI-Testing-Toolbox/issues/628.
+                    var element = context.Get(ByCell(index, nameof(TaxRateSetting.TaxRate)));
+                    element.Click();
+                    element.Clear();
+                    element.SendKeysWithLogging(value.ToTechnicalString());
+                }
+
+                // Enable feature.
+                await context.SignInDirectlyAsync();
+                await context.EnableFeatureDirectlyAsync(FeatureIds.CustomTaxRates);
+
+                // Verify the menu navigation.
+                await context.GoToDashboardAsync();
+                await context.ClickReliablyOnAsync(By.ClassName("menu-configuration"));
+                await context.ClickReliablyOnAsync(By.XPath(
+                    "//ul[@data-title='Configuration']/li[contains(@class, 'has-items') and " +
+                    ".//span[contains(@class, 'title') and contains(., 'Commerce')]]"));
+                await context.ClickReliablyOnAsync(By.LinkText("Custom Tax Rates"));
+                context.Get(By.TagName("h2")).GetTextTrimmed().ShouldBe("Recipients and Tax Codes");
+
+                // Fill out first row with example data.
+                await SetCellAsync(0, nameof(TaxRateSetting.DestinationCity), "Saint-Nicéphore");
+                await SetCellAsync(0, nameof(TaxRateSetting.DestinationProvince), "QC");
+                await SetCellAsync(0, nameof(TaxRateSetting.DestinationPostalCode), "J2A 1R1");
+                await SetCellAsync(0, nameof(TaxRateSetting.DestinationRegion), "CA[");
+                await SetCellAsync(0, nameof(TaxRateSetting.TaxCode), "TVQ");
+                await SetCellAsync(0, nameof(TaxRateSetting.VatNumber), "1");
+                SetTaxRate(0, 0.01m);
+                await SetCorporationAsync(0, MatchTaxRates.Checked);
+                ResetScroll();
+
+                // Add another row and fill it with another example.
+                await context.ClickReliablyOnAsync(By.ClassName("taxRateSettings__addButton"));
+                await SetCellAsync(1, nameof(TaxRateSetting.DestinationCity), "Budapest");
+                await SetCellAsync(1, nameof(TaxRateSetting.DestinationPostalCode), "][");
+                await SetCellAsync(1, nameof(TaxRateSetting.DestinationRegion), "HU");
+                SetTaxRate(1, 27);
+                ResetScroll();
+
+                // Click "Save", error message should be displayed after page load.
+                await context.ClickReliablyOnAsync(By.ClassName("save"));
+                context.Exists(By.ClassName("validation-summary-errors"));
+
+                // Verify that error message contents match expectations.
+                context
+                    .GetAll(By.CssSelector(".validation-summary-errors li"))
+                    .Select(element => element.GetTextTrimmed())
+                    .ToList()
+                    .ShouldBe(
+                    [
+                        "The value in column \"Country or region code\" in row 1 must be empty or a valid regular expression.",
+                        "The value in column \"Postal code\" in row 2 must be empty or a valid regular expression."
+                    ]);
+
+                // Fix incorrect cells and validate that the data is successfully retained.
+                var byAllInputs = By.CssSelector(".taxRateSettings__row input");
+                await SetCellAsync(0, nameof(TaxRateSetting.DestinationRegion), "CA");
+                await SetCellAsync(1, nameof(TaxRateSetting.DestinationPostalCode), "^1[0-9][0-9][0-9]");
+                await context.ClickReliablyOnAsync(By.ClassName("save"));
+                context.ShouldBeSuccess("Site settings updated successfully.");
+                await context.Driver.Navigate().RefreshAsync();
+                context.Exists(byAllInputs);
+                context
+                    .GetAll(byAllInputs)
+                    .Select(element => element.GetValue())
+                    .ToList()
+                    .ShouldBe(
+                    [
+                        "Saint-Nicéphore",
+                        "QC",
+                        "J2A 1R1",
+                        "CA",
+                        "TVQ",
+                        "1",
+                        "0.01",
+
+                        "Budapest",
+                        string.Empty,
+                        "^1[0-9][0-9][0-9]",
+                        "HU",
+                        string.Empty,
+                        string.Empty,
+                        "27"]);
+            },
+            browser);
+
     private static void FieldShouldBe(UITestContext context, string id, decimal value) =>
         decimal
-            .Parse(context.Get(By.Id(id)).GetAttribute("value").Replace(',', '.'), CultureInfo.InvariantCulture)
+            .Parse(context.Get(By.Id(id)).GetAttribute("value")!.Replace(',', '.'), CultureInfo.InvariantCulture)
             .ShouldBe(value);
 }
