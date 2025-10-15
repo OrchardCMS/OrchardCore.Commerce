@@ -32,7 +32,7 @@ public class TaxRateSetting
     [JsonIgnore]
     public bool IsEmpty =>
         TaxRate == 0 &&
-        IsCorporation == MatchTaxRates.Unchecked &&
+        IsCorporation == MatchTaxRates.Ignored &&
         string.IsNullOrEmpty(DestinationStreetAddress1) &&
         string.IsNullOrEmpty(DestinationStreetAddress2) &&
         string.IsNullOrEmpty(DestinationCity) &&
