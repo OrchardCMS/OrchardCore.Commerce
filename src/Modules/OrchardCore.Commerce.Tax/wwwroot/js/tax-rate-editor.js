@@ -5,10 +5,10 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
 
     const vue = {
         el: element,
-            data: {
-        hideAddressColumns: true,
+        data: {
+            hideAddressColumns: true,
             rates: JSON.parse(element.getAttribute('data-rates')),
-    },
+        },
         computed: {
             json: (self) => JSON.stringify(self.rates),
         },
@@ -22,7 +22,7 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
                 hideAddressVisibility(value);
             },
         },
-    }
+    };
 
     new window.Vue(vue);
     hideAddressVisibility(true);
