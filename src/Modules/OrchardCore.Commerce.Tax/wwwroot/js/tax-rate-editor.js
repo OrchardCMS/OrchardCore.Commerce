@@ -4,7 +4,7 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
     }
 
     const newRowJson = element.getAttribute('data-new-row');
-    window.taxvue = new Vue({
+    new window.Vue({
         el: element,
         data: {
             hideAddressColumns: true,
@@ -19,7 +19,7 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
             },
         },
         watch: {
-            hideAddressColumns: function (value) {
+            hideAddressColumns(value) {
                 hideAddressVisibility(value);
             },
         },
