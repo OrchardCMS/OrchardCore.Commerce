@@ -1,4 +1,5 @@
 using Atata;
+using GraphQL;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
@@ -130,7 +131,7 @@ public class TaxBehaviorTests : UITestBase
                 void ResetScroll() => context.ExecuteScript("window.scrollTo(0, 0);");
 
                 By ByCell(int index, string name) =>
-                    By.Name($"ISite.Rates[{index.ToTechnicalString()}].{name}");
+                    By.CssSelector($".taxRateSettings__row_{index.ToTechnicalString()}] .taxRateSettings__{name.ToCamelCase()}");
 
                 Task SetCellAsync(int index, string name, string value) =>
                     context.ClickAndFillInWithRetriesAsync(ByCell(index, name), value);

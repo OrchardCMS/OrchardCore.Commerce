@@ -53,43 +53,48 @@
         </thead>
 
         <tbody>
-        <tr v-for="(rate, index) in rates">
+        <tr v-for="(rate, index) in rates" :class="'@(blockName)__row @(blockName)__row_' + index">
             <th scope="row" class="font-weight-bold">
                 {{ index + 1 }}
             </th>
-            <td :class="{ 'd-none': hideAddressColumns }">
+            <td :class="{ 'd-none': hideAddressColumns }" class="@(blockName)__destinationStreetAddress1">
                 <input v-model="rate.destinationStreetAddress1">
             </td>
-            <td :class="{ 'd-none': hideAddressColumns }">
+            <td :class="{ 'd-none': hideAddressColumns }" class="@(blockName)__destinationStreetAddress2">
                 <input v-model="rate.destinationStreetAddress2">
             </td>
             <td>
-                <input v-model="rate.destinationCity">
+                <input v-model="rate.destinationCity" class="@(blockName)__destinationCity">
             </td>
             <td>
-                <input v-model="rate.destinationProvince">
+                <input v-model="rate.destinationProvince" class="@(blockName)__destinationProvince">
             </td>
             <td>
-                <input v-model="rate.destinationPostalCode">
+                <input v-model="rate.destinationPostalCode" class="@(blockName)__destinationPostalCode">
             </td>
             <td>
-                <input v-model="rate.destinationRegion">
+                <input v-model="rate.destinationRegion" class="@(blockName)__destinationRegion">
             </td>
             <td>
-                <input v-model="rate.taxCode">
+                <input v-model="rate.taxCode" class="@(blockName)__taxCode">
             </td>
             <td>
-                <input v-model="rate.vatNumber">
+                <input v-model="rate.vatNumber" class="@(blockName)__vatNumber">
             </td>
             <td>
-                <select v-model="rate.isCorporation">
+                <select v-model="rate.isCorporation" class="@(blockName)__isCorporation">
                     <option value="@MatchTaxRates.Ignored">@T["Ignored"]</option>
                     <option value="@MatchTaxRates.Checked">@T["Checked"]</option>
                     <option value="@MatchTaxRates.Unchecked">@T["Unchecked"]</option>
                 </select>
             </td>
             <td>
-                <input v-model.number="rate.taxRate" type="number" min="0" max="100" step="0.001">
+                <input v-model.number="rate.taxRate"
+                       class="@(blockName)__taxRate"
+                       type="number"
+                       min="0"
+                       max="100"
+                       step="0.001">
             </td>
             <td>
                 <div class="d-flex flex-row">
