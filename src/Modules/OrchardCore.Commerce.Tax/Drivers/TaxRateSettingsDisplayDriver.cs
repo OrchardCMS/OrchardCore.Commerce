@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.Tax.Permissions;
 using OrchardCore.Commerce.Tax.Services;
+using OrchardCore.Commerce.Tax.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -12,6 +13,7 @@ using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -56,10 +58,10 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>, 
 
     public override async Task<IDisplayResult> EditAsync(ISite model, TaxRateSettings section, BuildEditorContext context) =>
         await AuthorizeAsync()
-            ? Initialize<TaxRateSettings>($"{nameof(TaxRateSettings)}_Edit", model =>
+            ? Initialize<TaxRateSettingsViewModel>($"{nameof(TaxRateSettings)}_Edit", model =>
                 {
+                    if (!section.Rates.Any()) section.Rates.Add(new());
                     model.CopyFrom(section);
-                    if (!model.Rates.Any()) model.Rates.Add(new TaxRateSetting());
                 })
                 .Location(CommonLocationNames.Content)
                 .OnGroup(SettingsGroupId)
@@ -67,19 +69,21 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>, 
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, TaxRateSettings section, UpdateEditorContext context)
     {
-        if (await context.CreateModelMaybeAsync<TaxRateSettings>(nameof(ISite), AuthorizeAsync) is not { } settings ||
+        if (await context.CreateModelMaybeAsync<TaxRateSettingsViewModel>(Prefix, AuthorizeAsync) is not { } viewModel ||
             _hca.HttpContext?.Request.HasFormContentType != true)
         {
             return null;
         }
 
-        // Remove all empty entries.
-        settings.Rates.RemoveAll(rate => rate.IsEmpty);
+        // Parse and update rates.
+        viewModel.Rates.SetItems(JsonSerializer
+            .Deserialize<IEnumerable<TaxRateSetting>>(viewModel.RatesJson, JOptions.CamelCase)
+            .Where(rate => !rate.IsEmpty));
 
         // Show error if any string entries are invalid RegEx.
-        for (var i = 0; i < settings.Rates.Count; i++)
+        for (var i = 0; i < viewModel.Rates.Count; i++)
         {
-            var rate = settings.Rates[i];
+            var rate = viewModel.Rates[i];
             Validate(context, i, rate.DestinationStreetAddress1, nameof(TaxRateSetting.DestinationStreetAddress1));
             Validate(context, i, rate.DestinationStreetAddress2, nameof(TaxRateSetting.DestinationStreetAddress2));
             Validate(context, i, rate.DestinationCity, nameof(TaxRateSetting.DestinationCity));
@@ -90,8 +94,8 @@ public class TaxRateSettingsDisplayDriver : SiteDisplayDriver<TaxRateSettings>, 
             Validate(context, i, rate.TaxCode, nameof(TaxRateSetting.TaxCode));
         }
 
-        section.CopyFrom(settings);
-        return await EditAsync(model, settings, context);
+        section.CopyFrom(viewModel);
+        return await EditAsync(model, viewModel, context);
     }
 
     private void Validate(BuildShapeContext context, int index, string value, string name)

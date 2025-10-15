@@ -7,7 +7,7 @@ public class TaxRateSettings
 {
     public IList<TaxRateSetting> Rates { get; } = [];
 
-    public void CopyFrom(TaxRateSettings other)
+    public virtual void CopyFrom(TaxRateSettings other)
     {
         Rates.Clear();
         Rates.AddRange(other.Rates);
@@ -29,7 +29,7 @@ public class TaxRateSetting
 
     public decimal TaxRate { get; set; }
 
-    [JsonInclude]
+    [JsonIgnore]
     public bool IsEmpty =>
         TaxRate == 0 &&
         IsCorporation == MatchTaxRates.Unchecked &&

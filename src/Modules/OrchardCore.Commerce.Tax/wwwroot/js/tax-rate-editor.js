@@ -1,29 +1,29 @@
-document.querySelectorAll('.taxRateSettings').forEach((wrapperElement) => {
-    const tableElement = wrapperElement.querySelector('.taxRateSettings__table');
-    const tableStyle = wrapperElement.querySelector('.taxRateSettings__table').style;
-    const checkbox = wrapperElement.querySelector('.taxRateSettings__hideAddressColumns');
+document.querySelectorAll('.taxRateSettings').forEach((element) => {
+    function hideAddressVisibility(value) {
+        element.style.setProperty('--tax-address-display', value ? 'none' : 'table-cell');
+    }
 
-    const rates = JSON.parse(tableElement.getAttribute('data-rates'));
-    const newRowJson = tableElement.getAttribute('data-new-row');
-
-    const table = new Vue({
-        el: tableElement.querySelector('tbody'),
+    const newRowJson = element.getAttribute('data-new-row');
+    window.taxvue = new Vue({
+        el: element,
         data: {
-            rates: rates,
+            hideAddressColumns: true,
+            rates: JSON.parse(element.getAttribute('data-rates')),
+        },
+        computed: {
+            json: (self) => JSON.stringify(self.rates),
+        },
+        methods: {
+            addRow() {
+                this.rates.push(JSON.parse(newRowJson));
+            },
+        },
+        watch: {
+            hideAddressColumns: function (value) {
+                hideAddressVisibility(value);
+            },
         },
     });
 
-    wrapperElement.querySelector('.taxRateSettings__addButton').addEventListener('click', function (event) {
-        event.preventDefault();
-        table.rates.push(JSON.parse(newRowJson));
-    });
-
-    function updateAddressVisibility() {
-        tableStyle.setProperty('--tax-address-display', checkbox.checked ? 'none' : 'table-cell');
-    }
-
-    checkbox.addEventListener('change', updateAddressVisibility);
-    updateAddressVisibility();
-
-    const form = document.querySelector(`form:has(${vueQuery})`);
+    hideAddressVisibility(true);
 });
