@@ -141,13 +141,10 @@ public class TaxBehaviorTests : UITestBase
                         ByCell(index, nameof(TaxRateSetting.IsCorporation)),
                         value.ToString());
 
-                void SetTaxRate(int index, decimal value)
-                {
-                    var element = context.Get(ByCell(index, nameof(TaxRateSetting.TaxRate)));
-                    element.Click();
-                    element.Clear();
-                    element.SendKeysWithLogging(value.ToTechnicalString());
-                }
+                Task SetTaxRateAsync(int index, decimal value) =>
+                    context.ClickAndFillInWithRetriesAsync(
+                        ByCell(index, nameof(TaxRateSetting.TaxRate)),
+                        value.ToTechnicalString());
 
                 // Enable feature.
                 await context.SignInDirectlyAsync();
@@ -169,7 +166,7 @@ public class TaxBehaviorTests : UITestBase
                 await SetCellAsync(0, nameof(TaxRateSetting.DestinationRegion), "CA[");
                 await SetCellAsync(0, nameof(TaxRateSetting.TaxCode), "TVQ");
                 await SetCellAsync(0, nameof(TaxRateSetting.VatNumber), "1");
-                SetTaxRate(0, 0.01m);
+                await SetTaxRateAsync(0, 0.01m);
                 await SetCorporationAsync(0, MatchTaxRates.Checked);
                 ResetScroll();
 
@@ -178,7 +175,7 @@ public class TaxBehaviorTests : UITestBase
                 await SetCellAsync(1, nameof(TaxRateSetting.DestinationCity), "Budapest");
                 await SetCellAsync(1, nameof(TaxRateSetting.DestinationPostalCode), "][");
                 await SetCellAsync(1, nameof(TaxRateSetting.DestinationRegion), "HU");
-                SetTaxRate(1, 27);
+                await SetTaxRateAsync(1, 27);
                 ResetScroll();
 
                 // Click "Save", error message should be displayed after page load.
