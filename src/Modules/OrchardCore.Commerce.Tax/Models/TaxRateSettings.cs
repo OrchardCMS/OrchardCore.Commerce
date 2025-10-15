@@ -31,15 +31,16 @@ public class TaxRateSetting
 
     [JsonInclude]
     public bool IsEmpty =>
-        TaxRate == 0 || (
-            string.IsNullOrEmpty(DestinationStreetAddress1) &&
-            string.IsNullOrEmpty(DestinationStreetAddress2) &&
-            string.IsNullOrEmpty(DestinationCity) &&
-            string.IsNullOrEmpty(DestinationProvince) &&
-            string.IsNullOrEmpty(DestinationPostalCode) &&
-            string.IsNullOrEmpty(DestinationRegion) &&
-            string.IsNullOrEmpty(VatNumber) &&
-            string.IsNullOrEmpty(TaxCode));
+        TaxRate == 0 &&
+        IsCorporation == MatchTaxRates.Unchecked &&
+        string.IsNullOrEmpty(DestinationStreetAddress1) &&
+        string.IsNullOrEmpty(DestinationStreetAddress2) &&
+        string.IsNullOrEmpty(DestinationCity) &&
+        string.IsNullOrEmpty(DestinationProvince) &&
+        string.IsNullOrEmpty(DestinationPostalCode) &&
+        string.IsNullOrEmpty(DestinationRegion) &&
+        string.IsNullOrEmpty(VatNumber) &&
+        string.IsNullOrEmpty(TaxCode);
 }
 
 public enum MatchTaxRates
