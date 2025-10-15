@@ -3,19 +3,18 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
         element.style.setProperty('--tax-address-display', value ? 'none' : 'table-cell');
     }
 
-    const newRowJson = element.getAttribute('data-new-row');
-    new window.Vue({
+    const vue = {
         el: element,
-        data: {
-            hideAddressColumns: true,
+            data: {
+        hideAddressColumns: true,
             rates: JSON.parse(element.getAttribute('data-rates')),
-        },
+    },
         computed: {
             json: (self) => JSON.stringify(self.rates),
         },
         methods: {
             addRow() {
-                this.rates.push(JSON.parse(newRowJson));
+                this.rates.push(JSON.parse(element.getAttribute('data-new-row')));
             },
         },
         watch: {
@@ -23,7 +22,8 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
                 hideAddressVisibility(value);
             },
         },
-    });
+    }
 
+    new window.Vue(vue);
     hideAddressVisibility(true);
 });
