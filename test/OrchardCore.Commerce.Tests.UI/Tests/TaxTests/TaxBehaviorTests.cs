@@ -143,6 +143,7 @@ public class TaxBehaviorTests : UITestBase
 
                 void SetTaxRate(int index, decimal value)
                 {
+                    // This is a workaround for https://github.com/Lombiq/UI-Testing-Toolbox/issues/628.
                     var element = context.Get(ByCell(index, nameof(TaxRateSetting.TaxRate)));
                     element.Click();
                     element.Clear();
