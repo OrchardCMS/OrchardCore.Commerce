@@ -1,4 +1,6 @@
 @using OrchardCore.Commerce.Tax.Services
+@using System.Text.Json
+@using System.Web
 @model TaxRateSettings
 
 @inject ITaxRateSettingsHeaderProvider TaxRateSettingsHeaderProvider
@@ -9,17 +11,20 @@
     const string blockName = "taxRateSettings";
     const string tableElement = blockName + "__table";
     const string addButtonElement = blockName + "__addButton";
+    const string addressCheckboxElement = blockName + "__hideAddressColumns";
 
     var blockGuid = Guid.NewGuid().ToString("N");
-    var tableElementId = $"{tableElement}_{blockGuid}";
-    var addButtonElementId = $"{addButtonElement}_{blockGuid}";
-    var addressCheckboxElementId = $"{blockName}__hideAddressColumns_{blockGuid}";
+    var addressCheckboxElementId = $"{addressCheckboxElement}_{blockGuid}";
 
     var labels = TaxRateSettingsHeaderProvider.HeaderLabels;
     var descriptionText = T["You can define custom tax rate rules in the table below. Create a new rule by pressing the \"Add Row\" button. Any columns you fill out (besides \"{0}\") will serve as a condition (checked against the buyer's invoice address and the product's VAT number) to apply that tax rate. The first row that matches all of its listed patterns and conditions will provide the tax rate for a given product.", labels[nameof(TaxRateSetting.TaxRate)]];
     var noteForIsCorporation = T["Matches the value of the &quot;Buyer is a corporation&quot; checkbox during checkout.&#13;If set to &quot;Ignored&quot; then the value of the checkbox doesn't matter to match this rule.&#13;Otherwise the checkbox has to be either &quot;Checked&quot; or &quot;Unchecked&quot; to apply this rule."];
+
+    var taxRatesJson = JsonSerializer.Serialize(Model.Rates, JOptions.CamelCase);
+    var newRowJson = JsonSerializer.Serialize(new TaxRateSetting(), JOptions.CamelCase);
 }
 
+<div class="@blockName">
 <h2>@T["Recipients and Tax Codes"]</h2>
 
 <p>@descriptionText</p>
@@ -29,7 +34,9 @@
     <label for="@addressCheckboxElementId">@T["Hide Address Columns"]</label>
 </div>
 
-<table id="@tableElementId" class="table @tableElement">
+<table class="table @tableElement"
+       data-rates="@Html.Raw(HttpUtility.HtmlAttributeEncode(JsonSerializer.Serialize(taxRatesJson)))"
+       data-new-row="@Html.Raw(HttpUtility.HtmlAttributeEncode(JsonSerializer.Serialize(newRowJson)))">
     <thead>
     <tr>
         <th scope="col">#</th>
@@ -114,7 +121,8 @@
     </span>
 </div>
 
-<button id="@addButtonElementId" class="@addButtonElement btn btn-secondary mb-3">@T["Add Row"]</button>
+<button class="@addButtonElement btn btn-secondary mb-3">@T["Add Row"]</button>
+</div>
 
 <style at="Head">
     .taxRateSettings__table .address-column {
@@ -123,35 +131,4 @@
 </style>
 
 <script at="Head" asp-name="vuejs"></script>
-<script at="Foot" depends-on="vuejs">
-    const vueQuery = '#@tableElementId tbody';
-    const rates = @Json.Serialize(Model.Rates);
-
-    var table = new Vue({
-        el: vueQuery,
-        data: { rates: rates },
-    });
-
-    document.getElementById(@addButtonElementId.JsonHtmlContent()).addEventListener('click', function (event) {
-        event.preventDefault();
-        table.rates.push({
-            "destinationStreetAddress1": null,
-            "destinationStreetAddress2": null,
-            "destinationCity": null,
-            "destinationProvince": null,
-            "destinationPostalCode": null,
-            "destinationRegion": null,
-            "taxCode": null,
-            "vatNumber": null,
-            "isCorporation": @((int)MatchTaxRates.Ignored),
-            "taxRate": 0,
-        });
-    });
-
-    const tableStyle = document.querySelector('.taxRateSettings__table').style;
-    const checkbox = document.getElementById(@addressCheckboxElementId.JsonHtmlContent());
-
-    function updateAddressVisibility() { tableStyle.setProperty('--tax-address-display', checkbox.checked ? 'none' : 'table-cell'); }
-    checkbox.addEventListener('change', updateAddressVisibility);
-    updateAddressVisibility();
-</script>
+<script at="Foot" asp-name="OrchardCore.Commerce.Tax.TaxRateEditor"></script>
