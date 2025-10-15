@@ -3,7 +3,7 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
         element.style.setProperty('--tax-address-display', value ? 'none' : 'table-cell');
     }
 
-    const vue = {
+    const vue = new window.Vue({
         el: element,
         data: {
             hideAddressColumns: true,
@@ -22,8 +22,7 @@ document.querySelectorAll('.taxRateSettings').forEach((element) => {
                 hideAddressVisibility(value);
             },
         },
-    };
+    });
 
-    new window.Vue(vue);
-    hideAddressVisibility(true);
+    hideAddressVisibility(vue.hideAddressColumns);
 });
