@@ -38,7 +38,7 @@ public class BehaviorCheckoutTests : UITestBase
                 void MatchText(string css, string expected) =>
                     context.Get(By.CssSelector(css)).Text.Trim().RegexReplace(@"\s+", " ").ShouldBe(expected);
 
-                MatchText("h4.text-success", "Thank you for your purchase!");
+                MatchText("h4.text-success", "Thank you");
 
                 const string address = "BLACK MESA EAST 1. CITY 17 AF";
                 MatchText(".field-name-order-part-billing-address dd", address);
