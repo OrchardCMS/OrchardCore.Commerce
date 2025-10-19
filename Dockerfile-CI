@@ -3,8 +3,8 @@
 FROM --platform=$BUILDPLATFORM golang:alpine@sha256:06cdd34bd531b810650e47762c01e025eb9b1c7eadd191553b91c9f2d549fae8 AS build
 ARG TARGETOS
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809@sha256:932e6a33be9230874b4c0eb55c50b894935d75e56dae799f0312909b976d347a AS build_windows
-FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:53f73fbe620361e5116f68752bf42958dfcda8699a94a785dcb4657bc571c8f3 AS build_linux
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809@sha256:29af1050e3c8aea913ae3b146eb823c50e4a50ae8ed508511c9de9c3847bfa6a AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:ebdd28e9ee54ea5032a390500d37bb1b6d45c36c6ba51e10f3ddfcdc746f3e28 AS build_linux
 FROM build_${TARGETOS} AS aspnet
 
 EXPOSE 80
