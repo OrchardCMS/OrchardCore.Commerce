@@ -132,5 +132,4 @@
     <input type="hidden" name="@Html.NameFor(model => model.RatesJson)" :value="json" />
 </div>
 
-<script at="Head" asp-name="vuejs"></script>
-<script at="Foot" asp-name="OrchardCore.Commerce.Tax.TaxRateEditor"></script>
+<script at="Foot" asp-name="OrchardCore.Commerce.Tax.TaxRateEditor" depends-on="vuejs:2"></script>
