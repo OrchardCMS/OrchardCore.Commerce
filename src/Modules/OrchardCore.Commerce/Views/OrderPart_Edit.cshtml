@@ -170,8 +170,7 @@
 </div>
 
 <script asp-name="@ResourceNames.ToggleSecondAddress" at="Foot"></script>
-<script at="Head" asp-name="vuejs"></script>
-<script at="Foot" depends-on="vuejs">
+<script at="Foot" depends-on="vuejs:2">
     const vueQuery = '#orderPart__products';
 
     let lineItems = @Json.Serialize(Model.LineItems);
