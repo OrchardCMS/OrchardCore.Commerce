@@ -39,8 +39,7 @@
     <span asp-validation-for="TieredValuesSerialized"></span>
 </section>
 
-<script at="Foot" asp-name="vuejs"></script>
-<script at="Foot" depends-on="vuejs">
+<script at="Foot" depends-on="vuejs:2">
     let app = new Vue({
         el: "#price-tiers",
         data: {
