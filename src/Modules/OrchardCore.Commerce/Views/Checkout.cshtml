@@ -2,7 +2,6 @@
 @using OrchardCore.Commerce.Abstractions.Models
 @using OrchardCore.Commerce.Payment.Controllers
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore.Commerce.Extensions
 @using static OrchardCore.Commerce.Constants.ResourceNames
 @using static OrchardCore.Commerce.Payment.Constants.ResourceNames
 
@@ -15,7 +14,7 @@
     var provinces = Model.Provinces;
 
     var actionUrl = Orchard.Action<PaymentController>(controller =>
-        controller.CheckoutWithoutPayment(Model.ShoppingCartId));
+        controller.CheckoutWithoutPayment(Model.ShoppingCartId, !ignoreAddress));
 }
 
 <section id="checkout">
@@ -35,24 +34,7 @@
                    prop-Text="@T["Phone Number"]"
                    prop-Value="@Model.OrderPart.Phone.Text"
                    prop-ClassNames="@("payment-form-phone")"
-                   prop-Required="@true" />
-
-            <shape type="InputRow"
-                   prop-Name="@Html.NameFor(model => model.OrderPart.VatNumber.Text)"
-                   prop-Text="@T["VAT Number"]"
-                   prop-Value="@Model.OrderPart.VatNumber.Text"
-                   prop-ClassNames="@("payment-form-vat")" />
-
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox"
-                           asp-for="OrderPart.IsCorporation.Value"
-                           class="form-check-input content-preview-select">
-                    <label asp-for="OrderPart.IsCorporation.Value" class="form-check-label">
-                        @T["Buyer is a corporation"]
-                    </label>
-                </div>
-            </div>
+                   prop-Required="@true" />            
 
             @if (ignoreAddress)
             {
@@ -78,6 +60,23 @@
             }
             else
             {
+                <shape type="InputRow"
+                   prop-Name="@Html.NameFor(model => model.OrderPart.VatNumber.Text)"
+                   prop-Text="@T["VAT Number"]"
+                   prop-Value="@Model.OrderPart.VatNumber.Text"
+                   prop-ClassNames="@("payment-form-vat")" />
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox"
+                               asp-for="OrderPart.IsCorporation.Value"
+                               class="form-check-input content-preview-select">
+                        <label asp-for="OrderPart.IsCorporation.Value" class="form-check-label">
+                            @T["Buyer is a corporation"]
+                        </label>
+                    </div>
+                </div>
+
                 <div class="address address_billing-address">
                 <h3 class="address__title">@T["Billing Address"]</h3>
 
@@ -158,21 +157,19 @@
                         </button>
                     </div>
                 }
-                
-            }           
-            
+                <script asp-name="@ToggleSecondAddress" at="Foot"></script>
+                <script depends-on="@ToggleSecondAddress" at="Foot">
+                    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
+                    checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
+                    initializeToggleSecondAddress(
+                        checkbox,
+                        document.querySelector('.address_billing-address'),
+                        document.querySelector('.address_shipping-address'));
+                </script>
+            } 
         </form>
     </div>
 </section>
 
 <style asp-name="@PaymentForm"></style>
 
-<script asp-name="@ToggleSecondAddress" at="Foot"></script>
-<script depends-on="@ToggleSecondAddress" at="Foot">
-    const checkbox = document.getElementById('OrderPart_BillingAndShippingAddressesMatch_Value');
-    checkbox.checked = @Json.Serialize(Model.OrderPart.BillingAndShippingAddressesMatch.Value);
-    initializeToggleSecondAddress(
-        checkbox,
-        document.querySelector('.address_billing-address'),
-        document.querySelector('.address_shipping-address'));
-</script>
