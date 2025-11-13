@@ -40,5 +40,5 @@ public class LocalTaxProvider : ITaxProvider
     public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
         ITaxProvider.AllOrNoneAsync(model, items => items
             .Select(item => item.Content.ContentItem.As<TaxPart>())
-            .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value > 0));
+            .Count(taxPart => taxPart?.GrossPrice?.Amount.IsValid == true && taxPart.TaxRate.Value >= 0));
 }

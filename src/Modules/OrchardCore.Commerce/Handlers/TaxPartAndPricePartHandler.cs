@@ -39,7 +39,7 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         var taxRate = taxPart.TaxRate?.Value ?? 0;
 
         var isGrossPricePresent = taxPart.GrossPrice?.Amount.IsValid == true;
-        var isTaxRatePresent = taxRate > 0;
+        var isTaxRatePresent = taxRate >= 0;
 
         if (isGrossPricePresent && isTaxRatePresent)
         {
