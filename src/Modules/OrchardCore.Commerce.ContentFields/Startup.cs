@@ -27,7 +27,8 @@ public class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
-        services.Configure<TemplateOptions>(option => {
+        services.Configure<TemplateOptions>(option =>
+        {
             option.MemberAccessStrategy.Register<PriceField>();
             option.MemberAccessStrategy.Register<PriceFieldDisplayViewModel>();
         });
