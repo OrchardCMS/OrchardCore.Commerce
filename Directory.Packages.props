@@ -21,7 +21,7 @@
     <PackageVersion Include="Lombiq.Tests.UI" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="$(LombiqTestsUIVersion)" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />
@@ -42,7 +42,7 @@
     <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Stripe.net" Version="49.2.0" />
-    <PackageVersion Include="System.Text.Json" Version="9.0.10" />
+    <PackageVersion Include="System.Text.Json" Version="9.0.11" />
     <PackageVersion Include="xunit.v3" Version="3.2.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
