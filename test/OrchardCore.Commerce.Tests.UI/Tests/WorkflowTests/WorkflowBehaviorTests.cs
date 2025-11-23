@@ -61,7 +61,7 @@ public class WorkflowBehaviorTests : UITestBase
                     ]);
 
                 // Verify that it still works even after a reload.
-                context.Refresh();
+                await context.RefreshAsync();
                 context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe(price);
             },
             browser);
