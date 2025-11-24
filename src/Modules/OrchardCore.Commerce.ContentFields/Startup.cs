@@ -6,6 +6,7 @@ using OrchardCore.Commerce.AddressDataType.Abstractions;
 using OrchardCore.Commerce.AddressDataType.Services;
 using OrchardCore.Commerce.ContentFields.Drivers;
 using OrchardCore.Commerce.ContentFields.Models;
+using OrchardCore.Commerce.ContentFields.ViewModels;
 using OrchardCore.Commerce.Drivers;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
@@ -27,7 +28,10 @@ public class Startup : StartupBase
         services.AddScoped<IFieldsOnlyDisplayManager, FieldsOnlyDisplayManager>();
 
         services.Configure<TemplateOptions>(option =>
-            option.MemberAccessStrategy.Register<PriceField>());
+        {
+            option.MemberAccessStrategy.Register<PriceField>();
+            option.MemberAccessStrategy.Register<PriceFieldDisplayViewModel>();
+        });
 
         // Price Field
         services.AddContentField<PriceField>()
