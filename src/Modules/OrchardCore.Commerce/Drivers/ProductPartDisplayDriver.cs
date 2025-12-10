@@ -7,10 +7,9 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
@@ -29,25 +28,24 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     }
 
     public override IDisplayResult Display(ProductPart part, BuildPartDisplayContext context) =>
-        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
+        Initialize<ProductPartViewModel>(GetDisplayShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part))
             .Location("Detail", "Content:20")
             .Location("Summary", "Meta:5");
 
     public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) =>
-        Initialize<ProductPartViewModel>(GetEditorShapeType(context), viewModel => BuildViewModel(viewModel, part));
+        Initialize<ProductPartViewModel>(GetEditorShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part));
 
     public override async Task<IDisplayResult> UpdateAsync(
         ProductPart part,
-        IUpdateModel updater,
         UpdatePartEditorContext context)
     {
         var skuBefore = part.Sku;
 
-        await updater.TryUpdateModelAsync(part, Prefix);
+        await context.Updater.TryUpdateModelAsync(part, Prefix);
 
         if (part.Sku.Contains('-'))
         {
-            updater.ModelState.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
+            context.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
             return await EditAsync(part, context);
         }
 
@@ -57,7 +55,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         {
             part.CanBeBought.Clear();
 
-            var filteredInventory = inventoryPart.Inventory.FilterOutdatedEntries(inventoryPart.InventoryKeys);
+            var filteredInventory = inventoryPart.FilterOutdatedEntries();
 
             // If an inventory's value is below 1 and back ordering is not allowed, corresponding
             // CanBeBought entry needs to be set to false; should be set to true otherwise.
@@ -92,7 +90,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         part.CanBeBought.AddRange(newAvailabilities);
     }
 
-    private void BuildViewModel(ProductPartViewModel viewModel, ProductPart part)
+    private async Task BuildViewModelAsync(ProductPartViewModel viewModel, ProductPart part)
     {
         viewModel.ContentItem = part.ContentItem;
         viewModel.Sku = part.Sku;
@@ -100,19 +98,11 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 
         if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
-            var filteredInventory = inventoryPart.Inventory.FilterOutdatedEntries(inventoryPart.InventoryKeys);
-            foreach (var inventory in filteredInventory)
+            foreach (var (key, value) in inventoryPart.FilterOutdatedEntries())
             {
                 // If an inventory's value is below 1 and back ordering is not allowed, corresponding
                 // CanBeBought entry needs to be set to false; should be set to true otherwise.
-                viewModel.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
-            }
-
-            // When creating a new Product item, initialize default inventory.
-            if (part.ContentItem.As<PriceVariantsPart>() == null && !inventoryPart.Inventory.Any())
-            {
-                inventoryPart.Inventory.Add("DEFAULT", 0);
-                inventoryPart.InventoryKeys.Add("DEFAULT");
+                viewModel.CanBeBought[key] = inventoryPart.AllowsBackOrder.Value || value >= 1;
             }
         }
         else
@@ -120,6 +110,6 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             viewModel.CanBeBought[part.ContentItem.ContentItemId] = true;
         }
 
-        viewModel.Attributes = _productAttributeService.GetProductAttributeFields(part.ContentItem);
+        viewModel.Attributes = await _productAttributeService.GetProductAttributeFieldsAsync(part.ContentItem);
     }
 }

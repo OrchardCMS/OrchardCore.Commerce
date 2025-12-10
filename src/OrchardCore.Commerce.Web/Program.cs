@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Logging;
@@ -14,19 +13,15 @@ var configuration = builder.Configuration;
 
 builder.Services
     .AddSingleton(configuration)
-    .AddOrchardCms(builder =>
-    {
-        if (!configuration.IsUITesting())
-        {
-            builder.AddSetupFeatures("OrchardCore.AutoSetup");
-        }
-    });
+    .AddOrchardCms(orchardCoreBuilder => orchardCoreBuilder
+        // Enabling allowInlineStyle is necessary because style attributes are used in the Blog theme. Re-evaluate if
+        // this is still true during the review of https://github.com/OrchardCMS/OrchardCore.Commerce/issues/300.
+        .ConfigureSecurityDefaultsWithStaticFiles(new() { AllowInlineStyle = true })
+        .EnableAutoSetupIfNotUITesting(configuration));
 
 var app = builder.Build();
-
-app.UseStaticFiles();
 app.UseOrchardCore();
-app.Run();
+await app.RunAsync();
 
 [SuppressMessage(
     "Design",

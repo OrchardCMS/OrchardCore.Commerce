@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
@@ -9,10 +8,10 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class OrderPartViewModel
 {
-    public IList<OrderLineItemViewModel> LineItems { get; } = new List<OrderLineItemViewModel>();
+    public IList<OrderLineItemViewModel> LineItems { get; } = [];
 
     public Amount Total { get; set; }
-    public IList<IPayment> Charges { get; } = new List<IPayment>();
+    public IList<Abstractions.Models.Payment> Charges { get; } = [];
 
     [BindNever]
     public ContentItem ContentItem { get; set; }

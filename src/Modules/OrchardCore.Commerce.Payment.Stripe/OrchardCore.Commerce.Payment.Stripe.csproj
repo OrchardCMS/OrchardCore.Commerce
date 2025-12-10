@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -28,24 +28,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.7.0"/>
-    <PackageReference Include="Stripe.net" Version="41.27.0" />
+    <PackageReference Include="OrchardCore.Flows" />
+    <PackageReference Include="OrchardCore.Module.Targets" />
+    <PackageReference Include="Stripe.net" />
+  </ItemGroup>
+
+  <!-- Newtonsoft.Json is a dependency of Stripe.net. While OC does not use it directly any more, this is needed to pull
+       the package up to a more up-to-date and secure version. -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Commerce.Payment\OrchardCore.Commerce.Payment.csproj" />
     <ProjectReference Include="..\OrchardCore.Commerce.Promotion\OrchardCore.Commerce.Promotion.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
-  </ItemGroup>
-  <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.props" />
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
-  </ImportGroup>
-  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.3.2" />
+    <ProjectReference Include="..\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
 </Project>

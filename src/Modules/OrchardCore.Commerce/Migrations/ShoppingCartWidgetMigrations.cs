@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using System.Threading.Tasks;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
 
 namespace OrchardCore.Commerce.Migrations;
@@ -12,10 +13,10 @@ public class ShoppingCartWidgetMigrations : DataMigration
     public ShoppingCartWidgetMigrations(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager
-            .AlterTypeDefinition(ShoppingCartWidget, type => type
+        await _contentDefinitionManager
+            .AlterTypeDefinitionAsync(ShoppingCartWidget, type => type
             .WithPart(nameof(ShoppingCartWidgetPart))
             .Stereotype("Widget"));
 

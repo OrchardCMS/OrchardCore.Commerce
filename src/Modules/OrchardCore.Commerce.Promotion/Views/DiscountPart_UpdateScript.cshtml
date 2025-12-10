@@ -1,19 +1,24 @@
-@model OrchardCore.Commerce.Promotion.ViewModels.DiscountPartUpdateScriptViewModel
+@model DiscountPartUpdateScriptViewModel
 
 @{
     var uniqueItem = $"anchor_{Guid.NewGuid():N}";
+    var items = Model.Items.Select(item => new
+    {
+        Old = item.OldValue.ToString(),
+        New = item.NewValue.ToString(),
+        Query = item.QuerySelector,
+    });
 }
 
 <div id="@uniqueItem" hidden></div>
 
 <script at="Foot">
-    const baseElement = document.getElementById(@uniqueItem.JsonHtmlContent()).parentElement;
-
-    @foreach (var item in Model.Items)
-    {
-        var html = $"<del class=\"text-danger\">{item.OldValue}</del> <span>{item.NewValue}</span>";
-        <text>
-            baseElement.querySelector(@item.QuerySelector.JsonHtmlContent()).innerHTML = @html.JsonHtmlContent();
-        </text>
-    }
+    (function(baseElement, items) {
+        items.forEach((item) => {
+            const html = `<del class="text-danger">${item.old}</del> <span>${item.new}</span>`;
+            Array
+                .from(baseElement.querySelectorAll(item.query))
+                .forEach((element) => { element.innerHTML = html; });
+        });
+    })(document.getElementById(@uniqueItem.JsonHtmlContent()).parentElement, @Json.Serialize(items));
 </script>

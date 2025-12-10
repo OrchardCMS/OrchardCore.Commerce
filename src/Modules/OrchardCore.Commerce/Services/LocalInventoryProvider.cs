@@ -53,7 +53,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
         foreach (var item in model)
         {
             var productPart = await _productService.GetProductAsync(item.ProductSku);
-            var fullSku = _productService.GetOrderFullSku(item, productPart);
+            var fullSku = (await _productService.GetOrderFullSkuAsync(item, productPart)).TrimEnd('-');
 
             await UpdateInventoryAsync(
                 await _productService.GetProductAsync(item.ProductSku),
@@ -70,7 +70,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
         try
         {
-            var inventoryPart = productPart.ContentItem.As<InventoryPart>();
+            var inventoryPart = productPart?.ContentItem.As<InventoryPart>();
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
@@ -82,9 +82,9 @@ public class LocalInventoryProvider : IProductInventoryProvider
                 entry.Key == inventoryIdentifier || entry.Key == inventoryRootIdentifier);
 
             var newValue = relevantInventory.Value + difference;
-            if (newValue < 0)
+            if (newValue < 0 && !inventoryPart.AllowsBackOrder.Value)
             {
-                throw new InvalidOperationException("Inventory value cannot be negative.");
+                throw new InvalidOperationException("Unless back ordering is allowed, Inventory value cannot be negative.");
             }
 
             var newEntry = new KeyValuePair<string, int>(relevantInventory.Key, newValue);
@@ -93,7 +93,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
             inventoryPart.Inventory.Add(newEntry);
             inventoryPart.Apply();
 
-            _session.Save(productPart.ContentItem);
+            await _session.SaveAsync(productPart.ContentItem);
         }
         finally
         {

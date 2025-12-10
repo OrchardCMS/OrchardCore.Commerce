@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using System;
+using System.Text.Json;
 using Xunit;
 using static OrchardCore.Commerce.MoneyDataType.Currency;
 
@@ -37,7 +37,7 @@ public class AmountTests
     }
 
     [Fact]
-    public void OneCanMultiplyAnAmountByANumber() // #spell-check-ignore-line
+    public void OneCanMultiplyAnAmountByANumber()
     {
         Assert.Equal(new Amount(42.34M, Euro), 2 * new Amount(21.17M, Euro));
         Assert.Equal(new Amount(42.34M, Euro), new Amount(21.17M, Euro) * 2);
@@ -86,13 +86,12 @@ public class AmountTests
     [Fact]
     public void SerialisationPersistsValidValues()
     {
-        var amt1 = new Amount(1.23M, Euro);
+        var originalAmount = new Amount(1.23M, Euro);
 
-        var s = JsonConvert.SerializeObject(amt1);
+        var json = JsonSerializer.Serialize(originalAmount);
+        var deserializedAmount = JsonSerializer.Deserialize<Amount>(json);
 
-        var amt2 = JsonConvert.DeserializeObject<Amount>(s);
-
-        Assert.Equal(amt1, amt2);
+        Assert.Equal(originalAmount, deserializedAmount);
     }
 
     [Fact]
@@ -100,14 +99,13 @@ public class AmountTests
     {
         var unknown = new Currency("My FOO", "My FOO", "f", "FOO");
 
-        var amt1 = new Amount(1.23M, unknown);
+        var originalAmount = new Amount(1.23M, unknown);
 
-        var s = JsonConvert.SerializeObject(amt1);
+        var json = JsonSerializer.Serialize(originalAmount);
+        var deserializedAmount = JsonSerializer.Deserialize<Amount>(json);
 
-        var amt2 = JsonConvert.DeserializeObject<Amount>(s);
+        Assert.True(originalAmount == deserializedAmount);
 
-        Assert.True(amt1 == amt2);
-
-        Assert.Equal(amt1, amt2);
+        Assert.Equal(originalAmount, deserializedAmount);
     }
 }

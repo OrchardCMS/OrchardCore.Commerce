@@ -1,4 +1,5 @@
 ﻿using Lombiq.Tests.UI.Extensions;
+using Lombiq.Tests.UI.Helpers;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -16,11 +17,30 @@ public static class FormUITestContextExtensions
     {
         if (address is null) return;
 
-        async Task FillAsync(string suffix, string value)
+        Task FillAsync(string suffix, string value, bool isDropdown = false)
         {
             var by = By.Id(prefix + suffix);
-            if (value is null || context.Get(by).GetAttribute("value") == value) return;
-            await context.ClickAndFillInWithRetriesAsync(by, value);
+            if (value is null || context.Get(by).GetAttribute("value") == value) return Task.CompletedTask;
+
+            if (!isDropdown)
+            {
+                return context.ClickAndFillInWithRetriesAsync(by, value);
+            }
+
+            return ReliabilityHelper.DoWithRetriesOrFailAsync(
+                async () =>
+                {
+                    try
+                    {
+                        await context.SetDropdownByValueAsync(by, value);
+                        return true;
+                    }
+                    catch (WebDriverException)
+                    {
+                        return false;
+                    }
+                },
+                cancellationToken: context.Configuration.TestCancellationToken);
         }
 
         await FillAsync(nameof(address.Name), address.Name);
@@ -29,9 +49,9 @@ public static class FormUITestContextExtensions
         await FillAsync(nameof(address.StreetAddress1), address.StreetAddress1);
         await FillAsync(nameof(address.StreetAddress2), address.StreetAddress2);
         await FillAsync(nameof(address.City), address.City);
-        await FillAsync(nameof(address.Province), address.Province);
         await FillAsync(nameof(address.PostalCode), address.PostalCode);
-        await FillAsync(nameof(address.Region), address.Region);
+        await FillAsync(nameof(address.Region), address.Region, isDropdown: true);
+        await FillAsync(nameof(address.Province), address.Province, isDropdown: true);
     }
 
     public static async Task FillAddressAsync(this UITestContext context, string fieldName, AddressField field)

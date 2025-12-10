@@ -3,7 +3,6 @@ using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;

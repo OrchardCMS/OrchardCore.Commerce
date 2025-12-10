@@ -1,0 +1,50 @@
+﻿@{
+    var prefix = (Model.Prefix as string)?.Trim('.');
+    var name = $"{prefix}.{Model.Name}".Trim('.');
+    var id = Html.Id(name);
+    var classes = Model.ClassNames ?? $"address__{Model.Name}".ToLowerInvariant();
+    var type = Model.InputType ?? "text";
+    var isRequired = false;
+
+    if (Model.Required is bool requiredBool)
+    {
+        isRequired = requiredBool;
+    }
+    else if (Model.Required is string requiredString)
+    {
+        isRequired = requiredString.EqualsOrdinalIgnoreCase("true");
+    }
+}
+
+<div class="row">
+    <div class="mb-3 col-md-12">
+        <label for="@id">@Model.Text@(isRequired ? " *" : string.Empty)</label>
+    </div>
+    <div class="mb-3 col-md-6">
+        @if (type == "dropdown")
+        {
+            <select id="@id"
+                    name="@name"
+                    value="@(Model.Value is IEnumerable<SelectListItem> ? null : Model.Value)"
+                    class="form-control content-preview-text @classes"
+                    required="@isRequired">
+                @if (Model.Value is IEnumerable<SelectListItem> selectListItems)
+                {
+                    foreach (var item in selectListItems)
+                    {
+                        <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+                    }
+                }
+            </select>
+        }
+        else
+        {
+            <input type="@type"
+                   id="@id"
+                   name="@name"
+                   value="@Model.Value"
+                   class="form-control content-preview-text @classes"
+                   required="@isRequired"/>
+        }
+    </div>
+</div>

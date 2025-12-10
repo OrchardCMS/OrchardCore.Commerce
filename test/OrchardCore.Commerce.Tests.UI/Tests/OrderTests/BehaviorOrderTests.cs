@@ -6,7 +6,6 @@ using OpenQA.Selenium;
 using Shouldly;
 using System.Globalization;
 using Xunit;
-using Xunit.Abstractions;
 using static OrchardCore.Commerce.Tests.UI.Constants.ContentItemIds;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.OrderTests;
@@ -26,6 +25,13 @@ public class BehaviorOrderTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
+                void SetUnitPriceCurrency(int index, string isoCode) => context.ExecuteScript($@"
+                    const select = document.querySelector(
+                        'select[name=\'OrderPart.LineItems[{index.ToTechnicalString()}].UnitPriceCurrencyIsoCode\']');
+                    select.value = '{isoCode}';
+                    select.dispatchEvent(new Event('change'))
+                    ");
+
                 await context.SignInDirectlyAndGoToDashboardAsync();
                 await context.GoToContentItemEditorByIdAsync(TestOrder);
 
@@ -46,11 +52,11 @@ public class BehaviorOrderTests : UITestBase
                 AssertTotal(context, "$", "100");
 
                 // Displayed currency symbol should change based on topmost currency selector's value.
-                await context.SetDropdownByTextAsync(ByUnitPriceCurrencyIsoCode(0), "EUR");
+                SetUnitPriceCurrency(0, "EUR");
                 AssertTotal(context, "€", "100");
 
                 // Other currency selectors should not affect displayed currency symbol.
-                await context.SetDropdownByTextAsync(ByUnitPriceCurrencyIsoCode(1), "USD");
+                SetUnitPriceCurrency(1, "USD");
                 AssertTotal(context, "€", "100");
 
                 // Product should be deletable from list before submitting it for the first time.
@@ -73,12 +79,12 @@ public class BehaviorOrderTests : UITestBase
                 await ClickAddItemAsync(context);
 
                 await context.ClickAndFillInWithRetriesAsync(ByQuantity(0), "5");
-                await context.ClickAndFillInWithRetriesAsync(ByProductSku(0), "nonexistentproduct"); // #spell-check-ignore-line
+                await context.ClickAndFillInWithRetriesAsync(ByProductSku(0), "nonexistentproduct");
                 await context.ClickAndFillInWithRetriesAsync(ByUnitPriceValue(0), "10");
                 await context.ClickPublishAsync();
 
                 // Non-existent SKU should result in validation errors being shown and no Product being added.
-                context.ErrorMessageExists("SKU \"NONEXISTENTPRODUCT\" does not belong to an existing Product."); // #spell-check-ignore-line
+                context.ErrorMessageExists("SKU \"NONEXISTENTPRODUCT\" does not belong to an existing Product.");
 
                 context.Missing(ByQuantity(0));
                 await ClickAddItemAsync(context);
@@ -86,7 +92,7 @@ public class BehaviorOrderTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(ByQuantity(0), "5");
                 await context.ClickAndFillInWithRetriesAsync(ByProductSku(0), "testproductvariant");
                 await context.ClickAndFillInWithRetriesAsync(ByUnitPriceValue(0), "10");
-                await context.SetDropdownByTextAsync(ByUnitPriceCurrencyIsoCode(0), "EUR");
+                SetUnitPriceCurrency(0, "EUR");
                 await context.ClickPublishAsync();
 
                 // Selected currency should be saved.
@@ -115,7 +121,7 @@ public class BehaviorOrderTests : UITestBase
                 // No attributes should be loaded for Product without attributes.
                 context.Missing(By.Name("OrderPart.LineItems[1].SelectedAttributes[Text][Size]"));
 
-                await context.SetDropdownByTextAsync(ByUnitPriceCurrencyIsoCode(1), "CAD");
+                SetUnitPriceCurrency(1, "CAD");
                 await context.ClickPublishAsync();
 
                 // Selecting non-matching currencies should result in validation errors.

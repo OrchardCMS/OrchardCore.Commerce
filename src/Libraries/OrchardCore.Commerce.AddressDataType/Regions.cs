@@ -10,6 +10,12 @@ public static class Regions
     /// <summary>
     /// Gets the list of regions.
     /// </summary>
+    /// <remarks><para>
+    /// The values depend on the configuration of the executing operating system. This means these values can be
+    /// outdated even when used locally, and contentious when utilized to serve international visitors. Consider using
+    /// the appropriate method in IRegionService of the OrchardCore.Commerce.Abstractions library instead. It still uses
+    /// this source by default but can be extended or replaced as any service so your code will be more future-proof.
+    /// </para></remarks>
     public static IList<Region> All { get; } =
         CultureInfo
             .GetCultures(CultureTypes.SpecificCultures)
@@ -25,12 +31,15 @@ public static class Regions
                 region is { TwoLetterISORegionName.Length: 2 } && // Filter out world and other 3-digit regions.
                 !string.IsNullOrEmpty(region.EnglishName))
             .Distinct()
-            .Select(region => new Region(region))
+            .Select(Region.FromRegionInfo)
             .ToList();
 
     /// <summary>
     /// Gets two-letter regions codes mapped to region names.
     /// </summary>
+    [Obsolete(
+        "Don't use these directly, they may be removed in a future version. Use the equivalent methods in " +
+        "IRegionService of the OrchardCore.Commerce.Abstractions library.")]
     public static IDictionary<string, IDictionary<string, string>> Provinces { get; } =
         new Dictionary<string, IDictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
         {

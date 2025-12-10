@@ -1,6 +1,6 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
@@ -13,8 +13,10 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -31,6 +33,10 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
         Initialize<DiscountPartViewModel>(GetEditorShapeType(context), viewModel =>
             BuildViewModel(viewModel, (DiscountInformation)part, part, newPrice: null));
 
+    [SuppressMessage(
+        "Performance",
+        "CA1859:Use concrete types when possible for improved performance",
+        Justification = "False positive, we pass multiple different types to this method at different times.")]
     private static void BuildViewModel(DiscountPartViewModel model, DiscountInformation discount, IContent content, Amount? newPrice)
     {
         model.ContentItem = content.ContentItem;
@@ -39,9 +45,9 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
         if (newPrice != null) model.NewPrice.Amount = newPrice.Value;
     }
 
-    private static Amount? CalculateNewPrice(DiscountInformation discount, IContent content)
+    private static Amount? CalculateNewPrice(DiscountInformation discount, DiscountPart part)
     {
-        var contentItem = content?.ContentItem;
+        var contentItem = part?.ContentItem;
         var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { IsValid: true } grossPrice
             ? grossPrice
             : contentItem?.As<PricePart>()?.Price;
@@ -74,7 +80,7 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
                 var data = model.AdditionalData;
 
                 var discounts = data.GetDiscounts().ToList();
-                if (!discounts.Any()) return null;
+                if (discounts.Count == 0) return null;
 
                 var shapes = discounts
                     .Select(discount => Initialize<DiscountPartViewModel>(
@@ -104,7 +110,7 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
             }
             catch (FrontendException exception)
             {
-                await _notifier.ErrorAsync(exception.HtmlMessage);
+                await _notifier.FrontEndErrorAsync(exception);
                 return null;
             }
         }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
-public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, PriceDisplaySettings>
+public class PriceDisplaySettingsDisplayDriver : SiteDisplayDriver<PriceDisplaySettings>
 {
     public const string GroupId = "PriceDisplay";
 
@@ -32,14 +32,17 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
         _authorizationService = authorizationService;
     }
 
-    public override async Task<IDisplayResult> EditAsync(PriceDisplaySettings section, BuildEditorContext context)
-    {
-        var user = _hca.HttpContext?.User;
+    protected override string SettingsGroupId
+        => GroupId;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
+    public override async Task<IDisplayResult> EditAsync(ISite model, PriceDisplaySettings section, BuildEditorContext context)
+    {
+        if (!await AuthorizeAsync())
         {
             return null;
         }
+
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<PriceDisplaySettingsViewModel>("PriceDisplaySettings_Edit", model =>
         {
@@ -47,28 +50,23 @@ public class PriceDisplaySettingsDisplayDriver : SectionDisplayDriver<ISite, Pri
             model.UseGrossPriceDisplay = section.UseGrossPriceDisplay;
         })
             .PlaceInContent()
-            .OnGroup(GroupId);
+            .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(PriceDisplaySettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite model, PriceDisplaySettings section, UpdateEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManagePriceDisplaySettings))
+        if (await context.CreateModelMaybeAsync<PriceDisplaySettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
-            return null;
-        }
-
-        var model = new PriceDisplaySettingsViewModel();
-        if (context.GroupId == GroupId && await context.Updater.TryUpdateModelAsync(model, Prefix))
-        {
-            section.UseNetPriceDisplay = model.UseNetPriceDisplay;
-            section.UseGrossPriceDisplay = model.UseGrossPriceDisplay;
+            section.UseNetPriceDisplay = viewModel.UseNetPriceDisplay;
+            section.UseGrossPriceDisplay = viewModel.UseGrossPriceDisplay;
 
             // Release the tenant to apply settings.
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
-        return await EditAsync(section, context);
+        return await EditAsync(model, section, context);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, Permissions.ManagePriceDisplaySettings);
 }

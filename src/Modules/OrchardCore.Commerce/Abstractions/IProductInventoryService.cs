@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.Abstractions.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,4 +15,10 @@ public interface IProductInventoryService
     /// </summary>
     /// <param name="items">The quantities and products whose inventories need to be adjusted.</param>
     Task<IList<ShoppingCartItem>> UpdateInventoriesAsync(IList<ShoppingCartItem> items);
+
+    /// <summary>
+    /// Verifies the inventory state of the provided <paramref name="lines"/>.
+    /// </summary>
+    /// <returns><see langword="true"/> if the line items can't be checked out.</returns>
+    Task<bool> VerifyLinesAsync(IList<ShoppingCartLineViewModel> lines);
 }

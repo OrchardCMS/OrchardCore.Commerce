@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
-public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSettings>
+public class RegionSettingsDisplayDriver : SiteDisplayDriver<RegionSettings>
 {
     public const string GroupId = "Region";
 
@@ -39,52 +39,49 @@ public class RegionSettingsDisplayDriver : SectionDisplayDriver<ISite, RegionSet
         _regionService = regionService;
     }
 
-    public override async Task<IDisplayResult> EditAsync(RegionSettings section, BuildEditorContext context)
+    protected override string SettingsGroupId
+        => GroupId;
+
+    public override async Task<IDisplayResult> EditAsync(ISite model, RegionSettings section, BuildEditorContext context)
     {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings)) return null;
-
-        return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
-        {
-            model.AllowedRegions = section.AllowedRegions;
-            model.Regions = _regionService
-                .GetAllRegions()
-                .CreateSelectListOptions();
-        })
-            .Location("Content")
-            .OnGroup(GroupId);
-    }
-
-    public override async Task<IDisplayResult> UpdateAsync(RegionSettings section, BuildEditorContext context)
-    {
-        var user = _hca.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRegionSettings))
+        if (!await AuthorizeAsync())
         {
             return null;
         }
 
-        if (context.GroupId == GroupId)
-        {
-            var model = new RegionSettingsViewModel();
+        context.AddTenantReloadWarningWrapper();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        return Initialize<RegionSettingsViewModel>("RegionSettings_Edit", model =>
             {
-                var allowedRegions = model.AllowedRegions.AsList();
-                var allRegionTwoLetterIsoRegionNames = _regionService
+                model.AllowedRegions = section.AllowedRegions;
+                model.Regions = _regionService
                     .GetAllRegions()
-                    .Select(region => region.TwoLetterISORegionName);
+                    .CreateSelectListOptions();
+            })
+            .PlaceInContent()
+            .OnGroup(SettingsGroupId);
+    }
 
-                section.AllowedRegions = allowedRegions?.Any() == true
-                    ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
-                    : allRegionTwoLetterIsoRegionNames;
+    public override async Task<IDisplayResult> UpdateAsync(ISite model, RegionSettings section, UpdateEditorContext context)
+    {
+        if (await context.CreateModelMaybeAsync<RegionSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
+        {
+            var allowedRegions = viewModel.AllowedRegions?.AsList() ?? [];
+            var allRegionTwoLetterIsoRegionNames = _regionService
+                .GetAllRegions()
+                .Select(region => region.TwoLetterISORegionName);
 
-                // Release the tenant to apply settings.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
-            }
+            section.AllowedRegions = allowedRegions.Count != 0
+                ? allRegionTwoLetterIsoRegionNames.Where(allowedRegions.Contains)
+                : allRegionTwoLetterIsoRegionNames;
+
+            // Release the tenant to apply settings.
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
-        return await EditAsync(section, context);
+        return await EditAsync(model, section, context);
     }
+
+    private Task<bool> AuthorizeAsync() =>
+        _authorizationService.AuthorizeAsync(_hca.HttpContext?.User, Permissions.ManageRegionSettings);
 }

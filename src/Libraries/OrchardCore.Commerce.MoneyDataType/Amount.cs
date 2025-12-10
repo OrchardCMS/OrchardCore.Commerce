@@ -3,6 +3,7 @@
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
@@ -13,7 +14,6 @@ namespace OrchardCore.Commerce.MoneyDataType;
 /// A money amount, which is represented by a decimal number and a currency.
 /// </summary>
 [JsonConverter(typeof(AmountConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(LegacyAmountConverter))]
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
@@ -83,6 +83,35 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     public Amount GetRounded() =>
         new(Math.Round(Value, Currency.DecimalPlaces), Currency);
 
+    /// <summary>
+    /// Converts the <see cref="Amount"/> to a fixed-point fractional value by keeping some digits based on the <see
+    /// cref="ICurrency.CurrencyIsoCode"/>.
+    /// </summary>
+    /// <param name="roundingByCurrencyCode">
+    /// Provides exceptional rounding rules for currencies that aren't converted according to the default. The key is
+    /// the <see cref="Currency"/>'s ISO code, the value pairs follow the same logic as the matching default parameters.
+    /// </param>
+    /// <param name="defaultKeepDigits">Indicates how many digits should be kept after the decimal point.</param>
+    /// <param name="defaultRoundTens">
+    /// If positive, the <see cref="Amount"/> is rounded to this many digits before converted to a fixed-point
+    /// fractional. Ignored otherwise.
+    /// </param>
+    public long GetFixedPointAmount(
+        IDictionary<string, (int KeepDigits, int RoundTens)> roundingByCurrencyCode,
+        int defaultKeepDigits = 2,
+        int defaultRoundTens = 0)
+    {
+        static int Tens(int zeroes) => (int)Math.Pow(10, zeroes);
+
+        var (keepDigits, roundTens) = roundingByCurrencyCode.TryGetValue(Currency.CurrencyIsoCode, out var pair)
+            ? pair
+            : (defaultKeepDigits, defaultRoundTens);
+
+        return roundTens > 0
+            ? (long)Math.Round(Value / Tens(roundTens)) * Tens(roundTens + keepDigits)
+            : (long)Math.Round(Value * Tens(keepDigits));
+    }
+
     private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")
     {
         if (Currency.Equals(other.Currency)) return;
@@ -98,14 +127,18 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     public static Amount operator +(Amount first, Amount second)
     {
         first.ThrowIfCurrencyDoesntMatch(second, operation: "add");
-        return new Amount(first.Value + second.Value, first.Currency);
+        return new(first.Value + second.Value, first.Currency);
     }
+
+    public static Amount operator +(Amount first, decimal second) => new(first.Value + second, first.Currency);
 
     public static Amount operator -(Amount first, Amount second)
     {
         first.ThrowIfCurrencyDoesntMatch(second, operation: "subtract");
-        return new Amount(first.Value - second.Value, first.Currency);
+        return new(first.Value - second.Value, first.Currency);
     }
+
+    public static Amount operator -(Amount first, decimal second) => new(first.Value - second, first.Currency);
 
     public static Amount operator -(Amount amount) =>
         new(-amount.Value, amount.Currency);

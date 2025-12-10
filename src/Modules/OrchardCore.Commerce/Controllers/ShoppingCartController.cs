@@ -1,12 +1,13 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Lombiq.HelpfulLibraries.OrchardCore.Workflow;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Activities;
+using OrchardCore.Commerce.Endpoints;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -18,6 +19,7 @@ using OrchardCore.Workflows.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Controllers;
 
@@ -32,6 +34,7 @@ public class ShoppingCartController : Controller
     private readonly IHtmlLocalizer<ShoppingCartController> H;
     private readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
     private readonly IProductService _productService;
+    private readonly IShoppingCartService _shoppingCartService;
 
     // These are needed.
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -44,7 +47,8 @@ public class ShoppingCartController : Controller
         IEnumerable<IWorkflowManager> workflowManagers,
         IHtmlLocalizer<ShoppingCartController> htmlLocalizer,
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
-        IProductService productService)
+        IProductService productService,
+        IShoppingCartService shoppingCartService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _notifier = notifier;
@@ -56,6 +60,7 @@ public class ShoppingCartController : Controller
         _shoppingCartEvents = shoppingCartEvents;
         _productService = productService;
         H = htmlLocalizer;
+        _shoppingCartService = shoppingCartService;
     }
 
     [HttpGet]
@@ -102,7 +107,7 @@ public class ShoppingCartController : Controller
 
     [HttpGet]
     [Route("cart/empty")]
-    public async Task<ActionResult> Empty()
+    public new async Task<ActionResult> Empty()
     {
         var trackingConsentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
         if (trackingConsentFeature?.CanTrack == false)
@@ -120,10 +125,26 @@ public class ShoppingCartController : Controller
     public async Task<ActionResult> Update(ShoppingCartUpdateModel cart, string shoppingCartId)
     {
         var updatedLines = new List<ShoppingCartLineUpdateModel>();
-        foreach (var line in cart.Lines)
+
+        var lines = await cart.Lines.AwaitEachAsync(async line =>
+            (Line: line, Item: await _shoppingCartSerializer.ParseCartLineAsync(line)));
+
+        // Check if there are any line items that failed to deserialize. This can only happen if the shopping cart
+        // update model was manually altered or if a product from cart was removed in the backend. This is however
+        // unlikely, because products should be made unavailable rather than deleted.
+        if (!ModelState.IsValid || lines.Any(line => line.Item == null))
+        {
+            await _shoppingCartPersistence.StoreAsync(new ShoppingCart(), shoppingCartId);
+
+            await _notifier.ErrorAsync(
+                H["Your shopping cart is broken and had to be replaced. We apologize for the inconvenience."]);
+
+            return RedirectToAction(nameof(Empty));
+        }
+
+        foreach (var (line, item) in lines)
         {
             var isValid = true;
-            var item = await _shoppingCartSerializer.ParseCartLineAsync(line);
 
             await _workflowManagers.TriggerEventAsync<CartUpdatedEvent>(
                 new { LineItem = item },
@@ -141,8 +162,8 @@ public class ShoppingCartController : Controller
             // Preserve invalid lines in the cart, but modify their Quantity values to valid ones.
             if (!isValid)
             {
-                var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
-                    .As<InventoryPart>().MinimumOrderQuantity.Value;
+                var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))?
+                    .As<InventoryPart>()?.MinimumOrderQuantity.Value ?? 0;
 
                 // Choose new quantity based on whether Minimum Order Quantity has a value.
                 line.Quantity = (int)(minOrderQuantity > 0 ? minOrderQuantity : 1);
@@ -168,18 +189,16 @@ public class ShoppingCartController : Controller
     {
         try
         {
-            var parsedLine = await _shoppingCartHelpers.AddToCartAsync(
-                shoppingCartId,
-                await _shoppingCartSerializer.ParseCartLineAsync(line),
-                storeIfOk: true);
+            if (!ModelState.IsValid || await _shoppingCartSerializer.ParseCartLineAsync(line) is not { } shoppingCartItem)
+            {
+                return NotFound();
+            }
 
-            await _workflowManagers.TriggerEventAsync<ProductAddedToCartEvent>(
-                new { LineItem = parsedLine },
-                $"ShoppingCart-{HttpContext.Session.Id}-{shoppingCartId}");
+            await _shoppingCartService.AddItemToCartAsync(shoppingCartItem, HttpContext.Session.Id, shoppingCartId);
         }
         catch (FrontendException exception)
         {
-            await _notifier.ErrorAsync(exception.HtmlMessage);
+            await _notifier.FrontEndErrorAsync(exception);
         }
 
         return RedirectToAction(nameof(Index), new { shoppingCartId });
@@ -189,10 +208,14 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> RemoveItem(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
-        var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
-        cart.RemoveItem(parsedLine);
-        await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
+        if (ModelState.IsValid)
+        {
+            var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
+            var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
+            cart.RemoveItem(parsedLine);
+            await _shoppingCartPersistence.StoreAsync(cart, shoppingCartId);
+        }
+
         return RedirectToAction(nameof(Index), new { shoppingCartId });
     }
 }

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -19,7 +20,7 @@ public class ProductAttributeService : IProductAttributeService
     public ProductAttributeService(IContentDefinitionManager contentDefinitionManager) =>
         _contentDefinitionManager = contentDefinitionManager;
 
-    public IEnumerable<ProductAttributeDescription> GetProductAttributeFields(ContentItem product)
+    public async Task<IEnumerable<ProductAttributeDescription>> GetProductAttributeFieldsAsync(ContentItem product)
     {
         var productAttributeTypes = GetProductAttributeFieldTypes(product);
 
@@ -32,8 +33,7 @@ public class ProductAttributeService : IProductAttributeService
                     productAttributeTypes[partFieldDefinition.FieldDefinition.Name],
                     partFieldDefinition.Name) as ProductAttributeField;
 
-        return _contentDefinitionManager
-            .GetTypeDefinition(product.ContentType)
+        return (await _contentDefinitionManager.GetTypeDefinitionAsync(product.ContentType))
             .Parts
             .SelectMany(typePartDefinition => typePartDefinition.PartDefinition.Fields
                 .Where(partFieldDefinition => productAttributeTypes.ContainsKey(partFieldDefinition.FieldDefinition.Name))
@@ -77,9 +77,9 @@ public class ProductAttributeService : IProductAttributeService
             .GetMethod(
                 nameof(ProductAttributeField<TextProductAttributeFieldSettings>.GetSettings),
                 BindingFlags.Instance | BindingFlags.Public)
-            ?.Invoke(field, new object[] { partFieldDefinition }) as ProductAttributeFieldSettings;
+            ?.Invoke(field, [partFieldDefinition]) as ProductAttributeFieldSettings;
 
-    private static IDictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
+    private static Dictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
         product.OfType<ContentPart>()
             .SelectMany(parts => parts.OfType<ProductAttributeField>())
             .Select(field => field.GetType())

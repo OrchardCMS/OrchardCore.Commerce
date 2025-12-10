@@ -32,7 +32,7 @@ public class ProductListService : IProductListService
         ArgumentNullException.ThrowIfNull(productList);
         ArgumentNullException.ThrowIfNull(filterParameters);
 
-        var productTypes = _contentDefinitionManager.ListTypeDefinitions()
+        var productTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
             .Where(type => type.Parts.Any(part => part.PartDefinition.Name == nameof(ProductPart)))
             .Select(type => type.Name)
             .ToArray();
@@ -90,8 +90,7 @@ public class ProductListService : IProductListService
     }
 
     private async Task<IList<IProductListFilterProvider>> GetOrderedApplicableProvidersAsync(ProductListPart productList) =>
-        (await _productListQueryProviders
-            .WhereAsync(async provider => await provider.IsApplicableAsync(productList)))
-        .OrderBy(provider => provider.Order)
-        .ToList();
+        [.. (await _productListQueryProviders
+                .WhereAsync(async provider => await provider.IsApplicableAsync(productList)))
+            .OrderBy(provider => provider.Order)];
 }

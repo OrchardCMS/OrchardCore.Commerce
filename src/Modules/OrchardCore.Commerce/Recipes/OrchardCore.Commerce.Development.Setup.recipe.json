@@ -65,7 +65,7 @@
         "OrchardCore.Commerce.SessionCartStorage",
 
         "OrchardCore.Commerce.Payment.DummyProvider",
-        "OrchardCore.Commerce.Payment.Stripe",
+        "OrchardCore.Commerce.Payment.Exactly",
         "OrchardCore.Commerce.Promotion",
         "OrchardCore.Commerce.Inventory",
 

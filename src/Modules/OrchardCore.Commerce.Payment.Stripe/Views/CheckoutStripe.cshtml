@@ -3,7 +3,6 @@
 @using OrchardCore.Commerce.MoneyDataType
 @using OrchardCore.Commerce.Payment.Stripe.Controllers
 @using OrchardCore.Mvc.Core.Utilities
-
 @{
     if (Model.DefaultTotal is not Amount defaultTotal)
     {
@@ -12,6 +11,8 @@
 
     string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
     string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
+    string paymentIntentId = Model.PaymentProviderData?.PaymentIntentId ?? string.Empty;
+    string accountId = Model.PaymentProviderData?.AccountId?.Trim();
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -45,9 +46,19 @@
     <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
     <script at="Foot" depends-on="StripeJs,StripePaymentForm">
         stripePaymentForm(
-            Stripe(@publishableKey.JsonHtmlContent()),
+            @if (!string.IsNullOrEmpty(accountId))
+            {
+                <text>
+                Stripe(@publishableKey.JsonHtmlContent(), @Json.Serialize(new { StripeAccount = accountId })),
+                </text>
+            }
+            else {
+                <text>
+                Stripe(@publishableKey.JsonHtmlContent()),
+                </text>
+            }
             @clientSecret.JsonHtmlContent(),
-            @Url.GetBaseUrl().JsonHtmlContent(),
+            @paymentIntentId.JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
             @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
             @T["There was an error during confirming the payment, please try again."].Json(),

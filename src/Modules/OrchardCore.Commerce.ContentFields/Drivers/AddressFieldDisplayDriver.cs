@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -11,15 +12,25 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Drivers;
 
 public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
 {
+    private static readonly Dictionary<string, Func<Address, string>> RequiredFields = new()
+    {
+        [nameof(Address.Name)] = address => address.Name,
+        [nameof(Address.StreetAddress1)] = address => address.StreetAddress1,
+        [nameof(Address.City)] = address => address.City,
+    };
+
+    private readonly IEnumerable<IAddressUpdater> _addressUpdaters;
     private readonly IEnumerable<IAddressFieldEvents> _addressFieldEvents;
     private readonly IAddressFormatterProvider _addressFormatterProvider;
     private readonly IHttpContextAccessor _hca;
@@ -27,12 +38,14 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
     private readonly IStringLocalizer<AddressFieldDisplayDriver> T;
 
     public AddressFieldDisplayDriver(
+        IEnumerable<IAddressUpdater> addressUpdaters,
         IEnumerable<IAddressFieldEvents> addressFieldEvents,
         IAddressFormatterProvider addressFormatterProvider,
         IHttpContextAccessor hca,
         IRegionService regionService,
         IStringLocalizer<AddressFieldDisplayDriver> stringLocalizer)
     {
+        _addressUpdaters = addressUpdaters;
         _addressFieldEvents = addressFieldEvents;
         _addressFormatterProvider = addressFormatterProvider;
         _hca = hca;
@@ -52,8 +65,8 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
                             .Format(field.Address)
                             .Replace(System.Environment.NewLine, "<br/>"));
                 })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content)
+            .Location(CommonContentDisplayTypes.Summary, CommonLocationNames.Content);
 
     public override IDisplayResult Edit(AddressField field, BuildFieldEditorContext context) =>
         Initialize<AddressFieldViewModel>(
@@ -63,40 +76,44 @@ public class AddressFieldDisplayDriver : ContentFieldDisplayDriver<AddressField>
                 viewModel.UserAddressToSave = field.UserAddressToSave;
 
                 viewModel.Regions = (await _regionService.GetAvailableRegionsAsync()).CreateSelectListOptions();
-                viewModel.Provinces.AddRange(Regions.Provinces);
+                viewModel.Provinces.AddRange(await _regionService.GetAllProvincesAsync());
                 PopulateViewModel(field, viewModel, context.PartFieldDefinition);
             });
 
-    public override async Task<IDisplayResult> UpdateAsync(AddressField field, IUpdateModel updater, UpdateFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(AddressField field, UpdateFieldEditorContext context)
     {
-        var viewModel = new AddressFieldViewModel();
+        if (await TryUpdateModelAsync(context) is { } viewModel)
+        {
+            field.Address = viewModel.Address;
+            await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, context.Updater, context));
+        }
+
+        return await EditAsync(field, context);
+    }
+
+    private async Task<AddressFieldViewModel> TryUpdateModelAsync(UpdateFieldEditorContext context)
+    {
+        var viewModel = await context.CreateModelAsync<AddressFieldViewModel>(Prefix);
+        if (viewModel.Address is not { } address) return null;
+
+        await _addressUpdaters.AwaitEachAsync(addressUpdater => addressUpdater.UpdateAsync(address));
 
         // We have to detect if we are in the user editor in the admin dashboard, because then it's okay to save even if
         // the normally required fields are left empty.
-        var isInUserEditor = _hca.HttpContext?.Request.RouteValues["area"]?.ToString() == "OrchardCore.Users";
+        if (_hca.HttpContext?.Request.RouteValues["area"]?.ToString() == "OrchardCore.Users") return viewModel;
 
-        bool IsRequiredFieldEmpty(string value, string key)
+        var missingFields = RequiredFields
+            .Where(pair => string.IsNullOrWhiteSpace(pair.Value(address)))
+            .Select(pair => pair.Key)
+            .ToList();
+
+        foreach (var key in missingFields)
         {
-            if (isInUserEditor || !string.IsNullOrWhiteSpace(value)) return false;
-
             // This doesn't need to be too complex as it's just a fallback from the client-side validation.
-            updater.ModelState.AddModelError(key, T["A value is required for {0}.", key]);
-            return true;
+            context.AddModelError(key, T["A value is required for {0}.", key]);
         }
 
-        if (!await updater.TryUpdateModelAsync(viewModel, Prefix) ||
-            IsRequiredFieldEmpty(viewModel.Address.Name, nameof(viewModel.Address.Name)) ||
-            IsRequiredFieldEmpty(viewModel.Address.StreetAddress1, nameof(viewModel.Address.StreetAddress1)) ||
-            IsRequiredFieldEmpty(viewModel.Address.City, nameof(viewModel.Address.City)))
-        {
-            return await EditAsync(field, context);
-        }
-
-        field.Address = viewModel.Address;
-
-        await _addressFieldEvents.AwaitEachAsync(handler => handler.UpdatingAsync(viewModel, field, updater, context));
-
-        return await EditAsync(field, context);
+        return missingFields.Count != 0 ? null : viewModel;
     }
 
     private static void PopulateViewModel(

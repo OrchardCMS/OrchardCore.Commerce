@@ -9,7 +9,6 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.Utilities;
 using System.Collections.Generic;
@@ -35,54 +34,51 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), viewModel => BuildViewModel(viewModel, part))
+        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part))
             .Location("Detail", "Content:25")
             .Location("Summary", "Meta:10");
 
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), viewModel =>
+        Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), async viewModel =>
         {
-            BuildViewModel(viewModel, part);
+            await BuildViewModelAsync(viewModel, part);
             viewModel.Currencies = _moneyService.Currencies;
         });
 
     public override async Task<IDisplayResult> UpdateAsync(
         PriceVariantsPart part,
-        IUpdateModel updater,
         UpdatePartEditorContext context)
     {
         var viewModel = new PriceVariantsPartViewModel();
-        if (await updater.TryUpdateModelAsync(
-                viewModel,
-                Prefix,
-                viewModel => viewModel.VariantsValues,
-                viewModel => viewModel.VariantsCurrencies))
-        {
-            // Restoring variants so that only the new values are stored.
-            part.Variants.RemoveAll();
-            viewModel.Variants.RemoveAll();
+        await context.Updater.TryUpdateModelAsync(
+            viewModel,
+            Prefix,
+            viewModel => viewModel.VariantsValues,
+            viewModel => viewModel.VariantsCurrencies);
 
-            foreach (var x in viewModel.VariantsValues)
+        // Restoring variants so that only the new values are stored.
+        part.Variants.RemoveAll();
+        viewModel.Variants.RemoveAll();
+
+        foreach ((string key, decimal? value) in viewModel.VariantsValues)
+        {
+            if (value.HasValue &&
+                viewModel.VariantsCurrencies?.ContainsKey(key) == true &&
+                viewModel.VariantsCurrencies[key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
             {
-                if (x.Value.HasValue &&
-                    viewModel.VariantsCurrencies?.ContainsKey(x.Key) == true &&
-                    viewModel.VariantsCurrencies[x.Key] != Currency.UnspecifiedCurrency.CurrencyIsoCode)
-                {
-                    part.Variants[x.Key] = _moneyService.Create(x.Value.Value, viewModel.VariantsCurrencies[x.Key]);
-                }
+                part.Variants[key] = _moneyService.Create(value.Value, viewModel.VariantsCurrencies[key]);
             }
         }
 
         return await EditAsync(part, context);
     }
 
-    private void BuildViewModel(PriceVariantsPartViewModel model, PriceVariantsPart part)
+    private async Task BuildViewModelAsync(PriceVariantsPartViewModel model, PriceVariantsPart part)
     {
         model.ContentItem = part.ContentItem;
         model.PriceVariantsPart = part;
 
-        var allVariantsKeys = _predefinedValuesProductAttributeService
-            .GetProductAttributesCombinations(part.ContentItem)
+        var allVariantsKeys = (await _predefinedValuesProductAttributeService.GetProductAttributesCombinationsAsync(part.ContentItem))
             .Select(attr => attr.HtmlClassify().ToUpperInvariant())
             .ToList();
 

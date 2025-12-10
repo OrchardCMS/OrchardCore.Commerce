@@ -1,0 +1,53 @@
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore
+@using OrchardCore.Commerce.Payment.Exactly.Controllers
+@using OrchardCore.Commerce.Payment.Exactly.Drivers
+@model OrchardCore.Commerce.Payment.Exactly.Models.ExactlySettings
+
+<p class="alert alert-info exactly-sign-up-info">
+    @T["Please be sure to use <a href=\"{0}\">this link</a> to create your exactly account. That way <a href=\"https://lombiq.com/\">Lombiq</a> (the steward of the Orchard Core Commerce project) will get a commission on the payment fees, which helps cover some of the development costs of OCC. This is at no cost to you; the fees you pay are the same either way.", ExactlySettingsDisplayDriver.SignUpLink]
+</p>
+
+<div class="mb-3">
+    <div>
+        <a id="ExactlySettings__testButton"
+            href="@(Orchard.Action<ExactlyController>(controller => controller.VerifyApi()))"
+           class="btn btn-sm btn-primary">
+            @T["Verify currently saved API configuration"]
+        </a>
+    </div>
+    <span class="hint">
+        @T["Warning: pressing this button won't save the current page. If you have edited any fields it gets disabled."]
+    </span>
+</div>
+
+<fieldset asp-for="ProjectId"
+          label="@T["Project ID"]"
+          hint="@T["The GUID identifying the project."]"></fieldset>
+
+<fieldset asp-for="ApiKey"
+          label="@T["API key"]"
+          hint="@(new HtmlString(" ").Join(
+                    T["The secret API key for the project."],
+                    T["The field will be empty after saving it, for security reasons."]))"
+          type="password"></fieldset>
+
+<div class="mb-3">
+    <span class="hint">
+        @T["You can find your project information at <a href=\"https://dashboard.exactly.com/projects/\" target=\"_blank\">https://dashboard.exactly.com/projects/</a>."]
+    </span>
+</div>
+
+<script at="Foot" depends-on="jQuery">
+    jQuery(function($) {
+        const button = document.getElementById('ExactlySettings__testButton');
+        const ids = @Json.Serialize(new[]
+        {
+            Html.IdFor(model => model.ProjectId),
+            Html.IdFor(model => model.ApiKey),
+        });
+
+        $(ids.map((id) => document.getElementById(id))).change(() => button.classList.add('disabled'));
+    });
+</script>

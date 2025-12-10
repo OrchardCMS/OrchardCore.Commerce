@@ -1,0 +1,14 @@
+name: Publish to CloudSmith from tag
+
+on:
+  push:
+    tags:
+      - v*-preview.*
+
+jobs:
+  publish-cloudsmith:
+    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
+    with:
+      source: https://nuget.cloudsmith.io/orchardcore/commerce/v3/index.json
+    secrets:
+      API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}

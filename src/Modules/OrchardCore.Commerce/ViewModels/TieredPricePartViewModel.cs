@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Commerce.ViewModels;
 
@@ -34,7 +34,7 @@ public class TieredPricePartViewModel
     {
         DefaultPrice = defaultPrice.Value;
         Tiers = tiers.OrderBy(tier => tier.Quantity);
-        TieredValuesSerialized = JArray.FromObject(tiers).ToString();
+        TieredValuesSerialized = JArray.FromObject(tiers)?.ToJsonString();
 
         Currency = currency;
     }

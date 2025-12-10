@@ -2,37 +2,27 @@ using OrchardCore.Commerce.MoneyDataType.Abstractions;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace OrchardCore.Commerce.MoneyDataType;
 
 public readonly partial struct Currency
 {
-    private static readonly ICurrencyProvider _defaultProvider = new CurrencyProvider();
+    private static readonly CurrencyProvider _defaultProvider;
 
-    private static ICurrency _unspecifiedCurrency;
-    private static ICurrency _euro;
+    [SuppressMessage(
+        "Usage",
+        "CA2207:Initialize value type static fields inline",
+        Justification = $"Necessary to ensure that the {nameof(_defaultProvider)} field is initialized first.")]
+    static Currency() => _defaultProvider = new();
 
-    public static ICurrency UnspecifiedCurrency
-    {
-        get
-        {
-            _unspecifiedCurrency ??= new Currency("Unspecified", "Unspecified", "---", "---");
-            return _unspecifiedCurrency;
-        }
-    }
+    public static ICurrency UnspecifiedCurrency { get; } = new Currency("Unspecified", "Unspecified", "---", "---");
 
     // This is a special case (rendered with specific formatting with invariant culture) due to the currency's
     // international nature. The values provided come from the RegionInfo of "en-EU" as available on Windows or Linux.
     // It's hard coded because this culture/region is not available on all platforms.
-    public static ICurrency Euro
-    {
-        get
-        {
-            _euro ??= new Currency("European Union", "European Union", "€", "EUR");
-            return _euro;
-        }
-    }
+    public static ICurrency Euro { get; } = new Currency("European Union", "European Union", "€", "EUR");
 
     public static ICurrency UnitedArabEmiratesDirham => _defaultProvider.GetCurrency("AED");
     public static ICurrency AfghanAfghani => _defaultProvider.GetCurrency("AFN");
@@ -133,6 +123,7 @@ public readonly partial struct Currency
     public static ICurrency TurkishLira => _defaultProvider.GetCurrency("TRY");
     public static ICurrency TrinidadAndTobagoDollar => _defaultProvider.GetCurrency("TTD");
     public static ICurrency NewTaiwanDollar => _defaultProvider.GetCurrency("TWD");
+    public static ICurrency UgandanShilling => _defaultProvider.GetCurrency("UGX");
     public static ICurrency UkrainianHryvnia => _defaultProvider.GetCurrency("UAH");
     public static ICurrency UsDollar => _defaultProvider.GetCurrency("USD");
     public static ICurrency UruguayanPeso => _defaultProvider.GetCurrency("UYU");

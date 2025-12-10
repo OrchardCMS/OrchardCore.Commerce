@@ -6,12 +6,14 @@ Orchard Core Commerce supports multiple payment providers and allows developers 
 
 Each provider is a stand-alone feature you can turn on or off.
 
+- [Exactly](exactly-payment.md): A production-ready provider for [exactly.com](https://exactly.com/).
 - [Stripe](stripe-payment.md): A production-ready provider for [stripe.com](https://stripe.com/).
 - Dummy: A development-only provider that lets you click through the checkout without going off-site. Mainly used for UI testing.
 
 ## Creating your own
 
 To create a custom payment provider your code must contain the following:
+
 - An implementation of `IPaymentProvider` registered as a service.
 - A shape type `Checkout{provider.Name}`, such as _CheckoutStripe.cshtml_ and _CheckoutDummy.cshtml_.
 

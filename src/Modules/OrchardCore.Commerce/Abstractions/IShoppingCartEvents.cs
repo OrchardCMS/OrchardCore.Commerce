@@ -34,4 +34,9 @@ public interface IShoppingCartEvents
     /// Invoked after the shopping cart content is loaded from the <see cref="IShoppingCartPersistence"/>.
     /// </summary>
     Task<ShoppingCart> LoadedAsync(ShoppingCart shoppingCart);
+
+    /// <summary>
+    /// Invoked after the creation of <see cref="ShoppingCartViewModel"/> to check whether the model is invalid.
+    /// </summary>
+    Task ViewModelCreatedAsync(ShoppingCartViewModel viewModel) => Task.CompletedTask;
 }

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata;
@@ -13,89 +12,85 @@ namespace OrchardCore.Commerce.Tests.Fakes;
 public class FakeContentDefinitionManager : IContentDefinitionManager
 {
     public IChangeToken ChangeToken => throw new NotSupportedException();
-    public void DeletePartDefinition(string name) => throw new NotSupportedException();
-    public void DeleteTypeDefinition(string name) => throw new NotSupportedException();
+    public Task DeletePartDefinitionAsync(string name) => throw new NotSupportedException();
+    public Task DeleteTypeDefinitionAsync(string name) => throw new NotSupportedException();
 
     public Task<string> GetIdentifierAsync() => throw new NotSupportedException();
 
-    public ContentPartDefinition GetPartDefinition(string name) => throw new NotSupportedException();
+    public Task<ContentPartDefinition> GetPartDefinitionAsync(string name) => throw new NotSupportedException();
 
-    public ContentTypeDefinition GetTypeDefinition(string name) =>
-        new(
+    public Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name) =>
+         Task.FromResult(new ContentTypeDefinition(
             name,
             name,
-            new[]
-            {
+            [
                 new ContentTypePartDefinition(
                     "ProductPart1",
                     new ContentPartDefinition(
                         "ProductPartType",
-                        new[]
-                        {
+                        [
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                                 "foobool",
-                                new JObject()),
+                                []),
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(BooleanField)),
                                 "barbool",
-                                new JObject()),
-                        },
-                        new JObject()),
-                    new JObject()),
+                                []),
+                        ],
+                        []),
+                    []),
                 new ContentTypePartDefinition(
                     "ProductPart2",
                     new ContentPartDefinition(
                         "ProductPartType2",
-                        new[]
-                        {
+                        [
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
                                 "footext",
-                                new JObject()),
+                                []),
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(TextField)),
                                 "bartext",
-                                new JObject()),
-                        },
-                        new JObject()),
-                    new JObject()),
+                                []),
+                        ],
+                        []),
+                    []),
                 new ContentTypePartDefinition(
                     "ProductPart3",
                     new ContentPartDefinition(
                         "product",
-                        new[]
-                        {
+                        [
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                                 "attr1",
-                                new JObject()),
+                                []),
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
                                 "attr2",
-                                new JObject()),
+                                []),
                             new ContentPartFieldDefinition(
                                 new ContentFieldDefinition(nameof(NumericProductAttributeField)),
                                 "attr3",
-                                new JObject()),
-                        },
-                        new JObject()),
-                    new JObject()),
-            },
-            new JObject());
+                                []),
+                        ],
+                        []),
+                    []),
+            ],
+            []));
 
     public Task<int> GetTypesHashAsync() => throw new NotSupportedException();
-    public IEnumerable<ContentPartDefinition> ListPartDefinitions() => throw new NotSupportedException();
-    public IEnumerable<ContentTypeDefinition> ListTypeDefinitions() => throw new NotSupportedException();
+    public Task<IEnumerable<ContentPartDefinition>> ListPartDefinitionsAsync() => throw new NotSupportedException();
+    public Task<IEnumerable<ContentTypeDefinition>> ListTypeDefinitionsAsync() => throw new NotSupportedException();
 
-    public ContentPartDefinition LoadPartDefinition(string name) => throw new NotSupportedException();
+    public Task<ContentPartDefinition> LoadPartDefinitionAsync(string name) => throw new NotSupportedException();
 
-    public IEnumerable<ContentPartDefinition> LoadPartDefinitions() => throw new NotSupportedException();
+    public Task<IEnumerable<ContentPartDefinition>> LoadPartDefinitionsAsync() => throw new NotSupportedException();
 
-    public ContentTypeDefinition LoadTypeDefinition(string name) => throw new NotSupportedException();
+    public Task<ContentTypeDefinition> LoadTypeDefinitionAsync(string name) => throw new NotSupportedException();
 
-    public IEnumerable<ContentTypeDefinition> LoadTypeDefinitions() => throw new NotSupportedException();
+    public Task<IEnumerable<ContentTypeDefinition>> LoadTypeDefinitionsAsync() => throw new NotSupportedException();
 
-    public void StorePartDefinition(ContentPartDefinition contentPartDefinition) => throw new NotSupportedException();
-    public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition) => throw new NotSupportedException();
+    public Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition) => throw new NotSupportedException();
+    public Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition) => throw new NotSupportedException();
 }

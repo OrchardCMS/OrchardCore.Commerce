@@ -1,26 +1,29 @@
-using Newtonsoft.Json.Linq;
+using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
-using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace OrchardCore.Commerce.Tests;
 
 public class ProductAttributeTests
 {
-    private readonly IProductAttributeProvider _parser;
+    private readonly ProductAttributeProvider _parser;
     private readonly ContentPartFieldDefinition _boolFieldDefinition;
     private readonly ContentPartFieldDefinition _numericFieldDefinition;
     private readonly ContentPartFieldDefinition _textFieldDefinition;
     private readonly ContentTypePartDefinition _partTypeDefinition;
+    private static readonly string[] ExpectedFirst = ["1"];
+    private static readonly string[] ExpectedSecond = ["2"];
+    private static readonly string[] ExpectedThird = ["1", "2", "3"];
 
     public ProductAttributeTests()
     {
@@ -29,19 +32,19 @@ public class ProductAttributeTests
         _boolFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(BooleanProductAttributeField)),
                 "BooleanField",
-                new JObject())
+                [])
         { PartDefinition = partDefinition };
         _numericFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(NumericProductAttributeField)),
                 "NumericField",
-                new JObject())
+                [])
         { PartDefinition = partDefinition };
         _textFieldDefinition = new ContentPartFieldDefinition(
                 new ContentFieldDefinition(nameof(TextProductAttributeField)),
                 "TextField",
-                new JObject())
+                [])
         { PartDefinition = partDefinition };
-        _partTypeDefinition = new ContentTypePartDefinition("product", partDefinition, new JObject());
+        _partTypeDefinition = new ContentTypePartDefinition("product", partDefinition, []);
     }
 
     [Fact]
@@ -150,25 +153,28 @@ public class ProductAttributeTests
         var listValue = _parser.Parse(
             _partTypeDefinition,
             _textFieldDefinition,
-            new[] { "1", "2", "3" }) as TextProductAttributeValue;
+            ["1", "2", "3"]) as TextProductAttributeValue;
 
         Assert.NotNull(oneValue);
         Assert.Equal("product.TextField", oneValue.AttributeName);
-        Assert.Equal(new[] { "1" }, oneValue.Value);
+        Assert.Equal(ExpectedFirst, oneValue.Value);
 
         Assert.NotNull(twoValue);
         Assert.Equal("product.TextField", twoValue.AttributeName);
-        Assert.Equal(new[] { "2" }, twoValue.Value);
+        Assert.Equal(ExpectedSecond, twoValue.Value);
 
         Assert.NotNull(listValue);
         Assert.Equal("product.TextField", listValue.AttributeName);
-        Assert.Equal(new[] { "1", "2", "3" }, listValue.Value);
+        Assert.Equal(ExpectedThird, listValue.Value);
     }
 
     [Fact]
-    public void ProductAttributeServiceCanFindAttributesOnProducts()
+    public async Task ProductAttributeServiceCanFindAttributesOnProducts()
     {
-        var productAttributeService = new ProductAttributeService(new FakeContentDefinitionManager());
+        var mocker = new AutoMocker();
+        mocker.UseCommerceFakes();
+
+        var productAttributeService = mocker.CreateProductAttributeServiceInstance();
         var product = new ContentItem { ContentType = "Product" };
         var productPart1 = new ContentPart();
         var boolProductAttribute = new BooleanProductAttributeField();
@@ -181,7 +187,7 @@ public class ProductAttributeTests
         productPart2.Weld("bartext", new TextField());
         product.Weld("ProductPart2", productPart2);
 
-        var productAttributeFields = productAttributeService.GetProductAttributeFields(product).ToArray();
+        var productAttributeFields = (await productAttributeService.GetProductAttributeFieldsAsync(product)).ToArray();
 
         Assert.Equal(2, productAttributeFields.Length);
         var foobool = productAttributeFields.Find(field => field.Name == "foobool");

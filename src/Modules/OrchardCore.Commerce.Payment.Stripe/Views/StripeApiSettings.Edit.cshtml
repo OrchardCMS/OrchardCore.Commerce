@@ -1,31 +1,29 @@
+@using Lombiq.HelpfulLibraries.OrchardCore.TagHelpers
+@using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.Localization
 @model OrchardCore.Commerce.Payment.Stripe.ViewModels.StripeApiSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+@{
+    var emptyAfterSaving = T["The field will be empty after saving it, for security reasons."];
+}
 
-<div class="mb-3" asp-validation-class-for="PublishableKey">
-    <label asp-for="PublishableKey">@T["Publishable Key"]</label>
-    <input asp-for="PublishableKey" class="form-control" type="text" />
-    <span asp-validation-for="PublishableKey"></span>
-    <span class="hint">@T["Your Stripe's Publishable API key."]</span>
-</div>
+<fieldset asp-for="PublishableKey"
+          label="@T["Publishable Key"]"
+          hint="@T["Your Stripe's Publishable API key."]"></fieldset>
 
-<div class="mb-3" asp-validation-class-for="SecretKey">
-    <label asp-for="SecretKey">@T["Secret Key"]</label>
-    <input asp-for="SecretKey" class="form-control" type="password" autocomplete="off" />
-    <span asp-validation-for="SecretKey"></span>
-    <span class="hint">
-        @T["Your Stripe Secret API key. The field will be empty after saving it, for security reasons."]
-    </span>
-</div>
+<fieldset asp-for="SecretKey"
+          label="@T["Secret Key"]"
+          hint="@(new HtmlString(" ").Join(T["Your Stripe Secret API key."], emptyAfterSaving))"
+          type="password"></fieldset>
 
-<div class="mb-3" asp-validation-class-for="SecretKey">
-    <label asp-for="WebhookSigningSecret">@T["Webhook Signing Secret"]</label>
-    <input asp-for="WebhookSigningSecret" class="form-control" type="password" autocomplete="off" />
-    <span asp-validation-for="WebhookSigningSecret"></span>
-    <span class="hint">
-        @T["Your Webhook Signing Secret key. The field will be empty after saving it, for security reasons."]
-    </span>
-</div>
+<fieldset asp-for="AccountId"
+          label="@T["Account ID"]"
+          hint="@T["Your Stripe Connect Account ID. This is necessary when using a Stripe connected account."]"></fieldset>
+
+<fieldset asp-for="WebhookSigningSecret"
+          label="@T["Webhook Signing Secret"]"
+          hint="@(new HtmlString(" ").Join(T["Your Webhook Signing Secret key."], emptyAfterSaving))"
+          type="password"></fieldset>
 
 <div class="mb-3">
     <span class="hint">

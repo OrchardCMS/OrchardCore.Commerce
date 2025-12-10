@@ -1,9 +1,8 @@
-﻿using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Entities;
 using OrchardCore.Localization.Models;
 using OrchardCore.Settings;
 using System;
@@ -23,8 +22,9 @@ public class ContentLocalizationProductService : ProductService
         ISession session,
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IPredefinedValuesProductAttributeService predefinedValuesService)
-        : base(session, contentManager, contentDefinitionManager, predefinedValuesService) =>
+        IPredefinedValuesProductAttributeService predefinedValuesService,
+        Lazy<IShoppingCartSerializer> shoppingCartSerializer)
+        : base(session, contentManager, contentDefinitionManager, predefinedValuesService, shoppingCartSerializer) =>
             _siteService = siteService;
 
     public override async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
@@ -65,7 +65,7 @@ public class ContentLocalizationProductService : ProductService
     /// the last, so this list can be used with <see cref="List{T}.IndexOf(T)"/> to sort by descending order and anything
     /// not on this list will be correctly sorted to the back due to the -1 index.
     /// </summary>
-    private static IList<string> GetPrioritySupportedCultures(LocalizationSettings settings)
+    private static List<string> GetPrioritySupportedCultures(LocalizationSettings settings)
     {
         var list = settings
             .SupportedCultures

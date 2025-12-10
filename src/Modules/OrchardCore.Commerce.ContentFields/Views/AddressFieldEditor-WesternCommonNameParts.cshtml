@@ -1,0 +1,123 @@
+@model AddressFieldEditorViewModel
+
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using OrchardCore.Commerce.Abstractions.Fields
+@using OrchardCore.Commerce.Abstractions.Models
+@using OrchardCore.Commerce.AddressDataType
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.TagHelpers
+@using System.Text.Json
+@using static OrchardCore.Commerce.AddressDataType.Constants.CommonNameParts
+
+@{
+    var namePrefix = Model.CityName[..^(nameof(Address.City).Length)];
+    var idPrefix = namePrefix.Replace('.', '_');
+
+    var namePrefixWithoutAddress = namePrefix[..^((nameof(AddressField.Address)).Length + 1)];
+    var idPrefixWithoutAddress = namePrefixWithoutAddress.Replace('.', '_');
+
+    var address = Model.AddressField?.Address ?? new Address();
+
+    var province = address.Province ?? string.Empty;
+
+    var regions = Model.Regions.Select(region =>
+        {
+            region.Selected = region.Value == address.Region;
+            return region;
+        });
+
+    string NameForNamePart(string key) => $"{nameof(Address.NameParts)}.{key}";
+    string ClassesForNamePart(string key) => $"address__name address__name_{key.ToLowerInvariant()}";
+    string GetNamePart(string key) => address.NameParts.GetMaybe(key);
+
+    var titleName = namePrefix + NameForNamePart(Honorific);
+    var titleId = Html.Id(titleName);
+
+    var titleOptions = new[]
+        {
+            new LocalizedHtmlString(string.Empty, string.Empty),
+            T["Mr"],
+            T["Miss"],
+            T["Mrs"],
+            T["Mx"],
+            T["Dr"],
+        }
+        .Select(option => new SelectListItem(
+            option.Html(),
+            option.Name,
+            option.Name.Equals(GetNamePart(Honorific), StringComparison.OrdinalIgnoreCase)));
+}
+
+<div class="row">
+    <div class="mb-3 col-md-12">
+        <label for="@titleId">@T["Title"]</label>
+    </div>
+    <div class="mb-3 col-md-6">
+        <select id="@titleId"
+                name="@titleName"
+                class="form-control content-preview-text @ClassesForNamePart(Honorific)"
+                asp-items="@titleOptions"></select>
+    </div>
+</div>
+
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@NameForNamePart(GivenName)" prop-Text="@T["Given Name"]" prop-Value="@GetNamePart(GivenName)" prop-ClassNames="@ClassesForNamePart(GivenName)" Required="true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@NameForNamePart(MiddleName)" prop-Text="@T["Middle Name"]" prop-Value="@GetNamePart(MiddleName)" prop-ClassNames="@ClassesForNamePart(MiddleName)" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@NameForNamePart(FamilyName)" prop-Text="@T["Family Name"]" prop-Value="@GetNamePart(FamilyName)" prop-ClassNames="@ClassesForNamePart(FamilyName)" Required="true" />
+
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Department)" prop-Text="@T["Department"]" prop-Value="@address.Department" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Company)" prop-Text="@T["Company or institution"]" prop-Value="@address.Company" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress1)" prop-Text="@T["First street address"]" prop-Value="@address.StreetAddress1" ClassNames="address__street address__street_first" Required="true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.StreetAddress2)" prop-Text="@T["Second street address"]" prop-Value="@address.StreetAddress2" ClassNames="address__street address__street_second" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.City)" prop-Text="@T["City"]" prop-Value="@address.City" Required="true" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Province)" prop-Text="@T["State or province"]" prop-Value="@address.Province" Required="true" InputType="dropdown" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.PostalCode)" prop-Text="@T["Postal code"]" prop-Value="@address.PostalCode" ClassNames="address__postalCode" />
+<shape type="InputRow" prop-Prefix="@namePrefix" prop-Name="@nameof(Address.Region)" prop-Text="@T["Country or region"]" prop-Value="@regions" Required="true" InputType="dropdown" />
+
+@if (Model.AddressField?.UserAddressToSave == nameof(OrderPart.ShippingAddress) ||
+     (Model as IShape).Metadata.Differentiator?.Split('-').Contains(nameof(OrderPart.ShippingAddress)) == true)
+{
+    <shape type="InputRow"
+           prop-Prefix="@namePrefix"
+           prop-Name="@($"{nameof(Address.AdditionalFields)}.NoteForCourier")"
+           prop-Text="@T["Note for Courier"]"
+           prop-Value="@address.AdditionalFields.GetMaybe("NoteForCourier")" />
+}
+
+@if (!string.IsNullOrEmpty(Model.AddressField?.UserAddressToSave))
+{
+    <input type="hidden"
+           id="@(idPrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
+           name="@(namePrefixWithoutAddress + nameof(AddressField.UserAddressToSave))"
+           value="@Model.AddressField.UserAddressToSave"
+           class="address__userAddressToSave" />
+    <div class="mb-3">
+        <div class="form-check">
+            <input type="checkbox"
+                   class="form-check-input content-preview-select address__toBeSaved"
+                   data-val="true"
+                   value="true"
+                   id="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))"
+                   name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
+            <input name="@(namePrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))" type="hidden" value="false">
+            <label class="form-check-label" for="@(idPrefixWithoutAddress + nameof(AddressFieldViewModel.ToBeSaved))">
+                @T["Save this address"]
+            </label>
+        </div>
+    </div>
+}
+
+<script asp-name="@ResourceNames.CommerceRegions" at="Foot"></script>
+<script at="Foot" depends-on="@ResourceNames.CommerceRegions">
+    @if (Context.Items["commerce-regions-initialized"] == null)
+    {
+        <text>commerceRegionsInitialize(@Json.Serialize(Model.Provinces));</text>
+        Context.Items["commerce-regions-initialized"] = true;
+    }
+
+    commerceRegionsBind(
+        '#@(idPrefix + nameof(Address.Province))',
+        '.row',
+        '#@(idPrefix + nameof(Address.Region))',
+        @province.JsonHtmlContent());
+</script>

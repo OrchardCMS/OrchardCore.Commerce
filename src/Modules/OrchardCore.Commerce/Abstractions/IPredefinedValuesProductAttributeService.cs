@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
 
@@ -11,38 +12,37 @@ namespace OrchardCore.Commerce.Abstractions;
 public interface IPredefinedValuesProductAttributeService
 {
     /// <summary>
-    /// Filters <see cref="IProductAttributeService.GetProductAttributeFields"/> result to only those attribute fields
+    /// Filters <see cref="IProductAttributeService.GetProductAttributeFieldsAsync"/> result to only those attribute fields
     /// that have predefined values.
     /// </summary>
-    IEnumerable<ProductAttributeDescription> GetProductAttributesRestrictedToPredefinedValues(ContentItem product);
+    Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product);
 }
 
 public static class PredefinedValuesProductAttributeServiceExtensions
 {
-    public static IEnumerable<IEnumerable<object>> GetProductAttributesPredefinedValues(
+    public static async Task<IEnumerable<IEnumerable<object>>> GetProductAttributesPredefinedValuesAsync(
         this IPredefinedValuesProductAttributeService service,
         ContentItem product) =>
-        service
-            .GetProductAttributesRestrictedToPredefinedValues(product)
+        (await service.GetProductAttributesRestrictedToPredefinedValuesAsync(product))
             .Where(description => description.Settings is IPredefinedValuesProductAttributeFieldSettings)
             .Select(description =>
                 ((IPredefinedValuesProductAttributeFieldSettings)description.Settings).PredefinedValues.ToList())
             .ToList();
 
-    public static IEnumerable<string> GetProductAttributesCombinations(
+    public static async Task<IEnumerable<string>> GetProductAttributesCombinationsAsync(
         this IPredefinedValuesProductAttributeService service,
         ContentItem product) =>
-        CartesianProduct(service.GetProductAttributesPredefinedValues(product))
+        CartesianProduct(await service.GetProductAttributesPredefinedValuesAsync(product))
             .Select(predefinedValues => string.Join('-', predefinedValues));
 
     private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
     {
-        IEnumerable<IEnumerable<T>> emptyProduct = new[] { Enumerable.Empty<T>() };
+        IEnumerable<IEnumerable<T>> emptyProduct = [[]];
         return sequences.Aggregate(
             emptyProduct,
             (accumulator, sequence) =>
                 accumulator.SelectMany(
                     _ => sequence,
-                    (accumulatorSequence, item) => accumulatorSequence.Concat(new[] { item })));
+                    (accumulatorSequence, item) => accumulatorSequence.Concat([item])));
     }
 }

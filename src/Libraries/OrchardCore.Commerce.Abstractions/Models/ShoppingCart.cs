@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -21,14 +20,12 @@ public class ShoppingCart
     /// <summary>
     /// Gets the number of lines in the cart.
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
     [JsonIgnore]
     public int Count => Items.Count;
 
     /// <summary>
     /// Gets the total number of items (i.e. products) in the cart. In other words, the sum of quantities of all lines.
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
     [JsonIgnore]
     public int ItemCount => Items.Sum(item => item.Quantity);
 
@@ -48,7 +45,7 @@ public class ShoppingCart
     /// </para>
     /// </remarks>
     public ShoppingCart(IEnumerable<ShoppingCartItem> items) =>
-        Items = new List<ShoppingCartItem>(items ?? Enumerable.Empty<ShoppingCartItem>());
+        Items = new List<ShoppingCartItem>(items ?? []);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShoppingCart"/> class.
@@ -64,10 +61,6 @@ public class ShoppingCart
     /// </summary>
     /// <param name="items">The new list of items.</param>
     /// <returns>A new shopping cart with all properties identical to this, but with a different list of items.</returns>
-    [SuppressMessage(
-        "Performance",
-        "CA1822",
-        Justification = $"Keep non-static in case {nameof(ShoppingCart)} gets additional properties in the future.")]
     public ShoppingCart With(IEnumerable<ShoppingCartItem> items) => new(items);
 
     /// <summary>

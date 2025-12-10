@@ -1,9 +1,8 @@
-﻿using Lombiq.Tests.UI.Attributes;
+using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.PriceVariantsPartTests;
 
@@ -22,7 +21,7 @@ public class ValidationPriceVariantsTests : UITestBase
             await context.SignInDirectlyAsync();
             await context.CreateNewContentItemAsync("PriceVariantsProduct");
 
-            const string skuAlreadyExists = "TESTPRODUCTVARIANT"; // #spell-check-ignore-line
+            const string skuAlreadyExists = "TESTPRODUCTVARIANT";
 
             await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), skuAlreadyExists);
 

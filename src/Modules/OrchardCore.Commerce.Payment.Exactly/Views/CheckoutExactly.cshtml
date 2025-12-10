@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore
+@using OrchardCore.Commerce.Payment.Exactly.Controllers
+@{
+    var actionUrl = Orchard.Action<ExactlyController>(controller => controller.CreateTransaction(null));
+    var statusUrl = Orchard.Action<ExactlyController>(controller => controller.GetRedirectUrl("TRANSACTION_ID"));
+    var defaultErrorMessage =
+        T["An error has occurred while trying to connect to the payment service. Please try again later."];
+}
+
+<shape type="PayButton" PayButtonClass="exactly" prop-Text="@T["Pay with Exactly\u00ae"]" />
+
+<script asp-name="OrchardCore.Commerce.Payment.Exactly.Script" at="Foot">
+    Array.from(document.querySelectorAll(".pay-button-exactly")).forEach((button) => {
+        function setButtons(enabled) {
+            document.querySelectorAll(".pay-button-exactly").forEach(button => button.disabled = !enabled)
+        }
+
+        function fetchJson(url, config) {
+            return fetch(url, config).then(response => response.json());
+        }
+
+        function sleep(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+
+        function handleError(json) {
+            if (json && !json.error) return true;
+
+            let error = json?.error ?? @defaultErrorMessage.Json();
+
+            if (Array.isArray(json?.html)) {
+                error = json.html.map((html) => {
+                    const div = document.createElement('div');
+                    div.innerHTML = html;
+
+                    document.body.append(div);
+                    const text = div.innerText.trim();
+                    document.body.removeChild(div);
+
+                    return text;
+                }).join('\n');
+            }
+
+            alert(error);
+            return false;
+        }
+
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            setButtons(false);
+
+            const form = document.querySelector('.payment-form');
+            const actionResponse = await fetchJson(@actionUrl.JsonHtmlContent(), { method: 'post', body: new FormData(form) });
+
+            if (handleError(actionResponse)) {
+                const statusUrl = (@statusUrl.JsonHtmlContent()).replace('TRANSACTION_ID', actionResponse.id);
+                while (true) {
+                    const statusResponse = await fetchJson(statusUrl, { method: 'get' });
+
+                    if (statusResponse && handleError(statusResponse)) {
+                        location.href = statusResponse.url;
+                        break;
+                    }
+
+                    await sleep(200);
+                }
+            }
+
+            setButtons(true);
+        });
+    });
+</script>

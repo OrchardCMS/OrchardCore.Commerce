@@ -8,12 +8,12 @@ namespace OrchardCore.Commerce.Abstractions;
 public static class ProductServiceExtensions
 {
     public static async Task<ProductPart> GetProductAsync(this IProductService service, string sku) =>
-        (await service.GetProductsAsync(new[] { sku })).SingleOrDefault();
+        string.IsNullOrEmpty(sku) ? null : (await service.GetProductsAsync([sku])).SingleOrDefault();
 
     public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryAsync(
         this IProductService service,
         IEnumerable<string> skus) =>
-        (await service.GetProductsAsync(skus)).ToDictionary(product => product.Sku);
+        (await service.GetProductsAsync(skus.WhereNot(string.IsNullOrWhiteSpace))).ToDictionary(product => product.Sku);
 
     public static async Task<IDictionary<string, ProductPart>> GetProductDictionaryByContentItemVersionsAsync(
         this IProductService service,

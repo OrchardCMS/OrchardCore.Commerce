@@ -1,6 +1,6 @@
 # Taxation
 
-Tax support is an ongoing process, check out the [Tax infrastructure](https://github.com/OrchardCMS/OrchardCore.Commerce/projects/2) project for current progress. See below what we have right now.
+Tax support is an ongoing process based on user feedback and contribution. See below what we have right now.
 
 ## Core tax support
 
@@ -11,7 +11,7 @@ Enable the _Orchard Core Commerce - Tax_ feature. This grants you the _Tax_ cont
 
 ## Basic tax support
 
-Filling out the _Gross Price_ and _Tax Rate_ (percentage) fields, automatically updates the product's regular price field to the calculated net price during publish. For products configured like this the shopping cart shows the _Gross Price_ instead of the _Price_ field. This is suitable for stores that only ship locally.
+Filling out the _Gross Price_ and _Tax Rate_ (percentage) fields, automatically updates the product's regular price field to the calculated net price during publish. For products configured like this the shopping cart shows the _Gross Price_ instead of the _Price_ field (so it only works with _Price_ part and not the _PriceVariant_ part). This is suitable for stores that only ship locally.
 
 ## Locally maintained tax rates
 

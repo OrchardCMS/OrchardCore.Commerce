@@ -38,7 +38,7 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     public async Task<ShoppingCart> ParseCartAsync(ShoppingCartUpdateModel cart)
     {
         var products = await GetProductsAsync(cart.Lines.Select(line => line.ProductSku));
-        var types = ExtractTypeDefinitions(products.Values);
+        var types = await ExtractTypeDefinitionsAsync(products.Values);
 
         return new ShoppingCart(cart.Lines
             .Where(updateModel => updateModel.Quantity > 0)
@@ -48,15 +48,19 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
                 ParseAttributes(updateModel, types[products[updateModel.ProductSku].ContentItem.ContentType]))));
     }
 
-    public async Task<ShoppingCart> DeserializeAsync(string serializedCart)
+    public async Task<ShoppingCart> DeserializeAsync(string serializedCart) =>
+        (await DeserializeAndVerifyAsync(serializedCart)).ShoppingCart;
+
+    public async Task<DeserializeResult> DeserializeAndVerifyAsync(string serializedCart)
     {
-        var cart = new ShoppingCart();
         if (string.IsNullOrEmpty(serializedCart))
         {
-            return cart;
+            return new(new ShoppingCart(), HasChanged: false, IsEmpty: true);
         }
 
+        var cart = new ShoppingCart();
         var cartItems = JsonDocument.Parse(serializedCart).RootElement.GetProperty("Items").EnumerateArray();
+        var hasChanged = false;
 
         // Update prices for all items in the shopping cart.
         foreach (var itemElement in cartItems)
@@ -64,57 +68,68 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
             var item = itemElement.ToObject<ShoppingCartItem>();
             cart.AddItem(item);
 
-            if (item?.Prices.Any() == true)
+            if (item?.Prices.Any() != true) continue;
+
+            var oldPrices = hasChanged ? null : item.GetPricesSimple();
+            cart.SetPrices(item, item.Prices.Select(price => new PrioritizedPrice(
+                price.Priority,
+                _moneyService.EnsureCurrency(price.Price))));
+
+            if (!hasChanged)
             {
-                cart.SetPrices(
-                    item,
-                    item.Prices.Select(price => new PrioritizedPrice(price.Priority, _moneyService.EnsureCurrency(price.Price))));
+                var newPrices = item.GetPricesSimple();
+                hasChanged = oldPrices != newPrices;
             }
         }
 
         // Post-process attributes for concrete types according to field definitions (deserialization being essentially
         // non-polymorphic and without access to our type definition contextual information).
+        // Also ensure, that there are no corrupted, missing or deleted products in the cart.
         var products = await GetProductsAsync(cart.Items.Select(item => item.ProductSku));
-        var newCartItems = cart
-            .Items
-            .Where(line => line.Attributes != null)
-            .Select(line => new ShoppingCartItem(
+        var cartLineCount = cart.Items.Count;
+        var newCartItems = await Task.WhenAll(cart.Items
+            .Where(line =>
+                line.Attributes != null &&
+                !string.IsNullOrEmpty(line.ProductSku) &&
+                products.ContainsKey(line.ProductSku))
+            .Select(async line => new ShoppingCartItem(
                 line.Quantity,
                 line.ProductSku,
-                PostProcessAttributes(line.Attributes, products[line.ProductSku]),
-                line.Prices))
-            .ToList();
+                await PostProcessAttributesAsync(line.Attributes, products[line.ProductSku]),
+                line.Prices)));
+        cart = cart.With(newCartItems);
 
-        return cart.With(newCartItems);
+        hasChanged = hasChanged || cart.Items.Count != cartLineCount;
+        return new(cart, hasChanged, cart.Items.Count == 0);
     }
 
     public ISet<IProductAttributeValue> ParseAttributes(ShoppingCartLineUpdateModel line, ContentTypeDefinition type) =>
         new HashSet<IProductAttributeValue>(
-        line.Attributes is null
-            ? Enumerable.Empty<IProductAttributeValue>()
-            : line
-                .Attributes
-                .Where(attribute => attribute.Key.Contains('.'))
-                .Select(attribute =>
-                {
-                    var (attributePartDefinition, attributeFieldDefinition) = type.GetFieldDefinition(attribute.Key);
-                    return _attributeProviders
-                        .Select(provider => provider.Parse(attributePartDefinition, attributeFieldDefinition, attribute.Value))
-                        .FirstOrDefault(attributeValue => attributeValue != null);
-                }));
+            line.Attributes is null
+                ? []
+                : line
+                    .Attributes
+                    .Where(attribute => attribute.Key?.Contains('.') == true)
+                    .SelectWhere(attribute =>
+                        type.GetFieldDefinition(attribute.Key) is ({ } partDefinition, { } fieldDefinition)
+                            ? _attributeProviders
+                                .Select(provider => provider.Parse(partDefinition, fieldDefinition, attribute.Value))
+                                .FirstOrDefault(attributeValue => attributeValue != null)
+                            : null));
 
     public async Task<ShoppingCartItem> ParseCartLineAsync(ShoppingCartLineUpdateModel line)
     {
-        var product = await _productService.GetProductAsync(line.ProductSku);
-        if (product is null) return null;
-        var type = GetTypeDefinition(product);
-        var parsedLine = new ShoppingCartItem(line.Quantity, line.ProductSku, ParseAttributes(line, type));
-        return parsedLine;
+        if (await _productService.GetProductAsync(line?.ProductSku) is not { } product) return null;
+
+        var type = await GetTypeDefinitionAsync(product);
+        return new ShoppingCartItem(line!.Quantity, line.ProductSku, ParseAttributes(line, type));
     }
 
-    public ISet<IProductAttributeValue> PostProcessAttributes(IEnumerable<IProductAttributeValue> attributes, ProductPart productPart)
+    public async Task<ISet<IProductAttributeValue>> PostProcessAttributesAsync(
+        IEnumerable<IProductAttributeValue> attributes,
+        ProductPart productPart)
     {
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        var type = await _contentDefinitionManager.GetTypeDefinitionAsync(productPart.ContentItem.ContentType);
 
         return attributes
             .CastWhere<BaseProductAttributeValue<object>>()
@@ -131,12 +146,18 @@ public class ShoppingCartSerializer : IShoppingCartSerializer
     private async Task<Dictionary<string, ProductPart>> GetProductsAsync(IEnumerable<string> skus) =>
         (await _productService.GetProductsAsync(skus)).ToDictionary(productPart => productPart.Sku);
 
-    private Dictionary<string, ContentTypeDefinition> ExtractTypeDefinitions(IEnumerable<ProductPart> products) =>
-        products
-            .Select(productPart => _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType))
-            .GroupBy(typeDefinition => typeDefinition.Name)
-            .ToDictionary(group => group.Key, group => group.First());
+    private async Task<Dictionary<string, ContentTypeDefinition>> ExtractTypeDefinitionsAsync(IEnumerable<ProductPart> products)
+    {
+        var typeDefinitions = await Task.WhenAll(products.Select(async productPart =>
+        {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(productPart.ContentItem.ContentType);
+            return new { Key = typeDefinition.Name, Value = typeDefinition };
+        }));
 
-    private ContentTypeDefinition GetTypeDefinition(ProductPart product) =>
-        _contentDefinitionManager.GetTypeDefinition(product.ContentItem.ContentType);
+        return typeDefinitions.GroupBy(td => td.Key)
+                              .ToDictionary(group => group.Key, group => group.First().Value);
+    }
+
+    private Task<ContentTypeDefinition> GetTypeDefinitionAsync(ProductPart product) =>
+        _contentDefinitionManager.GetTypeDefinitionAsync(product.ContentItem.ContentType);
 }

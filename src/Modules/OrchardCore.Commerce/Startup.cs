@@ -1,5 +1,6 @@
 using Fluid;
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Lombiq.HelpfulLibraries.OrchardCore.ResourceManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -15,9 +16,11 @@ using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Activities;
 using OrchardCore.Commerce.AddressDataType;
 using OrchardCore.Commerce.AddressDataType.Abstractions;
+using OrchardCore.Commerce.Constants;
 using OrchardCore.Commerce.ContentFields.Events;
 using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Drivers;
+using OrchardCore.Commerce.Endpoints.Extensions;
 using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
@@ -28,6 +31,7 @@ using OrchardCore.Commerce.Migrations;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Settings;
@@ -46,7 +50,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
@@ -66,6 +69,7 @@ public class Startup : StartupBase
         services.AddTagHelpers<MvcTitleTagHelper>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IResourceFilterProvider, ResourceFilters>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
@@ -100,6 +104,7 @@ public class Startup : StartupBase
 
         // Price
         services.AddScoped<IDataMigration, PriceMigrations>();
+        services.AddSingleton<IIndexProvider, PriceIndexProvider>();
 
         services.AddContentPart<PricePart>()
             .AddHandler<PricePartHandler>();
@@ -130,8 +135,6 @@ public class Startup : StartupBase
         // Currency
         services.AddScoped<ICurrencyProvider, CurrencyProvider>();
         services.AddScoped<IMoneyService, MoneyService>();
-        // No display currency selected. Fall back to default currency logic in MoneyService.
-        services.AddScoped<ICurrencySelector, NullCurrencySelector>();
 
         // Shopping cart
         services.AddScoped<IShoppingCartHelpers, ShoppingCartHelpers>();
@@ -140,7 +143,6 @@ public class Startup : StartupBase
             .UseDisplayDriver<ShoppingCartWidgetPartDisplayDriver>()
             .WithMigration<ShoppingCartWidgetMigrations>();
         services.AddScoped<IShoppingCartEvents, TaxShoppingCartEvents>();
-        services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
 
         // Orders
         services.AddContentPart<OrderPart>()
@@ -160,11 +162,11 @@ public class Startup : StartupBase
 
         // Settings
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IDisplayDriver<ISite>, CurrencySettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<CurrencySettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddTransient<IConfigureOptions<CurrencySettings>, CurrencySettingsConfiguration>();
-        services.AddScoped<IDisplayDriver<ISite>, PriceDisplaySettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, RegionSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<PriceDisplaySettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<RegionSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegionSettings>, RegionSettingsConfiguration>();
 
         // Page
@@ -182,23 +184,26 @@ public class Startup : StartupBase
                 option.MemberAccessStrategy.Register<AddressFieldEditorViewModel>();
                 option.MemberAccessStrategy.Register<OrderPart>();
                 option.MemberAccessStrategy.Register<AddressField>();
-                option.MemberAccessStrategy.Register<IPayment>();
+                option.MemberAccessStrategy.Register<Abstractions.Models.Payment>();
                 option.MemberAccessStrategy.Register<Amount, string>((obj, _) => obj.ToString());
                 option.MemberAccessStrategy.Register<Amount, decimal>((obj, _) => obj.Value);
             })
-            // Liquid filter to convert JToken value to Amount struct in liquid.
+            // Liquid filter to convert JsonNode value to Amount struct in liquid.
             .AddLiquidFilter<AmountConverterFilter>("amount")
             // Liquid filter to convert string, JToken or various models with "ProductSku" properties int an SKU and
             // then retrieve the corresponding content item.
             .AddLiquidFilter<ProductFilter>("product")
             // Liquid filter to create AddressFieldEditorViewModel.
             .AddLiquidFilter<AddressFieldEditorViewModelConverterFilter>("address_field_editor_view_model")
-            // Liquid filter to create OrderLineItemViewModels.
-            .AddLiquidFilter<OrderLineItemViewModelsAndTaxRatesConverterFilter>("order_line_item_view_models_and_tax_rates");
+            // Liquid filter to create OrderLineItemViewModels and additional data.
+            .AddLiquidFilter<OrderPartToOrderSummaryLiquidFilter>("order_part_to_order_summary")
+            // Liquid filter to convert Amount, its JSON representation, or a number into Amount.ToString() including correct formatting and currency.
+            .AddLiquidFilter<AmountToStringLiquidFilter>("amount_to_string");
 
         // Product List
         services.AddScoped<IProductListService, ProductListService>();
-        services.AddScoped<IProductListFilterProvider, ProductListTitleFilterProvider>();
+        services.AddProductListFilterProvider<ProductListTitleFilterProvider>();
+        services.AddProductListFilterProvider<BasePriceFilterProvider>();
         services.AddScoped<IAppliedProductListFilterParametersProvider, QueryStringAppliedProductListFilterParametersProvider>();
         services.AddScoped<IDataMigration, ProductListMigrations>();
         services.AddContentPart<ProductListPart>()
@@ -207,7 +212,24 @@ public class Startup : StartupBase
             new TextProductAttributeDeserializer(),
             new BooleanProductAttributeDeserializer(),
             new NumericProductAttributeDeserializer());
+
+        services.AddCommerceApiServices();
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        app.UseResourceFilters();
+        routes.AddShoppingCartApiEndpoints();
+    }
+}
+
+public sealed class FallbackPriceStartup : StartupBase
+{
+    public override int Order => int.MaxValue;
+
+    public override void ConfigureServices(IServiceCollection services) =>
+        // No display currency selected. Fall back to default currency logic in MoneyService.
+        services.AddScoped<ICurrencySelector, NullCurrencySelector>();
 }
 
 [RequireFeatures("OrchardCore.Workflows")]
@@ -232,18 +254,17 @@ public class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegionSettings>>();
-        services.AddScoped<IDisplayDriver<DeploymentStep>>(serviceProvider =>
-            {
-                // It's the IStringLocalizer.
-#pragma warning disable SA1312 // Variable names should begin with lower-case letter
-                var T = serviceProvider.GetService<IStringLocalizer<DeploymentStartup>>();
-#pragma warning restore SA1312 // Variable names should begin with lower-case letter
-                return new SiteSettingsPropertyDeploymentStepDriver<RegionSettings>(
-                    T["Region settings"],
-                    T["Exports the region settings."]);
-            });
-        services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<RegionSettings>());
+        services.AddDeployment<SiteSettingsPropertyDeploymentSource<RegionSettings>, SiteSettingsPropertyDeploymentStep<RegionSettings>>();
+        services.AddScoped(ImplementationFactory);
+    }
+
+    private IDisplayDriver<DeploymentStep> ImplementationFactory(IServiceProvider serviceProvider)
+    {
+        var localizer = serviceProvider.GetService<IStringLocalizer<DeploymentStartup>>();
+
+        return new SiteSettingsPropertyDeploymentStepDriver<RegionSettings>(
+            localizer["Region settings"],
+            localizer["Exports the region settings."]);
     }
 }
 
@@ -253,7 +274,12 @@ public class SessionCartStorageStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSession(_ => { });
+        services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(60);
+            options.Cookie.HttpOnly = true; // Security: cookie inaccessible to JavaScript.
+            options.Cookie.IsEssential = true; // Required for GDPR compliance.
+        });
 
         // Shopping Cart
         services.AddScoped<IShoppingCartPersistence, SessionShoppingCartPersistence>();
@@ -272,7 +298,6 @@ public class SessionCartStorageStartup : StartupBase
 }
 
 [Feature(CommerceConstants.Features.CurrencySettingsSelector)]
-[RequireFeatures(CommerceConstants.Features.Core)]
 public class CurrencySettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
@@ -368,20 +393,38 @@ public class InventoryStartup : StartupBase
         services.AddScoped<IProductEstimationContextUpdater, InventoryProductEstimationContextUpdater>();
         services.AddScoped<IOrderEvents, InventoryOrderEvents>();
         services.AddScoped<IProductInventoryService, ProductInventoryService>();
+        services.AddScoped<ICheckoutEvents, InventoryCheckoutEvents>();
+        services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
     }
 }
 
 [RequireFeatures("OrchardCore.ContentLocalization")]
 public class ContentLocalizationStartup : StartupBase
 {
+    public override int Order => OrchardCoreCommerceConfigureOrder.AfterDefault;
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDuplicateSkuResolver, LocalizationDuplicateSkuResolver>();
 
-        services.RemoveImplementations<IProductService>();
+        services.RemoveImplementationsOf<IProductService>();
         services.AddScoped<IProductService, ContentLocalizationProductService>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) =>
         app.UseMiddleware<LocalizationCurrencyRedirectMiddleware>();
+}
+
+[RequireFeatures(CommerceConstants.Features.Subscription)]
+public class SubscriptionStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddContentPart<SubscriptionPart>()
+            .WithMigration<SubscriptionMigrations>()
+            .WithIndex<SubscriptionPartIndexProvider>();
+
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
+    }
 }

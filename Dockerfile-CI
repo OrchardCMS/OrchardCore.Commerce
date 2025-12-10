@@ -1,0 +1,14 @@
+# This Docker file is intended for the CI
+# A prerequisite is a published application in the .build/release  
+FROM --platform=$BUILDPLATFORM golang:alpine@sha256:d3f0cf7723f3429e3f9ed846243970b20a2de7bae6a5b66fc5914e228d831bbb AS build
+ARG TARGETOS
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809@sha256:ffce86755290a40dbc42ec176e6ffaf9f8025909c67100417c1566186c57e205 AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:47091f7cee02e448630df85542579e09b7bbe3b10bd4e1991ff59d3adbddd720 AS build_linux
+FROM build_${TARGETOS} AS aspnet
+
+EXPOSE 80
+ENV ASPNETCORE_URLS http://+:80
+WORKDIR /app
+COPY .build/release /app
+ENTRYPOINT ["dotnet", "OrchardCore.Commerce.Web.dll"]

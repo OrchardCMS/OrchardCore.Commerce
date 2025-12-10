@@ -1,8 +1,8 @@
+using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
@@ -76,14 +76,14 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var products = await _productService.GetProductDictionaryAsync(cart.Items.Select(line => line.ProductSku));
         var items = await _priceService.AddPricesAsync(cart.Items);
 
-        IList<ShoppingCartLineViewModel> lines = items
-            .Select(item =>
+        var lines = (await Task.WhenAll(items
+            .Select(async item =>
             {
                 var product = products[item.ProductSku];
                 var price = _priceService.SelectPrice(item.Prices);
 
                 var attributes = item.HasRawAttributes()
-                    ? _shoppingCartSerializer.PostProcessAttributes(item.Attributes, product)
+                    ? await _shoppingCartSerializer.PostProcessAttributesAsync(item.Attributes, product)
                     : item.Attributes;
 
                 return new ShoppingCartLineViewModel(attributes: attributes.ToDictionary(attr => attr.AttributeName))
@@ -95,21 +95,18 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
                     UnitPrice = price,
                     LinePrice = item.Quantity * price,
                 };
-            })
-            .ToList();
+            }))).AsList();
 
-        if (!lines.Any()) return null;
+        if (lines.Count == 0) return null;
 
-        var model = new ShoppingCartViewModel { Id = cart.Id };
-
-        IList<LocalizedHtmlString> headers = new[]
-        {
+        IList<LocalizedHtmlString> headers =
+        [
             H["Quantity"],
             H["Product"],
             H["Price"],
             H["Action"],
-        };
-        IList<Amount> totals = (await CalculateMultipleCurrencyTotalsAsync(cart)).Values.ToList();
+        ];
+        IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 
         (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);
 
@@ -120,17 +117,19 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             totals = lines.CalculateTotals().ToList();
         }
 
-        // The values are rounded to avoid storing more precision than what the currency supports.
         foreach (var line in lines)
         {
+            // The values are rounded to avoid storing more precision than what the currency supports.
             line.LinePrice = line.LinePrice.GetRounded();
             line.UnitPrice = line.UnitPrice.GetRounded();
         }
 
-        model.Totals.AddRange(totals.Any() ? totals.Round() : new List<Amount> { new(0, lines[0].LinePrice.Currency) });
-
+        var model = new ShoppingCartViewModel { Id = cart.Id };
+        model.Totals.AddRange(totals.Any() ? totals.Round() : [new(0, lines[0].LinePrice.Currency)]);
         model.Headers.AddRange(headers);
         model.Lines.AddRange(lines);
+
+        await _shoppingCartEvents.AwaitEachAsync(shoppingCartEvents => shoppingCartEvents.ViewModelCreatedAsync(model));
 
         return model;
     }
@@ -153,7 +152,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
     public async Task<IDictionary<string, Amount>> CalculateMultipleCurrencyTotalsAsync(ShoppingCart cart) =>
         cart.Count == 0
-            ? new Dictionary<string, Amount>()
+            ? []
             : (await cart.CalculateTotalsAsync(_priceService)).ToDictionary(total => total.Currency.CurrencyIsoCode);
 
     public async Task<ShoppingCartItem> AddToCartAsync(
@@ -173,20 +172,23 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         var cart = await _shoppingCartPersistence.RetrieveAsync(shoppingCartId);
         var parsedLine = cart.AddItem(item);
 
+        var errors = new List<LocalizedHtmlString>();
         foreach (var shoppingCartEvent in _shoppingCartEvents.OrderBy(provider => provider.Order))
         {
             if (await shoppingCartEvent.VerifyingItemAsync(parsedLine) is { } errorMessage)
             {
-                throw new FrontendException(errorMessage);
+                errors.Add(errorMessage);
             }
         }
+
+        FrontendException.ThrowIfAny(errors);
 
         if (await GetErrorAsync(parsedLine.ProductSku, parsedLine) is { } error)
         {
             throw new FrontendException(error);
         }
 
-        return (cart, item);
+        return (cart, parsedLine);
     }
 
     public Task<ShoppingCartLineViewModel> EstimateProductAsync(
@@ -224,7 +226,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
             return H["Product with SKU {0} not found.", sku];
         }
 
-        item = (await _priceService.AddPricesAsync(new[] { item })).Single();
+        item = (await _priceService.AddPricesAsync([item])).Single();
 
         return item.Prices.Any()
             ? null
@@ -242,7 +244,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         {
             item = await _priceService.AddPriceAsync(item);
             var price = _priceSelectionStrategy.SelectPrice(item.Prices);
-            var fullSku = _productService.GetOrderFullSku(item, await _productService.GetProductAsync(item.ProductSku));
+            var fullSku = await _productService.GetOrderFullSkuAsync(item, await _productService.GetProductAsync(item.ProductSku));
 
             var selectedAttributes = _productAttributeProviders
                 .Select(provider => provider.GetSelectedAttributes(item.Attributes))

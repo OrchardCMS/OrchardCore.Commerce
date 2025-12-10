@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.ContentManagement;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using System;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using YesSql;
 
@@ -30,21 +30,18 @@ public class UserService : IUserService
     public async Task<User> GetFullUserAsync(ClaimsPrincipal claimsPrincipal) =>
         claimsPrincipal == null ? null : await _userManager.GetUserAsync(claimsPrincipal) as User;
 
-    public async Task AlterUserSettingAsync(User user, string contentType, Func<JObject, JObject> updateContentItemJson)
+    public async Task AlterUserSettingAsync(User user, string contentType, Func<JsonObject, JsonObject> updateContentItemJson)
     {
-        if (user.Properties.GetJObject(contentType) is not { } contentItem)
+        if (user.Properties[contentType] is not JsonObject contentItem)
         {
             user.Properties[contentType] = JObject.FromObject(await _contentManager.NewAsync(contentType));
-            contentItem = (JObject)user.Properties[contentType];
+            contentItem = user.Properties[contentType]!.AsObject();
         }
 
         user.Properties[contentType] = updateContentItemJson(contentItem);
-        _session.Save(user);
+        await _session.SaveAsync(user);
     }
 
     public ContentItem GetUserSetting(User user, string contentType) =>
-        user?
-            .Properties
-            .GetValue(contentType)?
-            .ToObject<ContentItem>();
+        user?.Properties[contentType]?.ToObject<ContentItem>();
 }

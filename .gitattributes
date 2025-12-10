@@ -1,2 +1,5 @@
 * text=auto
 *.cs text eol=crlf
+
+# Keep LF line endings in pnpm-lock.yaml files to prevent Git from reporting this file as changed after pnpm touches it.
+pnpm-lock.yaml text eol=lf

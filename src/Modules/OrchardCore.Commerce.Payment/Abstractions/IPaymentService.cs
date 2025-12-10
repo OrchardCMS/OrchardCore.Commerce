@@ -1,20 +1,17 @@
-using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
-using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Payment.Constants;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Mvc.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Commerce.Abstractions;
+namespace OrchardCore.Commerce.Payment.Abstractions;
 
 /// <summary>
 /// Services related to payment and <c>PaymentController</c>.
@@ -29,7 +26,12 @@ public interface IPaymentService
         Action<OrderPart>? updateOrderPart = null);
 
     /// <summary>
-    /// When the order is payed this logic should be run to set <paramref name="order"/> properties that represents its state.
+    /// Calculates the shopping cart's checkout total.
+    /// </summary>
+    public Task<Amount> GetTotalAsync(string? shoppingCartId);
+
+    /// <summary>
+    /// When the order is paid this logic should be run to set <paramref name="order"/> properties that represents its state.
     /// </summary>
     Task FinalModificationOfOrderAsync(ContentItem order, string? shoppingCartId, string? paymentProviderName);
 
@@ -40,7 +42,11 @@ public interface IPaymentService
     /// If <see langword="true"/>, then the order totals will be checked. They must be zero, otherwise an error
     /// notification will be sent and <see langword="null"/> is returned. If <see langword="false"/>, this is ignored.
     /// </param>
-    Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(string? shoppingCartId, bool mustBeFree);
+    Task<ContentItem?> CreatePendingOrderFromShoppingCartAsync(
+        string? shoppingCartId,
+        bool mustBeFree = false,
+        bool notifyOnError = true,
+        bool throwOnError = false);
 
     /// <summary>
     /// Updates the <paramref name="order"/>'s status to <see cref="OrderStatuses.Ordered"/>.
@@ -52,7 +58,7 @@ public interface IPaymentService
     Task UpdateOrderToOrderedAsync(
         ContentItem order,
         string? shoppingCartId,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null);
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null);
 
     /// <summary>
     /// Tries to get the order identified by <paramref name="orderId"/>, or creates a new one if it's not there. Then
@@ -62,10 +68,35 @@ public interface IPaymentService
     /// </summary>
     /// <exception cref="FrontendException">Thrown if the order validation failed.</exception>
     Task<(ContentItem Order, bool IsNew)> CreateOrUpdateOrderFromShoppingCartAsync(
-        IUpdateModelAccessor updateModelAccessor,
+        IUpdateModelAccessor? updateModelAccessor,
         string? orderId,
         string? shoppingCartId,
-        AlterOrderAsyncDelegate? alterOrderAsync = null);
+        AlterOrderAsyncDelegate? alterOrderAsync = null,
+        OrderPart? orderPart = null);
+
+    /// <summary>
+    /// Updates the provided Order content item from the update model as if it was just edited.
+    /// </summary>
+    Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order);
+
+    /// <summary>
+    /// Call back for payment.
+    /// </summary>
+    Task<PaymentOperationStatusViewModel> CallBackAsync(string paymentProviderName, string? orderId, string? shoppingCartId);
+
+    /// <summary>
+    /// Free checkout.
+    /// </summary>
+    Task<PaymentOperationStatusViewModel> CheckoutWithoutPaymentAsync(string? shoppingCartId, bool mustBeFree = true);
+
+    /// <summary>
+    /// Validate the checkout.
+    /// </summary>
+    /// <param name="providerName">The name of provider.</param>
+    /// <param name="shoppingCartId">Shopping Cart.</param>
+    /// <param name="paymentId">Payment Id, for Stripe,it is Payment Intent Id.</param>
+    /// <returns>The list of the errors.</returns>
+    Task<IList<string>> ValidateErrorsAsync(string providerName, string? shoppingCartId, string? paymentId);
 }
 
 public delegate Task AlterOrderAsyncDelegate(
@@ -77,20 +108,19 @@ public delegate Task AlterOrderAsyncDelegate(
 
 public static class PaymentServiceExtensions
 {
-    public static async Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
+    public static async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         this IPaymentService service,
-        Controller controller,
         ContentItem order,
         string? shoppingCartId,
         string? paymentProviderName = null,
-        Func<OrderPart, IEnumerable<IPayment>?>? getCharges = null)
+        Func<OrderPart, IEnumerable<Commerce.Abstractions.Models.Payment>?>? getCharges = null)
     {
         await service.UpdateOrderToOrderedAsync(order, shoppingCartId, getCharges);
         await service.FinalModificationOfOrderAsync(order, shoppingCartId, paymentProviderName);
-
-        return controller.RedirectToAction(
-            nameof(PaymentController.Success),
-            typeof(PaymentController).ControllerName(),
-            new { area = FeatureIds.Area, orderId = order.ContentItemId, });
+        return new PaymentOperationStatusViewModel
+        {
+            Status = PaymentOperationStatus.Succeeded,
+            Content = order,
+        };
     }
 }

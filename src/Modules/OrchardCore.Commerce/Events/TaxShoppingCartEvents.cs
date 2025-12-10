@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Tax.Extensions;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +33,7 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
     {
         var headers = eventContext.Headers;
         var lines = eventContext.Lines;
-        var context = new PromotionAndTaxProviderContext(
+        var context = PromotionAndTaxProviderContext.FromShoppingCartLineViewModels(
             lines,
             eventContext.Totals,
             eventContext.ShippingAddress,

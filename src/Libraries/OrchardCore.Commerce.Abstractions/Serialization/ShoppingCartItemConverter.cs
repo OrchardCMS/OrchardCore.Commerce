@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Commerce.Abstractions.Serialization;
 
-internal sealed class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
+public sealed class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem>
 {
     public const string QuantityName = "quantity";
     public const string SkuName = "sku";
@@ -66,7 +66,7 @@ internal sealed class ShoppingCartItemConverter : JsonConverter<ShoppingCartItem
             foreach (var attribute in value.Attributes)
             {
                 writer.WritePropertyName(attribute.AttributeName);
-                // Re-using the raw attribute serialization logic
+                // Reusing the raw attribute serialization logic
                 JsonSerializer.Serialize(writer, new RawProductAttributeValue(attribute.UntypedValue), options);
             }
 

@@ -33,7 +33,7 @@ public class PriceService : IPriceService
 
         // If all applicable providers were used, then there is nothing left to do.
         var remainingProviders = priceProviders.Except(fullyApplicableProviders).ToList();
-        if (!remainingProviders.Any()) return items;
+        if (remainingProviders.Count == 0) return items;
 
         // If only a mixture of providers can work, then we handle each applicable item together. By storing the
         // original indexes here, we ensure that the results will be in the same order as the input items.
@@ -43,7 +43,7 @@ public class PriceService : IPriceService
         // Take out subsets where items are individually applicable to the remaining providers.
         foreach (var provider in remainingProviders)
         {
-            var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync(new[] { pair.Item }));
+            var applicable = await unhandled.WhereAsync(pair => provider.IsApplicableAsync([pair.Item]));
             if (!applicable.Any()) continue;
 
             unhandled.RemoveAll(applicable.Contains);
@@ -53,8 +53,8 @@ public class PriceService : IPriceService
         }
 
         // If any items were handled then rebuild the list, otherwise cut it short here.
-        if (!handled.Any()) return items;
-        if (unhandled.Any()) handled.AddRange(unhandled);
+        if (handled.Count == 0) return items;
+        if (unhandled.Count != 0) handled.AddRange(unhandled);
 
         return handled
             .OrderBy(pair => pair.Index)

@@ -2,11 +2,11 @@ using Atata;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
-using Newtonsoft.Json;
 using OpenQA.Selenium;
+using OrchardCore.Commerce.AddressDataType;
 using Shouldly;
+using System.Text.Json;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.UserTests;
 
@@ -45,43 +45,31 @@ public class UserPersistenceTests : UITestBase
                 await context.SignInDirectlyAndGoToHomepageAsync();
                 await context.ClickReliablyOnAsync(By.ClassName("user-addresses-widget"));
 
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_ShippingAddress_Address_Name"),
-                    ShippingName);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_ShippingAddress_Address_Department"),
-                    ShippingDepartment);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_ShippingAddress_Address_StreetAddress1"),
-                    ShippingAddress);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_ShippingAddress_Address_City"),
-                    ShippingCity);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_ShippingAddress_Address_PostalCode"),
-                    ShippingPostalCode);
-                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_ShippingAddress_Address_Region"), ShippingCountryCode);
+                await context.FillAddressAsync(
+                    "UserAddressesPart_ShippingAddress_Address_",
+                    new Address
+                    {
+                        Name = ShippingName,
+                        Department = ShippingDepartment,
+                        StreetAddress1 = ShippingAddress,
+                        City = ShippingCity,
+                        PostalCode = ShippingPostalCode,
+                        Region = ShippingCountryCode,
+                    });
 
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_BillingAddress_Address_Name"),
-                    BillingName);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_BillingAddress_Address_Department"),
-                    BillingDepartment);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_BillingAddress_Address_Company"),
-                    BillingCompany);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_BillingAddress_Address_StreetAddress1"),
-                    BillingAddress);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_BillingAddress_Address_City"),
-                    BillingCity);
-                await context.ClickAndFillInWithRetriesAsync(
-                    By.Id("UserAddressesPart_BillingAddress_Address_PostalCode"),
-                    BillingPostalCode);
-                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Region"), BillingCountryCode);
-                await context.SetDropdownByValueAsync(By.Id("UserAddressesPart_BillingAddress_Address_Province"), BillingStateCode);
+                await context.FillAddressAsync(
+                    "UserAddressesPart_BillingAddress_Address_",
+                    new Address
+                    {
+                        Name = BillingName,
+                        Department = BillingDepartment,
+                        Company = BillingCompany,
+                        StreetAddress1 = BillingAddress,
+                        City = BillingCity,
+                        PostalCode = BillingPostalCode,
+                        Region = BillingCountryCode,
+                        Province = BillingStateCode,
+                    });
 
                 await context.ClickReliablyOnSubmitAsync();
                 context.ShouldBeSuccess("Your addresses have been updated.");
@@ -89,14 +77,14 @@ public class UserPersistenceTests : UITestBase
                 const string getInputsScript = @"return JSON.stringify(
                     Array.from(document.querySelectorAll(`form[action='/user/addresses'] input, form[action='/user/addresses'] select`))
                         .map((element) => element.value))";
-                var inputs = JsonConvert.DeserializeObject<string[]>(
+                var inputs = JsonSerializer.Deserialize<string[]>(
                         context.ExecuteScript(getInputsScript).ToString()!);
                 inputs.ShouldNotBeNull();
                 inputs
                     .Take(18)
                     .ToArray()
-                    .ShouldBe(new[]
-                    {
+                    .ShouldBe(
+                    [
                         BillingName,
                         BillingDepartment,
                         BillingCompany,
@@ -115,7 +103,7 @@ public class UserPersistenceTests : UITestBase
                         string.Empty,
                         ShippingPostalCode,
                         ShippingCountryCode,
-                    });
+                    ]);
             },
             browser);
 
@@ -141,18 +129,18 @@ public class UserPersistenceTests : UITestBase
                 const string getInputsScript = @"return JSON.stringify(
                     Array.from(document.querySelectorAll(`form[action='/user/details'] input, form[action='/user/details'] select`))
                         .map((element) => element.value))";
-                var inputs = JsonConvert.DeserializeObject<string[]>(
+                var inputs = JsonSerializer.Deserialize<string[]>(
                         context.ExecuteScript(getInputsScript).ToString()!);
                 inputs.ShouldNotBeNull();
                 inputs
                     .Take(3)
                     .ToArray()
-                    .ShouldBe(new[]
-                    {
+                    .ShouldBe(
+                    [
                         PhoneNumber,
                         VatNumber,
                         "true",
-                    });
+                    ]);
             },
             browser);
 

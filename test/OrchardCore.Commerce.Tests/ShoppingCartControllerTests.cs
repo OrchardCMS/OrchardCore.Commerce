@@ -1,17 +1,17 @@
 using Lombiq.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Moq.AutoMock;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Controllers;
-using OrchardCore.Commerce.MoneyDataType.Abstractions;
+using OrchardCore.Commerce.Endpoints;
 using OrchardCore.Commerce.ProductAttributeValues;
 using OrchardCore.Commerce.Services;
 using OrchardCore.Commerce.Tests.Fakes;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Localization;
 using OrchardCore.Workflows.Services;
 using System;
@@ -23,7 +23,11 @@ namespace OrchardCore.Commerce.Tests;
 
 public class ShoppingCartControllerTests
 {
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+    // This change would break the IShoppingCartPersistence reference in the consumer classes and
+    // it would lead to multiple test failing due to NRE when accessing methods in IShoppingCartPersistence.
     private readonly IShoppingCartPersistence _cartStorage = new FakeCartStorage();
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
     private readonly Dictionary<string, string[]> _attrSet1 = new()
     {
@@ -38,19 +42,19 @@ public class ShoppingCartControllerTests
         { "ProductPart3.attr1", new[] { "true" } },
         { "ProductPart3.attr2", new[] { "bar", "baz" } },
     };
-    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed = new()
-    {
+    private readonly HashSet<IProductAttributeValue> _attrSet1Parsed =
+    [
         new BooleanProductAttributeValue("ProductPart3.attr1", value: true),
-    };
-    private readonly HashSet<IProductAttributeValue> _attrSet2Parsed = new()
-    {
+    ];
+    private readonly HashSet<IProductAttributeValue> _attrSet2Parsed =
+    [
         new BooleanProductAttributeValue("ProductPart3.attr1", value: false),
-    };
-    private readonly HashSet<IProductAttributeValue> _attrSet3Parsed = new()
-    {
+    ];
+    private readonly HashSet<IProductAttributeValue> _attrSet3Parsed =
+    [
         new BooleanProductAttributeValue("ProductPart3.attr1", value: true),
         new TextProductAttributeValue("ProductPart3.attr2", "bar", "baz"),
-    };
+    ];
 
     [Fact]
     public async Task AddExistingItemToCart()
@@ -58,7 +62,7 @@ public class ShoppingCartControllerTests
         var cart = await StoreAndRetrieveItemAsync("foo");
 
         Assert.Equal(
-            new List<ShoppingCartItem> { new(10, "foo") },
+            [new(10, "foo")],
             cart.Items);
     }
 
@@ -68,11 +72,10 @@ public class ShoppingCartControllerTests
         var cart = await StoreAndRetrieveItemAsync("bar");
 
         Assert.Equal(
-            new List<ShoppingCartItem>
-            {
+            [
                 new(3, "foo"),
                 new(7, "bar"),
-            },
+            ],
             cart.Items);
     }
 
@@ -97,15 +100,14 @@ public class ShoppingCartControllerTests
         var cart = await controller.Get();
 
         Assert.Equal(
-            new List<ShoppingCartItem>
-            {
+            [
                 new(9, "foo"),
                 new(11, "foo", _attrSet1Parsed),
                 new(13, "foo", _attrSet2Parsed),
                 new(15, "foo", _attrSet3Parsed),
                 new(17, "bar", _attrSet3Parsed),
                 new(13, "baz", _attrSet3Parsed),
-            },
+            ],
             cart.Items);
     }
 
@@ -191,19 +193,14 @@ public class ShoppingCartControllerTests
         var mockContextAccessor = mocker.GetMock<IHttpContextAccessor>();
         mockContextAccessor.Setup(hca => hca.HttpContext).Returns(mockContext.HttpContext);
 
-        mocker.Use<IPriceService>(new FakePriceService());
-        mocker.Use<IProductService>(new FakeProductService());
-        mocker.Use<IEnumerable<IShoppingCartEvents>>(new[] { new FakeShoppingCartEvents() });
-        mocker.Use<IEnumerable<IProductAttributeProvider>>(new[] { new ProductAttributeProvider() });
-        mocker.Use<IContentDefinitionManager>(new FakeContentDefinitionManager());
-        mocker.Use<IMoneyService>(new TestMoneyService());
-        mocker.Use<IShoppingCartSerializer>(mocker.CreateInstance<ShoppingCartSerializer>());
-
+        mocker.Use(mocker.CreateShoppingCartSerializerInstance());
         mocker.Use(_cartStorage);
         mocker.Use<IHtmlLocalizer<ShoppingCartHelpers>>(new HtmlLocalizer<ShoppingCartHelpers>(new NullHtmlLocalizerFactory()));
         mocker.Use<IShoppingCartHelpers>(mocker.CreateInstance<ShoppingCartHelpers>());
 
-        mocker.Use<IEnumerable<IWorkflowManager>>(Array.Empty<IWorkflowManager>());
+        mocker.Use<IEnumerable<IWorkflowManager>>([]);
+
+        mocker.Use<IShoppingCartService>(mocker.CreateInstance<ShoppingCartService>());
         var controller = mocker.CreateInstance<ShoppingCartController>();
         controller.ControllerContext = mockContext;
         return controller;
@@ -223,7 +220,7 @@ public class ShoppingCartControllerTests
         return await _cartStorage.RetrieveAsync(cartId);
     }
 
-    private static Task AddItemAsync(
+    private static Task<ActionResult> AddItemAsync(
         ShoppingCartController controller,
         string cartId,
         int quantity,

@@ -1,7 +1,9 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
+using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Exceptions;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.Commerce.ViewModels;
@@ -11,6 +13,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using System.Threading.Tasks;
+using FrontendException = Lombiq.HelpfulLibraries.AspNetCore.Exceptions.FrontendException;
 
 namespace OrchardCore.Commerce.Drivers;
 
@@ -40,8 +43,8 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
             var model = await _shoppingCartHelpers.EstimateProductAsync(
                 shoppingCartId: null,
                 product.Sku,
-                addresses?.ShippingAddress.Address,
-                addresses?.BillingAddress.Address);
+                addresses?.GetSafeShippingAddress(),
+                addresses?.GetSafeBillingAddress());
 
             if (!model.AdditionalData.HasGrossPrice()) return null;
 
@@ -49,15 +52,15 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
 
             return Initialize<TaxRateViewModel>("TaxPart_TaxRate_GrossPrice", viewModel =>
                 viewModel.Context = new PromotionAndTaxProviderContext(
-                    new[] { new PromotionAndTaxProviderContextLineItem(model) },
-                    new[] { model.LinePrice },
-                    addresses?.ShippingAddress.Address,
-                    addresses?.BillingAddress.Address))
-                .Location("Detail", "Content");
+                    [new(model.Product, model.UnitPrice, model.Quantity, model.AdditionalData.GetDiscounts())],
+                    [model.LinePrice],
+                    addresses?.GetSafeShippingAddress(),
+                    addresses?.GetSafeBillingAddress()))
+                .Location(CommonContentDisplayTypes.Detail, CommonLocationNames.Content);
         }
         catch (FrontendException exception)
         {
-            await _notifier.ErrorAsync(exception.HtmlMessage);
+            await _notifier.FrontEndErrorAsync(exception);
             return null;
         }
     }

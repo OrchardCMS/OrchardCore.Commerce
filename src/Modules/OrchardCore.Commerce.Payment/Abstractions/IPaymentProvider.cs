@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Constants;
-using OrchardCore.Commerce.Controllers;
+using OrchardCore.Commerce.Payment.Controllers;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using System;
@@ -30,12 +29,12 @@ public interface IPaymentProvider
     /// Arbitrary data which will be set as the value in <see cref="IPaymentViewModel.PaymentProviderData"/>. If it
     /// returns <see langword="null"/> then the shape won't be displayed.
     /// </returns>
-    Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model);
+    Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string? shoppingCartId = null);
 
     /// <summary>
     /// Validates the data POSTed to the <see cref="PaymentController.Validate"/> action.
     /// </summary>
-    Task ValidateAsync(IUpdateModelAccessor updateModelAccessor) => Task.CompletedTask;
+    Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string? shoppingCartId, string? paymentId = null) => Task.CompletedTask;
 
     /// <summary>
     /// Invoked at the end of <see cref="IPaymentService.FinalModificationOfOrderAsync"/>.
@@ -47,10 +46,10 @@ public interface IPaymentProvider
     /// If the provider thinks it can be resolved, best approach is to return <see
     /// cref="PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync"/>.
     /// </summary>
-    Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
-        string? shoppingCartId);
+        string? shoppingCartId
+        );
 }
 
 public static class PaymentProviderExtensions

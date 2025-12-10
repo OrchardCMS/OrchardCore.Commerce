@@ -14,14 +14,14 @@ using OrchardCore.Modules.Manifest;
     Name = "Orchard Core Commerce - Core",
     Category = "Commerce",
     Description = "Registers the core components used by the Commerce features.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Contents",
         "OrchardCore.Workflows",
         "OrchardCore.Templates",
         "OrchardCore.Commerce.ContentFields",
         "OrchardCore.Commerce.Payment",
-    }
+    ]
 )]
 
 [assembly: Feature(
@@ -29,11 +29,11 @@ using OrchardCore.Modules.Manifest;
     Name = "Orchard Core Commerce - Session Cart Storage",
     Category = "Commerce",
     Description = "Registers session-based shopping cart persistence.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Contents",
         CommerceConstants.Features.Core,
-    }
+    ]
 )]
 
 [assembly: Feature(
@@ -41,9 +41,21 @@ using OrchardCore.Modules.Manifest;
     Name = "Orchard Core Commerce - Currency Settings Selector",
     Category = "Commerce",
     Description = "Currency selector that uses display currency configured in settings. Useful for Dev/Test scenarios.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Contents",
         CommerceConstants.Features.Core,
-    }
+    ]
+)]
+
+[assembly: Feature(
+    Id = CommerceConstants.Features.Subscription,
+    Name = "Orchard Core Commerce - Subscription",
+    Category = "Commerce",
+    Description = "Subscription management. Currently only supports Stripe.",
+    Dependencies =
+    [
+        "OrchardCore.Contents",
+        CommerceConstants.Features.Core,
+    ]
 )]

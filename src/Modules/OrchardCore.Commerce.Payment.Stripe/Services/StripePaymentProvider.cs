@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Controllers;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
+using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using Stripe;
 using System;
@@ -19,74 +15,73 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
 public class StripePaymentProvider : IPaymentProvider
 {
-    public const string ProviderName = "Stripe";
+    public const string ProviderName = "stripe";
 
-    private readonly IHttpContextAccessor _hca;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly ISession _session;
     private readonly ISiteService _siteService;
+    private readonly IStripePaymentIntentService _stripePaymentIntentService;
     private readonly IStripePaymentService _stripePaymentService;
 
     public string Name => ProviderName;
 
     public StripePaymentProvider(
-        IHttpContextAccessor hca,
         IPaymentIntentPersistence paymentIntentPersistence,
         ISession session,
         ISiteService siteService,
-        IStripePaymentService stripePaymentService)
+        IStripePaymentService stripePaymentService,
+        IStripePaymentIntentService stripePaymentIntentService)
     {
-        _hca = hca;
         _paymentIntentPersistence = paymentIntentPersistence;
         _session = session;
         _siteService = siteService;
         _stripePaymentService = stripePaymentService;
+        _stripePaymentIntentService = stripePaymentIntentService;
     }
 
-    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model)
+    public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string shoppingCartId = null)
     {
         PaymentIntent paymentIntent;
 
         try
         {
-            paymentIntent = await _stripePaymentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal);
+            paymentIntent = await _stripePaymentIntentService.CreatePaymentIntentAsync(model.SingleCurrencyTotal, shoppingCartId);
         }
         catch (StripeException exception) when (exception.Message.StartsWithOrdinal("No API key provided."))
         {
             return null;
         }
 
-        if (_hca.HttpContext?.GetRouteValue("action")?.ToString() == nameof(PaymentController.PaymentRequest))
+        if (isPaymentRequest)
         {
-            _session.Save(new OrderPayment
+            await _session.SaveAsync(new OrderPayment
             {
                 OrderId = model.OrderPart.ContentItem.ContentItemId,
                 PaymentIntentId = paymentIntent.Id,
             });
         }
 
-        return new
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+
+        return new StripePaymentProviderData
         {
-            (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>().PublishableKey,
-            paymentIntent.ClientSecret,
+            PublishableKey = stripeApiSettings.PublishableKey,
+            ClientSecret = paymentIntent.ClientSecret,
+            PaymentIntentId = paymentIntent.Id,
+            AccountId = stripeApiSettings.AccountId,
         };
     }
 
-    public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor) =>
-        _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor);
+    public Task ValidateAsync(IUpdateModelAccessor updateModelAccessor, string shoppingCartId, string paymentId = null) =>
+        _stripePaymentService.CreateOrUpdateOrderFromShoppingCartAsync(updateModelAccessor, shoppingCartId, paymentId);
 
-    public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId)
-    {
+    public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId) =>
         // A new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.Remove();
+        _paymentIntentPersistence.RemoveAsync(shoppingCartId);
 
-        return Task.CompletedTask;
-    }
-
-    public Task<IActionResult> UpdateAndRedirectToFinishedOrderAsync(
-        Controller controller,
+    public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,
         string shoppingCartId) =>
         throw new NotSupportedException(
-            "This code should never be reached, because Stripe payment uses ~/checkout/middleware/Stripe, not ~/checkout/callback/Stripe.");
+            "This code should never be reached, because Stripe payment uses ~/stripe/middleware, not ~/checkout/callback/Stripe.");
 }

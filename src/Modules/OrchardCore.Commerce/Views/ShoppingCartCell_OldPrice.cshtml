@@ -1,13 +1,14 @@
-@using OrchardCore.Commerce.Models;
-@using OrchardCore.Commerce.Tax.Extensions
 @using OrchardCore.Commerce.Abstractions.ViewModels
-
-@inject OrchardCore.Settings.ISiteService SiteService
+@using OrchardCore.Commerce.Models
+@using OrchardCore.Commerce.Promotion.Extensions
+@using OrchardCore.Commerce.Tax.Extensions
+@using OrchardCore.Settings
+@inject ISiteService SiteService
 
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
     var (oldNetPrice, oldGrossPrice) = line.AdditionalData.GetOldPrices();
-    var priceDisplaySettings = (await SiteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
+    var priceDisplaySettings = await SiteService.GetSettingsAsync<PriceDisplaySettings>();
 
     // Determine which price format to use based on corresponding site setting.
     var oldPrice = priceDisplaySettings.UseNetPriceDisplay ? oldNetPrice : oldGrossPrice;
@@ -19,7 +20,7 @@
     }
 
     // Old price should not be shown if there are no discounts.
-    if (!line.AdditionalData.GetMaybe("Discounts").Any())
+    if (!line.AdditionalData.GetDiscounts().Any())
     {
         oldPrice = null;
     }

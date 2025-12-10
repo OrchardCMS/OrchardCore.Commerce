@@ -1,18 +1,18 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
 public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
 {
-    private const string ShoppingCartPrefix = "OrchardCore:Commerce:ShoppingCart";
+    // Using _ as a separator to avoid separator character conflicts.
+    private const string ShoppingCartPrefix = "OrchardCore_Commerce_ShoppingCart";
 
-    private readonly Dictionary<string, JObject> _scopeCache = new();
+    private readonly Dictionary<string, JsonObject> _scopeCache = [];
 
     protected readonly IEnumerable<IShoppingCartEvents> _shoppingCartEvents;
 
@@ -35,7 +35,7 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
             cart = await shoppingCartEvent.LoadedAsync(cart) ?? cart;
         }
 
-        _scopeCache[key] = JObject.FromObject(cart, new JsonSerializer());
+        _scopeCache[key] = JObject.FromObject(cart);
         return cart;
     }
 
@@ -44,6 +44,16 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
         var key = GetCacheId(items.Id);
 
         if (await StoreInnerAsync(key, items))
+        {
+            _scopeCache.Remove(key, out _);
+        }
+    }
+
+    public async Task RemoveAsync(string shoppingCartId)
+    {
+        var key = GetCacheId(shoppingCartId);
+
+        if (await RemoveInnerAsync(key))
         {
             _scopeCache.Remove(key, out _);
         }
@@ -68,6 +78,12 @@ public abstract class ShoppingCartPersistenceBase : IShoppingCartPersistence
     /// </returns>
     protected abstract Task<bool> StoreInnerAsync(string key, ShoppingCart items);
 
+    /// <summary>
+    /// Remove the items using the <see cref="ShoppingCartPersistenceBase"/>-specific <paramref name="key"/>.
+    /// </summary>
+    /// <param name="key">A prefix and (if set) the shopping cart ID combined.</param>
+    /// <returns>A value indicating whether the removal was successful.</returns>
+    protected abstract Task<bool> RemoveInnerAsync(string key);
     protected string GetCacheId(string shoppingCartId) =>
-        string.IsNullOrEmpty(shoppingCartId) ? ShoppingCartPrefix : $"{ShoppingCartPrefix}:{shoppingCartId}";
+        string.IsNullOrEmpty(shoppingCartId) ? ShoppingCartPrefix : $"{ShoppingCartPrefix}_{shoppingCartId}";
 }

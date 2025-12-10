@@ -23,8 +23,20 @@ public sealed class SessionShoppingCartPersistence : ShoppingCartPersistenceBase
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
-    protected override Task<ShoppingCart> RetrieveInnerAsync(string key) =>
-        _shoppingCartSerializer.DeserializeAsync(Session.GetString(key));
+    protected override async Task<ShoppingCart> RetrieveInnerAsync(string key)
+    {
+        var serialized = Session.GetString(key);
+
+        if (serialized == null && _httpContextAccessor.HttpContext != null)
+        {
+            _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(key, out serialized);
+        }
+
+        var result = await _shoppingCartSerializer.DeserializeAndVerifyAsync(serialized);
+        if (result.HasChanged) await StoreAsync(result.ShoppingCart);
+
+        return result.ShoppingCart;
+    }
 
     protected override async Task<bool> StoreInnerAsync(string key, ShoppingCart items)
     {
@@ -32,6 +44,23 @@ public sealed class SessionShoppingCartPersistence : ShoppingCartPersistenceBase
         if (Session.GetString(key) == cartString) return false;
 
         Session.SetString(key, cartString);
+        _httpContextAccessor.SetCookieForever(key, cartString);
+
         return true;
+    }
+
+    protected override Task<bool> RemoveInnerAsync(string key)
+    {
+        try
+        {
+            Session.Clear();
+            _httpContextAccessor.HttpContext?.Response.Cookies.Delete(key);
+        }
+        catch
+        {
+            return Task.FromResult(false);
+        }
+
+        return Task.FromResult(true);
     }
 }

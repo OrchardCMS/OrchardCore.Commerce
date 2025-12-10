@@ -8,7 +8,13 @@ namespace OrchardCore.Commerce.ViewModels;
 
 public class AddressFieldEditorViewModel : ShapeViewModel
 {
-    public AddressField AddressField { get; set; }
+    public const string ShapeType = "AddressFieldEditor";
+
+    public IAddressField AddressField { get; set; }
+
+    public bool HidePersonFields { get; set; }
+    public bool HidePostalFields { get; set; }
+
     public string CityName { get; set; }
 
     [BindNever]
@@ -21,5 +27,5 @@ public class AddressFieldEditorViewModel : ShapeViewModel
 #pragma warning restore CA2227 // Collection properties should be read only
         new Dictionary<string, IDictionary<string, string>>();
 
-    public AddressFieldEditorViewModel() => Metadata.Type = "AddressFieldEditor";
+    public AddressFieldEditorViewModel() => Metadata.Type = ShapeType;
 }

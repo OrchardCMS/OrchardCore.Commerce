@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OrchardCore.Indexing.Abstractions" Version="1.7.0" />
-    <PackageReference Include="OrchardCore.Module.Targets" Version="1.7.0" />
-    <PackageReference Include="OrchardCore.Templates" Version="1.7.0" />
+    <PackageReference Include="OrchardCore.Indexing.Abstractions" />
+    <PackageReference Include="OrchardCore.Module.Targets" />
+    <PackageReference Include="OrchardCore.Templates" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,21 +38,10 @@
   </ItemGroup>
 
   <ItemGroup Condition="Exists($(LombiqHelpfulLibrariesPath))">
-    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)" />
+    <ProjectReference Include="$(LombiqHelpfulLibrariesPath)\Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj" />
   </ItemGroup>
   <ItemGroup Condition="!Exists($(LombiqHelpfulLibrariesPath))">
-    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" Version="8.0.3-alpha.1.occ-63" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <ProjectReference Include="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.csproj" />
-  </ItemGroup>
-  <ImportGroup Condition="Exists($(LombiqNodeJsExtensionsPath))">
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.props" />
-    <Import Project="$(LombiqNodeJsExtensionsPath)\Lombiq.NodeJs.Extensions.targets" />
-  </ImportGroup>
-  <ItemGroup Condition="!Exists($(LombiqNodeJsExtensionsPath))">
-    <PackageReference Include="Lombiq.NodeJs.Extensions" Version="1.3.2" />
+    <PackageReference Include="Lombiq.HelpfulLibraries.OrchardCore" />
   </ItemGroup>
 
 </Project>

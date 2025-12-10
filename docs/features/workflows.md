@@ -2,10 +2,9 @@
 
 ## Shopping Cart Event Workflow Events
 
-These events get triggered by `WorkflowShoppingCartEvents` which implements the `IShoppingCartEvents` interface. For each you can access the input as a .NET object using the `Context` workflow input and the serialized version as the `JSON` workflow input.
-All of these workflows expect to return one or more outputs which is passed back to the invoking code.
+These events get triggered by `WorkflowShoppingCartEvents` which implements the `IShoppingCartEvents` interface. For each you can access the input as a .NET object using the `Context` workflow input and the serialized version as the `JSON` workflow input. All of these workflows expect to return one or more outputs which is passed back to the invoking code.
 
-> ⚠ If you want to return an altered version of the input as the output, please always use the JSON which is already serialized in the expected format used by OrchardCore.Commerce's converters. For example, you can use the JS expression `JSON.parse(input('JSON'))`.
+> ⚠ If you want to return an altered version of the input as the output, please always use the JSON which is already serialized in the expected format used by OrchardCore.Commerce's converters. For example, you can use the JS expression `JSON.parse(input('JSON'))`. <!-- markdownlint-disable-next-line MD028 -->
 
 > ℹ When your output contains `LocalizedHtmlString`, it can be represented in JS either as `string` or `{ Name: string, Value: string }`. In case of just `string` the same text becomes `LocalizedHtmlString.Name` and `LocalizedHtmlString.Value` too.
 
@@ -32,7 +31,7 @@ Executes after the shopping cart content is loaded from the store and before it'
 
 - Input: `ShoppingCart` object.
 - Outputs:
-  - ShoppingCart: `ShoppingCart` object. An altered version of the input. If no changes are necessary, the output can be skipped. Here it's the most important to only use `input('JSON')` as mentioned above, because `ShoppingCart` has custom JSON converters inside that will ony correctly serialize in .NET code.
+  - ShoppingCart: `ShoppingCart` object. An altered version of the input. If no changes are necessary, the output can be skipped. Here it's the most important to only use `input('JSON')` as mentioned above, because `ShoppingCart` has custom JSON converters inside that will only correctly serialize in .NET code.
 
 ## Other Workflow Events
 

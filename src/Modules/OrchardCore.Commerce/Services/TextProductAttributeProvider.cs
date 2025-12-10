@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Services;
 
@@ -34,7 +35,7 @@ public class TextProductAttributeProvider : IProductAttributeProvider
         string[] value) =>
             new TextProductAttributeValue(partDefinition.Name + "." + attributeFieldDefinition.Name, value);
 
-    public void HandleSelectedAttributes(
+    public async Task HandleSelectedAttributesAsync(
         IDictionary<string, IDictionary<string, string>> selectedAttributes,
         ProductPart productPart,
         IList<IProductAttributeValue> attributesList)
@@ -51,8 +52,8 @@ public class TextProductAttributeProvider : IProductAttributeProvider
             selectedAttributes.Add(Text, new Dictionary<string, string>());
         }
 
-        var predefinedAttributes = _predefinedValuesProductAttributeService
-            .GetProductAttributesRestrictedToPredefinedValues(productPart.ContentItem);
+        var predefinedAttributes = await _predefinedValuesProductAttributeService
+            .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem);
 
         // Predefined attributes must contain the selected attributes.
         var selectedTextAttributesList = predefinedAttributes
@@ -60,7 +61,7 @@ public class TextProductAttributeProvider : IProductAttributeProvider
             .ToList();
 
         // Construct actual attributes from strings.
-        var type = _contentDefinitionManager.GetTypeDefinition(productPart.ContentItem.ContentType);
+        var type = await _contentDefinitionManager.GetTypeDefinitionAsync(productPart.ContentItem.ContentType);
         foreach (var attribute in selectedTextAttributesList)
         {
             var (attributePartDefinition, attributeFieldDefinition) = _productAttributeService.GetFieldDefinition(
@@ -71,9 +72,10 @@ public class TextProductAttributeProvider : IProductAttributeProvider
 
             var value = predefinedStrings.First(item => item == selectedTextAttributes[attribute.Name]);
 
-            var matchingAttribute = Parse(attributePartDefinition, attributeFieldDefinition, new[] { value });
-
-            attributesList.Add(matchingAttribute);
+            if (Parse(attributePartDefinition, attributeFieldDefinition, [value]) is { } matchingAttribute)
+            {
+                attributesList.Add(matchingAttribute);
+            }
         }
     }
 

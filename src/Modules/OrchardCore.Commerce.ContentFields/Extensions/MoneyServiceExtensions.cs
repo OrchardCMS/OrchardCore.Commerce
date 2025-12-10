@@ -22,8 +22,8 @@ public static class MoneyServiceExtensions
     {
         var currencies = mode switch
         {
-            CurrencySelectionMode.DefaultCurrency => new[] { moneyService.DefaultCurrency },
-            CurrencySelectionMode.SpecificCurrency => new[] { moneyService.GetCurrency(specificCurrencyIsoCode) },
+            CurrencySelectionMode.DefaultCurrency => [moneyService.DefaultCurrency],
+            CurrencySelectionMode.SpecificCurrency => [moneyService.GetCurrency(specificCurrencyIsoCode)],
             CurrencySelectionMode.AllCurrencies => moneyService.Currencies,
             _ => throw new ArgumentOutOfRangeException(nameof(mode)),
         };

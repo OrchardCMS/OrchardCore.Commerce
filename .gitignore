@@ -4,7 +4,7 @@
 obj/
 bin/
 artifacts/
-wwwroot/
+is-cache/
 node_modules/
 *.user
 .pnpm-debug.log
@@ -16,3 +16,4 @@ node_modules/
 /.editorconfig
 .ps1-analyzer-stamp
 *.orig
+.prettierrc.js

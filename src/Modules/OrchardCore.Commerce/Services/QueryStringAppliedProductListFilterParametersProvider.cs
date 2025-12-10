@@ -13,6 +13,7 @@ namespace OrchardCore.Commerce.Services;
 public class QueryStringAppliedProductListFilterParametersProvider : IAppliedProductListFilterParametersProvider
 {
     public const string QueryStringPrefix = "products.";
+    public const string QueryStringKeyOrderBy = QueryStringPrefix + "orderBy";
 
     private readonly IHttpContextAccessor _hca;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -32,10 +33,12 @@ public class QueryStringAppliedProductListFilterParametersProvider : IAppliedPro
 
     public async Task<ProductListFilterParameters> GetFilterParametersAsync(ProductListPart productList)
     {
-        var queryStrings = _hca.HttpContext.Request.Query;
+        var queryStrings = _hca.HttpContext!.Request.Query;
         var orderByValue = queryStrings
-            .Where(queryString => queryString.Key.StartsWith(QueryStringPrefix + "orderBy", StringComparison.InvariantCulture))
+            .Where(queryString => queryString.Key.StartsWith(QueryStringKeyOrderBy, StringComparison.InvariantCulture))
             .SelectMany(queryString => queryString.Value)
+            // The orderBy should never contain spaces. Anything filtered out be the call below is malformed or malicious.
+            .SelectWhere(value => value.Trim(), value => value.Split().Length == 1)
             .FirstOrDefault();
         var filterValues = queryStrings
             .Where(queryString => queryString.Key.StartsWith(QueryStringPrefix, StringComparison.InvariantCulture))

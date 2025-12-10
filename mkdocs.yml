@@ -32,6 +32,8 @@ extra:
       link: https://orchardcore.net
     - icon: fontawesome/brands/github-alt
       link: https://github.com/OrchardCMS/OrchardCore.Commerce
+    - icon: fontawesome/brands/discord
+      link: https://orchardcore.net/discord
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/OrchardCMS
 
@@ -66,19 +68,20 @@ plugins:
   - search
   - git-authors
   - git-revision-date-localized
-  - exclude:
-      glob:
-        # Excluding the large node folder with all its MD files. We can't exclude everything apart from docs because there are links to e.g. C# files too.
-        - "*node_modules*"
 
 # Page tree
 nav:
   - About: index.md
+  - Guides:
+    - Creating a simple webshop: guides/create-webshop.md
   - Key Features:
     - Inventory: features/inventory.md
     - Products and Prices: features/products-and-prices.md
     - Promotions: features/promotions.md
-    - Stripe Payment: features/stripe-payment.md
+    - Payment Providers:
+      - Overview: features/payment-providers.md
+      - Exactly® Payment: features/exactly-payment.md
+      - Stripe Payment: features/stripe-payment.md
     - Taxation: features/taxation.md
     - User Features: features/user-features.md
     - Workflows: features/workflows.md
@@ -95,4 +98,6 @@ nav:
       - NumericProductAttributeField: features/numeric-product-attribute-field.md
   - Resources:
     - Libraries: resources/libraries/README.md
-  - Releases: https://github.com/OrchardCMS/OrchardCore.Commerce/releases
+  - Releases and Notes:
+    - 3.0.0: releases/3.0.0.md
+    - GitHub: https://github.com/OrchardCMS/OrchardCore.Commerce/releases

@@ -1,10 +1,12 @@
 # Orchard Core Commerce
 
-[![Join the chat at https://gitter.im/OrchardCore-Commerce/Lobby](https://badges.gitter.im/OrchardCore-Commerce/Lobby.svg)](https://gitter.im/OrchardCore-Commerce/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Documentation](https://readthedocs.org/projects/orchardcorecommerce/badge/)](https://commerce.orchardcore.net/) [![OrchardCore.Commerce NuGet](https://img.shields.io/nuget/v/OrchardCore.Commerce?label=OrchardCore.Commerce)](https://www.nuget.org/packages/OrchardCore.Commerce/) [![Cloudsmith](https://api-prd.cloudsmith.io/badges/version/orchardcore/commerce/nuget/OrchardCore.Commerce/latest/x/?render=true&badge_token=gAAAAABey9hKFD_C-ZIpLvayS3HDsIjIorQluDs53KjIdlxoDz6Ntt1TzvMNJp7a_UWvQbsfN5nS7_0IbxCyqHZsjhmZP6cBkKforo-NqwrH5-E6QCrJ3D8%3D)](https://cloudsmith.io/~orchardcore/repos/commerce/packages/detail/nuget/OrchardCore.Commerce/latest/)
+[![Discord](https://img.shields.io/discord/551136772243980291?color=%237289DA&label=Discord&logo=discord&logoColor=white&style=flat)](https://discord.gg/rYHxgqU5) [![Read the Docs](https://img.shields.io/readthedocs/orchardcorecommerce?label=Documentation)](https://commerce.orchardcore.net/) [![Latest version of 'OrchardCore.Commerce' on NuGet](https://img.shields.io/nuget/v/OrchardCore.Commerce?style=flat&label=NuGet)](https://www.nuget.org/packages/OrchardCore.Commerce/) [![Latest version of 'OrchardCore.Commerce' on Cloudsmith](https://api-prd.cloudsmith.io/v1/badges/version/orchardcore/commerce/nuget/OrchardCore.Commerce/latest/xsp=True/?render=true&show_latest=true&style=flat&labelColor=gray&label=Cloudsmith)](https://cloudsmith.io/~orchardcore/repos/commerce/packages/detail/nuget/OrchardCore.Commerce/latest/xsp=True/)
 
 The commerce module for [Orchard Core](https://github.com/OrchardCMS/OrchardCore).
 
 It's also available on all sites of [DotNest, the Orchard SaaS](https://dotnest.com/).
+
+Do you want to chat with other community members? [Check out our channel on the Orchard discord server.](https://discord.gg/PtaYnX63)
 
 ## History, status, and planning
 
@@ -22,15 +24,12 @@ See the [discussions page](https://github.com/OrchardCMS/OrchardCore.Commerce/di
 
 ### Pre-requisites
 
-This project uses [`Lombiq Node.js Extensions`](https://github.com/Lombiq/NodeJs-Extensions) to compile and lint client-side assets. See its pre-requisites [here](https://github.com/Lombiq/NodeJs-Extensions/tree/dev#pre-requisites).
-
-If you want to include OrchardCore.Commerce as a git submodule instead of NuGet package, include the [`Lombiq Helpful Libraries`](https://github.com/Lombiq/Helpful-Libraries/) and `Lombiq Node.js Extensions` submodules as well. In your solution directory create a _Directory.Build.props_ file if one doesn't exist. This should contain the properties that configure the path to the _Lombiq.HelpfulLibraries.OrchardCore.csproj_ file and the _Lombiq.NodeJs.Extensions_ project directory. For example:
+If you have [Lombiq Analyzers](https://github.com/Lombiq/.NET-Analyzers) included in your project as a submodule you should also add the following property to the _Directory.Build.props_ file:
 
 ```xml
 <Project>
   <PropertyGroup>
-    <LombiqHelpfulLibrariesPath>$(MSBuildThisFileDirectory)/src/Libraries/Lombiq.HelpfulLibraries/Lombiq.HelpfulLibraries.OrchardCore/Lombiq.HelpfulLibraries.OrchardCore.csproj</LombiqHelpfulLibrariesPath>
-    <LombiqNodeJsExtensionsPath>$(MSBuildThisFileDirectory)/src/Utilities/Lombiq.NodeJs.Extensions/Lombiq.NodeJs.Extensions</LombiqNodeJsExtensionsPath>
+    <LombiqAnalyzersPath>$(MSBuildThisFileDirectory)/tools/Lombiq.Analyzers</LombiqAnalyzersPath>
   </PropertyGroup>
 </Project>
 ```
@@ -41,15 +40,18 @@ If you want to include OrchardCore.Commerce as a git submodule instead of NuGet 
 2. Build and run the `OrchardCore.Commerce.Web` project.
 3. Thanks to [Auto Setup](https://docs.orchardcore.net/en/latest/docs/reference/modules/AutoSetup/), the site will be set up with the `OrchardCore Commerce - Development` recipe.
 4. Go to the dashboard, using the credentials `admin` and `Password1!`.
-5. If you want to test Stripe, go to _Configuration_ → _Commerce_ → _Stripe API_. Set the keys to the test keys found [here](docs/features/stripe-payment.md). If the keys are not set, the Stripe payment button won't appear during checkout. 
+5. If you want to test Stripe, go to _Configuration_ → _Commerce_ → _Stripe API_. Set the keys to the test keys found [here](docs/features/stripe-payment.md). If the keys are not set, the Stripe payment button won't appear during checkout.
 6. Go to _Content_ → _Content Items_, and create your first `Product`.
 
 ## Documentation
+
+Check out the complete documentation portal here: <https://commerce.orchardcore.net/>
 
 - [Inventory](docs/features/inventory.md)
 - [Products and Prices](docs/features/products-and-prices.md)
 - [Promotions](docs/features/promotions.md)
 - [Payment providers](docs/features/payment-providers.md)
+  - [Exactly® Payment](docs/features/exactly-payment.md)
   - [Stripe Payment](docs/features/stripe-payment.md)
 - [Taxation](docs/features/taxation.md)
 - [User Features](docs/features/user-features.md)

@@ -61,45 +61,19 @@ public class OrderLineItemService : IOrderLineItemService
         IList<OrderLineItem> lineItems,
         OrderPart orderPart)
     {
-        if (!lineItems.Any()) return (Array.Empty<OrderLineItemViewModel>(), Amount.Unspecified);
+        if (lineItems.Count == 0 || lineItems.All(item => item.ContentItemVersion == null))
+        {
+            return (Array.Empty<OrderLineItemViewModel>(), Amount.Unspecified);
+        }
 
         var products = await _productService.GetProductDictionaryByContentItemVersionsAsync(
             lineItems.Select(line => line.ContentItemVersion));
 
-        var viewModelLineItems = await Task.WhenAll(lineItems.Select(async lineItem =>
+        var viewModelLineItems = new List<OrderLineItemViewModel>();
+        foreach (var lineItem in lineItems)
         {
-            var productPart = products[lineItem.ProductSku];
-            var metaData = await _contentManager.GetContentItemMetadataAsync(productPart);
-
-            var fullSku = lineItem.FullSku;
-            if (string.IsNullOrEmpty(lineItem.FullSku))
-            {
-                var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
-                fullSku = _productService.GetOrderFullSku(item, productPart);
-            }
-
-            var availableAttributesAndSettings = await GetAvailableAttributesAndSettingsAsync();
-
-            return new OrderLineItemViewModel
-            {
-                ProductPart = productPart,
-                Quantity = lineItem.Quantity,
-                ProductSku = lineItem.ProductSku,
-                ProductFullSku = fullSku,
-                ProductName = productPart.ContentItem.DisplayText,
-                UnitPriceValue = lineItem.UnitPrice.Value,
-                UnitPriceCurrencyIsoCode = lineItem.UnitPrice.Currency.CurrencyIsoCode,
-                UnitPrice = lineItem.UnitPrice,
-                LinePrice = lineItem.LinePrice,
-                ProductRouteValues = metaData.DisplayRouteValues,
-                Attributes = lineItem.Attributes,
-                SelectedAttributes = lineItem.SelectedAttributes,
-                AvailableTextAttributes = availableAttributesAndSettings.AvailableTextAttributes,
-                AvailableBooleanAttributes = availableAttributesAndSettings.AvailableBooleanAttributes,
-                AvailableNumericAttributes = availableAttributesAndSettings.AvailableNumericAttributes,
-                NumericAttributeSettings = availableAttributesAndSettings.NumericAttributeSettings,
-            };
-        }));
+            viewModelLineItems.Add(await GetOrderLineItemViewModelAsync(products, lineItem));
+        }
 
         var (shipping, billing) = await _hca.GetUserAddressIfNullAsync(
             orderPart?.ShippingAddress.Address,
@@ -167,21 +141,21 @@ public class OrderLineItemService : IOrderLineItemService
         {
             var productSku = product.As<ProductPart>().Sku;
 
-            var booleanAttributes = _productAttributeService.GetProductAttributeFields(product)
+            var booleanAttributes = (await _productAttributeService.GetProductAttributeFieldsAsync(product))
                 .Where(attribute => attribute.Field is BooleanProductAttributeField)
                 .Select(attribute => attribute.Name)
                 .ToList();
 
-            if (booleanAttributes.Any())
+            if (booleanAttributes.Count != 0)
             {
                 availableBooleanAttributes.Add(productSku, booleanAttributes);
             }
 
-            var numericAttributes = _productAttributeService.GetProductAttributeFields(product)
+            var numericAttributes = (await _productAttributeService.GetProductAttributeFieldsAsync(product))
                 .Where(attribute => attribute.Field is NumericProductAttributeField)
                 .ToList();
 
-            if (numericAttributes.Any())
+            if (numericAttributes.Count != 0)
             {
                 availableNumericAttributes.Add(productSku, numericAttributes.Select(attribute => attribute.Name).ToList());
                 numericAttributeSettings.Add(
@@ -191,7 +165,7 @@ public class OrderLineItemService : IOrderLineItemService
                         attribute => attribute.Settings as NumericProductAttributeFieldSettings));
             }
 
-            var textAttributes = _predefinedAttributeService.GetProductAttributesRestrictedToPredefinedValues(product);
+            var textAttributes = await _predefinedAttributeService.GetProductAttributesRestrictedToPredefinedValuesAsync(product);
             foreach (var attribute in textAttributes)
             {
                 var settings = (TextProductAttributeFieldSettings)attribute.Settings;
@@ -222,5 +196,42 @@ public class OrderLineItemService : IOrderLineItemService
         return discounts?.Any() != true
             ? item.ProductPart.GetAllDiscountInformation()
             : discounts;
+    }
+
+    private async Task<OrderLineItemViewModel> GetOrderLineItemViewModelAsync(
+        IDictionary<string, ProductPart> products,
+        OrderLineItem lineItem)
+    {
+        var productPart = products[lineItem.ProductSku];
+        var metaData = await _contentManager.GetContentItemMetadataAsync(productPart);
+
+        var fullSku = lineItem.FullSku;
+        if (string.IsNullOrEmpty(lineItem.FullSku))
+        {
+            var item = new ShoppingCartItem(lineItem.Quantity, lineItem.ProductSku, lineItem.Attributes);
+            fullSku = await _productService.GetOrderFullSkuAsync(item, productPart);
+        }
+
+        var availableAttributesAndSettings = await GetAvailableAttributesAndSettingsAsync();
+
+        return new OrderLineItemViewModel
+        {
+            ProductPart = productPart,
+            Quantity = lineItem.Quantity,
+            ProductSku = lineItem.ProductSku,
+            ProductFullSku = fullSku,
+            ProductName = productPart.ContentItem.DisplayText,
+            UnitPriceValue = lineItem.UnitPrice.Value,
+            UnitPriceCurrencyIsoCode = lineItem.UnitPrice.Currency.CurrencyIsoCode,
+            UnitPrice = lineItem.UnitPrice,
+            LinePrice = lineItem.LinePrice,
+            ProductRouteValues = metaData.DisplayRouteValues,
+            Attributes = lineItem.Attributes,
+            SelectedAttributes = lineItem.SelectedAttributes,
+            AvailableTextAttributes = availableAttributesAndSettings.AvailableTextAttributes,
+            AvailableBooleanAttributes = availableAttributesAndSettings.AvailableBooleanAttributes,
+            AvailableNumericAttributes = availableAttributesAndSettings.AvailableNumericAttributes,
+            NumericAttributeSettings = availableAttributesAndSettings.NumericAttributeSettings,
+        };
     }
 }

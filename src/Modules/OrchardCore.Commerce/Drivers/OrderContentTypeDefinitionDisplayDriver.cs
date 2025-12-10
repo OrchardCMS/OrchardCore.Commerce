@@ -4,6 +4,7 @@ using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
 {
     // The built-in fields are rendered from the Checkout shape.
     private static readonly string[] _excludedShapes =
-    {
+    [
         "Order_Checkout__OrderPart__OrderId",
         "Order_Checkout__OrderPart__Status",
         "Order_Checkout__OrderPart__Email",
@@ -23,7 +24,7 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
         "Order_Checkout__OrderPart__BillingAddress",
         "Order_Checkout__OrderPart__ShippingAddress",
         "Order_Checkout__OrderPart__BillingAndShippingAddressesMatch",
-    };
+    ];
 
     private readonly IContentManager _contentManager;
     private readonly IFieldsOnlyDisplayManager _fieldsOnlyDisplayManager;
@@ -39,36 +40,38 @@ public class OrderContentTypeDefinitionDisplayDriver : ContentTypeDefinitionDisp
         _orderContentTypeDefinitionExclusionProviders = orderContentTypeDefinitionExclusionProviders;
     }
 
-    public override IDisplayResult Edit(ContentTypeDefinition model) =>
-        model.Name == Order
-            ? Initialize<OrderPartTemplatesViewModel>(
-                    "OrderPart_TemplateLinks",
-                    async viewModel =>
-                    {
-                        var templateLinks = (await _fieldsOnlyDisplayManager
-                                .GetFieldTemplateEditorUrlsAsync(await _contentManager.NewAsync(Order), "Checkout"))
-                            .AsList();
+    public override IDisplayResult Edit(ContentTypeDefinition model, BuildEditorContext context)
+    {
+        if (model.Name != Order)
+        {
+            return null;
+        }
 
-                        var excludedShapes = new List<string>(_excludedShapes);
+        return Initialize<OrderPartTemplatesViewModel>("OrderPart_TemplateLinks", async viewModel =>
+        {
+            var templateLinks = (await _fieldsOnlyDisplayManager
+                    .GetFieldTemplateEditorUrlsAsync(await _contentManager.NewAsync(Order), "Checkout"))
+                .AsList();
 
-                        foreach (var provider in _orderContentTypeDefinitionExclusionProviders)
-                        {
-                            excludedShapes.AddRange(provider.GetExcludedShapes(templateLinks));
-                        }
+            var excludedShapes = new List<string>(_excludedShapes);
 
-                        viewModel.TemplateLinks = templateLinks
-                            .WhereNot(link => excludedShapes.Contains(link.ShapeType))
-                            .Select(link =>
-                            {
-                                var displayText = link.Url
-                                    .Query
-                                    .Split("name=")[^1]
-                                    .Replace("Order_Checkout__", string.Empty)
-                                    .Replace("__", " - ");
+            foreach (var provider in _orderContentTypeDefinitionExclusionProviders)
+            {
+                excludedShapes.AddRange(provider.GetExcludedShapes(templateLinks));
+            }
 
-                                return (link.Url, displayText, link.IsNew);
-                            });
-                    })
-                .Location("Content:last")
-            : null;
+            viewModel.TemplateLinks = templateLinks
+                .WhereNot(link => excludedShapes.Contains(link.ShapeType))
+                .Select(link =>
+                {
+                    var displayText = link.Url
+                        .Query
+                        .Split("name=")[^1]
+                        .Replace("Order_Checkout__", string.Empty)
+                        .Replace("__", " - ");
+
+                    return (link.Url, displayText, link.IsNew);
+                });
+        }).Location("Content:last");
+    }
 }

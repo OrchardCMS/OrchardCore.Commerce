@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Models;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Commerce.Services;

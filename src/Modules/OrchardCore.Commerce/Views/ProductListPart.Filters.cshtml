@@ -1,9 +1,13 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using OrchardCore.Commerce.Services
+@using OrchardCore.DisplayManagement.TagHelpers
+@using static OrchardCore.Commerce.Services.QueryStringAppliedProductListFilterParametersProvider
+
 @model ProductListFiltersViewModel
 
 @{
     var filterIdQueryStringKeys = Model.FilterIds.Select(id => "products." + id).ToArray();
-    var activeOrderByOption = Context.Request.Query["products.orderBy"].ToString();
+    var activeOrderByOption = Context.Request.Query[QueryStringKeyOrderBy].ToString();
     if (string.IsNullOrEmpty(activeOrderByOption))
     {
         activeOrderByOption = ProductListTitleFilterProvider.TitleAscOrderById;
@@ -12,7 +16,7 @@
 
 <h3>@T["Filter Products"]</h3>
 
-<form method="get" action="@Context.Request.Path">
+<form method="get" action="@Href("~" + Context.Request.Path)">
     @foreach (var filterId in Model.FilterIds)
     {
         var shapeType = "ProductList__Filter__" + filterId;
@@ -22,7 +26,7 @@
     <fieldset class="products-fieldset-order-by">
         <div class="mb-3">
             <label for="products-order-by">@T["Sort By"]</label>
-            <select name="products.orderBy" class="form-select" id="products-order-by">
+            <select name="@QueryStringKeyOrderBy" class="form-select" id="products-order-by">
                 @foreach (var option in Model.OrderByOptions)
                 {
                     var shapeType = "ProductList__OrderBy__" + option;
@@ -35,7 +39,7 @@
 
     @foreach (var key in Context.Request.Query.Keys)
     {
-        if (!key.EqualsOrdinalIgnoreCase("products.orderBy") && !filterIdQueryStringKeys.Contains(key, StringComparer.OrdinalIgnoreCase))
+        if (!key.EqualsOrdinalIgnoreCase(QueryStringKeyOrderBy) && !filterIdQueryStringKeys.Contains(key, StringComparer.OrdinalIgnoreCase))
         {
             <input type="hidden" name="@key" value="@Context.Request.Query[key]"/>
         }

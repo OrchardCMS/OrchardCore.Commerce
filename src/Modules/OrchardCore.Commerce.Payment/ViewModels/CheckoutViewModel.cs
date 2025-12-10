@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
+using OrchardCore.Commerce.AddressDataType;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.MoneyDataType;
-using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.DisplayManagement;
-using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.ViewModels;
+namespace OrchardCore.Commerce.Payment.ViewModels;
 
 public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
 {
@@ -17,7 +17,10 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
     public Amount GrossTotal { get; init; }
 
     [BindNever]
-    public IEnumerable<SelectListItem> Regions { get; set; } = Array.Empty<SelectListItem>();
+    public IEnumerable<SelectListItem> Regions => RegionData.CreateSelectListOptions();
+
+    [BindNever]
+    public IEnumerable<Region> RegionData { get; set; } = [];
 
     [BindNever]
     public IDictionary<string, IDictionary<string, string>> Provinces { get; } =
@@ -25,7 +28,11 @@ public class CheckoutViewModel : PaymentViewModel, ICheckoutViewModel
 
     public string? UserEmail { get; init; }
 
-    public IEnumerable<IShape> CheckoutShapes { get; init; } = Array.Empty<IShape>();
+    public bool IsInvalid { get; set; }
+
+    public bool ShouldIgnoreAddress { get; set; }
+
+    public IEnumerable<IShape> CheckoutShapes { get; init; } = [];
 
     public CheckoutViewModel(OrderPart orderPart, Amount singleCurrencyTotal, Amount netTotal)
         : base(orderPart, singleCurrencyTotal, netTotal) =>

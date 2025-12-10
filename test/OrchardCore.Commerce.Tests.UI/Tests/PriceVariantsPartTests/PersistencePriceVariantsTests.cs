@@ -6,7 +6,6 @@ using OpenQA.Selenium;
 using OrchardCore.Commerce.MoneyDataType;
 using Shouldly;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Commerce.Tests.UI.Tests.PriceVariantsPartTests;
 
@@ -25,7 +24,7 @@ public class PersistencePriceVariantsTests : UITestBase
                 await context.SignInDirectlyAsync();
                 await context.CreateNewContentItemAsync("TestPriceVariantsProduct");
 
-                const string sku = "UITESTSKU"; // #spell-check-ignore-line
+                const string sku = "UITESTSKU";
                 const string price = "9999";
                 var currency = Currency.HungarianForint.CurrencyIsoCode;
 
