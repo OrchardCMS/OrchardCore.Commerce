@@ -39,13 +39,13 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         var taxRate = taxPart.TaxRate?.Value ?? 0;
 
         var isGrossPricePresent = taxPart.GrossPrice?.Amount.IsValid == true;
-        var isTaxRatePresent = taxRate >= 0;
+        var isTaxRatePresent = taxRate > 0;
 
-        if (isGrossPricePresent && isTaxRatePresent)
+        if (isGrossPricePresent)
         {
             await UpdatePricePartAsync(part.ContentItem, taxPart.GrossPrice.Amount, taxRate);
         }
-        else if (isGrossPricePresent ^ isTaxRatePresent)
+        else if (isTaxRatePresent)
         {
             await InvalidateUnevenStateAsync();
         }
