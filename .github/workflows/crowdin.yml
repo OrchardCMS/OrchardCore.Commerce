@@ -27,7 +27,7 @@ jobs:
           extractpo . Localization
 
           # Clone the Translations repository.
-          git clone "https://${Env:GH_TOKEN}:github.com/OrchardCMS/OrchardCore.Commerce.Translations.git"
+          git clone "https://${Env:GH_TOKEN}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git"
           git config --global user.name "Lombiq Bot"
           git config --global user.email "bot@lombiq.com"
           git config --unset-all http.https://github.com/.extraheader
