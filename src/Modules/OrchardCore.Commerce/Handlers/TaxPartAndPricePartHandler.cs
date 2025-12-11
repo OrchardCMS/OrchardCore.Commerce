@@ -55,8 +55,6 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         {
             await InvalidateUnevenStateAsync();
         }
-
-        return;
     }
 
     private Task UpdatePricePartAsync(ContentItem contentItem, Amount grossPrice, decimal taxRate)
