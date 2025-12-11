@@ -19,7 +19,7 @@ jobs:
       - name: Generate and upload localization strings
         shell: pwsh
         env:
-          GH_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.TRANSLATIONS_TOKEN }}
         run: |
           # Generate latest localization files.
           dotnet tool install --global OrchardCoreContrib.PoExtractor
