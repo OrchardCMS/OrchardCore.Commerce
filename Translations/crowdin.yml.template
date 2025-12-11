@@ -1,9 +1,0 @@
-"base_path": "."
-"base_url": "https://api.crowdin.com"
-"preserve_hierarchy": false
-files: [
-  {
-    "source": "*.pot",
-    "translation": "Repository/Localization/%locale%/%file_name%.po",
-  }
-]
