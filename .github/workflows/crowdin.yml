@@ -28,6 +28,8 @@ jobs:
 
           # Clone the Translations repository.
           gh repo clone OrchardCMS/OrchardCore.Commerce.Translations
+          git config --global user.name "Lombiq Bot"
+          git config --global user.email "bot@lombiq.com"
 
           # Update the Translations repository.
           Push-Location OrchardCore.Commerce.Translations
