@@ -26,8 +26,8 @@ jobs:
 
           # Clone the Translations repository.
           git clone https://github.com/OrchardCMS/OrchardCore.Commerce.Translations.git Remote
-          git config user.name "Lombiq Bot"
-          git config user.email "bot@lombiq.com"
+          git config --global user.name "Lombiq Bot"
+          git config --global user.email "bot@lombiq.com"
 
           # Update the Translations repository.
           Push-Location Remote
