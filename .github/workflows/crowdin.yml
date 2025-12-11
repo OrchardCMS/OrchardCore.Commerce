@@ -25,9 +25,10 @@ jobs:
           extractpo . Localization
 
           # Clone the Translations repository.
-          git clone git@github.com:OrchardCMS/OrchardCore.Commerce.git Remote
+          git clone "https://${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git" Remote
           git config --global user.name "Lombiq Bot"
           git config --global user.email "bot@lombiq.com"
+          git config --unset-all http.https://github.com/.extraheader
 
           # Update the Translations repository.
           Push-Location Remote
