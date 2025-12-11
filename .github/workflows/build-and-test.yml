@@ -49,12 +49,3 @@ jobs:
       MERGE_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
     with:
       merge-method: "squash"
-
-  synchronize-with-crowdin:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: Lombiq/GitHub-Actions/.github/actions/checkout@dev
-
-      - name: Set up .NET
-        uses: Lombiq/GitHub-Actions/.github/actions/setup-dotnet@dev
