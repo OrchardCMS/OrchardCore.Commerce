@@ -19,7 +19,7 @@ jobs:
       - name: Generate and upload localization strings
         shell: pwsh
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.TRANSLATIONS_TOKEN }}
         run: |
           # Generate latest localization files.
           dotnet tool install --global OrchardCoreContrib.PoExtractor
@@ -30,6 +30,7 @@ jobs:
           gh repo clone OrchardCMS/OrchardCore.Commerce.Translations
           git config --global user.name "Lombiq Bot"
           git config --global user.email "bot@lombiq.com"
+          git config --unset-all http.https://github.com/.extraheader
 
           # Update the Translations repository.
           Push-Location OrchardCore.Commerce.Translations
