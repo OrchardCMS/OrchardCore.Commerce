@@ -41,7 +41,13 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         var isGrossPricePresent = taxPart.GrossPrice?.Amount.IsValid == true;
         var isTaxRatePresent = taxRate > 0;
 
-        if (isGrossPricePresent)
+        if (taxRate < 0)
+        {
+            _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
+                nameof(TaxPart.TaxRate),
+                T["Tax Rate can't be negative."]);
+        }
+        else if (isGrossPricePresent)
         {
             await UpdatePricePartAsync(part.ContentItem, taxPart.GrossPrice.Amount, taxRate);
         }
