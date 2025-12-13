@@ -22,6 +22,13 @@ public class LocalizationTests : UITestBase
                 const string cssTranslatedTextElement =
                     ".content-product:has(a[href*='/testdiscountedproduct']) .field-name-discount-part-new-price strong";
 
+                // Switch to another language (Hungarian) in the admin.
+                await context.SignInDirectlyAndGoToAdminRelativeUrlAsync("/Settings/localization");
+                await context.ClickReliablyOnAsync(By.XPath("//tr[td[1]/span[contains(., 'en-US')]]//a[@title='Remove culture']"));
+                await context.ClickReliablyOnAsync(By.ClassName("save"));
+
+                // Verify that localized text is visible on the home page.
+                await context.GoToHomePageAsync();
                 context
                     .Get(By.CssSelector(cssTranslatedTextElement))
                     .GetTextTrimmed()
