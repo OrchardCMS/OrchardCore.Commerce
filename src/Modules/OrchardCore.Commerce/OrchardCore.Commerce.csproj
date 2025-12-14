@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <Title>Orchard Core Commerce</Title>
-    <Authors>Bertrand Le Roy</Authors>
+    <Authors>Orchard Core Community and Contributors</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
     <Description>The commerce module for Orchard Core.</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce</PackageTags>
