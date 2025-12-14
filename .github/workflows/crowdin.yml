@@ -22,9 +22,9 @@ jobs:
           GH_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
         run: |
           # Generate latest localization files.
-          dotnet tool install --global OrchardCoreContrib.PoExtractor
+          dotnet tool install OrchardCoreContrib.PoExtractor
           New-Item -Path Localization -ItemType Directory
-          extractpo . Localization
+          dotnet extractpo . Localization
 
           # Clone the Translations repository.
           git clone "https://${Env:GH_TOKEN}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git"
