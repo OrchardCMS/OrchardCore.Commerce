@@ -28,8 +28,8 @@ jobs:
           extractpo . Translations
           if (-not (Test-Path .\Translations\*.pot))
           {
-            Write-Output '::error::No POT files were found.'
-            exit 1
+              Write-Output '::error::No POT files were found.'
+              exit 1
           }
           
           Set-Location Translations
