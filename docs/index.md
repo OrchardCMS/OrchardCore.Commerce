@@ -6,5 +6,5 @@ The commerce module for [Orchard Core](https://github.com/OrchardCMS/OrchardCore
 
 GitHub repositories for this project:
 
-- https://github.com/OrchardCMS/OrchardCore.Commerce: The code of OrchardCore.Commerce.
-- https://github.com/OrchardCMS/OrchardCore.Commerce.Translations: Localization and translation using Crowdin.
+- [OrchardCore.Commerce](https://github.com/OrchardCMS/OrchardCore.Commerce): The code of OrchardCore.Commerce.
+- [OrchardCore.Commerce.Translations](https://github.com/OrchardCMS/OrchardCore.Commerce.Translations): Localization and translation using Crowdin.
