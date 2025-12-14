@@ -57,6 +57,17 @@ Check out the complete documentation portal here: <https://commerce.orchardcore.
 - [User Features](docs/features/user-features.md)
 - [Workflows](docs/features/workflows.md)
 
+> [!NOTE]
+> You can learn more about the translation and localization support for this project in the [OrchardCMS/OrchardCore.Commerce.Translations/](https://github.com/OrchardCMS/OrchardCore.Commerce.Translations/) repository.
+
+## Contributing and support
+
+Bug reports, feature requests, comments, questions, code contributions and love letters are warmly welcome. You can send them to us via GitHub issues, discussions, and pull requests. Please adhere to our [code of conduct](CODE-OF-CONDUCT.md) while doing so.
+
+You can help translating this project to a language you know, via our [Crowdin project](https://crowdin.com/project/orchard-core-commerce). Check out the [Translations repository](https://github.com/OrchardCMS/OrchardCore.Commerce.Translations/) for more details about it.
+
+This project is developed by [Lombiq Technologies](https://lombiq.com/). Commercial-grade support is available through Lombiq.
+
 ## Demo video
 
 [![Watch the video](https://img.youtube.com/vi/EVvwS1UaIk4/maxresdefault.jpg)](https://youtu.be/EVvwS1UaIk4)
