@@ -9,7 +9,7 @@
     <label>@name @T["(Boolean product attribute)"]</label>
     <ul>
         <li class="hint">@T["Label: {0}", settings.Label]</li>
-        <li class="hint">@(settings.DefaultValue ? T["Default value: on"] : T["Default value: off"])</li>
+        <li class="hint">@T["Default value: {0}", settings.DefaultValue ? T["on"] : T["off"]]</li>
         <li class="hint">@T["Hint: {0}", settings.Hint]</li>
     </ul>
 </fieldset>

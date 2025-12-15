@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <Title>Orchard Core Commerce - Inventory</Title>
-    <Authors>Bertrand Le Roy</Authors>
+    <Authors>Orchard Core Community and Contributors</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
     <Description>Inventory management for Orchard Core Commerce</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Inventory</PackageTags>

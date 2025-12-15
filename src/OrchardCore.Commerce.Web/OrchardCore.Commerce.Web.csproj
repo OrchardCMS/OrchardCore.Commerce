@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
+    <PackageReference Include="OrchardCore.Commerce.Translations" />
 
     <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
          Directory.Packages.props file for more details. -->

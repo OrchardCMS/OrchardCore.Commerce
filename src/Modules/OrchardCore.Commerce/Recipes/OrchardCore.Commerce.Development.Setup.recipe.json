@@ -68,6 +68,7 @@
         "OrchardCore.Commerce.Payment.Exactly",
         "OrchardCore.Commerce.Promotion",
         "OrchardCore.Commerce.Inventory",
+        "OrchardCore.Commerce.Translations",
 
         // Themes
         "TheBlogTheme",

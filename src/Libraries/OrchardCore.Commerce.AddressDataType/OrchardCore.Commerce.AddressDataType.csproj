@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <Title>Orchard Core Commerce - Address Data Type</Title>
-    <Authors>Bertrand Le Roy</Authors>
+    <Authors>Orchard Core Community and Contributors</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
     <Description>New data type representing international addresses.</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Address;Postal</PackageTags>

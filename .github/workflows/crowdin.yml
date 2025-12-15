@@ -11,5 +11,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        if: false
         uses: Lombiq/GitHub-Actions/.github/actions/checkout@dev
+
+      - name: Set up .NET
+        uses: Lombiq/GitHub-Actions/.github/actions/setup-dotnet@dev
+
+      - name: Generate and upload localization strings
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.LOMBIQBOT_GITHUB_PERSONAL_ACCESS_TOKEN }}
+        run: |
+          # Generate latest localization files.
+          dotnet tool install OrchardCoreContrib.PoExtractor
+          New-Item -Path Localization -ItemType Directory
+          dotnet extractpo . Localization
+
+          # Clone the Translations repository.
+          git clone "https://${Env:GH_TOKEN}@github.com/OrchardCMS/OrchardCore.Commerce.Translations.git"
+          git config --global user.name "Lombiq Bot"
+          git config --global user.email "bot@lombiq.com"
+          git config --unset-all http.https://github.com/.extraheader
+
+          # Update the Translations repository.
+          Push-Location OrchardCore.Commerce.Translations
+          Move-Item -Force ../Localization/*.pot Localization/
+          git add .
+          git status
+          git commit "--message=Updated .pot files.`n`nhttps://github.com/OrchardCMS/OrchardCore.Commerce/commit/$(git rev-parse HEAD)`n`n$(git log -1)"
+          git push
+          Pop-Location
+
+          Remove-Item -Recurse -Force OrchardCore.Commerce.Translations, Localization
