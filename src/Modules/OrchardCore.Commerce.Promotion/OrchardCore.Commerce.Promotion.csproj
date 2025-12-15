@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <Title>Orchard Core Commerce - Promotion</Title>
-    <Authors>Bertrand Le Roy</Authors>
+    <Authors>Orchard Core Community and Contributors</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
     <Description>Taxation module for Orchard Core Commerce for discounts and promotions.</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce;Discounts;Promotions</PackageTags>

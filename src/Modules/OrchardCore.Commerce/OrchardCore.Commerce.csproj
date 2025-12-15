@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <Title>Orchard Core Commerce</Title>
-    <Authors>Bertrand Le Roy</Authors>
+    <Authors>Orchard Core Community and Contributors</Authors>
     <Copyright>Copyright © 2018 .NET Foundation</Copyright>
     <Description>The commerce module for Orchard Core.</Description>
     <PackageTags>OrchardCore;OrchardCore.Commerce;Commerce;e-Commerce</PackageTags>
@@ -24,6 +24,7 @@
     <None Include="License.md" Pack="true" PackagePath="" />
     <None Include="..\..\..\Readme.md" />
     <None Include="OrchardCoreIcon.png" Pack="true" PackagePath="" />
+    <None Include="buildTransitive/**" Pack="true" PackagePath="buildTransitive/" />
   </ItemGroup>
 
   <ItemGroup>
