@@ -66,7 +66,7 @@ Bug reports, feature requests, comments, questions, code contributions and love 
 
 You can help translating this project to a language you know, via our [Crowdin project](https://crowdin.com/project/orchard-core-commerce). Check out the [Translations repository](https://github.com/OrchardCMS/OrchardCore.Commerce.Translations/) for more details about it.
 
-This project is developed by [Lombiq Technologies](https://lombiq.com/). Commercial-grade support is available through Lombiq.
+This project is maintained by [Lombiq Technologies](https://lombiq.com/) with the help of community contributions by people like you.
 
 ## Demo video
 
