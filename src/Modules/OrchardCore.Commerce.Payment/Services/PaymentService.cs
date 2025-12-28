@@ -361,7 +361,7 @@ public class PaymentService : IPaymentService
     public async Task<IList<string>> UpdateOrderWithDriversAsync(ContentItem order)
     {
         await _contentItemDisplayManager.UpdateEditorAsync(order, _updateModelAccessor.ModelUpdater, isNew: false);
-        return _updateModelAccessor.ModelUpdater.GetModelErrorMessages()?.AsList() ?? Array.Empty<string>();
+        return _updateModelAccessor.ModelUpdater.GetModelErrorMessages().AsList();
     }
 
     public async Task UpdateOrderToOrderedAsync(
@@ -459,7 +459,7 @@ public class PaymentService : IPaymentService
                 exception,
                 "An exception has occurred during checkout form validation for shopping cart ID {ShoppingCartId}.",
                 shoppingCartIdForDisplay);
-            var errorMessage = _hca.HttpContext.IsDevelopmentAndLocalhost()
+            var errorMessage = _hca.HttpContext?.IsDevelopmentAndLocalhost() == true
                 ? exception.ToString()
                 : H["An exception has occurred during checkout form validation for shopping cart ID {0}.", shoppingCartIdForDisplay].Value;
 

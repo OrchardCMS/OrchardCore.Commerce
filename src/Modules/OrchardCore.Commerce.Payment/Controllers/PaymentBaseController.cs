@@ -58,7 +58,9 @@ public abstract class PaymentBaseController : Controller
 
             PaymentOperationStatus.NotFound => NotFound(),
 
-            PaymentOperationStatus.NotThingToDo => this.RedirectToContentDisplay(paidStatusViewModel.Content),
+            PaymentOperationStatus.NotThingToDo => paidStatusViewModel.Content is { } content
+                ? this.RedirectToContentDisplay(content)
+                : NotFound(),
 
             PaymentOperationStatus.WaitingForRedirect => Redirect(url: paidStatusViewModel.Url),
 
