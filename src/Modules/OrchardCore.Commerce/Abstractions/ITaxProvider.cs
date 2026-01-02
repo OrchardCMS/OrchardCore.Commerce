@@ -25,7 +25,10 @@ public interface ITaxProvider : ISortableUpdaterProvider<PromotionAndTaxProvider
 
         if (count == 0) return false;
         if (count == items.Count) return true;
-        throw new InvalidOperationException("Some, but not all products have gross price. This is invalid.");
+        throw new InvalidOperationException(
+            "Some, but not all products have gross price. This is invalid. If you want to declare a tax-free " +
+            "product, make sure to still include a Tax Part for the content type. Then set the Tax Rate field to 0 " +
+            "in the products.");
     }
 
     /// <inheritdoc cref="AllOrNoneAsync(PromotionAndTaxProviderContext, Func{IList{PromotionAndTaxProviderContextLineItem}, Task{int}})"/>
