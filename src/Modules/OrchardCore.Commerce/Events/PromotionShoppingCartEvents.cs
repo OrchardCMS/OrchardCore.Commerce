@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Promotion.Extensions;
 using OrchardCore.Commerce.Tax.Extensions;
 using OrchardCore.Modules;
@@ -81,10 +82,19 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 
             if (line.AdditionalData.HasGrossPrice())
             {
-                var ratio = line.AdditionalData.GetNetPrice().Value / line.AdditionalData.GetGrossPrice().Value;
+                var grossPrice = line.AdditionalData.GetGrossPrice().Value;
 
-                line.AdditionalData.SetGrossPrice(price);
-                line.AdditionalData.SetNetPrice(price * ratio);
+                if (grossPrice == 0)
+                {
+                    line.AdditionalData.SetNetPrice(new Amount(0, price.Currency));
+                }
+                else
+                {
+                    var ratio = line.AdditionalData.GetNetPrice().Value / grossPrice;
+
+                    line.AdditionalData.SetGrossPrice(price);
+                    line.AdditionalData.SetNetPrice(price * ratio);
+                }
             }
 
             line.LinePrice = price * line.Quantity;
