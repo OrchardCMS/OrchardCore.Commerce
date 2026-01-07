@@ -1,6 +1,7 @@
 using OrchardCore.Commerce.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions;
@@ -20,7 +21,7 @@ public interface ITaxProvider : ISortableUpdaterProvider<PromotionAndTaxProvider
         Func<IList<PromotionAndTaxProviderContextLineItem>,
             Task<int>> getCountAsync)
     {
-        var items = model.Items.AsList();
+        var items = model.Items.Where(item => item.Subtotal.Value > 0).AsList();
         var count = await getCountAsync(items);
 
         if (count == 0) return false;
