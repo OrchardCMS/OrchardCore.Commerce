@@ -4,6 +4,7 @@ using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.Settings;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,8 +13,12 @@ namespace OrchardCore.Commerce.Services;
 
 public class LocalTaxProvider : ITaxProvider
 {
+    private readonly ISiteService _siteService;
+
     // This is the simplest, lowest priority option and if anything else is applicable it should supersede this.
     public int Order => int.MaxValue;
+
+    public LocalTaxProvider(ISiteService siteService) => _siteService = siteService;
 
     public Task<PromotionAndTaxProviderContext> UpdateAsync(PromotionAndTaxProviderContext model)
     {
@@ -37,8 +42,9 @@ public class LocalTaxProvider : ITaxProvider
         });
     }
 
-    public Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
-        ITaxProvider.AllOrNoneAsync(model, items => Task.FromResult(HasTaxRate(items)));
+    public async Task<bool> IsApplicableAsync(PromotionAndTaxProviderContext model) =>
+        (await _siteService.GetSettingsAsync<TaxSettings>())?.IgnoreAllOrNone == true ||
+        await ITaxProvider.AllOrNoneAsync(model, items => Task.FromResult(HasTaxRate(items)));
 
     private int HasTaxRate(IList<PromotionAndTaxProviderContextLineItem> items) => items
         .SelectWhere(item => item.Content.ContentItem.As<TaxPart>())
