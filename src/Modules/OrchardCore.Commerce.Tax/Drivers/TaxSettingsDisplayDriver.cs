@@ -7,28 +7,22 @@ using OrchardCore.Commerce.Tax.Permissions;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using System.Threading.Tasks;
+
 namespace OrchardCore.Commerce.Tax.Drivers;
 
 public class TaxSettingsDisplayDriver : SiteDisplayDriver<TaxSettings>
 {
     public const string GroupId = nameof(TaxSettings);
 
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _hca;
     private readonly IAuthorizationService _authorizationService;
 
     public TaxSettingsDisplayDriver(
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         IHttpContextAccessor hca,
         IAuthorizationService authorizationService)
     {
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _hca = hca;
         _authorizationService = authorizationService;
     }
