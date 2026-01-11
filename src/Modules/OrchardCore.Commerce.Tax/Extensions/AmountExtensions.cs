@@ -9,7 +9,7 @@ public static class AmountExtensions
         new(netAmount.Value * ToMultiplier(taxRate), netAmount.Currency);
 
     public static Amount WithTax(this Amount netAmount, IContent contentWithTaxPart) =>
-        WithTax(netAmount, contentWithTaxPart.As<TaxPart>().TaxRate.Value!.Value);
+        WithTax(netAmount, contentWithTaxPart.As<TaxPart>()?.TaxRate.Value ?? 0);
 
     public static Amount WithoutTax(this Amount grossAmount, decimal taxRate) =>
         new(grossAmount.Value / ToMultiplier(taxRate), grossAmount.Currency);

@@ -20,9 +20,12 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IPermissionProvider, TaxRatePermissions>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddContentPart<TaxPart>()
             .WithMigration<TaxPartMigrations>();
+        services.AddSiteDisplayDriver<TaxSettingsDisplayDriver>();
+        services.AddScoped<INavigationProvider, TaxSettingsAdminMenu>();
     }
 }
 
@@ -31,7 +34,6 @@ public class CustomTaxRatesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, TaxRatePermissions>();
         services.AddScoped<ITaxRateSettingsHeaderProvider, TaxRateSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<TaxRateSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<TaxRateSettings>, TaxRateSettingsConfiguration>();

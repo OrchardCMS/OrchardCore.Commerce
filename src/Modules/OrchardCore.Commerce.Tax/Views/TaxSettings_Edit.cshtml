@@ -1,0 +1,9 @@
+@model OrchardCore.Commerce.Tax.Models.TaxSettings
+
+<div class="mb-3" asp-validation-class-for="IgnoreAllOrNone">
+    <div class="w-sm-75 w-md-50 w-lg-25 pe-md-3">
+        <input asp-for="IgnoreAllOrNone" type="checkbox" class="form-check-input content-preview-select" checked="@Model.IgnoreAllOrNone" />
+        <label asp-for="IgnoreAllOrNone" class="form-check-label">@T["Skip consistent applicability check"]</label>
+    </div>
+    <span class="hint">@T["If checked, the shop won't verify that every product in the cart has a valid Tax part. If you check this, you are responsible for verifying that all taxable product types have attached and correctly configured tax parts."]</span>
+</div>
