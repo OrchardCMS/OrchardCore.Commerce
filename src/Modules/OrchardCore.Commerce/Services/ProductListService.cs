@@ -3,6 +3,7 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement.Records;
 using System;
 using System.Collections.Generic;
 using System.Linq;
