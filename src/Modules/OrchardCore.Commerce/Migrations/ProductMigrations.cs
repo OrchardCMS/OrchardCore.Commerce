@@ -54,4 +54,21 @@ public class ProductMigrations : DataMigration
                     .WithSettings(new MediaFieldSettings { Multiple = false })));
         return 2;
     }
+
+    public async Task<int> UpdateFrom2Async()
+    {
+        await SchemaBuilder
+            .AlterTableAsync(nameof(ProductPartIndex), table => table
+                .AddColumn<System.DateTime?>(nameof(ProductPartIndex.StartTimeUtc))
+                .AddColumn<System.DateTime?>(nameof(ProductPartIndex.EndTimeUtc)));
+
+        await SchemaBuilder
+            .AlterTableAsync(nameof(ProductPartIndex), table => table
+                .CreateIndex(
+                    $"IDX_{nameof(ProductPartIndex)}_TimeBased",
+                    nameof(ProductPartIndex.StartTimeUtc),
+                    nameof(ProductPartIndex.EndTimeUtc)));
+
+        return 3;
+    }
 }
