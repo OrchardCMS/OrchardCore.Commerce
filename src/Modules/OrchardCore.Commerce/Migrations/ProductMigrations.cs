@@ -2,6 +2,7 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Settings;
@@ -74,5 +75,26 @@ public class ProductMigrations : DataMigration
                     }));
 
         return 3;
+    }
+
+    public async Task<int> UpdateFrom3Async()
+    {
+        // Add DateTimeField fields to ProductPart for UI editing
+        await _contentDefinitionManager
+            .AlterPartDefinitionAsync<ProductPart>(builder => builder
+                .WithField(part => part.StartTimeUtc, field => field
+                    .WithDisplayName("Product Start Time")
+                    .WithSettings(new DateTimeFieldSettings
+                    {
+                        Hint = "The date and time (UTC) from which the product becomes visible and available for purchase. Leave empty for immediate availability.",
+                    }))
+                .WithField(part => part.EndTimeUtc, field => field
+                    .WithDisplayName("Product End Time")
+                    .WithSettings(new DateTimeFieldSettings
+                    {
+                        Hint = "The date and time (UTC) until which the product remains visible and available for purchase. Leave empty for indefinite availability.",
+                    })));
+
+        return 4;
     }
 }

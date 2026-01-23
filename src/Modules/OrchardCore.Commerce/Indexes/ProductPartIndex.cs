@@ -39,8 +39,8 @@ public class ProductPartIndexProvider : IndexProvider<ContentItem>
                 {
                     Sku = productPart.Sku.ToUpperInvariant(),
                     ContentItemId = contentItem.ContentItemId,
-                    StartTimeUtc = productPart.StartTimeUtc,
-                    EndTimeUtc = productPart.EndTimeUtc,
+                    StartTimeUtc = productPart.StartTimeUtc?.Value,
+                    EndTimeUtc = productPart.EndTimeUtc?.Value,
                 };
             });
 }

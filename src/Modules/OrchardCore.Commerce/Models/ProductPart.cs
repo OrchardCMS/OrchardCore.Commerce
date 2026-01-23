@@ -1,8 +1,8 @@
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.Media.Fields;
-using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Models;
@@ -32,11 +32,11 @@ public class ProductPart : ContentPart, ISkuHolderContent
     /// Gets or sets the date and time (UTC) from which the product becomes visible and available for purchase.
     /// If null, the product is visible immediately.
     /// </summary>
-    public DateTime? StartTimeUtc { get; set; }
+    public DateTimeField StartTimeUtc { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the date and time (UTC) until which the product remains visible and available for purchase.
     /// If null, the product remains visible indefinitely.
     /// </summary>
-    public DateTime? EndTimeUtc { get; set; }
+    public DateTimeField EndTimeUtc { get; set; } = new();
 }
