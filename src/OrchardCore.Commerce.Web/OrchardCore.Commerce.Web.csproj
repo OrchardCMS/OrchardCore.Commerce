@@ -13,9 +13,13 @@
   </ItemGroup> -->
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.MicrosoftDI" />
+    <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
+    <PackageReference Include="Microsoft.Identity.Web"/>
     <PackageReference Include="OrchardCore.Commerce.Translations" />
+    <PackageReference Include="SixLabors.ImageSharp" />
 
     <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
          Directory.Packages.props file for more details. -->
