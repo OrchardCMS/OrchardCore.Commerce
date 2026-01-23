@@ -4,10 +4,11 @@
 @{
     var line = (ShoppingCartLineViewModel)Model.Line;
     var attributes = (IList<(IProductAttributeValue Value, string Type, int Index)>)Model.ProductAttributes;
+    var url = await Orchard.GetItemDisplayUrlAsync(line.Product.ContentItem.ContentItemId);
 }
 
 <div class="cart-product-name">
-    <a href="@Orchard.GetItemDisplayUrl(line.Product.ContentItem.ContentItemId)" class="link-primary">@line.ProductName</a>
+    <a href="@url" class="link-primary">@line.ProductName</a>
 </div>
 
 @if (line.Attributes?.Any() == true)
