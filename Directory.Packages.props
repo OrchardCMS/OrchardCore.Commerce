@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
 
     <!-- The Orchard Core version should always be x.y.0 of the latest minor version for maximum compatibility when
          distributed as NuGet packages. On the other hand, the consuming projects (including OrchardCore.Commerce.Web)
@@ -23,7 +23,7 @@
     <PackageVersion Include="Lombiq.Tests.UI" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="$(LombiqTestsUIVersion)" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="3.14.1" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.3.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
