@@ -26,6 +26,8 @@ jobs:
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
+      # The Windows runner doesn't have the same available .NET versions. 
+      dotnet-version: 10.0.2
 
   codespell:
     name: Codespell
