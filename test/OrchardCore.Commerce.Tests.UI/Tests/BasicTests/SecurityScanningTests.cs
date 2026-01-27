@@ -28,10 +28,13 @@ public class SecurityScanningTests : UITestBase
                         40027,
                         "The query time is controllable using parameter value [some SQL injection]");
 
-                    configuration.DisableActiveScanRule(
+                    FalsePositive(
+                        configuration,
                         90003,
+                        "Sub Resource Integrity Attribute Missing",
                         "The Blog theme references Google Fonts using link elements that lack an integrity tag. This " +
-                        "is not relevant for us.");
+                        "is not relevant for us.",
+                        "https://[^/]+/.*");
 
                     FalsePositive(
                         configuration,
