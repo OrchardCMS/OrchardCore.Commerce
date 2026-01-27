@@ -13,12 +13,9 @@ public class AdminMenu : AdminMenuNavigationProviderBase
     { }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder
-            .Add(T["Configuration"], configuration => configuration
-                .Add(T["Commerce"], commerce => commerce
-                    .Add(T["Address Display"], T["Address Display"], entry => entry
-                        .SiteSettings(CheckoutAddressSettingsDisplayDriver.GroupId)
-                        .Permission(Permissions.ManageAddressDisplaySettings)
-                        .LocalNav())
-                ));
+        builder.AddCommerce(T, commerce => commerce
+            .Add(T["Address Display"], T["Address Display"], entry => entry
+                .SiteSettings(CheckoutAddressSettingsDisplayDriver.GroupId)
+                .Permission(Permissions.ManageAddressDisplaySettings)
+                .LocalNav()));
 }
