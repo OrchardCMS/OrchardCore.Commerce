@@ -13,7 +13,7 @@ using YesSql;
 
 namespace OrchardCore.Commerce.Handlers;
 
-public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
+public class TaxPartAndPricePartHandler : CreatingOrUpdatingPartHandler<PricePart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
@@ -32,7 +32,7 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         T = stringLocalizer;
     }
 
-    public override async Task UpdatedAsync(UpdateContentContext context, PricePart part)
+    protected override async Task CreatingOrUpdatingAsync(PricePart part)
     {
         if (part.ContentItem.As<TaxPart>() is not { } taxPart) return;
 

@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Promotion.Models;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Handlers;
 
-public class DiscountPartHandler : ContentPartHandler<DiscountPart>
+public class DiscountPartHandler : CreatingOrUpdatingPartHandler<DiscountPart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -28,7 +27,7 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         T = stringLocalizer;
     }
 
-    public override async Task UpdatedAsync(UpdateContentContext context, DiscountPart part)
+    protected override async Task CreatingOrUpdatingAsync(DiscountPart part)
     {
         if (part.ContentItem.As<DiscountPart>() is not { } discountPart) return;
 
@@ -45,15 +44,12 @@ public class DiscountPartHandler : ContentPartHandler<DiscountPart>
         if ((part.ContentItem.As<PricePart>()?.Price is { } pricePartPrice &&
             pricePartPrice.Currency.Equals(discountAmount.Currency) &&
             pricePartPrice < discountAmount) ||
-            (part.ContentItem.As<TaxPart>()?.GrossPrice.Amount is { } taxPartGrossPriceAmount &&
-            taxPartGrossPriceAmount.IsValid &&
+            (part.ContentItem.As<TaxPart>()?.GrossPrice.Amount is { IsValid: true } taxPartGrossPriceAmount &&
             taxPartGrossPriceAmount.Currency.Equals(discountAmount.Currency) &&
             taxPartGrossPriceAmount < discountAmount))
         {
             await InvalidateNegativePriceStateAsync();
         }
-
-        return;
     }
 
     private async Task InvalidateEvenStateAsync()
