@@ -6,23 +6,20 @@
     <!-- The Orchard Core version should always be x.y.0 of the latest minor version for maximum compatibility when
          distributed as NuGet packages. On the other hand, the consuming projects (including OrchardCore.Commerce.Web)
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
-    <OrchardCoreVersion>3.0.0-preview-18892</OrchardCoreVersion>
-
-    <LombiqHelpfulLibrariesVersion>12.5.1-alpha.7.osoe-925</LombiqHelpfulLibrariesVersion>
-    <LombiqTestsUIVersion>14.2.2-alpha.1.osoe-925</LombiqTestsUIVersion>
+    <OrchardCoreVersion>3.0.0-preview-18894</OrchardCoreVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.3" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.3" />
-    <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.2.1-alpha.1.osoe-925" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="$(LombiqHelpfulLibrariesVersion)" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="$(LombiqHelpfulLibrariesVersion)" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="$(LombiqHelpfulLibrariesVersion)" />
+    <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.2.1-alpha.3.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="12.5.1-alpha.7.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="12.5.1-alpha.7.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="12.5.1-alpha.7.osoe-925" />
     <PackageVersion Include="Lombiq.Tests" Version="5.0.1-alpha.0.osoe-925" />
-    <PackageVersion Include="Lombiq.Tests.UI" Version="$(LombiqTestsUIVersion)" />
-    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="$(LombiqTestsUIVersion)" />
-    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="$(LombiqTestsUIVersion)" />
+    <PackageVersion Include="Lombiq.Tests.UI" Version="14.2.2-alpha.1.osoe-925" />
+    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="14.2.2-alpha.1.osoe-925" />
+    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="14.2.2-alpha.1.osoe-925" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.3.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
