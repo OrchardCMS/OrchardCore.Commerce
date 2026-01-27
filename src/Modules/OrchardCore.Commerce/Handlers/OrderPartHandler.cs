@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using System;
 using System.Threading.Tasks;
 using YesSql;
