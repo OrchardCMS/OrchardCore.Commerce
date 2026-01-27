@@ -58,7 +58,7 @@ public class LocalizedProductBehaviorTests : UITestBase
                 await context.ClickReliablyOnAsync(By.CssSelector("form[action='/shoppingcart/AddItem'] button.btn-primary"));
                 context.ErrorMessageShouldNotExist();
                 context.Get(By.ClassName("cart-product-name")).Text.Trim().ShouldBe(LocalizedTitle);
-                context.Get(By.ClassName("shopping-cart-table-unit-price")).Text.Trim().ShouldBe("3 500,00 Ft");
+                context.Get(By.ClassName("shopping-cart-table-unit-price")).Text.Trim().ShouldBe("3 500 Ft");
             },
             browser);
 
