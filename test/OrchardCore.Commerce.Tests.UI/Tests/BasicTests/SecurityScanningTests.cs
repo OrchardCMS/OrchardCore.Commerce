@@ -28,6 +28,8 @@ public class SecurityScanningTests : UITestBase
                         40027,
                         "The query time is controllable using parameter value [some SQL injection]");
 
+                    // Can be removed if the project uses an Orchard Core version where
+                    // https://github.com/OrchardCMS/OrchardCore/issues/18765 is resolved.
                     FalsePositive(
                         configuration,
                         90003,
