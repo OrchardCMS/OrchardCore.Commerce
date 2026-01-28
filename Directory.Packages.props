@@ -13,9 +13,9 @@
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.3" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.3" />
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.2.1-alpha.3.osoe-925" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="12.5.1-alpha.7.osoe-925" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="12.5.1-alpha.7.osoe-925" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="12.5.1-alpha.7.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="12.5.2-alpha.0.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="12.5.2-alpha.0.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="12.5.2-alpha.0.osoe-925" />
     <PackageVersion Include="Lombiq.Tests" Version="5.0.1-alpha.0.osoe-925" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="14.2.2-alpha.1.osoe-925" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="14.2.2-alpha.1.osoe-925" />
