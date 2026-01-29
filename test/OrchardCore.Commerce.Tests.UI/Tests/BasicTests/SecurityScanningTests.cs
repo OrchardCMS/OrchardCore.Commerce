@@ -28,15 +28,7 @@ public class SecurityScanningTests : UITestBase
                         40027,
                         "The query time is controllable using parameter value [some SQL injection]");
 
-                    // Can be removed if the project uses an Orchard Core version where
-                    // https://github.com/OrchardCMS/OrchardCore/issues/18765 is resolved.
-                    FalsePositive(
-                        configuration,
-                        90003,
-                        "Sub Resource Integrity Attribute Missing",
-                        "The Blog theme references Google Fonts using link elements that lack an integrity tag. This " +
-                        "is not relevant for us.",
-                        "https://[^/]+/.*");
+                    configuration.DisableSubresourceIntegrityAttributeMissingRuleForGoogleFonts();
 
                     FalsePositive(
                         configuration,
