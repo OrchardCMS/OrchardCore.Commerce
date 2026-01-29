@@ -24,7 +24,6 @@ namespace OrchardCore.Commerce.Services;
 public class OrderLineItemService : IOrderLineItemService
 {
     private readonly IClock _clock;
-    private readonly IHttpContextAccessor _hca;
     private readonly IProductService _productService;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
@@ -32,22 +31,22 @@ public class OrderLineItemService : IOrderLineItemService
     private readonly ISession _session;
     private readonly IProductAttributeService _productAttributeService;
     private readonly IPredefinedValuesProductAttributeService _predefinedAttributeService;
+    private readonly IOrchardHelper _orchardHelper;
 
 #pragma warning disable S107 // Methods should not have too many parameters
     public OrderLineItemService(
         IClock clock,
-        IHttpContextAccessor hca,
         IProductService productService,
         IContentManager contentManager,
         IEnumerable<ITaxProvider> taxProviders,
         IPromotionService promotionService,
         ISession session,
         IProductAttributeService productAttributeService,
-        IPredefinedValuesProductAttributeService predefinedAttributeService)
+        IPredefinedValuesProductAttributeService predefinedAttributeService,
+        IOrchardHelper orchardHelper)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _clock = clock;
-        _hca = hca;
         _productService = productService;
         _contentManager = contentManager;
         _taxProviders = taxProviders;
@@ -55,6 +54,7 @@ public class OrderLineItemService : IOrderLineItemService
         _session = session;
         _productAttributeService = productAttributeService;
         _predefinedAttributeService = predefinedAttributeService;
+        _orchardHelper = orchardHelper;
     }
 
     public async Task<(IList<OrderLineItemViewModel> ViewModels, Amount Total)> CreateOrderLineItemViewModelsAndTotalAsync(
@@ -75,7 +75,7 @@ public class OrderLineItemService : IOrderLineItemService
             viewModelLineItems.Add(await GetOrderLineItemViewModelAsync(products, lineItem));
         }
 
-        var (shipping, billing) = await _hca.GetUserAddressIfNullAsync(
+        var (shipping, billing) = await _orchardHelper.HttpContext.GetUserAddressIfNullAsync(
             orderPart?.ShippingAddress.Address,
             orderPart?.BillingAddress.Address);
 
@@ -226,6 +226,9 @@ public class OrderLineItemService : IOrderLineItemService
             UnitPrice = lineItem.UnitPrice,
             LinePrice = lineItem.LinePrice,
             ProductRouteValues = metaData.DisplayRouteValues,
+            ProductImageUrl = productPart.ProductImage?.Paths?.FirstOrDefault() is { } productImagePath
+                ? _orchardHelper.AssetUrl(productImagePath)
+                : null,
             Attributes = lineItem.Attributes,
             SelectedAttributes = lineItem.SelectedAttributes,
             AvailableTextAttributes = availableAttributesAndSettings.AvailableTextAttributes,
