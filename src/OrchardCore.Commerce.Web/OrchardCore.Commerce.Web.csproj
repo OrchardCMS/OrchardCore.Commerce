@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
     <IsPackable>false</IsPackable>
-    <OrchardCoreVersion>3.0.0-preview-18896</OrchardCoreVersion>
+    <OrchardCoreVersion>3.0.0-preview-18899</OrchardCoreVersion>
   </PropertyGroup>
 
   <!-- Currently we don't have any ps1/psm1/psd1 files in the repo, so this is commented out. Add the ProjectReference
