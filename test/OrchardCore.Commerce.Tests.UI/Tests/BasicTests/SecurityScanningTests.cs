@@ -32,6 +32,16 @@ public class SecurityScanningTests : UITestBase
 
                     FalsePositive(
                         configuration,
+                        40018,
+                        "SQL Injection",
+                        "It says \"The page results were successfully manipulated using the boolean conditions\", " +
+                        "but the \"manipulation\" is simply that the site returns the error screen \"Your browser " +
+                        "sent a request that this server could not understand.\" with an error code, so the problem " +
+                        "is already handled internally by OC.",
+                        @".*/shoppingcart/AddItem.*");
+
+                    FalsePositive(
+                        configuration,
                         10202,
                         "Absence of Anti-CSRF Tokens",
                         "The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
