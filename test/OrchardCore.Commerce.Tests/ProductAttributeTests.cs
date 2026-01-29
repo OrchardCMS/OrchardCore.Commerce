@@ -178,14 +178,14 @@ public class ProductAttributeTests
         var product = new ContentItem { ContentType = "Product" };
         var productPart1 = new ContentPart();
         var boolProductAttribute = new BooleanProductAttributeField();
-        product.Weld("ProductPart1", productPart1);
         productPart1.Weld("foobool", boolProductAttribute);
         productPart1.Weld("barbool", new BooleanField());
+        product.Weld("ProductPart1", productPart1);
         var productPart2 = new ContentPart();
         var textProductAttribute = new TextProductAttributeField();
-        product.Weld("ProductPart2", productPart2);
         productPart2.Weld("footext", textProductAttribute);
         productPart2.Weld("bartext", new TextField());
+        product.Weld("ProductPart2", productPart2);
 
         var productAttributeFields = (await productAttributeService.GetProductAttributeFieldsAsync(product)).ToArray();
 
