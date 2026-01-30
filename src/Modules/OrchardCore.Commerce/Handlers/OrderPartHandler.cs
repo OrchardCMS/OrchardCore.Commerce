@@ -1,14 +1,13 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using System;
 using System.Threading.Tasks;
 using YesSql;
 
 namespace OrchardCore.Commerce.Handlers;
 
-public class OrderPartHandler : ContentPartHandler<OrderPart>
+public class OrderPartHandler : CreatingOrUpdatingPartHandler<OrderPart>
 {
     private readonly IStringLocalizer T;
     private readonly ISession _session;
@@ -19,7 +18,7 @@ public class OrderPartHandler : ContentPartHandler<OrderPart>
         T = stringLocalizer;
     }
 
-    public override async Task UpdatedAsync(UpdateContentContext context, OrderPart part)
+    protected override async Task CreatingOrUpdatingAsync(OrderPart part)
     {
         if (part.ContentItem.As<OrderPart>() is not { } orderPart) return;
 

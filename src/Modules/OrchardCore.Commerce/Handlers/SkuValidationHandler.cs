@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ using YesSql;
 
 namespace OrchardCore.Commerce.Handlers;
 
-public class SkuValidationHandler : ContentPartHandler<ProductPart>
+public class SkuValidationHandler : CreatingOrUpdatingPartHandler<ProductPart>
 {
     private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -32,7 +31,7 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
         T = stringLocalizer;
     }
 
-    public override async Task UpdatedAsync(UpdateContentContext context, ProductPart part)
+    protected override async Task CreatingOrUpdatingAsync(ProductPart part)
     {
         if (string.IsNullOrWhiteSpace(part.Sku))
         {

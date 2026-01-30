@@ -16,15 +16,9 @@ public class TaxRateAdminMenu : NavigationProviderBase
     { }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder
-            .Add(T["Configuration"], configuration => configuration
-                .Add(T["Commerce"], commerce => commerce
-                    .Add(T["Custom Tax Rates"], T["Custom Tax Rates"], entry => entry
-                        .Action("Index", "Admin", new
-                        {
-                            area = "OrchardCore.Settings",
-                            groupId = nameof(TaxRateSettings),
-                        })
-                        .Permission(TaxRatePermissions.ManageCustomTaxRates)
-                        .LocalNav())));
+        builder.AddCommerce(T, commerce => commerce
+            .Add(T["Custom Tax Rates"], T["Custom Tax Rates"], entry => entry
+                .SiteSettings(nameof(TaxRateSettings))
+                .Permission(TaxRatePermissions.ManageCustomTaxRates)
+                .LocalNav()));
 }

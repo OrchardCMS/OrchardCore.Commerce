@@ -13,12 +13,9 @@ public class AdminMenu : AdminMenuNavigationProviderBase
     { }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder
-            .Add(T["Configuration"], configuration => configuration
-                .Add(T["Commerce"], commerce => commerce
-                    .Add(T["Exactly API"], T["Exactly API"], entry => entry
-                        .SiteSettings(ExactlySettingsDisplayDriver.EditorGroupId)
-                        .Permission(Permissions.ManageExactlySettings)
-                        .LocalNav())
-                ));
+        builder.AddCommerce(T, commerce => commerce
+            .Add(T["Exactly API"], T["Exactly API"], entry => entry
+                .SiteSettings(ExactlySettingsDisplayDriver.EditorGroupId)
+                .Permission(Permissions.ManageExactlySettings)
+                .LocalNav()));
 }

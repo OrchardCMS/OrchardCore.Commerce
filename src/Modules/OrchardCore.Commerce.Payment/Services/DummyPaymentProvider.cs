@@ -36,10 +36,15 @@ public class DummyPaymentProvider : IPaymentProvider
         H = htmlLocalizer;
     }
 
+    /// <summary>
+    /// Returns an empty data object, or <see langword="null"/>.
+    /// </summary>
+    /// <remarks><para>
+    /// This provider doesn't have any special data. It can only be displayed during development even if the feature is
+    /// enabled. If the condition is met, a blank object is returned. Otherwise <see langword="null"/>, which will cause
+    /// the provider to be skipped when used through the <see cref="PaymentViewModel.WithProviderDataAsync"/> method.
+    /// </para></remarks>
     public Task<object?> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string? shoppingCartId = null) =>
-        // This provider doesn't have any special data, and it should only be displayed during development even if the
-        // feature is enabled. So if the condition is met a blank object is returned, otherwise null which will cause
-        // the provider to be skipped when used through the viewModel.WithProviderDataAsync(providers) method.
         Task.FromResult(_hca.HttpContext?.IsDevelopmentAndLocalhost() == true ? new object() : null);
 
     public async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
