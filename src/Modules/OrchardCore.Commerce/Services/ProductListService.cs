@@ -1,6 +1,8 @@
+using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.ContentManagement.Records;
 using System;
 using System.Collections.Generic;
@@ -41,6 +43,12 @@ public class ProductListService : IProductListService
 
         var query = _session.Query<ContentItem>();
         query = query.With<ContentItemIndex>(index => index.ContentType.IsIn(productTypes) && index.Published);
+        
+        // Filter products by start and end time
+        var utcNow = DateTime.UtcNow;
+        query = query.With<ProductPartIndex>(index =>
+            (index.StartTimeUtc == null || index.StartTimeUtc <= utcNow) &&
+            (index.EndTimeUtc == null || index.EndTimeUtc >= utcNow));
 
         var context = new ProductListFilterContext
         {

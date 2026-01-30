@@ -1,6 +1,7 @@
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.Media.Fields;
 using System.Collections.Generic;
 
@@ -26,4 +27,16 @@ public class ProductPart : ContentPart, ISkuHolderContent
     /// Gets or sets the image associated with this product, which will be displayed on the product's page.
     /// </summary>
     public MediaField ProductImage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time (UTC) from which the product becomes visible and available for purchase.
+    /// If null, the product is visible immediately.
+    /// </summary>
+    public DateTimeField StartTimeUtc { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the date and time (UTC) until which the product remains visible and available for purchase.
+    /// If null, the product remains visible indefinitely.
+    /// </summary>
+    public DateTimeField EndTimeUtc { get; set; } = new();
 }
