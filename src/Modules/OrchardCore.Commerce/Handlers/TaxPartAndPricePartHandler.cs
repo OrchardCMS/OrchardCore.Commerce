@@ -3,7 +3,6 @@ using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -13,7 +12,7 @@ using YesSql;
 
 namespace OrchardCore.Commerce.Handlers;
 
-public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
+public class TaxPartAndPricePartHandler : CreatingOrUpdatingPartHandler<PricePart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
@@ -32,7 +31,7 @@ public class TaxPartAndPricePartHandler : ContentPartHandler<PricePart>
         T = stringLocalizer;
     }
 
-    public override async Task UpdatedAsync(UpdateContentContext context, PricePart part)
+    protected override async Task CreatingOrUpdatingAsync(PricePart part)
     {
         if (part.ContentItem.As<TaxPart>() is not { } taxPart) return;
 

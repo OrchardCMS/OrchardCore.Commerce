@@ -15,15 +15,9 @@ public class TaxSettingsAdminMenu : AdminMenuNavigationProviderBase
     }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder
-            .Add(T["Configuration"], configuration => configuration
-                .Add(T["Commerce"], commerce => commerce
-                    .Add(T["Tax"], T["Tax"], entry => entry
-                        .Action("Index", "Admin", new
-                        {
-                            area = "OrchardCore.Settings",
-                            groupId = TaxSettingsDisplayDriver.GroupId,
-                        })
-                        .Permission(TaxRatePermissions.ManageTaxSettings)
-                        .LocalNav())));
+        builder.AddCommerce(T, commerce => commerce
+            .Add(T["Tax"], T["Tax"], entry => entry
+                .SiteSettings(TaxSettingsDisplayDriver.GroupId)
+                .Permission(TaxRatePermissions.ManageTaxSettings)
+                .LocalNav()));
 }

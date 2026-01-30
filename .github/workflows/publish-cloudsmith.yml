@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish-cloudsmith:
-    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@issue/OSOE-925
     with:
       source: https://nuget.cloudsmith.io/orchardcore/commerce/v3/index.json
       publish-version: "USE_GITHUB_RUN_NUMBER"

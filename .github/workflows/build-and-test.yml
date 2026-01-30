@@ -10,14 +10,14 @@ on:
 jobs:
   build-and-test-linux:
     name: Build and Test (Linux)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/OSOE-925
     with:
       machine-types: '["ubuntu-24.04"]'
       timeout-minutes: 60
 
   build-and-test-windows:
     name: Build and Test (Windows)
-    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@dev
+    uses: Lombiq/GitHub-Actions/.github/workflows/build-and-test-orchard-core.yml@issue/OSOE-925
     with:
       machine-types: '["windows-2022"]'
       timeout-minutes: 60
@@ -26,6 +26,8 @@ jobs:
       # Running ZAP for security scans in Docker under GHA Windows runners won't work since such virtualization is not
       # supported by GHA.
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
+      # We already do this on Linux.
+      verify-dotnet-consolidation: false
 
   codespell:
     name: Codespell

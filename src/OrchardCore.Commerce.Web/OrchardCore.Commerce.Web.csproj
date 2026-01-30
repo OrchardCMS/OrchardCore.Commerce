@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
     <IsPackable>false</IsPackable>
+    <OrchardCoreVersion>3.0.0-preview-18899</OrchardCoreVersion>
   </PropertyGroup>
 
   <!-- Currently we don't have any ps1/psm1/psd1 files in the repo, so this is commented out. Add the ProjectReference
@@ -13,14 +14,18 @@
   </ItemGroup> -->
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.MicrosoftDI" />
+    <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
+    <PackageReference Include="Microsoft.Identity.Web"/>
     <PackageReference Include="OrchardCore.Commerce.Translations" />
+    <PackageReference Include="SixLabors.ImageSharp" />
 
     <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
          Directory.Packages.props file for more details. -->
-    <PackageReference Include="OrchardCore.Application.Cms.Targets" VersionOverride="2.1.9" />
-    <PackageReference Include="OrchardCore.Logging.NLog" VersionOverride="2.1.9" />
+    <PackageReference Include="OrchardCore.Application.Cms.Targets" VersionOverride="$(OrchardCoreVersion)" />
+    <PackageReference Include="OrchardCore.Logging.NLog" VersionOverride="$(OrchardCoreVersion)" />
   </ItemGroup>
 
   <ItemGroup>

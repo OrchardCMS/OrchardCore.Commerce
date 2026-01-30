@@ -13,11 +13,9 @@ public class AdminMenu : AdminMenuNavigationProviderBase
     { }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder
-            .Add(T["Configuration"], configuration => configuration
-                .Add(T["Commerce"], commerce => commerce
-                    .Add(T["Stripe API"], T["Stripe API"], stripeApi => stripeApi
-                        .SiteSettings(StripeApiSettingsDisplayDriver.GroupId)
-                        .Permission(Permissions.ManageStripeApiSettings)
-                        .LocalNav())));
+        builder.AddCommerce(T, commerce => commerce
+            .Add(T["Stripe API"], T["Stripe API"], stripeApi => stripeApi
+                .SiteSettings(StripeApiSettingsDisplayDriver.GroupId)
+                .Permission(Permissions.ManageStripeApiSettings)
+                .LocalNav()));
 }

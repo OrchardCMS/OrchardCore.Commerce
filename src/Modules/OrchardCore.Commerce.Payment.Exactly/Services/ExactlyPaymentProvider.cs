@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -19,7 +17,6 @@ using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using System;
@@ -38,36 +35,30 @@ public class ExactlyPaymentProvider : IPaymentProvider
     private readonly IExactlyService _exactlyService;
     private readonly IHttpContextAccessor _hca;
     private readonly IMoneyService _moneyService;
+    private readonly IOrchardHelper _orchardHelper;
     private readonly IPaymentService _paymentService;
     private readonly ISiteService _siteService;
     private readonly IHtmlLocalizer<ExactlyPaymentProvider> H;
-    private readonly IActionContextAccessor _actionContextAccessor;
-    private readonly IUrlHelperFactory _urlHelperFactory;
 
     public string Name => ProviderName;
 
-#pragma warning disable S107 // Methods should not have too many parameters
     public ExactlyPaymentProvider(
         IStringLocalizer<ChargeResponse> chargeResponseStringLocalizer,
         IExactlyService exactlyService,
         IMoneyService moneyService,
-        INotifier notifier,
+        IOrchardHelper orchardHelper,
         IPaymentService paymentService,
-        IOrchardServices<ExactlyPaymentProvider> services,
-        IActionContextAccessor actionContextAccessor,
-        IUrlHelperFactory urlHelperFactory)
-#pragma warning restore S107 // Methods should not have too many parameters
+        IOrchardServices<ExactlyPaymentProvider> services)
     {
         _chargeResponseStringLocalizer = chargeResponseStringLocalizer;
         _contentManager = services.ContentManager.Value;
         _exactlyService = exactlyService;
         _hca = services.HttpContextAccessor.Value;
         _moneyService = moneyService;
+        _orchardHelper = orchardHelper;
         _paymentService = paymentService;
         _siteService = services.SiteService.Value;
         H = services.HtmlLocalizer.Value;
-        _actionContextAccessor = actionContextAccessor;
-        _urlHelperFactory = urlHelperFactory;
     }
 
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string shoppingCartId = null)
@@ -156,18 +147,14 @@ public class ExactlyPaymentProvider : IPaymentProvider
         string areaName = FeatureIds.Payment,
         string returnUrl = null)
     {
-        string url;
-        var actionContext = _actionContextAccessor.ActionContext;
-        actionContext ??= await GetActionContextAsync(_hca.HttpContext);
-        var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
-        url = urlHelper.ToAbsoluteAction(actionName, controllerName, new
+        if (_hca.HttpContext?.Request is not { } request) return null;
+
+        var urlHelper = await _orchardHelper.GetUrlHelperAsync();
+        return urlHelper.ToAbsoluteAction(actionName, controllerName, new
         {
             area = areaName,
-            returnUrl = string.IsNullOrEmpty(returnUrl)
-                    ? _hca.HttpContext.Request.GetDisplayUrl()
-                    : returnUrl,
+            returnUrl = string.IsNullOrEmpty(returnUrl) ? request.GetDisplayUrl() : returnUrl,
         });
-        return url;
     }
 
     internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)

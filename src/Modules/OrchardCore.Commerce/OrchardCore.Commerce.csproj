@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
   </PropertyGroup>
 
@@ -34,6 +34,7 @@
     <PackageReference Include="OrchardCore.ContentTypes.Abstractions" />
     <PackageReference Include="OrchardCore.Html" />
     <PackageReference Include="OrchardCore.Localization" />
+    <PackageReference Include="OrchardCore.Media" />
     <PackageReference Include="OrchardCore.Module.Targets" GeneratePathProperty="true" />
     <PackageReference Include="OrchardCore.Navigation.Core" />
     <PackageReference Include="OrchardCore.Title" />

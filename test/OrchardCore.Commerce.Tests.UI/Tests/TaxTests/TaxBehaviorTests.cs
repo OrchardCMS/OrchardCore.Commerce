@@ -156,10 +156,8 @@ public class TaxBehaviorTests : UITestBase
 
                 // Verify the menu navigation.
                 await context.GoToDashboardAsync();
-                await context.ClickReliablyOnAsync(By.ClassName("menu-configuration"));
-                await context.ClickReliablyOnAsync(By.XPath(
-                    "//ul[@data-title='Configuration']/li[contains(@class, 'has-items') and " +
-                    ".//span[contains(@class, 'title') and contains(., 'Commerce')]]"));
+                await context.ClickReliablyOnAsync(By.Id("settings"));
+                await context.ClickReliablyOnAsync(By.Id("settings-commerce"));
                 await context.ClickReliablyOnAsync(By.LinkText("Custom Tax Rates"));
                 context.Get(By.TagName("h2")).GetTextTrimmed().ShouldBe("Recipients and Tax Codes");
 

@@ -14,19 +14,17 @@ public class AdminMenu : AdminMenuNavigationProviderBase
     { }
 
     protected override void Build(NavigationBuilder builder) =>
-        builder
-            .Add(T["Configuration"], configuration => configuration
-                .Add(T["Commerce"], commerce => commerce
-                    .Add(T["Currency"], T["Currency"], entry => entry
-                        .SiteSettings(CurrencySettingsDisplayDriver.GroupId)
-                        .Permission(Permissions.ManageCurrencySettings)
-                        .LocalNav())
-                    .Add(T["Price Display"], T["Price Display"], entry => entry
-                        .SiteSettings(PriceDisplaySettingsDisplayDriver.GroupId)
-                        .Permission(Permissions.ManagePriceDisplaySettings)
-                        .LocalNav())
-                    .Add(T["Region"], T["Region"], region => region
-                        .SiteSettings(RegionSettingsDisplayDriver.GroupId)
-                        .Permission(Permissions.ManageRegionSettings)
-                        .LocalNav())));
+        builder.AddCommerce(T, commerce => commerce
+            .Add(T["Currency"], T["Currency"], entry => entry
+                .SiteSettings(CurrencySettingsDisplayDriver.GroupId)
+                .Permission(Permissions.ManageCurrencySettings)
+                .LocalNav())
+            .Add(T["Price Display"], T["Price Display"], entry => entry
+                .SiteSettings(PriceDisplaySettingsDisplayDriver.GroupId)
+                .Permission(Permissions.ManagePriceDisplaySettings)
+                .LocalNav())
+            .Add(T["Region"], T["Region"], region => region
+                .SiteSettings(RegionSettingsDisplayDriver.GroupId)
+                .Permission(Permissions.ManageRegionSettings)
+                .LocalNav()));
 }

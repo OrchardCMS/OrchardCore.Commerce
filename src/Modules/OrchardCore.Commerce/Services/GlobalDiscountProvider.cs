@@ -7,7 +7,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
-using OrchardCore.ContentTypes.Services;
 using OrchardCore.Modules;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +25,7 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IClock _clock;
-    private readonly IContentDefinitionService _contentDefinitionService;
+    private readonly IContentDefinitionStore _contentDefinitionStore;
     private readonly IHttpContextAccessor _hca;
     private readonly ISession _session;
 
@@ -35,13 +34,13 @@ public class GlobalDiscountProvider : IPromotionProvider
     public GlobalDiscountProvider(
         IAuthorizationService authorizationService,
         IClock clock,
-        IContentDefinitionService contentDefinitionService,
+        IContentDefinitionStore contentDefinitionStore,
         IHttpContextAccessor hca,
         ISession session)
     {
         _authorizationService = authorizationService;
         _clock = clock;
-        _contentDefinitionService = contentDefinitionService;
+        _contentDefinitionStore = contentDefinitionStore;
         _hca = hca;
         _session = session;
     }
@@ -55,7 +54,8 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     private async Task<IEnumerable<DiscountInformation>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
-        var typeNames = (await _contentDefinitionService.GetTypesAsync())
+        var typeNames = (await _contentDefinitionStore.GetContentDefinitionAsync())
+            .ContentTypeDefinitionRecords
             .Where(type => type
                 .Settings[nameof(ContentTypeSettings)]
                 .ToObject<ContentTypeSettings>()?
@@ -66,7 +66,7 @@ public class GlobalDiscountProvider : IPromotionProvider
 
         var globalDiscountItems = await _session
             .Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(typeNames) && index.Published)
-            .ListAsync();
+            .ListAsync(_hca.HttpContext?.RequestAborted ?? default);
 
         globalDiscountItems = await globalDiscountItems.WhereAsync(item =>
             _authorizationService.AuthorizeAsync(_hca.HttpContext!.User, CommonPermissions.ListContent, item));
