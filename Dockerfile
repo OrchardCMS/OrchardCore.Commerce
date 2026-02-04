@@ -1,5 +1,5 @@
 # TARGETARCH and TARGETOS are set automatically when --platform is provided.
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0@sha256:874c4613d5ebf8b328ad920a90640c8dea9758bdbe61dc191dbcbed03721fc79 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0@sha256:aa05b91be697b83229cb000b90120f0783604ad74ed92a0b45cdf3d1a9c873de AS build-env
 ARG TARGETOS
 LABEL stage=build-env
 WORKDIR /source
@@ -14,8 +14,8 @@ COPY Directory.Packages.props .
 RUN dotnet publish src/OrchardCore.Commerce.Web/OrchardCore.Commerce.Web.csproj -c Release -o /app --framework net8.0 /p:RunAnalyzers=false
 
 # build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809@sha256:ffce86755290a40dbc42ec176e6ffaf9f8025909c67100417c1566186c57e205 AS build_windows
-FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:47091f7cee02e448630df85542579e09b7bbe3b10bd4e1991ff59d3adbddd720 AS build_linux
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809@sha256:454026ec875dc2415853bb6376b4d642bf08aa3e9f0478be33e0000a2897307f AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:4b8f0b08534833b39bb662fb19a65e78cb086f5ca8dd35de3f87026de8885be4 AS build_linux
 FROM build_${TARGETOS} AS aspnet
 
 EXPOSE 80
