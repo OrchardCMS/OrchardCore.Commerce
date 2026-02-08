@@ -13,9 +13,7 @@ public class TaxRateSettingsConfiguration : IConfigureOptions<TaxRateSettings>
     public void Configure(TaxRateSettings options)
     {
         var settings = _siteService
-            .GetSiteSettingsAsync()
-            .GetAwaiter()
-            .GetResult()
+            .GetSiteSettings()
             .As<TaxRateSettings>();
 
         options.CopyFrom(settings);

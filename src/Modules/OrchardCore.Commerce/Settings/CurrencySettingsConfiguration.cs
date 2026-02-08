@@ -12,9 +12,7 @@ public class CurrencySettingsConfiguration : IConfigureOptions<CurrencySettings>
     public void Configure(CurrencySettings options)
     {
         var settings = _site
-            .GetSiteSettingsAsync()
-            .GetAwaiter()
-            .GetResult()
+            .GetSiteSettings()
             .As<CurrencySettings>();
 
         options.DefaultCurrency = settings.DefaultCurrency;
