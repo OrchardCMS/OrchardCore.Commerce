@@ -59,7 +59,7 @@ public class NullContentManager : IContentManager
     public virtual Task<ContentItem> LoadAsync(ContentItem contentItem) =>
         Task.FromResult(new ContentItem());
 
-    public virtual Task RemoveAsync(ContentItem contentItem) => Task.CompletedTask;
+    public virtual Task<bool> RemoveAsync(ContentItem contentItem) => Task.FromResult(false);
 
     public virtual Task DiscardDraftAsync(ContentItem contentItem) => Task.CompletedTask;
 
