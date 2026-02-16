@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.3" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.3" />
+    <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.2.1-alpha.3.osoe-925" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="12.5.2-alpha.0.osoe-925" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="12.5.2-alpha.0.osoe-925" />
