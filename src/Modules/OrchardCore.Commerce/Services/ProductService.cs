@@ -40,8 +40,12 @@ public class ProductService : IProductService
     {
         var trimmedSkus = skus.Select(sku => sku.Split('-')[0]);
 
+        var utcNow = DateTime.UtcNow;
         var contentItemIds = (await _session
-                .QueryIndex<ProductPartIndex>(index => index.Sku.IsIn(trimmedSkus))
+                .QueryIndex<ProductPartIndex>(index =>
+                    index.Sku.IsIn(trimmedSkus) &&
+                    (index.StartTimeUtc == null || index.StartTimeUtc <= utcNow) &&
+                    (index.EndTimeUtc == null || index.EndTimeUtc >= utcNow))
                 .ListAsync())
             .Select(idx => idx.ContentItemId)
             .Distinct();

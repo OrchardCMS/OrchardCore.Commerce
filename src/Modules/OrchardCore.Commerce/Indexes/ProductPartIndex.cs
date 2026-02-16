@@ -1,6 +1,7 @@
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using System;
 using YesSql.Indexes;
 
 namespace OrchardCore.Commerce.Indexes;
@@ -9,6 +10,8 @@ public class ProductPartIndex : MapIndex, ISkuHolder
 {
     public string ContentItemId { get; set; }
     public string Sku { get; set; }
+    public DateTime? StartTimeUtc { get; set; }
+    public DateTime? EndTimeUtc { get; set; }
 }
 
 /// <summary>
@@ -36,6 +39,8 @@ public class ProductPartIndexProvider : IndexProvider<ContentItem>
                 {
                     Sku = productPart.Sku.ToUpperInvariant(),
                     ContentItemId = contentItem.ContentItemId,
+                    StartTimeUtc = productPart.StartTimeUtc?.Value,
+                    EndTimeUtc = productPart.EndTimeUtc?.Value,
                 };
             });
 }
