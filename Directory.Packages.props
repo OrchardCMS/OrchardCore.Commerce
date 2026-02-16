@@ -6,7 +6,7 @@
     <!-- The Orchard Core version should always be x.y.0 of the latest minor version for maximum compatibility when
          distributed as NuGet packages. On the other hand, the consuming projects (including OrchardCore.Commerce.Web)
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
-    <OrchardCoreVersion>3.0.0-preview-18908</OrchardCoreVersion>
+    <OrchardCoreVersion>3.0.0-preview-18914</OrchardCoreVersion>
   </PropertyGroup>
 
   <ItemGroup>
