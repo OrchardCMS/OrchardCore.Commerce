@@ -22,8 +22,4 @@
   <!-- Inherit parent props file if one exists. -->
   <Import Condition="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../')) != ''"
           Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-  
-  <PropertyGroup>
-    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-  </PropertyGroup>
 </Project>
