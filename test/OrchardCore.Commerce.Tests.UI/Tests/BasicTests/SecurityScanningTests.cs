@@ -42,6 +42,14 @@ public class SecurityScanningTests : UITestBase
 
                     FalsePositive(
                         configuration,
+                        40018,
+                        "SQL Injection",
+                        "It has nothing to do with SQL manipulation, it just gave a query that returns different " +
+                        "results (nothing, because we don't have a product called \"ZAP\").",
+                        @".*pagenum=.*products.title=ZAP.*");
+
+                    FalsePositive(
+                        configuration,
                         10202,
                         "Absence of Anti-CSRF Tokens",
                         "The ProductListPart-Filters intentionally uses a GET form. No XSS risk.",
