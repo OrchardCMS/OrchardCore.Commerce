@@ -9,9 +9,10 @@ WORKDIR /source
 COPY ./src ./src
 COPY Directory.Build.props .
 COPY Directory.Packages.props .
+COPY NuGet.config .
 
 # build, results are placed in /app
-RUN dotnet publish src/OrchardCore.Commerce.Web/OrchardCore.Commerce.Web.csproj -c Release -o /app --framework net8.0 /p:RunAnalyzers=false
+RUN dotnet publish src/OrchardCore.Commerce.Web/OrchardCore.Commerce.Web.csproj -c Release -o /app --framework net10.0 /p:RunAnalyzers=false
 
 # build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-nanoserver-ltsc2022@sha256:5e0c69d771061e8edcd4951ddafeff807945978086dc0c41e35ba89a46e58914 AS build_windows
