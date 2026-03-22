@@ -1,4 +1,8 @@
+#nullable enable
+
 using OrchardCore.ContentManagement;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Abstractions.Abstractions;
@@ -28,4 +32,13 @@ public interface ISkuGenerator
     /// The content item whose product SKU is to be generated. Must not be modified by this method.
     /// </param>
     public Task<string> GenerateSkuAsync(ContentItem contentItem);
+}
+
+public static class SkuGeneratorExtensions
+{
+    /// <summary>
+    /// Returns the highest <see cref="ISkuGenerator.Priority"/> generator, or <see langword="null"/>.
+    /// </summary>
+    public static ISkuGenerator? HighestPriority(this IEnumerable<ISkuGenerator> generators) =>
+        generators.OrderByDescending(generator => generator.Priority).FirstOrDefault();
 }
