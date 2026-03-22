@@ -10,19 +10,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.3" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.3" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="5.2.1-alpha.3.osoe-925" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="12.6.1-alpha.5.osoe-925" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="12.6.1-alpha.5.osoe-925" />
-    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="12.6.1-alpha.5.osoe-925" />
-    <PackageVersion Include="Lombiq.Tests" Version="5.0.1-alpha.0.osoe-925" />
-    <PackageVersion Include="Lombiq.Tests.UI" Version="14.2.2-alpha.6.osoe-925" />
-    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="14.2.2-alpha.6.osoe-925" />
-    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="14.2.2-alpha.6.osoe-925" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="4.5.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="14.2.2-alpha.6.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="14.2.2-alpha.6.osoe-925" />
+    <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="14.2.2-alpha.6.osoe-925" />
+    <PackageVersion Include="Lombiq.Tests" Version="5.0.1-alpha.1.osoe-925" />
+    <PackageVersion Include="Lombiq.Tests.UI" Version="14.2.2-alpha.7.osoe-925" />
+    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="14.2.2-alpha.7.osoe-925" />
+    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="14.2.2-alpha.7.osoe-925" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.6.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.ContentFields" Version="$(OrchardCoreVersion)" />
@@ -45,7 +45,7 @@
     <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageVersion Include="Stripe.net" Version="50.2.0" />
+    <PackageVersion Include="Stripe.net" Version="50.4.1" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
