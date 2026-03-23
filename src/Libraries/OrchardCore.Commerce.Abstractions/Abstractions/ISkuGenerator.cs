@@ -21,7 +21,7 @@ public interface ISkuGenerator
     /// <summary>
     /// Gets a value indicating whether this generator allows user fill-in. If <see langword="false"/>, the SKU field is
     /// hidden in the product editor. If <see langword="true"/>, the generator is only used when the product is
-    /// published with an empty SKU.  
+    /// published with an empty SKU.
     /// </summary>
     public bool IsManualAllowed => false;
 
