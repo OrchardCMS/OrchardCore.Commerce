@@ -39,14 +39,14 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
     public override async Task CreatingAsync(CreateContentContext context, ProductPart part)
     {
         // If we have an SKU generator and the SKU is either empty or it must not be manually filled, then overwrite it
-        // with the generated value. 
+        // with the generated value.
         if (_skuGenerators.HighestPriority() is { } generator &&
             (string.IsNullOrWhiteSpace(part.Sku) || !generator.IsManualAllowed))
         {
             part.Sku = await generator.GenerateSkuAsync(part.ContentItem);
             part.ContentItem.Apply(part);
         }
-        
+
         await CreatingOrUpdatingAsync(part);
     }
 
