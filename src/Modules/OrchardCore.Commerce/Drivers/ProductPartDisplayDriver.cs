@@ -45,10 +45,11 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         ProductPart part,
         UpdatePartEditorContext context)
     {
-        var skuBefore = part.Sku;
+        var skuBefore = part.Sku ?? string.Empty;
 
         await context.Updater.TryUpdateModelAsync(part, Prefix);
 
+        part.Sku ??= string.Empty;
         if (part.Sku.Contains('-'))
         {
             context.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
