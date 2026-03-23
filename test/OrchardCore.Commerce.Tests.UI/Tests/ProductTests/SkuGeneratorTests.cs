@@ -22,7 +22,7 @@ public class SkuGeneratorTests : UITestBase
             {
                 string GetValue(string id) =>
                     context.Get(By.Id(id)).GetValue() ?? string.Empty;
-                
+
                 async Task CreateProductAsync(bool isSkuDisabled)
                 {
                     await context.CreateNewContentItemAsync("Product", onlyIfNotAlreadyThere: false);
@@ -30,16 +30,16 @@ public class SkuGeneratorTests : UITestBase
                         .Get(By.Id("ProductPart_Sku"))
                         .GetAttribute("readonly")
                         .ShouldBe(isSkuDisabled ? "true" : null);
-                        
+
                     await context.ClickAndFillInWithRetriesAsync(By.Id("TitlePart_Title"), "SKU Test Product");
                     await context.ClickPublishAsync();
                 }
-                
+
                 // Verify baseline product creation (SKU field must be filled manually).
                 await context.SignInDirectlyAsync();
                 await CreateProductAsync(isSkuDisabled: false);
                 context.ErrorMessageExists("SKU must not be empty.");
-                
+
                 // Verify altered product creation (SKU field is disabled, value is auto-generated).
                 await context.EnableFeatureDirectlyAsync(CommerceConstants.Features.SkuGeneratorGuid);
                 await CreateProductAsync(isSkuDisabled: true);
