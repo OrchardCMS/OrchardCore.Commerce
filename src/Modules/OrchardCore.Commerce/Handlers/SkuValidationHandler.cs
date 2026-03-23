@@ -44,6 +44,7 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
             (string.IsNullOrWhiteSpace(part.Sku) || !generator.IsManualAllowed))
         {
             part.Sku = await generator.GenerateSkuAsync(part.ContentItem);
+            part.ContentItem.Apply(part);
         }
         
         await CreatingOrUpdatingAsync(part);
