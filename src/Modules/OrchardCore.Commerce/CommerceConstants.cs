@@ -5,8 +5,10 @@ public static class CommerceConstants
     public static class Features
     {
         public const string Core = "OrchardCore.Commerce";
-        public const string SessionCartStorage = "OrchardCore.Commerce.SessionCartStorage";
-        public const string CurrencySettingsSelector = "OrchardCore.Commerce.CurrencySettingsSelector";
-        public const string Subscription = "OrchardCore.Commerce.Subscription";
+        public const string SkuGenerator = $"{Core}.{nameof(SkuGenerator)}";
+        public const string SessionCartStorage = $"{Core}.{nameof(SessionCartStorage)}";
+        public const string CurrencySettingsSelector = $"{Core}.{nameof(CurrencySettingsSelector)}";
+        public const string Subscription = $"{Core}.{nameof(Subscription)}";
+        public const string SkuGeneratorGuid = $"{SkuGenerator}.Guid";
     }
 }

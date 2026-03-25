@@ -11,6 +11,9 @@ public class ProductPartViewModel : ISkuHolderContent
     public string Sku { get; set; }
 
     [BindNever]
+    public bool IsSkuReadOnly { get; set; }
+
+    [BindNever]
     public ContentItem ContentItem { get; set; }
 
     [BindNever]

@@ -1,10 +1,17 @@
 @model ProductPartViewModel
 
+@using OrchardCore.ContentManagement
+
 <div class="mb-3" asp-validation-class-for="Sku">
     <label asp-for="Sku">@T["SKU"] </label>
-    <input asp-for="Sku" class="form-control text-muted" />
+    <input asp-for="Sku" class="form-control text-muted" readonly="@Model.IsSkuReadOnly" />
     <span asp-validation-for="Sku"></span>
     <span class="hint">
         @T["The SKU of the product."]
+
+        @if (Model.IsSkuReadOnly && Model.IsNew())
+        {
+            @T["Not editable, the value is automatically generated when the product is saved."]
+        }
     </span>
 </div>
