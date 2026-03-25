@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Exactly.Models;
+using OrchardCore.Infrastructure;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -25,7 +26,7 @@ public class ExactlyApiHandler : DelegatingHandler
         const BindingFlags privateFieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
         var allowedHeaderTypes = typeof(HttpHeaders).GetField("_allowedHeaderTypes", privateFieldFlags);
         allowedHeaderTypes!.SetValue(request.Headers, Enum.Parse(allowedHeaderTypes.FieldType, "All"));
-        request.Headers.Add("Content-Type", "application/vnd.api+json");
+        request.Headers.Add("Content-Type", MediaTypeNamesExtended.Application.JsonVendeorPrefix);
 #pragma warning restore S3011
 
         return base.SendAsync(request, cancellationToken);
