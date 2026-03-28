@@ -40,7 +40,7 @@ public class StripeMigrations : DataMigration
         {
             await SchemaBuilder.DropMapIndexTableAsync(typeof(OrderPaymentIndex));
         }
-        catch (Exception exception) when (exception is DbException)
+        catch (DbException exception)
         {
             // This is fine, it just means that the table didn't exist.
             _logger.LogInformation(
