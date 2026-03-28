@@ -1,5 +1,4 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Data;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Payment.Stripe.Indexes;
 using OrchardCore.Commerce.Payment.Stripe.Models;
@@ -7,6 +6,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using System;
+using System.Data.Common;
 using System.Threading.Tasks;
 using YesSql.Sql;
 using static OrchardCore.Commerce.Abstractions.Constants.ContentTypes;
@@ -40,7 +40,7 @@ public class StripeMigrations : DataMigration
         {
             await SchemaBuilder.DropMapIndexTableAsync(typeof(OrderPaymentIndex));
         }
-        catch (Exception exception) when (exception is SqlException)
+        catch (Exception exception) when (exception is DbException)
         {
             // This is fine, it just means that the table didn't exist.
             _logger.LogInformation(
