@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Inventory;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
@@ -17,13 +18,18 @@ namespace OrchardCore.Commerce.Drivers;
 public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 {
     private readonly IProductAttributeService _productAttributeService;
+    private readonly ISkuGenerator _skuGenerator;
     private readonly IStringLocalizer T;
+
+    private bool IsSkuReadOnly => _skuGenerator?.IsManualAllowed == false;
 
     public ProductPartDisplayDriver(
         IProductAttributeService productAttributeService,
+        IEnumerable<ISkuGenerator> skuGenerators,
         IStringLocalizer<ProductPartDisplayDriver> stringLocalizer)
     {
         _productAttributeService = productAttributeService;
+        _skuGenerator = skuGenerators.HighestPriority();
         T = stringLocalizer;
     }
 
@@ -39,17 +45,19 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         ProductPart part,
         UpdatePartEditorContext context)
     {
-        var skuBefore = part.Sku;
+        var skuBefore = part.Sku ?? string.Empty;
 
         await context.Updater.TryUpdateModelAsync(part, Prefix);
 
+        part.Sku ??= string.Empty;
         if (part.Sku.Contains('-'))
         {
             context.AddModelError(nameof(ProductPart.Sku), T["SKU may not contain the dash character."]);
             return await EditAsync(part, context);
         }
 
-        part.Sku = part.Sku.ToUpperInvariant();
+        // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
+        part.Sku = IsSkuReadOnly ? skuBefore : part.Sku.ToUpperInvariant();
 
         if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
         {
@@ -94,6 +102,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
     {
         viewModel.ContentItem = part.ContentItem;
         viewModel.Sku = part.Sku;
+        viewModel.IsSkuReadOnly = IsSkuReadOnly;
         viewModel.ProductPart = part;
 
         if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)

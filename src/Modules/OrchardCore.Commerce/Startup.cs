@@ -428,3 +428,10 @@ public class SubscriptionStartup : StartupBase
         services.AddScoped<ISubscriptionService, SubscriptionService>();
     }
 }
+
+[RequireFeatures(CommerceConstants.Features.SkuGeneratorGuid)]
+public class SkuGeneratorGuidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services) =>
+        services.AddScoped<ISkuGenerator, GuidSkuGenerator>();
+}
