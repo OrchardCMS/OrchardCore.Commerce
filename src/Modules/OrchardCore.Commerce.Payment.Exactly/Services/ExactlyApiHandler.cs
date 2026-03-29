@@ -26,7 +26,7 @@ public class ExactlyApiHandler : DelegatingHandler
         const BindingFlags privateFieldFlags = BindingFlags.Instance | BindingFlags.NonPublic;
         var allowedHeaderTypes = typeof(HttpHeaders).GetField("_allowedHeaderTypes", privateFieldFlags);
         allowedHeaderTypes!.SetValue(request.Headers, Enum.Parse(allowedHeaderTypes.FieldType, "All"));
-        request.Headers.Add("Content-Type", MediaTypeNamesExtended.Application.JsonVendeorPrefix);
+        request.Headers.Add("Content-Type", MediaTypeNamesExtended.Application.JsonVendorPrefix);
 #pragma warning restore S3011
 
         return base.SendAsync(request, cancellationToken);
