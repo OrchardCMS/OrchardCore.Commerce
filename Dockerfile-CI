@@ -1,10 +1,10 @@
 # This Docker file is intended for the CI
 # A prerequisite is a published application in the .build/release  
-FROM --platform=$BUILDPLATFORM golang:alpine@sha256:f6751d823c26342f9506c03797d2527668d095b0a15f1862cddb4d927a7a4ced AS build
+FROM --platform=$BUILDPLATFORM golang:alpine@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039 AS build
 ARG TARGETOS
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-nanoserver-ltsc2022@sha256:5e0c69d771061e8edcd4951ddafeff807945978086dc0c41e35ba89a46e58914 AS build_windows
-FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:aec87aa74ddf129da573fa69f42f229a23c953a1c6fdecedea1aa6b1fe147d76 AS build_linux
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-nanoserver-ltsc2022@sha256:a7c0020148b57b05dbc09365709dbf002d182eb8257d46ec5ad442453aff1718 AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:a04d1c1d2d26119049494057d80ea6cda25bbd8aef7c444a1fc1ef874fd3955b AS build_linux
 FROM build_${TARGETOS} AS aspnet
 
 EXPOSE 80
