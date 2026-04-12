@@ -66,13 +66,13 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task<string> GetPublicKeyAsync()
     {
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
         return stripeApiSettings.PublishableKey;
     }
 
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
     {
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
 
         if (string.IsNullOrEmpty(stripeApiSettings.PublishableKey) ||
             string.IsNullOrEmpty(stripeApiSettings.SecretKey) ||
@@ -194,7 +194,7 @@ public class StripePaymentService : IStripePaymentService
             },
             orderPart);
 
-        if (!order.As<OrderPart>().LineItems.Any() && updateModelAccessor != null)
+        if (!order.GetOrCreate<OrderPart>().LineItems.Any() && updateModelAccessor != null)
         {
             updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(OrderPart.LineItems),
@@ -220,7 +220,7 @@ public class StripePaymentService : IStripePaymentService
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.WaitingForRedirect,
-                Url = _hca.HttpContext.Request.GetDisplayUrl(),
+                Url = _hca.HttpContext?.Request.GetDisplayUrl(),
             };
         }
 
@@ -239,7 +239,7 @@ public class StripePaymentService : IStripePaymentService
             };
         }
 
-        var part = order.As<OrderPart>() ?? new OrderPart();
+        var part = order.GetOrCreate<OrderPart>();
         var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
 
         // Looks like there is nothing to do here.
@@ -277,12 +277,12 @@ public class StripePaymentService : IStripePaymentService
         });
         await _contentManager.UpdateAsync(order);
 
-        if (order.As<StripePaymentPart>().RetryCounter <= 10)
+        if (order.GetOrCreate<StripePaymentPart>().RetryCounter <= 10)
         {
             return new PaymentOperationStatusViewModel
             {
                 Status = PaymentOperationStatus.WaitingForRedirect,
-                Url = _hca.HttpContext.Request.GetDisplayUrl(),
+                Url = _hca.HttpContext?.Request.GetDisplayUrl(),
             };
         }
 
@@ -305,7 +305,7 @@ public class StripePaymentService : IStripePaymentService
             await _paymentService.UpdateOrderWithDriversAsync(order);
         }
 
-        var part = order.As<OrderPart>();
+        var part = order.GetOrCreate<OrderPart>();
         var billing = part.BillingAddress.Address ?? new Address();
         var shipping = part.ShippingAddress.Address ?? new Address();
 

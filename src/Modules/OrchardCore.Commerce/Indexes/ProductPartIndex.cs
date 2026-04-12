@@ -19,23 +19,13 @@ public class ProductPartIndexProvider : IndexProvider<ContentItem>
     public override void Describe(DescribeContext<ContentItem> context) =>
         context.For<ProductPartIndex>()
             .Map(contentItem =>
-            {
-                if (!contentItem.IsPublished())
-                {
-                    return null;
-                }
-
-                var productPart = contentItem.As<ProductPart>();
-
-                if (productPart?.Sku == null)
-                {
-                    return null;
-                }
-
-                return new ProductPartIndex
-                {
-                    Sku = productPart.Sku.ToUpperInvariant(),
-                    ContentItemId = contentItem.ContentItemId,
-                };
-            });
+                contentItem.IsPublished() &&
+                contentItem.TryGet<ProductPart>(out var productPart) &&
+                !string.IsNullOrEmpty(productPart.Sku)
+                    ? new ProductPartIndex
+                    {
+                        Sku = productPart.Sku.ToUpperInvariant(),
+                        ContentItemId = contentItem.ContentItemId,
+                    }
+                    : null);
 }

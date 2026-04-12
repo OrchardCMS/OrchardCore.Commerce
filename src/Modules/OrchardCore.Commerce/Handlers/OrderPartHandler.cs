@@ -20,7 +20,7 @@ public class OrderPartHandler : CreatingOrUpdatingPartHandler<OrderPart>
 
     protected override async Task CreatingOrUpdatingAsync(OrderPart part)
     {
-        if (part.ContentItem.As<OrderPart>() is not { } orderPart) return;
+        if (!part.ContentItem.TryGet<OrderPart>(out var orderPart)) return;
 
         var guid = orderPart.OrderId.Text ?? Guid.NewGuid().ToString();
         orderPart.OrderId.Text = guid;
@@ -32,7 +32,5 @@ public class OrderPartHandler : CreatingOrUpdatingPartHandler<OrderPart>
 
         orderPart.Apply();
         await _session.SaveAsync(orderPart.ContentItem);
-
-        return;
     }
 }

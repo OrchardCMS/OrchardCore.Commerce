@@ -35,7 +35,7 @@ public class TaxRateTaxPartDisplayDriver : ContentPartDisplayDriver<TaxPart>
 
     public override async Task<IDisplayResult> DisplayAsync(TaxPart part, BuildPartDisplayContext context)
     {
-        if (part.As<ProductPart>() is not { } product || _hca.HttpContext is not { } httpContext) return null;
+        if (!part.ContentItem.TryGet<ProductPart>(out var product) || _hca.HttpContext is not { } httpContext) return null;
 
         try
         {

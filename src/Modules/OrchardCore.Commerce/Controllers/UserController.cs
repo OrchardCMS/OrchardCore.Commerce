@@ -128,9 +128,9 @@ public class UserController : Controller
 
     private async Task<ContentItem> GetUserContentItemAsync(User user, string contentType)
     {
-        var contentItem = user.As<ContentItem>(contentType);
+        var contentItem = user.GetOrCreate<ContentItem>(contentType);
 
-        return string.IsNullOrEmpty(contentItem?.ContentType)
+        return string.IsNullOrEmpty(contentItem.ContentType)
             ? await _contentManager.NewAsync(contentType)
             : contentItem;
     }

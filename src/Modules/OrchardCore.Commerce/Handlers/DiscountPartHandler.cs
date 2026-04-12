@@ -29,7 +29,7 @@ public class DiscountPartHandler : CreatingOrUpdatingPartHandler<DiscountPart>
 
     protected override async Task CreatingOrUpdatingAsync(DiscountPart part)
     {
-        if (part.ContentItem.As<DiscountPart>() is not { } discountPart) return;
+        if (!part.ContentItem.TryGet<DiscountPart>(out var discountPart)) return;
 
         var discountPercentage = discountPart.DiscountPercentage?.Value ?? 0;
         var discountAmount = discountPart.DiscountAmount.Amount;
@@ -41,12 +41,12 @@ public class DiscountPartHandler : CreatingOrUpdatingPartHandler<DiscountPart>
             await InvalidateEvenStateAsync();
         }
 
-        if ((part.ContentItem.As<PricePart>()?.Price is { } pricePartPrice &&
+        if (part.ContentItem.GetMaybe<PricePart>()?.Price is { } pricePartPrice &&
             pricePartPrice.Currency.Equals(discountAmount.Currency) &&
-            pricePartPrice < discountAmount) ||
-            (part.ContentItem.As<TaxPart>()?.GrossPrice.Amount is { IsValid: true } taxPartGrossPriceAmount &&
+            pricePartPrice < discountAmount ||
+            part.ContentItem.GetMaybe<TaxPart>()?.GrossPrice.Amount is { IsValid: true } taxPartGrossPriceAmount &&
             taxPartGrossPriceAmount.Currency.Equals(discountAmount.Currency) &&
-            taxPartGrossPriceAmount < discountAmount))
+            taxPartGrossPriceAmount < discountAmount)
         {
             await InvalidateNegativePriceStateAsync();
         }
