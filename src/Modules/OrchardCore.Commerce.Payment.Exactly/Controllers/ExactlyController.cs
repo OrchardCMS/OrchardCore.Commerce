@@ -58,7 +58,7 @@ public class ExactlyController : Controller
                 shoppingCartId,
                 notifyOnError: false,
                 throwOnError: true);
-            return await _exactlyService.CreateTransactionAsync(order.As<OrderPart>());
+            return await _exactlyService.CreateTransactionAsync(order.GetOrCreate<OrderPart>());
         });
 
     public async Task<IActionResult> GetRedirectUrl(string transactionId) =>
@@ -84,7 +84,7 @@ public class ExactlyController : Controller
             order.DisplayText = S["Exactly API test order"];
             await _contentManager.CreateAsync(order);
 
-            var result = await _exactlyService.CreateTransactionAsync(order.As<OrderPart>(), testAmount);
+            var result = await _exactlyService.CreateTransactionAsync(order.GetOrCreate<OrderPart>(), testAmount);
             var action = await GetActionRedirectRequestedAsync(result.Id);
 
             await _notifier.SuccessAsync(

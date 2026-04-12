@@ -64,7 +64,7 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
             .ToList();
 
         // When taxes are specified, Gross Price is always applicable, while Net Price is optional.
-        var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).As<PriceDisplaySettings>();
+        var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<PriceDisplaySettings>();
         if (priceDisplaySettings.UseNetPriceDisplay)
         {
             var grossIndex = newHeaders.FindIndex(header => header.Name == "Gross Price");

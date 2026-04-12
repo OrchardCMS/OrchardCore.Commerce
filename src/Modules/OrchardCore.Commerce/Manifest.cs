@@ -59,3 +59,14 @@ using OrchardCore.Modules.Manifest;
         CommerceConstants.Features.Core,
     ]
 )]
+
+[assembly: Feature(
+    Id = CommerceConstants.Features.SkuGeneratorGuid,
+    Name = "Orchard Core Commerce - SKU Generator - GUID",
+    Category = "Commerce",
+    Description = "Replaces manual SKU entry in the content item editor with a GUID-based generator.",
+    Dependencies =
+    [
+        CommerceConstants.Features.Core,
+    ]
+)]

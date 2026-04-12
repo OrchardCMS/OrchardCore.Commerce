@@ -31,15 +31,12 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
     public Task<bool> IsApplicableAsync(IList<ShoppingCartItem> model) => Task.FromResult(true);
 
-    public async Task<IDictionary<string, int>> QueryAllInventoriesAsync(string sku)
-    {
-        var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
-        return inventoryPart?.Inventory;
-    }
+    public async Task<IDictionary<string, int>> QueryAllInventoriesAsync(string sku) =>
+        (await _productService.GetProductAsync(sku))?.GetMaybe<InventoryPart>()?.Inventory;
 
     public async Task<int> QueryInventoryAsync(string sku, string fullSku = null)
     {
-        var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
+        var inventoryPart = (await _productService.GetProductAsync(sku))?.GetMaybe<InventoryPart>();
 
         // If fullSku is specified, look for Price Variant Product's inventory.
         var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? sku : fullSku;
@@ -70,8 +67,11 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
         try
         {
-            var inventoryPart = productPart?.ContentItem.As<InventoryPart>();
-            if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
+            if (productPart?.ContentItem.TryGet<InventoryPart>(out var inventoryPart) != true ||
+                inventoryPart.IgnoreInventory.Value)
+            {
+                return;
+            }
 
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;
             var inventoryRootIdentifier = inventoryIdentifier.Contains('-')

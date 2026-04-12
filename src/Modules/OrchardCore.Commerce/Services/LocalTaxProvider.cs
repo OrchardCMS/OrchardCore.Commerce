@@ -47,6 +47,6 @@ public class LocalTaxProvider : ITaxProvider
         await ITaxProvider.AllOrNoneAsync(model, items => Task.FromResult(HasTaxRate(items)));
 
     private static int HasTaxRate(IList<PromotionAndTaxProviderContextLineItem> items) => items
-        .SelectWhere(item => item.Content.ContentItem.As<TaxPart>())
+        .SelectWhere(item => item.Content.ContentItem.GetMaybe<TaxPart>())
         .Count(taxPart => taxPart.TaxRate.Value == 0 || (taxPart.GrossPrice.Amount.IsValid && taxPart.TaxRate.Value > 0));
 }
