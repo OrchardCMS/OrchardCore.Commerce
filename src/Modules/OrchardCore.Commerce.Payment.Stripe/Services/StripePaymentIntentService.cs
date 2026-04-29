@@ -62,8 +62,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
         };
 
         var paymentIntent = await CreatePaymentIntentAsync(paymentIntentOptions);
-
-        await _paymentIntentPersistence.StoreAsync(paymentIntent.Id, shoppingCartId);
+        await _paymentIntentPersistence.StoreAsync(shoppingCartId, new(paymentIntent.Id, total));
 
         return paymentIntent;
     }
