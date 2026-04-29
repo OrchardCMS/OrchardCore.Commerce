@@ -1,4 +1,4 @@
-(function(Stripe) {
+(function setupStripePaymentForm(Stripe) {
     function toString(data, key, defaultValue) {
         if (!data[key]) return defaultValue;
         const value = `${data[key]}`.trim();
