@@ -45,18 +45,10 @@
     <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
     <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
     <script at="Foot" depends-on="StripeJs,StripePaymentForm">
+        const stripeKey = @publishableKey.JsonHtmlContent();
+        const stripeAccountId = @(string.IsNullOrEmpty(accountId) ? Html.Raw("undefined") : Json.Serialize(new { StripeAccount = accountId }));
         stripePaymentForm(
-            @if (!string.IsNullOrEmpty(accountId))
-            {
-                <text>
-                Stripe(@publishableKey.JsonHtmlContent(), @Json.Serialize(new { StripeAccount = accountId })),
-                </text>
-            }
-            else {
-                <text>
-                Stripe(@publishableKey.JsonHtmlContent()),
-                </text>
-            }
+            Stripe(stripeKey, stripeAccountId),
             @clientSecret.JsonHtmlContent(),
             @paymentIntentId.JsonHtmlContent(),
             document.querySelector('input[name="__RequestVerificationToken"]').value,
