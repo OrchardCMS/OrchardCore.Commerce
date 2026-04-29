@@ -84,7 +84,7 @@ public static class ShoppingCartHelpersExtensions
         string shoppingCartId,
         IContent order)
     {
-        var orderPart = order as OrderPart ?? order.As<OrderPart>();
+        var orderPart = order as OrderPart ?? order.GetOrCreate<OrderPart>();
 
         return service.CreateShoppingCartViewModelAsync(
             shoppingCartId,

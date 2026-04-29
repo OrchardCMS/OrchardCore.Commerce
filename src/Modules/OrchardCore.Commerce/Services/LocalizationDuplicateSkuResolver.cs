@@ -8,9 +8,9 @@ namespace OrchardCore.Commerce.Services;
 public class LocalizationDuplicateSkuResolver : IDuplicateSkuResolver
 {
     public IList<ContentItem> UpdateDuplicatesList(ContentItem current, IList<ContentItem> otherProducts) =>
-        current.As<LocalizationPart>()?.LocalizationSet is { } currentLocalizationSet
+        current.GetOrCreate<LocalizationPart>()?.LocalizationSet is { } currentLocalizationSet
             ? otherProducts
-                .WhereNot(other => other.As<LocalizationPart>()?.LocalizationSet == currentLocalizationSet)
+                .WhereNot(other => other.GetOrCreate<LocalizationPart>()?.LocalizationSet == currentLocalizationSet)
                 .ToList()
             : otherProducts;
 }

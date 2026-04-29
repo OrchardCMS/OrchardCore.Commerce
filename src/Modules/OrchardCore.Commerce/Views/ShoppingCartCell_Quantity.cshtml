@@ -10,7 +10,7 @@
     var minOrderQuantity = 0;
     var maxOrderQuantity = 1;
 
-    var inventoryPart = line.Product.ContentItem.As<InventoryPart>();
+    var inventoryPart = line.Product.ContentItem.GetOrCreate<InventoryPart>();
     if (inventoryPart != null)
     {
         minOrderQuantity = (int)(inventoryPart.MinimumOrderQuantity.Value > 0 && !inventoryPart.IgnoreInventory.Value

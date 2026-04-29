@@ -103,7 +103,7 @@ public class PaymentController : PaymentBaseController
     public async Task<IActionResult> PaymentRequest(string orderId)
     {
         if (await _contentManager.GetAsync(orderId) is not { } order ||
-            order.As<OrderPart>() is not { } orderPart)
+            order.GetOrCreate<OrderPart>() is not { } orderPart)
         {
             return NotFound();
         }

@@ -14,7 +14,7 @@ public class ExactlySettingsConfiguration : IConfigureOptions<ExactlySettings>
     {
         var siteSettings = _siteService
             .GetSiteSettings()
-            .As<ExactlySettings>();
+            .GetOrCreate<ExactlySettings>();
 
         siteSettings.CopyTo(options);
     }

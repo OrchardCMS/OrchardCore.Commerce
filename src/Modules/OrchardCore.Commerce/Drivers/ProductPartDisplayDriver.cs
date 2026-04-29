@@ -59,7 +59,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
         part.Sku = IsSkuReadOnly ? skuBefore : part.Sku.ToUpperInvariant();
 
-        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
+        if (part.ContentItem.GetOrCreate<InventoryPart>() is { } inventoryPart)
         {
             part.CanBeBought.Clear();
 
@@ -105,7 +105,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         viewModel.IsSkuReadOnly = IsSkuReadOnly;
         viewModel.ProductPart = part;
 
-        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
+        if (part.ContentItem.GetOrCreate<InventoryPart>() is { } inventoryPart)
         {
             foreach (var (key, value) in inventoryPart.FilterOutdatedEntries())
             {

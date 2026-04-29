@@ -63,7 +63,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
 
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string shoppingCartId = null)
     {
-        var settings = (await _siteService.GetSiteSettingsAsync())?.As<ExactlySettings>();
+        var settings = (await _siteService.GetSiteSettingsAsync())?.GetOrCreate<ExactlySettings>();
         return string.IsNullOrEmpty(settings?.ApiKey) || string.IsNullOrEmpty(settings.ProjectId) ? null : new object();
     }
 

@@ -163,7 +163,7 @@ public class ShoppingCartController : Controller
             if (!isValid)
             {
                 var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))?
-                    .As<InventoryPart>()?.MinimumOrderQuantity.Value ?? 0;
+                    .GetOrCreate<InventoryPart>()?.MinimumOrderQuantity.Value ?? 0;
 
                 // Choose new quantity based on whether Minimum Order Quantity has a value.
                 line.Quantity = (int)(minOrderQuantity > 0 ? minOrderQuantity : 1);
