@@ -15,10 +15,16 @@
         const paymentFormSelector = toString(data, 'paymentFormSelector', '.payment-form');
         const payButtonSelector = toString(data, 'payButtonSelector', '.pay-button-stripe');
         const payTextSelector = toString(data, 'payTextSelector', '.pay-text');
-        const paymentProcessingContainerSelector = toString(data, 'paymentProcessingContainerSelector', '.payment-processing-container');
+        const paymentProcessingContainerSelector = toString(
+            data,
+            'paymentProcessingContainerSelector',
+            '.payment-processing-container');
         const placeOfPaymentSelector = toString(data, 'placeOfPaymentSelector', '#payment-form_payment');
         const payButtonValueSelector = toString(data, 'payButtonValueSelector', '.pay-button-value');
-        const addressesSelector = toString(data, 'addressesSelector', '*[id^="OrderPart_ShippingAddress_"], *[id^="OrderPart_BillingAddress_"]');
+        const addressesSelector = toString(
+            data,
+            'addressesSelector',
+            '*[id^="OrderPart_ShippingAddress_"], *[id^="OrderPart_BillingAddress_"]');
         const addressSelector = toString(data, 'addressSelector', '.address');
         const addressTitleSelector = toString(data, 'addressTitleSelector', '.address__title');
 
@@ -142,8 +148,8 @@
                         debounce = false;
                         submitButton.disabled = false;
 
-                        // This is not essential if it fails so we intentionally don't catch it. This way if there is an error it can still be seen in the
-                        // browser log during development or UI testing.
+                        // This is not essential if it fails so we intentionally don't catch it. This way if there is an
+                        // error it can still be seen in the browser log during development or UI testing.
                         if ('error' in priceJson) throw priceJson;
 
                         payButtonValue.setAttribute('data-value', priceJson.value);
