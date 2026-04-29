@@ -6,7 +6,7 @@
     <!-- The Orchard Core version should always be x.y.0 of the latest minor version for maximum compatibility when
          distributed as NuGet packages. On the other hand, the consuming projects (including OrchardCore.Commerce.Web)
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
-    <OrchardCoreVersion>3.0.0-preview-18960</OrchardCoreVersion>
+    <OrchardCoreVersion>3.0.0-preview-18991</OrchardCoreVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +22,7 @@
     <PackageVersion Include="Lombiq.Tests.UI" Version="14.2.2-alpha.7.osoe-925" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="14.2.2-alpha.7.osoe-925" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="14.2.2-alpha.7.osoe-925" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="4.6.0" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.7.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
