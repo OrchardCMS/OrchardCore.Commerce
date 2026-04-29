@@ -9,6 +9,7 @@ using OrchardCore.Settings;
 using Stripe;
 using System.Threading;
 using System.Threading.Tasks;
+using static OrchardCore.Commerce.Payment.Stripe.Constants.PaymentIntentStatuses;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
@@ -52,6 +53,13 @@ public class StripePaymentIntentService : IStripePaymentIntentService
 
     public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string shoppingCartId = null)
     {
+        var paymentIntentInfo = await _paymentIntentPersistence.RetrieveAsync(shoppingCartId);
+        if (paymentIntentInfo?.Amount == total &&
+            await GetPaymentIntentAsync(paymentIntentInfo.PaymentIntentId) is { Status: RequiresPaymentMethod } storedPaymentIntent)
+        {
+            return storedPaymentIntent;
+        }
+
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
