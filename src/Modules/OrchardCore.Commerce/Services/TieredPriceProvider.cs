@@ -41,7 +41,7 @@ public class TieredPriceProvider : IPriceProvider
 
     private ShoppingCartItem AddPriceToShoppingCartItem(ShoppingCartItem item, ProductPart productPart)
     {
-        if (productPart.ContentItem.As<TieredPricePart>() is not { } tieredPricePart) return null;
+        if (!productPart.ContentItem.TryGet<TieredPricePart>(out var tieredPricePart)) return null;
 
         return item.WithPrice(
             new PrioritizedPrice(1, tieredPricePart.GetPriceForQuantity(_moneyService, item.Quantity)));

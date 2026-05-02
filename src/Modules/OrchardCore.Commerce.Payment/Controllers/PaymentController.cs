@@ -102,8 +102,7 @@ public class PaymentController : PaymentBaseController
     [HttpGet("checkout/paymentrequest/{orderId}")]
     public async Task<IActionResult> PaymentRequest(string orderId)
     {
-        if (await _contentManager.GetAsync(orderId) is not { } order ||
-            order.As<OrderPart>() is not { } orderPart)
+        if (await _contentManager.GetAsync(orderId) is not { } order || !order.TryGet<OrderPart>(out var orderPart))
         {
             return NotFound();
         }

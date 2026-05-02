@@ -100,8 +100,7 @@ public static class PaymentEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
-        if (await contentManager.GetAsync(orderId) is not { } order ||
-            order.As<OrderPart>() is not { } orderPart)
+        if (await contentManager.GetAsync(orderId) is not { } order || !order.TryGet<OrderPart>(out var orderPart))
         {
             return TypedResults.BadRequest();
         }

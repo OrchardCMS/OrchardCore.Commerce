@@ -24,7 +24,7 @@ public class InventoryProductEstimationContextUpdater : IProductEstimationContex
     {
         // If the product doesn't have InventoryPart then this event is not applicable.
         if (await _productService.GetProductAsync(model.ShoppingCartItem.ProductSku) is not { } product ||
-            product.ContentItem.As<InventoryPart>() is not { } inventory)
+            !product.ContentItem.TryGet<InventoryPart>(out var inventory))
         {
             return model;
         }

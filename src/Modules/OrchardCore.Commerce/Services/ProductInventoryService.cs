@@ -38,8 +38,8 @@ public class ProductInventoryService : IProductInventoryService
     {
         foreach (var line in lines)
         {
-            var productPart = line.Product.ContentItem.As<ProductPart>();
-            if (productPart.As<InventoryPart>() is not { } inventoryPart)
+            var productPart = line.Product.ContentItem.GetOrCreate<ProductPart>();
+            if (productPart.ContentItem?.TryGet<InventoryPart>(out var inventoryPart) != true)
             {
                 continue;
             }

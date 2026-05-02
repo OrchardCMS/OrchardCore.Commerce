@@ -15,7 +15,7 @@ public class RegionSettingsConfiguration : IConfigureOptions<RegionSettings>
     {
         var settings = _siteService
             .GetSiteSettings()
-            .As<RegionSettings>();
+            .GetOrCreate<RegionSettings>();
 
         options.AllowedRegions = settings.AllowedRegions;
     }

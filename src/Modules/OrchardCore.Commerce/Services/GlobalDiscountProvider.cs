@@ -73,7 +73,7 @@ public class GlobalDiscountProvider : IPromotionProvider
 
         int totalQuantity = model.Items.Sum(item => item.Quantity);
         return globalDiscountItems
-            .As<DiscountPart>()
+            .GetOrCreate<DiscountPart>()
             .Where(part => part.IsApplicable(totalQuantity, model.PurchaseDateTime ?? _clock.UtcNow))
             .Select(part => (DiscountInformation)part);
     }
