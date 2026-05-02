@@ -25,7 +25,7 @@ public class ProductPartIndexProvider : IndexProvider<ContentItem>
                     return null;
                 }
 
-                var productPart = contentItem.GetOrCreate<ProductPart>();
+                var productPart = contentItem.As<ProductPart>();
 
                 if (productPart?.Sku == null)
                 {

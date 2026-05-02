@@ -50,7 +50,7 @@ public class OrderPartToOrderSummaryLiquidFilter : ILiquidFilter
             .Select(viewModel => new
             {
                 ViewModel = viewModel,
-                TaxRate = viewModel.ProductPart.ContentItem?.GetOrCreate<TaxPart>()?.TaxRate?.Value,
+                TaxRate = viewModel.ProductPart.ContentItem?.As<TaxPart>()?.TaxRate?.Value,
                 UnitTax = viewModel.UnitPrice - Round(viewModel.UnitPriceValue, viewModel),
                 SubTotal = subTotal,
                 TaxTotal = total - subTotal,

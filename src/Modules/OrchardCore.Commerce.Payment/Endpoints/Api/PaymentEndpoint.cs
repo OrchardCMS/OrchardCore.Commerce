@@ -101,7 +101,7 @@ public static class PaymentEndpoint
         }
 
         if (await contentManager.GetAsync(orderId) is not { } order ||
-            order.GetOrCreate<OrderPart>() is not { } orderPart)
+            order.As<OrderPart>() is not { } orderPart)
         {
             return TypedResults.BadRequest();
         }

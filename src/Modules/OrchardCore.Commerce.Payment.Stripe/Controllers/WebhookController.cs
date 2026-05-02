@@ -44,7 +44,7 @@ public class WebhookController : ControllerBase
         var json = await streamReader.ReadToEndAsync(HttpContext.RequestAborted);
         try
         {
-            var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
+            var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
             var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
 
             var stripeEvent = _stripeHelperService.PrepareStripeEvent(

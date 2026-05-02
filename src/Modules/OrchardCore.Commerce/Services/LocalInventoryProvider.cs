@@ -33,13 +33,13 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
     public async Task<IDictionary<string, int>> QueryAllInventoriesAsync(string sku)
     {
-        var inventoryPart = (await _productService.GetProductAsync(sku))?.GetOrCreate<InventoryPart>();
+        var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
         return inventoryPart?.Inventory;
     }
 
     public async Task<int> QueryInventoryAsync(string sku, string fullSku = null)
     {
-        var inventoryPart = (await _productService.GetProductAsync(sku))?.GetOrCreate<InventoryPart>();
+        var inventoryPart = (await _productService.GetProductAsync(sku))?.As<InventoryPart>();
 
         // If fullSku is specified, look for Price Variant Product's inventory.
         var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? sku : fullSku;
@@ -70,7 +70,7 @@ public class LocalInventoryProvider : IProductInventoryProvider
 
         try
         {
-            var inventoryPart = productPart?.ContentItem.GetOrCreate<InventoryPart>();
+            var inventoryPart = productPart?.ContentItem.As<InventoryPart>();
             if (inventoryPart == null || inventoryPart.IgnoreInventory.Value) return;
 
             var inventoryIdentifier = string.IsNullOrEmpty(fullSku) ? productPart.Sku : fullSku;

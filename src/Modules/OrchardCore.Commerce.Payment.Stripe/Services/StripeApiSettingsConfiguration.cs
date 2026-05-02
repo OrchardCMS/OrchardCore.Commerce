@@ -26,7 +26,7 @@ public class StripeApiSettingsConfiguration : IConfigureOptions<StripeApiSetting
     {
         var settings = _siteService
             .GetSiteSettings()
-            .GetOrCreate<StripeApiSettings>();
+            .As<StripeApiSettings>();
 
         options.PublishableKey = settings.PublishableKey;
 

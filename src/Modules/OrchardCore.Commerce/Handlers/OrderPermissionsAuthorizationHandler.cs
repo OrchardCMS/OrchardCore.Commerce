@@ -16,7 +16,7 @@ public class OrderPermissionsAuthorizationHandler : AuthorizationHandler<Permiss
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
-        if (context.Resource is not IContent order || order.GetOrCreate<OrderPart>() is null)
+        if (context.Resource is not IContent order || order.As<OrderPart>() is null)
         {
             return;
         }

@@ -55,7 +55,7 @@ public class PriceVariantProvider : IPriceProvider
 
     private async Task<ShoppingCartItem> AddPriceToShoppingCartItemAsync(ShoppingCartItem item, ProductPart productPart)
     {
-        var priceVariantsPart = productPart.ContentItem.GetOrCreate<PriceVariantsPart>();
+        var priceVariantsPart = productPart.ContentItem.As<PriceVariantsPart>();
 
         if (priceVariantsPart is { Variants: { } variants } && variants.Any())
         {

@@ -66,13 +66,13 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task<string> GetPublicKeyAsync()
     {
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
         return stripeApiSettings.PublishableKey;
     }
 
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
     {
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
 
         if (string.IsNullOrEmpty(stripeApiSettings.PublishableKey) ||
             string.IsNullOrEmpty(stripeApiSettings.SecretKey) ||
@@ -194,7 +194,7 @@ public class StripePaymentService : IStripePaymentService
             },
             orderPart);
 
-        if (!order.GetOrCreate<OrderPart>().LineItems.Any() && updateModelAccessor != null)
+        if (!order.As<OrderPart>().LineItems.Any() && updateModelAccessor != null)
         {
             updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(OrderPart.LineItems),
@@ -239,7 +239,7 @@ public class StripePaymentService : IStripePaymentService
             };
         }
 
-        var part = order.GetOrCreate<OrderPart>() ?? new OrderPart();
+        var part = order.As<OrderPart>() ?? new OrderPart();
         var succeeded = fetchedPaymentIntent.Status == PaymentIntentStatuses.Succeeded;
 
         // Looks like there is nothing to do here.
@@ -277,7 +277,7 @@ public class StripePaymentService : IStripePaymentService
         });
         await _contentManager.UpdateAsync(order);
 
-        if (order.GetOrCreate<StripePaymentPart>().RetryCounter <= 10)
+        if (order.As<StripePaymentPart>().RetryCounter <= 10)
         {
             return new PaymentOperationStatusViewModel
             {
@@ -305,7 +305,7 @@ public class StripePaymentService : IStripePaymentService
             await _paymentService.UpdateOrderWithDriversAsync(order);
         }
 
-        var part = order.GetOrCreate<OrderPart>();
+        var part = order.As<OrderPart>();
         var billing = part.BillingAddress.Address ?? new Address();
         var shipping = part.ShippingAddress.Address ?? new Address();
 

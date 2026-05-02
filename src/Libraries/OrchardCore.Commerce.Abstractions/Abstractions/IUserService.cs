@@ -38,9 +38,9 @@ public static class UserServiceExtensions
             : Task.FromResult<User>(null);
 
     public static TPart GetUserSetting<TPart>(this IUserService service, User user, string contentType = null)
-        where TPart : ContentPart, new()
+        where TPart : ContentPart
     {
         contentType ??= typeof(TPart).Name.RegexReplace("Part$", string.Empty);
-        return service.GetUserSetting(user, contentType)?.GetOrCreate<TPart>();
+        return service.GetUserSetting(user, contentType)?.As<TPart>();
     }
 }

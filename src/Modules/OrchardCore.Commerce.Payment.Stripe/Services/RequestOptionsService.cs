@@ -27,7 +27,7 @@ public class RequestOptionsService : IRequestOptionsService
 
         _apiKeyAccessor = siteSettings =>
             siteSettings
-                .GetOrCreate<StripeApiSettings>()
+                .As<StripeApiSettings>()
                 .SecretKey
                 .DecryptStripeApiKey(dataProtectionProvider, logger);
     }
@@ -41,9 +41,9 @@ public class RequestOptionsService : IRequestOptionsService
         var requestOptions = await GetOrCreateRequestOptionsAsync();
         requestOptions.IdempotencyKey = Guid.NewGuid().ToString();
 
-        if (siteSettings.GetOrCreate<StripeApiSettings>().AccountId != null)
+        if (siteSettings.As<StripeApiSettings>().AccountId != null)
         {
-            requestOptions.StripeAccount = siteSettings.GetOrCreate<StripeApiSettings>().AccountId;
+            requestOptions.StripeAccount = siteSettings.As<StripeApiSettings>().AccountId;
         }
 
         return requestOptions;
@@ -53,7 +53,7 @@ public class RequestOptionsService : IRequestOptionsService
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var apiKey = _apiKeyAccessor(siteSettings);
-        var accountId = siteSettings.GetOrCreate<StripeApiSettings>().AccountId;
+        var accountId = siteSettings.As<StripeApiSettings>().AccountId;
 
         _requestOptions =
             accountId != null

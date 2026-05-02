@@ -34,7 +34,7 @@ public class ContentLocalizationProductService : ProductService
 
         // Shortcut if there are no duplicate localized products.
         if (skuList.Count == products.Count ||
-            (await _siteService.GetSiteSettingsAsync()).GetOrCreate<LocalizationSettings>() is not { } localizationSettings)
+            (await _siteService.GetSiteSettingsAsync()).As<LocalizationSettings>() is not { } localizationSettings)
         {
             return products;
         }
@@ -53,7 +53,7 @@ public class ContentLocalizationProductService : ProductService
             }
 
             result.Add(parts
-                .OrderByDescending(part => priority.IndexOf(part.ContentItem.GetOrCreate<LocalizationPart>()?.Culture))
+                .OrderByDescending(part => priority.IndexOf(part.ContentItem.As<LocalizationPart>()?.Culture))
                 .First());
         }
 

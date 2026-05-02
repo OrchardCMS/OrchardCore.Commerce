@@ -311,7 +311,7 @@ public class PaymentService : IPaymentService
                 Status = PaymentOperationStatus.NotFound,
             };
 
-        var status = order.GetOrCreate<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
+        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
 
         if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
         {
@@ -394,10 +394,10 @@ public class PaymentService : IPaymentService
     {
         var order = await _contentManager.GetAsync(orderId) ?? await _contentManager.NewAsync(Order);
         var isNew = order.IsNew();
-        var part = order.GetOrCreate<OrderPart>();
+        var part = order.As<OrderPart>();
 
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
-        if (cart.Items.Any() && !order.GetOrCreate<OrderPart>().LineItems.Any() && updateModelAccessor != null)
+        if (cart.Items.Any() && !order.As<OrderPart>().LineItems.Any() && updateModelAccessor != null)
         {
             await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
 

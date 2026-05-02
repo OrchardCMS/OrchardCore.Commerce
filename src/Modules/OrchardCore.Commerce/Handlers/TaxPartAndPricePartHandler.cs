@@ -33,7 +33,7 @@ public class TaxPartAndPricePartHandler : CreatingOrUpdatingPartHandler<PricePar
 
     protected override async Task CreatingOrUpdatingAsync(PricePart part)
     {
-        if (part.ContentItem.GetOrCreate<TaxPart>() is not { } taxPart) return;
+        if (part.ContentItem.As<TaxPart>() is not { } taxPart) return;
 
         var taxRate = taxPart.TaxRate?.Value ?? 0;
 

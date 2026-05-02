@@ -20,7 +20,7 @@ public class OrderPartHandler : CreatingOrUpdatingPartHandler<OrderPart>
 
     protected override async Task CreatingOrUpdatingAsync(OrderPart part)
     {
-        if (part.ContentItem.GetOrCreate<OrderPart>() is not { } orderPart) return;
+        if (part.ContentItem.As<OrderPart>() is not { } orderPart) return;
 
         var guid = orderPart.OrderId.Text ?? Guid.NewGuid().ToString();
         orderPart.OrderId.Text = guid;

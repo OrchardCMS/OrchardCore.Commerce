@@ -28,7 +28,7 @@ public class SubscriptionPartIndexProvider : IndexProvider<ContentItem>
             .When(contentItem => contentItem.Has<SubscriptionPart>())
             .Map(contentItem =>
             {
-                var subscriptionPart = contentItem.GetOrCreate<SubscriptionPart>();
+                var subscriptionPart = contentItem.As<SubscriptionPart>();
 
                 return new SubscriptionPartIndex
                 {
