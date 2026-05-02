@@ -41,12 +41,14 @@ public class DiscountPartHandler : CreatingOrUpdatingPartHandler<DiscountPart>
             await InvalidateEvenStateAsync();
         }
 
-        if (part.ContentItem.GetMaybe<PricePart>()?.Price is { } pricePartPrice &&
+        var isPricePartInvalid = part.ContentItem.GetMaybe<PricePart>()?.Price is { } pricePartPrice &&
             pricePartPrice.Currency.Equals(discountAmount.Currency) &&
-            pricePartPrice < discountAmount ||
-            part.ContentItem.GetMaybe<TaxPart>()?.GrossPrice.Amount is { IsValid: true } taxPartGrossPriceAmount &&
+            pricePartPrice < discountAmount;
+        var isTaxPartInvalid = part.ContentItem.GetMaybe<TaxPart>()?.GrossPrice.Amount is { IsValid: true } taxPartGrossPriceAmount &&
             taxPartGrossPriceAmount.Currency.Equals(discountAmount.Currency) &&
-            taxPartGrossPriceAmount < discountAmount)
+            taxPartGrossPriceAmount < discountAmount;
+
+        if (isPricePartInvalid || isTaxPartInvalid)
         {
             await InvalidateNegativePriceStateAsync();
         }
