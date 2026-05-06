@@ -13,6 +13,17 @@
     string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
     string paymentIntentId = Model.PaymentProviderData?.PaymentIntentId ?? string.Empty;
     string accountId = Model.PaymentProviderData?.AccountId?.Trim();
+    
+    var urlPrefix = Url.Content("~/").TrimEnd('/');
+    var missingText = T["A value is required for %LABEL%."].Value;
+    var stripeData = new
+    {
+        clientSecret,
+        paymentIntentId,
+        urlPrefix,
+        publishableKey,
+        missingText,
+    }; 
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -45,24 +56,8 @@
     <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
     <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
     <script at="Foot" depends-on="StripeJs,StripePaymentForm">
-        stripePaymentForm(
-            @if (!string.IsNullOrEmpty(accountId))
-            {
-                <text>
-                Stripe(@publishableKey.JsonHtmlContent(), @Json.Serialize(new { StripeAccount = accountId })),
-                </text>
-            }
-            else {
-                <text>
-                Stripe(@publishableKey.JsonHtmlContent()),
-                </text>
-            }
-            @clientSecret.JsonHtmlContent(),
-            @paymentIntentId.JsonHtmlContent(),
-            document.querySelector('input[name="__RequestVerificationToken"]').value,
-            @Url.Content("~/").TrimEnd('/').JsonHtmlContent(),
-            @T["There was an error during confirming the payment, please try again."].Json(),
-            @T["A value is required for %LABEL%."].Json(),
-            @(Orchard.Action<StripeController>(controller => controller.UpdatePaymentIntent("PAYMENT_INTENT")).JsonHtmlContent()));
+        const data = @Json.Serialize(stripeData);
+        data.stripeAccountId = @(string.IsNullOrEmpty(accountId) ? Html.Raw("undefined") : Json.Serialize(new { StripeAccount = accountId }));
+        stripePaymentForm(data);
     </script>
 }

@@ -61,7 +61,7 @@ public class StripePaymentProvider : IPaymentProvider
             });
         }
 
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).As<StripeApiSettings>();
+        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
 
         return new StripePaymentProviderData
         {

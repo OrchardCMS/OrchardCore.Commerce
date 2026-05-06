@@ -32,7 +32,7 @@ public class TaxRateTaxProvider : ITaxProvider
                 var taxRate = MatchTaxRate(
                     taxRates.Rates,
                     model.ShippingAddress,
-                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text,
+                    item.Content.GetMaybe<TaxPart>()?.ProductTaxCode?.Text,
                     model.VatNumber,
                     model.IsCorporation);
 
@@ -51,14 +51,14 @@ public class TaxRateTaxProvider : ITaxProvider
         await ITaxProvider.AllOrNoneAsync(model, async items =>
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var taxRates = siteSettings.As<TaxRateSettings>();
-            if (taxRates?.Rates.Any() != true) return 0;
+            var taxRates = siteSettings.GetOrCreate<TaxRateSettings>();
+            if (!taxRates.Rates.Any()) return 0;
 
             return items.Count(item =>
                 MatchTaxRate(
                     taxRates.Rates,
                     model.ShippingAddress,
-                    item.Content.As<TaxPart>()?.ProductTaxCode?.Text,
+                    item.Content.GetMaybe<TaxPart>()?.ProductTaxCode?.Text,
                     model.VatNumber,
                     model.IsCorporation) >= 0);
         });

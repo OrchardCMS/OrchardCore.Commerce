@@ -40,7 +40,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
     {
         // If the product doesn't have InventoryPart then this event is not applicable.
         if (await _productService.GetProductAsync(item.ProductSku) is not { } productPart ||
-            productPart.ContentItem.As<InventoryPart>() is not { } inventoryPart)
+            !productPart.ContentItem.TryGet<InventoryPart>(out var inventoryPart))
         {
             return null;
         }
@@ -52,7 +52,7 @@ public class InventoryShoppingCartEvents : ShoppingCartEventsBase
         }
 
         // If there are no attributes on a Price Variant Product, there's no need for the below checks.
-        if (productPart.ContentItem.As<PriceVariantsPart>() is not null && !item.Attributes.Any())
+        if (productPart.ContentItem.Has<PriceVariantsPart>() && !item.Attributes.Any())
         {
             return null;
         }

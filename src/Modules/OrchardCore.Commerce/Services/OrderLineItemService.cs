@@ -139,7 +139,7 @@ public class OrderLineItemService : IOrderLineItemService
         var allProducts = await _session.Query<ContentItem, ProductPartIndex>().ListAsync();
         foreach (var product in allProducts)
         {
-            var productSku = product.As<ProductPart>().Sku;
+            var productSku = product.GetOrCreate<ProductPart>().Sku;
 
             var booleanAttributes = (await _productAttributeService.GetProductAttributeFieldsAsync(product))
                 .Where(attribute => attribute.Field is BooleanProductAttributeField)

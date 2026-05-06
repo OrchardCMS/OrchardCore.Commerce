@@ -11,11 +11,8 @@ public class CheckoutAddressService : ICheckoutAddressService
 
     public CheckoutAddressService(ISiteService siteService) => _siteService = siteService;
 
-    public virtual async Task<bool> ShouldIgnoreAddressAsync(CheckoutViewModel checkoutViewModel)
-    {
-        var settings = (await _siteService.GetSiteSettingsAsync()).As<CheckoutAddressSettings>();
-        var shouldIgnore = settings.ShouldIgnoreAddress;
-
-        return shouldIgnore;
-    }
+    public virtual async Task<bool> ShouldIgnoreAddressAsync(CheckoutViewModel checkoutViewModel) =>
+        (await _siteService.GetSiteSettingsAsync())
+        .GetOrCreate<CheckoutAddressSettings>()
+        .ShouldIgnoreAddress;
 }
