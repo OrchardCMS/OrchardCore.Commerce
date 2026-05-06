@@ -55,7 +55,8 @@ public class StripePaymentIntentService : IStripePaymentIntentService
     {
         var paymentIntentInfo = await _paymentIntentPersistence.RetrieveAsync(shoppingCartId);
         if (paymentIntentInfo?.Amount == total &&
-            await GetPaymentIntentAsync(paymentIntentInfo.PaymentIntentId) is { Status: RequiresPaymentMethod } storedPaymentIntent)
+            await GetPaymentIntentAsync(paymentIntentInfo.PaymentIntentId) is { Status: RequiresPaymentMethod } storedPaymentIntent &&
+            storedPaymentIntent.Amount == AmountHelpers.GetPaymentAmount(total))
         {
             return storedPaymentIntent;
         }
