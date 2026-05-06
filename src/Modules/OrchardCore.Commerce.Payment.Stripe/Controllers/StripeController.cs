@@ -13,25 +13,14 @@ namespace OrchardCore.Commerce.Payment.Stripe.Controllers;
 
 public class StripeController : PaymentBaseController
 {
-    private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IStripePaymentService _stripePaymentService;
 
     public StripeController(
         IOrchardServices<StripeController> services,
         INotifier notifier,
-        IPaymentIntentPersistence paymentIntentPersistence,
         IStripePaymentService stripePaymentService)
-        : base(notifier, services.Logger.Value)
-    {
-        _paymentIntentPersistence = paymentIntentPersistence;
+        : base(notifier, services.Logger.Value) =>
         _stripePaymentService = stripePaymentService;
-    }
-
-    public async Task<IActionResult> UpdatePaymentIntent(string paymentIntent)
-    {
-        await _paymentIntentPersistence.StoreAsync(paymentIntent);
-        return Ok();
-    }
 
     [AllowAnonymous]
     [HttpGet("stripe/middleware")]

@@ -7,7 +7,9 @@ using OrchardCore.Commerce.Payment.Stripe.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Helpers;
 using OrchardCore.Settings;
 using Stripe;
+using System.Threading;
 using System.Threading.Tasks;
+using static OrchardCore.Commerce.Payment.Stripe.Constants.PaymentIntentStatuses;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Services;
 
@@ -19,6 +21,8 @@ public class StripePaymentIntentService : IStripePaymentIntentService
     private readonly ISiteService _siteService;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly IStringLocalizer<StripePaymentIntentService> T;
+
+    private CancellationToken Aborted => _hca.HttpContext?.RequestAborted ?? default;
 
     public StripePaymentIntentService(
         PaymentIntentService paymentIntentService,
@@ -44,11 +48,19 @@ public class StripePaymentIntentService : IStripePaymentIntentService
             paymentIntentId,
             paymentIntentGetOptions,
             await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _hca.HttpContext.RequestAborted);
+            Aborted);
     }
 
     public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string shoppingCartId = null)
     {
+        var paymentIntentInfo = await _paymentIntentPersistence.RetrieveAsync(shoppingCartId);
+        if (paymentIntentInfo?.Amount == total &&
+            await GetPaymentIntentAsync(paymentIntentInfo.PaymentIntentId) is { Status: RequiresPaymentMethod } storedPaymentIntent &&
+            storedPaymentIntent.Amount == AmountHelpers.GetPaymentAmount(total))
+        {
+            return storedPaymentIntent;
+        }
+
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var paymentIntentOptions = new PaymentIntentCreateOptions
         {
@@ -59,8 +71,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
         };
 
         var paymentIntent = await CreatePaymentIntentAsync(paymentIntentOptions);
-
-        await _paymentIntentPersistence.StoreAsync(paymentIntent.Id, shoppingCartId);
+        await _paymentIntentPersistence.StoreAsync(shoppingCartId, new(paymentIntent.Id, total));
 
         return paymentIntent;
     }
@@ -69,7 +80,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
         await _paymentIntentService.CreateAsync(
             options,
             await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _hca.HttpContext.RequestAborted);
+            Aborted);
 
     public async Task<PaymentIntent> GetOrUpdatePaymentIntentAsync(
         string paymentIntentId,
@@ -93,6 +104,6 @@ public class StripePaymentIntentService : IStripePaymentIntentService
             paymentIntentId,
             updateOptions,
             await _requestOptionsService.SetIdempotencyKeyAsync(),
-            _hca.HttpContext.RequestAborted);
+            Aborted);
     }
 }
