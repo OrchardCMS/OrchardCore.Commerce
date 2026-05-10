@@ -7,6 +7,7 @@ namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
 public sealed class CurrencyConverter : JsonConverter<ICurrency>
 {
+    public static readonly CurrencyConverter Instance = new();
     public override ICurrency Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
         Currency.FromIsoCode(reader.GetString());
 

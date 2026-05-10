@@ -10,6 +10,7 @@ namespace OrchardCore.Commerce.MoneyDataType.Serialization;
 
 public sealed class AmountConverter : JsonConverter<Amount>
 {
+    public static readonly AmountConverter Instance = new();
     public const string ValueName = "value";
     public const string CurrencyName = "currency";
     public const string Name = "name";
