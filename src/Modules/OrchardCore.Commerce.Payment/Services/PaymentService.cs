@@ -264,10 +264,12 @@ public class PaymentService : IPaymentService
             try
             {
                 return mustBeFree
-                    ? await this.UpdateAndRedirectToFinishedOrderAsync(order,
+                    ? await this.UpdateAndRedirectToFinishedOrderAsync(
+                        order,
                         shoppingCartId,
                         FeatureIds.WithoutPaymentProvider)
-                    : await this.UpdateAndRedirectToFinishedOrderAsync(order,
+                    : await this.UpdateAndRedirectToFinishedOrderAsync(
+                        order,
                         shoppingCartId,
                         FeatureIds.NoNecessaryPaymentProvider);
             }

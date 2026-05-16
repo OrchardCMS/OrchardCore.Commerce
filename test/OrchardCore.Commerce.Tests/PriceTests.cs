@@ -35,7 +35,7 @@ public class PriceTests
             Assert.Single(item.Prices);
             Assert.Equal(
                 item.Prices.Single().Price.Value,
-                (await productService.GetProductAsync(item.ProductSku)).ContentItem.As<PricePart>().PriceField.Amount.Value,
+                (await productService.GetProductAsync(item.ProductSku)).ContentItem.GetOrCreate<PricePart>().PriceField.Amount.Value,
                 precision: 2);
         }
     }
@@ -109,7 +109,7 @@ public class PriceTests
         product.Alter<PricePart>(pricePart => pricePart.Price = new Amount(price, Currency.Euro));
         product.GetOrCreate<ProductPart>();
         product.Alter<ProductPart>(productPart => productPart.Sku = sku);
-        return product.As<ProductPart>();
+        return product.GetOrCreate<ProductPart>();
     }
 
     private sealed class DummyProductService : IProductService
