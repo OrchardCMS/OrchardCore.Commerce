@@ -53,7 +53,7 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
         var netPriceExists = newHeaders.Exists(header => header.Name == "Net Price");
         var insertIndex = netPriceExists
             ? newHeaders.FindIndex(header => header.Name == "Net Price")
-            : newHeaders.FindIndex(header => header.Name is "Price" or "Gross Price");
+            : newHeaders.FindIndex(header => header.Name is "Price" or "Price (including Tax)");
 
         newHeaders.Insert(insertIndex, H["Old Price"]);
 

@@ -54,20 +54,20 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
             line.AdditionalData.SetNetPrice(line.UnitPrice);
 
             // Other promotions will use UnitPrice and LinePrice as the base of the promotion. We need to modify these
-            // to the gross price, otherwise the promotion would be applied on the net price and that would be used.
+            // to the Price (including Tax), otherwise the promotion would be applied on the net price and that would be used.
             line.LinePrice = price * line.Quantity;
             line.UnitPrice = price;
         }
 
         var newHeaders = headers
-            .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
+            .Select(header => header.Name == "Price" ? H["Price (including Tax)"] : header)
             .ToList();
 
-        // When taxes are specified, Gross Price is always applicable, while Net Price is optional.
+        // When taxes are specified, Price (including Tax) is always applicable, while Net Price is optional.
         var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<PriceDisplaySettings>();
         if (priceDisplaySettings.UseNetPriceDisplay)
         {
-            var grossIndex = newHeaders.FindIndex(header => header.Name == "Gross Price");
+            var grossIndex = newHeaders.FindIndex(header => header.Name == "Price (including Tax)");
             newHeaders.Insert(grossIndex, H["Net Price"]);
         }
 

@@ -58,7 +58,7 @@ public class TaxBehaviorTests : UITestBase
         ExecuteTestAfterSetupAsync(
             async context =>
             {
-                const string error = "You must either provide both Gross Price and Tax Rate, or neither of them.";
+                const string error = "You must either provide both Price (including Tax) and Tax Rate, or neither of them.";
 
                 await context.SignInDirectlyAsync();
                 await context.GoToContentItemEditorByIdAsync(TestProduct);

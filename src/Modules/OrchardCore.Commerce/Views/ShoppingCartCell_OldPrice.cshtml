@@ -13,7 +13,7 @@
     // Determine which price format to use based on corresponding site setting.
     var oldPrice = priceDisplaySettings.UseNetPriceDisplay ? oldNetPrice : oldGrossPrice;
 
-    // If old gross price is null, old net price is to be used regardless of price display settings.
+    // If old Price (including Tax) is null, old net price is to be used regardless of price display settings.
     if (oldGrossPrice == null)
     {
         oldPrice = oldNetPrice;

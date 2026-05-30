@@ -84,17 +84,17 @@ _Listing available Products makes browsing easier for customers._
 Shopping without a shopping cart is a difficult task: while it's not outside the realm of possibility, let's make our lives easier by creating one. For this, we're going to need to create Zones, Layers, and finally a Widget.
 
 - **Zones**:
-Navigate to _Design > Settings > Zones_ and define the zone where you want the Shopping Cart Widget to be rendered. Make sure to use zones that are also referenced by your Layout. To learn more about Zones, refer to their [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/Layers/#zones).
+  Navigate to _Design > Settings > Zones_ and define the zone where you want the Shopping Cart Widget to be rendered. Make sure to use zones that are also referenced by your Layout. To learn more about Zones, refer to their [documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/Layers/#zones).
 
 ![Zones.](../assets/images/create-webshop/step-5/zones.png)
 
 _Header, Content, Footer, any zone can be created here. Except for Ozone, that's illegal._
 
 - **Layers**:
-A Layer is also going to be necessary for the Widget, so if you don't have one set up yet, see the [relevant documentation page](https://docs.orchardcore.net/en/latest/reference/modules/Layers/).
+  A Layer is also going to be necessary for the Widget, so if you don't have one set up yet, see the [relevant documentation page](https://docs.orchardcore.net/en/latest/reference/modules/Layers/).
 
 - **Widget**:
-Widgets are content items that have their stereotype set to Widget. The Commerce module creates a simple Shopping Cart Widget when it's enabled, so we'll just use that. For more extensive documentation about Widgets, see the [usual place](https://docs.orchardcore.net/en/main/docs/reference/modules/Widgets/).
+  Widgets are content items that have their stereotype set to Widget. The Commerce module creates a simple Shopping Cart Widget when it's enabled, so we'll just use that. For more extensive documentation about Widgets, see the [usual place](https://docs.orchardcore.net/en/main/docs/reference/modules/Widgets/).
 
 To actually add a Widget, return to the _Design > Widgets_ page. Click the Add Widget button that's within the Zone of your choice, and select Shopping Cart Widget.
 
@@ -168,7 +168,7 @@ _With these settings, one variant may be chosen and added to the cart. Different
 
 ### Taxation
 
-The module comes with basic tax support capabilities that include specifying gross prices and tax rates on products. These can be utilized by attaching `TaxPart` to content types that also have `ProductPart`. For a detailed overview of the feature, see its [documentation](../features/taxation.md).
+The module comes with basic tax support capabilities that include specifying Price (including Tax)s and tax rates on products. These can be utilized by attaching `TaxPart` to content types that also have `ProductPart`. For a detailed overview of the feature, see its [documentation](../features/taxation.md).
 
 ![Tax fields.](../assets/images/create-webshop/taxation/tax-fields.png)
 
@@ -193,5 +193,6 @@ _These inventory-related fields show up in the editor after the `InventoryPart` 
 ## Video
 
 For a more visual presentation of a simple webshop, [check out the relevant recording](https://www.youtube.com/watch?v=SQHVUUUT8O0) from the 2023 Orchard Harvest below.
+
 <!-- markdownlint-disable-next-line MD033 -->
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/SQHVUUUT8O0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

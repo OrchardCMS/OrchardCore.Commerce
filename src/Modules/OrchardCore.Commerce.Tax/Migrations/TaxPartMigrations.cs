@@ -33,7 +33,7 @@ public class TaxPartMigrations : DataMigration
                         Hint = "The ID that identifies the product of product category for taxing purposes.",
                     }))
                 .WithField(part => part.GrossPrice, part => part
-                    .WithDisplayName("Gross Price")
+                    .WithDisplayName("Price (including Tax)")
                     .WithSettings(new PriceFieldSettings
                     {
                         Hint = "The price with tax. If specified along with the Tax Rate, then Price content part is " +
@@ -43,7 +43,7 @@ public class TaxPartMigrations : DataMigration
                     .WithDisplayName("Tax Rate")
                     .WithSettings(new NumericFieldSettings
                     {
-                        Hint = "The tax percentage of the net price, which is added to get the gross price.",
+                        Hint = "The tax percentage of the net price, which is added to get the Price (including Tax).",
                         Minimum = 0,
                         Maximum = 100,
                     }))

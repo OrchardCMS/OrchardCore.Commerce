@@ -57,7 +57,7 @@
     <tr>
         <td class="font-weight-bold">@T["Total"]</td>
         <td colspan="@(viewModel.Headers.Count - 2)" class="shopping-cart-table-totals">
-            @* If there's no Gross Price, display original totals. *@
+            @* If there's no Price (including Tax), display original totals. *@
             @if (grossTotal.Value == 0)
             {
                 @foreach (var total in viewModel.Totals)
@@ -78,7 +78,7 @@
                     }
                     @if (priceDisplaySettings.UseGrossPriceDisplay)
                     {
-                        @T["Gross Price: {0}", grossTotal]
+                        @T["Price (including Tax): {0}", grossTotal]
                     }
                 </p>
             }

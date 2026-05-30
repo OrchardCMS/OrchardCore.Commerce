@@ -6,12 +6,12 @@ Tax support is an ongoing process based on user feedback and contribution. See b
 
 Enable the _Orchard Core Commerce - Tax_ feature. This grants you the _Tax_ content part, which you can attach to any content type that has a [_Product_ part](products-and-prices.md). This adds the following settings to the content item editor:
 
-- Tax Code: You may use this field to store a product classification code or tax bracket name. This can be used for calculating gross price or for accounting.
-- Gross Price & Tax Rate: These are used by the basic tax support, see below.
+- Tax Code: You may use this field to store a product classification code or tax bracket name. This can be used for calculating Price (including Tax) or for accounting.
+- Price (including Tax) & Tax Rate: These are used by the basic tax support, see below.
 
 ## Basic tax support
 
-Filling out the _Gross Price_ and _Tax Rate_ (percentage) fields, automatically updates the product's regular price field to the calculated net price during publish. For products configured like this the shopping cart shows the _Gross Price_ instead of the _Price_ field (so it only works with _Price_ part and not the _PriceVariant_ part). This is suitable for stores that only ship locally.
+Filling out the _Price (including Tax)_ and _Tax Rate_ (percentage) fields, automatically updates the product's regular price field to the calculated net price during publish. For products configured like this the shopping cart shows the _Price (including Tax)_ instead of the _Price_ field (so it only works with _Price_ part and not the _PriceVariant_ part). This is suitable for stores that only ship locally.
 
 ## Locally maintained tax rates
 
