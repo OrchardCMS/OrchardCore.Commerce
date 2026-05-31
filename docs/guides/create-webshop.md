@@ -168,7 +168,7 @@ _With these settings, one variant may be chosen and added to the cart. Different
 
 ### Taxation
 
-The module comes with basic tax support capabilities that include specifying Price (including Tax)s and tax rates on products. These can be utilized by attaching `TaxPart` to content types that also have `ProductPart`. For a detailed overview of the feature, see its [documentation](../features/taxation.md).
+The module comes with basic tax support capabilities that include specifying gross prices and tax rates on products. These can be utilized by attaching `TaxPart` to content types that also have `ProductPart`. For a detailed overview of the feature, see its [documentation](../features/taxation.md).
 
 ![Tax fields.](../assets/images/create-webshop/taxation/tax-fields.png)
 
