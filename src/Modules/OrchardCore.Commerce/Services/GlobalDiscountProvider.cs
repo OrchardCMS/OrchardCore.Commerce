@@ -64,7 +64,7 @@ public class GlobalDiscountProvider : IPromotionProvider
             .Select(type => type.Name)
             .ToList();
 
-        var globalDiscountItems = await _session
+        IEnumerable<ContentItem> globalDiscountItems = await _session
             .Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(typeNames) && index.Published)
             .ListAsync(_hca.HttpContext?.RequestAborted ?? default);
 
