@@ -61,7 +61,7 @@ public class ExactlyService : IExactlyService
     {
         // If the request is not successful, try to parse the response error and throw a more specific FrontendException
         // instead of the ApiException.
-        if (result.Error?.Content is { } error && error.StartsWith('{'))
+        if (result.Error is ApiException { Content: { } error } && error.StartsWith('{'))
         {
             try
             {
