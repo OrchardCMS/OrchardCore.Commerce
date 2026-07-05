@@ -27,5 +27,5 @@ public interface IProductAttributeService
     /// Updates the <see cref="ProductPart.CanBeBought"/> dictionary and applies the changes to the SKU key of <see cref="ProductAttributeField"/>.
     /// </summary>
     /// <param name="part"><see cref="ProductPart"/>.</param>
-    void UpdateCanBeBoughtForProductAttributeField(ProductPart part);
+    void UpdateCanBeBoughtForProductAttributeField(ProductPart part, string skuBefore);
 }
