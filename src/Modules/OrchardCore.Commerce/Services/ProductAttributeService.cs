@@ -75,21 +75,18 @@ public class ProductAttributeService : IProductAttributeService
         if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart))
         {
             var filteredInventory = inventoryPart.FilterOutdatedEntries();
+            part.CanBeBought.Clear();
+            // If an inventory's value is below 1 and back ordering is not allowed, corresponding
+            // CanBeBought entry needs to be set to false; should be set to true otherwise.
+            foreach (var inventory in filteredInventory)
+            {
+                part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+            }
 
             // If SKU was updated, CanBeBought keys also need to be updated.
             if (part.Sku != skuBefore)
             {
                 UpdateAvailabilityKeys(part, filteredInventory.Count);
-            }
-            else
-            {
-                part.CanBeBought.Clear();
-                // If an inventory's value is below 1 and back ordering is not allowed, corresponding
-                // CanBeBought entry needs to be set to false; should be set to true otherwise.
-                foreach (var inventory in filteredInventory)
-                {
-                    part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
-                }
             }
         }
         else
