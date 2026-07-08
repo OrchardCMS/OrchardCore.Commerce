@@ -67,6 +67,8 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         viewModel.Sku = part.Sku;
         viewModel.IsSkuReadOnly = IsSkuReadOnly;
         viewModel.ProductPart = part;
+        _productAttributeService.UpdateCanBeBoughtForProductAttributeField(part, part.Sku);
+
         viewModel.CanBeBought = part.CanBeBought;
         viewModel.Attributes = await _productAttributeService.GetProductAttributeFieldsAsync(part.ContentItem);
     }
