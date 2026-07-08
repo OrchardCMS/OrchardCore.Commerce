@@ -76,6 +76,7 @@ public class ProductAttributeService : IProductAttributeService
         {
             var filteredInventory = inventoryPart.FilterOutdatedEntries();
             part.CanBeBought.Clear();
+
             // If an inventory's value is below 1 and back ordering is not allowed, corresponding
             // CanBeBought entry needs to be set to false; should be set to true otherwise.
             foreach (var inventory in filteredInventory)
