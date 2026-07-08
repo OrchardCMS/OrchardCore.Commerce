@@ -23,7 +23,5 @@ public class ProductPartViewModel : ISkuHolderContent
     public IEnumerable<ProductAttributeDescription> Attributes { get; set; }
 
     [BindNever]
-#pragma warning disable CA2227
-    public IDictionary<string, bool> CanBeBought { get; set; } = new Dictionary<string, bool>();
-#pragma warning restore CA2227
+    public IDictionary<string, bool> CanBeBought { get; private set; } = new Dictionary<string, bool>();
 }
