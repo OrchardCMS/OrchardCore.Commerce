@@ -17,11 +17,13 @@ public interface IDuplicateSkuResolver
     /// <param name="current">The product currently being evaluated.</param>
     /// <param name="otherProducts">A list of existing duplicates with the same SKU.</param>
     /// <returns>The list of unresolved duplicates.</returns>
-    Task<IList<ContentItem>> UpdateDuplicatesListAsync(ContentItem current, IList<ContentItem> otherProducts) =>
+    Task<IReadOnlyList<ContentItem>> UpdateDuplicatesListAsync(
+        ContentItem current,
+        IReadOnlyList<ContentItem> otherProducts) =>
         Task.FromResult(UpdateDuplicatesList(current, otherProducts));
 
     /// <inheritdoc cref="UpdateDuplicatesListAsync"/>
-    IList<ContentItem> UpdateDuplicatesList(ContentItem current, IList<ContentItem> otherProducts) =>
+    IReadOnlyList<ContentItem> UpdateDuplicatesList(ContentItem current, IReadOnlyList<ContentItem> otherProducts) =>
         throw new InvalidOperationException(
             $"Please implement either {nameof(UpdateDuplicatesListAsync)} or {nameof(UpdateDuplicatesList)}.");
 }
