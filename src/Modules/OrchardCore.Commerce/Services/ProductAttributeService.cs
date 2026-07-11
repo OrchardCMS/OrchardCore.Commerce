@@ -1,5 +1,7 @@
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Inventory;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
@@ -66,6 +68,48 @@ public class ProductAttributeService : IProductAttributeService
                 .Select(fieldDefinition => (PartDefinition: partDefinition, FieldDefinition: fieldDefinition))
                 .Where(pair => pair.FieldDefinition.Name == fieldName))
             .FirstOrDefault();
+    }
+
+    public void UpdateCanBeBoughtForProductAttributeField(ProductPart part, string skuBefore)
+    {
+        if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart))
+        {
+            var filteredInventory = inventoryPart.FilterOutdatedEntries();
+            part.CanBeBought.Clear();
+
+            // If an inventory's value is below 1 and back ordering is not allowed, corresponding
+            // CanBeBought entry needs to be set to false; should be set to true otherwise.
+            foreach (var inventory in filteredInventory)
+            {
+                part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
+            }
+
+            // If SKU was updated, CanBeBought keys also need to be updated.
+            if (part.Sku != skuBefore)
+            {
+                UpdateAvailabilityKeys(part, filteredInventory.Count);
+            }
+        }
+        else
+        {
+            part.CanBeBought[part.ContentItem.ContentItemId] = true;
+        }
+    }
+
+    private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount)
+    {
+        var newAvailabilities = new Dictionary<string, bool>();
+        foreach (var entry in part.CanBeBought)
+        {
+            var updatedKey = inventoryCount > 1
+                ? $"{part.Sku}-{entry.Key.Split('-')[^1]}"
+                : part.Sku;
+
+            newAvailabilities.Add(updatedKey, entry.Value);
+        }
+
+        part.CanBeBought.Clear();
+        part.CanBeBought.AddRange(newAvailabilities);
     }
 
     private ProductAttributeFieldSettings GetFieldSettings(

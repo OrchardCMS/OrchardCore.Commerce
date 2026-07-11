@@ -22,4 +22,10 @@ public interface IProductAttributeService
     /// </summary>
     (ContentTypePartDefinition PartDefinition, ContentPartFieldDefinition FieldDefinition)
         GetFieldDefinition(ContentTypeDefinition type, string attributeName);
+
+    /// <summary>
+    /// Updates the <see cref="ProductPart.CanBeBought"/> dictionary and applies the changes to the SKU key of <see cref="ProductAttributeField"/>.
+    /// </summary>
+    /// <param name="part"><see cref="ProductPart"/>.</param>
+    void UpdateCanBeBoughtForProductAttributeField(ProductPart part, string skuBefore);
 }

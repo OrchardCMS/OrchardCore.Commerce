@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
@@ -21,12 +22,14 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
     private readonly IEnumerable<IDuplicateSkuResolver> _duplicateSkuResolvers;
     private readonly IEnumerable<ISkuGenerator> _skuGenerators;
     private readonly IStringLocalizer<SkuValidationHandler> T;
+    private readonly IProductAttributeService _productAttributeService;
 
     public SkuValidationHandler(
         ISession session,
         IUpdateModelAccessor updateModelAccessor,
         IEnumerable<IDuplicateSkuResolver> duplicateSkuResolvers,
         IEnumerable<ISkuGenerator> skuGenerators,
+        IProductAttributeService productAttributeService,
         IStringLocalizer<SkuValidationHandler> stringLocalizer)
     {
         _session = session;
@@ -34,10 +37,13 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
         _duplicateSkuResolvers = duplicateSkuResolvers;
         _skuGenerators = skuGenerators;
         T = stringLocalizer;
+        _productAttributeService = productAttributeService;
     }
 
     public override async Task CreatingAsync(CreateContentContext context, ProductPart part)
     {
+        var skuBefore = part.Sku ?? string.Empty;
+
         // If we have an SKU generator and the SKU is either empty or it must not be manually filled, then overwrite it
         // with the generated value.
         if (_skuGenerators.HighestPriority() is { } generator &&
@@ -45,6 +51,8 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
         {
             part.Sku = await generator.GenerateSkuAsync(part.ContentItem);
             part.ContentItem.Apply(part);
+
+            _productAttributeService.UpdateCanBeBoughtForProductAttributeField(part, skuBefore);
         }
 
         await CreatingOrUpdatingAsync(part);
