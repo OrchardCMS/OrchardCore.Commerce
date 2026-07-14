@@ -11,6 +11,20 @@ public class SkuService : ISkuService
     public SkuService(IEnumerable<ISkuGenerator> skuGenerators) => _skuGenerators = skuGenerators;
 
     public virtual bool IsReadOnly() => _skuGenerators.HighestPriority() is { IsManualAllowed: false };
+
+    public virtual void Update(ProductPart part, string skuBefore)
+    {
+        if (!string.IsNullOrEmpty(skuBefore))
+        {
+            // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
+            part.Sku = IsReadOnly() ? skuBefore : part.Sku.ToUpperInvariant();
+        }
+        else
+        {
+            part.Sku = part.Sku.ToUpperInvariant();
+        }
+    }
+
     public virtual bool TryGetGenerator(ProductPart part, out ISkuGenerator skuGenerator)
     {
         var generator = _skuGenerators.HighestPriority();

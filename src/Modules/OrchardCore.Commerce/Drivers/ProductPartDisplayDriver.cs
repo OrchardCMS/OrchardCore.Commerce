@@ -52,8 +52,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             return await EditAsync(part, context);
         }
 
-        // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
-        part.Sku = IsSkuReadOnly ? skuBefore : part.Sku.ToUpperInvariant();
+        _skuService.Update(part, skuBefore);
 
         _productAttributeService.UpdateCanBeBoughtForProductAttributeField(part, skuBefore);
 

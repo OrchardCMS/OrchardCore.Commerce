@@ -15,6 +15,13 @@ public interface ISkuService
     bool IsReadOnly();
 
     /// <summary>
+    /// Update the SKU of a <see cref="ProductPart"/> based on the registered SKU generator, if any.
+    /// </summary>
+    /// <param name="part"><see cref="ProductPart"/>.</param>
+    /// <param name="skuBefore">Previous SKU.</param>
+    void Update(ProductPart part, string skuBefore);
+
+    /// <summary>
     /// Judges whether a <see cref="ProductPart"/> has to be a SKU generator associated with it, and if so, returns true with the generator.
     /// </summary>
     /// <param name="part">The <see cref="ProductPart"/>.</param>
