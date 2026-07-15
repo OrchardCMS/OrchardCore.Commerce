@@ -14,15 +14,14 @@ public class SkuService : ISkuService
 
     public virtual void Update(ProductPart part, string skuBefore)
     {
-        if (!string.IsNullOrEmpty(skuBefore))
+        if (!string.IsNullOrEmpty(skuBefore) && IsReadOnly())
         {
             // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
-            part.Sku = IsReadOnly() ? skuBefore : part.Sku.ToUpperInvariant();
+            part.Sku = skuBefore;
+            return;
         }
-        else
-        {
-            part.Sku = part.Sku.ToUpperInvariant();
-        }
+
+        part.Sku = part.Sku.ToUpperInvariant();
     }
 
     public virtual bool TryGetGenerator(ProductPart part, out ISkuGenerator skuGenerator)
