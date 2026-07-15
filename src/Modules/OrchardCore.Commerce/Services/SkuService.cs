@@ -26,19 +26,12 @@ public class SkuService : ISkuService
 
     public virtual bool TryGetGenerator(ProductPart part, out ISkuGenerator skuGenerator)
     {
-        var generator = _skuGenerators.HighestPriority();
+        skuGenerator = _skuGenerators.HighestPriority();
 
-        // No generator available
-        if (generator == null)
-        {
-            skuGenerator = null;
-            return false;
-        }
+        // No generator is available.
+        if (skuGenerator == null) return false;
 
-        // Condition for allowing the generator
-        bool canGenerate = string.IsNullOrWhiteSpace(part.Sku) && !generator.IsManualAllowed;
-
-        skuGenerator = canGenerate ? generator : null;
-        return canGenerate;
+        // Condition for allowing the generator.
+        return string.IsNullOrWhiteSpace(part.Sku) && !skuGenerator.IsManualAllowed;
     }
 }
