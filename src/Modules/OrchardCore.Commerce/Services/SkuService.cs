@@ -16,7 +16,6 @@ public class SkuService : ISkuService
     {
         if (!string.IsNullOrEmpty(skuBefore) && IsReadOnly())
         {
-            // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
             part.Sku = skuBefore;
             return;
         }
@@ -24,14 +23,21 @@ public class SkuService : ISkuService
         part.Sku = part.Sku.ToUpperInvariant();
     }
 
+    /// <summary>
+    /// If the user didn't fill in the SKU even though manual entry is allowed, the system should generate one. (true || false).
+    /// If the user manually edited the HTML before submitting the form, but manual entry is not allowed,
+    /// the system should overwrite the submitted value with a generated one(false || true).
+    /// Keep virtual for different implementations to override the default behavior.
+    /// </summary>
+    /// <param name="part"><see cref="ProductPart"/>.</param>
+    /// <param name="skuGenerator">returns the <see cref="ISkuGenerator"/>.</param>
+    /// <returns>True when an <see cref="ISkuGenerator"/> should be used; otherwise, false.</returns>
     public virtual bool TryGetGenerator(ProductPart part, out ISkuGenerator skuGenerator)
     {
         skuGenerator = _skuGenerators.HighestPriority();
 
-        // No generator is available.
         if (skuGenerator == null) return false;
 
-        // Condition for allowing the generator.
-        return string.IsNullOrWhiteSpace(part.Sku) && !skuGenerator.IsManualAllowed;
+        return string.IsNullOrWhiteSpace(part.Sku) || !skuGenerator.IsManualAllowed;
     }
 }

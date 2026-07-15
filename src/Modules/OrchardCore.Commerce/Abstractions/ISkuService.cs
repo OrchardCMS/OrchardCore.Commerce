@@ -25,7 +25,7 @@ public interface ISkuService
     /// Judges whether a <see cref="ProductPart"/> has to be a SKU generator associated with it, and if so, returns true with the generator.
     /// </summary>
     /// <param name="part">The <see cref="ProductPart"/>.</param>
-    /// <param name="skuGenerator">returns the generator.</param>
+    /// <param name="skuGenerator">returns the <see cref="ISkuGenerator"/>.</param>
     /// <returns>
     /// True when an <see cref="ISkuGenerator"/> should be used; otherwise, false.
     /// </returns>
