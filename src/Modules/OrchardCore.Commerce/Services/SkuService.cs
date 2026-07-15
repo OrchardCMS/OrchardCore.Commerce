@@ -23,15 +23,14 @@ public class SkuService : ISkuService
         part.Sku = part.Sku.ToUpperInvariant();
     }
 
-    /// <summary>
+    /// <summary>Tries to retrieve an SKU generator, if possible.</summary>
+    /// <returns>True when an <see cref="ISkuGenerator"/> should be used; otherwise, false.</returns>
+    /// <remarks><para>
     /// If the user didn't fill in the SKU even though manual entry is allowed, the system should generate one. (true || false).
     /// If the user manually edited the HTML before submitting the form, but manual entry is not allowed,
     /// the system should overwrite the submitted value with a generated one(false || true).
     /// Keep virtual for different implementations to override the default behavior.
-    /// </summary>
-    /// <param name="part"><see cref="ProductPart"/>.</param>
-    /// <param name="skuGenerator">returns the <see cref="ISkuGenerator"/>.</param>
-    /// <returns>True when an <see cref="ISkuGenerator"/> should be used; otherwise, false.</returns>
+    /// </para></remarks>
     public virtual bool TryGetGenerator(ProductPart part, out ISkuGenerator skuGenerator)
     {
         skuGenerator = _skuGenerators.HighestPriority();
