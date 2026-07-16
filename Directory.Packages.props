@@ -22,7 +22,7 @@
     <PackageVersion Include="Lombiq.Tests.UI" Version="14.2.2-alpha.14.osoe-925" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="14.2.2-alpha.14.osoe-925" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="14.2.2-alpha.14.osoe-925" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="4.9.0" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.10.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
