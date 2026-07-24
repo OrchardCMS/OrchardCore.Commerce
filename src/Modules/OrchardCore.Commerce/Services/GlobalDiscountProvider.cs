@@ -55,7 +55,7 @@ public class GlobalDiscountProvider : IPromotionProvider
     private async Task<IEnumerable<DiscountInformation>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
         if (_hca.HttpContext is not { } context) return [];
-        
+
         var typeNames = (await _contentDefinitionStore.GetContentDefinitionAsync())
             .ContentTypeDefinitionRecords
             .Where(type => type
