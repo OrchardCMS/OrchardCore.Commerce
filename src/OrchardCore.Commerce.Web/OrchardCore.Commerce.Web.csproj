@@ -20,7 +20,6 @@
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
     <PackageReference Include="Microsoft.Identity.Web"/>
     <PackageReference Include="OrchardCore.Commerce.Translations" />
-    <PackageReference Include="SixLabors.ImageSharp" />
 
     <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
          Directory.Packages.props file for more details. -->
@@ -36,8 +35,10 @@
     <ProjectReference Include="..\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
+  <!-- Security Updates - make sure to check if these are still necessary -->
   <ItemGroup>
-    <None Remove=".ps1-analyzer-stamp" />
+    <!-- From OrchardCore.Application.Cms.Targets. -->
+    <PackageReference Include="System.Security.Cryptography.Xml" NoWarn="NU1510" />
   </ItemGroup>
 
 </Project>
