@@ -7,7 +7,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class LocalizationDuplicateSkuResolver : IDuplicateSkuResolver
 {
-    public IList<ContentItem> UpdateDuplicatesList(ContentItem current, IList<ContentItem> otherProducts) =>
+    public IReadOnlyList<ContentItem> UpdateDuplicatesList(ContentItem current, IReadOnlyList<ContentItem> otherProducts) =>
         current.GetMaybe<LocalizationPart>()?.LocalizationSet is { } currentLocalizationSet
             ? otherProducts
                 .WhereNot(other => other.GetMaybe<LocalizationPart>()?.LocalizationSet == currentLocalizationSet)

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Indexes;
@@ -7,9 +7,7 @@ using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 
@@ -69,22 +67,19 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
             return;
         }
 
-        var alreadyExisting = (await _session
-                .Query<ContentItem, ProductPartIndex>(index =>
-                    index.Sku == part.Sku &&
-                    index.ContentItemId != part.ContentItem.ContentItemId)
-                .ListAsync())
-            .AsList();
+        var alreadyExisting = await _session
+            .Query<ContentItem, ProductPartIndex>(index =>
+                index.Sku == part.Sku &&
+                index.ContentItemId != part.ContentItem.ContentItemId)
+            .ListReadOnlyAsync();
 
         var resolvers = _duplicateSkuResolvers.AsList();
-        for (var i = 0; i < resolvers.Count && alreadyExisting.Any(); i++)
+        for (var i = 0; i < resolvers.Count && alreadyExisting.Count > 0; i++)
         {
-            alreadyExisting =
-                await resolvers[i].UpdateDuplicatesListAsync(part.ContentItem, alreadyExisting) ??
-                Array.Empty<ContentItem>();
+            alreadyExisting = await resolvers[i].UpdateDuplicatesListAsync(part.ContentItem, alreadyExisting) ?? [];
         }
 
-        if (alreadyExisting.Any())
+        if (alreadyExisting.Count > 0)
         {
             _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(part.Sku),

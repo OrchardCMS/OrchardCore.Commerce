@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
     <IsPackable>false</IsPackable>
-    <OrchardCoreVersion>3.0.0-preview-18997</OrchardCoreVersion>
+    <OrchardCoreVersion>3.0.1</OrchardCoreVersion>
   </PropertyGroup>
 
   <!-- Currently we don't have any ps1/psm1/psd1 files in the repo, so this is commented out. Add the ProjectReference
@@ -20,7 +20,6 @@
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
     <PackageReference Include="Microsoft.Identity.Web"/>
     <PackageReference Include="OrchardCore.Commerce.Translations" />
-    <PackageReference Include="SixLabors.ImageSharp" />
 
     <!-- The Orchard Core packages must override the version to target the latest patch version in this project. See the
          Directory.Packages.props file for more details. -->
@@ -36,8 +35,10 @@
     <ProjectReference Include="..\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
+  <!-- Security Updates - make sure to check if these are still necessary -->
   <ItemGroup>
-    <None Remove=".ps1-analyzer-stamp" />
+    <!-- From OrchardCore.Application.Cms.Targets. -->
+    <PackageReference Include="System.Security.Cryptography.Xml" NoWarn="NU1510" />
   </ItemGroup>
 
 </Project>
