@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -15,18 +14,18 @@ namespace OrchardCore.Commerce.Drivers;
 public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 {
     private readonly IProductAttributeService _productAttributeService;
-    private readonly ISkuGenerator _skuGenerator;
+    private readonly ISkuService _skuService;
     private readonly IStringLocalizer T;
 
-    private bool IsSkuReadOnly => _skuGenerator?.IsManualAllowed == false;
+    private bool IsSkuReadOnly => _skuService.IsReadOnly();
 
     public ProductPartDisplayDriver(
         IProductAttributeService productAttributeService,
-        IEnumerable<ISkuGenerator> skuGenerators,
+        ISkuService skuService,
         IStringLocalizer<ProductPartDisplayDriver> stringLocalizer)
     {
         _productAttributeService = productAttributeService;
-        _skuGenerator = skuGenerators.HighestPriority();
+        _skuService = skuService;
         T = stringLocalizer;
     }
 
@@ -53,8 +52,7 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             return await EditAsync(part, context);
         }
 
-        // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
-        part.Sku = IsSkuReadOnly ? skuBefore : part.Sku.ToUpperInvariant();
+        _skuService.Update(part, skuBefore);
 
         _productAttributeService.UpdateCanBeBoughtForProductAttributeField(part, skuBefore);
 

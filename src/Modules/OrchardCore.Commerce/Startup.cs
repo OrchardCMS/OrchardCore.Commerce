@@ -70,6 +70,7 @@ public class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IResourceFilterProvider, ResourceFilters>();
+        services.AddScoped<ISkuService, SkuService>();
 
         // Product
         services.AddSingleton<IIndexProvider, ProductPartIndexProvider>();
