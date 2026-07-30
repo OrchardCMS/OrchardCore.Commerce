@@ -23,7 +23,7 @@ public class UserSettingsOrderEvents : IOrderEvents
     public async Task FinalizeAsync(ContentItem order, string shoppingCartId, string paymentProviderName)
     {
         // Saving addresses.
-        var orderPart = order.As<OrderPart>();
+        var orderPart = order.GetOrCreate<OrderPart>();
 
         if (_hca.HttpContext != null && await _userService.GetFullUserAsync(_hca.HttpContext.User) is { } user)
         {

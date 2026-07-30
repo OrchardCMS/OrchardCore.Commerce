@@ -99,7 +99,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         model.InitializeVariants(variants, values, currencies);
 
         // When creating a new PriceVariantsProduct item, initialize default inventories.
-        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart && !inventoryPart.Inventory.Any())
+        if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart) && !inventoryPart.Inventory.Any())
         {
             foreach (var variantKey in allVariantsKeys)
             {

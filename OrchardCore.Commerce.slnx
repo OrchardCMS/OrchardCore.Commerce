@@ -1,0 +1,84 @@
+<Solution>
+  <Folder Name="/.github/" />
+  <Folder Name="/.github/workflows/">
+    <File Path=".github/workflows/build-and-test.yml" />
+    <File Path=".github/workflows/crowdin.yml" />
+    <File Path=".github/workflows/publish-cloudsmith-tag.yml" />
+    <File Path=".github/workflows/publish-cloudsmith.yml" />
+    <File Path=".github/workflows/publish-nuget.yml" />
+    <File Path=".github/workflows/renovate.yml" />
+    <File Path=".github/workflows/validate-pull-request.yml" />
+  </Folder>
+  <Folder Name="/docs/">
+    <File Path="docs/index.md" />
+    <File Path="docs/requirements.txt" />
+  </Folder>
+  <Folder Name="/docs/features/">
+    <File Path="docs/features/boolean-product-attribute-field.md" />
+    <File Path="docs/features/exactly-payment.md" />
+    <File Path="docs/features/inventory-part.md" />
+    <File Path="docs/features/inventory.md" />
+    <File Path="docs/features/numeric-product-attribute-field.md" />
+    <File Path="docs/features/payment-providers.md" />
+    <File Path="docs/features/price-part.md" />
+    <File Path="docs/features/price-variants-part.md" />
+    <File Path="docs/features/product-part.md" />
+    <File Path="docs/features/products-and-prices.md" />
+    <File Path="docs/features/promotions.md" />
+    <File Path="docs/features/stripe-payment.md" />
+    <File Path="docs/features/taxation.md" />
+    <File Path="docs/features/text-product-attribute-field.md" />
+    <File Path="docs/features/tiered-price-part.md" />
+    <File Path="docs/features/user-features.md" />
+    <File Path="docs/features/workflows.md" />
+  </Folder>
+  <Folder Name="/docs/guides/">
+    <File Path="docs/guides/create-webshop.md" />
+  </Folder>
+  <Folder Name="/docs/releases/">
+    <File Path="4.0.0.md" />
+    <File Path="docs/releases/3.0.0.md" />
+  </Folder>
+  <Folder Name="/docs/resources/" />
+  <Folder Name="/docs/resources/libraries/">
+    <File Path="docs/resources/libraries/README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".codespellrc" />
+    <File Path=".config/dotnet-tools.json" />
+    <File Path=".gitattributes" />
+    <File Path=".github/workflows/build-and-test.yml" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="License.md" />
+    <File Path="mkdocs.yml" />
+    <File Path="NuGet.config" />
+    <File Path="Readme.md" />
+    <File Path="renovate.json5" />
+    <File Path="Reset-Local.ps1" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/OrchardCore.Commerce.Web/OrchardCore.Commerce.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/Libraries/">
+    <Project Path="src/Libraries/OrchardCore.Commerce.Abstractions/OrchardCore.Commerce.Abstractions.csproj" />
+    <Project Path="src/Libraries/OrchardCore.Commerce.AddressDataType/OrchardCore.Commerce.AddressDataType.csproj" />
+    <Project Path="src/Libraries/OrchardCore.Commerce.MoneyDataType/OrchardCore.Commerce.MoneyDataType.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/OrchardCore.Commerce.ContentFields/OrchardCore.Commerce.ContentFields.csproj" />
+    <Project Path="src/Modules/OrchardCore.Commerce.Inventory/OrchardCore.Commerce.Inventory.csproj" />
+    <Project Path="src/Modules/OrchardCore.Commerce.Payment.Exactly/OrchardCore.Commerce.Payment.Exactly.csproj" />
+    <Project Path="src/Modules/OrchardCore.Commerce.Payment.Stripe/OrchardCore.Commerce.Payment.Stripe.csproj" />
+    <Project Path="src/Modules/OrchardCore.Commerce.Payment/OrchardCore.Commerce.Payment.csproj" />
+    <Project Path="src/Modules/OrchardCore.Commerce.Promotion/OrchardCore.Commerce.Promotion.csproj" />
+    <Project Path="src/Modules/OrchardCore.Commerce.Tax/OrchardCore.Commerce.Tax.csproj" />
+    <Project Path="src/Modules/OrchardCore.Commerce/OrchardCore.Commerce.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/OrchardCore.Commerce.Tests.UI.Shortcuts/OrchardCore.Commerce.Tests.UI.Shortcuts.csproj" />
+    <Project Path="test/OrchardCore.Commerce.Tests.UI/OrchardCore.Commerce.Tests.UI.csproj" />
+    <Project Path="test/OrchardCore.Commerce.Tests/OrchardCore.Commerce.Tests.csproj" />
+  </Folder>
+</Solution>

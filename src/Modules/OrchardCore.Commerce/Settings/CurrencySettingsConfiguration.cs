@@ -13,7 +13,7 @@ public class CurrencySettingsConfiguration : IConfigureOptions<CurrencySettings>
     {
         var settings = _site
             .GetSiteSettings()
-            .As<CurrencySettings>();
+            .GetOrCreate<CurrencySettings>();
 
         options.DefaultCurrency = settings.DefaultCurrency;
         options.CurrentDisplayCurrency = settings.CurrentDisplayCurrency;

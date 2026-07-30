@@ -10,12 +10,9 @@ public class ExactlySettingsConfiguration : IConfigureOptions<ExactlySettings>
 
     public ExactlySettingsConfiguration(ISiteService siteService) => _siteService = siteService;
 
-    public void Configure(ExactlySettings options)
-    {
-        var siteSettings = _siteService
+    public void Configure(ExactlySettings options) =>
+        _siteService
             .GetSiteSettings()
-            .As<ExactlySettings>();
-
-        siteSettings.CopyTo(options);
-    }
+            .GetOrCreate<ExactlySettings>()
+            .CopyTo(options);
 }

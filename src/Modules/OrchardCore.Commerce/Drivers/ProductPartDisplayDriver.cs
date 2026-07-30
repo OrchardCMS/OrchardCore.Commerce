@@ -1,11 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
-using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Inventory;
-using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -18,18 +14,18 @@ namespace OrchardCore.Commerce.Drivers;
 public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
 {
     private readonly IProductAttributeService _productAttributeService;
-    private readonly ISkuGenerator _skuGenerator;
+    private readonly ISkuService _skuService;
     private readonly IStringLocalizer T;
 
-    private bool IsSkuReadOnly => _skuGenerator?.IsManualAllowed == false;
+    private bool IsSkuReadOnly => _skuService.IsReadOnly();
 
     public ProductPartDisplayDriver(
         IProductAttributeService productAttributeService,
-        IEnumerable<ISkuGenerator> skuGenerators,
+        ISkuService skuService,
         IStringLocalizer<ProductPartDisplayDriver> stringLocalizer)
     {
         _productAttributeService = productAttributeService;
-        _skuGenerator = skuGenerators.HighestPriority();
+        _skuService = skuService;
         T = stringLocalizer;
     }
 
@@ -56,46 +52,11 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             return await EditAsync(part, context);
         }
 
-        // If the SKU is read-only then editing should not be possible, but here we undo any POST trickery just in case.
-        part.Sku = IsSkuReadOnly ? skuBefore : part.Sku.ToUpperInvariant();
+        _skuService.Update(part, skuBefore);
 
-        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
-        {
-            part.CanBeBought.Clear();
-
-            var filteredInventory = inventoryPart.FilterOutdatedEntries();
-
-            // If an inventory's value is below 1 and back ordering is not allowed, corresponding
-            // CanBeBought entry needs to be set to false; should be set to true otherwise.
-            foreach (var inventory in filteredInventory)
-            {
-                part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
-            }
-
-            // If SKU was updated, CanBeBought keys also need to be updated.
-            if (part.Sku != skuBefore)
-            {
-                UpdateAvailabilityKeys(part, filteredInventory.Count);
-            }
-        }
+        _productAttributeService.UpdateCanBeBoughtForProductAttributeField(part, skuBefore);
 
         return await EditAsync(part, context);
-    }
-
-    private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount)
-    {
-        var newAvailabilities = new Dictionary<string, bool>();
-        foreach (var entry in part.CanBeBought)
-        {
-            var updatedKey = inventoryCount > 1
-                ? $"{part.Sku}-{entry.Key.Split('-')[^1]}"
-                : part.Sku;
-
-            newAvailabilities.Add(updatedKey, entry.Value);
-        }
-
-        part.CanBeBought.Clear();
-        part.CanBeBought.AddRange(newAvailabilities);
     }
 
     private async Task BuildViewModelAsync(ProductPartViewModel viewModel, ProductPart part)
@@ -105,20 +66,8 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
         viewModel.IsSkuReadOnly = IsSkuReadOnly;
         viewModel.ProductPart = part;
 
-        if (part.ContentItem.As<InventoryPart>() is { } inventoryPart)
-        {
-            foreach (var (key, value) in inventoryPart.FilterOutdatedEntries())
-            {
-                // If an inventory's value is below 1 and back ordering is not allowed, corresponding
-                // CanBeBought entry needs to be set to false; should be set to true otherwise.
-                viewModel.CanBeBought[key] = inventoryPart.AllowsBackOrder.Value || value >= 1;
-            }
-        }
-        else
-        {
-            viewModel.CanBeBought[part.ContentItem.ContentItemId] = true;
-        }
-
+        _productAttributeService.UpdateCanBeBoughtForProductAttributeField(part, part.Sku);
+        viewModel.CanBeBought.SetItems(part.CanBeBought);
         viewModel.Attributes = await _productAttributeService.GetProductAttributeFieldsAsync(part.ContentItem);
     }
 }

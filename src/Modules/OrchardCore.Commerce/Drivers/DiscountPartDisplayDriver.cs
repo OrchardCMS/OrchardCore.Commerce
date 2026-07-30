@@ -48,9 +48,9 @@ public class DiscountPartDisplayDriver : ContentPartDisplayDriver<DiscountPart>
     private static Amount? CalculateNewPrice(DiscountInformation discount, DiscountPart part)
     {
         var contentItem = part?.ContentItem;
-        var newPrice = contentItem?.As<TaxPart>()?.GrossPrice?.Amount is { IsValid: true } grossPrice
+        var newPrice = contentItem?.GetMaybe<TaxPart>()?.GrossPrice?.Amount is { IsValid: true } grossPrice
             ? grossPrice
-            : contentItem?.As<PricePart>()?.Price;
+            : contentItem?.GetMaybe<PricePart>()?.Price;
 
         if (newPrice is not { } notNullPrice) return null;
         if (discount.DiscountPercentage > 0) return notNullPrice.WithDiscount(discount.DiscountPercentage);

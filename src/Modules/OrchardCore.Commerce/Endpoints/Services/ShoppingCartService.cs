@@ -133,7 +133,7 @@ public class ShoppingCartService : IShoppingCartService
             if (!string.IsNullOrEmpty(errored))
             {
                 var minOrderQuantity = (await _productService.GetProductAsync(line.ProductSku))
-                    .As<InventoryPart>().MinimumOrderQuantity.Value;
+                    .GetOrCreate<InventoryPart>().MinimumOrderQuantity.Value;
 
                 // Choose new quantity based on whether Minimum Order Quantity has a value.
                 line.Quantity = (int)(minOrderQuantity > 0 ? minOrderQuantity : 1);

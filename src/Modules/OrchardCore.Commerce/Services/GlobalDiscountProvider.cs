@@ -54,6 +54,8 @@ public class GlobalDiscountProvider : IPromotionProvider
 
     private async Task<IEnumerable<DiscountInformation>> QueryDiscountPartsAsync(PromotionAndTaxProviderContext model)
     {
+        if (_hca.HttpContext is not { } context) return [];
+
         var typeNames = (await _contentDefinitionStore.GetContentDefinitionAsync())
             .ContentTypeDefinitionRecords
             .Where(type => type
@@ -66,14 +68,15 @@ public class GlobalDiscountProvider : IPromotionProvider
 
         var globalDiscountItems = await _session
             .Query<ContentItem, ContentItemIndex>(index => index.ContentType.IsIn(typeNames) && index.Published)
-            .ListAsync(_hca.HttpContext?.RequestAborted ?? default);
+            .ListAsync(context.RequestAborted);
 
-        globalDiscountItems = await globalDiscountItems.WhereAsync(item =>
-            _authorizationService.AuthorizeAsync(_hca.HttpContext!.User, CommonPermissions.ListContent, item));
+        globalDiscountItems = (await globalDiscountItems
+            .WhereAsync(item => _authorizationService.AuthorizeAsync(context.User, CommonPermissions.ListContent, item)))
+            .AsReadOnly();
 
         int totalQuantity = model.Items.Sum(item => item.Quantity);
         return globalDiscountItems
-            .As<DiscountPart>()
+            .GetOrCreate<DiscountPart>()
             .Where(part => part.IsApplicable(totalQuantity, model.PurchaseDateTime ?? _clock.UtcNow))
             .Select(part => (DiscountInformation)part);
     }

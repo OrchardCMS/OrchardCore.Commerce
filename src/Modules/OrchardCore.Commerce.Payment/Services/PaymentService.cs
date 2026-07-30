@@ -263,15 +263,12 @@ public class PaymentService : IPaymentService
         {
             try
             {
-                return mustBeFree ?
-                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(
-                        this,
+                return mustBeFree
+                    ? await this.UpdateAndRedirectToFinishedOrderAsync(
                         order,
                         shoppingCartId,
                         FeatureIds.WithoutPaymentProvider)
-                        :
-                        await PaymentServiceExtensions.UpdateAndRedirectToFinishedOrderAsync(
-                        this,
+                    : await this.UpdateAndRedirectToFinishedOrderAsync(
                         order,
                         shoppingCartId,
                         FeatureIds.NoNecessaryPaymentProvider);
@@ -311,7 +308,7 @@ public class PaymentService : IPaymentService
                 Status = PaymentOperationStatus.NotFound,
             };
 
-        var status = order.As<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
+        var status = order.GetMaybe<OrderPart>()?.Status?.Text ?? OrderStatusCodes.Pending;
 
         if (status is not OrderStatusCodes.Pending and not OrderStatusCodes.PaymentFailed)
         {
@@ -394,10 +391,10 @@ public class PaymentService : IPaymentService
     {
         var order = await _contentManager.GetAsync(orderId) ?? await _contentManager.NewAsync(Order);
         var isNew = order.IsNew();
-        var part = order.As<OrderPart>();
+        var part = order.GetOrCreate<OrderPart>();
 
         var cart = await _shoppingCartHelpers.RetrieveAsync(shoppingCartId);
-        if (cart.Items.Any() && !order.As<OrderPart>().LineItems.Any() && updateModelAccessor != null)
+        if (cart.Items.Any() && !order.GetOrCreate<OrderPart>().LineItems.Any() && updateModelAccessor != null)
         {
             await _contentItemDisplayManager.UpdateEditorAsync(order, updateModelAccessor.ModelUpdater, isNew: false);
 

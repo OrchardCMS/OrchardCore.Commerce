@@ -41,10 +41,11 @@ public class LocalizationCurrencyRedirectMiddleware
         var contentManager = context.RequestServices.GetRequiredService<IContentManager>();
         var item = await contentManager.GetAsync(id);
 
-        if (item?.As<PricePart>() is { } pricePart &&
-            item.As<LocalizationPart>() is { } localizationPart &&
+        if (item?.TryGet<PricePart>(out var pricePart) == true &&
+            item.TryGet<LocalizationPart>(out var localizationPart) &&
             await context.RequestServices.GetRequiredService<ISiteService>().GetSiteSettingsAsync() is { } settings &&
-            settings.As<CurrencySettings>().CurrentDisplayCurrency is { } displayCurrency &&
+            settings.TryGet<CurrencySettings>(out var currencySettings) &&
+            currencySettings.CurrentDisplayCurrency is { } displayCurrency &&
             displayCurrency != pricePart.Price.Currency.CurrencyIsoCode)
         {
             var session = context.RequestServices.GetRequiredService<ISession>();
@@ -55,7 +56,7 @@ public class LocalizationCurrencyRedirectMiddleware
                 .ListAsync();
 
             var applicable = localizationSet
-                .As<PricePart>()
+                .GetOrCreate<PricePart>()
                 .FirstOrDefault(part => part.Price.Currency.CurrencyIsoCode == displayCurrency);
 
             if (applicable != null)

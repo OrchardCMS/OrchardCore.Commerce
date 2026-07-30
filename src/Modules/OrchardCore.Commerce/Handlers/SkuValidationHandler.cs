@@ -1,14 +1,12 @@
 ﻿using Microsoft.Extensions.Localization;
-using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Indexes;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 
@@ -19,32 +17,38 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
     private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IEnumerable<IDuplicateSkuResolver> _duplicateSkuResolvers;
-    private readonly IEnumerable<ISkuGenerator> _skuGenerators;
+    private readonly ISkuService _skuService;
     private readonly IStringLocalizer<SkuValidationHandler> T;
+    private readonly IProductAttributeService _productAttributeService;
 
     public SkuValidationHandler(
         ISession session,
         IUpdateModelAccessor updateModelAccessor,
         IEnumerable<IDuplicateSkuResolver> duplicateSkuResolvers,
-        IEnumerable<ISkuGenerator> skuGenerators,
+        ISkuService skuService,
+        IProductAttributeService productAttributeService,
         IStringLocalizer<SkuValidationHandler> stringLocalizer)
     {
         _session = session;
         _updateModelAccessor = updateModelAccessor;
         _duplicateSkuResolvers = duplicateSkuResolvers;
-        _skuGenerators = skuGenerators;
+        _skuService = skuService;
         T = stringLocalizer;
+        _productAttributeService = productAttributeService;
     }
 
     public override async Task CreatingAsync(CreateContentContext context, ProductPart part)
     {
+        var skuBefore = part.Sku ?? string.Empty;
+
         // If we have an SKU generator and the SKU is either empty or it must not be manually filled, then overwrite it
         // with the generated value.
-        if (_skuGenerators.HighestPriority() is { } generator &&
-            (string.IsNullOrWhiteSpace(part.Sku) || !generator.IsManualAllowed))
+        if (_skuService.TryGetGenerator(part, out var generator))
         {
             part.Sku = await generator.GenerateSkuAsync(part.ContentItem);
             part.ContentItem.Apply(part);
+
+            _productAttributeService.UpdateCanBeBoughtForProductAttributeField(part, skuBefore);
         }
 
         await CreatingOrUpdatingAsync(part);
@@ -61,22 +65,19 @@ public class SkuValidationHandler : ContentPartHandler<ProductPart>
             return;
         }
 
-        var alreadyExisting = (await _session
-                .Query<ContentItem, ProductPartIndex>(index =>
-                    index.Sku == part.Sku &&
-                    index.ContentItemId != part.ContentItem.ContentItemId)
-                .ListAsync())
-            .AsList();
+        var alreadyExisting = await _session
+            .Query<ContentItem, ProductPartIndex>(index =>
+                index.Sku == part.Sku &&
+                index.ContentItemId != part.ContentItem.ContentItemId)
+            .ListReadOnlyAsync();
 
         var resolvers = _duplicateSkuResolvers.AsList();
-        for (var i = 0; i < resolvers.Count && alreadyExisting.Any(); i++)
+        for (var i = 0; i < resolvers.Count && alreadyExisting.Count > 0; i++)
         {
-            alreadyExisting =
-                await resolvers[i].UpdateDuplicatesListAsync(part.ContentItem, alreadyExisting) ??
-                Array.Empty<ContentItem>();
+            alreadyExisting = await resolvers[i].UpdateDuplicatesListAsync(part.ContentItem, alreadyExisting) ?? [];
         }
 
-        if (alreadyExisting.Any())
+        if (alreadyExisting.Count > 0)
         {
             _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
                 nameof(part.Sku),

@@ -22,7 +22,7 @@ public class PriceIndexProvider : IndexProvider<ContentItem>
             {
                 if (!contentItem.Published || !contentItem.Latest) return null;
 
-                if (contentItem.As<PricePart>() is { Price.Value: var price })
+                if (contentItem.GetMaybe<PricePart>() is { Price.Value: var price })
                 {
                     return new PriceIndex
                     {
@@ -31,7 +31,7 @@ public class PriceIndexProvider : IndexProvider<ContentItem>
                     };
                 }
 
-                var variants = contentItem.As<PriceVariantsPart>()?.Variants;
+                var variants = contentItem.GetMaybe<PriceVariantsPart>()?.Variants;
                 if (variants?.Any() == true)
                 {
                     var amounts = variants.Values.Select(amount => amount.Value).ToList();
