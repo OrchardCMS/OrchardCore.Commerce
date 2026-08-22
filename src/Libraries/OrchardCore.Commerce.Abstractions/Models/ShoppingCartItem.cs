@@ -5,6 +5,7 @@ using OrchardCore.Commerce.Abstractions.Serialization;
 using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -82,7 +83,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
                 .OrderBy(price => price?.Priority)
                 .Select(price => price == null
                     ? "null"
-                    : StringHelper.CreateInvariant($"{price.Price.Value} {price.Price.Currency?.CurrencyIsoCode}")));
+                    : string.Create(CultureInfo.InvariantCulture, $"{price.Price.Value} {price.Price.Currency?.CurrencyIsoCode}")));
 
     /// <summary>
     /// Creates a new shopping cart item that is a clone of this, but with prices replaced with new ones.
