@@ -8,5 +8,7 @@ on:
 jobs:
   publish-nuget:
     uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
+    with:
+      dotnet-pack-ignore-warning: NU5104
     secrets:
       API_KEY: ${{ secrets.NUGET_API_KEY }}
