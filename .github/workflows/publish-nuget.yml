@@ -8,7 +8,5 @@ on:
 jobs:
   publish-nuget:
     uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
-    with:
-      require-major-version-for-compatibility-suppressions: 'false'
     secrets:
       API_KEY: ${{ secrets.NUGET_API_KEY }}
