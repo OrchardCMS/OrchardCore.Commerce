@@ -1,0 +1,35 @@
+@using OrchardCore.Commerce.Payment.Stripe.Models
+
+@{
+    if (Model.PaymentProviderData is not StripePaymentProviderData paymentProviderData)
+    {
+        return;
+    }
+    
+    var publishableKey = paymentProviderData.PublishableKey ?? string.Empty;
+    var clientSecret = paymentProviderData.ClientSecret ?? string.Empty;
+    var paymentIntentId = paymentProviderData.PaymentIntentId ?? string.Empty;
+    var accountId = paymentProviderData.AccountId?.Trim();
+    
+    var urlPrefix = Url.Content("~/").TrimEnd('/');
+    var missingText = T["A value is required for %LABEL%."].Value;
+    var stripeData = new
+    {
+        clientSecret,
+        paymentIntentId,
+        urlPrefix,
+        publishableKey,
+        missingText,
+    }; 
+}
+
+@if (!string.IsNullOrEmpty(publishableKey))
+{
+    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
+    <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
+    <script at="Foot" depends-on="StripeJs,StripePaymentForm">
+        const data = @Json.Serialize(stripeData);
+        data.stripeAccountId = @(string.IsNullOrEmpty(accountId) ? Html.Raw("undefined") : Json.Serialize(new { StripeAccount = accountId }));
+        stripePaymentForm(data);
+    </script>
+}
