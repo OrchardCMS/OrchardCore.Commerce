@@ -6,6 +6,12 @@
     }
 
     function stripePaymentForm(data) {
+        if (arguments.length > 1) {
+            console.error(
+                'There were more than 1 arguments passed to the stripePaymentForm function. This likely indicates ' +
+                'an incorrect or outdated call.');
+        }
+        
         const stripe = Stripe(data.publishableKey, data.stripeAccountId);
         const validateUrl = toString(data, 'validateUrl', 'checkout/validate/stripe');
         const paramsUrl = toString(data, 'paramsUrl', 'stripe/params');
