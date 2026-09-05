@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Infrastructure;
 using System;
@@ -12,9 +13,10 @@ namespace OrchardCore.Commerce.Payment.Exactly.Services;
 
 public class ExactlyApiHandler : DelegatingHandler
 {
-    private readonly ExactlySettings _settings;
+    private readonly ExactlyEnvironmentSettings _settings;
 
-    public ExactlyApiHandler(IOptionsSnapshot<ExactlySettings> settings) => _settings = settings.Value;
+    public ExactlyApiHandler(PaymentEnvironment environment, IOptionsSnapshot<ExactlySettings> settings) =>
+        _settings = settings.Value.Get(environment);
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {

@@ -41,9 +41,7 @@ public class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IPermissionProvider, ApiPermissions>();
 
-        services.AddScoped<IRequestOptionsService, RequestOptionsService>();
-        services.AddScoped<IStripePaymentService, StripePaymentService>();
-        services.AddScoped<IPaymentProvider, StripePaymentProvider>();
+        services.AddStripeEnvironmentServices();
         services.AddScoped<IPaymentIntentPersistence, PaymentIntentPersistence>();
         services.AddTransient<IConfigureOptions<StripeApiSettings>, StripeApiSettingsConfiguration>();
 
@@ -66,11 +64,6 @@ public class Startup : StartupBase
         services.AddDataMigration<StripeSessionMigrations>();
 
         services.AddScoped<IStripeHelperService, StripeHelperService>();
-        services.AddScoped<IStripeSessionService, StripeSessionService>();
-        services.AddScoped<IStripeCustomerService, StripeCustomerService>();
-        services.AddScoped<IStripeSubscriptionService, StripeSubscriptionService>();
-        services.AddScoped<IStripePaymentIntentService, StripePaymentIntentService>();
-        services.AddScoped<IStripeConfirmationTokenService, StripeConfirmationTokenService>();
 
         services.AddScoped<SessionService>();
         services.AddScoped<CustomerService>();

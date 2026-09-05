@@ -17,21 +17,24 @@ public class StripePaymentProvider : IPaymentProvider
 {
     public const string ProviderName = "stripe";
 
+    private readonly PaymentEnvironment _environment;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
     private readonly ISession _session;
     private readonly ISiteService _siteService;
     private readonly IStripePaymentIntentService _stripePaymentIntentService;
     private readonly IStripePaymentService _stripePaymentService;
 
-    public string Name => ProviderName;
+    public string Name => ProviderName.ForEnvironment(_environment);
 
     public StripePaymentProvider(
+        PaymentEnvironment environment,
         IPaymentIntentPersistence paymentIntentPersistence,
         ISession session,
         ISiteService siteService,
         IStripePaymentService stripePaymentService,
         IStripePaymentIntentService stripePaymentIntentService)
     {
+        _environment = environment;
         _paymentIntentPersistence = paymentIntentPersistence;
         _session = session;
         _siteService = siteService;
@@ -42,6 +45,12 @@ public class StripePaymentProvider : IPaymentProvider
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string shoppingCartId = null)
     {
         PaymentIntent paymentIntent;
+
+        var envSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>().Get(_environment);
+        if (!envSettings.HasCredentials)
+        {
+            return null;
+        }
 
         try
         {
@@ -61,14 +70,12 @@ public class StripePaymentProvider : IPaymentProvider
             });
         }
 
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
-
         return new StripePaymentProviderData
         {
-            PublishableKey = stripeApiSettings.PublishableKey,
+            PublishableKey = envSettings.PublishableKey,
             ClientSecret = paymentIntent.ClientSecret,
             PaymentIntentId = paymentIntent.Id,
-            AccountId = stripeApiSettings.AccountId,
+            AccountId = envSettings.AccountId,
         };
     }
 
@@ -77,7 +84,7 @@ public class StripePaymentProvider : IPaymentProvider
 
     public Task FinalModificationOfOrderAsync(ContentItem order, string shoppingCartId) =>
         // A new payment intent should be created on the next checkout.
-        _paymentIntentPersistence.RemoveAsync(shoppingCartId);
+        _paymentIntentPersistence.RemoveAsync(shoppingCartId, _environment);
 
     public Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
         ContentItem order,

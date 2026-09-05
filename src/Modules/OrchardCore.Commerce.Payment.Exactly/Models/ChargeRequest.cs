@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.Common.Utilities;
+using Lombiq.HelpfulLibraries.Common.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,12 +68,13 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
     public static async Task<ChargeRequest> CreateForCurrentUserAsync(
         OrderPart orderPart,
         HttpContext context,
+        PaymentEnvironment environment,
         Amount? total = null)
     {
         var provider = context.RequestServices;
 
         var returnUrl = context.ActionTask<PaymentController>(controller => controller.Callback(
-            ExactlyPaymentProvider.ProviderName,
+            ExactlyPaymentProvider.ProviderName.ForEnvironment(environment),
             orderPart.ContentItem.ContentItemId,
             null));
         var absoluteReturnUrl = new Uri(new Uri(context.Request.GetDisplayUrl()), returnUrl);
@@ -83,7 +84,7 @@ public class ChargeRequest : IExactlyRequestAttributes, IExactlyAmount
             orderPart.LineItems,
             total ?? await provider.GetRequiredService<IPaymentService>().GetTotalAsync(shoppingCartId: null),
             await provider.GetRequiredService<IUserService>().GetFullUserAsync(context.User),
-            provider.GetRequiredService<IOptionsSnapshot<ExactlySettings>>().Value.ProjectId,
+            provider.GetRequiredService<IOptionsSnapshot<ExactlySettings>>().Value.Get(environment).ProjectId,
             absoluteReturnUrl);
     }
 }

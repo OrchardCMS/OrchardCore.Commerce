@@ -1,4 +1,5 @@
-﻿using Stripe;
+using OrchardCore.Commerce.Payment.Abstractions;
+using Stripe;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Abstractions;
@@ -12,5 +13,6 @@ public interface IStripeWebhookEventHandler
     /// Called when a Stripe event is received. This is where you can handle the event.
     /// </summary>
     /// <param name="stripeEvent">Contains the Stripe Event parameters.</param>
-    Task ReceivedStripeEventAsync(Event stripeEvent);
+    /// <param name="environment">The payment environment that matched the webhook signing secret.</param>
+    Task ReceivedStripeEventAsync(Event stripeEvent, PaymentEnvironment environment);
 }

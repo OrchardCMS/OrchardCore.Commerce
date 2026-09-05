@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
 using Stripe;
@@ -21,7 +22,6 @@ public static class StripeCustomerEndpoint
 
     private static async Task<IResult> GetStripeCustomerAsync(
         [FromQuery] string customerId,
-        [FromServices] IStripeCustomerService stripeCustomerService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -30,6 +30,7 @@ public static class StripeCustomerEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        var stripeCustomerService = httpContext.GetRequiredKeyedPaymentService<IStripeCustomerService>();
         var customer = await stripeCustomerService.GetCustomerByIdAsync(customerId);
         return TypedResults.Ok(customer);
     }
@@ -42,7 +43,6 @@ public static class StripeCustomerEndpoint
 
     private static async Task<IResult> GetStripeCreateCustomerAsync(
         [FromBody] CustomerCreateOptions customerCreateOptions,
-        [FromServices] IStripeCustomerService stripeCustomerService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -51,6 +51,7 @@ public static class StripeCustomerEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        var stripeCustomerService = httpContext.GetRequiredKeyedPaymentService<IStripeCustomerService>();
         var customer = await stripeCustomerService.CreateCustomerAsync(customerCreateOptions);
         return TypedResults.Ok(customer);
     }

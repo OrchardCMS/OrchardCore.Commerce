@@ -1,6 +1,7 @@
 #nullable enable
 
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using System.Text.Json;
@@ -20,9 +21,9 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
 
     public PaymentIntentPersistence(IHttpContextAccessor httpContextAccessor) => _httpContextAccessor = httpContextAccessor;
 
-    public Task<PaymentIntentPersistenceInfo?> RetrieveAsync(string? shoppingCartId)
+    public Task<PaymentIntentPersistenceInfo?> RetrieveAsync(string? shoppingCartId, PaymentEnvironment environment)
     {
-        var key = GetCacheId(shoppingCartId);
+        var key = GetCacheId(shoppingCartId, environment);
 
         if (Session?.GetString(key)?.Trim() is { Length: > 0 } serializedFromSession &&
             TryParse(serializedFromSession, out var sessionResult))
@@ -40,9 +41,9 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
         return Task.FromResult<PaymentIntentPersistenceInfo?>(null);
     }
 
-    public Task StoreAsync(string? shoppingCartId, PaymentIntentPersistenceInfo info)
+    public Task StoreAsync(string? shoppingCartId, PaymentIntentPersistenceInfo info, PaymentEnvironment environment)
     {
-        var key = GetCacheId(shoppingCartId);
+        var key = GetCacheId(shoppingCartId, environment);
         var serialized = JsonSerializer.Serialize(info);
 
         Session?.SetString(key, serialized);
@@ -51,17 +52,22 @@ public class PaymentIntentPersistence : IPaymentIntentPersistence
         return Task.CompletedTask;
     }
 
-    public Task RemoveAsync(string? shoppingCartId)
+    public Task RemoveAsync(string? shoppingCartId, PaymentEnvironment environment)
     {
-        var key = GetCacheId(shoppingCartId);
+        var key = GetCacheId(shoppingCartId, environment);
         Session?.Remove(key);
         _httpContextAccessor.HttpContext?.Response.Cookies.Delete(key);
 
         return Task.CompletedTask;
     }
 
-    protected string GetCacheId(string? shoppingCartId) =>
-       string.IsNullOrEmpty(shoppingCartId) ? PaymentIntentKeyPrefix : $"{PaymentIntentKeyPrefix}_{shoppingCartId}";
+    protected string GetCacheId(string? shoppingCartId, PaymentEnvironment environment)
+    {
+        var prefix = environment == PaymentEnvironment.Sandbox
+            ? $"{PaymentIntentKeyPrefix}{PaymentEnvironmentExtensions.SandboxSuffix}"
+            : PaymentIntentKeyPrefix;
+        return string.IsNullOrEmpty(shoppingCartId) ? prefix : $"{prefix}_{shoppingCartId}";
+    }
 
     private static bool TryParse(string serialized, out PaymentIntentPersistenceInfo? result)
     {

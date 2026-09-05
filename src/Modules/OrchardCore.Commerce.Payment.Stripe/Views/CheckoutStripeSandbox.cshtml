@@ -1,0 +1,74 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore
+@using OrchardCore.Commerce.MoneyDataType
+@using OrchardCore.Commerce.Payment.Abstractions
+@using Microsoft.AspNetCore.WebUtilities
+@{
+    if (Model.DefaultTotal is not Amount defaultTotal)
+    {
+        throw new InvalidOperationException("Missing DefaultTotal");
+    }
+
+    string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
+    string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
+    string paymentIntentId = Model.PaymentProviderData?.PaymentIntentId ?? string.Empty;
+    string accountId = Model.PaymentProviderData?.AccountId?.Trim();
+
+    var urlPrefix = Url.Content("~/").TrimEnd('/');
+    var missingText = T["A value is required for %LABEL%."].Value;
+    var environment = PaymentEnvironment.Sandbox.ToQueryValue();
+    var paramsUrl = QueryHelpers.AddQueryString(
+        "stripe/params",
+        PaymentEnvironmentExtensions.QueryParameterName,
+        environment
+    );
+    var stripeData = new
+    {
+        clientSecret,
+        paymentIntentId,
+        urlPrefix,
+        publishableKey,
+        missingText,
+        validateUrl = "checkout/validate/stripeSandbox",
+        paramsUrl,
+        errorContainerSelector = ".message-error",
+        stripeFieldErrorSelector = ".stripe-sandbox-field-error",
+        payButtonSelector = ".pay-button-stripeSandbox",
+        placeOfPaymentSelector = "#payment-form_payment_sandbox",
+    };
+}
+
+<input type="hidden" id="StripePaymentPart_PaymentIntentId_Text_Sandbox" name="StripePaymentPart.PaymentIntentId.Text">
+
+<h3>@T["Stripe Payment (Sandbox)"]</h3>
+
+<fieldset>
+    <div class="row payment-intent">
+        <div id="payment-form_payment_sandbox">@T["Stripe payment is not configured for this site."]</div>
+    </div>
+</fieldset>
+
+<div>
+    <strong>@T["Net Price: {0}", Model.NetTotal]</strong>
+</div>
+@if (Model.GrossTotal != null && Model.GrossTotal.Value != 0)
+{
+    <div>
+        <strong>@T["Gross Price: {0}", Model.GrossTotal]</strong>
+    </div>
+}
+
+<shape type="PayButton" PayButtonClass="stripeSandbox" prop-Total="@defaultTotal" />
+
+<div class="stripe-sandbox-field-error my-3" hidden></div>
+
+@if (!string.IsNullOrEmpty(publishableKey))
+{
+    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
+    <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
+    <script at="Foot" depends-on="StripeJs,StripePaymentForm">
+        const sandboxData = @Json.Serialize(stripeData);
+        sandboxData.stripeAccountId = @(string.IsNullOrEmpty(accountId) ? Html.Raw("undefined") : Json.Serialize(new { StripeAccount = accountId }));
+        stripePaymentForm(sandboxData);
+    </script>
+}

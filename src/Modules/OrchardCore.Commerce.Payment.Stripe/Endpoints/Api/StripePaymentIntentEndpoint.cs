@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Endpoints;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Models;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
@@ -24,7 +25,6 @@ public static class StripePaymentIntentEndpoint
 
     private static async Task<IResult> GetPaymentIntentAsync(
         [FromQuery] string paymentIntentId,
-        [FromServices] IStripePaymentIntentService stripePaymentIntentService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext
         )
@@ -34,6 +34,7 @@ public static class StripePaymentIntentEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        var stripePaymentIntentService = httpContext.GetRequiredKeyedPaymentService<IStripePaymentIntentService>();
         var paymentIntent = await stripePaymentIntentService.GetPaymentIntentAsync(paymentIntentId);
         return TypedResults.Ok(paymentIntent);
     }
@@ -46,8 +47,6 @@ public static class StripePaymentIntentEndpoint
 
     private static async Task<IResult> CreatePaymentIntentAsync(
         [FromBody] CreatePaymentIntentWithOrderViewModel viewModel,
-        [FromServices] IStripePaymentIntentService stripePaymentIntentService,
-        [FromServices] IStripePaymentService stripePaymentService,
         [FromServices] IShoppingCartService shoppingCartService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
@@ -57,6 +56,8 @@ public static class StripePaymentIntentEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        var stripePaymentIntentService = httpContext.GetRequiredKeyedPaymentService<IStripePaymentIntentService>();
+        var stripePaymentService = httpContext.GetRequiredKeyedPaymentService<IStripePaymentService>();
         var shoppingCartViewModel = await shoppingCartService.GetAsync(viewModel.ShoppingCartId);
         var total = shoppingCartViewModel.Totals.Single();
         var paymentIntent = await stripePaymentIntentService.CreatePaymentIntentAsync(total, viewModel.ShoppingCartId);

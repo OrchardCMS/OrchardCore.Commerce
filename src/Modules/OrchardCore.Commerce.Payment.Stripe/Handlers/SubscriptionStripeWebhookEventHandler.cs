@@ -1,11 +1,14 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Users;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Commerce.Models;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Services;
 using OrchardCore.ContentManagement;
 using Stripe;
+using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,25 +21,27 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
     private readonly ICachingUserManager _cachingUserManager;
     private readonly ISubscriptionService _subscriptionService;
     private readonly ILogger<SubscriptionStripeWebhookEventHandler> _logger;
-    private readonly IStripeSubscriptionService _stripeSubscriptionService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IContentManager _contentManager;
 
     public SubscriptionStripeWebhookEventHandler(
         ICachingUserManager cachingUserManager,
         ISubscriptionService subscriptionService,
-        IStripeSubscriptionService stripeSubscriptionService,
         IContentManager contentManager,
+        IServiceProvider serviceProvider,
         ILogger<SubscriptionStripeWebhookEventHandler> logger)
     {
         _cachingUserManager = cachingUserManager;
         _subscriptionService = subscriptionService;
-        _stripeSubscriptionService = stripeSubscriptionService;
         _contentManager = contentManager;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
-    public async Task ReceivedStripeEventAsync(Event stripeEvent)
+    public async Task ReceivedStripeEventAsync(Event stripeEvent, PaymentEnvironment environment)
     {
+        var stripeSubscriptionService = _serviceProvider.GetRequiredKeyedService<IStripeSubscriptionService>(environment);
+
         if (stripeEvent.Type == InvoicePaid)
         {
             if (stripeEvent.Data.Object is Invoice { Status: "paid" } invoice)
@@ -51,7 +56,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                 }
 
                 var subscriptionId = invoice.Parent.SubscriptionDetails.SubscriptionId;
-                var stripeSubscription = await _stripeSubscriptionService.GetSubscriptionAsync(subscriptionId);
+                var stripeSubscription = await stripeSubscriptionService.GetSubscriptionAsync(subscriptionId);
                 var subscriptionPart = new SubscriptionPart
                 {
                     UserId = { Text = user?.UserId },
@@ -71,7 +76,7 @@ public class SubscriptionStripeWebhookEventHandler : IStripeWebhookEventHandler
                             .Period
                             .End,
                     },
-                    PaymentProviderName = { Text = StripePaymentProvider.ProviderName },
+                    PaymentProviderName = { Text = StripePaymentProvider.ProviderName.ForEnvironment(environment) },
                     IdInPaymentProvider = { Text = subscriptionId },
 
                     Metadata = stripeSubscription.Metadata,

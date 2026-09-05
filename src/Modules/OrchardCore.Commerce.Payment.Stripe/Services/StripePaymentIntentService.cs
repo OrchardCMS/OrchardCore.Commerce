@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Constants;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
@@ -20,11 +21,13 @@ public class StripePaymentIntentService : IStripePaymentIntentService
     private readonly IRequestOptionsService _requestOptionsService;
     private readonly ISiteService _siteService;
     private readonly IPaymentIntentPersistence _paymentIntentPersistence;
+    private readonly PaymentEnvironment _environment;
     private readonly IStringLocalizer<StripePaymentIntentService> T;
 
     private CancellationToken Aborted => _hca.HttpContext?.RequestAborted ?? default;
 
     public StripePaymentIntentService(
+        PaymentEnvironment environment,
         PaymentIntentService paymentIntentService,
         IHttpContextAccessor httpContextAccessor,
         IRequestOptionsService requestOptionsService,
@@ -32,6 +35,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
         IPaymentIntentPersistence paymentIntentPersistence,
         IStringLocalizer<StripePaymentIntentService> localizer)
     {
+        _environment = environment;
         _paymentIntentService = paymentIntentService;
         _hca = httpContextAccessor;
         _requestOptionsService = requestOptionsService;
@@ -53,7 +57,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
 
     public async Task<PaymentIntent> CreatePaymentIntentAsync(Amount total, string shoppingCartId = null)
     {
-        var paymentIntentInfo = await _paymentIntentPersistence.RetrieveAsync(shoppingCartId);
+        var paymentIntentInfo = await _paymentIntentPersistence.RetrieveAsync(shoppingCartId, _environment);
         if (paymentIntentInfo?.Amount == total &&
             await GetPaymentIntentAsync(paymentIntentInfo.PaymentIntentId) is { Status: RequiresPaymentMethod } storedPaymentIntent &&
             storedPaymentIntent.Amount == AmountHelpers.GetPaymentAmount(total))
@@ -71,7 +75,7 @@ public class StripePaymentIntentService : IStripePaymentIntentService
         };
 
         var paymentIntent = await CreatePaymentIntentAsync(paymentIntentOptions);
-        await _paymentIntentPersistence.StoreAsync(shoppingCartId, new(paymentIntent.Id, total));
+        await _paymentIntentPersistence.StoreAsync(shoppingCartId, new(paymentIntent.Id, total), _environment);
 
         return paymentIntent;
     }

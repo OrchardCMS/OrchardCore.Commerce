@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
 using System.Threading.Tasks;
@@ -21,7 +22,6 @@ public static class StripeConfirmationTokenEndpoint
 
     private static async Task<IResult> GetStripeConfirmationTokenAsync(
         [FromQuery] string? confirmationTokenId,
-        [FromServices] IStripeConfirmationTokenService stripeConfirmationTokenService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -30,6 +30,7 @@ public static class StripeConfirmationTokenEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        var stripeConfirmationTokenService = httpContext.GetRequiredKeyedPaymentService<IStripeConfirmationTokenService>();
         var confirmationToken = await stripeConfirmationTokenService.GetConfirmationTokenAsync(confirmationTokenId);
         return TypedResults.Ok(confirmationToken);
     }

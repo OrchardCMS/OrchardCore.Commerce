@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Endpoints;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
@@ -26,8 +27,6 @@ public static class StripeSubscriptionEndpoint
 
     private static async Task<IResult> GetStripeCreateSubscriptionAsync(
         [FromBody] StripeCreateSubscriptionViewModel viewModel,
-        [FromServices] IStripeCustomerService stripeCustomerService,
-        [FromServices] IStripeSubscriptionService stripeSubscriptionService,
         [FromServices] IShoppingCartService shoppingCartService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
@@ -36,6 +35,9 @@ public static class StripeSubscriptionEndpoint
         {
             return httpContext.ChallengeOrForbidApi();
         }
+
+        var stripeCustomerService = httpContext.GetRequiredKeyedPaymentService<IStripeCustomerService>();
+        var stripeSubscriptionService = httpContext.GetRequiredKeyedPaymentService<IStripeSubscriptionService>();
 
         // Get price IDs from the shopping cart.
         var shoppingCartViewModel = await shoppingCartService.GetAsync(viewModel.ShoppingCartId);
@@ -94,7 +96,6 @@ public static class StripeSubscriptionEndpoint
 
     private static async Task<IResult> GetStripeGetSubscriptionAsync(
         [FromQuery] string subscriptionId,
-        [FromServices] IStripeSubscriptionService stripeSubscriptionService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -102,6 +103,8 @@ public static class StripeSubscriptionEndpoint
         {
             return httpContext.ChallengeOrForbidApi();
         }
+
+        var stripeSubscriptionService = httpContext.GetRequiredKeyedPaymentService<IStripeSubscriptionService>();
 
         // Get the subscription.
         var response = await stripeSubscriptionService.GetSubscriptionAsync(subscriptionId);

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Commerce.Endpoints;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Models;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
@@ -30,7 +31,6 @@ public static class StripeParametersEndpoint
     // The GetConfirmPaymentParametersAsync method is used to get the confirm payment parameters.
     private static async Task<IResult> GetStripeConfirmParametersAsync(
         [FromBody] ConfirmParametersViewModel confirmParametersViewModel,
-        [FromServices] IStripePaymentService stripePaymentService,
         [FromServices] IContentManager contentManager,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
@@ -41,6 +41,7 @@ public static class StripeParametersEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        var stripePaymentService = httpContext.GetRequiredKeyedPaymentService<IStripePaymentService>();
         var order = await contentManager.GetAsync(confirmParametersViewModel.OrderId);
         var model = await stripePaymentService.GetStripeConfirmParametersAsync(
             confirmParametersViewModel.ReturnUrl,
@@ -95,7 +96,6 @@ public static class StripeParametersEndpoint
     }
 
     private static async Task<IResult> GetStripePublicKeyAsync(
-        [FromServices] IStripePaymentService stripePaymentService,
         [FromServices] IAuthorizationService authorizationService,
         HttpContext httpContext)
     {
@@ -104,6 +104,7 @@ public static class StripeParametersEndpoint
             return httpContext.ChallengeOrForbidApi();
         }
 
+        var stripePaymentService = httpContext.GetRequiredKeyedPaymentService<IStripePaymentService>();
         var publicKey = await stripePaymentService.GetPublicKeyAsync();
         return TypedResults.Ok(publicKey);
     }

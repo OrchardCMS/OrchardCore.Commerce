@@ -30,6 +30,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
 {
     public const string ProviderName = "Exactly";
 
+    private readonly PaymentEnvironment _environment;
     private readonly IStringLocalizer<ChargeResponse> _chargeResponseStringLocalizer;
     private readonly IContentManager _contentManager;
     private readonly IExactlyService _exactlyService;
@@ -40,9 +41,10 @@ public class ExactlyPaymentProvider : IPaymentProvider
     private readonly ISiteService _siteService;
     private readonly IHtmlLocalizer<ExactlyPaymentProvider> H;
 
-    public string Name => ProviderName;
+    public string Name => ProviderName.ForEnvironment(_environment);
 
     public ExactlyPaymentProvider(
+        PaymentEnvironment environment,
         IStringLocalizer<ChargeResponse> chargeResponseStringLocalizer,
         IExactlyService exactlyService,
         IMoneyService moneyService,
@@ -50,6 +52,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
         IPaymentService paymentService,
         IOrchardServices<ExactlyPaymentProvider> services)
     {
+        _environment = environment;
         _chargeResponseStringLocalizer = chargeResponseStringLocalizer;
         _contentManager = services.ContentManager.Value;
         _exactlyService = exactlyService;
@@ -63,8 +66,8 @@ public class ExactlyPaymentProvider : IPaymentProvider
 
     public async Task<object> CreatePaymentProviderDataAsync(IPaymentViewModel model, bool isPaymentRequest = false, string shoppingCartId = null)
     {
-        var settings = await _siteService.GetSettingsAsync<ExactlySettings>();
-        return string.IsNullOrEmpty(settings.ApiKey) || string.IsNullOrEmpty(settings.ProjectId) ? null : new object();
+        var settings = (await _siteService.GetSettingsAsync<ExactlySettings>()).Get(_environment);
+        return settings.HasCredentials ? new object() : null;
     }
 
     public async Task<PaymentOperationStatusViewModel> UpdateAndRedirectToFinishedOrderAsync(
@@ -127,7 +130,7 @@ public class ExactlyPaymentProvider : IPaymentProvider
         try
         {
             return await _paymentService.UpdateAndRedirectToFinishedOrderAsync(
-                    order, shoppingCartId, ProviderName, _ => [response.ToPayment(_moneyService)]);
+                    order, shoppingCartId, Name, _ => [response.ToPayment(_moneyService)]);
         }
         catch (Exception ex)
         {

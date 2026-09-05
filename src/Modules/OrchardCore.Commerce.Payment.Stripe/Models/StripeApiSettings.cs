@@ -1,19 +1,64 @@
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Payment.Stripe.Extensions;
+using OrchardCore.Commerce.Payment.Abstractions;
 
 namespace OrchardCore.Commerce.Payment.Stripe.Models;
 
 public class StripeApiSettings
 {
+    public StripeApiEnvironmentSettings Production { get; set; } = new();
+    public StripeApiEnvironmentSettings Sandbox { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the legacy publishable key. Kept so existing site JSON can be deserialized.
+    /// </summary>
     public string PublishableKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets the legacy secret key. Kept so existing site JSON can be deserialized.
+    /// </summary>
     public string SecretKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets the legacy account ID. Kept so existing site JSON can be deserialized.
+    /// </summary>
     public string AccountId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the legacy webhook signing secret. Kept so existing site JSON can be deserialized.
+    /// </summary>
     public string WebhookSigningSecret { get; set; }
 
-    public string DecryptWebhookSigningSecret(IDataProtectionProvider dataProtectionProvider, ILogger logger) =>
-        WebhookSigningSecret.DecryptStripeApiKey(dataProtectionProvider, logger);
+    public StripeApiEnvironmentSettings Get(PaymentEnvironment environment)
+    {
+        Production ??= new StripeApiEnvironmentSettings();
+        Sandbox ??= new StripeApiEnvironmentSettings();
+        MigrateLegacyKeys();
 
-    public string DecryptSecretKey(IDataProtectionProvider dataProtectionProvider, ILogger logger) =>
-        SecretKey.DecryptStripeApiKey(dataProtectionProvider, logger);
+        return environment == PaymentEnvironment.Sandbox ? Sandbox : Production;
+    }
+
+    public void MigrateLegacyKeys()
+    {
+        Production ??= new StripeApiEnvironmentSettings();
+        Sandbox ??= new StripeApiEnvironmentSettings();
+
+        if (!string.IsNullOrEmpty(Production.PublishableKey) ||
+            !string.IsNullOrEmpty(Production.SecretKey) ||
+            string.IsNullOrEmpty(PublishableKey) && string.IsNullOrEmpty(SecretKey))
+        {
+            return;
+        }
+
+        Production.PublishableKey = PublishableKey;
+        Production.SecretKey = SecretKey;
+        Production.AccountId = AccountId;
+        Production.WebhookSigningSecret = WebhookSigningSecret;
+    }
+
+    public void ClearLegacyKeys()
+    {
+        PublishableKey = null;
+        SecretKey = null;
+        AccountId = null;
+        WebhookSigningSecret = null;
+    }
 }

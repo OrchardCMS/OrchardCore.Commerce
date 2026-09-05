@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Extensions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
@@ -13,21 +14,25 @@ namespace OrchardCore.Commerce.Payment.Stripe.Services;
 public class RequestOptionsService : IRequestOptionsService
 {
     private readonly ISiteService _siteService;
+    private readonly PaymentEnvironment _environment;
 
     private readonly Func<ISite, string> _apiKeyAccessor;
     private RequestOptions _requestOptions;
 
     public RequestOptionsService(
+        PaymentEnvironment environment,
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<RequestOptionsService> logger
     )
     {
+        _environment = environment;
         _siteService = siteService;
 
         _apiKeyAccessor = siteSettings =>
             siteSettings
                 .GetOrCreate<StripeApiSettings>()
+                .Get(_environment)
                 .SecretKey
                 .DecryptStripeApiKey(dataProtectionProvider, logger);
     }
@@ -41,9 +46,10 @@ public class RequestOptionsService : IRequestOptionsService
         var requestOptions = await GetOrCreateRequestOptionsAsync();
         requestOptions.IdempotencyKey = Guid.NewGuid().ToString();
 
-        if (siteSettings.GetOrCreate<StripeApiSettings>().AccountId != null)
+        var accountId = siteSettings.GetOrCreate<StripeApiSettings>().Get(_environment).AccountId;
+        if (accountId != null)
         {
-            requestOptions.StripeAccount = siteSettings.GetOrCreate<StripeApiSettings>().AccountId;
+            requestOptions.StripeAccount = accountId;
         }
 
         return requestOptions;
@@ -53,7 +59,7 @@ public class RequestOptionsService : IRequestOptionsService
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var apiKey = _apiKeyAccessor(siteSettings);
-        var accountId = siteSettings.GetOrCreate<StripeApiSettings>().AccountId;
+        var accountId = siteSettings.GetOrCreate<StripeApiSettings>().Get(_environment).AccountId;
 
         _requestOptions =
             accountId != null

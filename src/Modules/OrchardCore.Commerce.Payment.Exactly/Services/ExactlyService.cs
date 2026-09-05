@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using Refit;
 using System;
@@ -15,16 +16,18 @@ public class ExactlyService : IExactlyService
 {
     private readonly IExactlyApi _api;
     private readonly IHttpContextAccessor _hca;
+    private readonly PaymentEnvironment _environment;
 
-    public ExactlyService(IExactlyApi api, IHttpContextAccessor hca)
+    public ExactlyService(PaymentEnvironment environment, IExactlyApi api, IHttpContextAccessor hca)
     {
+        _environment = environment;
         _api = api;
         _hca = hca;
     }
 
     public async Task<ChargeResponse> CreateTransactionAsync(OrderPart orderPart, Amount? total = null)
     {
-        var charge = await ChargeRequest.CreateForCurrentUserAsync(orderPart, _hca.HttpContext, total);
+        var charge = await ChargeRequest.CreateForCurrentUserAsync(orderPart, _hca.HttpContext, _environment, total);
         var request = new ExactlyDataWrapper<ExactlyRequest<ChargeRequest>>(
             new ExactlyRequest<ChargeRequest> { Attributes = charge });
 

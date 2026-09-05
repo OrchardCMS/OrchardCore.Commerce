@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Payment.Exactly.Models;
+using OrchardCore.Commerce.Payment.Exactly.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -19,20 +19,17 @@ public class ExactlySettingsDisplayDriver : SiteDisplayDriver<ExactlySettings>
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _hca;
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly ExactlySettings _ssoSettings;
 
     protected override string SettingsGroupId => EditorGroupId;
 
     public ExactlySettingsDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor hca,
-        IShellReleaseManager shellReleaseManager,
-        IOptionsSnapshot<ExactlySettings> ssoSettings)
+        IShellReleaseManager shellReleaseManager)
     {
         _authorizationService = authorizationService;
         _hca = hca;
         _shellReleaseManager = shellReleaseManager;
-        _ssoSettings = ssoSettings.Value;
     }
 
     public override async Task<IDisplayResult> EditAsync(ISite model, ExactlySettings section, BuildEditorContext context)
@@ -40,11 +37,12 @@ public class ExactlySettingsDisplayDriver : SiteDisplayDriver<ExactlySettings>
         if (!await AuthorizeAsync()) return null;
 
         context.AddTenantReloadWarningWrapper();
+        section.MigrateLegacyKeys();
 
-        return Initialize<ExactlySettings>($"{nameof(ExactlySettings)}_Edit", settings =>
+        return Initialize<ExactlySettingsViewModel>($"{nameof(ExactlySettings)}_Edit", settings =>
             {
-                _ssoSettings.CopyTo(settings);
-                settings.ApiKey = string.Empty;
+                MapToViewModel(section.Production, settings.Production);
+                MapToViewModel(section.Sandbox, settings.Sandbox);
             })
             .PlaceInContent()
             .OnGroup(SettingsGroupId);
@@ -52,17 +50,28 @@ public class ExactlySettingsDisplayDriver : SiteDisplayDriver<ExactlySettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite model, ExactlySettings section, UpdateEditorContext context)
     {
-        if (await context.CreateModelMaybeAsync<ExactlySettings>(Prefix, AuthorizeAsync) is not { } viewModel)
+        if (await context.CreateModelMaybeAsync<ExactlySettingsViewModel>(Prefix, AuthorizeAsync) is not { } viewModel)
         {
             return null;
         }
 
-        viewModel.CopyTo(section);
+        section.MigrateLegacyKeys();
+        viewModel.Production?.CopyTo(section.Production ??= new ExactlyEnvironmentSettings());
+        viewModel.Sandbox?.CopyTo(section.Sandbox ??= new ExactlyEnvironmentSettings());
+        section.ClearLegacyKeys();
 
         // Release the tenant to apply settings.
         _shellReleaseManager.RequestRelease();
 
         return await EditAsync(model, section, context);
+    }
+
+    private static void MapToViewModel(ExactlyEnvironmentSettings section, ExactlyEnvironmentSettings model)
+    {
+        section ??= new ExactlyEnvironmentSettings();
+        model.BaseAddress = section.BaseAddress;
+        model.ProjectId = section.ProjectId;
+        model.ApiKey = string.Empty;
     }
 
     private Task<bool> AuthorizeAsync() =>

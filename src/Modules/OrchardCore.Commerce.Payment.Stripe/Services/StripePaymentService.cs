@@ -39,9 +39,11 @@ public class StripePaymentService : IStripePaymentService
     private readonly IPaymentService _paymentService;
     private readonly IHtmlLocalizer<StripePaymentService> H;
     private readonly IStripePaymentIntentService _stripePaymentIntentService;
+    private readonly PaymentEnvironment _environment;
 
 #pragma warning disable S107 // Methods should not have too many parameters
     public StripePaymentService(
+        PaymentEnvironment environment,
         IContentManager contentManager,
         ISiteService siteService,
         IStringLocalizer<StripePaymentService> stringLocalizer,
@@ -53,6 +55,7 @@ public class StripePaymentService : IStripePaymentService
         IStripePaymentIntentService stripePaymentIntentService)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
+        _environment = environment;
         _contentManager = contentManager;
         _siteService = siteService;
         _session = session;
@@ -67,21 +70,21 @@ public class StripePaymentService : IStripePaymentService
     public async Task<string> GetPublicKeyAsync()
     {
         var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
-        return stripeApiSettings.PublishableKey;
+        return stripeApiSettings.Get(_environment).PublishableKey;
     }
 
     public async Task<string> CreateClientSecretAsync(Amount total, ShoppingCartViewModel cart)
     {
-        var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
+        var envSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>().Get(_environment);
 
-        if (string.IsNullOrEmpty(stripeApiSettings.PublishableKey) ||
-            string.IsNullOrEmpty(stripeApiSettings.SecretKey) ||
+        if (string.IsNullOrEmpty(envSettings.PublishableKey) ||
+            string.IsNullOrEmpty(envSettings.SecretKey) ||
             total.Value <= 0)
         {
             return null;
         }
 
-        var paymentIntentId = (await _paymentIntentPersistence.RetrieveAsync(cart.Id))?.PaymentIntentId;
+        var paymentIntentId = (await _paymentIntentPersistence.RetrieveAsync(cart.Id, _environment))?.PaymentIntentId;
         var totals = cart.GetTotalsOrThrowIfEmpty();
 
         // Same here as on the checkout page: Later we have to figure out what to do if there are multiple
@@ -112,7 +115,7 @@ public class StripePaymentService : IStripePaymentService
             return _paymentService.UpdateAndRedirectToFinishedOrderAsync(
                 order,
                 shoppingCartId,
-                StripePaymentProvider.ProviderName,
+                StripePaymentProvider.ProviderName.ForEnvironment(_environment),
                 CreateChargesProvider(paymentIntent));
         }
         catch (Exception ex)
@@ -157,7 +160,7 @@ public class StripePaymentService : IStripePaymentService
         string paymentIntentId = null,
         OrderPart orderPart = null)
     {
-        var innerPaymentIntentId = paymentIntentId ?? (await _paymentIntentPersistence.RetrieveAsync(shoppingCartId))?.PaymentIntentId;
+        var innerPaymentIntentId = paymentIntentId ?? (await _paymentIntentPersistence.RetrieveAsync(shoppingCartId, _environment))?.PaymentIntentId;
         var paymentIntent = await _stripePaymentIntentService.GetPaymentIntentAsync(innerPaymentIntentId);
 
         // Stripe doesn't support multiple shopping cart IDs because we can't send that info to the middleware anyway.
@@ -215,7 +218,7 @@ public class StripePaymentService : IStripePaymentService
         bool needToJudgeIntentStorage = true)
     {
         // If it is null it means the session was not loaded yet and a redirect is needed.
-        if (needToJudgeIntentStorage && string.IsNullOrEmpty((await _paymentIntentPersistence.RetrieveAsync(shoppingCartId))?.PaymentIntentId))
+        if (needToJudgeIntentStorage && string.IsNullOrEmpty((await _paymentIntentPersistence.RetrieveAsync(shoppingCartId, _environment))?.PaymentIntentId))
         {
             return new PaymentOperationStatusViewModel
             {
@@ -287,7 +290,7 @@ public class StripePaymentService : IStripePaymentService
         }
 
         // Delete payment intent from session, to create a new one.
-        await _paymentIntentPersistence.RemoveAsync(shoppingCartId);
+        await _paymentIntentPersistence.RemoveAsync(shoppingCartId, _environment);
         return new PaymentOperationStatusViewModel
         {
             Status = PaymentOperationStatus.Failed,

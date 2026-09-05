@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Commerce.Payment.Stripe.Extensions;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Commerce.Payment.Stripe.Services;
 using OrchardCore.Commerce.Payment.Stripe.ViewModels;
@@ -57,21 +57,22 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
 
         context.AddTenantReloadWarningWrapper();
 
+        section.MigrateLegacyKeys();
+
         return Initialize<StripeApiSettingsViewModel>(
                 "StripeApiSettings_Edit",
                 model =>
                 {
-                    model.PublishableKey = section.PublishableKey;
+                    MapToViewModel(section.Production, model.Production);
+                    MapToViewModel(section.Sandbox, model.Sandbox);
 
-                    model.AccountId = section.AccountId;
-
-                    // Decrypting key.
-                    model.SecretKey = section.DecryptSecretKey(_dataProtectionProvider, _logger);
-
-                    model.WebhookSigningSecret = section.WebhookSigningSecret.DecryptStripeApiKey(
-                        _dataProtectionProvider,
-                        _logger
-                    );
+                    var request = _hca.HttpContext?.Request;
+                    var baseUrl = request == null
+                        ? "/stripe-webhook"
+                        : $"{request.Scheme}://{request.Host}{request.PathBase}/stripe-webhook";
+                    model.ProductionWebhookUrl = baseUrl;
+                    model.SandboxWebhookUrl =
+                        $"{baseUrl}?{PaymentEnvironmentExtensions.QueryParameterName}={PaymentEnvironment.Sandbox.ToQueryValue()}";
                 }
             )
             .PlaceInContent()
@@ -86,47 +87,51 @@ public class StripeApiSettingsDisplayDriver : SiteDisplayDriver<StripeApiSetting
     {
         if (await context.CreateModelMaybeAsync<StripeApiSettingsViewModel>(Prefix, AuthorizeAsync) is { } viewModel)
         {
-            var previousSecretKey = section.SecretKey;
-            var previousWebhookKey = section.WebhookSigningSecret;
-            section.PublishableKey = viewModel.PublishableKey?.Trim();
-
-            // Restore secret key if the input is empty, meaning that it has not been reset.
-            if (string.IsNullOrWhiteSpace(viewModel.SecretKey))
-            {
-                section.SecretKey = previousSecretKey;
-            }
-            else
-            {
-                // Encrypt secret key.
-                var protector = _dataProtectionProvider.CreateProtector(
-                    nameof(StripeApiSettingsConfiguration)
-                );
-                section.SecretKey = protector.Protect(viewModel.SecretKey?.Trim());
-            }
-
-            section.AccountId = string.IsNullOrWhiteSpace(viewModel.AccountId)
-                ? null
-                : viewModel.AccountId.Trim();
-
-            if (string.IsNullOrWhiteSpace(viewModel.WebhookSigningSecret))
-            {
-                section.WebhookSigningSecret = previousWebhookKey;
-            }
-            else
-            {
-                var protector = _dataProtectionProvider.CreateProtector(
-                    nameof(StripeApiSettingsConfiguration)
-                );
-                section.WebhookSigningSecret = protector.Protect(
-                    viewModel.WebhookSigningSecret?.Trim()
-                );
-            }
+            section.MigrateLegacyKeys();
+            var protector = _dataProtectionProvider.CreateProtector(nameof(StripeApiSettingsConfiguration));
+            ApplyEnvironment(viewModel.Production, section.Production ??= new StripeApiEnvironmentSettings(), protector);
+            ApplyEnvironment(viewModel.Sandbox, section.Sandbox ??= new StripeApiEnvironmentSettings(), protector);
+            section.ClearLegacyKeys();
 
             // Release the tenant to apply settings.
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }
 
         return await EditAsync(model, section, context);
+    }
+
+    private void MapToViewModel(
+        StripeApiEnvironmentSettings section,
+        StripeApiEnvironmentSettingsViewModel model)
+    {
+        model.PublishableKey = section?.PublishableKey;
+        model.AccountId = section?.AccountId;
+        model.SecretKey = section?.DecryptSecretKey(_dataProtectionProvider, _logger);
+        model.WebhookSigningSecret = section?.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
+    }
+
+    private static void ApplyEnvironment(
+        StripeApiEnvironmentSettingsViewModel viewModel,
+        StripeApiEnvironmentSettings section,
+        IDataProtector protector)
+    {
+        if (viewModel == null)
+        {
+            return;
+        }
+
+        section.PublishableKey = viewModel.PublishableKey?.Trim();
+        section.AccountId = string.IsNullOrWhiteSpace(viewModel.AccountId) ? null : viewModel.AccountId.Trim();
+
+        if (!string.IsNullOrWhiteSpace(viewModel.SecretKey))
+        {
+            section.SecretKey = protector.Protect(viewModel.SecretKey.Trim());
+        }
+
+        if (!string.IsNullOrWhiteSpace(viewModel.WebhookSigningSecret))
+        {
+            section.WebhookSigningSecret = protector.Protect(viewModel.WebhookSigningSecret.Trim());
+        }
     }
 
     private Task<bool> AuthorizeAsync() =>

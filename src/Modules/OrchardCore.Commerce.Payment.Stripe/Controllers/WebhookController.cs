@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Models;
 using OrchardCore.Settings;
@@ -38,14 +39,19 @@ public class WebhookController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index([FromHeader(Name = "Stripe-Signature")] string signature)
+    public async Task<IActionResult> Index(
+        [FromHeader(Name = "Stripe-Signature")] string signature,
+        [FromQuery] string environment = null)
     {
         using var streamReader = new StreamReader(HttpContext.Request.Body);
         var json = await streamReader.ReadToEndAsync(HttpContext.RequestAborted);
         try
         {
+            var paymentEnvironment = PaymentEnvironmentExtensions.Parse(environment);
             var stripeApiSettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<StripeApiSettings>();
-            var webhookSigningKey = stripeApiSettings.DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
+            var webhookSigningKey = stripeApiSettings
+                .Get(paymentEnvironment)
+                .DecryptWebhookSigningSecret(_dataProtectionProvider, _logger);
 
             var stripeEvent = _stripeHelperService.PrepareStripeEvent(
                 json,
@@ -59,7 +65,8 @@ public class WebhookController : ControllerBase
                 throw new StripeException("Invalid event or event Id.");
             }
 
-            await _stripeWebhookEventHandlers.AwaitEachAsync(handler => handler.ReceivedStripeEventAsync(stripeEvent));
+            await _stripeWebhookEventHandlers.AwaitEachAsync(
+                handler => handler.ReceivedStripeEventAsync(stripeEvent, paymentEnvironment));
 
             return Ok();
         }

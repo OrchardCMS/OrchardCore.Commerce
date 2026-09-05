@@ -28,9 +28,12 @@ public class StripeApiSettingsConfiguration : IConfigureOptions<StripeApiSetting
             .GetSiteSettings()
             .GetOrCreate<StripeApiSettings>();
 
-        options.PublishableKey = settings.PublishableKey;
+        settings.MigrateLegacyKeys();
+        options.Production = settings.Production ?? new StripeApiEnvironmentSettings();
+        options.Sandbox = settings.Sandbox ?? new StripeApiEnvironmentSettings();
+        options.ClearLegacyKeys();
 
-        // Decrypt the secret key.
-        options.SecretKey = settings.DecryptSecretKey(_dataProtectionProvider, _logger);
+        options.Production.SecretKey = options.Production.DecryptSecretKey(_dataProtectionProvider, _logger);
+        options.Sandbox.SecretKey = options.Sandbox.DecryptSecretKey(_dataProtectionProvider, _logger);
     }
 }

@@ -1,9 +1,10 @@
-﻿using Lombiq.HelpfulLibraries.AspNetCore.Extensions;
+using Lombiq.HelpfulLibraries.AspNetCore.Extensions;
 using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Abstractions;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Models;
 using OrchardCore.Commerce.Payment.Stripe.Endpoints.Permissions;
@@ -25,14 +26,15 @@ public static class StripeCheckoutApiEndpoint
     private static async Task<IResult> GetStripeCheckoutEndpointAsync(
         [FromBody] SubscriptionCheckoutEndpointViewModel viewModel,
         [FromServices] IAuthorizationService authorizationService,
-        [FromServices] IStripeCustomerService stripeCustomerService,
-        [FromServices] IStripeSessionService stripeSessionService,
         HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, ApiPermissions.CommerceApiStripePayment))
         {
             return httpContext.ChallengeOrForbidApi();
         }
+
+        var stripeCustomerService = httpContext.GetRequiredKeyedPaymentService<IStripeCustomerService>();
+        var stripeSessionService = httpContext.GetRequiredKeyedPaymentService<IStripeSessionService>();
 
         var customer = await stripeCustomerService.GetAndUpdateOrCreateCustomerAsync(
             viewModel.BillingAddress,

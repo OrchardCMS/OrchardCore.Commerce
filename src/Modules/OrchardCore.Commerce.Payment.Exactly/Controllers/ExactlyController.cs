@@ -1,4 +1,4 @@
-﻿using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
+using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Lombiq.HelpfulLibraries.OrchardCore.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -27,7 +27,6 @@ namespace OrchardCore.Commerce.Payment.Exactly.Controllers;
 public class ExactlyController : Controller
 {
     private readonly IContentManager _contentManager;
-    private readonly IExactlyService _exactlyService;
     private readonly ILogger<ExactlyController> _logger;
     private readonly INotifier _notifier;
     private readonly IPaymentService _paymentService;
@@ -35,13 +34,11 @@ public class ExactlyController : Controller
     private readonly IStringLocalizer<ExactlyController> S;
 
     public ExactlyController(
-        IExactlyService exactlyService,
         INotifier notifier,
         IPaymentService paymentService,
         IOrchardServices<ExactlyController> services)
     {
         _contentManager = services.ContentManager.Value;
-        _exactlyService = exactlyService;
         _logger = services.Logger.Value;
         _notifier = notifier;
         _paymentService = paymentService;
@@ -51,21 +48,23 @@ public class ExactlyController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateTransaction(string shoppingCartId) =>
+    public async Task<IActionResult> CreateTransaction(string shoppingCartId, string environment = null) =>
         await this.SafeJsonAsync(async () =>
         {
+            var exactlyService = HttpContext.GetRequiredKeyedPaymentService<IExactlyService>(environment);
             var order = await _paymentService.CreatePendingOrderFromShoppingCartAsync(
                 shoppingCartId,
                 notifyOnError: false,
                 throwOnError: true);
-            return await _exactlyService.CreateTransactionAsync(order.GetOrCreate<OrderPart>());
+            return await exactlyService.CreateTransactionAsync(order.GetOrCreate<OrderPart>());
         });
 
-    public async Task<IActionResult> GetRedirectUrl(string transactionId) =>
-        await this.SafeJsonAsync<object>(async () => await GetActionRedirectRequestedAsync(transactionId));
+    public async Task<IActionResult> GetRedirectUrl(string transactionId, string environment = null) =>
+        await this.SafeJsonAsync<object>(async () => await GetActionRedirectRequestedAsync(transactionId, environment));
 
-    public async Task<IActionResult> VerifyApi()
+    public async Task<IActionResult> VerifyApi(string environment = null)
     {
+        var exactlyService = HttpContext.GetRequiredKeyedPaymentService<IExactlyService>(environment);
         try
         {
             var testAmount = new Amount(1, Currency.Euro);
@@ -84,8 +83,8 @@ public class ExactlyController : Controller
             order.DisplayText = S["Exactly API test order"];
             await _contentManager.CreateAsync(order);
 
-            var result = await _exactlyService.CreateTransactionAsync(order.GetOrCreate<OrderPart>(), testAmount);
-            var action = await GetActionRedirectRequestedAsync(result.Id);
+            var result = await exactlyService.CreateTransactionAsync(order.GetOrCreate<OrderPart>(), testAmount);
+            var action = await GetActionRedirectRequestedAsync(result.Id, environment);
 
             await _notifier.SuccessAsync(
                 H["The Exactly API access works correctly. You can test the redirection by clicking <a href=\"{0}\">here</a>", action.Url]);
@@ -115,9 +114,12 @@ public class ExactlyController : Controller
             new { area = "OrchardCore.Settings", groupId = ExactlySettingsDisplayDriver.EditorGroupId });
     }
 
-    private async Task<ChargeAction.ChargeActionAttributes> GetActionRedirectRequestedAsync(string transactionId)
+    private async Task<ChargeAction.ChargeActionAttributes> GetActionRedirectRequestedAsync(
+        string transactionId,
+        string environment = null)
     {
-        var result = await _exactlyService.GetTransactionDetailsAsync(
+        var exactlyService = HttpContext.GetRequiredKeyedPaymentService<IExactlyService>(environment);
+        var result = await exactlyService.GetTransactionDetailsAsync(
             transactionId,
             ChargeResponse.ChargeResponseStatus.ActionRequired,
             HttpContext.RequestAborted);
