@@ -1,29 +1,10 @@
-@using Microsoft.AspNetCore.Mvc.Localization
-@using OrchardCore
 @using OrchardCore.Commerce.MoneyDataType
-@using OrchardCore.Commerce.Payment.Stripe.Controllers
-@using OrchardCore.Mvc.Core.Utilities
+
 @{
     if (Model.DefaultTotal is not Amount defaultTotal)
     {
         throw new InvalidOperationException("Missing DefaultTotal");
     }
-
-    string publishableKey = Model.PaymentProviderData?.PublishableKey ?? string.Empty;
-    string clientSecret = Model.PaymentProviderData?.ClientSecret ?? string.Empty;
-    string paymentIntentId = Model.PaymentProviderData?.PaymentIntentId ?? string.Empty;
-    string accountId = Model.PaymentProviderData?.AccountId?.Trim();
-    
-    var urlPrefix = Url.Content("~/").TrimEnd('/');
-    var missingText = T["A value is required for %LABEL%."].Value;
-    var stripeData = new
-    {
-        clientSecret,
-        paymentIntentId,
-        urlPrefix,
-        publishableKey,
-        missingText,
-    }; 
 }
 
 <input type="hidden" id="StripePaymentPart_PaymentIntentId_Text" name="StripePaymentPart.PaymentIntentId.Text">
@@ -51,13 +32,4 @@
 
 <div class="stripe-field-error my-3" hidden></div>
 
-@if (!string.IsNullOrEmpty(publishableKey))
-{
-    <script at="Head" asp-name="StripeJs" asp-src="https://js.stripe.com/v3/"></script>
-    <script at="Head" asp-name="@ResourceNames.StripePaymentForm"></script>
-    <script at="Foot" depends-on="StripeJs,StripePaymentForm">
-        const data = @Json.Serialize(stripeData);
-        data.stripeAccountId = @(string.IsNullOrEmpty(accountId) ? Html.Raw("undefined") : Json.Serialize(new { StripeAccount = accountId }));
-        stripePaymentForm(data);
-    </script>
-}
+<shape type="CheckoutStripeScript" prop-PaymentProviderData="@Model.PaymentProviderData"></shape>
