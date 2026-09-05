@@ -1,11 +1,7 @@
 using Lombiq.HelpfulLibraries.OrchardCore.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
@@ -16,7 +12,6 @@ using OrchardCore.Commerce.Payment.Controllers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using System;
@@ -155,21 +150,5 @@ public class ExactlyPaymentProvider : IPaymentProvider
             area = areaName,
             returnUrl = string.IsNullOrEmpty(returnUrl) ? request.GetDisplayUrl() : returnUrl,
         });
-    }
-
-    internal static async Task<ActionContext> GetActionContextAsync(HttpContext httpContext)
-    {
-        var routeData = new RouteData();
-        routeData.Routers.Add(new RouteCollection());
-
-        var actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
-        var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
-
-        foreach (var filter in filters)
-        {
-            await filter.OnActionExecutionAsync(actionContext);
-        }
-
-        return actionContext;
     }
 }
