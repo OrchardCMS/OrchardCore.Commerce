@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 
 namespace OrchardCore.Commerce.MoneyDataType;
 
 internal static class KnownCurrencyTable
 {
-    private static readonly object _lockObject = new();
+    private static readonly Lock _lockObject = new();
 
     internal static IDictionary<string, ICurrency> CurrencyTable { get; private set; }
 

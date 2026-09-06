@@ -7,6 +7,4 @@ namespace OrchardCore.Commerce.Models;
     "Minor Code Smell",
     "S2094:Classes should not be empty",
     Justification = "This part doesn't store data.")]
-public class ProductListPart : ContentPart
-{
-}
+public class ProductListPart : ContentPart;

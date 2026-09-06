@@ -7,6 +7,4 @@ namespace OrchardCore.Commerce.Abstractions;
 /// A service that updates the <see cref="ProductEstimationContext"/> used by the <see
 /// cref="IShoppingCartHelpers.EstimateProductAsync"/> method.
 /// </summary>
-public interface IProductEstimationContextUpdater : ISortableUpdaterProvider<ProductEstimationContext>
-{
-}
+public interface IProductEstimationContextUpdater : ISortableUpdaterProvider<ProductEstimationContext>;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
+using System.Threading;
 
 namespace OrchardCore.Commerce.Abstractions.Abstractions;
 
@@ -14,7 +15,7 @@ public interface IProductAttributeDeserializer
     internal static readonly Dictionary<string, IProductAttributeDeserializer> Deserializers =
         new(StringComparer.OrdinalIgnoreCase);
 
-    private static readonly object _lock = new();
+    private static readonly Lock _lock = new();
 #pragma warning restore SA1600
 
     /// <summary>
