@@ -17,6 +17,8 @@ namespace OrchardCore.Commerce.MoneyDataType;
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
 {
+    public static MidpointRounding MidpointRounding { get; set; } = MidpointRounding.AwayFromZero;
+
     public static Amount Unspecified { get; } = new(0, MoneyDataType.Currency.UnspecifiedCurrency);
 
     private readonly ICurrency? _currency;
@@ -81,7 +83,7 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
     }
 
     public Amount GetRounded() =>
-        new(Math.Round(Value, Currency.DecimalPlaces), Currency);
+        new(Math.Round(Value, Currency.DecimalPlaces, MidpointRounding), Currency);
 
     /// <summary>
     /// Converts the <see cref="Amount"/> to a fixed-point fractional value by keeping some digits based on the <see
@@ -108,8 +110,8 @@ public readonly struct Amount : IEquatable<Amount>, IComparable<Amount>
             : (defaultKeepDigits, defaultRoundTens);
 
         return roundTens > 0
-            ? (long)Math.Round(Value / Tens(roundTens)) * Tens(roundTens + keepDigits)
-            : (long)Math.Round(Value * Tens(keepDigits));
+            ? (long)Math.Round(Value / Tens(roundTens), MidpointRounding) * Tens(roundTens + keepDigits)
+            : (long)Math.Round(Value * Tens(keepDigits), MidpointRounding);
     }
 
     private void ThrowIfCurrencyDoesntMatch(Amount other, string operation = "compare")

@@ -67,12 +67,12 @@ public partial class AddressFormatter :
             address.StreetAddress2,
             string.Format(CultureInfo.InvariantCulture, _cityLineFormat, address.City, address.Province, address.PostalCode),
             address.Region);
-        var withoutEmptyLines = GeneratedRegex().Replace(rawFormatted, "${first}").Trim('\r', '\n');
+        var withoutEmptyLines = GeneratedRegex.Replace(rawFormatted, "${first}").Trim('\r', '\n');
         return _uppercase
             ? withoutEmptyLines.ToUpperInvariant()
             : withoutEmptyLines;
     }
 
     [GeneratedRegex(@"(?<first>\r?\n)[\r\n]+", RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 1000)]
-    private static partial Regex GeneratedRegex();
+    private static partial Regex GeneratedRegex { get; }
 }

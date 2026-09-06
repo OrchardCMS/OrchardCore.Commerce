@@ -136,7 +136,7 @@ public class OrderLineItemService : IOrderLineItemService
         var availableNumericAttributes = new Dictionary<string, List<string>>();
         var numericAttributeSettings = new Dictionary<string, IDictionary<string, NumericProductAttributeFieldSettings>>();
 
-        var allProducts = await _session.Query<ContentItem, ProductPartIndex>().ListAsync();
+        var allProducts = await _session.Query<ContentItem, ProductPartIndex>().ListAsync(_orchardHelper.HttpContext.RequestAborted);
         foreach (var product in allProducts)
         {
             var productSku = product.GetOrCreate<ProductPart>().Sku;

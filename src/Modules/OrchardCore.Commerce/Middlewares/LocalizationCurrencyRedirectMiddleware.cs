@@ -54,7 +54,7 @@ public class LocalizationCurrencyRedirectMiddleware
                 .QueryContentItem(PublicationStatus.Published)
                 .Where(index => index.ContentItemId != item.ContentItemId)
                 .With<LocalizedContentItemIndex>(index => index.LocalizationSet == localizationPart.LocalizationSet)
-                .ListAsync();
+                .ListAsync(context.RequestAborted);
 
             var applicable = localizationSet
                 .GetOrCreate<PricePart>()

@@ -35,7 +35,7 @@ public class PersistenceTieredPriceTests : UITestBase
                 const string unitPriceInputXPath = "//input[contains(@class, 'tier-unit-price-editor')]";
                 var currency = Currency.HungarianForint.CurrencyIsoCode;
 
-                await context.ClickAndFillInWithRetriesAsync(By.Id($"ProductPart_Sku"), sku);
+                await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), sku);
                 await context.ClickAndFillInWithRetriesAsync(By.Id("TieredPricePart_DefaultPrice"), price);
                 await context.SetDropdownByTextAsync("TieredPricePart_Currency", currency);
 

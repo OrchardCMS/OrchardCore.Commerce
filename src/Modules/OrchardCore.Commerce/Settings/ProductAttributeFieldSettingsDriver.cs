@@ -32,14 +32,10 @@ public abstract class ProductAttributeFieldSettingsDriver<TField, TSettings>
 }
 
 public class BooleanProductAttributeFieldSettingsDriver
-    : ProductAttributeFieldSettingsDriver<BooleanProductAttributeField, BooleanProductAttributeFieldSettings>
-{
-}
+    : ProductAttributeFieldSettingsDriver<BooleanProductAttributeField, BooleanProductAttributeFieldSettings>;
 
 public class NumericProductAttributeFieldSettingsDriver
-    : ProductAttributeFieldSettingsDriver<NumericProductAttributeField, NumericProductAttributeFieldSettings>
-{
-}
+    : ProductAttributeFieldSettingsDriver<NumericProductAttributeField, NumericProductAttributeFieldSettings>;
 
 public class TextProductAttributeFieldSettingsDriver
     : ProductAttributeFieldSettingsDriver<TextProductAttributeField, TextProductAttributeFieldSettings>

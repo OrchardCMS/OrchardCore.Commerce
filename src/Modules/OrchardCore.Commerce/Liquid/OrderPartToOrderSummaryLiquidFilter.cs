@@ -62,5 +62,5 @@ public class OrderPartToOrderSummaryLiquidFilter : ILiquidFilter
     }
 
     private static decimal Round(decimal value, OrderLineItemViewModel viewModel) =>
-        Math.Round(value, viewModel.UnitPrice.Currency.DecimalPlaces);
+        Math.Round(value, viewModel.UnitPrice.Currency.DecimalPlaces, Amount.MidpointRounding);
 }

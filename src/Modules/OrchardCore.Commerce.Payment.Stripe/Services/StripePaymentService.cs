@@ -142,7 +142,7 @@ public class StripePaymentService : IStripePaymentService
     public Task<OrderPayment> GetOrderPaymentByPaymentIntentIdAsync(string paymentIntentId) =>
         _session
             .Query<OrderPayment, OrderPaymentIndex>(index => index.PaymentIntentId == paymentIntentId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(_hca.HttpContext?.RequestAborted ?? default);
 
     public Task SaveOrderPaymentAsync(string orderContentItemId, string paymentIntentId) =>
         _session.SaveAsync(new OrderPayment

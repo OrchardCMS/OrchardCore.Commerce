@@ -10,9 +10,7 @@ namespace OrchardCore.Commerce.Fields;
     "Minor Code Smell",
     "S2094:Classes should not be empty",
     Justification = "Intermediate ancestor class to group together attribute fields.")]
-public abstract class ProductAttributeField : ContentField
-{
-}
+public abstract class ProductAttributeField : ContentField;
 
 /// <summary>
 /// Adds the ability for a product to be modified with a set of attributes, in particular when added to a shopping cart.
@@ -30,20 +28,14 @@ public abstract class ProductAttributeField<TSettings> : ProductAttributeField
 /// <summary>
 /// A Boolean product attribute.
 /// </summary>
-public class BooleanProductAttributeField : ProductAttributeField<BooleanProductAttributeFieldSettings>
-{
-}
+public class BooleanProductAttributeField : ProductAttributeField<BooleanProductAttributeFieldSettings>;
 
 /// <summary>
 /// A numeric product attribute.
 /// </summary>
-public class NumericProductAttributeField : ProductAttributeField<NumericProductAttributeFieldSettings>
-{
-}
+public class NumericProductAttributeField : ProductAttributeField<NumericProductAttributeFieldSettings>;
 
 /// <summary>
 /// A text product attribute, that may also have predefined values and may be used as enumeration or flags.
 /// </summary>
-public class TextProductAttributeField : ProductAttributeField<TextProductAttributeFieldSettings>
-{
-}
+public class TextProductAttributeField : ProductAttributeField<TextProductAttributeFieldSettings>;
