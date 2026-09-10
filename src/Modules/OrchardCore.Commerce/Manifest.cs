@@ -70,3 +70,10 @@ using OrchardCore.Modules.Manifest;
         CommerceConstants.Features.Core,
     ]
 )]
+
+[assembly: Feature(
+    Id = CommerceConstants.Features.PriceDisplayNames,
+    Name = "Orchard Core Commerce - Price Display Names",
+    Category = "Commerce",
+    Description = "Allows configuring display names for prices."
+)]

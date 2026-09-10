@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.ContentFields.Settings;
 using OrchardCore.Commerce.Tax.Models;
 using OrchardCore.ContentFields.Settings;
@@ -13,10 +15,14 @@ namespace OrchardCore.Commerce.Tax.Migrations;
 /// </summary>
 public class TaxPartMigrations : DataMigration
 {
+    private readonly PriceDisplayNameOptions _options;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public TaxPartMigrations(IContentDefinitionManager contentDefinitionManager) =>
+    public TaxPartMigrations(IContentDefinitionManager contentDefinitionManager, IOptions<PriceDisplayNameOptions> priceDisplayNameOptions)
+    {
         _contentDefinitionManager = contentDefinitionManager;
+        _options = priceDisplayNameOptions.Value;
+    }
 
     public async Task<int> CreateAsync()
     {
@@ -33,7 +39,7 @@ public class TaxPartMigrations : DataMigration
                         Hint = "The ID that identifies the product of product category for taxing purposes.",
                     }))
                 .WithField(part => part.GrossPrice, part => part
-                    .WithDisplayName("Gross Price")
+                    .WithDisplayName(_options.GrossPrice)
                     .WithSettings(new PriceFieldSettings
                     {
                         Hint = "The price with tax. If specified along with the Tax Rate, then Price content part is " +
@@ -43,7 +49,7 @@ public class TaxPartMigrations : DataMigration
                     .WithDisplayName("Tax Rate")
                     .WithSettings(new NumericFieldSettings
                     {
-                        Hint = "The tax percentage of the net price, which is added to get the gross price.",
+                        Hint = $"The tax percentage of the {_options.NetPrice}, which is added to get the {_options.GrossPrice}.",
                         Minimum = 0,
                         Maximum = 100,
                     }))

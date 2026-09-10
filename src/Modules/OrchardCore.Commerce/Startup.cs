@@ -42,8 +42,10 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Data.YesSql;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -435,4 +437,13 @@ public class SkuGeneratorGuidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
         services.AddScoped<ISkuGenerator, GuidSkuGenerator>();
+}
+
+[RequireFeatures(CommerceConstants.Features.PriceDisplayNames)]
+public class PriceDisplayNamesStartup : StartupBase
+{
+    private readonly IShellConfiguration _configuration;
+    public PriceDisplayNamesStartup(IShellConfiguration configuration) => _configuration = configuration;
+    public override void ConfigureServices(IServiceCollection services) =>
+        services.Configure<PriceDisplayNameOptions>(_configuration.GetSection("OrchardCore_Commerce_PriceDisplayNames"));
 }

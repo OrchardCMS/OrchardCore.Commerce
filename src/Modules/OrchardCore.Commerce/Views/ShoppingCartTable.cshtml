@@ -1,10 +1,12 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Commerce.Abstractions
 @using OrchardCore.Commerce.Abstractions.ViewModels
 @using OrchardCore.Commerce.Models
 @using OrchardCore.Commerce.MoneyDataType
 @using OrchardCore.Commerce.Tax.Extensions
 @using OrchardCore.Settings
 @inject ISiteService SiteService
-
+@inject IOptions<PriceDisplayNameOptions> priceDisplayNameOptions;
 @{
     var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
     var lines = viewModel.Lines;
@@ -70,7 +72,7 @@
                 <p>
                     @if (priceDisplaySettings.UseNetPriceDisplay)
                     {
-                        @T["Net Price: {0}", netTotal]
+                        @T["{0}: {1}", priceDisplayNameOptions.Value.NetPrice, netTotal]
                     }
                     @if (priceDisplaySettings.UseNetPriceDisplay && priceDisplaySettings.UseGrossPriceDisplay)
                     {
@@ -78,7 +80,7 @@
                     }
                     @if (priceDisplaySettings.UseGrossPriceDisplay)
                     {
-                        @T["Gross Price: {0}", grossTotal]
+                        @T["{0}: {1}", priceDisplayNameOptions.Value.GrossPrice, grossTotal]
                     }
                 </p>
             }
