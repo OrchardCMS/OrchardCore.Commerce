@@ -18,7 +18,7 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
     private readonly IClock _clock;
     private readonly IHtmlLocalizer<PromotionShoppingCartEvents> H;
     private readonly IPromotionService _promotionService;
-    private readonly PriceDisplayNameOptions _priceDisplayNameOptions;
+    private readonly HeadersDisplayNamesOptions _priceDisplayNameOptions;
 
     // Promotions should be applied after taxes.
     public override int Order => int.MaxValue;
@@ -26,7 +26,7 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
     public PromotionShoppingCartEvents(
         IClock clock,
         IHtmlLocalizer<PromotionShoppingCartEvents> htmlLocalizer,
-        IOptions<PriceDisplayNameOptions> priceDisplayNameOptions,
+        IOptions<HeadersDisplayNamesOptions> priceDisplayNameOptions,
         IPromotionService promotionService)
     {
         _clock = clock;

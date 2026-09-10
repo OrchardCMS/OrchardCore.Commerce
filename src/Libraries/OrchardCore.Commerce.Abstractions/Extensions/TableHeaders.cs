@@ -5,11 +5,11 @@ namespace OrchardCore.Commerce.Abstractions.Extensions;
 
 public static class TableHeaders
 {
-    public static IList<LocalizedHtmlString> GetDefaultHeaders(IHtmlLocalizer htmlLocalizer) =>
+    public static IList<LocalizedHtmlString> GetDefaultHeaders(IHtmlLocalizer htmlLocalizer, HeadersDisplayNamesOptions options) =>
     [
-        htmlLocalizer["Product"],
-        htmlLocalizer["Quantity"],
-        htmlLocalizer["Price"],
-        htmlLocalizer["Action"],
+        htmlLocalizer[options.Product],
+        htmlLocalizer[options.Quantity],
+        htmlLocalizer[options.Price],
+        htmlLocalizer[options.Action],
     ];
 }

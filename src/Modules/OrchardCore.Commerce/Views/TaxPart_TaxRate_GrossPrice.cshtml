@@ -1,13 +1,13 @@
 @using Microsoft.Extensions.Options
 @using OrchardCore.Commerce.Abstractions
 @model TaxRateViewModel
-@inject IOptions<PriceDisplayNameOptions> priceDisplayNameOptions;
+@inject IOptions<HeadersDisplayNamesOptions> options;
 
 @if (Model.GrossPrice is { } price)
 {
     <div class="pb-3 field field-type-pricefield field-name-tax-rate-gross-price"
          title="@T["Estimate, the final value is calculated during checkout."]">
-        <strong class="tax-rate-gross-price-title">@T[$"{priceDisplayNameOptions.Value.GrossPrice}*:"]</strong>
+        <strong class="tax-rate-gross-price-title">@T[$"{options.Value.GrossPrice}*:"]</strong>
         <span class="tax-rate-gross-price-value">@price</span>
     </div>
 }

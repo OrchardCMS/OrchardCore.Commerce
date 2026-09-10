@@ -439,11 +439,11 @@ public class SkuGeneratorGuidStartup : StartupBase
         services.AddScoped<ISkuGenerator, GuidSkuGenerator>();
 }
 
-[RequireFeatures(CommerceConstants.Features.PriceDisplayNames)]
+[RequireFeatures(CommerceConstants.Features.HeadersDisplayNames)]
 public class PriceDisplayNamesStartup : StartupBase
 {
     private readonly IShellConfiguration _configuration;
     public PriceDisplayNamesStartup(IShellConfiguration configuration) => _configuration = configuration;
     public override void ConfigureServices(IServiceCollection services) =>
-        services.Configure<PriceDisplayNameOptions>(_configuration.GetSection("OrchardCore_Commerce_PriceDisplayNames"));
+        services.Configure<HeadersDisplayNamesOptions>(_configuration.GetSection("OrchardCore_Commerce_HeadersDisplayNames"));
 }

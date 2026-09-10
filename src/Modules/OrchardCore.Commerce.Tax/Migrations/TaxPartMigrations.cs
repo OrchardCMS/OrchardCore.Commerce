@@ -15,10 +15,10 @@ namespace OrchardCore.Commerce.Tax.Migrations;
 /// </summary>
 public class TaxPartMigrations : DataMigration
 {
-    private readonly PriceDisplayNameOptions _options;
+    private readonly HeadersDisplayNamesOptions _options;
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public TaxPartMigrations(IContentDefinitionManager contentDefinitionManager, IOptions<PriceDisplayNameOptions> priceDisplayNameOptions)
+    public TaxPartMigrations(IContentDefinitionManager contentDefinitionManager, IOptions<HeadersDisplayNamesOptions> priceDisplayNameOptions)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _options = priceDisplayNameOptions.Value;

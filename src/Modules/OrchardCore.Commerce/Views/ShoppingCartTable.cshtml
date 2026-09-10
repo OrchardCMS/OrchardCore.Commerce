@@ -6,7 +6,7 @@
 @using OrchardCore.Commerce.Tax.Extensions
 @using OrchardCore.Settings
 @inject ISiteService SiteService
-@inject IOptions<PriceDisplayNameOptions> priceDisplayNameOptions;
+@inject IOptions<HeadersDisplayNamesOptions> options;
 @{
     var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
     var lines = viewModel.Lines;
@@ -72,7 +72,7 @@
                 <p>
                     @if (priceDisplaySettings.UseNetPriceDisplay)
                     {
-                        @T["{0}: {1}", priceDisplayNameOptions.Value.NetPrice, netTotal]
+                        @T["{0}: {1}", options.Value.NetPrice, netTotal]
                     }
                     @if (priceDisplaySettings.UseNetPriceDisplay && priceDisplaySettings.UseGrossPriceDisplay)
                     {
@@ -80,7 +80,7 @@
                     }
                     @if (priceDisplaySettings.UseGrossPriceDisplay)
                     {
-                        @T["{0}: {1}", priceDisplayNameOptions.Value.GrossPrice, grossTotal]
+                        @T["{0}: {1}", options.Value.GrossPrice, grossTotal]
                     }
                 </p>
             }

@@ -10,6 +10,6 @@ public static class CommerceConstants
         public const string CurrencySettingsSelector = $"{Core}.{nameof(CurrencySettingsSelector)}";
         public const string Subscription = $"{Core}.{nameof(Subscription)}";
         public const string SkuGeneratorGuid = $"{SkuGenerator}.Guid";
-        public const string PriceDisplayNames = $"{Core}.{nameof(PriceDisplayNames)}";
+        public const string HeadersDisplayNames = $"{Core}.{nameof(HeadersDisplayNames)}";
     }
 }
