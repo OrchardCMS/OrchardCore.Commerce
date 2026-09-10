@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Extensions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
@@ -99,13 +100,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (lines.Count == 0) return null;
 
-        IList<LocalizedHtmlString> headers =
-        [
-            H["Quantity"],
-            H["Product"],
-            H["Price"],
-            H["Action"],
-        ];
+        var headers = TableHeaders.GetDefaultHeaders(H);
+
         IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 
         (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);
