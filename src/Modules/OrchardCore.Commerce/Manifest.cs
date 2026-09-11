@@ -21,6 +21,7 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Templates",
         "OrchardCore.Commerce.ContentFields",
         "OrchardCore.Commerce.Payment",
+        CommerceConstants.Features.HeadersDisplayNames,
     ]
 )]
 
@@ -69,4 +70,11 @@ using OrchardCore.Modules.Manifest;
     [
         CommerceConstants.Features.Core,
     ]
+)]
+
+[assembly: Feature(
+    Id = CommerceConstants.Features.HeadersDisplayNames,
+    Name = "Orchard Core Commerce - Display Names",
+    Category = "Commerce",
+    Description = "Allows configuring display names."
 )]

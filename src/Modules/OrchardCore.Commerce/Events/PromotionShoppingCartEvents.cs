@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Models;
@@ -17,6 +18,7 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
     private readonly IClock _clock;
     private readonly IHtmlLocalizer<PromotionShoppingCartEvents> H;
     private readonly IPromotionService _promotionService;
+    private readonly HeadersDisplayNamesOptions _priceDisplayNameOptions;
 
     // Promotions should be applied after taxes.
     public override int Order => int.MaxValue;
@@ -24,11 +26,13 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
     public PromotionShoppingCartEvents(
         IClock clock,
         IHtmlLocalizer<PromotionShoppingCartEvents> htmlLocalizer,
+        IOptions<HeadersDisplayNamesOptions> priceDisplayNameOptions,
         IPromotionService promotionService)
     {
         _clock = clock;
         H = htmlLocalizer;
         _promotionService = promotionService;
+        _priceDisplayNameOptions = priceDisplayNameOptions.Value;
     }
 
     public override async Task<(IList<LocalizedHtmlString> Headers, IList<ShoppingCartLineViewModel> Lines)> DisplayingAsync(
@@ -50,12 +54,12 @@ public class PromotionShoppingCartEvents : ShoppingCartEventsBase
 
         var newHeaders = headers.ToList();
 
-        var netPriceExists = newHeaders.Exists(header => header.Name == "Net Price");
+        var netPriceExists = newHeaders.Exists(header => header.Name == _priceDisplayNameOptions.NetPrice);
         var insertIndex = netPriceExists
-            ? newHeaders.FindIndex(header => header.Name == "Net Price")
-            : newHeaders.FindIndex(header => header.Name is "Price" or "Gross Price");
+            ? newHeaders.FindIndex(header => header.Name == _priceDisplayNameOptions.NetPrice)
+            : newHeaders.FindIndex(header => header.Name == _priceDisplayNameOptions.Price || header.Name == _priceDisplayNameOptions.GrossPrice);
 
-        newHeaders.Insert(insertIndex, H["Old Price"]);
+        newHeaders.Insert(insertIndex, H[_priceDisplayNameOptions.OldPrice]);
 
         foreach (var (price, index) in lines.Select((item, index) => (item.UnitPrice, index)))
         {

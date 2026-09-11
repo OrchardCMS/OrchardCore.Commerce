@@ -1,8 +1,10 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Extensions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
@@ -20,6 +22,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class ShoppingCartHelpers : IShoppingCartHelpers
 {
+    private readonly HeadersDisplayNamesOptions _options;
     private readonly IHttpContextAccessor _hca;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
@@ -45,6 +48,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
+        IOptions<HeadersDisplayNamesOptions> priceDisplayNameOptions,
         IHtmlLocalizer<ShoppingCartHelpers> localizer)
     {
         _hca = hca;
@@ -56,6 +60,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
+        _options = priceDisplayNameOptions.Value;
         H = localizer;
     }
 
@@ -99,13 +104,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (lines.Count == 0) return null;
 
-        IList<LocalizedHtmlString> headers =
-        [
-            H["Quantity"],
-            H["Product"],
-            H["Price"],
-            H["Action"],
-        ];
+        var headers = TableHeaders.GetDefaultHeaders(H, _options);
+
         IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 
         (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);

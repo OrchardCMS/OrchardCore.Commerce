@@ -1,16 +1,18 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Commerce.Abstractions
 @model PriceDisplaySettingsViewModel
-
+@inject IOptions<HeadersDisplayNamesOptions> options;
 <div class="mb-3">
     <div class="custom-control custom-checkbox">
         <input asp-for="UseNetPriceDisplay" type="checkbox" class="custom-control-input">
-        <label class="custom-control-label" asp-for="UseNetPriceDisplay">@T["Use Net Price Display"]</label>
+        <label class="custom-control-label" asp-for="UseNetPriceDisplay">@T[$"Use {options.Value.NetPrice} Display"]</label>
     </div>
     <div class="row col-md">
         <span class="hint">@T["Turn on to display prices with taxes excluded."]</span>
     </div>
     <div class="custom-control custom-checkbox">
         <input asp-for="UseGrossPriceDisplay" type="checkbox" class="custom-control-input">
-        <label class="custom-control-label" asp-for="UseGrossPriceDisplay">@T["Use Gross Price Display"]</label>
+        <label class="custom-control-label" asp-for="UseGrossPriceDisplay">@T[$"Use {options.Value.GrossPrice} Display"]</label>
     </div>
     <div class="row col-md">
         <span class="hint">@T["Turn on to display prices with taxes included."]</span>
