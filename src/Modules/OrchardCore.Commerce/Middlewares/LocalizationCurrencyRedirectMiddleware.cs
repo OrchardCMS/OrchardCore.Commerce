@@ -1,7 +1,5 @@
 ﻿using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +8,7 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Settings;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,10 +61,7 @@ public class LocalizationCurrencyRedirectMiddleware
             if (applicable != null)
             {
                 var urlHelperFactory = context.RequestServices.GetRequiredService<IUrlHelperFactory>();
-                var urlHelper = urlHelperFactory.GetUrlHelper(new ActionContext(
-                    context,
-                    context.GetRouteData(),
-                    new ActionDescriptor()));
+                var urlHelper = urlHelperFactory.GetUrlHelper(await context.GetActionContextAsync());
                 context.Response.Redirect(urlHelper.DisplayContentItem(applicable));
             }
         }
