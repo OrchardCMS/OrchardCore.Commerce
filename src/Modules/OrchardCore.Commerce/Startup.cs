@@ -4,6 +4,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.ResourceManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -57,6 +58,7 @@ using OrchardCore.Workflows.Helpers;
 using System;
 using YesSql.Indexes;
 using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
+using static System.Collections.Specialized.BitVector32;
 
 namespace OrchardCore.Commerce;
 
@@ -443,6 +445,12 @@ public class PriceDisplayNamesStartup : StartupBase
 {
     private readonly IShellConfiguration _configuration;
     public PriceDisplayNamesStartup(IShellConfiguration configuration) => _configuration = configuration;
-    public override void ConfigureServices(IServiceCollection services) =>
-        services.Configure<HeadersDisplayNamesOptions>(_configuration.GetSection("OrchardCore_Commerce_HeadersDisplayNames"));
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        var section = _configuration.GetSection("OrchardCore_Commerce_HeadersDisplayNames");
+        if (section.Exists())
+        {
+            services.Configure<HeadersDisplayNamesOptions>(section);
+        }
+    }
 }
