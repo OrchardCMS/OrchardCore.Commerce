@@ -446,7 +446,7 @@ public class PriceDisplayNamesStartup : StartupBase
     public PriceDisplayNamesStartup(IShellConfiguration configuration) => _configuration = configuration;
     public override void ConfigureServices(IServiceCollection services)
     {
-        var section = _configuration.GetSection("OrchardCore_Commerce_HeadersDisplayNames");
+        var section = _configuration.GetSection("OrchardCoreCommerce_HeadersDisplayNames");
         if (section.Exists())
         {
             services.Configure<HeadersDisplayNamesOptions>(section);
