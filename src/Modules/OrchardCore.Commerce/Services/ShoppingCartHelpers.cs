@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.Extensions;
+using OrchardCore.Commerce.Abstractions.Helpers;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
@@ -107,7 +107,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (lines.Count == 0) return null;
 
-        var headers = TableHeaders.GetLocalizedShoppingCartHeaders(_htmlLocalizer, _options);
+        var headers = LocalizationHelpers.GetLocalizedShoppingCartHeaders(_htmlLocalizer, _options);
 
         IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 

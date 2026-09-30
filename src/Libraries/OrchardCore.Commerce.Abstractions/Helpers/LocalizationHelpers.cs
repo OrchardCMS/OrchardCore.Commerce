@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using System.Collections.Generic;
 
-namespace OrchardCore.Commerce.Abstractions.Extensions;
+namespace OrchardCore.Commerce.Abstractions.Helpers;
 
-public static class TableHeaders
+public static class LocalizationHelpers
 {
     public static IList<LocalizedHtmlString> GetLocalizedShoppingCartHeaders(IHtmlLocalizer<HeadersDisplayNamesOptions> htmlLocalizer, HeadersDisplayNamesOptions options) =>
     [
