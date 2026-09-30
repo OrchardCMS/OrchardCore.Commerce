@@ -1,7 +1,11 @@
-@using Microsoft.Extensions.Options
+@using Microsoft.Extensions.Options;
+@using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.Commerce.Abstractions
+@using OrchardCore.Commerce.Abstractions.Helpers
 @using OrchardCore.Commerce.MoneyDataType
 @inject IOptions<HeadersDisplayNamesOptions> options;
+@inject IHtmlLocalizer<HeadersDisplayNamesOptions> HtmlLocalizer;
+
 @{
     if (Model.DefaultTotal is not Amount defaultTotal)
     {
@@ -21,12 +25,12 @@
 
 @* Net Price is always applicable, while Gross Price can only be shown if it's specified. *@
 <div>
-    <strong>@T["{0}: {1}", options.Value.NetPrice, Model.NetTotal]</strong>
+    <strong>@LocalizationHelpers.FormatPriceWithLabel(HtmlLocalizer, options.Value.NetPrice, Model.NetTotal)</strong>
 </div>
 @if (Model.GrossTotal != null && Model.GrossTotal.Value != 0)
 {
     <div>
-        <strong>@T["{0}: {1}", options.Value.GrossPrice, Model.GrossTotal]</strong>
+        <strong>@LocalizationHelpers.FormatPriceWithLabel(HtmlLocalizer, options.Value.GrossPrice, Model.GrossTotal)</strong>
     </div>
 }
 
