@@ -104,7 +104,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (lines.Count == 0) return null;
 
-        var headers = TableHeaders.GetDefaultHeaders(H, _options);
+        var headers = TableHeaders.GetLocalizedShoppingCartHeaders(H, _options);
 
         IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 
