@@ -33,6 +33,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
+    private readonly IHtmlLocalizer<HeadersDisplayNamesOptions> _htmlLocalizer;
 
     [SuppressMessage(
         "Major Code Smell",
@@ -49,7 +50,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
         IOptions<HeadersDisplayNamesOptions> priceDisplayNameOptions,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer)
+        IHtmlLocalizer<ShoppingCartHelpers> localizer,
+        IHtmlLocalizer<HeadersDisplayNamesOptions> htmlLocalizer)
     {
         _hca = hca;
         _priceSelectionStrategy = priceSelectionStrategy;
@@ -62,6 +64,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _shoppingCartSerializer = shoppingCartSerializer;
         _options = priceDisplayNameOptions.Value;
         H = localizer;
+        _htmlLocalizer = htmlLocalizer;
     }
 
     public async Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(
@@ -104,7 +107,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (lines.Count == 0) return null;
 
-        var headers = TableHeaders.GetLocalizedShoppingCartHeaders(H, _options);
+        var headers = TableHeaders.GetLocalizedShoppingCartHeaders(_htmlLocalizer, _options);
 
         IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 
