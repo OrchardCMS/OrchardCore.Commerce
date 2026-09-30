@@ -442,11 +442,11 @@ public class SkuGeneratorGuidStartup : StartupBase
 [RequireFeatures(CommerceConstants.Features.HeadersDisplayNames)]
 public class PriceDisplayNamesStartup : StartupBase
 {
-    private readonly IShellConfiguration _configuration;
-    public PriceDisplayNamesStartup(IShellConfiguration configuration) => _configuration = configuration;
+    private readonly IShellConfiguration _shellConfiguration;
+    public PriceDisplayNamesStartup(IShellConfiguration shellConfiguration) => _shellConfiguration = shellConfiguration;
     public override void ConfigureServices(IServiceCollection services)
     {
-        var section = _configuration.GetSection("OrchardCoreCommerce_HeadersDisplayNames");
+        var section = _shellConfiguration.GetSection("OrchardCoreCommerce_HeadersDisplayNames");
         if (section.Exists())
         {
             services.Configure<HeadersDisplayNamesOptions>(section);
