@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Commerce.Abstractions.Abstractions;
 using System.Collections.Generic;
 
 namespace OrchardCore.Commerce.Abstractions.Helpers;
 
 public static class LocalizationHelpers
 {
-    public static IList<LocalizedHtmlString> GetLocalizedShoppingCartHeaders(IHtmlLocalizer<HeadersDisplayNamesOptions> htmlLocalizer, HeadersDisplayNamesOptions options) =>
+    public static IList<LocalizedHtmlString> GetLocalizedShoppingCartHeaders(
+        IHtmlLocalizer<HeadersDisplayNamesOptions> htmlLocalizer,
+        HeadersDisplayNamesOptions options) =>
     [
         htmlLocalizer[options.Product],
         htmlLocalizer[options.Quantity],
@@ -31,8 +32,7 @@ public static class LocalizationHelpers
         htmlLocalizer[options.GrossPrice];
 
     /// <summary>
-    /// Formats a localized price label alongside an amount/total. 
-    /// (e.g., "Net Price : $10.00")
+    /// Formats a localized price label alongside an amount/total.(e.g., "Net Price : $10.00").
     /// </summary>
     public static LocalizedHtmlString FormatPriceWithLabel(
         IHtmlLocalizer<HeadersDisplayNamesOptions> htmlLocalizer,
