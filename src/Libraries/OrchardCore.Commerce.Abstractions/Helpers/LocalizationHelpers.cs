@@ -32,11 +32,12 @@ public static class LocalizationHelpers
         htmlLocalizer[options.GrossPrice];
 
     /// <summary>
-    /// Formats a localized price label alongside an amount/total.(e.g., "Net Price : $10.00").
+    /// Formats and localizes the <paramref name="priceName"/> and displays it next to the <paramref name="amount"/>
+    /// (e.g., "Net Price: $10.00").
     /// </summary>
     public static LocalizedHtmlString FormatPriceWithLabel(
         IHtmlLocalizer<HeadersDisplayNamesOptions> htmlLocalizer,
         string priceName,
         object amount) =>
-        htmlLocalizer["{0} : {1}", htmlLocalizer[priceName], amount];
+        htmlLocalizer["{0}: {1}", htmlLocalizer[priceName], amount];
 }
