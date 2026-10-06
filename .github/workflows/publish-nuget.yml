@@ -10,7 +10,5 @@ jobs:
     uses: Lombiq/GitHub-Actions/.github/workflows/publish-nuget.yml@dev
     with:
       dotnet-pack-ignore-warning: NU5104
-      # Temporary setting until https://github.com/OrchardCMS/OrchardCore.Commerce/issues/755 is resolved.
-      test-platform: "VSTest"
     secrets:
       API_KEY: ${{ secrets.NUGET_API_KEY }}
