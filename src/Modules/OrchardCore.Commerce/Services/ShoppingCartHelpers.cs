@@ -1,8 +1,10 @@
 using Lombiq.HelpfulLibraries.AspNetCore.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Helpers;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.AddressDataType;
@@ -20,6 +22,7 @@ namespace OrchardCore.Commerce.Services;
 
 public class ShoppingCartHelpers : IShoppingCartHelpers
 {
+    private readonly HeadersDisplayNamesOptions _options;
     private readonly IHttpContextAccessor _hca;
     private readonly IPriceSelectionStrategy _priceSelectionStrategy;
     private readonly IPriceService _priceService;
@@ -30,6 +33,7 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
     private readonly IShoppingCartPersistence _shoppingCartPersistence;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
     private readonly IHtmlLocalizer<ShoppingCartHelpers> H;
+    private readonly IHtmlLocalizer<HeadersDisplayNamesOptions> _htmlLocalizer;
 
     [SuppressMessage(
         "Major Code Smell",
@@ -45,7 +49,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         IEnumerable<IShoppingCartEvents> shoppingCartEvents,
         IShoppingCartPersistence shoppingCartPersistence,
         IShoppingCartSerializer shoppingCartSerializer,
-        IHtmlLocalizer<ShoppingCartHelpers> localizer)
+        IOptions<HeadersDisplayNamesOptions> priceDisplayNameOptions,
+        IHtmlLocalizer<ShoppingCartHelpers> localizer,
+        IHtmlLocalizer<HeadersDisplayNamesOptions> htmlLocalizer)
     {
         _hca = hca;
         _priceSelectionStrategy = priceSelectionStrategy;
@@ -56,7 +62,9 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
         _shoppingCartEvents = shoppingCartEvents;
         _shoppingCartPersistence = shoppingCartPersistence;
         _shoppingCartSerializer = shoppingCartSerializer;
+        _options = priceDisplayNameOptions.Value;
         H = localizer;
+        _htmlLocalizer = htmlLocalizer;
     }
 
     public async Task<ShoppingCartViewModel> CreateShoppingCartViewModelAsync(
@@ -99,13 +107,8 @@ public class ShoppingCartHelpers : IShoppingCartHelpers
 
         if (lines.Count == 0) return null;
 
-        IList<LocalizedHtmlString> headers =
-        [
-            H["Quantity"],
-            H["Product"],
-            H["Price"],
-            H["Action"],
-        ];
+        var headers = LocalizationHelpers.GetLocalizedShoppingCartHeaders(_htmlLocalizer, _options);
+
         IList<Amount> totals = [.. (await CalculateMultipleCurrencyTotalsAsync(cart)).Values];
 
         (shipping, billing) = await _hca.GetUserAddressIfNullAsync(shipping, billing);

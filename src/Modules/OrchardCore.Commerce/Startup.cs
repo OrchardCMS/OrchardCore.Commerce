@@ -4,6 +4,7 @@ using Lombiq.HelpfulLibraries.OrchardCore.ResourceManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -44,6 +45,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -435,4 +437,19 @@ public class SkuGeneratorGuidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services) =>
         services.AddScoped<ISkuGenerator, GuidSkuGenerator>();
+}
+
+[RequireFeatures(CommerceConstants.Features.HeadersDisplayNames)]
+public class PriceDisplayNamesStartup : StartupBase
+{
+    private readonly IShellConfiguration _shellConfiguration;
+    public PriceDisplayNamesStartup(IShellConfiguration shellConfiguration) => _shellConfiguration = shellConfiguration;
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        var section = _shellConfiguration.GetSection("OrchardCoreCommerce_HeadersDisplayNames");
+        if (section.Exists())
+        {
+            services.Configure<HeadersDisplayNamesOptions>(section);
+        }
+    }
 }

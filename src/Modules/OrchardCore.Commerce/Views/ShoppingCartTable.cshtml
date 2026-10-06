@@ -1,9 +1,15 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+@using OrchardCore.Commerce.Abstractions
+@using OrchardCore.Commerce.Abstractions.Helpers
 @using OrchardCore.Commerce.Abstractions.ViewModels
 @using OrchardCore.Commerce.Models
 @using OrchardCore.Commerce.MoneyDataType
 @using OrchardCore.Commerce.Tax.Extensions
 @using OrchardCore.Settings
 @inject ISiteService SiteService
+@inject IOptions<HeadersDisplayNamesOptions> options;
+@inject IHtmlLocalizer<HeadersDisplayNamesOptions> HtmlLocalizer;
 
 @{
     var viewModel = (ShoppingCartViewModel)Model.ShoppingCartViewModel;
@@ -70,7 +76,7 @@
                 <p>
                     @if (priceDisplaySettings.UseNetPriceDisplay)
                     {
-                        @T["Net Price: {0}", netTotal]
+                        @LocalizationHelpers.FormatPriceWithLabel(HtmlLocalizer, options.Value.NetPrice, netTotal)                       
                     }
                     @if (priceDisplaySettings.UseNetPriceDisplay && priceDisplaySettings.UseGrossPriceDisplay)
                     {
@@ -78,7 +84,7 @@
                     }
                     @if (priceDisplaySettings.UseGrossPriceDisplay)
                     {
-                        @T["Gross Price: {0}", grossTotal]
+                        @LocalizationHelpers.FormatPriceWithLabel(HtmlLocalizer, options.Value.GrossPrice, grossTotal)                       
                     }
                 </p>
             }

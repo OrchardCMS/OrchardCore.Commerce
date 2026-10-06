@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.ViewModels;
 using OrchardCore.Commerce.Models;
@@ -12,6 +13,7 @@ namespace OrchardCore.Commerce.Events;
 
 public class TaxShoppingCartEvents : ShoppingCartEventsBase
 {
+    private readonly HeadersDisplayNamesOptions _options;
     private readonly IHtmlLocalizer<TaxShoppingCartEvents> H;
     private readonly IEnumerable<ITaxProvider> _taxProviders;
     private readonly ISiteService _siteService;
@@ -19,10 +21,12 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
     public override int Order => 0;
 
     public TaxShoppingCartEvents(
+        IOptions<HeadersDisplayNamesOptions> priceDisplayNameOptions,
         IHtmlLocalizer<TaxShoppingCartEvents> htmlLocalizer,
         IEnumerable<ITaxProvider> taxProviders,
         ISiteService siteService)
     {
+        _options = priceDisplayNameOptions.Value;
         H = htmlLocalizer;
         _taxProviders = taxProviders;
         _siteService = siteService;
@@ -60,15 +64,15 @@ public class TaxShoppingCartEvents : ShoppingCartEventsBase
         }
 
         var newHeaders = headers
-            .Select(header => header.Name == "Price" ? H["Gross Price"] : header)
+            .Select(header => header.Name == _options.Price ? H[_options.GrossPrice] : header)
             .ToList();
 
         // When taxes are specified, Gross Price is always applicable, while Net Price is optional.
         var priceDisplaySettings = (await _siteService.GetSiteSettingsAsync()).GetOrCreate<PriceDisplaySettings>();
         if (priceDisplaySettings.UseNetPriceDisplay)
         {
-            var grossIndex = newHeaders.FindIndex(header => header.Name == "Gross Price");
-            newHeaders.Insert(grossIndex, H["Net Price"]);
+            var grossIndex = newHeaders.FindIndex(header => header.Name == _options.GrossPrice);
+            newHeaders.Insert(grossIndex, H[_options.NetPrice]);
         }
 
         return (newHeaders, lines);
