@@ -2,6 +2,7 @@ namespace OrchardCore.Commerce.Abstractions;
 
 public class HeadersDisplayNamesOptions
 {
+    public const string ConfigSection = "Commerce:HeadersDisplayNames";
     public string Price { get; set; } = "Price";
     public string NetPrice { get; set; } = "Net Price";
     public string GrossPrice { get; set; } = "Gross Price";
