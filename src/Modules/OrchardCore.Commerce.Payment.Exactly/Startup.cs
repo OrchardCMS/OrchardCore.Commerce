@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Payment.Abstractions;
 using OrchardCore.Commerce.Payment.Exactly.Drivers;
 using OrchardCore.Commerce.Payment.Exactly.Models;
@@ -28,7 +29,9 @@ public class Startup : StartupBase
         services.AddScoped<IExactlyService, ExactlyService>();
 
         // Configuration, permission, admin things
-        services.Configure<ExactlySettings>(_shellConfiguration.GetSection("OrchardCoreCommerce_Payment_Exactly"));
+        services.Configure<ExactlySettings>(_shellConfiguration.GetSectionCompat(
+            ConfigurationConstants.PaymentExactlyConfig,
+            ConfigurationConstants.OldPaymentExactlyConfig));
         services.AddTransient<IConfigureOptions<ExactlySettings>, ExactlySettingsConfiguration>();
         services.AddSiteDisplayDriver<ExactlySettingsDisplayDriver>();
         services.AddScoped<IPermissionProvider, Permissions>();
