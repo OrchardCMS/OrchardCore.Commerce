@@ -6,13 +6,13 @@
     <!-- The Orchard Core version should always be x.y.0 of the latest minor version for maximum compatibility when
          distributed as NuGet packages. On the other hand, the consuming projects (including OrchardCore.Commerce.Web)
          should use Orchard Core references for the latest patch version to pull all versions up in the final app. -->
-    <OrchardCoreVersion>3.0.1</OrchardCoreVersion>
+    <OrchardCoreVersion>4.0.0-preview-19178</OrchardCoreVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
-    <PackageVersion Include="HtmlSanitizer" Version="9.1.923-beta" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.5" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.5" />
+    <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="6.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="13.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="13.0.0" />
@@ -22,7 +22,7 @@
     <PackageVersion Include="Lombiq.Tests.UI" Version="15.0.0" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="15.0.0" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="15.0.0" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="4.13.2" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.14.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="$(OrchardCoreVersion)" />
