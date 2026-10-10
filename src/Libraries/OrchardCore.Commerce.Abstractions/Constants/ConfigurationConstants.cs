@@ -8,6 +8,6 @@ public static class ConfigurationConstants
     public const string Payment = nameof(Payment);
     public const string Exactly = nameof(Exactly);
     public const string PaymentExactlyConfig = $"{Commerce}:{Payment}:{Exactly}";
-    public const string OldHeadersConfig = "OrchardCoreCommerce_HeadersDisplayNames";
-    public const string OldPaymentExactlyConfig = "OrchardCoreCommerce_Payment_Exactly";
+    public const string OldHeadersConfig = $"OrchardCoreCommerce_{HeadersDisplayNames}";
+    public const string OldPaymentExactlyConfig = $"OrchardCoreCommerce_{Payment}_{Exactly}";
 }
