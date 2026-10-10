@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions.Constants;
@@ -29,9 +30,21 @@ public class Startup : StartupBase
         services.AddScoped<IExactlyService, ExactlyService>();
 
         // Configuration, permission, admin things
-        services.Configure<ExactlySettings>(_shellConfiguration.GetSectionCompat(
-            ConfigurationConstants.PaymentExactlyConfig,
-            ConfigurationConstants.OldPaymentExactlyConfig));
+        var newConfig = _shellConfiguration.GetSection(ConfigurationConstants.PaymentExactlyConfig);
+
+        if (newConfig.Exists())
+        {
+            services.Configure<ExactlySettings>(newConfig);
+        }
+        else
+        {
+            var oldConfig = _shellConfiguration.GetSection(ConfigurationConstants.OldPaymentExactlyConfig);
+            if (oldConfig.Exists())
+            {
+                services.Configure<ExactlySettings>(oldConfig);
+            }
+        }
+
         services.AddTransient<IConfigureOptions<ExactlySettings>, ExactlySettingsConfiguration>();
         services.AddSiteDisplayDriver<ExactlySettingsDisplayDriver>();
         services.AddScoped<IPermissionProvider, Permissions>();
