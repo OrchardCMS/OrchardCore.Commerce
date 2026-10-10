@@ -10,6 +10,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Fields;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.Abstractions.TagHelpers;
@@ -446,10 +447,19 @@ public class PriceDisplayNamesStartup : StartupBase
     public PriceDisplayNamesStartup(IShellConfiguration shellConfiguration) => _shellConfiguration = shellConfiguration;
     public override void ConfigureServices(IServiceCollection services)
     {
-        var section = _shellConfiguration.GetSection("OrchardCoreCommerce_HeadersDisplayNames");
-        if (section.Exists())
+        var newConfig = _shellConfiguration.GetSection(ConfigurationConstants.HeadersConfig);
+
+        if (newConfig.Exists())
         {
-            services.Configure<HeadersDisplayNamesOptions>(section);
+            services.Configure<HeadersDisplayNamesOptions>(newConfig);
+        }
+        else
+        {
+            var oldConfig = _shellConfiguration.GetSection(ConfigurationConstants.OldHeadersConfig);
+            if (oldConfig.Exists())
+            {
+                services.Configure<HeadersDisplayNamesOptions>(oldConfig);
+            }
         }
     }
 }
