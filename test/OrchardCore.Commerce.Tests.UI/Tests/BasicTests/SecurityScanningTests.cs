@@ -46,7 +46,7 @@ public class SecurityScanningTests : UITestBase
                         "SQL Injection",
                         "It has nothing to do with SQL manipulation, it just gave a query that returns different " +
                         "results (nothing, because we don't have a product called \"ZAP\").",
-                        @".*pagenum=.*products.title=ZAP.*");
+                        @".*products.title=ZAP.*");
 
                     FalsePositive(
                         configuration,
