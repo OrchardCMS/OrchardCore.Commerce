@@ -17,9 +17,9 @@
     <PackageVersion Include="Lombiq.HelpfulLibraries.Common" Version="13.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="13.0.0" />
     <PackageVersion Include="Lombiq.Tests" Version="6.0.0" />
-    <PackageVersion Include="Lombiq.Tests.UI" Version="15.0.0" />
-    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="15.0.0" />
-    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="15.0.0" />
+    <PackageVersion Include="Lombiq.Tests.UI" Version="15.0.1-alpha.2.osoe-1317" />
+    <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="15.0.1-alpha.2.osoe-1317" />
+    <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="15.0.1-alpha.2.osoe-1317" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.13.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.GitHubActionsReport" Version="2.5.1" />
@@ -48,7 +48,6 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Stripe.net" Version="51.1.0" />
     <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.10" />
-    <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
 </Project>
