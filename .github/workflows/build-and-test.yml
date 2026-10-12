@@ -14,8 +14,6 @@ jobs:
     with:
       machine-types: '["ubuntu-24.04"]'
       timeout-minutes: 60
-      # Temporary setting until https://github.com/OrchardCMS/OrchardCore.Commerce/issues/755 is resolved.
-      test-platform: "VSTest"
 
   build-and-test-windows:
     name: Build and Test (Windows)
