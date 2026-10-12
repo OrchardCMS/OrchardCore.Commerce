@@ -8,9 +8,9 @@
     <OrchardCoreVersion>3.0.1</OrchardCoreVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
-    <PackageVersion Include="HtmlSanitizer" Version="9.1.923-beta" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.5" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.5" />
+    <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageVersion Include="Lombiq.Analyzers.OrchardCore" Version="6.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.OrchardCore" Version="13.0.0" />
     <PackageVersion Include="Lombiq.HelpfulLibraries.AspNetCore" Version="13.0.0" />
@@ -20,7 +20,7 @@
     <PackageVersion Include="Lombiq.Tests.UI" Version="15.0.1-alpha.2.osoe-1317" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="15.0.1-alpha.2.osoe-1317" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="15.0.1-alpha.2.osoe-1317" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="4.13.2" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="4.14.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.GitHubActionsReport" Version="2.5.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.HangDump" Version="2.5.1" />
