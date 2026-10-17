@@ -38,6 +38,7 @@
   <!-- Security Updates - make sure to check if these are still necessary -->
   <ItemGroup>
     <!-- From OrchardCore.Application.Cms.Targets. -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" NoWarn="NU1510" />
     <PackageReference Include="System.Security.Cryptography.Xml" NoWarn="NU1510" />
   </ItemGroup>
 
