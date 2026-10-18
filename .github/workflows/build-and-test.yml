@@ -28,8 +28,6 @@ jobs:
       test-filter: "FullyQualifiedName!~SecurityScanningTests"
       # We already do this on Linux.
       verify-dotnet-consolidation: false
-      # Temporary setting until https://github.com/OrchardCMS/OrchardCore.Commerce/issues/755 is resolved.
-      test-platform: "VSTest"
 
   codespell:
     name: Codespell
