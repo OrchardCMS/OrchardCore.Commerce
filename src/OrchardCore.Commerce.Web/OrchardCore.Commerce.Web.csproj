@@ -35,10 +35,4 @@
     <ProjectReference Include="..\Modules\OrchardCore.Commerce\OrchardCore.Commerce.csproj" />
   </ItemGroup>
 
-  <!-- Security Updates - make sure to check if these are still necessary -->
-  <ItemGroup>
-    <!-- From OrchardCore.Application.Cms.Targets. -->
-    <PackageReference Include="System.Security.Cryptography.Xml" NoWarn="NU1510" />
-  </ItemGroup>
-
 </Project>
