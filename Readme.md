@@ -64,6 +64,8 @@ Check out the complete documentation portal here: <https://commerce.orchardcore.
 
 Bug reports, feature requests, comments, questions, code contributions and love letters are warmly welcome. You can send them to us via GitHub issues, discussions, and pull requests. Please adhere to our [code of conduct](CODE-OF-CONDUCT.md) while doing so.
 
+Before submitting a bug issue, please make sure that you are using the latest NuGet release of the base Orchard Core packages. Orchard Core Commerce does not support the pre-release versions of Orchard Core.
+
 You can help translating this project to a language you know, via our [Crowdin project](https://crowdin.com/project/orchard-core-commerce). Check out the [Translations repository](https://github.com/OrchardCMS/OrchardCore.Commerce.Translations/) for more details about it.
 
 This project is maintained by [Lombiq Technologies](https://lombiq.com/) with the help of community contributions by people like you.
