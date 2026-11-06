@@ -24,7 +24,7 @@
 <input form="shopping-cart-update"
        type="number"
        min="@minOrderQuantity"
-       max="@(inventoryPart != null ? maxOrderQuantity : string.Empty)"
+       max="@(inventoryPart != null ? maxOrderQuantity : null)"
        name="@(name).Quantity"
        value="@line.Quantity"
        aria-label="Quantity"

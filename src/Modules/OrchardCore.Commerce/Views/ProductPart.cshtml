@@ -33,7 +33,7 @@
            name="line.Quantity"
            step="1"
            min="@minOrderQuantity"
-           max="@(inventoryPart != null ? maxOrderQuantity : string.Empty)"
+           max="@(inventoryPart != null ? maxOrderQuantity : null)"
            value="@minOrderQuantity"
            class="form-control" />
     <ul class="product-attribute-list">
