@@ -117,7 +117,7 @@ public class ShoppingCart
     /// <returns>The index of the item, or -1 if not found.</returns>
     private int IndexOf(ShoppingCartItem item)
     {
-        for (int i = 0; i < Items.Count; i++)
+        for (var i = 0; i < Items.Count; i++)
         {
             if (Items[i].IsSameProductAs(item))
             {
