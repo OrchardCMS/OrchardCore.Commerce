@@ -1,4 +1,3 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -14,9 +13,9 @@ public class BehaviorProductListTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task SortingByTitleShouldWork(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task SortingByTitleShouldWork() =>
+        RunAsync(
             async context =>
             {
                 await context.SetDropdownByTextAsync("products-order-by", "Title A-Z");
@@ -34,12 +33,11 @@ public class BehaviorProductListTests : UITestBase
 
                 titles[0].ShouldBe("Test Tiered Price Product");
                 titles[1].ShouldBe("Test Product");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task FilteringByTitleShouldWork(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task FilteringByTitleShouldWork() =>
+        RunAsync(
             async context =>
             {
                 await context.FillInWithRetriesAsync(By.Id("products-filter-title"), "tiered");
@@ -49,12 +47,11 @@ public class BehaviorProductListTests : UITestBase
 
                 titles.Count.ShouldBe(1);
                 titles[0].ShouldBe("Test Tiered Price Product");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task SortingAndPaginationShouldWorkTogether(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task SortingAndPaginationShouldWorkTogether() =>
+        RunAsync(
             async context =>
             {
                 await context.SetDropdownByTextAsync("products-order-by", "Title Z-A");
@@ -66,8 +63,7 @@ public class BehaviorProductListTests : UITestBase
 
                 titles.Count.ShouldBe(1);
                 titles[0].ShouldBe("Test Discounted Product");
-            },
-            browser);
+            });
 
     private static List<string> GetProductTitles(UITestContext context) =>
         context

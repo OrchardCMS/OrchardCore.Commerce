@@ -1,5 +1,4 @@
 using Atata;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -16,9 +15,9 @@ public class ProductBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ProductCanBeAddedToShoppingCart(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ProductCanBeAddedToShoppingCart() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -34,12 +33,11 @@ public class ProductBehaviorTests : UITestBase
                 context.Get(By.ClassName("shopping-cart-widget")).Click();
 
                 context.Driver.Exists(By.XPath("//a[contains(., 'Test Product')]").Visible());
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task PriceVariantsProductCanBeAddedToShoppingCart(Browser browser) =>
-    ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task PriceVariantsProductCanBeAddedToShoppingCart() =>
+    RunAsync(
         async context =>
         {
             await context.SignInDirectlyAsync();
@@ -48,12 +46,11 @@ public class ProductBehaviorTests : UITestBase
             await context.ClickReliablyOnSubmitAsync();
 
             context.Driver.Exists(By.XPath("//li[contains(., 'Size: Small')]").Visible());
-        },
-        browser);
+        });
 
-    [Theory, Chrome]
-    public Task PriceEstimationWithMinimumOrderQuantityShouldNotShowWarning(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task PriceEstimationWithMinimumOrderQuantityShouldNotShowWarning() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -67,12 +64,11 @@ public class ProductBehaviorTests : UITestBase
 
                 await context.GoToContentItemByIdAsync(TestProduct);
                 context.ErrorMessageShouldNotExist();
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ShoppingCartWidgetShouldCountCorrectly(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ShoppingCartWidgetShouldCountCorrectly() =>
+        RunAsync(
             async context =>
             {
                 void ShoppingCartShouldBe(int count) =>
@@ -88,8 +84,7 @@ public class ProductBehaviorTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(By.Name("cart.lines[0].Quantity"), "2");
                 await context.ClickReliablyOnAsync(By.CssSelector("#shopping-cart-update button"));
                 ShoppingCartShouldBe(2);
-            },
-            browser);
+            });
 
     private static void ShoppingCartItemCountShouldBe(UITestContext context, int count) =>
         context.Get(By.ClassName("shopping-cart-item-count")).Text.ShouldBeAsString(count);

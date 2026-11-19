@@ -1,4 +1,3 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -17,9 +16,9 @@ public class InventoryBehaviorTests : UITestBase
 
     public const string CheckoutUnavailableMessage = "Checkout unavailable — invalid item in cart.";
 
-    [Theory, Chrome]
-    public Task InventoryChecksOnCartUpdateShouldWorkProperly(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task InventoryChecksOnCartUpdateShouldWorkProperly() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAndGoToRelativeUrlAsync("/testproduct");
@@ -71,12 +70,11 @@ public class InventoryBehaviorTests : UITestBase
                     "The checkout quantity for Test Product is more than the maximum allowed (10).",
                     shouldExist: false);
                 AssertError(context, "There are not enough Test Product left in stock.", shouldExist: false);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task UnavailableProductInCartShouldPreventCheckout(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task UnavailableProductInCartShouldPreventCheckout() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAndGoToRelativeUrlAsync("/testproduct");
@@ -110,8 +108,7 @@ public class InventoryBehaviorTests : UITestBase
                 await context.ClickPublishAsync();
 
                 await VerifyCheckoutAvailabilityAsync(context, cartMessageShouldExist: false, checkoutMessageShouldExist: false);
-            },
-            browser);
+            });
 
     private static async Task VerifyCheckoutAvailabilityAsync(
         UITestContext context, bool cartMessageShouldExist, bool checkoutMessageShouldExist, bool navigate = true)

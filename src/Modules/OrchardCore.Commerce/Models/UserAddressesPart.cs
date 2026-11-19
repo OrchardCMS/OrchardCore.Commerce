@@ -16,8 +16,8 @@ public class UserAddressesPart : ContentPart
         "Design",
         "CA1024:Use properties where appropriate",
         Justification = "It's not appropriate for it's counterpart for billing so this should remain a method for parity")]
+    // If BillingAndShippingAddressesMatch is ticked, we return the billing address for the shipping address as well.
     public Address GetSafeShippingAddress() =>
-        // If BillingAndShippingAddressesMatch is ticked, we return the billing address for the shipping address as well.
         BillingAndShippingAddressesMatch.Value ? BillingAddress.Address : ShippingAddress.Address;
 
     public Address GetSafeBillingAddress() =>

@@ -1,5 +1,4 @@
 using Atata;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -36,9 +35,9 @@ public class UserPersistenceTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task UserAddressEditorShouldPersist(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task UserAddressEditorShouldPersist() =>
+        RunAsync(
             async context =>
             {
                 context.Missing(By.ClassName("user-addresses-widget"));
@@ -104,12 +103,11 @@ public class UserPersistenceTests : UITestBase
                         ShippingPostalCode,
                         ShippingCountryCode,
                     ]);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task UserDetailsEditorShouldPersist(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task UserDetailsEditorShouldPersist() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -141,12 +139,11 @@ public class UserPersistenceTests : UITestBase
                         VatNumber,
                         "true",
                     ]);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task AdminUserEditorShouldSaveWithoutFullyFilledUserAddresses(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task AdminUserEditorShouldSaveWithoutFullyFilledUserAddresses() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -173,12 +170,11 @@ public class UserPersistenceTests : UITestBase
                     .GetAttribute("value")?
                     .Trim()
                     .ShouldBe(testCustomerName);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task PartiallyFilledUserDetailsShouldPersistInAdminUserEditor(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task PartiallyFilledUserDetailsShouldPersistInAdminUserEditor() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -209,8 +205,7 @@ public class UserPersistenceTests : UITestBase
                     .GetAttribute("value")?
                     .Trim()
                     .ShouldBe(VatNumber);
-            },
-            browser);
+            });
 
     private static async Task SubmitAndGoToUserTabAsync(UITestContext context, string tabName)
     {

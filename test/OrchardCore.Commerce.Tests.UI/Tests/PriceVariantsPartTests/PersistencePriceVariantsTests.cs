@@ -1,7 +1,5 @@
 using Atata;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.MoneyDataType;
 using Shouldly;
@@ -16,9 +14,9 @@ public class PersistencePriceVariantsTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task CreatingNewPriceVariantShouldPersist(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task CreatingNewPriceVariantShouldPersist() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -46,6 +44,5 @@ public class PersistencePriceVariantsTests : UITestBase
                     .ShouldBe(currency);
 
                 context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999.00");
-            },
-            browser);
+            });
 }

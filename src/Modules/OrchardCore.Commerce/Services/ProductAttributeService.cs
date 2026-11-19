@@ -117,9 +117,8 @@ public class ProductAttributeService : IProductAttributeService
         ProductAttributeField field) =>
         field
             ?.GetType()
-            // Using that type parameter arbitrarily, any one of the concrete attribute settings types would have done.
             .GetMethod(
-                nameof(ProductAttributeField<TextProductAttributeFieldSettings>.GetSettings),
+                nameof(ProductAttributeField<>.GetSettings),
                 BindingFlags.Instance | BindingFlags.Public)
             ?.Invoke(field, [partFieldDefinition]) as ProductAttributeFieldSettings;
 

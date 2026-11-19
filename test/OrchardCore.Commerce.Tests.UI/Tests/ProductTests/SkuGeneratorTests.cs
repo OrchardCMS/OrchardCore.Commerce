@@ -1,7 +1,5 @@
 using Atata;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
@@ -15,9 +13,9 @@ public class SkuGeneratorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task GuidSkuGeneratorShouldWork(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task GuidSkuGeneratorShouldWork() =>
+        RunAsync(
             async context =>
             {
                 string GetValue(string id) =>
@@ -48,6 +46,5 @@ public class SkuGeneratorTests : UITestBase
                 // Verify published product.
                 GetValue("TitlePart_Title").ShouldBe("SKU Test Product");
                 GetValue("ProductPart_Sku").ToUpperInvariant().ShouldMatch("^[0-9A-F]{32}$");
-            },
-            browser);
+            });
 }

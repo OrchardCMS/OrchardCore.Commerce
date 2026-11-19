@@ -1,5 +1,4 @@
 using Atata;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -20,9 +19,9 @@ public class BehaviorOrderTests : UITestBase
     public const string CompletePaymentButtonXPath =
         "//a[@class='pay-button btn btn-success justify-content-center' and contains(., 'Complete Payment')]";
 
-    [Theory, Chrome]
-    public Task OrderEditorShouldWorkProperly(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task OrderEditorShouldWorkProperly() =>
+        RunAsync(
             async context =>
             {
                 void SetUnitPriceCurrency(int index, string isoCode) => context.ExecuteScript($@"
@@ -208,12 +207,11 @@ public class BehaviorOrderTests : UITestBase
                     .Get(By.Name("OrderPart.LineItems[0].SelectedAttributes[Numeric][TestNumericAttribute]"))
                     .GetValue()
                     .ShouldBe("2.5");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task OrderPaymentRequestButtonShouldWorkProperly(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task OrderPaymentRequestButtonShouldWorkProperly() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -239,8 +237,7 @@ public class BehaviorOrderTests : UITestBase
 
                 await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{TestOrder}");
                 context.Missing(By.XPath(CompletePaymentButtonXPath));
-            },
-            browser);
+            });
 
     private static Task ClickDeleteItemAsync(UITestContext context, int index) =>
         context.ClickReliablyOnAsync(By.XPath($"//button[contains(@class, 'btn btn-danger')][{index.ToString(CultureInfo.InvariantCulture)}]"));

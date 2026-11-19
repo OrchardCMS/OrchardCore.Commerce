@@ -1,6 +1,4 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Xunit;
 
@@ -13,9 +11,9 @@ public class ValidationPriceVariantsTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ProvidingExistingSkuShouldTripTheHandler(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ProvidingExistingSkuShouldTripTheHandler() =>
+        RunAsync(
             async context =>
         {
             await context.SignInDirectlyAsync();
@@ -28,6 +26,5 @@ public class ValidationPriceVariantsTests : UITestBase
             await context.ClickReliablyOnSubmitAsync();
 
             context.ErrorMessageExists("SKU must be unique. A product with the given SKU already exists.");
-        },
-            browser);
+        });
 }

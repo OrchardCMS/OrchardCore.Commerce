@@ -45,7 +45,7 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<string> RemoveLineAsync(ShoppingCartLineUpdateModel line, string shoppingCartId = null)
     {
-        string errored = string.Empty;
+        var errored = string.Empty;
         try
         {
             var parsedLine = await _shoppingCartSerializer.ParseCartLineAsync(line);
@@ -97,7 +97,7 @@ public class ShoppingCartService : IShoppingCartService
 
     public async Task<string> UpdateAsync(ShoppingCartUpdateModel cart, string token, string shoppingCartId = null)
     {
-        string errored = string.Empty;
+        var errored = string.Empty;
         var updatedLines = new List<ShoppingCartLineUpdateModel>();
 
         var lines = await cart.Lines.AwaitEachAsync(async line =>

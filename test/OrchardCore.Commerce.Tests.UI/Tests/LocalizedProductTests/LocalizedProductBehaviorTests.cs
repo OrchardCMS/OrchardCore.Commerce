@@ -1,4 +1,3 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -21,9 +20,9 @@ public class LocalizedProductBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task LocalizedProductCreationShouldBeAllowed(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task LocalizedProductCreationShouldBeAllowed() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -59,8 +58,7 @@ public class LocalizedProductBehaviorTests : UITestBase
                 context.ErrorMessageShouldNotExist();
                 context.Get(By.ClassName("cart-product-name")).Text.Trim().ShouldBe(LocalizedTitle);
                 context.Get(By.ClassName("shopping-cart-table-unit-price")).Text.Trim().ShouldBe("3 500,00 Ft");
-            },
-            browser);
+            });
 
     private static Task GoToLocalizedProductAsync(UITestContext context) =>
         context.GoToAdminRelativeUrlAsync("/Contents/ContentItems?q=Test%20Localized%20Product type%3ALocalizedProduct");

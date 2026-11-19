@@ -1,6 +1,4 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
@@ -14,9 +12,9 @@ public class LocalizationTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task NuGetPackageWithLocalizationShouldApplyTranslatedText(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task NuGetPackageWithLocalizationShouldApplyTranslatedText() =>
+        RunAsync(
             async context =>
             {
                 const string cssTranslatedTextElement =
@@ -33,6 +31,5 @@ public class LocalizationTests : UITestBase
                     .Get(By.CssSelector(cssTranslatedTextElement))
                     .GetTextTrimmed()
                     .ShouldBe("Kedvezményes ár adóval:");
-            },
-            browser);
+            });
 }

@@ -1,4 +1,3 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -20,9 +19,9 @@ public class BehaviorCheckoutTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task DummyCheckoutShouldWork(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task DummyCheckoutShouldWork() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -52,12 +51,11 @@ public class BehaviorCheckoutTests : UITestBase
                 MatchText(".order-charge-amount", total);
                 MatchText(".order-charge-transaction-id", $"{orderId}:0");
                 MatchText(".order-charge-text", "Dummy transaction of US Dollar.");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task AddressPartsFeatureShouldOverrideRegularCheckout(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task AddressPartsFeatureShouldOverrideRegularCheckout() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -87,8 +85,7 @@ public class BehaviorCheckoutTests : UITestBase
 
                 await context.ClickReliablyOnAsync(By.Id("OrderPart_BillingAndShippingAddressesMatch_Value"));
                 context.Get(noteBy).GetAttribute("value").ShouldBe(noteText);
-            },
-            browser);
+            });
 
     private static By AddressName(string key) =>
         By.Name($"OrderPart.BillingAddress.Address.NameParts.{key}");

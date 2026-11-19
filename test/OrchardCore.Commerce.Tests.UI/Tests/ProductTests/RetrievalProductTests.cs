@@ -1,4 +1,3 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -15,9 +14,9 @@ public class RetrievalProductTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task HomePageShouldBeProductList(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task HomePageShouldBeProductList() =>
+        RunAsync(
             async context =>
             {
                 void TextShouldBe(string css, string expectedText) =>
@@ -40,12 +39,11 @@ public class RetrievalProductTests : UITestBase
                 context.GetAll(By.XPath("//img[@src='/media/ProductImages/sample-product-image.png']"))
                     .Count
                     .ShouldBe(5);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ProductAttributesShouldBeDisplayedCorrectly(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ProductAttributesShouldBeDisplayedCorrectly() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -119,6 +117,5 @@ public class RetrievalProductTests : UITestBase
                     "2");
                 await context.ClickReliablyOnSubmitAsync();
                 context.Exists(By.XPath("//li[contains(., 'TestNumericAttribute: 2')]"));
-            },
-            browser);
+            });
 }

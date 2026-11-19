@@ -76,7 +76,7 @@ public abstract class PaymentBaseController : Controller
         string? orderId = null)
         where TController : Controller
     {
-        string localReturnUrl = string.Empty;
+        var localReturnUrl = string.Empty;
         if (!string.IsNullOrEmpty(returnUrl))
         {
             localReturnUrl = string.IsNullOrEmpty(returnUrl)

@@ -1,6 +1,5 @@
 using Atata;
 using GraphQL;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -25,9 +24,9 @@ public class TaxBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task TaxPartShouldUpdatePrice(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task TaxPartShouldUpdatePrice() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -50,12 +49,11 @@ public class TaxBehaviorTests : UITestBase
                 FieldShouldBe(context, NetPriceId, 8);
                 FieldShouldBe(context, GrossPriceId, 10);
                 FieldShouldBe(context, TaxRateId, 25);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task GrossPriceAndTaxRateShouldBeRequiredTogether(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task GrossPriceAndTaxRateShouldBeRequiredTogether() =>
+        RunAsync(
             async context =>
             {
                 const string error = "You must either provide both Gross Price and Tax Rate, or neither of them.";
@@ -68,12 +66,11 @@ public class TaxBehaviorTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
                 context.Exists(By.XPath(
                     $"//div[contains(@class, 'validation-summary-errors')]//li[contains(., '{error}')]"));
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ProductDetailsShouldShowCorrectTaxRates(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ProductDetailsShouldShowCorrectTaxRates() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -120,12 +117,11 @@ public class TaxBehaviorTests : UITestBase
                 await UpdateAddressAndVerifyPriceAsync(
                     () => context.FillAddressAsync(prefix, new Address { Province = "NJ" }),
                     "$5.33");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task CustomTaxRateEditorShouldWork(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task CustomTaxRateEditorShouldWork() =>
+        RunAsync(
             async context =>
             {
                 void ResetScroll() => context.ExecuteScript("window.scrollTo(0, 0);");
@@ -224,8 +220,7 @@ public class TaxBehaviorTests : UITestBase
                         string.Empty,
                         string.Empty,
                         "27"]);
-            },
-            browser);
+            });
 
     private static void FieldShouldBe(UITestContext context, string id, decimal value) =>
         decimal

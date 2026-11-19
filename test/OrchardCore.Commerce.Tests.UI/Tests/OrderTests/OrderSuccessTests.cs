@@ -1,5 +1,4 @@
 using Lombiq.HelpfulLibraries.OrchardCore.Mvc;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -18,12 +17,11 @@ public class OrderSuccessTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ProductCanBeAddedToShoppingCart(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ProductCanBeAddedToShoppingCart() =>
+        RunAsync(
             async context =>
             {
-                await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
                 await context.SignInDirectlyAsync();
 
                 await AddProductToCartAsync(context, TestProduct);
@@ -33,12 +31,11 @@ public class OrderSuccessTests : UITestBase
                 await context.GoToAsync<OrderController>(controller =>
                     controller.CreateOrderWithSuccessfulPayment(orderCreateTime, null));
                 context.Exists(By.XPath("//h4[contains(.,'Thank you for your purchase!')]"));
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ShoppingCartUpdateButtonWorks(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ShoppingCartUpdateButtonWorks() =>
+        RunAsync(
             async context =>
             {
                 await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
@@ -53,8 +50,7 @@ public class OrderSuccessTests : UITestBase
 
                 context.Get(QuantityFieldBy(1)).GetAttribute("value").ShouldBeAsString(2);
                 context.Get(QuantityFieldBy(2)).GetAttribute("value").ShouldBeAsString(2);
-            },
-            browser);
+            });
 
     private static async Task AddProductToCartAsync(UITestContext context, string contentItemId)
     {

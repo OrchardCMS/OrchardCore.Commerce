@@ -1,7 +1,5 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.BasicOrchardFeaturesTesting;
 using Lombiq.Tests.UI.Models;
-using Lombiq.Tests.UI.Services;
 using OrchardCore.Commerce.Tests.UI.Helpers;
 using Xunit;
 
@@ -16,13 +14,10 @@ public class BasicOrchardFeaturesTests : UITestBase
     };
 
     public BasicOrchardFeaturesTests(ITestOutputHelper testOutputHelper)
-        : base(testOutputHelper)
-    {
-    }
+        : base(testOutputHelper) =>
+        WithoutSetup();
 
-    [Theory, Chrome]
-    public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
-        ExecuteTestAsync(
-            context => context.TestBasicOrchardFeaturesAsync(_setupParameters),
-            browser);
+    [Fact]
+    public Task BasicOrchardFeaturesShouldWork() =>
+        RunAsync(context => context.TestBasicOrchardFeaturesAsync(_setupParameters));
 }

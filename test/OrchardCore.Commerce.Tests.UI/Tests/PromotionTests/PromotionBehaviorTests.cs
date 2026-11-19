@@ -1,6 +1,4 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
@@ -17,9 +15,9 @@ public class PromotionBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task GlobalDiscountShouldOnlyAppearAfterAuthenticated(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task GlobalDiscountShouldOnlyAppearAfterAuthenticated() =>
+        RunAsync(
             async context =>
             {
                 async Task CheckDiscountPresenceAsync(bool hasNewPrice)
@@ -34,12 +32,11 @@ public class PromotionBehaviorTests : UITestBase
                 await CheckDiscountPresenceAsync(hasNewPrice: false);
                 await context.SignInDirectlyAsync();
                 await CheckDiscountPresenceAsync(hasNewPrice: true);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task DiscountShouldProperlyAppearOnDiscountedProduct(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task DiscountShouldProperlyAppearOnDiscountedProduct() =>
+        RunAsync(
             async context =>
             {
                 const string FullPrice = "$5.00";
@@ -72,6 +69,5 @@ public class PromotionBehaviorTests : UITestBase
                 await context.GoToRelativeUrlAsync("/testdiscountedproduct");
                 context.Get(By.CssSelector($"{PriceFieldCssSelector} > del")).Text.ShouldBe(FullPrice);
                 context.Get(By.CssSelector($"{PriceFieldCssSelector} > span")).Text.ShouldBe(DiscountedPrice);
-            },
-            browser);
+            });
 }

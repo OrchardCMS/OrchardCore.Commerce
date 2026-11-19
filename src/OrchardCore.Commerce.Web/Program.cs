@@ -11,6 +11,7 @@ builder.Host.UseNLogHost();
 
 var configuration = builder.Configuration;
 
+#pragma warning disable IDE0055 // Fix formatting: needed for the inline comments.
 builder.Services
     .AddSingleton(configuration)
     .AddOrchardCms(orchardCoreBuilder => orchardCoreBuilder
@@ -18,6 +19,7 @@ builder.Services
         // this is still true during the review of https://github.com/OrchardCMS/OrchardCore.Commerce/issues/300.
         .ConfigureSecurityDefaultsWithStaticFiles(new() { AllowInlineStyle = true })
         .EnableAutoSetupIfNotUITesting(configuration));
+#pragma warning restore IDE0055 // Fix formatting: needed for the inline comments.
 
 var app = builder.Build();
 app.UseOrchardCore();

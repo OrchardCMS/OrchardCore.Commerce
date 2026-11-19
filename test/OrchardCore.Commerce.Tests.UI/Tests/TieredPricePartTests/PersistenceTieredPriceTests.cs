@@ -1,7 +1,5 @@
 using Atata;
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.MoneyDataType;
 using Shouldly;
@@ -16,9 +14,9 @@ public class PersistenceTieredPriceTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task CreatingNewTieredPriceShouldPersist(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task CreatingNewTieredPriceShouldPersist() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -62,6 +60,5 @@ public class PersistenceTieredPriceTests : UITestBase
                 context.Get(By.XPath($"({unitPriceInputXPath})[1]")).GetDomProperty("value").ShouldBe(unitPrice1);
                 context.Get(By.XPath($"({quantityInputXPath})[2]")).GetDomProperty("value").ShouldBe(quantity2);
                 context.Get(By.XPath($"({unitPriceInputXPath})[2]")).GetDomProperty("value").ShouldBe(unitPrice2);
-            },
-            browser);
+            });
 }

@@ -1,6 +1,4 @@
-﻿using Lombiq.Tests.UI.Attributes;
-using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
+﻿using Lombiq.Tests.UI.Extensions;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.Payment.Exactly.Constants;
 using OrchardCore.Commerce.Payment.Exactly.Drivers;
@@ -16,9 +14,9 @@ public class BehaviorExactlyTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ExactlySettingsSignUpLinkShouldDisplayCorrectly(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task ExactlySettingsSignUpLinkShouldDisplayCorrectly() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -29,6 +27,5 @@ public class BehaviorExactlyTests : UITestBase
                     .Get(By.CssSelector(".exactly-sign-up-info a"))
                     .GetAttribute("href")
                     .ShouldBe(ExactlySettingsDisplayDriver.SignUpLink);
-            },
-            browser);
+            });
 }

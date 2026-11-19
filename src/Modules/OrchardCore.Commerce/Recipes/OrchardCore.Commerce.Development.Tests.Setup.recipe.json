@@ -31,7 +31,9 @@
       "name": "feature",
       "enable": [
         // Needed for consistent, machine-independent locale setting.
-        "OrchardCore.Localization"
+        "OrchardCore.Localization",
+        // Needed for UI Testing.
+        "OrchardCore.Commerce.Tests.UI.Shortcuts"
       ],
       "disable": [
         "OrchardCore.Commerce.Payment.Exactly",

@@ -37,8 +37,7 @@ public class QueryStringAppliedProductListFilterParametersProvider : IAppliedPro
         var orderByValue = queryStrings
             .Where(queryString => queryString.Key.StartsWith(QueryStringKeyOrderBy, StringComparison.InvariantCulture))
             .SelectMany(queryString => queryString.Value)
-            // The orderBy should never contain spaces. Anything filtered out be the call below is malformed or malicious.
-            .SelectWhere(value => value.Trim(), value => value.Split().Length == 1)
+            .SelectWhere(value => value.Trim(), value => value.Split().Length == 1) // The orderBy should never contain spaces.
             .FirstOrDefault();
         var filterValues = queryStrings
             .Where(queryString => queryString.Key.StartsWith(QueryStringPrefix, StringComparison.InvariantCulture))

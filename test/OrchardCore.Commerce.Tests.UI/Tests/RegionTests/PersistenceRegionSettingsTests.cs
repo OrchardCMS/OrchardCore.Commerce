@@ -1,6 +1,4 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using Shouldly;
 using Xunit;
@@ -15,9 +13,9 @@ public class PersistenceRegionSettingsTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task RegionSettingsShouldPersist(Browser browser) =>
-        ExecuteTestAfterSetupAsync(
+    [Fact]
+    public Task RegionSettingsShouldPersist() =>
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -30,6 +28,5 @@ public class PersistenceRegionSettingsTests : UITestBase
                     .Select(selectListOption => selectListOption.Text)
                     .ToArray()
                     .ShouldBe(["Argentina", "Hungary", "Luxembourg"]);
-            },
-            browser);
+            });
 }

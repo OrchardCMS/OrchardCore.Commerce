@@ -74,7 +74,7 @@ public class GlobalDiscountProvider : IPromotionProvider
             .WhereAsync(item => _authorizationService.AuthorizeAsync(context.User, CommonPermissions.ListContent, item)))
             .AsReadOnly();
 
-        int totalQuantity = model.Items.Sum(item => item.Quantity);
+        var totalQuantity = model.Items.Sum(item => item.Quantity);
         return globalDiscountItems
             .GetOrCreate<DiscountPart>()
             .Where(part => part.IsApplicable(totalQuantity, model.PurchaseDateTime ?? _clock.UtcNow))
