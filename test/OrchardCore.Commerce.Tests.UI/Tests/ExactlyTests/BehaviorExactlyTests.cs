@@ -1,6 +1,4 @@
-﻿using Lombiq.Tests.UI.Attributes;
-using Lombiq.Tests.UI.Extensions;
-using Lombiq.Tests.UI.Services;
+﻿using Lombiq.Tests.UI.Extensions;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.Payment.Exactly.Constants;
 using OrchardCore.Commerce.Payment.Exactly.Drivers;
