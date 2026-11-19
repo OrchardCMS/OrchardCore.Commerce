@@ -22,7 +22,7 @@ public class BehaviorCheckoutTests : UITestBase
 
     [Fact]
     public Task DummyCheckoutShouldWork() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -56,7 +56,7 @@ public class BehaviorCheckoutTests : UITestBase
 
     [Fact]
     public Task AddressPartsFeatureShouldOverrideRegularCheckout() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

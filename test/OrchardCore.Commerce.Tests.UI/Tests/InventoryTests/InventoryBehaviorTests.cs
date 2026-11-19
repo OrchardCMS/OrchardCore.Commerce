@@ -19,7 +19,7 @@ public class InventoryBehaviorTests : UITestBase
 
     [Fact]
     public Task InventoryChecksOnCartUpdateShouldWorkProperly() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAndGoToRelativeUrlAsync("/testproduct");
@@ -75,7 +75,7 @@ public class InventoryBehaviorTests : UITestBase
 
     [Fact]
     public Task UnavailableProductInCartShouldPreventCheckout() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAndGoToRelativeUrlAsync("/testproduct");

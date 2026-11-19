@@ -12,7 +12,7 @@ public class SecurityScanningTests : UITestBase
 
     [Fact]
     public Task FullSecurityScanShouldPass() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             context => context.RunAndConfigureAndAssertFullSecurityScanForContinuousIntegrationAsync(
                 configuration =>
                 {

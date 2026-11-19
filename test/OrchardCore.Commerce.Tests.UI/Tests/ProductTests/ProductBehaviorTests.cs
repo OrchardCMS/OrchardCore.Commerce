@@ -18,7 +18,7 @@ public class ProductBehaviorTests : UITestBase
 
     [Fact]
     public Task ProductCanBeAddedToShoppingCart() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -38,7 +38,7 @@ public class ProductBehaviorTests : UITestBase
 
     [Fact]
     public Task PriceVariantsProductCanBeAddedToShoppingCart() =>
-    ExecuteTestAfterSetupAsync(
+    RunAsync(
         async context =>
         {
             await context.SignInDirectlyAsync();
@@ -51,7 +51,7 @@ public class ProductBehaviorTests : UITestBase
 
     [Fact]
     public Task PriceEstimationWithMinimumOrderQuantityShouldNotShowWarning() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -69,7 +69,7 @@ public class ProductBehaviorTests : UITestBase
 
     [Fact]
     public Task ShoppingCartWidgetShouldCountCorrectly() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 void ShoppingCartShouldBe(int count) =>

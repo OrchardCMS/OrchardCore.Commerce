@@ -17,7 +17,7 @@ public class SkuGeneratorTests : UITestBase
 
     [Fact]
     public Task GuidSkuGeneratorShouldWork() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 string GetValue(string id) =>

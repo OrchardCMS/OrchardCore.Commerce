@@ -23,7 +23,7 @@ public class LocalizedProductBehaviorTests : UITestBase
 
     [Fact]
     public Task LocalizedProductCreationShouldBeAllowed() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

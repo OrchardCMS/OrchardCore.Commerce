@@ -17,7 +17,7 @@ public class PersistenceRegionSettingsTests : UITestBase
 
     [Fact]
     public Task RegionSettingsShouldPersist() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

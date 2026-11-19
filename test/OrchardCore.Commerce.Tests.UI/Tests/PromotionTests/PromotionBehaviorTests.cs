@@ -19,7 +19,7 @@ public class PromotionBehaviorTests : UITestBase
 
     [Fact]
     public Task GlobalDiscountShouldOnlyAppearAfterAuthenticated() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 async Task CheckDiscountPresenceAsync(bool hasNewPrice)
@@ -38,7 +38,7 @@ public class PromotionBehaviorTests : UITestBase
 
     [Fact]
     public Task DiscountShouldProperlyAppearOnDiscountedProduct() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 const string FullPrice = "$5.00";

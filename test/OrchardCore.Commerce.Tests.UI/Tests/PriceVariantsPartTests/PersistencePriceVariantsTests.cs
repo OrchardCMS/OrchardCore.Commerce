@@ -18,7 +18,7 @@ public class PersistencePriceVariantsTests : UITestBase
 
     [Fact]
     public Task CreatingNewPriceVariantShouldPersist() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

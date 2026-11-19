@@ -15,7 +15,7 @@ public class ValidationPriceVariantsTests : UITestBase
 
     [Fact]
     public Task ProvidingExistingSkuShouldTripTheHandler() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
         {
             await context.SignInDirectlyAsync();

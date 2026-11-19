@@ -17,7 +17,7 @@ public class RetrievalProductTests : UITestBase
 
     [Fact]
     public Task HomePageShouldBeProductList() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 void TextShouldBe(string css, string expectedText) =>
@@ -44,7 +44,7 @@ public class RetrievalProductTests : UITestBase
 
     [Fact]
     public Task ProductAttributesShouldBeDisplayedCorrectly() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

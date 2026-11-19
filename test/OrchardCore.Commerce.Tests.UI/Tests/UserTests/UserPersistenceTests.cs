@@ -38,7 +38,7 @@ public class UserPersistenceTests : UITestBase
 
     [Fact]
     public Task UserAddressEditorShouldPersist() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 context.Missing(By.ClassName("user-addresses-widget"));
@@ -108,7 +108,7 @@ public class UserPersistenceTests : UITestBase
 
     [Fact]
     public Task UserDetailsEditorShouldPersist() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -144,7 +144,7 @@ public class UserPersistenceTests : UITestBase
 
     [Fact]
     public Task AdminUserEditorShouldSaveWithoutFullyFilledUserAddresses() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -175,7 +175,7 @@ public class UserPersistenceTests : UITestBase
 
     [Fact]
     public Task PartiallyFilledUserDetailsShouldPersistInAdminUserEditor() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

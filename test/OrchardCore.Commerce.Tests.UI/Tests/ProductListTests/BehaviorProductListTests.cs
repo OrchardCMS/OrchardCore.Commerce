@@ -16,7 +16,7 @@ public class BehaviorProductListTests : UITestBase
 
     [Fact]
     public Task SortingByTitleShouldWork() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SetDropdownByTextAsync("products-order-by", "Title A-Z");
@@ -38,7 +38,7 @@ public class BehaviorProductListTests : UITestBase
 
     [Fact]
     public Task FilteringByTitleShouldWork() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.FillInWithRetriesAsync(By.Id("products-filter-title"), "tiered");
@@ -52,7 +52,7 @@ public class BehaviorProductListTests : UITestBase
 
     [Fact]
     public Task SortingAndPaginationShouldWorkTogether() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SetDropdownByTextAsync("products-order-by", "Title Z-A");

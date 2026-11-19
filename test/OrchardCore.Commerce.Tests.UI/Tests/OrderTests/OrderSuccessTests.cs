@@ -20,7 +20,7 @@ public class OrderSuccessTests : UITestBase
 
     [Fact]
     public Task ProductCanBeAddedToShoppingCart() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
@@ -37,7 +37,7 @@ public class OrderSuccessTests : UITestBase
 
     [Fact]
     public Task ShoppingCartUpdateButtonWorks() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");

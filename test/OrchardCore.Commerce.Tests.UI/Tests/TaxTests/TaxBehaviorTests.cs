@@ -27,7 +27,7 @@ public class TaxBehaviorTests : UITestBase
 
     [Fact]
     public Task TaxPartShouldUpdatePrice() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -54,7 +54,7 @@ public class TaxBehaviorTests : UITestBase
 
     [Fact]
     public Task GrossPriceAndTaxRateShouldBeRequiredTogether() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 const string error = "You must either provide both Gross Price and Tax Rate, or neither of them.";
@@ -71,7 +71,7 @@ public class TaxBehaviorTests : UITestBase
 
     [Fact]
     public Task ProductDetailsShouldShowCorrectTaxRates() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();
@@ -122,7 +122,7 @@ public class TaxBehaviorTests : UITestBase
 
     [Fact]
     public Task CustomTaxRateEditorShouldWork() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 void ResetScroll() => context.ExecuteScript("window.scrollTo(0, 0);");

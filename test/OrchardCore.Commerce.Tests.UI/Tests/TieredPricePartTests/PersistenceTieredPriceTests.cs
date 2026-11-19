@@ -18,7 +18,7 @@ public class PersistenceTieredPriceTests : UITestBase
 
     [Fact]
     public Task CreatingNewTieredPriceShouldPersist() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

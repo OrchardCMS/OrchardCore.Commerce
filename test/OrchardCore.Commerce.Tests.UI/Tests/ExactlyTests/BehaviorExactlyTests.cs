@@ -18,7 +18,7 @@ public class BehaviorExactlyTests : UITestBase
 
     [Fact]
     public Task ExactlySettingsSignUpLinkShouldDisplayCorrectly() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

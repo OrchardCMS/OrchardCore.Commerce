@@ -16,11 +16,10 @@ public class BasicOrchardFeaturesTests : UITestBase
     };
 
     public BasicOrchardFeaturesTests(ITestOutputHelper testOutputHelper)
-        : base(testOutputHelper)
-    {
-    }
+        : base(testOutputHelper) =>
+        WithoutSetup();
 
     [Fact]
     public Task BasicOrchardFeaturesShouldWork() =>
-        ExecuteTestAsync(context => context.TestBasicOrchardFeaturesAsync(_setupParameters));
+        RunAsync(context => context.TestBasicOrchardFeaturesAsync(_setupParameters));
 }

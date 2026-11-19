@@ -22,7 +22,7 @@ public class BehaviorOrderTests : UITestBase
 
     [Fact]
     public Task OrderEditorShouldWorkProperly() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 void SetUnitPriceCurrency(int index, string isoCode) => context.ExecuteScript($@"
@@ -212,7 +212,7 @@ public class BehaviorOrderTests : UITestBase
 
     [Fact]
     public Task OrderPaymentRequestButtonShouldWorkProperly() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 await context.SignInDirectlyAsync();

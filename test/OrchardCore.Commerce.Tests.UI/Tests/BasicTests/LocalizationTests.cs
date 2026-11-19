@@ -16,7 +16,7 @@ public class LocalizationTests : UITestBase
 
     [Fact]
     public Task NuGetPackageWithLocalizationShouldApplyTranslatedText() =>
-        ExecuteTestAfterSetupAsync(
+        RunAsync(
             async context =>
             {
                 const string cssTranslatedTextElement =
