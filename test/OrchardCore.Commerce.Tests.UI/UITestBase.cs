@@ -10,45 +10,15 @@ public class UITestBase : OrchardCoreUITestBase<Program>
     protected UITestBase(ITestOutputHelper testOutputHelper)
         : base(testOutputHelper)
     {
-    }
+        UseSetup(SetupHelpers.RunSetupAsync);
 
-    protected override async Task ExecuteTestAfterSetupAsync(
-        Func<UITestContext, Task> testAsync,
-        Browser browser,
-        Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync)
-    {
-        var timeoutValue = TimeSpan.FromMinutes(10);
-
-        var testTask = ExecuteTestAsync(testAsync, browser, SetupHelpers.RunSetupAsync, changeConfigurationAsync);
-        var timeoutTask = Task.Delay(timeoutValue, CancellationToken.None);
-
-        await Task.WhenAny(testTask, timeoutTask);
-
-        if (timeoutTask.IsCompleted)
+        AddConfiguration(configuration =>
         {
-            throw new TimeoutException($"The time allotted for the test ({timeoutValue}) was exceeded.");
-        }
-
-        await testTask;
+            configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
+            configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
+                AccessibilityCheckingConfiguration
+                    .ConfigureWcag21aa(axeBuilder)
+                    .DisableRules("color-contrast");
+        });
     }
-
-    protected override Task ExecuteTestAsync(
-        Func<UITestContext, Task> testAsync,
-        Browser browser,
-        Func<UITestContext, Task<Uri>> setupOperation,
-        Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync) =>
-        base.ExecuteTestAsync(
-            testAsync,
-            browser,
-            setupOperation,
-            async configuration =>
-            {
-                configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
-                configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
-                    AccessibilityCheckingConfiguration
-                        .ConfigureWcag21aa(axeBuilder)
-                        .DisableRules("color-contrast");
-
-                if (changeConfigurationAsync != null) await changeConfigurationAsync(configuration);
-            });
 }
