@@ -16,7 +16,6 @@ public class WorkflowBehaviorTests : UITestBase
 
     [Fact]
     public Task CartVerifyingItemEventShouldDisplayError() =>
-        
         RunAfterCartWorkflowsRecipe(
             async context =>
             {

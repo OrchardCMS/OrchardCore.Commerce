@@ -57,6 +57,7 @@ using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using YesSql.Indexes;
 using static OrchardCore.Commerce.Tax.Constants.FeatureIds;
 
@@ -64,6 +65,7 @@ namespace OrchardCore.Commerce;
 
 public class Startup : StartupBase
 {
+    [SuppressMessage("Style", "IDE0055:Fix formatting", Justification = "Needed for inline comments.")]
     public override void ConfigureServices(IServiceCollection services)
     {
         // Infrastructure
@@ -231,8 +233,8 @@ public sealed class FallbackPriceStartup : StartupBase
 {
     public override int Order => int.MaxValue;
 
+    // No display currency selected. Fall back to default currency logic in MoneyService.
     public override void ConfigureServices(IServiceCollection services) =>
-        // No display currency selected. Fall back to default currency logic in MoneyService.
         services.AddScoped<ICurrencySelector, NullCurrencySelector>();
 }
 

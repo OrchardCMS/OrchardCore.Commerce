@@ -51,8 +51,7 @@ public class WebhookController : ControllerBase
                 json,
                 signature,
                 webhookSigningKey,
-                // Let the logic handle version mismatch.
-                throwOnApiVersionMismatch: false);
+                throwOnApiVersionMismatch: false); // Let the logic handle version mismatch.
 
             if (string.IsNullOrEmpty(stripeEvent.Id))
             {
