@@ -14,8 +14,8 @@ public class LocalizationTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task NuGetPackageWithLocalizationShouldApplyTranslatedText(Browser browser) =>
+    [Fact]
+    public Task NuGetPackageWithLocalizationShouldApplyTranslatedText() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -33,6 +33,5 @@ public class LocalizationTests : UITestBase
                     .Get(By.CssSelector(cssTranslatedTextElement))
                     .GetTextTrimmed()
                     .ShouldBe("Kedvezményes ár adóval:");
-            },
-            browser);
+            });
 }

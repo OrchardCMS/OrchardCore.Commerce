@@ -20,8 +20,8 @@ public class BehaviorOrderTests : UITestBase
     public const string CompletePaymentButtonXPath =
         "//a[@class='pay-button btn btn-success justify-content-center' and contains(., 'Complete Payment')]";
 
-    [Theory, Chrome]
-    public Task OrderEditorShouldWorkProperly(Browser browser) =>
+    [Fact]
+    public Task OrderEditorShouldWorkProperly() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -208,11 +208,10 @@ public class BehaviorOrderTests : UITestBase
                     .Get(By.Name("OrderPart.LineItems[0].SelectedAttributes[Numeric][TestNumericAttribute]"))
                     .GetValue()
                     .ShouldBe("2.5");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task OrderPaymentRequestButtonShouldWorkProperly(Browser browser) =>
+    [Fact]
+    public Task OrderPaymentRequestButtonShouldWorkProperly() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -239,8 +238,7 @@ public class BehaviorOrderTests : UITestBase
 
                 await context.GoToRelativeUrlAsync($"/Contents/ContentItems/{TestOrder}");
                 context.Missing(By.XPath(CompletePaymentButtonXPath));
-            },
-            browser);
+            });
 
     private static Task ClickDeleteItemAsync(UITestContext context, int index) =>
         context.ClickReliablyOnAsync(By.XPath($"//button[contains(@class, 'btn btn-danger')][{index.ToString(CultureInfo.InvariantCulture)}]"));

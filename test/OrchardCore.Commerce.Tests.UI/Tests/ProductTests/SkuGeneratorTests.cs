@@ -15,8 +15,8 @@ public class SkuGeneratorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task GuidSkuGeneratorShouldWork(Browser browser) =>
+    [Fact]
+    public Task GuidSkuGeneratorShouldWork() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -48,6 +48,5 @@ public class SkuGeneratorTests : UITestBase
                 // Verify published product.
                 GetValue("TitlePart_Title").ShouldBe("SKU Test Product");
                 GetValue("ProductPart_Sku").ToUpperInvariant().ShouldMatch("^[0-9A-F]{32}$");
-            },
-            browser);
+            });
 }

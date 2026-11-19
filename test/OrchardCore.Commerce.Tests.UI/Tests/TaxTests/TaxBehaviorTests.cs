@@ -25,8 +25,8 @@ public class TaxBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task TaxPartShouldUpdatePrice(Browser browser) =>
+    [Fact]
+    public Task TaxPartShouldUpdatePrice() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -50,11 +50,10 @@ public class TaxBehaviorTests : UITestBase
                 FieldShouldBe(context, NetPriceId, 8);
                 FieldShouldBe(context, GrossPriceId, 10);
                 FieldShouldBe(context, TaxRateId, 25);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task GrossPriceAndTaxRateShouldBeRequiredTogether(Browser browser) =>
+    [Fact]
+    public Task GrossPriceAndTaxRateShouldBeRequiredTogether() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -68,11 +67,10 @@ public class TaxBehaviorTests : UITestBase
                 await context.ClickReliablyOnSubmitAsync();
                 context.Exists(By.XPath(
                     $"//div[contains(@class, 'validation-summary-errors')]//li[contains(., '{error}')]"));
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ProductDetailsShouldShowCorrectTaxRates(Browser browser) =>
+    [Fact]
+    public Task ProductDetailsShouldShowCorrectTaxRates() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -120,11 +118,10 @@ public class TaxBehaviorTests : UITestBase
                 await UpdateAddressAndVerifyPriceAsync(
                     () => context.FillAddressAsync(prefix, new Address { Province = "NJ" }),
                     "$5.33");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task CustomTaxRateEditorShouldWork(Browser browser) =>
+    [Fact]
+    public Task CustomTaxRateEditorShouldWork() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -224,8 +221,7 @@ public class TaxBehaviorTests : UITestBase
                         string.Empty,
                         string.Empty,
                         "27"]);
-            },
-            browser);
+            });
 
     private static void FieldShouldBe(UITestContext context, string id, decimal value) =>
         decimal

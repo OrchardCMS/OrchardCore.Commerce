@@ -14,8 +14,8 @@ public class BehaviorProductListTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task SortingByTitleShouldWork(Browser browser) =>
+    [Fact]
+    public Task SortingByTitleShouldWork() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -34,11 +34,10 @@ public class BehaviorProductListTests : UITestBase
 
                 titles[0].ShouldBe("Test Tiered Price Product");
                 titles[1].ShouldBe("Test Product");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task FilteringByTitleShouldWork(Browser browser) =>
+    [Fact]
+    public Task FilteringByTitleShouldWork() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -49,11 +48,10 @@ public class BehaviorProductListTests : UITestBase
 
                 titles.Count.ShouldBe(1);
                 titles[0].ShouldBe("Test Tiered Price Product");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task SortingAndPaginationShouldWorkTogether(Browser browser) =>
+    [Fact]
+    public Task SortingAndPaginationShouldWorkTogether() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -66,8 +64,7 @@ public class BehaviorProductListTests : UITestBase
 
                 titles.Count.ShouldBe(1);
                 titles[0].ShouldBe("Test Discounted Product");
-            },
-            browser);
+            });
 
     private static List<string> GetProductTitles(UITestContext context) =>
         context

@@ -16,8 +16,8 @@ public class BehaviorExactlyTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ExactlySettingsSignUpLinkShouldDisplayCorrectly(Browser browser) =>
+    [Fact]
+    public Task ExactlySettingsSignUpLinkShouldDisplayCorrectly() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -29,6 +29,5 @@ public class BehaviorExactlyTests : UITestBase
                     .Get(By.CssSelector(".exactly-sign-up-info a"))
                     .GetAttribute("href")
                     .ShouldBe(ExactlySettingsDisplayDriver.SignUpLink);
-            },
-            browser);
+            });
 }

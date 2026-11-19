@@ -36,8 +36,8 @@ public class UserPersistenceTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task UserAddressEditorShouldPersist(Browser browser) =>
+    [Fact]
+    public Task UserAddressEditorShouldPersist() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -104,11 +104,10 @@ public class UserPersistenceTests : UITestBase
                         ShippingPostalCode,
                         ShippingCountryCode,
                     ]);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task UserDetailsEditorShouldPersist(Browser browser) =>
+    [Fact]
+    public Task UserDetailsEditorShouldPersist() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -141,11 +140,10 @@ public class UserPersistenceTests : UITestBase
                         VatNumber,
                         "true",
                     ]);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task AdminUserEditorShouldSaveWithoutFullyFilledUserAddresses(Browser browser) =>
+    [Fact]
+    public Task AdminUserEditorShouldSaveWithoutFullyFilledUserAddresses() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -173,11 +171,10 @@ public class UserPersistenceTests : UITestBase
                     .GetAttribute("value")?
                     .Trim()
                     .ShouldBe(testCustomerName);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task PartiallyFilledUserDetailsShouldPersistInAdminUserEditor(Browser browser) =>
+    [Fact]
+    public Task PartiallyFilledUserDetailsShouldPersistInAdminUserEditor() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -209,8 +206,7 @@ public class UserPersistenceTests : UITestBase
                     .GetAttribute("value")?
                     .Trim()
                     .ShouldBe(VatNumber);
-            },
-            browser);
+            });
 
     private static async Task SubmitAndGoToUserTabAsync(UITestContext context, string tabName)
     {

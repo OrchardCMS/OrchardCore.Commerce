@@ -15,8 +15,8 @@ public class PersistenceRegionSettingsTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task RegionSettingsShouldPersist(Browser browser) =>
+    [Fact]
+    public Task RegionSettingsShouldPersist() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -30,6 +30,5 @@ public class PersistenceRegionSettingsTests : UITestBase
                     .Select(selectListOption => selectListOption.Text)
                     .ToArray()
                     .ShouldBe(["Argentina", "Hungary", "Luxembourg"]);
-            },
-            browser);
+            });
 }

@@ -17,8 +17,8 @@ public class InventoryBehaviorTests : UITestBase
 
     public const string CheckoutUnavailableMessage = "Checkout unavailable — invalid item in cart.";
 
-    [Theory, Chrome]
-    public Task InventoryChecksOnCartUpdateShouldWorkProperly(Browser browser) =>
+    [Fact]
+    public Task InventoryChecksOnCartUpdateShouldWorkProperly() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -71,11 +71,10 @@ public class InventoryBehaviorTests : UITestBase
                     "The checkout quantity for Test Product is more than the maximum allowed (10).",
                     shouldExist: false);
                 AssertError(context, "There are not enough Test Product left in stock.", shouldExist: false);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task UnavailableProductInCartShouldPreventCheckout(Browser browser) =>
+    [Fact]
+    public Task UnavailableProductInCartShouldPreventCheckout() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -110,8 +109,7 @@ public class InventoryBehaviorTests : UITestBase
                 await context.ClickPublishAsync();
 
                 await VerifyCheckoutAvailabilityAsync(context, cartMessageShouldExist: false, checkoutMessageShouldExist: false);
-            },
-            browser);
+            });
 
     private static async Task VerifyCheckoutAvailabilityAsync(
         UITestContext context, bool cartMessageShouldExist, bool checkoutMessageShouldExist, bool navigate = true)

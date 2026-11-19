@@ -13,8 +13,8 @@ public class ValidationPriceVariantsTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ProvidingExistingSkuShouldTripTheHandler(Browser browser) =>
+    [Fact]
+    public Task ProvidingExistingSkuShouldTripTheHandler() =>
         ExecuteTestAfterSetupAsync(
             async context =>
         {
@@ -28,6 +28,5 @@ public class ValidationPriceVariantsTests : UITestBase
             await context.ClickReliablyOnSubmitAsync();
 
             context.ErrorMessageExists("SKU must be unique. A product with the given SKU already exists.");
-        },
-            browser);
+        });
 }

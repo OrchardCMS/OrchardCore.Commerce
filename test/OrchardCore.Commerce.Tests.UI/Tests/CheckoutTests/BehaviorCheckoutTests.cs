@@ -20,8 +20,8 @@ public class BehaviorCheckoutTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task DummyCheckoutShouldWork(Browser browser) =>
+    [Fact]
+    public Task DummyCheckoutShouldWork() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -52,11 +52,10 @@ public class BehaviorCheckoutTests : UITestBase
                 MatchText(".order-charge-amount", total);
                 MatchText(".order-charge-transaction-id", $"{orderId}:0");
                 MatchText(".order-charge-text", "Dummy transaction of US Dollar.");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task AddressPartsFeatureShouldOverrideRegularCheckout(Browser browser) =>
+    [Fact]
+    public Task AddressPartsFeatureShouldOverrideRegularCheckout() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -87,8 +86,7 @@ public class BehaviorCheckoutTests : UITestBase
 
                 await context.ClickReliablyOnAsync(By.Id("OrderPart_BillingAndShippingAddressesMatch_Value"));
                 context.Get(noteBy).GetAttribute("value").ShouldBe(noteText);
-            },
-            browser);
+            });
 
     private static By AddressName(string key) =>
         By.Name($"OrderPart.BillingAddress.Address.NameParts.{key}");

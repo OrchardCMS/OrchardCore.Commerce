@@ -20,9 +20,7 @@ public class BasicOrchardFeaturesTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
-        ExecuteTestAsync(
-            context => context.TestBasicOrchardFeaturesAsync(_setupParameters),
-            browser);
+    [Fact]
+    public Task BasicOrchardFeaturesShouldWork() =>
+        ExecuteTestAsync(context => context.TestBasicOrchardFeaturesAsync(_setupParameters));
 }

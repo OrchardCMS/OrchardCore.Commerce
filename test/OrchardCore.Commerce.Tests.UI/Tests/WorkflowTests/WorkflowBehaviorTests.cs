@@ -1,4 +1,3 @@
-using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
@@ -15,9 +14,10 @@ public class WorkflowBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task CartVerifyingItemEventShouldDisplayError(Browser browser) =>
-        ExecuteAsync(
+    [Fact]
+    public Task CartVerifyingItemEventShouldDisplayError() =>
+        
+        RunAfterCartWorkflowsRecipe(
             async context =>
             {
                 // Add only the free product to the cart. This is blocked by the "Item Verification Sample" workflow.
@@ -29,12 +29,11 @@ public class WorkflowBehaviorTests : UITestBase
                 context
                     .GetErrorMessage()
                     .ShouldBe("The \"Item Verification Sample\" workflow has intentionally failed this product.");
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task CartEventsShouldUpdateTableAndAddLineItem(Browser browser) =>
-        ExecuteAsync(
+    [Fact]
+    public Task CartEventsShouldUpdateTableAndAddLineItem() =>
+        RunAfterCartWorkflowsRecipe(
             async context =>
             {
                 // Add only the test product to the cart.
@@ -63,17 +62,13 @@ public class WorkflowBehaviorTests : UITestBase
                 // Verify that it still works even after a reload.
                 await context.RefreshAsync();
                 context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe(price);
-            },
-            browser);
+            });
 
-    private Task ExecuteAsync(Func<UITestContext, Task> test, Browser browser) =>
-        ExecuteTestAfterSetupAsync(
-            async context =>
-            {
-                await context.SignInDirectlyAsync();
-                await context.ExecuteRecipeDirectlyAsync("OrchardCore.Commerce.Samples.CartWorkflows");
-
-                await test(context);
-            },
-            browser);
+    private Task RunAfterCartWorkflowsRecipe(Func<UITestContext, Task> test) => TestBuilder
+        .AddTest(async context =>
+        {
+            await context.SignInDirectlyAsync();
+            await context.ExecuteRecipeDirectlyAsync("OrchardCore.Commerce.Samples.CartWorkflows");
+        })
+        .RunAsync(test);
 }

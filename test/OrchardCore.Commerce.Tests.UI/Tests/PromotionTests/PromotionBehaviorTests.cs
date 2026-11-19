@@ -17,8 +17,8 @@ public class PromotionBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task GlobalDiscountShouldOnlyAppearAfterAuthenticated(Browser browser) =>
+    [Fact]
+    public Task GlobalDiscountShouldOnlyAppearAfterAuthenticated() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -34,11 +34,10 @@ public class PromotionBehaviorTests : UITestBase
                 await CheckDiscountPresenceAsync(hasNewPrice: false);
                 await context.SignInDirectlyAsync();
                 await CheckDiscountPresenceAsync(hasNewPrice: true);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task DiscountShouldProperlyAppearOnDiscountedProduct(Browser browser) =>
+    [Fact]
+    public Task DiscountShouldProperlyAppearOnDiscountedProduct() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -72,6 +71,5 @@ public class PromotionBehaviorTests : UITestBase
                 await context.GoToRelativeUrlAsync("/testdiscountedproduct");
                 context.Get(By.CssSelector($"{PriceFieldCssSelector} > del")).Text.ShouldBe(FullPrice);
                 context.Get(By.CssSelector($"{PriceFieldCssSelector} > span")).Text.ShouldBe(DiscountedPrice);
-            },
-            browser);
+            });
 }

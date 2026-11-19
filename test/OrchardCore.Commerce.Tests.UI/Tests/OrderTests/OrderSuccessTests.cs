@@ -18,8 +18,8 @@ public class OrderSuccessTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ProductCanBeAddedToShoppingCart(Browser browser) =>
+    [Fact]
+    public Task ProductCanBeAddedToShoppingCart() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -33,11 +33,10 @@ public class OrderSuccessTests : UITestBase
                 await context.GoToAsync<OrderController>(controller =>
                     controller.CreateOrderWithSuccessfulPayment(orderCreateTime, null));
                 context.Exists(By.XPath("//h4[contains(.,'Thank you for your purchase!')]"));
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ShoppingCartUpdateButtonWorks(Browser browser) =>
+    [Fact]
+    public Task ShoppingCartUpdateButtonWorks() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -53,8 +52,7 @@ public class OrderSuccessTests : UITestBase
 
                 context.Get(QuantityFieldBy(1)).GetAttribute("value").ShouldBeAsString(2);
                 context.Get(QuantityFieldBy(2)).GetAttribute("value").ShouldBeAsString(2);
-            },
-            browser);
+            });
 
     private static async Task AddProductToCartAsync(UITestContext context, string contentItemId)
     {

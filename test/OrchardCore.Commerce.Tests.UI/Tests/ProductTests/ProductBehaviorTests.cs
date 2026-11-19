@@ -16,8 +16,8 @@ public class ProductBehaviorTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task ProductCanBeAddedToShoppingCart(Browser browser) =>
+    [Fact]
+    public Task ProductCanBeAddedToShoppingCart() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -34,11 +34,10 @@ public class ProductBehaviorTests : UITestBase
                 context.Get(By.ClassName("shopping-cart-widget")).Click();
 
                 context.Driver.Exists(By.XPath("//a[contains(., 'Test Product')]").Visible());
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task PriceVariantsProductCanBeAddedToShoppingCart(Browser browser) =>
+    [Fact]
+    public Task PriceVariantsProductCanBeAddedToShoppingCart() =>
     ExecuteTestAfterSetupAsync(
         async context =>
         {
@@ -48,11 +47,10 @@ public class ProductBehaviorTests : UITestBase
             await context.ClickReliablyOnSubmitAsync();
 
             context.Driver.Exists(By.XPath("//li[contains(., 'Size: Small')]").Visible());
-        },
-        browser);
+        });
 
-    [Theory, Chrome]
-    public Task PriceEstimationWithMinimumOrderQuantityShouldNotShowWarning(Browser browser) =>
+    [Fact]
+    public Task PriceEstimationWithMinimumOrderQuantityShouldNotShowWarning() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -67,11 +65,10 @@ public class ProductBehaviorTests : UITestBase
 
                 await context.GoToContentItemByIdAsync(TestProduct);
                 context.ErrorMessageShouldNotExist();
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ShoppingCartWidgetShouldCountCorrectly(Browser browser) =>
+    [Fact]
+    public Task ShoppingCartWidgetShouldCountCorrectly() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -88,8 +85,7 @@ public class ProductBehaviorTests : UITestBase
                 await context.ClickAndFillInWithRetriesAsync(By.Name("cart.lines[0].Quantity"), "2");
                 await context.ClickReliablyOnAsync(By.CssSelector("#shopping-cart-update button"));
                 ShoppingCartShouldBe(2);
-            },
-            browser);
+            });
 
     private static void ShoppingCartItemCountShouldBe(UITestContext context, int count) =>
         context.Get(By.ClassName("shopping-cart-item-count")).Text.ShouldBeAsString(count);

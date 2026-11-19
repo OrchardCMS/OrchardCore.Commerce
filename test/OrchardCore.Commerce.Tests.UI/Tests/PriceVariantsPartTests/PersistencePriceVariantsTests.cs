@@ -16,8 +16,8 @@ public class PersistencePriceVariantsTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task CreatingNewPriceVariantShouldPersist(Browser browser) =>
+    [Fact]
+    public Task CreatingNewPriceVariantShouldPersist() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -46,6 +46,5 @@ public class PersistencePriceVariantsTests : UITestBase
                     .ShouldBe(currency);
 
                 context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999.00");
-            },
-            browser);
+            });
 }

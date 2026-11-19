@@ -15,8 +15,8 @@ public class RetrievalProductTests : UITestBase
     {
     }
 
-    [Theory, Chrome]
-    public Task HomePageShouldBeProductList(Browser browser) =>
+    [Fact]
+    public Task HomePageShouldBeProductList() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -40,11 +40,10 @@ public class RetrievalProductTests : UITestBase
                 context.GetAll(By.XPath("//img[@src='/media/ProductImages/sample-product-image.png']"))
                     .Count
                     .ShouldBe(5);
-            },
-            browser);
+            });
 
-    [Theory, Chrome]
-    public Task ProductAttributesShouldBeDisplayedCorrectly(Browser browser) =>
+    [Fact]
+    public Task ProductAttributesShouldBeDisplayedCorrectly() =>
         ExecuteTestAfterSetupAsync(
             async context =>
             {
@@ -119,6 +118,5 @@ public class RetrievalProductTests : UITestBase
                     "2");
                 await context.ClickReliablyOnSubmitAsync();
                 context.Exists(By.XPath("//li[contains(., 'TestNumericAttribute: 2')]"));
-            },
-            browser);
+            });
 }
