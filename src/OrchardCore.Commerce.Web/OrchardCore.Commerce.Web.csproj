@@ -14,6 +14,7 @@
   </ItemGroup> -->
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" />
     <PackageReference Include="GraphQL.MicrosoftDI" />
     <PackageReference Include="GraphQL.SystemTextJson" />
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
