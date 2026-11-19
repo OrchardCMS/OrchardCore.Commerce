@@ -15,10 +15,12 @@ public class UITestBase : OrchardCoreUITestBase<Program>
         AddConfiguration(configuration =>
         {
             configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
+
+            // Disable rules violated by the Blog Theme.
             configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
                 AccessibilityCheckingConfiguration
                     .ConfigureWcag21aa(axeBuilder)
-                    .DisableRules("color-contrast");
+                    .DisableRules("color-contrast", "label-content-name-mismatch");
         });
     }
 }

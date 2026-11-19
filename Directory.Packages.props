@@ -47,6 +47,7 @@
     <PackageVersion Include="OrchardCore.Templates" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.Title" Version="$(OrchardCoreVersion)" />
     <PackageVersion Include="OrchardCore.Workflows.Abstractions" Version="$(OrchardCoreVersion)" />
+    <PackageVersion Include="Refit.Reflection" Version="16.4.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Stripe.net" Version="51.2.0" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.15" />
