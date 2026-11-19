@@ -12,19 +12,12 @@ public class UITestBase : OrchardCoreUITestBase<Program>
     {
     }
 
-    protected override Task ExecuteTestAfterSetupAsync(
+    protected override async Task ExecuteTestAfterSetupAsync(
         Func<UITestContext, Task> testAsync,
         Browser browser,
-        Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync) =>
-        ExecuteTestAfterSetupAsync(testAsync, browser, changeConfigurationAsync, timeout: null);
-
-    protected async Task ExecuteTestAfterSetupAsync(
-        Func<UITestContext, Task> testAsync,
-        Browser browser,
-        Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync,
-        TimeSpan? timeout)
+        Func<OrchardCoreUITestExecutorConfiguration, Task> changeConfigurationAsync)
     {
-        var timeoutValue = timeout ?? TimeSpan.FromMinutes(10);
+        var timeoutValue = TimeSpan.FromMinutes(10);
 
         var testTask = ExecuteTestAsync(testAsync, browser, SetupHelpers.RunSetupAsync, changeConfigurationAsync);
         var timeoutTask = Task.Delay(timeoutValue, CancellationToken.None);
