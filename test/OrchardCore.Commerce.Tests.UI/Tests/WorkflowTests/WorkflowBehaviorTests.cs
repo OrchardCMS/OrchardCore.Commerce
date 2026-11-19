@@ -16,7 +16,7 @@ public class WorkflowBehaviorTests : UITestBase
 
     [Fact]
     public Task CartVerifyingItemEventShouldDisplayError() =>
-        RunAfterCartWorkflowsRecipe(
+        RunAfterCartWorkflowsRecipeAsync(
             async context =>
             {
                 // Add only the free product to the cart. This is blocked by the "Item Verification Sample" workflow.
@@ -32,7 +32,7 @@ public class WorkflowBehaviorTests : UITestBase
 
     [Fact]
     public Task CartEventsShouldUpdateTableAndAddLineItem() =>
-        RunAfterCartWorkflowsRecipe(
+        RunAfterCartWorkflowsRecipeAsync(
             async context =>
             {
                 // Add only the test product to the cart.
@@ -63,7 +63,7 @@ public class WorkflowBehaviorTests : UITestBase
                 context.Get(By.ClassName("shopping-cart-table-totals")).Text.Trim().ShouldBe(price);
             });
 
-    private Task RunAfterCartWorkflowsRecipe(Func<UITestContext, Task> test) => TestBuilder
+    private Task RunAfterCartWorkflowsRecipeAsync(Func<UITestContext, Task> test) => TestBuilder
         .AddTest(async context =>
         {
             await context.SignInDirectlyAsync();
