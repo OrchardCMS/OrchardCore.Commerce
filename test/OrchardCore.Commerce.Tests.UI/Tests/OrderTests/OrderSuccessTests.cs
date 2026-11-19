@@ -22,7 +22,6 @@ public class OrderSuccessTests : UITestBase
         RunAsync(
             async context =>
             {
-                await context.EnableFeatureDirectlyAsync("OrchardCore.Commerce.Tests.UI.Shortcuts");
                 await context.SignInDirectlyAsync();
 
                 await AddProductToCartAsync(context, TestProduct);
