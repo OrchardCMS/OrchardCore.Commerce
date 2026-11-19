@@ -74,7 +74,7 @@ public class ContentLocalizationProductService : ProductService
             .ThenBy(culture => culture)
             .ToList();
 
-        for (int i = 0; i < list.Count; i++)
+        for (var i = 0; i < list.Count; i++)
         {
             if (list[i].PartitionEnd("-").Left is { } parent && !list.Contains(parent))
             {

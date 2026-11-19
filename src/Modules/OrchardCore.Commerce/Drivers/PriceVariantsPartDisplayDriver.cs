@@ -60,7 +60,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         part.Variants.RemoveAll();
         viewModel.Variants.RemoveAll();
 
-        foreach ((string key, decimal? value) in viewModel.VariantsValues)
+        foreach ((var key, var value) in viewModel.VariantsValues)
         {
             if (value.HasValue &&
                 viewModel.VariantsCurrencies?.ContainsKey(key) == true &&
