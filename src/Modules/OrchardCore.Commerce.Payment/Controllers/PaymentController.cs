@@ -8,9 +8,11 @@ using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.MoneyDataType.Extensions;
 using OrchardCore.Commerce.Payment.Abstractions;
+using OrchardCore.Commerce.Payment.Settings;
 using OrchardCore.Commerce.Payment.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +29,7 @@ public class PaymentController : PaymentBaseController
     private readonly INotifier _notifier;
     private readonly IEnumerable<IPaymentProvider> _paymentProviders;
     private readonly IPaymentService _paymentService;
+    private readonly ISiteService _siteService;
     public PaymentController(
         IOrchardServices<PaymentController> services,
         INotifier notifier,
@@ -36,6 +39,7 @@ public class PaymentController : PaymentBaseController
     {
         _authorizationService = services.AuthorizationService.Value;
         _contentManager = services.ContentManager.Value;
+        _siteService = services.SiteService.Value;
         T = services.StringLocalizer.Value;
         H = services.HtmlLocalizer.Value;
         _notifier = notifier;
@@ -167,14 +171,21 @@ public class PaymentController : PaymentBaseController
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("checkout/free")]
-    public async Task<IActionResult> CheckoutWithoutPayment([FromQuery] string? shoppingCartId, [FromQuery] bool mustBeFree)
+    public async Task<IActionResult> CheckoutWithoutPayment([FromQuery] string? shoppingCartId)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var result = await _paymentService.CheckoutWithoutPaymentAsync(shoppingCartId, mustBeFree);
+        // Whether an order may be completed without payment must be decided server side, not taken from a
+        // client supplied flag. Only the configured address-less checkout flow may finalize a non-free order
+        // without payment; otherwise the order total is required to be zero.
+        var shouldIgnoreAddress = (await _siteService.GetSiteSettingsAsync())
+            .GetOrCreate<CheckoutAddressSettings>()
+            .ShouldIgnoreAddress;
+
+        var result = await _paymentService.CheckoutWithoutPaymentAsync(shoppingCartId, mustBeFree: !shouldIgnoreAddress);
         return await ProduceActionResultAsync(result);
     }
 

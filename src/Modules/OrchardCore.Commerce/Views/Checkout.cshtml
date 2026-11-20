@@ -14,7 +14,7 @@
     var provinces = Model.Provinces;
 
     var actionUrl = Orchard.Action<PaymentController>(controller =>
-        controller.CheckoutWithoutPayment(Model.ShoppingCartId, !ignoreAddress));
+        controller.CheckoutWithoutPayment(Model.ShoppingCartId));
 }
 
 <section id="checkout">
