@@ -17,7 +17,7 @@ public class ValidationPriceVariantsTests : UITestBase
             async context =>
         {
             await context.SignInDirectlyAsync();
-            await context.CreateNewContentItemAsync("PriceVariantsProduct");
+            await context.CreateNewContentItemAsync(Constants.ContentTypes.PriceVariantsProduct);
 
             const string skuAlreadyExists = "TESTPRODUCTVARIANT";
 

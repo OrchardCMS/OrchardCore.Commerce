@@ -23,7 +23,7 @@ public class SkuGeneratorTests : UITestBase
 
                 async Task CreateProductAsync(bool isSkuDisabled)
                 {
-                    await context.CreateNewContentItemAsync("Product", onlyIfNotAlreadyThere: false);
+                    await context.CreateNewContentItemAsync(Constants.ContentTypes.Product, onlyIfNotAlreadyThere: false);
                     context
                         .Get(By.Id("ProductPart_Sku"))
                         .GetAttribute("readonly")
