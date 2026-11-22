@@ -45,4 +45,43 @@ public class PersistencePriceVariantsTests : UITestBase
 
                 context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999.00");
             });
+
+    [Fact]
+    public Task AlteringPriceVariantShouldWarn() =>
+        RunAsync(async context =>
+        {
+            await context.SignInDirectlyAsync();
+            await context.GoToContentTypeEditorAsync(Constants.ContentTypes.PriceVariantsProduct);
+            await context.ClickReliablyOnAsync(By.LinkText("Add Field"));
+
+            await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "Color");
+            await context.ClickReliablyOnAsync(By.CssSelector("input[value='TextProductAttributeField']"));
+            await context.ClickReliablyOnAsync(By.CssSelector("button[value='SaveAndConfigure']"));
+            await context.ClickAndFillInWithRetriesAsync(
+                By.Id("PriceVariantsProduct_Color_TextProductAttributeFieldSettingsDriver_PredefinedValues"),
+                "Red\nGreen\nBlue");
+            await context.ClickReliablyOnAsync(
+                By.Id("PriceVariantsProduct_Color_TextProductAttributeFieldSettingsDriver_RestrictToPredefinedValues"));
+            await context.ClickReliablyOnSubmitAsync();
+            await context.ClickReliablyOnSubmitAsync();
+            // Some warning should happen around here to indicate that product price variants will break.
+
+            await context.GoToContentItemListAsync(Constants.ContentTypes.PriceVariantsProduct);
+            var viewAbsoluteUri = new Uri(context.ExecuteScript("return document.querySelector('.view').href;").ToString());
+            await context.ClickReliablyOnAsync(By.ClassName("edit"));
+            await context.ClickReliablyOnSubmitAsync();
+            context.ErrorMessageExists("PRICES ARE MISSING");
+
+            context
+                .GetAllWhenOneExists(By.CssSelector(".content-part-wrapper-price-variants-part .variant-price-value"))
+                .Select((element, index) => new { Element = element, Value = 10 + index })
+                .ForEach(pair => pair.Element.FillInWith(pair.Value.ToTechnicalString()));
+            await Enumerable
+                .Range(1, 9)
+                .AwaitEachAsync(number => context.SetDropdownByValueAsync(
+                    By.XPath($"(//select[starts-with(@name, 'PriceVariantsPart.VariantsCurrencies')])[{number.ToTechnicalString()}]"),
+                    "USD"));
+            await context.ClickReliablyOnSubmitAsync();
+            context.ShouldBeSuccess();
+        });
 }
