@@ -83,5 +83,8 @@ public class PersistencePriceVariantsTests : UITestBase
                     "USD"));
             await context.ClickReliablyOnSubmitAsync();
             context.ShouldBeSuccess();
+
+            await context.GoToAbsoluteUrlAsync(viewAbsoluteUri);
+            // Validate presence of new price variants and not the old price variants.
         });
 }
