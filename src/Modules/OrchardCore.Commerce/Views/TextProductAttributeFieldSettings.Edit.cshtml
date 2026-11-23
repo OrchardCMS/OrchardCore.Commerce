@@ -1,5 +1,12 @@
 @model TextProductAttributeSettingsViewModel
 
+@using OrchardCore.Commerce.Models
+
+@{
+    var hasPriceVariantsPart = Model.Definition.ContentTypePartDefinition.ContentTypeDefinition.Parts.Any(definition =>
+        definition.PartDefinition.Name == nameof(PriceVariantsPart));
+}
+
 <div class="mb-3">
     <div class="custom-control custom-checkbox">
         <input asp-for="Required" type="checkbox" class="custom-control-input">
@@ -27,14 +34,14 @@
 <div class="mb-3">
     <div class="row col-sm-6">
         <label for="PredefinedValues">@T["Predefined values"]</label>
-        <textarea asp-for="PredefinedValues" cols="60" rows="8" class="form-control"></textarea>
+        <textarea asp-for="PredefinedValues" cols="60" rows="8" class="form-control text-product-attribute-predefined-values"></textarea>
         <span class="hint">@T["The set of suggested or allowed values. Enter one value per line."]</span>
     </div>
 </div>
 
 <div class="mb-3">
     <div class="custom-control custom-checkbox">
-        <input asp-for="RestrictToPredefinedValues" type="checkbox" class="custom-control-input">
+        <input asp-for="RestrictToPredefinedValues" type="checkbox" class="custom-control-input text-product-attribute-restrict-to-predefined-values">
         <label class="custom-control-label" asp-for="RestrictToPredefinedValues">@T["Restrict to predefined values"]</label>
         <span class="hint">@T["— Whether values should be restricted to the set of predefined values."]</span>
     </div>
@@ -55,3 +62,23 @@
         <span class="hint">@T["The default value. (optional)"]</span>
     </div>
 </div>
+
+<div class="warning-price-variants-will-break" hidden></div>
+
+@if (hasPriceVariantsPart)
+{
+    <script at="Foot">
+        const warning = @T["This action will cause existing products to lose their price variants. Are you sure you want to continue?"].Value.JsonHtmlContent();
+        const initialValues = (@Json.Serialize(Model.PredefinedValues)).split(/[\n\r]+/).join('\n');
+        
+        // Warn when adding a new text field that would expand the price variant matrix.
+        document.querySelector('.ta-content form').addEventListener('submit', function (event) {
+            if (!document.querySelector('.text-product-attribute-restrict-to-predefined-values').checked) return;
+            
+            const newValues = document.querySelector('.text-product-attribute-predefined-values').value?.split(/[\n\r]+/).join('\n') ?? [];
+            console.log(window.initialValues = initialValues);
+            console.log(window.newValues = newValues);
+            if (initialValues !== newValues && !confirm(warning)) event.preventDefault();
+        });
+    </script>
+}

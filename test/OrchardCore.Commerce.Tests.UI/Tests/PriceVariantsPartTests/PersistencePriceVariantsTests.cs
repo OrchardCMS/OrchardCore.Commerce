@@ -62,9 +62,9 @@ public class PersistencePriceVariantsTests : UITestBase
                 "Red\nGreen\nBlue");
             await context.ClickReliablyOnAsync(
                 By.Id("PriceVariantsProduct_Color_TextProductAttributeFieldSettingsDriver_RestrictToPredefinedValues"));
+            await Should.ThrowAsync<UnhandledAlertException>(() => context.ClickReliablyOnSubmitAsync());
+            context.AcceptAlert();
             await context.ClickReliablyOnSubmitAsync();
-            await context.ClickReliablyOnSubmitAsync();
-            // Some warning should happen around here to indicate that product price variants will break.
 
             await context.GoToContentItemListAsync(Constants.ContentTypes.PriceVariantsProduct);
             var viewAbsoluteUri = new Uri(context.ExecuteScript("return document.querySelector('.view').href;").ToString());
