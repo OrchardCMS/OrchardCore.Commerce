@@ -10,5 +10,7 @@ namespace OrchardCore.Commerce.Models;
 /// </summary>
 public class PriceVariantsPart : ContentPart
 {
+    public Amount? this[string key] => Variants.TryGetValue(key, out var value) ? value : null;
+
     public IDictionary<string, Amount> Variants { get; } = new Dictionary<string, Amount>(StringComparer.OrdinalIgnoreCase);
 }

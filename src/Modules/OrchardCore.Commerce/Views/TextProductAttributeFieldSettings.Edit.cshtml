@@ -68,7 +68,7 @@
 @if (hasPriceVariantsPart)
 {
     <script at="Foot">
-        const warning = @T["This action will cause existing products to lose their price variants. Are you sure you want to continue?"].Value.JsonHtmlContent();
+        const warning = @T["This action may cause existing products to lose their price or inventory variants. Are you sure you want to continue?"].Value.JsonHtmlContent();
         const initialValues = (@Json.Serialize(Model.PredefinedValues)).split(/[\n\r]+/).join('\n');
         
         // Warn when adding a new text field that would expand the price variant matrix.

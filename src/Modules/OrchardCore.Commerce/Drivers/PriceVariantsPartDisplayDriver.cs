@@ -83,18 +83,10 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             .ToList();
 
         var variants = part.Variants ?? new Dictionary<string, Amount>();
-
-        var values = allVariantsKeys.ToDictionary(
-            key => key,
-            key => part.Variants.TryGetValue(key, out var amount)
-                ? amount.Value
-                : (decimal?)null);
-
+        var values = allVariantsKeys.ToDictionary(key => key, key => part[key]?.Value);
         var currencies = allVariantsKeys.ToDictionary(
             key => key,
-            key => part.Variants.TryGetValue(key, out var amount)
-                ? amount.Currency.CurrencyIsoCode
-                : _currencyOptions.Value.CurrentDisplayCurrency);
+            key => part[key]?.Currency.CurrencyIsoCode ?? _currencyOptions.Value.CurrentDisplayCurrency);
 
         model.InitializeVariants(variants, values, currencies);
 
