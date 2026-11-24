@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Inventory;
 using OrchardCore.Commerce.Inventory.Models;
@@ -7,7 +8,6 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -24,7 +24,7 @@ public class ProductAttributeService : IProductAttributeService
 
     public async Task<IEnumerable<ProductAttributeDescription>> GetProductAttributeFieldsAsync(ContentItem product)
     {
-        var productAttributeTypes = GetProductAttributeFieldTypes(product);
+        var productAttributeTypes = product.GetFieldTypes<ProductAttributeField>();
 
         ProductAttributeField GetContentField(
             ContentTypePartDefinition typePartDefinition,
@@ -121,11 +121,4 @@ public class ProductAttributeService : IProductAttributeService
                 nameof(ProductAttributeField<>.GetSettings),
                 BindingFlags.Instance | BindingFlags.Public)
             ?.Invoke(field, [partFieldDefinition]) as ProductAttributeFieldSettings;
-
-    private static Dictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
-        product.OfType<ContentPart>()
-            .SelectMany(parts => parts.OfType<ProductAttributeField>())
-            .Select(field => field.GetType())
-            .Distinct()
-            .ToDictionary(type => type.Name);
 }
