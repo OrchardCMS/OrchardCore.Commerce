@@ -19,20 +19,20 @@ public class ProductService : IProductService
     private readonly ISession _session;
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
+    private readonly IProductAttributeService _productAttributeService;
     private readonly Lazy<IShoppingCartSerializer> _shoppingCartSerializer;
 
     public ProductService(
         ISession session,
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IPredefinedValuesProductAttributeService predefinedValuesService,
+        IProductAttributeService productAttributeService,
         Lazy<IShoppingCartSerializer> shoppingCartSerializer)
     {
         _session = session;
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _predefinedValuesService = predefinedValuesService;
+        _productAttributeService = productAttributeService;
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
@@ -57,7 +57,7 @@ public class ProductService : IProductService
     {
         if (productPart == null) return item.ProductSku;
 
-        var attributesRestrictedToPredefinedValues = (await _predefinedValuesService
+        var attributesRestrictedToPredefinedValues = (await _productAttributeService
             .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
             .Select(attr => attr.PartName + "." + attr.Name)
             .ToHashSet();
@@ -69,7 +69,7 @@ public class ProductService : IProductService
             item.Attributes.SetItems(await _shoppingCartSerializer.Value.PostProcessAttributesAsync(item.Attributes, productPart));
         }
 
-        var variantKey = await _predefinedValuesService.GetProductKey(
+        var variantKey = await _productAttributeService.GetProductKey(
             productPart.ContentItem,
             item.Attributes,
             _shoppingCartSerializer.Value);

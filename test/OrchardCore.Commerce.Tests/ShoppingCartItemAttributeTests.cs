@@ -19,8 +19,7 @@ public class ShoppingCartItemAttributeTests
     [Fact]
     [Obsolete(
         $"{nameof(ShoppingCartItem.GetVariantKeyFromAttributes)} is superseded by " +
-        $"{nameof(IPredefinedValuesProductAttributeService.GetProductKey)}, which is validated by the price variant " +
-        "UI tests.")]
+        $"{nameof(IProductAttributeService.GetProductKey)}, which is validated by the price variant UI tests.")]
     public void GenerateVariantKeyFromShoppingCartItemAttributes()
     {
         var item = new ShoppingCartItem(5, "foo", _attrSet1Parsed);

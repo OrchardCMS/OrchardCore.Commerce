@@ -1,4 +1,6 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Extensions;
 using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Inventory;
@@ -8,6 +10,7 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,6 +90,37 @@ public class ProductAttributeService : IProductAttributeService
         {
             part.CanBeBought[part.ContentItem.ContentItemId] = true;
         }
+    }
+
+    public async Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product) =>
+        (await GetProductAttributeFieldsAsync(product))
+        .Where(description => description.Settings is
+            IPredefinedValuesProductAttributeFieldSettings { RestrictToPredefinedValues: true })
+        .OrderBy(description => description.PartName, StringComparer.Ordinal)
+        .ThenBy(description => description.Name, StringComparer.Ordinal);
+
+    public async Task<string> GetProductKey(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer)
+    {
+        var productPart = product.GetOrCreate<ProductPart>();
+        var predefinedAttributeValues = (await GetProductAttributesRestrictedToPredefinedValuesAsync(product))
+            .Select(attr => attr.PartName + "." + attr.Name)
+            .ToHashSet();
+
+        if (predefinedAttributeValues.Count == 0) return null;
+
+        if (attributes.HasRawAttributes())
+        {
+            attributes.SetItems(await serializer.PostProcessAttributesAsync(attributes, productPart));
+        }
+
+        var predefinedAttributes = attributes
+            .OfType<IPredefinedValuesProductAttributeValue>()
+            .Where(attribute => predefinedAttributeValues.Contains(attribute.AttributeName))
+            .OrderBy(value => value.AttributeName, StringComparer.Ordinal);
+
+        return string
+            .Join('-', predefinedAttributes.Select(attr => attr.UntypedPredefinedValue).Where(value => value != null))
+            .HtmlClassify();
     }
 
     private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount)

@@ -15,18 +15,18 @@ namespace OrchardCore.Commerce.Services;
 public class PriceVariantProvider : IPriceProvider
 {
     private readonly IProductService _productService;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
+    private readonly IProductAttributeService _productAttributeService;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
 
     public int Order => 1;
 
     public PriceVariantProvider(
         IProductService productService,
-        IPredefinedValuesProductAttributeService predefinedValuesService,
+        IProductAttributeService productAttributeService,
         IShoppingCartSerializer shoppingCartSerializer)
     {
         _productService = productService;
-        _predefinedValuesService = predefinedValuesService;
+        _productAttributeService = productAttributeService;
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
@@ -59,7 +59,7 @@ public class PriceVariantProvider : IPriceProvider
 
         if (priceVariantsPart is not { Variants: { } variants } || !variants.Any()) return null;
 
-        var key = await _predefinedValuesService.GetProductKey(
+        var key = await _productAttributeService.GetProductKey(
             productPart.ContentItem,
             item.Attributes,
             _shoppingCartSerializer);

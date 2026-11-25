@@ -16,16 +16,13 @@ public class TextProductAttributeProvider : IProductAttributeProvider
     public const string Text = nameof(Text);
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
     private readonly IProductAttributeService _productAttributeService;
 
     public TextProductAttributeProvider(
         IContentDefinitionManager contentDefinitionManager,
-        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
         IProductAttributeService productAttributeService)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
         _productAttributeService = productAttributeService;
     }
 
@@ -52,7 +49,7 @@ public class TextProductAttributeProvider : IProductAttributeProvider
             selectedAttributes.Add(Text, new Dictionary<string, string>());
         }
 
-        var predefinedAttributes = await _predefinedValuesProductAttributeService
+        var predefinedAttributes = await _productAttributeService
             .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem);
 
         // Predefined attributes must contain the selected attributes.

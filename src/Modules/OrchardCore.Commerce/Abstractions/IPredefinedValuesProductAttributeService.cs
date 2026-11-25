@@ -1,18 +1,16 @@
-using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using FieldSettings = OrchardCore.Commerce.Abstractions.IPredefinedValuesProductAttributeFieldSettings;
-using Service = OrchardCore.Commerce.Abstractions.IPredefinedValuesProductAttributeService;
-
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
-/// Service for working with <see cref="FieldSettings"/>.
+/// Service for working with <see cref="OrchardCore.Commerce.Abstractions.IPredefinedValuesProductAttributeFieldSettings"/>.
 /// </summary>
+[Obsolete($"This will be merged into {nameof(IProductAttributeService)}.")]
 public interface IPredefinedValuesProductAttributeService
 {
     /// <summary>
@@ -20,41 +18,34 @@ public interface IPredefinedValuesProductAttributeService
     /// that have predefined values.
     /// </summary>
     Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product);
-
-    /// <summary>
-    /// returns the SKU suffix used to distinguish between product variants.
-    /// </summary>
-    Task<string> GetProductKey(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer);
 }
 
+[Obsolete($"Use the extension methods for {nameof(IProductAttributeService)} instead.")]
 public static class PredefinedValuesProductAttributeServiceExtensions
 {
     public static async Task<IEnumerable<IEnumerable<object>>> GetProductAttributesPredefinedValuesAsync(
-        this Service service, ContentItem product) =>
+        this IPredefinedValuesProductAttributeService service,
+        ContentItem product) =>
         (await service.GetProductAttributesRestrictedToPredefinedValuesAsync(product))
-        .Where(description => description.Settings is FieldSettings)
-        .Select(description => ((FieldSettings)description.Settings).PredefinedValues.ToList())
+        .Where(description => description.Settings is IPredefinedValuesProductAttributeFieldSettings)
+        .Select(description =>
+            ((IPredefinedValuesProductAttributeFieldSettings)description.Settings).PredefinedValues.ToList())
         .ToList();
 
     public static async Task<IEnumerable<string>> GetProductAttributesCombinationsAsync(
-        this Service service, ContentItem product) =>
-        (await service.GetProductAttributesPredefinedValuesAsync(product))
-        .CartesianProduct()
-        .Select(predefinedValues => string.Join('-', predefinedValues));
+        this IPredefinedValuesProductAttributeService service,
+        ContentItem product) =>
+        CartesianProduct(await service.GetProductAttributesPredefinedValuesAsync(product))
+            .Select(predefinedValues => string.Join('-', predefinedValues));
 
-    private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(this IEnumerable<IEnumerable<T>> sequences)
+    private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> sequences)
     {
-        // Prevent edge cases by cleaning the inner collections and handling when "sequences" only has 0 - 1 items.
-        var list = sequences
-            .Select(values => values.ToList())
-            .Where(sequence => sequence.Count > 0)
-            .ToList();
-
-        if (list.Count == 0) return list;
-        if (list.Count == 1) return list[0].Select(item => new[] { item });
-
         IEnumerable<IEnumerable<T>> emptyProduct = [[]];
-        return list.Aggregate(emptyProduct, (accumulator, sequence) =>
-            accumulator.SelectMany(_ => sequence, (accumulatorSequence, item) => accumulatorSequence.Concat([item])));
+        return sequences.Aggregate(
+            emptyProduct,
+            (accumulator, sequence) =>
+                accumulator.SelectMany(
+                    _ => sequence,
+                    (accumulatorSequence, item) => accumulatorSequence.Concat([item])));
     }
 }

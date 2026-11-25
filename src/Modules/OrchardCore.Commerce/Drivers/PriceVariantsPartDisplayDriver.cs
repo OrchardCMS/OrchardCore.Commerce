@@ -20,16 +20,16 @@ namespace OrchardCore.Commerce.Drivers;
 public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVariantsPart>
 {
     private readonly IMoneyService _moneyService;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
+    private readonly IProductAttributeService _productAttributeService;
     private readonly IOptions<CurrencySettings> _currencyOptions;
 
     public PriceVariantsPartDisplayDriver(
         IMoneyService moneyService,
-        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
+        IProductAttributeService productAttributeService,
         IOptions<CurrencySettings> currencyOptions)
     {
         _moneyService = moneyService;
-        _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
+        _productAttributeService = productAttributeService;
         _currencyOptions = currencyOptions;
     }
 
@@ -43,6 +43,11 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         {
             await BuildViewModelAsync(viewModel, part);
             viewModel.Currencies = _moneyService.Currencies;
+
+            foreach (var key in viewModel.VariantsCurrencies.Keys)
+            {
+                viewModel.VariantsCurrencies[key] ??= _moneyService.DefaultCurrency.CurrencyIsoCode;
+            }
         });
 
     public override async Task<IDisplayResult> UpdateAsync(
@@ -78,7 +83,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         model.ContentItem = part.ContentItem;
         model.PriceVariantsPart = part;
 
-        var allVariantsKeys = (await _predefinedValuesProductAttributeService.GetProductAttributesCombinationsAsync(part.ContentItem))
+        var allVariantsKeys = (await _productAttributeService.GetProductAttributesCombinationsAsync(part.ContentItem))
             .Select(attr => attr.HtmlClassify().ToUpperInvariant())
             .ToList();
 

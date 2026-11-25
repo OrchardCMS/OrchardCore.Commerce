@@ -22,9 +22,9 @@ public class ContentLocalizationProductService : ProductService
         ISession session,
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IPredefinedValuesProductAttributeService predefinedValuesService,
+        IProductAttributeService productAttributeService,
         Lazy<IShoppingCartSerializer> shoppingCartSerializer)
-        : base(session, contentManager, contentDefinitionManager, predefinedValuesService, shoppingCartSerializer) =>
+        : base(session, contentManager, contentDefinitionManager, productAttributeService, shoppingCartSerializer) =>
             _siteService = siteService;
 
     public override async Task<IEnumerable<ProductPart>> GetProductsAsync(IEnumerable<string> skus)
