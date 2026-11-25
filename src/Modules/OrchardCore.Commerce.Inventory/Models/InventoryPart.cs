@@ -19,4 +19,16 @@ public class InventoryPart : ContentPart
     public IList<string> InventoryKeys { get; } = [];
 
     public string ProductSku { get; set; }
+
+    public void ResetInventoryKeys() => InventoryKeys.SetItems(Inventory.Keys);
+
+    public static string GetUpdatedInventoryKey(string oldKey, string oldSku, string newSku)
+    {
+        var updatedKey = newSku;
+        var suffix = oldKey;
+        if (suffix.StartsWithOrdinalIgnoreCase(oldSku + '-')) suffix = suffix[(oldSku.Length + 1)..];
+        updatedKey += $"-{suffix}";
+
+        return updatedKey;
+    }
 }

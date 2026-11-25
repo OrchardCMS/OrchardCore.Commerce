@@ -96,7 +96,10 @@ public class ProductAttributeService : IProductAttributeService
         .OrderBy(description => description.PartName, StringComparer.Ordinal)
         .ThenBy(description => description.Name, StringComparer.Ordinal);
 
-    public async Task<string> GetProductKeyAsync(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer)
+    public async Task<string> GetProductKeyAsync(
+        ContentItem product,
+        ICollection<IProductAttributeValue> attributes,
+        IShoppingCartSerializer serializer)
     {
         var productPart = product.GetOrCreate<ProductPart>();
         var predefinedAttributeValues = (await GetProductAttributesRestrictedToPredefinedValuesAsync(product))
@@ -125,13 +128,9 @@ public class ProductAttributeService : IProductAttributeService
         var newAvailabilities = new Dictionary<string, bool>();
         foreach (var entry in part.CanBeBought)
         {
-            var updatedKey = part.Sku;
-            if (inventoryCount > 1)
-            {
-                var suffix = entry.Key;
-                if (suffix.StartsWithOrdinalIgnoreCase(skuBefore + '-')) suffix = suffix[(skuBefore.Length + 1)..];
-                updatedKey += $"-{suffix}";
-            }
+            var updatedKey = inventoryCount > 1
+                ? InventoryPart.GetUpdatedInventoryKey(entry.Key, skuBefore, part.Sku)
+                : part.Sku;
 
             newAvailabilities.Add(updatedKey, entry.Value);
         }
