@@ -1,6 +1,6 @@
+using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +20,11 @@ public interface IPredefinedValuesProductAttributeService
     /// that have predefined values.
     /// </summary>
     Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product);
+
+    /// <summary>
+    /// returns the SKU suffix used to distinguish between product variants.
+    /// </summary>
+    Task<string> GetProductKey(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer);
 }
 
 public static class PredefinedValuesProductAttributeServiceExtensions
