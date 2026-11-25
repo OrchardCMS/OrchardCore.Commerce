@@ -70,20 +70,17 @@ public class ProductAttributeService : IProductAttributeService
     {
         if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart))
         {
-            var filteredInventory = inventoryPart.FilterOutdatedEntries();
-            part.CanBeBought.Clear();
-
             // If an inventory's value is below 1 and back ordering is not allowed, corresponding
             // CanBeBought entry needs to be set to false; should be set to true otherwise.
-            foreach (var inventory in filteredInventory)
-            {
-                part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
-            }
+            var filteredInventory = inventoryPart
+                .FilterOutdatedEntries()
+                .ToDictionary(pair => pair.Key, pair => inventoryPart.AllowsBackOrder.Value || pair.Value >= 1);
+            part.CanBeBought.SetItems(filteredInventory);
 
             // If SKU was updated, CanBeBought keys also need to be updated.
             if (part.Sku != skuBefore)
             {
-                UpdateAvailabilityKeys(part, filteredInventory.Count);
+                UpdateAvailabilityKeys(part, filteredInventory.Count, skuBefore);
             }
         }
         else
@@ -99,7 +96,7 @@ public class ProductAttributeService : IProductAttributeService
         .OrderBy(description => description.PartName, StringComparer.Ordinal)
         .ThenBy(description => description.Name, StringComparer.Ordinal);
 
-    public async Task<string> GetProductKey(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer)
+    public async Task<string> GetProductKeyAsync(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer)
     {
         var productPart = product.GetOrCreate<ProductPart>();
         var predefinedAttributeValues = (await GetProductAttributesRestrictedToPredefinedValuesAsync(product))
@@ -123,20 +120,23 @@ public class ProductAttributeService : IProductAttributeService
             .HtmlClassify();
     }
 
-    private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount)
+    private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount, string skuBefore)
     {
         var newAvailabilities = new Dictionary<string, bool>();
         foreach (var entry in part.CanBeBought)
         {
-            var updatedKey = inventoryCount > 1
-                ? $"{part.Sku}-{entry.Key.Split('-')[^1]}"
-                : part.Sku;
+            var updatedKey = part.Sku;
+            if (inventoryCount > 1)
+            {
+                var suffix = entry.Key;
+                if (suffix.StartsWithOrdinalIgnoreCase(skuBefore + '-')) suffix = suffix[(skuBefore.Length + 1)..];
+                updatedKey += $"-{suffix}";
+            }
 
             newAvailabilities.Add(updatedKey, entry.Value);
         }
 
-        part.CanBeBought.Clear();
-        part.CanBeBought.AddRange(newAvailabilities);
+        part.CanBeBought.SetItems(newAvailabilities);
     }
 
     private static ProductAttributeField GetContentField(

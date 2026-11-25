@@ -59,7 +59,7 @@ public class PriceVariantProvider : IPriceProvider
 
         if (priceVariantsPart is not { Variants: { } variants } || !variants.Any()) return null;
 
-        var key = await _productAttributeService.GetProductKey(
+        var key = await _productAttributeService.GetProductKeyAsync(
             productPart.ContentItem,
             item.Attributes,
             _shoppingCartSerializer);

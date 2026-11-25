@@ -53,15 +53,15 @@ public class PersistencePriceVariantsTests : UITestBase
             var color = "RED GREEN BLUE".Split();
             var size = "SMALL MEDIUM LARGE".Split();
             var variants = color.CartesianProduct(size).Select(pair => $"{pair.Left}-{pair.Right}").ToList();
-            var byPriceEditorLabels1 = GetPriceEditorSelectors(size);
-            var byPriceEditorLabels2 = GetPriceEditorSelectors(variants);
+            var byPriceEditors1 = GetPriceEditorSelectors(size);
+            var byPriceEditors2 = GetPriceEditorSelectors(variants);
 
             await context.SignInDirectlyAsync();
 
             await context.GoToContentItemListAsync(Constants.ContentTypes.PriceVariantsProduct);
             await context.ClickReliablyOnAsync(By.ClassName("edit"));
-            byPriceEditorLabels1.ForEach(by => context.Exists(by));
-            byPriceEditorLabels2.ForEach(by => context.Missing(by));
+            byPriceEditors1.ForEach(by => context.Exists(by));
+            byPriceEditors2.ForEach(by => context.Missing(by));
 
             await context.GoToContentTypeEditorAsync(Constants.ContentTypes.PriceVariantsProduct);
             await context.ClickReliablyOnAsync(By.LinkText("Add Field"));
@@ -81,10 +81,19 @@ public class PersistencePriceVariantsTests : UITestBase
             await context.GoToContentItemListAsync(Constants.ContentTypes.PriceVariantsProduct);
             var viewAbsoluteUri = new Uri(context.ExecuteScript("return document.querySelector('.view').href;").ToString());
             await context.ClickReliablyOnAsync(By.ClassName("edit"));
-            byPriceEditorLabels1.ForEach(by => context.Missing(by));
-            byPriceEditorLabels2.ForEach(by => context.Exists(by));
+            byPriceEditors1.ForEach(by => context.Missing(by));
+            byPriceEditors2.ForEach(by => context.Exists(by));
+
+            // Validate that pressing the Publish button won't cause a navigation by HTML editing. (Can't directly
+            // access the "Please fill out this field" pop-up so this is a necessary workaround.)
+            context.ExecuteScript("document.getElementsByTagName('h1')[0].textContent = 'altered'");
             await context.ClickReliablyOnSubmitAsync();
-            context.ErrorMessageExists("PRICES ARE MISSING");
+            await byPriceEditors2
+                .Select((by, index) => (By: by, Index: index))
+                .AwaitEachAsync(pair => context.ClickAndFillInWithRetriesAsync(pair.By, (10 + pair.Index).ToTechnicalString()));
+            GetCurrencyEditorSelectors(variants).Select(context.Get).ForEach(element => element.GetValue().ShouldBe("USD"));
+            context.Exists(By.XPath("//h1[contains(., 'altered')]"));
+            await context.ClickReliablyOnSubmitAsync();
 
             context
                 .GetAllWhenOneExists(By.CssSelector(".content-part-wrapper-price-variants-part .variant-price-value"))
@@ -104,6 +113,11 @@ public class PersistencePriceVariantsTests : UITestBase
 
     private static List<By> GetPriceEditorSelectors(IEnumerable<string> variants) =>
         variants
-            .Select(variant => By.CssSelector($"[for='PriceVariantsPart_VariantsValues_{variant}_']"))
+            .Select(variant => By.Id($"PriceVariantsPart_VariantsValues_{variant}_"))
+            .ToList();
+
+    private static List<By> GetCurrencyEditorSelectors(IEnumerable<string> variants) =>
+        variants
+            .Select(variant => By.Id($"PriceVariantsPart_VariantsCurrencies_{variant}_"))
             .ToList();
 }

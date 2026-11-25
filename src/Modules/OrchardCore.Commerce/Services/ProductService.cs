@@ -69,7 +69,7 @@ public class ProductService : IProductService
             item.Attributes.SetItems(await _shoppingCartSerializer.Value.PostProcessAttributesAsync(item.Attributes, productPart));
         }
 
-        var variantKey = await _productAttributeService.GetProductKey(
+        var variantKey = await _productAttributeService.GetProductKeyAsync(
             productPart.ContentItem,
             item.Attributes,
             _shoppingCartSerializer.Value);

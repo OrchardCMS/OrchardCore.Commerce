@@ -43,7 +43,7 @@ public interface IProductAttributeService
     /// <summary>
     /// returns the SKU suffix used to distinguish between product variants.
     /// </summary>
-    Task<string> GetProductKey(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer);
+    Task<string> GetProductKeyAsync(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer);
 }
 
 public static class ProductAttributeServiceExtensions
