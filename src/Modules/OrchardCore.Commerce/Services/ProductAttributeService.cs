@@ -8,6 +8,7 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,23 +26,15 @@ public class ProductAttributeService : IProductAttributeService
     public async Task<IEnumerable<ProductAttributeDescription>> GetProductAttributeFieldsAsync(ContentItem product)
     {
         var productAttributeTypes = product.GetFieldTypes<ProductAttributeField>();
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(product.ContentType);
 
-        ProductAttributeField GetContentField(
-            ContentTypePartDefinition typePartDefinition,
-            ContentPartFieldDefinition partFieldDefinition) =>
-            product
-                .Get<ContentPart>(typePartDefinition.Name)
-                ?.Get(
-                    productAttributeTypes[partFieldDefinition.FieldDefinition.Name],
-                    partFieldDefinition.Name) as ProductAttributeField;
-
-        return (await _contentDefinitionManager.GetTypeDefinitionAsync(product.ContentType))
+        return contentTypeDefinition
             .Parts
             .SelectMany(typePartDefinition => typePartDefinition.PartDefinition.Fields
                 .Where(partFieldDefinition => productAttributeTypes.ContainsKey(partFieldDefinition.FieldDefinition.Name))
                 .Select(partFieldDefinition =>
                 {
-                    var field = GetContentField(typePartDefinition, partFieldDefinition);
+                    var field = GetContentField(product, productAttributeTypes, typePartDefinition, partFieldDefinition);
                     var settings = GetFieldSettings(partFieldDefinition, field);
                     return new ProductAttributeDescription(
                         name: partFieldDefinition.Name,
@@ -111,6 +104,16 @@ public class ProductAttributeService : IProductAttributeService
         part.CanBeBought.Clear();
         part.CanBeBought.AddRange(newAvailabilities);
     }
+
+    private static ProductAttributeField GetContentField(
+        ContentItem product,
+        IDictionary<string, Type> productAttributeTypes,
+        ContentTypePartDefinition typePartDefinition,
+        ContentPartFieldDefinition partFieldDefinition) =>
+        product
+                .Get<ContentPart>(typePartDefinition.Name)?
+                .Get(productAttributeTypes[partFieldDefinition.FieldDefinition.Name], partFieldDefinition.Name)
+            as ProductAttributeField;
 
     private ProductAttributeFieldSettings GetFieldSettings(
         ContentPartFieldDefinition partFieldDefinition,
