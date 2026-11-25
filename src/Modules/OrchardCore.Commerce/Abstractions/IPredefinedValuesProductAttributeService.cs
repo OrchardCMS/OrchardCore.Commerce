@@ -44,14 +44,14 @@ public static class PredefinedValuesProductAttributeServiceExtensions
 
     private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(this IEnumerable<IEnumerable<T>> sequences)
     {
-        // Prevent edge cases by cleaning the inner collections and immediately returning the list if there is no more
-        // than one sequence.
+        // Prevent edge cases by cleaning the inner collections and handling when "sequences" only has 0 - 1 items.
         var list = sequences
             .Select(values => values.ToList())
             .Where(sequence => sequence.Count > 0)
             .ToList();
 
-        if (list.Count <= 1) return list;
+        if (list.Count == 0) return list;
+        if (list.Count == 1) return list[0].Select(item => new[] { item });
 
         IEnumerable<IEnumerable<T>> emptyProduct = [[]];
         return list.Aggregate(emptyProduct, (accumulator, sequence) =>
