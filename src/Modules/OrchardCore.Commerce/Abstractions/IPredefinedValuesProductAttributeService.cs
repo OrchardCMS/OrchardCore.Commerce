@@ -37,9 +37,19 @@ public static class PredefinedValuesProductAttributeServiceExtensions
         .CartesianProduct()
         .Select(predefinedValues => string.Join('-', predefinedValues));
 
-    private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(this IEnumerable<IEnumerable<T>> sequences) =>
-        sequences.Aggregate(
-            Enumerable.Empty<IEnumerable<T>>(),
-            (accumulator, sequence) => accumulator
-                .SelectMany(_ => sequence, (accumulatorSequence, item) => accumulatorSequence.Concat([item])));
+    private static IEnumerable<IEnumerable<T>> CartesianProduct<T>(this IEnumerable<IEnumerable<T>> sequences)
+    {
+        // Prevent edge cases by cleaning the inner collections and immediately returning the list if there is no more
+        // than one sequence.
+        var list = sequences
+            .Select(values => values.ToList())
+            .Where(sequence => sequence.Count > 0)
+            .ToList();
+
+        if (list.Count <= 1) return list;
+
+        IEnumerable<IEnumerable<T>> emptyProduct = [[]];
+        return list.Aggregate(emptyProduct, (accumulator, sequence) =>
+            accumulator.SelectMany(_ => sequence, (accumulatorSequence, item) => accumulatorSequence.Concat([item])));
+    }
 }
