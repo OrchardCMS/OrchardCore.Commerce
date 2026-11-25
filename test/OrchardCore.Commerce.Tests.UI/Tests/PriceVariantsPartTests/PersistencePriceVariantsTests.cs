@@ -50,7 +50,19 @@ public class PersistencePriceVariantsTests : UITestBase
     public Task AlteringPriceVariantShouldWarn() =>
         RunAsync(async context =>
         {
+            var color = "RED GREEN BLUE".Split();
+            var size = "SMALL MEDIUM LARGE".Split();
+            var variants = color.CartesianProduct(size).Select(pair => $"{pair.Left}-{pair.Right}").ToList();
+            var byPriceEditorLabels1 = GetPriceEditorSelectors(size);
+            var byPriceEditorLabels2 = GetPriceEditorSelectors(variants);
+
             await context.SignInDirectlyAsync();
+
+            await context.GoToContentItemListAsync(Constants.ContentTypes.PriceVariantsProduct);
+            await context.ClickReliablyOnAsync(By.ClassName("edit"));
+            byPriceEditorLabels1.ForEach(by => context.Exists(by));
+            byPriceEditorLabels2.ForEach(by => context.Missing(by));
+
             await context.GoToContentTypeEditorAsync(Constants.ContentTypes.PriceVariantsProduct);
             await context.ClickReliablyOnAsync(By.LinkText("Add Field"));
 
@@ -69,6 +81,8 @@ public class PersistencePriceVariantsTests : UITestBase
             await context.GoToContentItemListAsync(Constants.ContentTypes.PriceVariantsProduct);
             var viewAbsoluteUri = new Uri(context.ExecuteScript("return document.querySelector('.view').href;").ToString());
             await context.ClickReliablyOnAsync(By.ClassName("edit"));
+            byPriceEditorLabels1.ForEach(by => context.Missing(by));
+            byPriceEditorLabels2.ForEach(by => context.Exists(by));
             await context.ClickReliablyOnSubmitAsync();
             context.ErrorMessageExists("PRICES ARE MISSING");
 
@@ -87,4 +101,9 @@ public class PersistencePriceVariantsTests : UITestBase
             await context.GoToAbsoluteUrlAsync(viewAbsoluteUri);
             // Validate presence of new price variants and not the old price variants.
         });
+
+    private static List<By> GetPriceEditorSelectors(IEnumerable<string> variants) =>
+        variants
+            .Select(variant => By.CssSelector($"[for='PriceVariantsPart_VariantsValues_{variant}_']"))
+            .ToList();
 }
