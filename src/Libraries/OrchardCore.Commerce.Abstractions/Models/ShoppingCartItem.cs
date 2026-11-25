@@ -55,6 +55,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             : new List<PrioritizedPrice>(prices).AsReadOnly();
     }
 
+    [Obsolete("Use IPredefinedValuesProductAttributeService.GetProductKey() in OrchardCore.Commerce instead.")]
     public string GetVariantKeyFromAttributes(ISet<string> predefinedAttributeValues)
     {
         var predefinedAttributes = Attributes

@@ -57,23 +57,15 @@ public class PriceVariantProvider : IPriceProvider
     {
         var priceVariantsPart = productPart.ContentItem.GetMaybe<PriceVariantsPart>();
 
-        if (priceVariantsPart is { Variants: { } variants } && variants.Any())
-        {
-            var attributesRestrictedToPredefinedValues = (await _predefinedValuesService
-                .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
-                .Select(attr => attr.PartName + "." + attr.Name)
-                .ToHashSet();
+        if (priceVariantsPart is not { Variants: { } variants } || !variants.Any()) return null;
 
-            if (item.HasRawAttributes())
-            {
-                item.Attributes.SetItems(await _shoppingCartSerializer.PostProcessAttributesAsync(item.Attributes, productPart));
-            }
+        var key = await _predefinedValuesService.GetProductKey(
+            productPart.ContentItem,
+            item.Attributes,
+            _shoppingCartSerializer);
 
-            var key = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
-
-            if (string.IsNullOrEmpty(key)) return item.WithPrice(new PrioritizedPrice(1, variants.First().Value));
-            if (variants.TryGetValue(key, out var variant)) return item.WithPrice(new PrioritizedPrice(1, variant));
-        }
+        if (string.IsNullOrEmpty(key)) return item.WithPrice(new PrioritizedPrice(1, variants.First().Value));
+        if (variants.TryGetValue(key, out var variant)) return item.WithPrice(new PrioritizedPrice(1, variant));
 
         return null;
     }

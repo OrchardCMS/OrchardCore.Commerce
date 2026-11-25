@@ -69,7 +69,13 @@ public class ProductService : IProductService
             item.Attributes.SetItems(await _shoppingCartSerializer.Value.PostProcessAttributesAsync(item.Attributes, productPart));
         }
 
-        var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
+        var variantKey = await _predefinedValuesService.GetProductKey(
+            productPart.ContentItem,
+            item.Attributes,
+            _shoppingCartSerializer.Value);
+
+        if (string.IsNullOrEmpty(variantKey)) return item.ProductSku;
+
         var fullSku = item.Attributes.Any()
             ? item.ProductSku + "-" + variantKey
             : string.Empty;
