@@ -33,7 +33,8 @@
         // Needed for consistent, machine-independent locale setting.
         "OrchardCore.Localization",
         // Needed for UI Testing.
-        "OrchardCore.Commerce.Tests.UI.Shortcuts"
+        "OrchardCore.Commerce.Tests.UI.Shortcuts",
+        "Lombiq.Tests.UI.AdminTheme"
       ],
       "disable": [
         "OrchardCore.Commerce.Payment.Exactly",
@@ -56,6 +57,10 @@
           "name": "OrchardCore.Commerce.Content.TestTieredPriceProduct"
         }
       ]
+    },
+    {
+      "name": "themes",
+      "admin": "Lombiq.Tests.UI.AdminTheme"
     }
   ]
 }
