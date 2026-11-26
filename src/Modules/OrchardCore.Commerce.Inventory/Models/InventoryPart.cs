@@ -31,17 +31,4 @@ public class InventoryPart : ContentPart
 
         return updatedKey;
     }
-
-    public static string GetInventoryDisplay(
-        IDictionary<string, int> inventory,
-        string key,
-        string sku)
-    {
-        if (inventory.Count < 2 || string.IsNullOrWhiteSpace(key) || !inventory.ContainsKey(key))
-        {
-            return string.Empty;
-        }
-
-        return key.StartsWithOrdinalIgnoreCase(sku + '-') ? key[(sku.Length + 1)..] : key;
-    }
 }

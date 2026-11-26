@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Inventory.Models;
@@ -34,19 +35,26 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part))
-            .Location("Detail", "Content:25")
-            .Location("Summary", "Meta:10");
+        Initialize<PriceVariantsPartViewModel>(
+                GetDisplayShapeType(context),
+                async viewModel => await BuildViewModelAsync(viewModel, part, cleanForDisplay: true))
+            .Location(CommonContentDisplayTypes.Detail, "Content:25")
+            .Location(CommonContentDisplayTypes.Summary, "Meta:10");
 
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
         Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), async viewModel =>
         {
-            await BuildViewModelAsync(viewModel, part);
+            var allVariantsKeys = await BuildViewModelAsync(viewModel, part);
             viewModel.Currencies = _moneyService.Currencies;
 
-            foreach (var key in viewModel.VariantsCurrencies.Keys)
+            // When creating a new PriceVariantsProduct item, initialize default inventories.
+            if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart) && !inventoryPart.Inventory.Any())
             {
-                viewModel.VariantsCurrencies[key] ??= _moneyService.DefaultCurrency.CurrencyIsoCode;
+                part.ContentItem.Alter<InventoryPart>(inventoryPart =>
+                {
+                    inventoryPart.Inventory.SetItems(allVariantsKeys.Select(key => new KeyValuePair<string, int>(key, 0)));
+                    inventoryPart.ResetInventoryKeys();
+                });
             }
         });
 
@@ -65,7 +73,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         part.Variants.RemoveAll();
         viewModel.Variants.RemoveAll();
 
-        foreach ((var key, var value) in viewModel.VariantsValues)
+        foreach (var (key, value) in viewModel.VariantsValues)
         {
             if (value.HasValue &&
                 viewModel.VariantsCurrencies?.ContainsKey(key) == true &&
@@ -78,10 +86,13 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         return await EditAsync(part, context);
     }
 
-    private async Task BuildViewModelAsync(PriceVariantsPartViewModel model, PriceVariantsPart part)
+    private async Task<List<string>> BuildViewModelAsync(
+        PriceVariantsPartViewModel model,
+        PriceVariantsPart part,
+        bool cleanForDisplay = false)
     {
         var product = part.ContentItem;
-        var hasInventoryPart = product.TryGet<InventoryPart>(out var inventoryPart);
+        var hasInventoryPart = product.Has<InventoryPart>();
         if (hasInventoryPart)
         {
             await _productAttributeService.UpdateInventoryPartFromProductAttributesAsync(product);
@@ -94,7 +105,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
             .Select(attr => attr.HtmlClassify().ToUpperInvariant())
             .ToList();
 
-        var variants = part.Variants ?? new Dictionary<string, Amount>();
+        var variants = cleanForDisplay ? CleanVariantDictionary(part.Variants, allVariantsKeys) : part.Variants;
         var values = allVariantsKeys.ToDictionary(key => key, key => part[key]?.Value);
         var currencies = allVariantsKeys.ToDictionary(
             key => key,
@@ -102,14 +113,19 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 
         model.InitializeVariants(variants, values, currencies);
 
-        // When creating a new PriceVariantsProduct item, initialize default inventories.
-        if (hasInventoryPart && !inventoryPart.Inventory.Any())
+        foreach (var key in model.VariantsCurrencies.Keys)
         {
-            foreach (var variantKey in allVariantsKeys)
-            {
-                inventoryPart.Inventory.Add(variantKey, 0);
-                inventoryPart.InventoryKeys.Add(variantKey);
-            }
+            model.VariantsCurrencies[key] ??= _moneyService.DefaultCurrency.CurrencyIsoCode;
         }
+        
+        return allVariantsKeys;
     }
+
+    private static Dictionary<string, T> CleanVariantDictionary<T>(
+        IDictionary<string, T> variants,
+        List<string> allVariantsKeys) =>
+        variants
+            .Where(pair => allVariantsKeys.Contains(pair.Key))
+            .OrderBy(pair => allVariantsKeys.IndexOf(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
 }

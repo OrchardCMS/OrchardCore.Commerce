@@ -125,19 +125,16 @@ public class ProductAttributeService : IProductAttributeService
 
     public async Task UpdateInventoryPartFromProductAttributesAsync(ContentItem product)
     {
+        if (!product.Has<PriceVariantsPart>() || !product.Has<InventoryPart>()) return;
+
         var variantKeys = (await this.GetProductAttributesCombinationsAsync(product))
             .Select(key => $"{product.GetOrCreate<ProductPart>().Sku}-{key}".ToUpperInvariant())
             .ToList();
 
         product.Alter<InventoryPart>(part =>
         {
-            part.Inventory.RemoveAll(pair => !variantKeys.Contains(pair.Key, StringComparer.OrdinalIgnoreCase));
-
-            foreach (var key in variantKeys)
-            {
-                part.Inventory[key] = part.Inventory.TryGetValue(key, out var value) ? value : 0;
-            }
-
+            part.Inventory.SetItems(variantKeys.Select(key => 
+                new KeyValuePair<string, int>(key, part.Inventory.TryGetValue(key, out var value) ? value : 0)));
             part.ResetInventoryKeys();
         });
     }

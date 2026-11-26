@@ -1,3 +1,5 @@
+#nullable enable
+
 using OrchardCore.Commerce.MoneyDataType;
 using OrchardCore.ContentManagement;
 using System;
