@@ -60,17 +60,13 @@ public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<Invent
         var skuChanged = !string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore);
         if (skuChanged && part.Inventory.Count == 1 && !part.Inventory.Keys.Single().Contains('-'))
         {
-            part.Inventory.SetItems([new(currentSku, part.Inventory.Values.Single())]);
-            part.ResetInventoryKeys();
+            part.SetInventory([currentSku], [part.Inventory.Values.Single()]);
         }
         else if (skuChanged)
         {
-            var newInventory = part.Inventory.ToDictionary(
-                item => InventoryPart.GetUpdatedInventoryKey(item.Key, skuBefore, currentSku),
-                item => item.Value);
-
-            part.Inventory.SetItems(newInventory);
-            part.ResetInventoryKeys();
+            part.SetInventory(
+                [.. part.InventoryKeys.Select(key => InventoryPart.GetUpdatedInventoryKey(key, skuBefore, currentSku))],
+                [.. part.InventoryKeys.Select(key => part.Inventory.GetMaybe(key))]);
         }
 
         part.ProductSku = currentSku;

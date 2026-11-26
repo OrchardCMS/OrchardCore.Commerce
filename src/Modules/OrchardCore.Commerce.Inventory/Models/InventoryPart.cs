@@ -20,7 +20,16 @@ public class InventoryPart : ContentPart
 
     public string ProductSku { get; set; }
 
-    public void ResetInventoryKeys() => InventoryKeys.SetItems(Inventory.Keys);
+    public void SetInventory(IList<string> keys, IList<int> inventory)
+    {
+        Inventory.Clear();
+        InventoryKeys.SetItems(keys);
+
+        for (var i = 0; i < keys.Count; i++)
+        {
+            Inventory.Add(keys[i], inventory[i]);
+        }
+    }
 
     public static string GetUpdatedInventoryKey(string oldKey, string oldSku, string newSku)
     {

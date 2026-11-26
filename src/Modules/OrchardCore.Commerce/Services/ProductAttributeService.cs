@@ -131,12 +131,9 @@ public class ProductAttributeService : IProductAttributeService
             .Select(key => $"{product.GetOrCreate<ProductPart>().Sku}-{key}".ToUpperInvariant())
             .ToList();
 
-        product.Alter<InventoryPart>(part =>
-        {
-            part.Inventory.SetItems(variantKeys.Select(key => 
-                new KeyValuePair<string, int>(key, part.Inventory.TryGetValue(key, out var value) ? value : 0)));
-            part.ResetInventoryKeys();
-        });
+        product.Alter<InventoryPart>(part => part.SetInventory(
+            variantKeys,
+            [.. variantKeys.Select(part.Inventory.GetMaybe)]));
     }
 
     private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount, string skuBefore)
