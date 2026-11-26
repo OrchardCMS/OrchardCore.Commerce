@@ -81,7 +81,8 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         return await EditAsync(part, context);
     }
 
-    private async Task BuildViewModelAsync(PriceVariantsPartViewModel model,
+    private async Task BuildViewModelAsync(
+        PriceVariantsPartViewModel model,
         PriceVariantsPart part,
         bool cleanForDisplay = false)
     {
