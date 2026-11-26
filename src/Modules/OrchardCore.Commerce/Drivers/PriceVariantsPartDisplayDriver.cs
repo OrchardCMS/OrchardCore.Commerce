@@ -44,17 +44,12 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
         Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), async viewModel =>
         {
-            var allVariantsKeys = await BuildViewModelAsync(viewModel, part);
+            await BuildViewModelAsync(viewModel, part);
             viewModel.Currencies = _moneyService.Currencies;
 
-            // When creating a new PriceVariantsProduct item, initialize default inventories.
-            if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart) && !inventoryPart.Inventory.Any())
+            if (part.ContentItem.Has<InventoryPart>())
             {
-                part.ContentItem.Alter<InventoryPart>(inventoryPart =>
-                {
-                    inventoryPart.Inventory.SetItems(allVariantsKeys.Select(key => new KeyValuePair<string, int>(key, 0)));
-                    inventoryPart.ResetInventoryKeys();
-                });
+                await _productAttributeService.UpdateInventoryPartFromProductAttributesAsync(part.ContentItem);
             }
         });
 
@@ -86,18 +81,11 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         return await EditAsync(part, context);
     }
 
-    private async Task<List<string>> BuildViewModelAsync(
-        PriceVariantsPartViewModel model,
+    private async Task BuildViewModelAsync(PriceVariantsPartViewModel model,
         PriceVariantsPart part,
         bool cleanForDisplay = false)
     {
         var product = part.ContentItem;
-        var hasInventoryPart = product.Has<InventoryPart>();
-        if (hasInventoryPart)
-        {
-            await _productAttributeService.UpdateInventoryPartFromProductAttributesAsync(product);
-        }
-
         model.ContentItem = product;
         model.PriceVariantsPart = part;
 
@@ -117,8 +105,6 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         {
             model.VariantsCurrencies[key] ??= _moneyService.DefaultCurrency.CurrencyIsoCode;
         }
-        
-        return allVariantsKeys;
     }
 
     private static Dictionary<string, T> CleanVariantDictionary<T>(
