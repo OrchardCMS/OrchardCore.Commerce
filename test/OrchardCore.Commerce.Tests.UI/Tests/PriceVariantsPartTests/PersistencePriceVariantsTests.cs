@@ -1,5 +1,6 @@
 using Atata;
 using Lombiq.Tests.UI.Extensions;
+using Lombiq.Tests.UI.Services;
 using OpenQA.Selenium;
 using OrchardCore.Commerce.MoneyDataType;
 using Shouldly;
@@ -96,14 +97,48 @@ public class PersistencePriceVariantsTests : UITestBase
                 .AwaitEachAsync(pair => context.ClickAndFillInWithRetriesAsync(pair.By, (10 + pair.Index).ToTechnicalString()));
             await byInventoryEditors
                 .Select((by, index) => (By: by, Index: index))
-                .AwaitEachAsync(pair => context.ClickAndFillInWithRetriesAsync(pair.By, (10 + pair.Index).ToTechnicalString()));
+                .AwaitEachAsync(pair => context.ClickAndFillInWithRetriesAsync(pair.By, (20 + pair.Index).ToTechnicalString()));
             byCurrencyEditors.Select(context.Get).ForEach(element => element.GetValue().ShouldBe("USD"));
             context.Exists(By.XPath("//h1[contains(., 'altered')]"));
             await context.ClickReliablyOnSubmitAsync();
             context.ShouldBeSuccess();
 
             await context.GoToAbsoluteUrlAsync(viewAbsoluteUri);
-            // Validate presence of new price variants and not the old price variants.
+            ValidateLines(
+                context,
+                ".product-price-variants li",
+                "RED-SMALL - $10.00",
+                "RED-MEDIUM - $11.00",
+                "RED-LARGE - $12.00",
+                "GREEN-SMALL - $13.00",
+                "GREEN-MEDIUM - $14.00",
+                "GREEN-LARGE - $15.00",
+                "BLUE-SMALL - $16.00",
+                "BLUE-MEDIUM - $17.00",
+                "BLUE-LARGE - $18.00");
+            ValidateLines(
+                context,
+                ".field-name-inventory-part-inventory .d-block",
+                "RED-SMALL Inventory: 20",
+                "RED-MEDIUM Inventory: 21",
+                "RED-LARGE Inventory: 22",
+                "GREEN-SMALL Inventory: 23",
+                "GREEN-MEDIUM Inventory: 24",
+                "GREEN-LARGE Inventory: 25",
+                "BLUE-SMALL Inventory: 26",
+                "BLUE-MEDIUM Inventory: 27",
+                "BLUE-LARGE Inventory: 28");
+            ValidateLines(
+                context,
+                ".product-attribute-list label",
+                "Size",
+                "Small",
+                "Medium",
+                "Large",
+                "Color",
+                "Red",
+                "Green",
+                "Blue");
         });
 
     private static List<By> GetSelectors(IEnumerable<string> variants, string idPrefix) =>
@@ -119,4 +154,10 @@ public class PersistencePriceVariantsTests : UITestBase
 
     private static List<By> GetInventoryEditorSelectors(IEnumerable<string> variants) =>
         GetSelectors(variants, "InventoryPart_Inventory_TESTPRODUCTVARIANT-");
+
+    private static void ValidateLines(UITestContext context, string css, params string[] expected) =>
+        context.GetAllWhenOneExists(By.CssSelector(css))
+            .Select(element => element.GetTextTrimmed())
+            .ToArray()
+            .ShouldBe(expected);
 }
