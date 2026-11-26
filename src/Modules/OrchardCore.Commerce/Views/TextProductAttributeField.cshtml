@@ -12,7 +12,7 @@
         throw new KeyNotFoundException("Model SKU is not set for text field.");
     }
 
-    var predefinedValues = settings.PredefinedValues.OfType<string>().WhereNotNullOrWhiteSpace();
+    var predefinedValues = settings.PredefinedValues?.OfType<string>().WhereNotNullOrWhiteSpace().ToList() ?? [];
     var canBeBoughtDictionary = new Dictionary<string, bool>(Model.CanBeBought, StringComparer.OrdinalIgnoreCase);
     var availableVariants = canBeBoughtDictionary
         .Where(pair => pair.Value)
@@ -33,18 +33,15 @@
     }
 
     var defaultValue = settings.DefaultValue;
-    var defaultValueIsAvailable = false;
-    if (!string.IsNullOrEmpty(defaultValue) &&
-        availableVariants.FirstOrDefault($"{sku}-{defaultValue}".EqualsOrdinalIgnoreCase) is { Length: > 0 } actual)
+    if (string.IsNullOrWhiteSpace(defaultValue) || settings.RestrictToPredefinedValues && !predefinedValues.Contains(defaultValue))
     {
-        defaultValueIsAvailable = true;
-        defaultValue = actual;
+        defaultValue = predefinedValues.FirstOrDefault();
     }
 }
 
 <label for="@id">@attr?.Name</label>
 <input type="hidden" name="line.Attributes[@index].Key" value="@attr?.PartName.@attr?.Name" />
-@if (settings.PredefinedValues is null || !settings.PredefinedValues.Any())
+@if (predefinedValues.Count == 0)
 {
     <input id="@id"
            type="text"
@@ -63,16 +60,11 @@ else if (settings.MultipleValues)
 
             if (CanBeBought(predefinedValue))
             {
-                // If the default value is not available, set the first available option as checked.
-                var isChecked = defaultValueIsAvailable
-                    ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
-                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault());
-
                 <li>
                     <input id="optionId"
                            type="checkbox"
                            name="line.Attributes[@index].Value"
-                           checked="@isChecked"
+                           checked="@(predefinedValue.EqualsOrdinalIgnoreCase(defaultValue))"
                            class="form-check-input" />
                     <label for="@optionId" class="form-check-label">@predefinedValue</label>
                 </li>
@@ -82,15 +74,12 @@ else if (settings.MultipleValues)
 }
 else if (settings.RestrictToPredefinedValues)
 {
-    if (settings.PredefinedValues.Count() > 5) // Doing radio buttons for less than 5 options
+    if (predefinedValues.Count > 5) // Doing radio buttons for less than 5 options
     {
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
             @foreach (var predefinedValue in predefinedValues.Where(CanBeBought))
             {
-                // If the default value is not available, set the first available option as selected.
-                var isSelected = defaultValueIsAvailable
-                    ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
-                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault());
+                var isSelected = predefinedValue.EqualsOrdinalIgnoreCase(defaultValue);
 
                 <option selected="@isSelected">@predefinedValue</option>
             }
@@ -106,17 +95,12 @@ else if (settings.RestrictToPredefinedValues)
 
                 if (CanBeBought(predefinedValue))
                 {
-                    // If the default value is not available, set the first available option as checked.
-                    var isChecked = defaultValueIsAvailable
-                        ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
-                        : $"{sku}-{predefinedValue.ToUpperInvariant()}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault());
-
                     <li>
                         <input id="@optionId"
                                type="radio"
                                name="line.Attributes[@index].Value"
                                value="@predefinedValue"
-                               checked="@isChecked"
+                               checked="@(predefinedValue.EqualsOrdinalIgnoreCase(defaultValue))"
                                class="form-check-input" />
                         <label for="@optionId" class="form-check-label">@predefinedValue</label>
                     </li>
