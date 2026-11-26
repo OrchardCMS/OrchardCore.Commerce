@@ -1,12 +1,12 @@
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Fields;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using FieldSettings = OrchardCore.Commerce.Abstractions.IPredefinedValuesProductAttributeFieldSettings;
 using Service = OrchardCore.Commerce.Abstractions.IProductAttributeService;
 
@@ -41,9 +41,15 @@ public interface IProductAttributeService
     Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product);
 
     /// <summary>
-    /// returns the SKU suffix used to distinguish between product variants.
+    /// Returns the SKU suffix used to distinguish between product variants.
     /// </summary>
     Task<string> GetProductKeyAsync(ContentItem product, ICollection<IProductAttributeValue> attributes, IShoppingCartSerializer serializer);
+
+    /// <summary>
+    /// Updates <see cref="InventoryPart.Inventory"/> and <see cref="InventoryPart.InventoryKeys"/> based on the product
+    /// attributes that are also used for price variants.
+    /// </summary>
+    Task UpdateInventoryPartFromProductAttributesAsync(ContentItem product);
 }
 
 public static class ProductAttributeServiceExtensions

@@ -80,10 +80,17 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
 
     private async Task BuildViewModelAsync(PriceVariantsPartViewModel model, PriceVariantsPart part)
     {
-        model.ContentItem = part.ContentItem;
+        var product = part.ContentItem;
+        var hasInventoryPart = product.TryGet<InventoryPart>(out var inventoryPart);
+        if (hasInventoryPart)
+        {
+            await _productAttributeService.UpdateInventoryPartFromProductAttributesAsync(product);
+        }
+
+        model.ContentItem = product;
         model.PriceVariantsPart = part;
 
-        var allVariantsKeys = (await _productAttributeService.GetProductAttributesCombinationsAsync(part.ContentItem))
+        var allVariantsKeys = (await _productAttributeService.GetProductAttributesCombinationsAsync(product))
             .Select(attr => attr.HtmlClassify().ToUpperInvariant())
             .ToList();
 
@@ -96,7 +103,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         model.InitializeVariants(variants, values, currencies);
 
         // When creating a new PriceVariantsProduct item, initialize default inventories.
-        if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart) && !inventoryPart.Inventory.Any())
+        if (hasInventoryPart && !inventoryPart.Inventory.Any())
         {
             foreach (var variantKey in allVariantsKeys)
             {

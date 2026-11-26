@@ -50,11 +50,14 @@ public class PersistencePriceVariantsTests : UITestBase
     public Task AlteringPriceVariantShouldWarn() =>
         RunAsync(async context =>
         {
-            var color = "RED GREEN BLUE".Split();
-            var size = "SMALL MEDIUM LARGE".Split();
+            var color = "Red Green Blue".Split();
+            var size = "Small Medium Large".Split();
             var variants = color.CartesianProduct(size).Select(pair => $"{pair.Left}-{pair.Right}").ToList();
-            var byPriceEditors1 = GetPriceEditorSelectors(size);
-            var byPriceEditors2 = GetPriceEditorSelectors(variants);
+            var variantsUpper = variants.Select(value => value.ToUpperInvariant()).ToList();
+            var byPriceEditors1 = GetPriceEditorSelectors(size.Select(value => value.ToUpperInvariant()));
+            var byPriceEditors2 = GetPriceEditorSelectors(variantsUpper);
+            var byCurrencyEditors = GetCurrencyEditorSelectors(variantsUpper);
+            var byInventoryEditors = GetInventoryEditorSelectors(variantsUpper);
 
             await context.SignInDirectlyAsync();
 
@@ -91,19 +94,11 @@ public class PersistencePriceVariantsTests : UITestBase
             await byPriceEditors2
                 .Select((by, index) => (By: by, Index: index))
                 .AwaitEachAsync(pair => context.ClickAndFillInWithRetriesAsync(pair.By, (10 + pair.Index).ToTechnicalString()));
-            GetCurrencyEditorSelectors(variants).Select(context.Get).ForEach(element => element.GetValue().ShouldBe("USD"));
+            await byInventoryEditors
+                .Select((by, index) => (By: by, Index: index))
+                .AwaitEachAsync(pair => context.ClickAndFillInWithRetriesAsync(pair.By, (10 + pair.Index).ToTechnicalString()));
+            byCurrencyEditors.Select(context.Get).ForEach(element => element.GetValue().ShouldBe("USD"));
             context.Exists(By.XPath("//h1[contains(., 'altered')]"));
-            await context.ClickReliablyOnSubmitAsync();
-
-            context
-                .GetAllWhenOneExists(By.CssSelector(".content-part-wrapper-price-variants-part .variant-price-value"))
-                .Select((element, index) => new { Element = element, Value = 10 + index })
-                .ForEach(pair => pair.Element.FillInWith(pair.Value.ToTechnicalString()));
-            await Enumerable
-                .Range(1, 9)
-                .AwaitEachAsync(number => context.SetDropdownByValueAsync(
-                    By.XPath($"(//select[starts-with(@name, 'PriceVariantsPart.VariantsCurrencies')])[{number.ToTechnicalString()}]"),
-                    "USD"));
             await context.ClickReliablyOnSubmitAsync();
             context.ShouldBeSuccess();
 
@@ -111,13 +106,17 @@ public class PersistencePriceVariantsTests : UITestBase
             // Validate presence of new price variants and not the old price variants.
         });
 
-    private static List<By> GetPriceEditorSelectors(IEnumerable<string> variants) =>
+    private static List<By> GetSelectors(IEnumerable<string> variants, string idPrefix) =>
         variants
-            .Select(variant => By.Id($"PriceVariantsPart_VariantsValues_{variant}_"))
+            .Select(variant => By.Id($"{idPrefix}{variant}_"))
             .ToList();
 
+    private static List<By> GetPriceEditorSelectors(IEnumerable<string> variants) =>
+        GetSelectors(variants, "PriceVariantsPart_VariantsValues_");
+
     private static List<By> GetCurrencyEditorSelectors(IEnumerable<string> variants) =>
-        variants
-            .Select(variant => By.Id($"PriceVariantsPart_VariantsCurrencies_{variant}_"))
-            .ToList();
+        GetSelectors(variants, "PriceVariantsPart_VariantsCurrencies_");
+
+    private static List<By> GetInventoryEditorSelectors(IEnumerable<string> variants) =>
+        GetSelectors(variants, "InventoryPart_Inventory_TESTPRODUCTVARIANT-");
 }

@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -84,6 +85,22 @@ public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<Invent
         model.Inventory.SetItems(part.FilterOutdatedEntries());
 
         var sku = part.ContentItem?.Content.ProductPart?.Sku?.ToString() as string;
-        if (model.Inventory.Count == 0) model.Inventory.Add(sku ?? NewProductKey, 0);
+        if (model.Inventory.Count == 0) model.Inventory.Add(sku, 0);
+
+        model.Titles.SetItems(model.Inventory.Keys.ToDictionary(key => key, key =>
+            GetInventoryDisplay(model.Inventory, key, sku)));
+    }
+
+    private static string GetInventoryDisplay(
+        IDictionary<string, int> inventory,
+        string key,
+        string sku)
+    {
+        if (inventory.Count < 2 || string.IsNullOrWhiteSpace(key) || !inventory.ContainsKey(key))
+        {
+            return string.Empty;
+        }
+
+        return key.StartsWithOrdinalIgnoreCase(sku + '-') ? key[(sku.Length + 1)..] : key;
     }
 }

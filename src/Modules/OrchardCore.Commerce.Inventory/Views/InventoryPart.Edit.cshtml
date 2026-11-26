@@ -4,11 +4,13 @@
 <div class="row">
     @foreach (var inventoryKey in Model.Inventory.Keys)
     {
-        var inventoryTitle = Model.Inventory.Count > 1 ? inventoryKey.Split('-').Last() : string.Empty;
+        var inventoryTitle = Model.Titles[inventoryKey];
 
         <div class="col-md-3">
             <div class="mb-3" asp-validation-class-for="Inventory[inventoryKey]">
-                <label asp-for="Inventory[inventoryKey]">@inventoryTitle @T["Inventory"] </label>
+                <label asp-for="Inventory[inventoryKey]">
+                    @(string.IsNullOrEmpty(inventoryTitle) ? T["Inventory"] : T["{0} Inventory", inventoryTitle])
+                </label>
                 <div class="input-group">
                     <input asp-for="Inventory[inventoryKey]" class="form-control text-muted" />
                 </div>

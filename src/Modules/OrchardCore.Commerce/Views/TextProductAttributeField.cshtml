@@ -3,7 +3,7 @@
 @{
     int index = Model.Index;
     var attr = Model.AttributeDescription as ProductAttributeDescription;
-    var settings = attr?.Settings as TextProductAttributeFieldSettings;
+    var settings = attr?.Settings as TextProductAttributeFieldSettings ?? new();
     var id = $"{Model.IdPrefix}-attribute-{index}";
     var optionIndex = 0;
 
@@ -12,20 +12,25 @@
         throw new KeyNotFoundException("Model SKU is not set for text field.");
     }
 
-    var canBeBoughtDictionary = Model.CanBeBought as Dictionary<string, bool> ?? new Dictionary<string, bool>();
+    var predefinedValues = settings.PredefinedValues.OfType<string>().WhereNotNullOrWhiteSpace();
+    var canBeBoughtDictionary = new Dictionary<string, bool>(Model.CanBeBought, StringComparer.OrdinalIgnoreCase);
     var availableVariants = canBeBoughtDictionary.Where(keyValuePair => keyValuePair.Value).ToList();
 
     bool CanBeBought(string predefinedValue)
     {
-        var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
+        var fullSku = $"{sku}-{predefinedValue}";
         return canBeBoughtDictionary.TryGetValue(fullSku, out var fullSkuCanBeBought) && fullSkuCanBeBought ||
                canBeBoughtDictionary.TryGetValue(sku, out var rootSkuCanBeBought) && rootSkuCanBeBought;
     }
 
-    var defaultValueUpper = settings?.DefaultValue?.ToUpperInvariant();
-    var defaultValueIsAvailable =
-        !string.IsNullOrEmpty(defaultValueUpper) &&
-        availableVariants.Any(keyValuePair => keyValuePair.Key == sku + "-" + defaultValueUpper);
+    var defaultValue = settings.DefaultValue;
+    var defaultValueIsAvailable = false;
+    if (!string.IsNullOrEmpty(defaultValue) &&
+        availableVariants.FirstOrDefault(pair => $"{sku}-{defaultValue}".EqualsOrdinalIgnoreCase(pair.Key)) is { Key: { Length: > 0 } actual })
+    {
+        defaultValueIsAvailable = true;
+        defaultValue = actual;
+    }
 }
 
 <label for="@id">@attr?.Name</label>
@@ -35,14 +40,14 @@
     <input id="@id"
            type="text"
            name="line.Attributes[@index].Value"
-           value="@settings?.DefaultValue"
+           value="@defaultValue"
            placeholder="@settings?.Placeholder"
            class="form-control" />
 }
 else if (settings.MultipleValues)
 {
     <ul>
-        @foreach (string predefinedValue in settings.PredefinedValues)
+        @foreach (var predefinedValue in predefinedValues)
         {
             var optionId = $"{id}-{optionIndex}";
             optionIndex++;
@@ -51,8 +56,8 @@ else if (settings.MultipleValues)
             {
                 // If the default value is not available, set the first available option as checked.
                 var isChecked = defaultValueIsAvailable
-                    ? predefinedValue == settings.DefaultValue
-                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
+                    ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
+                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault().Key);
 
                 <li>
                     <input id="optionId"
@@ -71,12 +76,12 @@ else if (settings.RestrictToPredefinedValues)
     if (settings.PredefinedValues.Count() > 5) // Doing radio buttons for less than 5 options
     {
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
-            @foreach (string predefinedValue in settings.PredefinedValues.Cast<string>().Where(CanBeBought))
+            @foreach (var predefinedValue in predefinedValues.Where(CanBeBought))
             {
                 // If the default value is not available, set the first available option as selected.
                 var isSelected = defaultValueIsAvailable
-                    ? predefinedValue == settings.DefaultValue
-                : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
+                    ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
+                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault().Key);
 
                 <option selected="@isSelected">@predefinedValue</option>
             }
@@ -85,7 +90,7 @@ else if (settings.RestrictToPredefinedValues)
     else
     {
         <ul>
-            @foreach (string predefinedValue in settings.PredefinedValues)
+            @foreach (var predefinedValue in predefinedValues)
             {
                 var optionId = $"{id}-{optionIndex}";
                 optionIndex++;
@@ -94,8 +99,8 @@ else if (settings.RestrictToPredefinedValues)
                 {
                     // If the default value is not available, set the first available option as checked.
                     var isChecked = defaultValueIsAvailable
-                        ? predefinedValue == settings.DefaultValue
-                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
+                        ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
+                        : $"{sku}-{predefinedValue.ToUpperInvariant()}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault().Key);
 
                     <li>
                         <input id="@optionId"
@@ -116,13 +121,13 @@ else
     <input id="@id"
            type="text"
            name="line.Attributes[@index].Value"
-           value="@settings.DefaultValue"
+           value="@defaultValue"
            placeholder="@settings.Placeholder"
            class="form-control" />
     <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select form-control">
-        @foreach (string predefinedValue in settings.PredefinedValues)
+        @foreach (var predefinedValue in predefinedValues)
         {
-            <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
+            <option selected="@(predefinedValue.EqualsOrdinalIgnoreCase(defaultValue))">@predefinedValue</option>
         }
     </select>
     <script at="Foot" depends-on="jQuery">

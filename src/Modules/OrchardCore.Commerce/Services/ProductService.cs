@@ -55,14 +55,15 @@ public class ProductService : IProductService
 
     public async Task<string> GetOrderFullSkuAsync(ShoppingCartItem item, ProductPart productPart)
     {
-        if (productPart == null) return item.ProductSku;
+        var sku = item.ProductSku.ToUpperInvariant();
+        if (productPart == null) return sku;
 
         var attributesRestrictedToPredefinedValues = (await _productAttributeService
             .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
             .Select(attr => attr.PartName + "." + attr.Name)
             .ToHashSet();
 
-        if (attributesRestrictedToPredefinedValues.Count == 0) return item.ProductSku;
+        if (attributesRestrictedToPredefinedValues.Count == 0) return sku;
 
         if (item.HasRawAttributes())
         {
@@ -74,13 +75,7 @@ public class ProductService : IProductService
             item.Attributes,
             _shoppingCartSerializer.Value);
 
-        if (string.IsNullOrEmpty(variantKey)) return item.ProductSku;
-
-        var fullSku = item.Attributes.Any()
-            ? item.ProductSku + "-" + variantKey
-            : string.Empty;
-
-        return fullSku.ToUpperInvariant();
+        return !string.IsNullOrEmpty(variantKey) && item.Attributes.Any() ? $"{sku}-{variantKey}" : sku;
     }
 
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)

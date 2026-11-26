@@ -123,6 +123,25 @@ public class ProductAttributeService : IProductAttributeService
             .HtmlClassify();
     }
 
+    public async Task UpdateInventoryPartFromProductAttributesAsync(ContentItem product)
+    {
+        var variantKeys = (await this.GetProductAttributesCombinationsAsync(product))
+            .Select(key => $"{product.GetOrCreate<ProductPart>().Sku}-{key}".ToUpperInvariant())
+            .ToList();
+
+        product.Alter<InventoryPart>(part =>
+        {
+            part.Inventory.RemoveAll(pair => !variantKeys.Contains(pair.Key, StringComparer.OrdinalIgnoreCase));
+
+            foreach (var key in variantKeys)
+            {
+                part.Inventory[key] = part.Inventory.TryGetValue(key, out var value) ? value : 0;
+            }
+
+            part.ResetInventoryKeys();
+        });
+    }
+
     private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount, string skuBefore)
     {
         var newAvailabilities = new Dictionary<string, bool>();
