@@ -14,19 +14,28 @@
 
     var predefinedValues = settings.PredefinedValues.OfType<string>().WhereNotNullOrWhiteSpace();
     var canBeBoughtDictionary = new Dictionary<string, bool>(Model.CanBeBought, StringComparer.OrdinalIgnoreCase);
-    var availableVariants = canBeBoughtDictionary.Where(keyValuePair => keyValuePair.Value).ToList();
+    var availableVariants = canBeBoughtDictionary
+        .Where(pair => pair.Value)
+        .Select(pair => pair.Key)
+        .ToList();
 
     bool CanBeBought(string predefinedValue)
     {
         var fullSku = $"{sku}-{predefinedValue}";
-        return canBeBoughtDictionary.TryGetValue(fullSku, out var fullSkuCanBeBought) && fullSkuCanBeBought ||
-               canBeBoughtDictionary.TryGetValue(sku, out var rootSkuCanBeBought) && rootSkuCanBeBought;
+        return availableVariants.Contains(sku, StringComparer.OrdinalIgnoreCase) ||
+            availableVariants.Contains(fullSku, StringComparer.OrdinalIgnoreCase) ||
+            availableVariants.Any(key =>
+            {
+                var parts = key.Split('-');
+                return parts.FirstOrDefault() == sku &&
+                    parts.Skip(1).Contains(predefinedValue, StringComparer.OrdinalIgnoreCase);
+            });
     }
 
     var defaultValue = settings.DefaultValue;
     var defaultValueIsAvailable = false;
     if (!string.IsNullOrEmpty(defaultValue) &&
-        availableVariants.FirstOrDefault(pair => $"{sku}-{defaultValue}".EqualsOrdinalIgnoreCase(pair.Key)) is { Key: { Length: > 0 } actual })
+        availableVariants.FirstOrDefault($"{sku}-{defaultValue}".EqualsOrdinalIgnoreCase) is { Length: > 0 } actual)
     {
         defaultValueIsAvailable = true;
         defaultValue = actual;
@@ -35,13 +44,13 @@
 
 <label for="@id">@attr?.Name</label>
 <input type="hidden" name="line.Attributes[@index].Key" value="@attr?.PartName.@attr?.Name" />
-@if (settings?.PredefinedValues is null || !settings.PredefinedValues.Any())
+@if (settings.PredefinedValues is null || !settings.PredefinedValues.Any())
 {
     <input id="@id"
            type="text"
            name="line.Attributes[@index].Value"
            value="@defaultValue"
-           placeholder="@settings?.Placeholder"
+           placeholder="@settings.Placeholder"
            class="form-control" />
 }
 else if (settings.MultipleValues)
@@ -57,7 +66,7 @@ else if (settings.MultipleValues)
                 // If the default value is not available, set the first available option as checked.
                 var isChecked = defaultValueIsAvailable
                     ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
-                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault().Key);
+                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault());
 
                 <li>
                     <input id="optionId"
@@ -81,7 +90,7 @@ else if (settings.RestrictToPredefinedValues)
                 // If the default value is not available, set the first available option as selected.
                 var isSelected = defaultValueIsAvailable
                     ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
-                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault().Key);
+                    : $"{sku}-{predefinedValue}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault());
 
                 <option selected="@isSelected">@predefinedValue</option>
             }
@@ -100,7 +109,7 @@ else if (settings.RestrictToPredefinedValues)
                     // If the default value is not available, set the first available option as checked.
                     var isChecked = defaultValueIsAvailable
                         ? predefinedValue.EqualsOrdinalIgnoreCase(defaultValue)
-                        : $"{sku}-{predefinedValue.ToUpperInvariant()}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault().Key);
+                        : $"{sku}-{predefinedValue.ToUpperInvariant()}".EqualsOrdinalIgnoreCase(availableVariants.FirstOrDefault());
 
                     <li>
                         <input id="@optionId"
@@ -144,7 +153,7 @@ else
     </script>
 }
 
-@if (settings?.Hint != null)
+@if (settings.Hint != null)
 {
     <div class="hint form-text text-muted">@settings.Hint</div>
 }
