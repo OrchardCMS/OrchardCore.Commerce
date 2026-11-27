@@ -3,7 +3,7 @@
 @{
     int index = Model.Index;
     var attr = Model.AttributeDescription as ProductAttributeDescription;
-    var settings = attr?.Settings as TextProductAttributeFieldSettings;
+    var settings = attr?.Settings as TextProductAttributeFieldSettings ?? new();
     var id = $"{Model.IdPrefix}-attribute-{index}";
     var optionIndex = 0;
 
@@ -12,53 +12,59 @@
         throw new KeyNotFoundException("Model SKU is not set for text field.");
     }
 
-    var canBeBoughtDictionary = Model.CanBeBought as Dictionary<string, bool> ?? new Dictionary<string, bool>();
-    var availableVariants = canBeBoughtDictionary.Where(keyValuePair => keyValuePair.Value).ToList();
+    var predefinedValues = settings.PredefinedValues?.OfType<string>().WhereNotNullOrWhiteSpace().ToList() ?? [];
+    var canBeBoughtDictionary = new Dictionary<string, bool>(Model.CanBeBought, StringComparer.OrdinalIgnoreCase);
+    var availableVariants = canBeBoughtDictionary
+        .Where(pair => pair.Value)
+        .Select(pair => pair.Key)
+        .ToList();
 
     bool CanBeBought(string predefinedValue)
     {
-        var fullSku = sku + "-" + predefinedValue.ToUpperInvariant();
-        return canBeBoughtDictionary.TryGetValue(fullSku, out var fullSkuCanBeBought) && fullSkuCanBeBought ||
-               canBeBoughtDictionary.TryGetValue(sku, out var rootSkuCanBeBought) && rootSkuCanBeBought;
+        var fullSku = $"{sku}-{predefinedValue}";
+        return availableVariants.Contains(sku, StringComparer.OrdinalIgnoreCase) ||
+            availableVariants.Contains(fullSku, StringComparer.OrdinalIgnoreCase) ||
+            availableVariants.Any(key =>
+            {
+                var parts = key.Split('-');
+                return parts.FirstOrDefault() == sku &&
+                    parts.Skip(1).Contains(predefinedValue, StringComparer.OrdinalIgnoreCase);
+            });
     }
 
-    var defaultValueUpper = settings?.DefaultValue?.ToUpperInvariant();
-    var defaultValueIsAvailable =
-        !string.IsNullOrEmpty(defaultValueUpper) &&
-        availableVariants.Any(keyValuePair => keyValuePair.Key == sku + "-" + defaultValueUpper);
+    var defaultValue = settings.DefaultValue;
+    if (string.IsNullOrWhiteSpace(defaultValue) || settings.RestrictToPredefinedValues && !predefinedValues.Contains(defaultValue))
+    {
+        defaultValue = predefinedValues.FirstOrDefault();
+    }
 }
 
 <label for="@id">@attr?.Name</label>
 <input type="hidden" name="line.Attributes[@index].Key" value="@attr?.PartName.@attr?.Name" />
-@if (settings?.PredefinedValues is null || !settings.PredefinedValues.Any())
+@if (predefinedValues.Count == 0)
 {
     <input id="@id"
            type="text"
            name="line.Attributes[@index].Value"
-           value="@settings?.DefaultValue"
-           placeholder="@settings?.Placeholder"
+           value="@defaultValue"
+           placeholder="@settings.Placeholder"
            class="form-control" />
 }
 else if (settings.MultipleValues)
 {
     <ul>
-        @foreach (string predefinedValue in settings.PredefinedValues)
+        @foreach (var predefinedValue in predefinedValues)
         {
             var optionId = $"{id}-{optionIndex}";
             optionIndex++;
 
             if (CanBeBought(predefinedValue))
             {
-                // If the default value is not available, set the first available option as checked.
-                var isChecked = defaultValueIsAvailable
-                    ? predefinedValue == settings.DefaultValue
-                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
-
                 <li>
                     <input id="optionId"
                            type="checkbox"
                            name="line.Attributes[@index].Value"
-                           checked="@isChecked"
+                           checked="@(predefinedValue.EqualsOrdinalIgnoreCase(defaultValue))"
                            class="form-check-input" />
                     <label for="@optionId" class="form-check-label">@predefinedValue</label>
                 </li>
@@ -68,15 +74,12 @@ else if (settings.MultipleValues)
 }
 else if (settings.RestrictToPredefinedValues)
 {
-    if (settings.PredefinedValues.Count() > 5) // Doing radio buttons for less than 5 options
+    if (predefinedValues.Count > 5) // Doing radio buttons for less than 5 options
     {
         <select id="@id" name="line.Attributes[@index].Value" class="form-control">
-            @foreach (string predefinedValue in settings.PredefinedValues.Cast<string>().Where(CanBeBought))
+            @foreach (var predefinedValue in predefinedValues.Where(CanBeBought))
             {
-                // If the default value is not available, set the first available option as selected.
-                var isSelected = defaultValueIsAvailable
-                    ? predefinedValue == settings.DefaultValue
-                : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
+                var isSelected = predefinedValue.EqualsOrdinalIgnoreCase(defaultValue);
 
                 <option selected="@isSelected">@predefinedValue</option>
             }
@@ -85,24 +88,19 @@ else if (settings.RestrictToPredefinedValues)
     else
     {
         <ul>
-            @foreach (string predefinedValue in settings.PredefinedValues)
+            @foreach (var predefinedValue in predefinedValues)
             {
                 var optionId = $"{id}-{optionIndex}";
                 optionIndex++;
 
                 if (CanBeBought(predefinedValue))
                 {
-                    // If the default value is not available, set the first available option as checked.
-                    var isChecked = defaultValueIsAvailable
-                        ? predefinedValue == settings.DefaultValue
-                    : sku + "-" + predefinedValue.ToUpperInvariant() == availableVariants.FirstOrDefault().Key;
-
                     <li>
                         <input id="@optionId"
                                type="radio"
                                name="line.Attributes[@index].Value"
                                value="@predefinedValue"
-                               checked="@isChecked"
+                               checked="@(predefinedValue.EqualsOrdinalIgnoreCase(defaultValue))"
                                class="form-check-input" />
                         <label for="@optionId" class="form-check-label">@predefinedValue</label>
                     </li>
@@ -116,13 +114,13 @@ else
     <input id="@id"
            type="text"
            name="line.Attributes[@index].Value"
-           value="@settings.DefaultValue"
+           value="@defaultValue"
            placeholder="@settings.Placeholder"
            class="form-control" />
     <select data-related="line.Attributes[@index].Value" class="product-attribute-combo-select form-control">
-        @foreach (string predefinedValue in settings.PredefinedValues)
+        @foreach (var predefinedValue in predefinedValues)
         {
-            <option selected="@(predefinedValue == settings.DefaultValue)">@predefinedValue</option>
+            <option selected="@(predefinedValue.EqualsOrdinalIgnoreCase(defaultValue))">@predefinedValue</option>
         }
     </select>
     <script at="Foot" depends-on="jQuery">
@@ -139,7 +137,7 @@ else
     </script>
 }
 
-@if (settings?.Hint != null)
+@if (settings.Hint != null)
 {
     <div class="hint form-text text-muted">@settings.Hint</div>
 }

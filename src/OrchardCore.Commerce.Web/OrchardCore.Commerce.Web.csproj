@@ -17,6 +17,7 @@
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="GraphQL.MicrosoftDI" />
     <PackageReference Include="GraphQL.SystemTextJson" />
+    <PackageReference Include="Lombiq.Tests.UI.AdminTheme" />
     <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
     <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
     <PackageReference Include="Microsoft.Identity.Web"/>

@@ -1,6 +1,8 @@
+using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Abstractions.Abstractions;
 using OrchardCore.Commerce.Abstractions.Models;
 using OrchardCore.Commerce.ProductAttributeValues;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -15,6 +17,9 @@ public class ShoppingCartItemAttributeTests
     ];
 
     [Fact]
+    [Obsolete(
+        $"{nameof(ShoppingCartItem.GetVariantKeyFromAttributes)} is superseded by " +
+        $"{nameof(IProductAttributeService.GetProductKeyAsync)}, which is validated by the price variant UI tests.")]
     public void GenerateVariantKeyFromShoppingCartItemAttributes()
     {
         var item = new ShoppingCartItem(5, "foo", _attrSet1Parsed);

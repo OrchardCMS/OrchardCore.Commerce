@@ -27,6 +27,7 @@ using OrchardCore.Commerce.Events;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Handlers;
 using OrchardCore.Commerce.Indexes;
+using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Liquid;
 using OrchardCore.Commerce.Middlewares;
 using OrchardCore.Commerce.Migrations;
@@ -106,7 +107,6 @@ public class Startup : StartupBase
         services.AddScoped<IProductAttributeProvider, BooleanProductAttributeProvider>();
         services.AddScoped<IProductAttributeProvider, NumericProductAttributeProvider>();
         services.AddScoped<IProductAttributeService, ProductAttributeService>();
-        services.AddScoped<IPredefinedValuesProductAttributeService, PredefinedValuesProductAttributeService>();
 
         // Price
         services.AddScoped<IDataMigration, PriceMigrations>();
@@ -401,6 +401,7 @@ public class InventoryStartup : StartupBase
         services.AddScoped<IProductInventoryService, ProductInventoryService>();
         services.AddScoped<ICheckoutEvents, InventoryCheckoutEvents>();
         services.AddScoped<IShoppingCartEvents, InventoryShoppingCartEvents>();
+        services.AddContentPart<InventoryPart>().AddHandler<InventoryPartHandler>();
     }
 }
 

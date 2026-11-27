@@ -1,4 +1,5 @@
 using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Media.Fields;
@@ -13,7 +14,7 @@ namespace OrchardCore.Commerce.Models;
 public class ProductPart : ContentPart, ISkuHolderContent
 {
     /// <inheritdoc cref="ISkuHolder.Sku"/>
-    public string Sku { get; set; }
+    public string Sku { get; set; } = ModelConstants.NewProductKey;
 
     /// <summary>
     /// Gets whether the product can currently be bought based on current inventory settings. If there is no

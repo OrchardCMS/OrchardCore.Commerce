@@ -7,13 +7,16 @@
     {
         <div class="col-md-3">
             <div class="mb-3" asp-validation-class-for="VariantsValues[variantKey]">
-                <label asp-for="VariantsValues[variantKey]">@variantKey @T["Price"] </label>
+                <label asp-for="VariantsValues[variantKey]">@T["{0} Price", variantKey]</label>
                 <div class="input-group">
-                    <input asp-for="VariantsValues[variantKey]" class="form-control text-muted variant-price-value" />
+                    <input asp-for="VariantsValues[variantKey]"
+                           class="form-control text-muted variant-price-value"
+                           required />
                     <div class="input-group-append">
                         <select asp-for="VariantsCurrencies[variantKey]"
                                 class="form-select"
-                                asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"></select>
+                                asp-items="@(new SelectList(Model.Currencies, "CurrencyIsoCode", "CurrencyIsoCode"))"
+                                required></select>
                     </div>
                 </div>
                 <span asp-validation-for="VariantsValues[variantKey]"></span>

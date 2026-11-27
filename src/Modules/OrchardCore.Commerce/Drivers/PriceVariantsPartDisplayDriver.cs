@@ -1,3 +1,4 @@
+using Lombiq.HelpfulLibraries.OrchardCore.Contents;
 using Microsoft.Extensions.Options;
 using OrchardCore.Commerce.Abstractions;
 using OrchardCore.Commerce.Inventory.Models;
@@ -20,29 +21,36 @@ namespace OrchardCore.Commerce.Drivers;
 public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVariantsPart>
 {
     private readonly IMoneyService _moneyService;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesProductAttributeService;
+    private readonly IProductAttributeService _productAttributeService;
     private readonly IOptions<CurrencySettings> _currencyOptions;
 
     public PriceVariantsPartDisplayDriver(
         IMoneyService moneyService,
-        IPredefinedValuesProductAttributeService predefinedValuesProductAttributeService,
+        IProductAttributeService productAttributeService,
         IOptions<CurrencySettings> currencyOptions)
     {
         _moneyService = moneyService;
-        _predefinedValuesProductAttributeService = predefinedValuesProductAttributeService;
+        _productAttributeService = productAttributeService;
         _currencyOptions = currencyOptions;
     }
 
     public override IDisplayResult Display(PriceVariantsPart part, BuildPartDisplayContext context) =>
-        Initialize<PriceVariantsPartViewModel>(GetDisplayShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part))
-            .Location("Detail", "Content:25")
-            .Location("Summary", "Meta:10");
+        Initialize<PriceVariantsPartViewModel>(
+                GetDisplayShapeType(context),
+                async viewModel => await BuildViewModelAsync(viewModel, part, cleanForDisplay: true))
+            .Location(CommonContentDisplayTypes.Detail, "Content:25")
+            .Location(CommonContentDisplayTypes.Summary, "Meta:10");
 
     public override IDisplayResult Edit(PriceVariantsPart part, BuildPartEditorContext context) =>
         Initialize<PriceVariantsPartViewModel>(GetEditorShapeType(context), async viewModel =>
         {
             await BuildViewModelAsync(viewModel, part);
             viewModel.Currencies = _moneyService.Currencies;
+
+            if (part.ContentItem.Has<InventoryPart>())
+            {
+                await _productAttributeService.UpdateInventoryPartFromProductAttributesAsync(part.ContentItem);
+            }
         });
 
     public override async Task<IDisplayResult> UpdateAsync(
@@ -60,7 +68,7 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         part.Variants.RemoveAll();
         viewModel.Variants.RemoveAll();
 
-        foreach ((var key, var value) in viewModel.VariantsValues)
+        foreach (var (key, value) in viewModel.VariantsValues)
         {
             if (value.HasValue &&
                 viewModel.VariantsCurrencies?.ContainsKey(key) == true &&
@@ -73,39 +81,35 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         return await EditAsync(part, context);
     }
 
-    private async Task BuildViewModelAsync(PriceVariantsPartViewModel model, PriceVariantsPart part)
+    private async Task BuildViewModelAsync(
+        PriceVariantsPartViewModel model,
+        PriceVariantsPart part,
+        bool cleanForDisplay = false)
     {
-        model.ContentItem = part.ContentItem;
+        var product = part.ContentItem;
+        model.ContentItem = product;
         model.PriceVariantsPart = part;
 
-        var allVariantsKeys = (await _predefinedValuesProductAttributeService.GetProductAttributesCombinationsAsync(part.ContentItem))
+        var allVariantsKeys = (await _productAttributeService.GetProductAttributesCombinationsAsync(product))
             .Select(attr => attr.HtmlClassify().ToUpperInvariant())
             .ToList();
 
-        var variants = part.Variants ?? new Dictionary<string, Amount>();
-
-        var values = allVariantsKeys.ToDictionary(
-            key => key,
-            key => part.Variants.TryGetValue(key, out var amount)
-                ? amount.Value
-                : (decimal?)null);
-
+        var variants = cleanForDisplay ? CleanVariantDictionary(part.Variants, allVariantsKeys) : part.Variants;
+        var values = allVariantsKeys.ToDictionary(key => key, key => part[key]?.Value);
         var currencies = allVariantsKeys.ToDictionary(
             key => key,
-            key => part.Variants.TryGetValue(key, out var amount)
-                ? amount.Currency.CurrencyIsoCode
-                : _currencyOptions.Value.CurrentDisplayCurrency);
+            key => part[key]?.Currency.CurrencyIsoCode ??
+                _currencyOptions.Value.CurrentDisplayCurrency ??
+                _moneyService.DefaultCurrency.CurrencyIsoCode);
 
         model.InitializeVariants(variants, values, currencies);
-
-        // When creating a new PriceVariantsProduct item, initialize default inventories.
-        if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart) && !inventoryPart.Inventory.Any())
-        {
-            foreach (var variantKey in allVariantsKeys)
-            {
-                inventoryPart.Inventory.Add(variantKey, 0);
-                inventoryPart.InventoryKeys.Add(variantKey);
-            }
-        }
     }
+
+    private static Dictionary<string, T> CleanVariantDictionary<T>(
+        IDictionary<string, T> variants,
+        List<string> allVariantsKeys) =>
+        variants
+            .Where(pair => allVariantsKeys.Contains(pair.Key))
+            .OrderBy(pair => allVariantsKeys.IndexOf(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
 }

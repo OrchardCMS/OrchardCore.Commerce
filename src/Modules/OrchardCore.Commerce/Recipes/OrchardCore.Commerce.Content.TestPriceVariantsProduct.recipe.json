@@ -36,6 +36,11 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
+              "PartName": "TestPriceVariantsProduct",
+              "Name": "TestPriceVariantsProduct",
+              "Settings": {}
+            },
+            {
               "PartName": "PriceVariantsPart",
               "Name": "PriceVariantsPart",
               "Settings": {}
@@ -49,6 +54,30 @@
               "PartName": "InventoryPart",
               "Name": "InventoryPart",
               "Settings": {}
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "TestPriceVariantsProduct",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextProductAttributeField",
+              "Name": "Test",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Test"
+                },
+                "TextProductAttributeFieldSettings": {
+                  "PredefinedValues": [
+                    "Primary"
+                  ],
+                  "RestrictToPredefinedValues": true,
+                  "DefaultValue": "Primary"
+                }
+              }
             }
           ]
         }

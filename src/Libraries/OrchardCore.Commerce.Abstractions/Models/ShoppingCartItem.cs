@@ -1,5 +1,5 @@
 using OrchardCore.Commerce.Abstractions.Abstractions;
-using OrchardCore.Commerce.Abstractions.ProductAttributeValues;
+using OrchardCore.Commerce.Abstractions.Extensions;
 using OrchardCore.Commerce.Abstractions.Serialization;
 using OrchardCore.Mvc.Utilities;
 using System;
@@ -55,6 +55,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
             : new List<PrioritizedPrice>(prices).AsReadOnly();
     }
 
+    [Obsolete("Use IPredefinedValuesProductAttributeService.GetProductKey() in OrchardCore.Commerce instead.")]
     public string GetVariantKeyFromAttributes(ISet<string> predefinedAttributeValues)
     {
         var predefinedAttributes = Attributes
@@ -121,7 +122,7 @@ public sealed class ShoppingCartItem : IEquatable<ShoppingCartItem>
     public bool IsSameProductAs(ShoppingCartItem other) =>
         other != null && ProductSku == other.ProductSku && Attributes.SetEquals(other.Attributes);
 
-    public bool HasRawAttributes() => Attributes.Any(attribute => attribute is RawProductAttributeValue);
+    public bool HasRawAttributes() => Attributes.HasRawAttributes();
 
     public override int GetHashCode() => (ProductSku, Quantity, Attributes).GetHashCode();
 }

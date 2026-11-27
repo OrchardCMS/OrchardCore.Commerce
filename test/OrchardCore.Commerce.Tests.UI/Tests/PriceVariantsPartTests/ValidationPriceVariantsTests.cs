@@ -1,3 +1,4 @@
+using Atata;
 using Lombiq.Tests.UI.Extensions;
 using OpenQA.Selenium;
 using Xunit;
@@ -17,11 +18,13 @@ public class ValidationPriceVariantsTests : UITestBase
             async context =>
         {
             await context.SignInDirectlyAsync();
-            await context.CreateNewContentItemAsync("PriceVariantsProduct");
+            await context.CreateNewContentItemAsync(Constants.ContentTypes.PriceVariantsProduct);
 
             const string skuAlreadyExists = "TESTPRODUCTVARIANT";
 
             await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), skuAlreadyExists);
+            context.GetAll(By.CssSelector("input[name ^= 'PriceVariantsPart.VariantsValues']"))
+                .ForEach(element => element.FillInWith("1"));
 
             await context.ClickReliablyOnSubmitAsync();
 

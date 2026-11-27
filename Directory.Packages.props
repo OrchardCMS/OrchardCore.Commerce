@@ -19,6 +19,7 @@
     <PackageVersion Include="Lombiq.HelpfulLibraries.Refit" Version="13.1.0" />
     <PackageVersion Include="Lombiq.Tests" Version="6.0.1" />
     <PackageVersion Include="Lombiq.Tests.UI" Version="16.0.1-alpha.3.osoe-1326" />
+    <PackageVersion Include="Lombiq.Tests.UI.AdminTheme" Version="16.0.1-alpha.3.osoe-1326" />
     <PackageVersion Include="Lombiq.Tests.UI.AppExtensions" Version="16.0.1-alpha.3.osoe-1326" />
     <PackageVersion Include="Lombiq.Tests.UI.Shortcuts" Version="16.0.1-alpha.3.osoe-1326" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.18.0" />

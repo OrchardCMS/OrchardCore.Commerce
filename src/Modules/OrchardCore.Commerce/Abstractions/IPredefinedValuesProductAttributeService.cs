@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Models;
 using OrchardCore.ContentManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,8 +8,9 @@ using System.Threading.Tasks;
 namespace OrchardCore.Commerce.Abstractions;
 
 /// <summary>
-/// Service for working with <see cref="IPredefinedValuesProductAttributeFieldSettings"/>.
+/// Service for working with <see cref="OrchardCore.Commerce.Abstractions.IPredefinedValuesProductAttributeFieldSettings"/>.
 /// </summary>
+[Obsolete($"This will be merged into {nameof(IProductAttributeService)}.")]
 public interface IPredefinedValuesProductAttributeService
 {
     /// <summary>
@@ -18,16 +20,17 @@ public interface IPredefinedValuesProductAttributeService
     Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product);
 }
 
+[Obsolete($"Use the extension methods for {nameof(IProductAttributeService)} instead.")]
 public static class PredefinedValuesProductAttributeServiceExtensions
 {
     public static async Task<IEnumerable<IEnumerable<object>>> GetProductAttributesPredefinedValuesAsync(
         this IPredefinedValuesProductAttributeService service,
         ContentItem product) =>
         (await service.GetProductAttributesRestrictedToPredefinedValuesAsync(product))
-            .Where(description => description.Settings is IPredefinedValuesProductAttributeFieldSettings)
-            .Select(description =>
-                ((IPredefinedValuesProductAttributeFieldSettings)description.Settings).PredefinedValues.ToList())
-            .ToList();
+        .Where(description => description.Settings is IPredefinedValuesProductAttributeFieldSettings)
+        .Select(description =>
+            ((IPredefinedValuesProductAttributeFieldSettings)description.Settings).PredefinedValues.ToList())
+        .ToList();
 
     public static async Task<IEnumerable<string>> GetProductAttributesCombinationsAsync(
         this IPredefinedValuesProductAttributeService service,

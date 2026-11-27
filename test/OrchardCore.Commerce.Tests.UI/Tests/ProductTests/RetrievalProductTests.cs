@@ -63,7 +63,7 @@ public class RetrievalProductTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Remove')]"));
 
                 // Add new boolean attribute and verify its properties show up correctly.
-                await context.GoToAddFieldToContentTypeAsync("PriceVariantsProduct");
+                await context.GoToAddFieldToContentTypeAsync(Constants.ContentTypes.PriceVariantsProduct);
                 await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "TestBooleanAttribute");
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Boolean Product Attribute Field')]"));
                 await context.ClickReliablyOnSubmitAsync();
@@ -87,7 +87,7 @@ public class RetrievalProductTests : UITestBase
                 await context.ClickReliablyOnAsync(By.XPath("//button[contains(., 'Remove')]"));
 
                 // Add new numeric attribute and verify its properties show up correctly.
-                await context.GoToAddFieldToContentTypeAsync("PriceVariantsProduct");
+                await context.GoToAddFieldToContentTypeAsync(Constants.ContentTypes.PriceVariantsProduct);
                 await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "TestNumericAttribute");
                 await context.ClickReliablyOnAsync(By.XPath("//label[contains(., 'Numeric Product Attribute Field')]"));
                 await context.ClickReliablyOnSubmitAsync();

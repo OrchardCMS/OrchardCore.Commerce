@@ -1,5 +1,6 @@
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.ViewModels;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -40,11 +41,21 @@ public class NumericProductAttributeFieldSettingsDriver
 public class TextProductAttributeFieldSettingsDriver
     : ProductAttributeFieldSettingsDriver<TextProductAttributeField, TextProductAttributeFieldSettings>
 {
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    public TextProductAttributeFieldSettingsDriver(IContentDefinitionManager contentDefinitionManager) =>
+        _contentDefinitionManager = contentDefinitionManager;
+
     public override IDisplayResult Edit(ContentPartFieldDefinition model, BuildEditorContext context) =>
         Initialize<TextProductAttributeSettingsViewModel>(
             nameof(TextProductAttributeFieldSettings) + "_Edit",
-            viewModel =>
+            async viewModel =>
             {
+                // If the ContentTypePartDefinition is missing, create it assuming that the field belongs to the content type part.
+                model.ContentTypePartDefinition ??= (await _contentDefinitionManager.GetTypeDefinitionAsync(model.PartDefinition.Name))?
+                    .Parts
+                    .First(part => part.PartDefinition.Name == model.PartDefinition.Name);
+                viewModel.Definition = model;
+
                 var settings = model.GetSettings<TextProductAttributeFieldSettings>();
                 viewModel.Hint = settings.Hint;
                 viewModel.DefaultValue = settings.DefaultValue;

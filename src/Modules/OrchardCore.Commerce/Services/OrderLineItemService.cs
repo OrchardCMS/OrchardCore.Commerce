@@ -30,7 +30,6 @@ public class OrderLineItemService : IOrderLineItemService
     private readonly IPromotionService _promotionService;
     private readonly ISession _session;
     private readonly IProductAttributeService _productAttributeService;
-    private readonly IPredefinedValuesProductAttributeService _predefinedAttributeService;
     private readonly IOrchardHelper _orchardHelper;
 
 #pragma warning disable S107 // Methods should not have too many parameters
@@ -42,7 +41,6 @@ public class OrderLineItemService : IOrderLineItemService
         IPromotionService promotionService,
         ISession session,
         IProductAttributeService productAttributeService,
-        IPredefinedValuesProductAttributeService predefinedAttributeService,
         IOrchardHelper orchardHelper)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
@@ -53,7 +51,6 @@ public class OrderLineItemService : IOrderLineItemService
         _promotionService = promotionService;
         _session = session;
         _productAttributeService = productAttributeService;
-        _predefinedAttributeService = predefinedAttributeService;
         _orchardHelper = orchardHelper;
     }
 
@@ -165,7 +162,7 @@ public class OrderLineItemService : IOrderLineItemService
                         attribute => attribute.Settings as NumericProductAttributeFieldSettings));
             }
 
-            var textAttributes = await _predefinedAttributeService.GetProductAttributesRestrictedToPredefinedValuesAsync(product);
+            var textAttributes = await _productAttributeService.GetProductAttributesRestrictedToPredefinedValuesAsync(product);
             foreach (var attribute in textAttributes)
             {
                 var settings = (TextProductAttributeFieldSettings)attribute.Settings;

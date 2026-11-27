@@ -19,20 +19,20 @@ public class ProductService : IProductService
     private readonly ISession _session;
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
+    private readonly IProductAttributeService _productAttributeService;
     private readonly Lazy<IShoppingCartSerializer> _shoppingCartSerializer;
 
     public ProductService(
         ISession session,
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IPredefinedValuesProductAttributeService predefinedValuesService,
+        IProductAttributeService productAttributeService,
         Lazy<IShoppingCartSerializer> shoppingCartSerializer)
     {
         _session = session;
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _predefinedValuesService = predefinedValuesService;
+        _productAttributeService = productAttributeService;
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
@@ -55,26 +55,27 @@ public class ProductService : IProductService
 
     public async Task<string> GetOrderFullSkuAsync(ShoppingCartItem item, ProductPart productPart)
     {
-        if (productPart == null) return item.ProductSku;
+        var sku = item.ProductSku.ToUpperInvariant();
+        if (productPart == null) return sku;
 
-        var attributesRestrictedToPredefinedValues = (await _predefinedValuesService
+        var attributesRestrictedToPredefinedValues = (await _productAttributeService
             .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
             .Select(attr => attr.PartName + "." + attr.Name)
             .ToHashSet();
 
-        if (attributesRestrictedToPredefinedValues.Count == 0) return item.ProductSku;
+        if (attributesRestrictedToPredefinedValues.Count == 0) return sku;
 
         if (item.HasRawAttributes())
         {
             item.Attributes.SetItems(await _shoppingCartSerializer.Value.PostProcessAttributesAsync(item.Attributes, productPart));
         }
 
-        var variantKey = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
-        var fullSku = item.Attributes.Any()
-            ? item.ProductSku + "-" + variantKey
-            : string.Empty;
+        var variantKey = await _productAttributeService.GetProductKeyAsync(
+            productPart.ContentItem,
+            item.Attributes,
+            _shoppingCartSerializer.Value);
 
-        return fullSku.ToUpperInvariant();
+        return !string.IsNullOrEmpty(variantKey) && item.Attributes.Any() ? $"{sku}-{variantKey}" : sku;
     }
 
     public async Task<IEnumerable<ProductPart>> GetProductsByContentItemVersionsAsync(IEnumerable<string> contentItemVersions)

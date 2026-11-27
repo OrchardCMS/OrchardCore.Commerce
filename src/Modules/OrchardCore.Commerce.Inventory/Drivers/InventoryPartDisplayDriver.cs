@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Inventory.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +16,7 @@ namespace OrchardCore.Commerce.Inventory.Drivers;
 
 public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
 {
-    public const string NewProductKey = "DEFAULT";
+    public const string NewProductKey = ModelConstants.NewProductKey;
 
     private readonly IHttpContextAccessor _hca;
 
@@ -59,17 +61,13 @@ public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<Invent
         var skuChanged = !string.IsNullOrEmpty(currentSku) && (context.IsNew || currentSku != skuBefore);
         if (skuChanged && part.Inventory.Count == 1 && !part.Inventory.Keys.Single().Contains('-'))
         {
-            part.Inventory.SetItems([new(currentSku, part.Inventory.Values.Single())]);
-            part.InventoryKeys.SetItems([currentSku]);
+            part.SetInventory([currentSku], [part.Inventory.Values.Single()]);
         }
         else if (skuChanged)
         {
-            var newInventory = part.Inventory.ToDictionary(
-                item => $"{currentSku}-{item.Key.Split('-', 2)[^1]}",
-                item => item.Value);
-
-            part.Inventory.SetItems(newInventory);
-            part.InventoryKeys.SetItems(newInventory.Keys);
+            part.SetInventory(
+                [.. part.InventoryKeys.Select(key => InventoryPart.GetUpdatedInventoryKey(key, skuBefore, currentSku))],
+                [.. part.InventoryKeys.Select(key => part.Inventory.GetMaybe(key))]);
         }
 
         part.ProductSku = currentSku;
@@ -83,7 +81,23 @@ public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<Invent
     {
         model.Inventory.SetItems(part.FilterOutdatedEntries());
 
-        var sku = part.ContentItem?.Content.ProductPart?.Sku?.ToString() as string;
-        if (model.Inventory.Count == 0) model.Inventory.Add(sku ?? NewProductKey, 0);
+        var sku = part.ContentItem?.Content.ProductPart?.Sku?.ToString() as string ?? NewProductKey;
+        if (model.Inventory.Count == 0) model.Inventory.Add(sku, 0);
+
+        model.Titles.SetItems(model.Inventory.Keys.ToDictionary(key => key, key =>
+            GetInventoryDisplay(model.Inventory, key, sku)));
+    }
+
+    private static string GetInventoryDisplay(
+        IDictionary<string, int> inventory,
+        string key,
+        string sku)
+    {
+        if (inventory.Count < 2 || string.IsNullOrWhiteSpace(key) || !inventory.ContainsKey(key))
+        {
+            return string.Empty;
+        }
+
+        return key.StartsWithOrdinalIgnoreCase(sku + '-') ? key[(sku.Length + 1)..] : key;
     }
 }

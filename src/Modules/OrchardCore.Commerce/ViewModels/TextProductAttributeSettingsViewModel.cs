@@ -1,7 +1,13 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.ContentManagement.Metadata.Models;
+
 namespace OrchardCore.Commerce.ViewModels;
 
 public class TextProductAttributeSettingsViewModel
 {
+    [BindNever]
+    public ContentPartFieldDefinition Definition { get; set; }
+
     public string Hint { get; set; }
     public string DefaultValue { get; set; }
     public bool Required { get; set; }

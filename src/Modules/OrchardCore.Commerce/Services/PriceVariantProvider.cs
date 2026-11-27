@@ -15,18 +15,18 @@ namespace OrchardCore.Commerce.Services;
 public class PriceVariantProvider : IPriceProvider
 {
     private readonly IProductService _productService;
-    private readonly IPredefinedValuesProductAttributeService _predefinedValuesService;
+    private readonly IProductAttributeService _productAttributeService;
     private readonly IShoppingCartSerializer _shoppingCartSerializer;
 
     public int Order => 1;
 
     public PriceVariantProvider(
         IProductService productService,
-        IPredefinedValuesProductAttributeService predefinedValuesService,
+        IProductAttributeService productAttributeService,
         IShoppingCartSerializer shoppingCartSerializer)
     {
         _productService = productService;
-        _predefinedValuesService = predefinedValuesService;
+        _productAttributeService = productAttributeService;
         _shoppingCartSerializer = shoppingCartSerializer;
     }
 
@@ -57,23 +57,15 @@ public class PriceVariantProvider : IPriceProvider
     {
         var priceVariantsPart = productPart.ContentItem.GetMaybe<PriceVariantsPart>();
 
-        if (priceVariantsPart is { Variants: { } variants } && variants.Any())
-        {
-            var attributesRestrictedToPredefinedValues = (await _predefinedValuesService
-                .GetProductAttributesRestrictedToPredefinedValuesAsync(productPart.ContentItem))
-                .Select(attr => attr.PartName + "." + attr.Name)
-                .ToHashSet();
+        if (priceVariantsPart is not { Variants: { } variants } || !variants.Any()) return null;
 
-            if (item.HasRawAttributes())
-            {
-                item.Attributes.SetItems(await _shoppingCartSerializer.PostProcessAttributesAsync(item.Attributes, productPart));
-            }
+        var key = await _productAttributeService.GetProductKeyAsync(
+            productPart.ContentItem,
+            item.Attributes,
+            _shoppingCartSerializer);
 
-            var key = item.GetVariantKeyFromAttributes(attributesRestrictedToPredefinedValues);
-
-            if (string.IsNullOrEmpty(key)) return item.WithPrice(new PrioritizedPrice(1, variants.First().Value));
-            if (variants.TryGetValue(key, out var variant)) return item.WithPrice(new PrioritizedPrice(1, variant));
-        }
+        if (string.IsNullOrEmpty(key)) return item.WithPrice(new PrioritizedPrice(1, variants.First().Value));
+        if (variants.TryGetValue(key, out var variant)) return item.WithPrice(new PrioritizedPrice(1, variant));
 
         return null;
     }

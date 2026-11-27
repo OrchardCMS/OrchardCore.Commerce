@@ -1,4 +1,7 @@
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Abstractions;
+using OrchardCore.Commerce.Abstractions.Extensions;
+using OrchardCore.Commerce.Extensions;
 using OrchardCore.Commerce.Fields;
 using OrchardCore.Commerce.Inventory;
 using OrchardCore.Commerce.Inventory.Models;
@@ -7,6 +10,7 @@ using OrchardCore.Commerce.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Mvc.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,24 +28,16 @@ public class ProductAttributeService : IProductAttributeService
 
     public async Task<IEnumerable<ProductAttributeDescription>> GetProductAttributeFieldsAsync(ContentItem product)
     {
-        var productAttributeTypes = GetProductAttributeFieldTypes(product);
+        var productAttributeTypes = product.GetFieldTypes<ProductAttributeField>();
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(product.ContentType);
 
-        ProductAttributeField GetContentField(
-            ContentTypePartDefinition typePartDefinition,
-            ContentPartFieldDefinition partFieldDefinition) =>
-            product
-                .Get<ContentPart>(typePartDefinition.Name)
-                ?.Get(
-                    productAttributeTypes[partFieldDefinition.FieldDefinition.Name],
-                    partFieldDefinition.Name) as ProductAttributeField;
-
-        return (await _contentDefinitionManager.GetTypeDefinitionAsync(product.ContentType))
+        return contentTypeDefinition
             .Parts
             .SelectMany(typePartDefinition => typePartDefinition.PartDefinition.Fields
                 .Where(partFieldDefinition => productAttributeTypes.ContainsKey(partFieldDefinition.FieldDefinition.Name))
                 .Select(partFieldDefinition =>
                 {
-                    var field = GetContentField(typePartDefinition, partFieldDefinition);
+                    var field = GetContentField(product, productAttributeTypes, typePartDefinition, partFieldDefinition);
                     var settings = GetFieldSettings(partFieldDefinition, field);
                     return new ProductAttributeDescription(
                         name: partFieldDefinition.Name,
@@ -74,20 +70,17 @@ public class ProductAttributeService : IProductAttributeService
     {
         if (part.ContentItem.TryGet<InventoryPart>(out var inventoryPart))
         {
-            var filteredInventory = inventoryPart.FilterOutdatedEntries();
-            part.CanBeBought.Clear();
-
             // If an inventory's value is below 1 and back ordering is not allowed, corresponding
             // CanBeBought entry needs to be set to false; should be set to true otherwise.
-            foreach (var inventory in filteredInventory)
-            {
-                part.CanBeBought[inventory.Key] = inventoryPart.AllowsBackOrder.Value || inventory.Value >= 1;
-            }
+            var filteredInventory = inventoryPart
+                .FilterOutdatedEntries()
+                .ToDictionary(pair => pair.Key, pair => inventoryPart.AllowsBackOrder.Value || pair.Value >= 1);
+            part.CanBeBought.SetItems(filteredInventory);
 
             // If SKU was updated, CanBeBought keys also need to be updated.
             if (part.Sku != skuBefore)
             {
-                UpdateAvailabilityKeys(part, filteredInventory.Count);
+                UpdateAvailabilityKeys(part, filteredInventory.Count, skuBefore);
             }
         }
         else
@@ -96,21 +89,77 @@ public class ProductAttributeService : IProductAttributeService
         }
     }
 
-    private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount)
+    public async Task<IEnumerable<ProductAttributeDescription>> GetProductAttributesRestrictedToPredefinedValuesAsync(ContentItem product) =>
+        (await GetProductAttributeFieldsAsync(product))
+        .Where(description => description.Settings is
+            IPredefinedValuesProductAttributeFieldSettings { RestrictToPredefinedValues: true })
+        .OrderBy(description => description.PartName, StringComparer.Ordinal)
+        .ThenBy(description => description.Name, StringComparer.Ordinal);
+
+    public async Task<string> GetProductKeyAsync(
+        ContentItem product,
+        ICollection<IProductAttributeValue> attributes,
+        IShoppingCartSerializer serializer)
+    {
+        var productPart = product.GetOrCreate<ProductPart>();
+        var predefinedAttributeValues = (await GetProductAttributesRestrictedToPredefinedValuesAsync(product))
+            .Select(attr => attr.PartName + "." + attr.Name)
+            .ToHashSet();
+
+        if (predefinedAttributeValues.Count == 0) return null;
+
+        if (attributes.HasRawAttributes())
+        {
+            attributes.SetItems(await serializer.PostProcessAttributesAsync(attributes, productPart));
+        }
+
+        var predefinedAttributes = attributes
+            .OfType<IPredefinedValuesProductAttributeValue>()
+            .Where(attribute => predefinedAttributeValues.Contains(attribute.AttributeName))
+            .OrderBy(value => value.AttributeName, StringComparer.Ordinal);
+
+        return string
+            .Join('-', predefinedAttributes.Select(attr => attr.UntypedPredefinedValue).Where(value => value != null))
+            .HtmlClassify();
+    }
+
+    public async Task UpdateInventoryPartFromProductAttributesAsync(ContentItem product)
+    {
+        if (!product.Has<PriceVariantsPart>() || !product.Has<InventoryPart>()) return;
+
+        var variantKeys = (await this.GetProductAttributesCombinationsAsync(product))
+            .Select(key => $"{product.GetOrCreate<ProductPart>().Sku}-{key}".ToUpperInvariant())
+            .ToList();
+
+        product.Alter<InventoryPart>(part => part.SetInventory(
+            variantKeys,
+            [.. variantKeys.Select(part.Inventory.GetMaybe)]));
+    }
+
+    private static void UpdateAvailabilityKeys(ProductPart part, int inventoryCount, string skuBefore)
     {
         var newAvailabilities = new Dictionary<string, bool>();
         foreach (var entry in part.CanBeBought)
         {
             var updatedKey = inventoryCount > 1
-                ? $"{part.Sku}-{entry.Key.Split('-')[^1]}"
+                ? InventoryPart.GetUpdatedInventoryKey(entry.Key, skuBefore, part.Sku)
                 : part.Sku;
 
             newAvailabilities.Add(updatedKey, entry.Value);
         }
 
-        part.CanBeBought.Clear();
-        part.CanBeBought.AddRange(newAvailabilities);
+        part.CanBeBought.SetItems(newAvailabilities);
     }
+
+    private static ProductAttributeField GetContentField(
+        ContentItem product,
+        IDictionary<string, Type> productAttributeTypes,
+        ContentTypePartDefinition typePartDefinition,
+        ContentPartFieldDefinition partFieldDefinition) =>
+        product
+                .Get<ContentPart>(typePartDefinition.Name)?
+                .Get(productAttributeTypes[partFieldDefinition.FieldDefinition.Name], partFieldDefinition.Name)
+            as ProductAttributeField;
 
     private ProductAttributeFieldSettings GetFieldSettings(
         ContentPartFieldDefinition partFieldDefinition,
@@ -121,11 +170,4 @@ public class ProductAttributeService : IProductAttributeService
                 nameof(ProductAttributeField<>.GetSettings),
                 BindingFlags.Instance | BindingFlags.Public)
             ?.Invoke(field, [partFieldDefinition]) as ProductAttributeFieldSettings;
-
-    private static Dictionary<string, Type> GetProductAttributeFieldTypes(ContentItem product) =>
-        product.OfType<ContentPart>()
-            .SelectMany(parts => parts.OfType<ProductAttributeField>())
-            .Select(field => field.GetType())
-            .Distinct()
-            .ToDictionary(type => type.Name);
 }
