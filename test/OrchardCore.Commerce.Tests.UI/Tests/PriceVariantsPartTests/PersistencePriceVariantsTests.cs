@@ -28,23 +28,23 @@ public class PersistencePriceVariantsTests : UITestBase
                 var currency = Currency.HungarianForint.CurrencyIsoCode;
 
                 await context.ClickAndFillInWithRetriesAsync(By.Id("ProductPart_Sku"), sku);
-                await context.ClickAndFillInWithRetriesAsync(By.Id("PriceVariantsPart_VariantsValues__"), price);
-                await context.SetDropdownByTextAsync("PriceVariantsPart_VariantsCurrencies__", currency);
+                await context.ClickAndFillInWithRetriesAsync(By.Id("PriceVariantsPart_VariantsValues_PRIMARY_"), price);
+                await context.SetDropdownByTextAsync("PriceVariantsPart_VariantsCurrencies_PRIMARY_", currency);
 
                 await context.ClickReliablyOnSubmitAsync();
                 context.ShouldBeSuccess();
 
                 await context.GoToContentItemListAsync("TestPriceVariantsProduct");
-                await context.ClickReliablyOnAsync(By.XPath("//a[. = 'Edit']"));
+                await context.ClickReliablyOnAsync(By.ClassName("edit"));
 
                 context.Get(By.Id("ProductPart_Sku")).GetDomProperty("value").ShouldBe(sku);
 
-                context.Get(By.CssSelector("#PriceVariantsPart_VariantsCurrencies__ option:checked")
+                context.Get(By.CssSelector("#PriceVariantsPart_VariantsCurrencies_PRIMARY_ option:checked")
                         .OfAnyVisibility())
                     .Text
                     .ShouldBe(currency);
 
-                context.Get(By.Id("PriceVariantsPart_VariantsValues__")).GetDomProperty("value").ShouldBe("9999.00");
+                context.Get(By.Id("PriceVariantsPart_VariantsValues_PRIMARY_")).GetDomProperty("value").ShouldBe("9999.00");
             });
 
     [Fact]
