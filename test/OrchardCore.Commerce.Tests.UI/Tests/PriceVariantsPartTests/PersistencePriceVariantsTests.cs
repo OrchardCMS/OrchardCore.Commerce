@@ -73,9 +73,10 @@ public class PersistencePriceVariantsTests : UITestBase
             await context.ClickAndFillInWithRetriesAsync(By.Id("DisplayName"), "Color");
             await context.ClickReliablyOnAsync(By.CssSelector("input[value='TextProductAttributeField']"));
             await context.ClickReliablyOnAsync(By.CssSelector("button[value='SaveAndConfigure']"));
-            await context.ClickAndFillInWithRetriesAsync(
-                By.Id("PriceVariantsProduct_Color_TextProductAttributeFieldSettingsDriver_PredefinedValues"),
-                "Red\nGreen\nBlue");
+            // Can't use "ClickAndFillInWithRetriesAsync" because the newlines don't match on Windows.
+            context.Driver.TryFillElement(
+                context.Get(By.Id("PriceVariantsProduct_Color_TextProductAttributeFieldSettingsDriver_PredefinedValues")),
+                string.Join(Keys.Enter, "Red", "Green", "Blue"));
             await context.ClickReliablyOnAsync(
                 By.Id("PriceVariantsProduct_Color_TextProductAttributeFieldSettingsDriver_RestrictToPredefinedValues"));
             await Should.ThrowAsync<UnhandledAlertException>(() => context.ClickReliablyOnSubmitAsync());
