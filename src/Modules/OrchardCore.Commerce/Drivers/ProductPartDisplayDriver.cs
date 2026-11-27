@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Commerce.Abstractions;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Models;
 using OrchardCore.Commerce.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -35,7 +36,15 @@ public class ProductPartDisplayDriver : ContentPartDisplayDriver<ProductPart>
             .Location("Summary", "Meta:5");
 
     public override IDisplayResult Edit(ProductPart part, BuildPartEditorContext context) =>
-        Initialize<ProductPartViewModel>(GetEditorShapeType(context), async viewModel => await BuildViewModelAsync(viewModel, part));
+        Initialize<ProductPartViewModel>(GetEditorShapeType(context), async viewModel =>
+        {
+            await BuildViewModelAsync(viewModel, part);
+
+            if (!viewModel.IsSkuReadOnly && viewModel.Sku == ModelConstants.NewProductKey)
+            {
+                viewModel.Sku = string.Empty;
+            }
+        });
 
     public override async Task<IDisplayResult> UpdateAsync(
         ProductPart part,

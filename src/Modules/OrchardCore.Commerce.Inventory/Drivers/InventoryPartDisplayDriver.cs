@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Commerce.Abstractions.Constants;
 using OrchardCore.Commerce.Inventory.Models;
 using OrchardCore.Commerce.Inventory.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -15,7 +16,7 @@ namespace OrchardCore.Commerce.Inventory.Drivers;
 
 public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<InventoryPart>
 {
-    public const string NewProductKey = "DEFAULT";
+    public const string NewProductKey = ModelConstants.NewProductKey;
 
     private readonly IHttpContextAccessor _hca;
 
@@ -80,7 +81,7 @@ public sealed class InventoryPartDisplayDriver : ContentPartDisplayDriver<Invent
     {
         model.Inventory.SetItems(part.FilterOutdatedEntries());
 
-        var sku = part.ContentItem?.Content.ProductPart?.Sku?.ToString() as string;
+        var sku = part.ContentItem?.Content.ProductPart?.Sku?.ToString() as string ?? NewProductKey;
         if (model.Inventory.Count == 0) model.Inventory.Add(sku, 0);
 
         model.Titles.SetItems(model.Inventory.Keys.ToDictionary(key => key, key =>
