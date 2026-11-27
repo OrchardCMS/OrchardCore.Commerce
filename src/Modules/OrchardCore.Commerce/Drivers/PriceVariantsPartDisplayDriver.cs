@@ -98,14 +98,11 @@ public class PriceVariantsPartDisplayDriver : ContentPartDisplayDriver<PriceVari
         var values = allVariantsKeys.ToDictionary(key => key, key => part[key]?.Value);
         var currencies = allVariantsKeys.ToDictionary(
             key => key,
-            key => part[key]?.Currency.CurrencyIsoCode ?? _currencyOptions.Value.CurrentDisplayCurrency);
+            key => part[key]?.Currency.CurrencyIsoCode ??
+                _currencyOptions.Value.CurrentDisplayCurrency ??
+                _moneyService.DefaultCurrency.CurrencyIsoCode);
 
         model.InitializeVariants(variants, values, currencies);
-
-        foreach (var key in model.VariantsCurrencies.Keys)
-        {
-            model.VariantsCurrencies[key] ??= _moneyService.DefaultCurrency.CurrencyIsoCode;
-        }
     }
 
     private static Dictionary<string, T> CleanVariantDictionary<T>(
